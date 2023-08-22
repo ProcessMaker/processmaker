@@ -79,6 +79,7 @@
         "popper.js": "^1.16.1",
         "pusher-js": "^4.4.0",
         "snapsvg": "^0.5.1",
+        "splitpanes": "^2.4.1",
         "svg-pan-zoom": "^3.6.1",
         "timezones.json": "^1.5.2",
         "tinycolor2": "^1.4.2",

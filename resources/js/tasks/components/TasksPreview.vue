@@ -1,85 +1,98 @@
 <template>
   <div>
-    <b-sidebar
-      id="tasks-preview"
-      ref="tasks-preview"
-      v-model="showPreview"
-      :right="showRight"
-      shadow
-      lazy
-      no-header
+    <splitpanes
+      id="splitpane"
+      ref="inspectorSplitPanes"
+      class="default-theme" 
+      :dbl-click-splitter="false"
+      v-if="showPreview"
     >
-      <template #default="{ hide }">
-        <div class="p-3">
-          <div class="d-flex w-100 h-100 mb-3">
-            <div class="my-1">
-              <a class="lead text-secondary font-weight-bold">
-                {{ task.element_name }}
-              </a>
+      <pane style="opacity: 0;">
+        <div></div>
+      </pane>
+      <pane :min-size="paneMinSize" max-size="99" style="background-color: white;">
+        <div
+          id="tasks-preview"
+          ref="tasks-preview"
+          class="h-100 p-3"
+        >
+          <template>
+            <div>
+              <div class="d-flex w-100 h-100 mb-3">
+                <div class="my-1">
+                  <a class="lead text-secondary font-weight-bold">
+                    {{ task.element_name }}
+                  </a>
+                </div>
+                <div class="ml-auto mr-0 text-right">
+                  <b-button
+                    class="btn-light text-secondary"
+                    :aria-label="$t('Previous Tasks')"
+                    :disabled="!existPrev"
+                    @click="goPrevNext('Prev')"
+                  >
+                    <i class="fas fa-chevron-left" />
+                    {{ $t("Prev") }}
+                  </b-button>
+                  <b-button
+                    class="btn-light text-secondary"
+                    :aria-label="$t('Next Tasks')"
+                    :disabled="!existNext"
+                    @click="goPrevNext('Next')"
+                  >
+                    {{ $t("Next") }}
+                    <i class="fas fa-chevron-right" />
+                  </b-button>
+                  <a class="text-secondary">|</a>
+                  <b-button
+                    class="btn-light text-secondary"
+                    :aria-label="$t('Open Task')"
+                    :href="openTask()"
+                  >
+                    <i class="fas fa-external-link-alt" />
+                  </b-button>
+                  <a class="text-secondary">|</a>
+                  <b-button
+                    class="btn-light text-secondary"
+                    :aria-label="$t('Close')"
+                    @click="onClose()"
+                  >
+                    <i class="fas fa-times" />
+                  </b-button>
+                </div>
+              </div>
+              <div class="frame-container">
+                <b-embed
+                  v-if="showFrame1"
+                  id="tasksFrame1"
+                  width="100%"
+                  :class="showFrame2 ? 'loadingFrame' : ''"
+                  :src="linkTasks1"
+                  @load="frameLoaded()"
+                />
+                <b-embed
+                  v-if="showFrame2"
+                  id="tasksFrame2"
+                  width="100%"
+                  :class="showFrame1 ? 'loadingFrame' : ''"
+                  :src="linkTasks2"
+                  @load="frameLoaded()"
+                />
+              </div>
             </div>
-            <div class="ml-auto mr-0 text-right">
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Previous Tasks')"
-                :disabled="!existPrev"
-                @click="goPrevNext('Prev')"
-              >
-                <i class="fas fa-chevron-left" />
-                {{ $t("Prev") }}
-              </b-button>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Next Tasks')"
-                :disabled="!existNext"
-                @click="goPrevNext('Next')"
-              >
-                {{ $t("Next") }}
-                <i class="fas fa-chevron-right" />
-              </b-button>
-              <a class="text-secondary">|</a>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Open Task')"
-                :href="openTask()"
-              >
-                <i class="fas fa-external-link-alt" />
-              </b-button>
-              <a class="text-secondary">|</a>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Close')"
-                @click="hide"
-              >
-                <i class="fas fa-times" />
-              </b-button>
-            </div>
-          </div>
-          <div class="frame-container">
-            <b-embed
-              v-if="showFrame1"
-              id="tasksFrame1"
-              width="100%"
-              :class="showFrame2 ? 'loadingFrame' : ''"
-              :src="linkTasks1"
-              @load="frameLoaded()"
-            />
-            <b-embed
-              v-if="showFrame2"
-              id="tasksFrame2"
-              width="100%"
-              :class="showFrame1 ? 'loadingFrame' : ''"
-              :src="linkTasks2"
-              @load="frameLoaded()"
-            />
-          </div>
+          </template>
         </div>
-      </template>
-    </b-sidebar>
+      </pane>
+    </splitpanes>
   </div>
 </template>
 
 <script>
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+
 export default {
+  components: { Splitpanes, Pane },
   data() {
     return {
       showPreview: false,
@@ -93,11 +106,19 @@ export default {
       existPrev: false,
       existNext: false,
       loading: true,
+      paneMinSize: 0,
       isLoading: false,
       showFrame: 1,
       showFrame1: false,
       showFrame2: false,
     };
+  },
+  updated() {
+    const resize_ob = new ResizeObserver((entries) => {
+      const width = entries[0].contentRect.width;
+      this.setPaneMinSize(width, 480);
+    });
+    resize_ob.observe(this.$refs.inspectorSplitPanes.container);
   },
   methods: {
     /**
@@ -119,6 +140,12 @@ export default {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+    },
+    onClose() {
+      this.showPreview = false;
+    },
+    setPaneMinSize(splitpanesWidth, minPixelWidth) {
+      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
     },
     /**
      * Defined Previuos and Next task
@@ -183,9 +210,11 @@ export default {
 </script>
 
 <style>
-#tasks-preview {
-  top: 11%;
-  width: 50%;
+#splitpane {
+  top: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
 }
 .loadingFrame {
   opacity: 0.5;
