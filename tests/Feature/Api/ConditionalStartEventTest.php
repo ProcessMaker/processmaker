@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\StartEventConditional;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
@@ -13,7 +14,10 @@ class ConditionalStartEventTest extends TestCase
 {
     public function testConditionalEventMustTriggeredWhenActive()
     {
-        Bus::fake([StartEventConditional::class]);
+        Bus::fake([
+            StartEventConditional::class,
+            RefreshArtisanCaches::class,
+        ]);
 
         //Create a conditional process with ACTIVE status by default
         ImportProcess::dispatchSync(
@@ -29,7 +33,10 @@ class ConditionalStartEventTest extends TestCase
 
     public function testConditionalEventMustNotTriggeredWhenInactive()
     {
-        Bus::fake([StartEventConditional::class]);
+        Bus::fake([
+            StartEventConditional::class,
+            RefreshArtisanCaches::class,
+        ]);
 
         //Create a conditional process with ACTIVE status by default
         ImportProcess::dispatchSync(

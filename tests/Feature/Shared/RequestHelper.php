@@ -86,6 +86,9 @@ trait RequestHelper
                     'trace' => $exception->getTrace(),
                 ];
             }
+            if (!isset($json['trace'])) {
+                return;
+            }
             $json['trace'] = array_slice($json['trace'], 0, 15);
             error_log((isset($this->_debug_response->exception) ? get_class($this->_debug_response->exception) : '') . ': ' . $json['message']);
             isset($json['file']) ? error_log($json['file'] . ':' . $json['line'])

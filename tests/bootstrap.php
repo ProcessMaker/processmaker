@@ -9,7 +9,6 @@ require_once __DIR__ . '/../bootstrap/app.php';
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\Models\Setting;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -94,9 +93,7 @@ if (env('TEST_TOKEN')) {
     $_ENV['DATA_DB_DATABASE'] = $database;
 } elseif (env('POPULATE_DATABASE')) {
     Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
-    Setting::withoutEvents(function () {
-        Artisan::call('migrate:fresh', []);
-    });
+    Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
     \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;

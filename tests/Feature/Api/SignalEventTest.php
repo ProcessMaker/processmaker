@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CatchSignalEventProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process;
@@ -16,6 +18,11 @@ class SignalEventTest extends TestCase
 {
     public function testSignalEventMustTriggeredWhenProcessActive()
     {
+        Bus::fake([
+            RefreshArtisanCaches::class,
+            CatchSignalEventProcess::class,
+        ]);
+
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
         ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
@@ -35,15 +42,20 @@ class SignalEventTest extends TestCase
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_catcher.json')
         );
 
-        //Evaluates that CatchSignalEventProcess is triggering because catcher process is ACTIVE
-        $this->expectsJobs(CatchSignalEventProcess::class);
-
         $throwSignalEventJob = new ThrowSignalEvent($signalRef, [], [$excludedProcess], []);
         $throwSignalEventJob->handle();
+
+        //Evaluates that CatchSignalEventProcess is triggering because catcher process is ACTIVE
+        Bus::assertDispatched(CatchSignalEventProcess::class);
     }
 
     public function testSignalEventMustNotTriggeredWhenProcessInactive()
     {
+        Bus::fake([
+            RefreshArtisanCaches::class,
+            CatchSignalEventProcess::class,
+        ]);
+
         //Create a signal process that TRIGGER a signal with ACTIVE status by default
         ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/signal_event_process_trigger.json')
@@ -70,11 +82,11 @@ class SignalEventTest extends TestCase
         $catcherProcess->status = 'INACTIVE';
         $catcherProcess->save();
 
-        //Evaluates that CatchSignalEventProcess is NOT triggering because catcher process is INACTIVE
-        $this->doesntExpectJobs(CatchSignalEventProcess::class);
-
         $throwSignalEventJob = new ThrowSignalEvent($signalRef, [], [$excludedProcess], []);
         $throwSignalEventJob->handle();
+
+        //Evaluates that CatchSignalEventProcess is NOT triggering because catcher process is INACTIVE
+        Bus::assertNotDispatched(CatchSignalEventProcess::class);
     }
 
     /**
