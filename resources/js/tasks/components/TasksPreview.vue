@@ -10,7 +10,7 @@
       <pane style="opacity: 0;">
         <div></div>
       </pane>
-      <pane :min-size="paneMinSize" max-size="99">
+      <pane :min-size="paneMinSize" max-size="99" style="background-color: white;">
         <div
           id="tasks-preview"
           ref="tasks-preview"
