@@ -1,174 +1,203 @@
 {
-    "name": "processmaker/processmaker",
-    "version": "4.7.1+nightly-20230816",
-    "description": "BPM PHP Software",
-    "keywords": [
-        "php bpm processmaker"
+  "name": "processmaker/processmaker",
+  "version": "4.7.1+nightly-20230816",
+  "description": "BPM PHP Software",
+  "keywords": [
+    "php bpm processmaker"
+  ],
+  "homepage": "http://processmaker.com",
+  "license": "GAGPL-3.0-or-later",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.1",
+    "babenkoivan/elastic-scout-driver": "^3.0",
+    "composer/semver": "^3.3",
+    "darkaonline/l5-swagger": "^8.3",
+    "doctrine/dbal": "^3.3",
+    "fakerphp/faker": "^1.9.1",
+    "fruitcake/laravel-cors": "^2.0",
+    "google/apiclient": "^2.12",
+    "guzzlehttp/guzzle": "^7.4",
+    "igaster/laravel-theme": "2.0.*",
+    "laravel/framework": "^8.83",
+    "laravel/horizon": "^5.10",
+    "laravel/passport": "^10.4",
+    "laravel/scout": "^9.4",
+    "laravel/telescope": "^4.9",
+    "laravel/tinker": "^2.5",
+    "laravel/ui": "^3.4",
+    "laravelcollective/html": "^6.3",
+    "lavary/laravel-menu": "^1.8",
+    "lcobucci/jwt": "^4.2",
+    "league/flysystem-aws-s3-v3": "^1.0",
+    "mateusjunges/laravel-kafka": "^1.9",
+    "microsoft/microsoft-graph": "^1.77",
+    "moontoast/math": "^1.2",
+    "mustache/mustache": "^2.14",
+    "openai-php/client": "^0.5.2",
+    "phing/phing": "^2.17",
+    "php-amqplib/php-amqplib": "^3.5",
+    "pion/laravel-chunk-upload": "^1.5",
+    "predis/predis": "^2.0",
+    "processmaker/docker-executor-lua": "^1.0",
+    "processmaker/docker-executor-node": "1.1.0",
+    "processmaker/docker-executor-php": "1.2.0",
+    "processmaker/laravel-i18next": "dev-master",
+    "processmaker/nayra": "1.9.4",
+    "processmaker/package-advanced-user-manager": "^1.6",
+    "processmaker/package-data-sources": "^1.21",
+    "processmaker/package-decision-engine": "^1.4",
+    "processmaker/package-projects": "^0.0.1",
+    "processmaker/pmql": "1.9.1",
+    "pusher/pusher-php-server": "^7.0",
+    "ralouphie/getallheaders": "^3.0",
+    "spatie/laravel-fractal": "^5.8",
+    "spatie/laravel-medialibrary": "^9.9",
+    "symfony/expression-language": "^5.4",
+    "teamtnt/laravel-scout-tntsearch-driver": "^11.6",
+    "typo3/class-alias-loader": "^1.0",
+    "whichbrowser/parser": "^2.1"
+  },
+  "require-dev": {
+    "brianium/paratest": "^6.6",
+    "dms/phpunit-arraysubset-asserts": "^0.4",
+    "facade/ignition": "^2.5",
+    "filp/whoops": "^2.14",
+    "laravel/dusk": "^6.25",
+    "laravel/homestead": "^13.2",
+    "mockery/mockery": "^1.4.4",
+    "nunomaduro/collision": "^5.10",
+    "phpunit/phpunit": "^9.5.13",
+    "squizlabs/php_codesniffer": "^3.7",
+    "symfony/dom-crawler": "^5.4"
+  },
+  "autoload": {
+    "files": [
+      "helpers.php"
     ],
-    "homepage": "http://processmaker.com",
-    "license": "GAGPL-3.0-or-later",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "require": {
-        "php": "^8.1",
-        "babenkoivan/elastic-scout-driver": "^3.0",
-        "composer/semver": "^3.3",
-        "darkaonline/l5-swagger": "^8.3",
-        "doctrine/dbal": "^3.3",
-        "fakerphp/faker": "^1.9.1",
-        "fruitcake/laravel-cors": "^2.0",
-        "google/apiclient": "^2.12",
-        "guzzlehttp/guzzle": "^7.4",
-        "igaster/laravel-theme": "2.0.*",
-        "laravel/framework": "^8.83",
-        "laravel/horizon": "^5.10",
-        "laravel/passport": "^10.4",
-        "laravel/scout": "^9.4",
-        "laravel/telescope": "^4.9",
-        "laravel/tinker": "^2.5",
-        "laravel/ui": "^3.4",
-        "laravelcollective/html": "^6.3",
-        "lavary/laravel-menu": "^1.8",
-        "lcobucci/jwt": "^4.2",
-        "league/flysystem-aws-s3-v3": "^1.0",
-        "mateusjunges/laravel-kafka": "^1.9",
-        "microsoft/microsoft-graph": "^1.77",
-        "moontoast/math": "^1.2",
-        "mustache/mustache": "^2.14",
-        "openai-php/client": "^0.5.2",
-        "phing/phing": "^2.17",
-        "php-amqplib/php-amqplib": "^3.5",
-        "pion/laravel-chunk-upload": "^1.5",
-        "predis/predis": "^2.0",
-        "processmaker/docker-executor-lua": "^1.0",
-        "processmaker/docker-executor-node": "1.1.0",
-        "processmaker/docker-executor-php": "1.2.0",
-        "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.9.4",
-        "processmaker/pmql": "1.9.1",
-        "pusher/pusher-php-server": "^7.0",
-        "ralouphie/getallheaders": "^3.0",
-        "spatie/laravel-fractal": "^5.8",
-        "spatie/laravel-medialibrary": "^9.9",
-        "symfony/expression-language": "^5.4",
-        "teamtnt/laravel-scout-tntsearch-driver": "^11.6",
-        "typo3/class-alias-loader": "^1.0",
-        "whichbrowser/parser": "^2.1"
-    },
-    "require-dev": {
-        "brianium/paratest": "^6.6",
-        "dms/phpunit-arraysubset-asserts": "^0.4",
-        "facade/ignition": "^2.5",
-        "filp/whoops": "^2.14",
-        "laravel/dusk": "^6.25",
-        "laravel/homestead": "^13.2",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^5.10",
-        "phpunit/phpunit": "^9.5.13",
-        "squizlabs/php_codesniffer": "^3.7",
-        "symfony/dom-crawler": "^5.4"
-    },
-    "autoload": {
-        "files": [
-            "helpers.php"
-        ],
-        "psr-4": {
-            "ProcessMaker\\": [
-                "ProcessMaker/"
-            ],
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": [
-                "laravel/dusk",
-                "laravel/passport"
-            ]
-        },
-        "google/apiclient-services": [
-            "Gmail"
-        ],
-        "processmaker": {
-            "build": "0a52208e",
-            "custom": {
-                "package-ellucian-ethos": "1.12.4"
-            },
-            "enterprise": {
-                "connector-docusign": "1.4.0",
-                "connector-idp": "1.4.0",
-                "connector-pdf-print": "1.13.1",
-                "connector-send-email": "1.21.3",
-                "connector-slack": "1.5.0",
-                "docker-executor-node-ssr": "1.4.0",
-                "package-actions-by-email": "1.13.3",
-                "package-advanced-user-manager": "1.6.0",
-                "package-ai": "1.0.1",
-                "package-analytics-reporting": "1.0.0",
-                "package-auth": "1.12.1",
-                "package-collections": "2.11.3",
-                "package-comments": "1.7.0",
-                "package-conversational-forms": "1.4.1",
-                "package-data-sources": "1.21.9",
-                "package-decision-engine": "1.4.5",
-                "package-dynamic-ui": "1.13.4",
-                "package-files": "1.10.2",
-                "package-googleplaces": "1.7.1",
-                "package-photo-video": "1.0.0",
-                "package-plaid": "1.0.0",
-                "package-pm-blocks": "1.1.1",
-                "package-process-documenter": "1.6.0",
-                "package-process-optimization": "1.6.0",
-                "package-product-analytics": "1.5.4",
-                "package-savedsearch": "1.27.5",
-                "package-sentry": "1.5.1",
-                "package-signature": "1.8.0",
-                "package-translations": "2.5.0",
-                "package-versions": "1.6.0",
-                "package-vocabularies": "2.11.2",
-                "package-webentry": "2.16.5",
-                "packages": "^0"
-            },
-            "release": "Summer 2023"
-        }
-    },
-    "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate"
-        ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover",
-            "@php artisan processmaker:install-pre-commit-hooks"
-        ],
-        "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ]
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/ProcessMaker/SocialiteProviders"
-        }
-    ],
-    "config": {
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "optimize-autoloader": true,
-        "allow-plugins": {
-            "typo3/class-alias-loader": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true
-        }
+    "psr-4": {
+      "ProcessMaker\\": [
+        "ProcessMaker/"
+      ],
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": [
+        "laravel/dusk",
+        "laravel/passport"
+      ]
+    },
+    "google/apiclient-services": [
+      "Gmail"
+    ],
+    "processmaker": {
+      "build": "0a52208e",
+      "custom": {
+        "package-ellucian-ethos": "1.12.4"
+      },
+      "enterprise": {
+        "connector-docusign": "1.4.0",
+        "connector-idp": "1.4.0",
+        "connector-pdf-print": "1.13.1",
+        "connector-send-email": "1.21.3",
+        "connector-slack": "1.5.0",
+        "docker-executor-node-ssr": "1.4.0",
+        "package-actions-by-email": "1.13.3",
+        "package-advanced-user-manager": "1.6.0",
+        "package-ai": "1.0.1",
+        "package-analytics-reporting": "1.0.0",
+        "package-auth": "1.12.1",
+        "package-collections": "2.11.3",
+        "package-comments": "1.7.0",
+        "package-conversational-forms": "1.4.1",
+        "package-data-sources": "1.21.9",
+        "package-decision-engine": "1.4.5",
+        "package-dynamic-ui": "1.13.4",
+        "package-files": "1.10.2",
+        "package-googleplaces": "1.7.1",
+        "package-photo-video": "1.0.0",
+        "package-plaid": "1.0.0",
+        "package-pm-blocks": "1.1.1",
+        "package-process-documenter": "1.6.0",
+        "package-process-optimization": "1.6.0",
+        "package-product-analytics": "1.5.4",
+        "package-projects": "0.0.1",
+        "package-savedsearch": "1.27.5",
+        "package-sentry": "1.5.1",
+        "package-signature": "1.8.0",
+        "package-translations": "2.5.0",
+        "package-versions": "1.6.0",
+        "package-vocabularies": "2.11.2",
+        "package-webentry": "2.16.5",
+        "packages": "^0"
+      },
+      "release": "Summer 2023"
+    }
+  },
+  "scripts": {
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate"
+    ],
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover",
+      "@php artisan processmaker:install-pre-commit-hooks"
+    ],
+    "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
+    "post-update-cmd": [
+      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+    ]
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/SocialiteProviders"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-advanced-user-manager"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-projects"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-projects"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-data-sources"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-decision-engine"
+    },
+    {
+      "type": "path",
+      "url": "../processmaker-plugins/package-decision-engine"
+    }
+  ],
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "php-http/discovery": true
+    }
+  }
 }
