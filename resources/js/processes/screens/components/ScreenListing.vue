@@ -38,6 +38,9 @@
           />
         </template>
       </vuetable>
+
+      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName"/>
+
       <pagination
         single="Screen"
         plural="Screens"
@@ -92,10 +95,11 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import AddToProjectModal from "../../../components/projects/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu },
+  components: { EllipsisMenu, AddToProjectModal },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission"],
   data() {
@@ -116,6 +120,11 @@ export default {
           href: "/designer/screens/{{id}}/edit",
           permission: "edit-screens",
           icon: "fas fa-cog",
+        },
+        { 
+          value: "add-to-project", 
+          content: "Assign to Project",
+          icon: "fas nav-icon fa-folder" 
         },
         {
           value: "duplicate-item",
@@ -139,6 +148,8 @@ export default {
         },
       ],
       orderBy: "title",
+      screenId: null,
+      assetName: " ",
       dupScreen: {
         title: "",
         type: "",
@@ -225,6 +236,11 @@ export default {
           }
         });
     },
+    showAddToProjectModal(name, id) {        
+      this.screenId = id;
+      this.assetName = name;
+      this.$refs["add-to-project-modal"].show();
+    },
     onAction(actionType, data, index) {
       if (actionType.value) {
         switch (actionType.value) {
@@ -257,6 +273,9 @@ export default {
                 });
             }
           );
+            break;
+            case 'add-to-project':
+              this.showAddToProjectModal(data.name, data.id);
             break;
         }
     } else {
