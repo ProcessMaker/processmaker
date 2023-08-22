@@ -61,20 +61,22 @@
                   </b-button>
                 </div>
               </div>
-              <div>
-                <div
-                  v-show="loading"
-                  class="text-center"
-                >
-                  <b-spinner />
-                </div>
+              <div class="frame-container">
                 <b-embed
-                  v-show="!loading"
-                  id="tasksFrame"
-                  type="iframe"
-                  :class="loading ? 'loadingFrame' : ''"
-                  :src="linkTasks"
-                  @load="frameLoaded"
+                  v-if="showFrame1"
+                  id="tasksFrame1"
+                  width="100%"
+                  :class="showFrame2 ? 'loadingFrame' : ''"
+                  :src="linkTasks1"
+                  @load="frameLoaded()"
+                />
+                <b-embed
+                  v-if="showFrame2"
+                  id="tasksFrame2"
+                  width="100%"
+                  :class="showFrame1 ? 'loadingFrame' : ''"
+                  :src="linkTasks2"
+                  @load="frameLoaded()"
                 />
               </div>
             </div>
@@ -95,7 +97,8 @@ export default {
     return {
       showPreview: false,
       showRight: true,
-      linkTasks: "",
+      linkTasks1: "",
+      linkTasks2: "",
       task: {},
       data: [],
       prevTask: {},
@@ -104,6 +107,10 @@ export default {
       existNext: false,
       loading: true,
       paneMinSize: 0,
+      isLoading: false,
+      showFrame: 1,
+      showFrame1: false,
+      showFrame2: false,
     };
   },
   updated() {
@@ -117,9 +124,17 @@ export default {
     /**
      * Show the sidebar
      */
-    showSideBar(info, data) {
+    showSideBar(info, data, firstTime = false) {
+      this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
-      this.linkTasks = `/tasks/${info.id}/edit/preview`;
+      if (this.showFrame === 1) {
+        this.linkTasks1 = `/tasks/${info.id}/edit/preview`;
+        this.showFrame1 = true;
+      }
+      if (this.showFrame === 2) {
+        this.showFrame2 = true;
+        this.linkTasks2 = `/tasks/${info.id}/edit/preview`;
+      }
       this.showPreview = true;
       this.data = data;
       this.existPrev = false;
@@ -180,6 +195,15 @@ export default {
      */
     frameLoaded() {
       this.loading = false;
+      if (this.showFrame === 1) {
+        this.showFrame1 = true;
+        this.showFrame2 = false;
+        this.showFrame = 2;
+      } else {
+        this.showFrame2 = true;
+        this.showFrame1 = false;
+        this.showFrame = 1;
+      }
     },
   },
 };
@@ -193,6 +217,17 @@ export default {
   position: absolute;
 }
 .loadingFrame {
-  opacity: 0.6;
+  opacity: 0.5;
+}
+.frame-container {
+  display: grid;
+}
+.embed-responsive {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  overflow: hidden
+  grid-row;
 }
 </style>

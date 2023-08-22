@@ -62,7 +62,8 @@ class DownloadSecurityLog implements ShouldQueue
     {
         // Check if the S3 is ready to use
         if (!Media::s3IsReady()) {
-            event(new SecurityLogDownloadFailed($this->user, false, __('This feature requires the configured AWS S3 service. Please contact your Customer Success Manager to use it.')));
+            event(new SecurityLogDownloadFailed($this->user, false, __('You seem to be missing access to this feature. Please contact ProcessMaker Support.
+            ')));
 
             return;
         }
@@ -101,7 +102,9 @@ class DownloadSecurityLog implements ShouldQueue
     {
         $uuid = Uuid::uuid4()->toString() . Str::random(8);
 
-        return 'security-logs/' . $uuid . '.' . $this->format;
+        $s3Uri = empty(config('app.security_log_s3_uri')) ? 'security-logs' : config('app.security_log_s3_uri');
+
+        return $s3Uri .'/'. $uuid . '.' . $this->format;
     }
 
     /**

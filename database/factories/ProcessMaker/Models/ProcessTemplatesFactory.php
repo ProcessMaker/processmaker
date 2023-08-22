@@ -32,6 +32,7 @@ class ProcessTemplatesFactory extends Factory
             'user_id' => User::factory()->create()->getKey(),
             'manifest' => json_encode($manifest),
             'svg' => $process->svg,
+            'version' => '1.0.0',
             'process_id' => $process->id,
             'process_category_id' => function () {
                 return ProcessCategory::factory()->create()->getKey();

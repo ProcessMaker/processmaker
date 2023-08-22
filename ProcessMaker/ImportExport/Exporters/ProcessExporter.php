@@ -58,12 +58,20 @@ class ProcessExporter extends ExporterBase
 
         // Screens
         if ($process->cancel_screen_id) {
-            $screen = Screen::findOrFail($process->cancel_screen_id);
-            $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+            $screen = Screen::find($process->cancel_screen_id);
+            if ($screen) {
+                $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+            } else {
+                \Log::debug("Cancel ScreenId: $process->cancel_screen_id not exists");
+            }
         }
         if ($process->request_detail_screen_id) {
-            $screen = Screen::findOrFail($process->request_detail_screen_id);
-            $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
+            $screen = Screen::find($process->request_detail_screen_id);
+            if ($screen) {
+                $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
+            } else {
+                \Log::debug("Request Detail ScreenId: $process->request_detail_screen_id not exists");
+            }
         }
 
         $this->exportSubprocesses();
@@ -301,14 +309,22 @@ class ProcessExporter extends ExporterBase
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
 
             if (is_numeric($screenId)) {
-                $screen = Screen::findOrFail($screenId);
-                $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
+                $screen = Screen::find($screenId);
+                if ($screen) {
+                    $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
+                } else {
+                    \Log::debug("ScreenId: $screenId not exists");
+                }
             }
 
             // Let's check if interstitialScreen exist
             if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
-                $interstitialScreen = Screen::findOrFail($interstitialScreenId);
-                $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
+                $interstitialScreen = Screen::find($interstitialScreenId);
+                if ($interstitialScreen) {
+                    $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
+                } else {
+                    \Log::debug("Interstitial screenId: $interstitialScreenId not exists");
+                }
             }
         }
     }
@@ -343,8 +359,12 @@ class ProcessExporter extends ExporterBase
             $scriptId = $element->getAttribute('pm:scriptRef');
 
             if (is_numeric($scriptId)) {
-                $script = Script::findOrFail($scriptId);
-                $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
+                $script = Script::find($scriptId);
+                if ($script) {
+                    $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
+                } else {
+                    \Log::debug("ScriptId: $scriptId not exists");
+                }
             }
         }
     }
