@@ -1,84 +1,93 @@
 <template>
   <div>
-    <div
-    id="tasks-preview"
-    ref="tasks-preview"
-    v-if="showPreview"
-    >
-    <div 
-      id="resizer"
-      ref="resizer"
-    >
-      <i class='fas fa-grip-lines-vertical text-secondary'></i>
-    </div>
-    <template>
-        <div class="ml-2 p-3">
-          <div class="d-flex w-100 h-100 mb-3">
-            <div class="my-1">
-              <a class="lead text-secondary font-weight-bold">
-                {{ task.element_name }}
-              </a>
-            </div>
-            <div class="ml-auto mr-0 text-right">
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Previous Tasks')"
-                :disabled="!existPrev"
-                @click="goPrevNext('Prev')"
-              >
-                <i class="fas fa-chevron-left" />
-                {{ $t("Prev") }}
-              </b-button>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Next Tasks')"
-                :disabled="!existNext"
-                @click="goPrevNext('Next')"
-              >
-                {{ $t("Next") }}
-                <i class="fas fa-chevron-right" />
-              </b-button>
-              <a class="text-secondary">|</a>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Open Task')"
-                :href="openTask()"
-              >
-                <i class="fas fa-external-link-alt" />
-              </b-button>
-              <a class="text-secondary">|</a>
-              <b-button
-                class="btn-light text-secondary"
-                :aria-label="$t('Close')"
-              >
-                <i class="fas fa-times" />
-              </b-button>
-            </div>
-          </div>
-          <div>
-            <div
-              v-show="loading"
-              class="text-center"
-            >
-              <b-spinner />
-            </div>
-            <b-embed
-              v-show="!loading"
-              id="tasksFrame"
-              type="iframe"
-              :class="loading ? 'loadingFrame' : ''"
-              :src="linkTasks"
-              @load="frameLoaded"
-            />
-          </div>
+    <splitpanes
+        id="splitpane"
+        class="default-theme" 
+        v-if="showPreview">
+      <pane style="opacity: 0;">
+        <div></div>
+      </pane>
+      <pane min-size="40" max-size="99">
+        <div
+        id="tasks-preview"
+        ref="tasks-preview"
+        class="h-100"
+        >
+          <template>
+              <div class="ml-2 p-3">
+                <div class="d-flex w-100 h-100 mb-3">
+                  <div class="my-1">
+                    <a class="lead text-secondary font-weight-bold">
+                      {{ task.element_name }}
+                    </a>
+                  </div>
+                  <div class="ml-auto mr-0 text-right">
+                    <b-button
+                      class="btn-light text-secondary"
+                      :aria-label="$t('Previous Tasks')"
+                      :disabled="!existPrev"
+                      @click="goPrevNext('Prev')"
+                    >
+                      <i class="fas fa-chevron-left" />
+                      {{ $t("Prev") }}
+                    </b-button>
+                    <b-button
+                      class="btn-light text-secondary"
+                      :aria-label="$t('Next Tasks')"
+                      :disabled="!existNext"
+                      @click="goPrevNext('Next')"
+                    >
+                      {{ $t("Next") }}
+                      <i class="fas fa-chevron-right" />
+                    </b-button>
+                    <a class="text-secondary">|</a>
+                    <b-button
+                      class="btn-light text-secondary"
+                      :aria-label="$t('Open Task')"
+                      :href="openTask()"
+                    >
+                      <i class="fas fa-external-link-alt" />
+                    </b-button>
+                    <a class="text-secondary">|</a>
+                    <b-button
+                      class="btn-light text-secondary"
+                      :aria-label="$t('Close')"
+                      @click="onClose()"
+                    >
+                      <i class="fas fa-times" />
+                    </b-button>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    v-show="loading"
+                    class="text-center"
+                  >
+                    <b-spinner />
+                  </div>
+                  <b-embed
+                    v-show="!loading"
+                    id="tasksFrame"
+                    type="iframe"
+                    :class="loading ? 'loadingFrame' : ''"
+                    :src="linkTasks"
+                    @load="frameLoaded"
+                  />
+                </div>
+              </div>
+            </template>
         </div>
-      </template>
-    </div>
+      </pane>
+    </splitpanes>
   </div>
 </template>
 
 <script>
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+
 export default {
+  components: { Splitpanes, Pane },
   data() {
     return {
       showPreview: false,
@@ -93,14 +102,6 @@ export default {
       loading: true,
     };
   },
-  updated() {
-    document.getElementById("resizer").addEventListener("mousedown", (event) => {
-        document.addEventListener("mousemove", this.resize, false);
-        document.addEventListener("mouseup", () => {
-          document.removeEventListener("mousemove", this.resize, false);
-        }, false);
-      });
-  },
   methods: {
     /**
      * Show the sidebar
@@ -114,9 +115,8 @@ export default {
       this.existNext = false;
       this.defineNextPrevTask();
     },
-    resize(e) {
-      const size = `${e.x}px`;
-      document.getElementById("tasks-preview").style.flexBasis = size;
+    onClose(){
+      this.showPreview = false;
     },
     /**
      * Defined Previuos and Next task
@@ -172,31 +172,11 @@ export default {
 </script>
 
 <style>
-#tasks-preview {
+#splitpane {
   top: 0;
-  right: 0;
-  width: 50%;
+  width: 100%;
   height: 100%;
   position: absolute;
-  background: white;
-  min-width: 40%;
-  box-shadow: -2px 0px 5px grey;
-}
-#resizer {
-  float: left;
-  flex-basis: 18px;
-  z-index: 2;
-  height: 100%;
-  width: 10px;
-  position: relative;
-  cursor: col-resize;
-  background: lightgrey;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 .loadingFrame {
   opacity: 0.6;
