@@ -22,7 +22,7 @@ trait LoggingHelper
             $matches = 0;
 
             foreach ($data as $key => $value) {
-                if (array_key_exists($key, $record)) {
+                if (property_exists($record, $key)) {
                     if ($record[$key] == $value) {
                         $matches++;
                     }
