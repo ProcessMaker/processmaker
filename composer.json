@@ -164,30 +164,6 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/SocialiteProviders"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-advanced-user-manager"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-projects"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-projects"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-data-sources"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-decision-engine"
-    },
-    {
-      "type": "path",
-      "url": "../processmaker-plugins/package-decision-engine"
     }
   ],
   "config": {
