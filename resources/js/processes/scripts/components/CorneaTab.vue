@@ -222,28 +222,29 @@ export default {
       const endColumn = this.selection.endColumn;
       const startLineNumber = this.selection.startLineNumber;
       const endLineNumber = this.selection.endLineNumber;
+      const newStartColumn = this.selection.newStartColumn;
 
       if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
           this.$t("Notice"),
           this.$t("The generated text will be inserted at the last position of your cursor on the current script") +
-          `<pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
-            ${this.lineContext.previousLine === null ? '' : '...'}
+          `<pre class="d-flex pt-3 mb-0 text-muted flex-column code-preview">
+            ${this.lineContext.previousLine === null ? '' : '<div class="w-100 text-center pb-3">...</div>'}
             <div class="d-flex">
               <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
               <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : '' }</div>
             </div>
-            <div class="d-flex">
+            <div class="d-flex align-items-center">
               <div class="line-number-preview">${startLineNumber}</div>
-              <div>${this.lineContext.currentLine.substring(0, startColumn - 1)}</div>
+              <div>${this.lineContext.currentLine.substring(0, newStartColumn)}</div>
               <span class="blink text-primary cursor-preview">|</span>
-              <div>${this.lineContext.currentLine.substring(startColumn - 1)}</div>
+              <div>${this.lineContext.currentLine.substring(newStartColumn)}</div>
             </div>
             <div class="d-flex">
               <div class="line-number-preview">${this.lineContext.nextLine !== null ? startLineNumber + 1 : ''}</div>
               <div>${this.lineContext.nextLine ? this.lineContext.nextLine : ''}</div>
             </div>
-            ${this.lineContext.nextLine === null ? '' : '...'}
+            ${this.lineContext.nextLine === null ? '' : '<div class="w-100 text-center pt-3">...</div>'}
           </pre>`,
           "",
           () => {
@@ -413,7 +414,10 @@ export default {
 }
 
 .cursor-preview {
-  font-size: 130%;
+  font-size: 120%;
+  margin-top: -1px;
+  width: 7px;
+  margin-left: -4px;
 }
 
 .accordion-icon {

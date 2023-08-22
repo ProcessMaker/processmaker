@@ -518,27 +518,46 @@ export default {
       this.prompt = prompt;
     },
     onGetSelection() {
-      const editor = this.showDiffEditor ? this.$refs.diffEditor.getMonaco() : this.$refs.editor.getMonaco();
+      const editor = this.showDiffEditor ? this.$refs.diffEditor.getMonaco().getOriginalEditor() : this.$refs.editor.getMonaco();
       if (editor) {
-        let context = {};
-        const selection = editor.getSelection() ;
+        const context = {};
+        const selection = editor.getSelection();
         this.selection = selection;
-        
-        context.currentLine = editor.getModel().getLineContent(selection.startLineNumber);
+
+        const currentLineUnsanitized = editor.getModel().getLineContent(selection.startLineNumber);
+        context.currentLine = this.sanitize(currentLineUnsanitized);
+        const newStartColumnPosition = this.prevCharactersCount(currentLineUnsanitized.substring(0, selection.startColumn - 1));
+        this.$set(this.selection, "newStartColumn", newStartColumnPosition);
+
         if (this.selection.startLineNumber === 1) {
           context.previousLine = null;
         } else {
-          context.previousLine = editor.getModel().getLineContent(selection.startLineNumber - 1);
+          context.previousLine = this.sanitize(editor.getModel().getLineContent(selection.startLineNumber - 1));
         }
 
         if (editor.getModel().getLineCount() === selection.startLineNumber) {
           context.nextLine = null;
         } else {
-          context.nextLine = editor.getModel().getLineContent(selection.startLineNumber + 1);
+          context.nextLine = this.sanitize(editor.getModel().getLineContent(selection.startLineNumber + 1));
         }
 
         this.lineContext = context;
       }
+    },
+    sanitize(string) {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#x27;",
+        "/": "&#x2F;",
+      };
+      const reg = /[&<>"'/]/ig;
+      return string.replace(reg, (match) => (map[match]));
+    },
+    prevCharactersCount(subString) {
+      return this.sanitize(subString).length;
     },
     onRequestStarted(progress, action) {
       this.loading = true;
