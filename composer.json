@@ -10,7 +10,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "babenkoivan/elastic-scout-driver": "^3.0",
         "composer/semver": "^3.3",
         "darkaonline/l5-swagger": "^8.3",
