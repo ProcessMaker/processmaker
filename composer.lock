@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fddb1c78234202b9a5d2040587c8375",
+    "content-hash": "185b637e122081f1af3966f42356a74b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6843,7 +6843,7 @@
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
             "support": {
                 "issues": "https://github.com/ProcessMaker/laravel-i18next/issues",
-                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/master"
+                "source": "https://github.com/ProcessMaker/laravel-i18next/tree/develop"
             },
             "time": "2020-11-26T14:26:47+00:00"
         },

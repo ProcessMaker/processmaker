@@ -12,10 +12,12 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     formData.append('password', password);
+
+    let timeout = ProcessMaker.apiClient.defaults.timeout > 90000 ? ProcessMaker.apiClient.defaults.timeout : 90000;// default 90 seconds
     
     return ProcessMaker.apiClient.post('/import/do-import', formData,
     {
-        timeout: 60_000, // 60 seconds
+        timeout: timeout,
         headers: {
             'Content-Type': 'multipart/form-data'
         }
