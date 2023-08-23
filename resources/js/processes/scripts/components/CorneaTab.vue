@@ -23,9 +23,7 @@
           {{ $t("Generate Script From Text") }}
         </b-col>
         <b-col v-if="!showPromptArea" class="p-0 text-right" cols="3">
-          <span
-            class="text-center px-2 bg-warning rounded small"
-          >
+          <span class="text-center px-2 bg-warning rounded small">
             {{ $t("NEW") }}
           </span>
         </b-col>
@@ -123,7 +121,16 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection", "packageAi", "defaultSelected", "defaultPrompt", "lineContext"],
+  props: [
+    "user",
+    "sourceCode",
+    "language",
+    "selection",
+    "packageAi",
+    "defaultSelected",
+    "defaultPrompt",
+    "lineContext",
+  ],
   data() {
     return {
       showPromptArea: false,
@@ -155,7 +162,6 @@ export default {
       this.prompt = this.defaultPrompt;
     }
   },
-
   methods: {
     getSelection() {
       this.$emit("get-selection");
@@ -226,12 +232,13 @@ export default {
       if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
           this.$t("Notice"),
-          this.$t("The generated text will be inserted at the last position of your cursor on the current script") +
-          `<pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
-            ${this.lineContext.previousLine === null ? '' : '...'}
+          `<div class="mb-4 font-weight-bold">${this.$t("Ensure the cursor is positioned where you intend to place the generated script.")}</div>
+          <div class="mb-2">${this.$t("Current cursor position:")}</div>
+          <pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
+            ${this.lineContext.previousLine === null ? "" : "..."}
             <div class="d-flex">
               <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
-              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : '' }</div>
+              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : ''}</div>
             </div>
             <div class="d-flex">
               <div class="line-number-preview">${startLineNumber}</div>
@@ -248,10 +255,18 @@ export default {
           "",
           () => {
             this.callGenerateScript();
-          },
+          }
         );
       } else {
         this.callGenerateScript();
+      }
+
+      await this.$nextTick();
+
+      const modal = document.getElementsByClassName('modal-dialog modal-md');
+      if (modal.length > 0) {
+        console.log(modal);
+        modal[0].classList.replace('modal-md','modal-lg');
       }
     },
 
@@ -345,7 +360,11 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
-            this.$emit("request-started", this.progress, this.$t("Documenting"));
+            this.$emit(
+              "request-started",
+              this.progress,
+              this.$t("Documenting")
+            );
           }
         })
         .catch((error) => {
@@ -379,15 +398,19 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
-            this.$emit("request-started", this.progress, this.$t("Generating explanation"));
+            this.$emit(
+              "request-started",
+              this.progress,
+              this.$t("Generating explanation")
+            );
           }
         })
         .catch((error) => {
           const errorMsg = error.response?.data?.message || error.message;
           window.ProcessMaker.alert(errorMsg, "danger");
         });
-    }
-  }
+    },
+  },
 };
 </script>
 <style>
@@ -398,7 +421,7 @@ export default {
 }
 
 .code-preview {
-  background: #eeeeee8f;
+  background: #e7f3fa;
   padding: 4px;
 }
 

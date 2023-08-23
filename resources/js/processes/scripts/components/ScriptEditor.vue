@@ -523,7 +523,7 @@ export default {
         let context = {};
         const selection = editor.getSelection() ;
         this.selection = selection;
-        
+
         context.currentLine = editor.getModel().getLineContent(selection.startLineNumber);
         if (this.selection.startLineNumber === 1) {
           context.previousLine = null;
