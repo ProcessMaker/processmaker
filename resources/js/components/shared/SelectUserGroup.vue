@@ -10,7 +10,7 @@
             group-label="type"
             :class="{'border border-danger':error}"
             :loading="loading"
-            :placeholder="placeholder ? placeholder : $t('type here to search')"
+            :placeholder="$t('type here to search')"
             :options="options"
             :multiple="multiple"
             :show-labels="false"
@@ -57,7 +57,6 @@
       },
       error: String,
       helper: String,
-      placeholder: String,
     },
     data () {
       return {
