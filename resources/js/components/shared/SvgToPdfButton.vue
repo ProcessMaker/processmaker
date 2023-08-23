@@ -5,7 +5,7 @@
     :class="{ 'btn-disabled': isLoading }"
     :aria-disabled="isLoading"
     :disabled="isLoading"
-    @click="convertSVGtoPDF()"
+    @click="download()"
   >
     <span
       v-if="isLoading"
@@ -18,11 +18,10 @@
   </a>
 </template>
 <script>
-import { jsPDF } from "jspdf";
-import "svg2pdf.js";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Canvg } from "canvg";
 
 export default {
-  name: "SvgToPdfButton",
   props: {
     svg: {
       type: String,
@@ -34,7 +33,7 @@ export default {
     },
     buttonLabel: {
       type: String,
-      default: "Download as PDF",
+      default: "Download",
     },
   },
   data() {
@@ -43,31 +42,37 @@ export default {
     };
   },
   methods: {
-    convertSVGtoPDF() {
+    async svgToCanvas(svgString) {
+      // Create canvas.
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set canvas dimensions from SVG attributes.
+      const svgElement = new DOMParser().parseFromString(svgString, "image/svg+xml").documentElement;
+      canvas.width = svgElement.getAttribute("width");
+      canvas.height = svgElement.getAttribute("height");
+
+      // Render SVG onto canvas.
+      const v = await Canvg.fromString(ctx, svgString);
+      v.render();
+
+      return canvas;
+    },
+
+    async download() {
       this.isLoading = true;
-      // eslint-disable-next-line new-cap
-      const pdf = new jsPDF({
-        format: "letter",
-        orientation: "landscape",
-      });
+      const canvas = await this.svgToCanvas(this.svg);
+      const dataURL = canvas.toDataURL("image/png");
 
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(this.svg, "image/svg+xml");
-      const svgElement = doc.firstChild;
+      const downloadLink = document.createElement("a");
+      downloadLink.href = dataURL;
+      downloadLink.download = `${this.fileName}.png`;
 
-      pdf
-        .svg(svgElement, {
-          x: 0,
-          y: 0,
-          width: pdf.internal.pageSize.width,
-          height: pdf.internal.pageSize.height,
-        })
-        .then(() => {
-          pdf.save(`${this.fileName}.pdf`);
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+
+      document.body.removeChild(downloadLink);
+      this.isLoading = false;
     },
   },
 };
