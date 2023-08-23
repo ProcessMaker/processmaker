@@ -46,6 +46,10 @@
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
+        <project-select :label="$t('Project')" api-get="projects"
+        api-list="projects" v-model="projects"
+        :errors="addError?.projects"
+        name="project"></project-select>
        <b-form-group
           :label="$t('Process Manager')"
         >
@@ -84,9 +88,10 @@
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   import TemplateSearch from "../../components/templates/TemplateSearch.vue";
+  import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 
   export default {
-    components: { Modal, Required, TemplateSearch },
+    components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData"],
     data: function() {
@@ -97,6 +102,7 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        projects: [],
         template_version: null,
         addError: {},
         status: "",

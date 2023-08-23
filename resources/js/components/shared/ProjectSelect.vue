@@ -42,7 +42,7 @@
           loading: false,
           options: [],
           error: '',
-          uncategorizedCategory: null,
+          defaultProject: null,
           lastSelectedId: null,
         };
       },
@@ -69,8 +69,8 @@
             const content = [];
             const selected = String(this.value).split(',');
             this.loading = selected.length;
-            selected.forEach(category => {
-              this.getOptionData(category, content);
+            selected.forEach(project => {
+              this.getOptionData(project, content);
             });
           } else {
             this.content.splice(0);
@@ -85,7 +85,6 @@
         },
         getOptionData(id, content) {
           const option = this.options.concat(this.content).find(item => item.id == id);
-          
           if (option) {
             this.loading--;
             content.push(option);
@@ -113,17 +112,27 @@
             .then(response => {
               this.loading = false;
               this.options = response.data.data;
+              console.log('THIS.OPTIONS', this.options);
             })
             .catch(err => {
               this.loading = false;
             });
         },
         loadDefaultProject() {
-          return ProcessMaker.apiClient
-            .get(this.apiList + "?filter=Uncategorized&per_page=1&order_by=id&order_direction=ASC")
-            .then(response => {
-              this.defaultProject = response.data.data[0];
-            });
+          console.log('window.location.origin', window.location.origin);
+          // const envDomain = window.location.origin;
+          var envDomain = "http://madidi-release.processmaker.net/";
+          // var envDomain = "http://processmaker.test"
+          // var envDomain = "http://testing.processmaker.net/";
+          var regexPattern = /^http:\/\/([^./]+)\./;
+          this.defaultProject = envDomain.match(regexPattern)[1];
+          console.log('THIS.DEFAULTPROJECT', this.defaultProject);
+          return this.defaultProject;
+          // return ProcessMaker.apiClient
+          // .get(this.apiList + "?filter=Uncategorized&per_page=1&order_by=id&order_direction=ASC")
+          // .then(response => {
+          //   this.defaultProject = response.data.data[0];
+          // });
         },
         setDefaultProject() {
           if (!this.defaultProject) {
@@ -132,13 +141,26 @@
   
           if (this.content.length === 0) {
             // No projects so give it the default project
-            this.content.push(this.defaultProject);
+            const defaultProjectInfo = {
+              // created_at: new Date(),
+              // deleted_at: null,
+              // id: null,
+              // status: "ACTIVE",
+              title: this.defaultProject,
+              // updated_at: new Date(),
+              // user_id: window.ProcessMaker.user.id,
+              // uuid: null,
+            }
+            this.content.push(defaultProjectInfo);
+            console.log('THIS.CONTENT', this.content);
+
             return;
           }
   
           const defaultProjectIndex = this.content.findIndex(c => {
             return c.id === this.defaultProject.id;
           });
+
           if (defaultProjectIndex >= 0 && this.content.length > 1) {
             // The user picked a project so remove default project
             this.content.splice(defaultProjectIndex, 1);
@@ -146,10 +168,9 @@
         },
       },
       mounted() {
-        this.loadDefaultProject().then(() => {
+        this.loadDefaultProject();
           this.setUpOptions();
-        });
-      }
+      },
     };
   </script>
   
