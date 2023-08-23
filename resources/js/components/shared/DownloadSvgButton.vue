@@ -73,9 +73,10 @@ export default {
       // Set new dimensions with extra space for the watermark.
       const watermarkHeight = 30;
       const padding = 5;
+      const shiftDown = 90;
 
       canvas.width = originalWidth;
-      canvas.height = originalHeight + watermarkHeight + padding;
+      canvas.height = originalHeight + watermarkHeight + padding + shiftDown;
 
       // Remove transparency from the canvas.
       ctx.fillStyle = "white";
@@ -108,11 +109,10 @@ export default {
       const totalWidth = watermarkImage.width + textWidth + padding;
 
       // Draw the watermark image to the left of the text.
-      // eslint-disable-next-line max-len
-      ctx.drawImage(watermarkImage, canvas.width - totalWidth, canvas.height - watermarkHeight, watermarkImage.width, watermarkHeight);
+      ctx.drawImage(watermarkImage, canvas.width - totalWidth, originalHeight + shiftDown, watermarkImage.width, watermarkHeight);
 
       // Adjusted the y-coordinate so the watermark sits just below the SVG content.
-      ctx.fillText(watermarkText, canvas.width - textWidth - padding, canvas.height - padding);
+      ctx.fillText(watermarkText, canvas.width - textWidth - padding, originalHeight + shiftDown + watermarkHeight - padding);
 
       return canvas;
     },
