@@ -3,12 +3,10 @@
 namespace ProcessMaker\Http\Controllers\Auth;
 
 use App;
-use Exception;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Log;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
@@ -98,45 +96,13 @@ class LoginController extends Controller
             }
         }
 
-        $redirect = $this->validateSocialiteLoginWithLDAP($user, $request);
-        if ($redirect !== false) {
-            return $redirect;
-        }
-        return $this->login($request);
-    }
-
-    /**
-     * Validate Socialite Login with LDAP, if user validation is successful, it returns a redirection 
-     * to the SSOController::callback() controller; otherwise, it returns false.
-     * 
-     * @param User $user
-     * @param Request $request
-     * @return mixed
-     */
-    public function validateSocialiteLoginWithLDAP(User $user, Request $request)
-    {
-        if (!class_exists(\Laravel\Socialite\Facades\Socialite::class)) {
-            return false;
-        }
-        if (!isset($user->meta)) {
-            return false;
-        }
-        if (!isset($user->meta->authenticationType)) {
-            return false;
-        }
-        if ($user->meta->authenticationType === 'ldap') {
-            try {
-                $provider = \Laravel\Socialite\Facades\Socialite::driver('ldap');
-                if ($provider->auth($user, $request->input('password'))) {
-                    return redirect()->route('sso.callback', ['driver' => 'ldap']);
-                } else {
-                    Log::info('SocialiteProviders: ' . $provider->getErrorMessage());
-                }
-            } catch (Exception $e) {
-                Log::info('SocialiteProviders: ' . $e->getMessage());
+        if (class_exists(\ProcessMaker\Package\Auth\Auth\LDAPLogin::class)) {
+            $redirect = \ProcessMaker\Package\Auth\Auth\LDAPLogin::auth($user, $request->input('password'));
+            if ($redirect !== false) {
+                return $redirect;
             }
         }
-        return false;
+        return $this->login($request);
     }
 
     /**
