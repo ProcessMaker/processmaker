@@ -79,7 +79,7 @@
   import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
   import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-  import AddToProjectModal from "../../components/projects/AddToProjectModal.vue";
+  import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
