@@ -17,6 +17,7 @@ import Modal from "./Modal";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
+import ProjectSelect from "./ProjectSelect";
 import Required from "./Required";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
@@ -40,6 +41,7 @@ export {
   IconSelector,
   Modal,
   PmqlInput,
+  ProjectSelect,
   PTab,
   PTabs,
   Required,
