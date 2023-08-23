@@ -77,6 +77,10 @@ export default {
       canvas.width = originalWidth;
       canvas.height = originalHeight + watermarkHeight + padding;
 
+      // Remove transparency from the canvas.
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       // Convert SVG string to data URL.
       const imgSrc = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
       const img = new Image();
@@ -97,6 +101,7 @@ export default {
 
       // Draw watermark.
       ctx.font = "20px Arial";
+      ctx.fillStyle = "black";
       const textWidth = ctx.measureText(watermarkText).width;
 
       // Calculate the total width of the image + text
