@@ -23,9 +23,7 @@
           {{ $t("Generate Script From Text") }}
         </b-col>
         <b-col v-if="!showPromptArea" class="p-0 text-right" cols="3">
-          <span
-            class="text-center px-2 bg-warning rounded small"
-          >
+          <span class="text-center px-2 bg-warning rounded small">
             {{ $t("NEW") }}
           </span>
         </b-col>
@@ -47,6 +45,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="generate-script-btn"
                 @click="showPromptArea = true"
+                v-b-tooltip.hover.bottom
+                :title="$t('An AI generated scripts will be inserted as part of your code.')"
               >
                 <div>
                   <img :src="penSparkleIcon" />
@@ -62,6 +62,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="document-script-btn"
                 @click="documentScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will document all your code.')"
               >
                 <div>
                   <img :src="bookIcon" />
@@ -80,6 +82,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="clean-script-btn"
                 @click="cleanScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will clean and define the portion of code you have selected.')"
               >
                 <div>
                   <img :src="brushIcon" />
@@ -95,6 +99,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="list-steps-btn"
                 @click="explainScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will generate an explanation of the portion of code you have selected.')"
               >
                 <div>
                   <img :src="listIcon" />
@@ -123,7 +129,16 @@ export default {
   components: {
     GenerateScriptTextPrompt,
   },
-  props: ["user", "sourceCode", "language", "selection", "packageAi", "defaultSelected", "defaultPrompt", "lineContext"],
+  props: [
+    "user",
+    "sourceCode",
+    "language",
+    "selection",
+    "packageAi",
+    "defaultSelected",
+    "defaultPrompt",
+    "lineContext",
+  ],
   data() {
     return {
       showPromptArea: false,
@@ -155,7 +170,6 @@ export default {
       this.prompt = this.defaultPrompt;
     }
   },
-
   methods: {
     getSelection() {
       this.$emit("get-selection");
@@ -226,13 +240,14 @@ export default {
 
       if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
-          this.$t("Notice"),
-          this.$t("The generated text will be inserted at the last position of your cursor on the current script") +
-          `<pre class="d-flex pt-3 mb-0 text-muted flex-column code-preview">
-            ${this.lineContext.previousLine === null ? '' : '<div class="w-100 text-center pb-3">...</div>'}
+          this.$t("Before you continue"),
+          `<div class="mb-4 font-weight-bold">${this.$t("Ensure the cursor is positioned where you intend to place the generated script.")}</div>
+          <div class="mb-2">${this.$t("Current cursor position:")}</div>
+          <pre class="d-flex mb-0 text-muted flex-column code-preview">
+            ${this.lineContext.previousLine === null ? "" : '<div class="w-100 text-center pb-3">...</div>'}
             <div class="d-flex">
               <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
-              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : '' }</div>
+              <div>${this.lineContext.previousLine !== null ? this.lineContext.previousLine : ''}</div>
             </div>
             <div class="d-flex align-items-center">
               <div class="line-number-preview">${startLineNumber}</div>
@@ -250,10 +265,13 @@ export default {
           () => {
             this.callGenerateScript();
           },
+          "xl",
         );
       } else {
         this.callGenerateScript();
       }
+
+      await this.$nextTick();
     },
 
     callGenerateScript() {
@@ -346,7 +364,11 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
-            this.$emit("request-started", this.progress, this.$t("Documenting"));
+            this.$emit(
+              "request-started",
+              this.progress,
+              this.$t("Documenting")
+            );
           }
         })
         .catch((error) => {
@@ -380,15 +402,19 @@ export default {
         .then((response) => {
           if (response.data?.progress?.status === "running") {
             this.progress = response.data.progress;
-            this.$emit("request-started", this.progress, this.$t("Generating explanation"));
+            this.$emit(
+              "request-started",
+              this.progress,
+              this.$t("Generating explanation")
+            );
           }
         })
         .catch((error) => {
           const errorMsg = error.response?.data?.message || error.message;
           window.ProcessMaker.alert(errorMsg, "danger");
         });
-    }
-  }
+    },
+  },
 };
 </script>
 <style>
@@ -399,8 +425,9 @@ export default {
 }
 
 .code-preview {
-  background: #eeeeee8f;
+  background: #e7f3fa;
   padding: 4px;
+  border-radius: 8px;
 }
 
 .line-number-preview {
