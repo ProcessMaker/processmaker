@@ -86,7 +86,7 @@ export default {
   components: { },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", 'isPackageInstalled'],
   data() {
     return {
       active: false,
@@ -107,7 +107,11 @@ export default {
           if (this.isDocumenterInstalled) {
             return btn;
           }
-        } else if (btn.hasOwnProperty('conditional') ) {
+        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
+          if (this.isPackageInstalled) {
+            return btn;
+          }
+        } else if (btn.hasOwnProperty('conditional')  ) {
           const result = Parser.evaluate(btn.conditional, this.data);
           if (result) {
             return btn;

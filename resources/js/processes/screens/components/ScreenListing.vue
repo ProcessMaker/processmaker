@@ -95,7 +95,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import AddToProjectModal from "../../../components/projects/AddToProjectModal.vue";
+import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
