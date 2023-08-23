@@ -1,3 +1,4 @@
+import AddToProjectModal from "./AddToProjectModal";
 import BasicSearch from "./BasicSearch";
 import ChangeLog from "./ChangeLog";
 import ColorSchemeSelector from "./ColorSchemeSelector";
@@ -22,6 +23,7 @@ import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 
 export {
+  AddToProjectModal,
   BasicSearch,
   ChangeLog,
   ColorSchemeSelector,
