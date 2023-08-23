@@ -47,6 +47,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="generate-script-btn"
                 @click="showPromptArea = true"
+                v-b-tooltip.hover.bottom
+                :title="$t('An AI generated scripts will be inserted as part of your code.')"
               >
                 <div>
                   <img :src="penSparkleIcon" />
@@ -62,6 +64,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="document-script-btn"
                 @click="documentScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will document all your code.')"
               >
                 <div>
                   <img :src="bookIcon" />
@@ -80,6 +84,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="clean-script-btn"
                 @click="cleanScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will clean and define the portion of code you have selected.')"
               >
                 <div>
                   <img :src="brushIcon" />
@@ -95,6 +101,8 @@
                 class="d-flex align-items-center flex-column bg-light ai-button w-100 py-4 justify-content-center"
                 data-test="list-steps-btn"
                 @click="explainScript()"
+                v-b-tooltip.hover.bottom
+                :title="$t('AI will generate an explanation of the portion of code you have selected.')"
               >
                 <div>
                   <img :src="listIcon" />
