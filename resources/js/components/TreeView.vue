@@ -14,6 +14,7 @@ export default {
   props: {
     value: {
       type: String,
+      default: "",
     },
     iframeHeight: {
       type: String,
@@ -35,7 +36,7 @@ export default {
   },
   mounted() {
     const jsonCrackEmbed = this.$refs.jsonCrackEmbed;
-    const json = this.jsonData;
+    const json = this.jsonData === "" ? "{}" : this.jsonData;
     const options = {
       theme: "light",
       direction: "RIGHT",
