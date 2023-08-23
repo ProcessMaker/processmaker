@@ -43,6 +43,23 @@ export default {
     };
   },
   methods: {
+    async download() {
+      this.isLoading = true;
+      const svgString = await this.convertImagesToBase64(this.svg);
+      const canvas = await this.svgToCanvas(svgString, this.watermarkText);
+      const dataURL = canvas.toDataURL("image/png");
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = dataURL;
+      downloadLink.download = `${this.fileName}.png`;
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+
+      document.body.removeChild(downloadLink);
+      this.isLoading = false;
+    },
+
     async svgToCanvas(svgString, watermarkText) {
       // Create canvas.
       const canvas = document.createElement("canvas");
@@ -95,20 +112,33 @@ export default {
       return canvas;
     },
 
-    async download() {
-      this.isLoading = true;
-      const canvas = await this.svgToCanvas(this.svg, this.watermarkText);
-      const dataURL = canvas.toDataURL("image/png");
+    async convertImagesToBase64(svgString) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgString, "image/svg+xml");
+      const images = doc.querySelectorAll("image");
 
-      const downloadLink = document.createElement("a");
-      downloadLink.href = dataURL;
-      downloadLink.download = `${this.fileName}.png`;
+      // Convert URL image to base64.
+      async function fetchImageAsBase64(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+      }
 
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
+      // eslint-disable-next-line no-restricted-syntax
+      for (const img of images) {
+        const href = img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+        if (href && href.startsWith("http")) {
+          // eslint-disable-next-line no-await-in-loop
+          const base64Data = await fetchImageAsBase64(href);
+          img.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", base64Data);
+        }
+      }
 
-      document.body.removeChild(downloadLink);
-      this.isLoading = false;
+      return new XMLSerializer().serializeToString(doc);
     },
   },
 };
