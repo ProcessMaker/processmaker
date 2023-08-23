@@ -126,6 +126,7 @@
                 "package-process-documenter": "1.6.0",
                 "package-process-optimization": "1.6.0",
                 "package-product-analytics": "1.5.4",
+                "package-projects": "0.1.0",
                 "package-savedsearch": "1.27.5",
                 "package-sentry": "1.5.1",
                 "package-signature": "1.8.0",
