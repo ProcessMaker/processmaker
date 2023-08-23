@@ -141,7 +141,7 @@ class BuildScriptExecutors extends Command
                 $cmd .= ' --user-id=' . $this->userId;
             }
             $this->artisan($cmd);
-            $this->info("SDK is at ${sdkDir}");
+            $this->info("SDK is at {$sdkDir}");
         }
 
         $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
@@ -152,7 +152,7 @@ class BuildScriptExecutors extends Command
         $this->info('Building the docker executor');
 
         $image = $scriptExecutor->dockerImageName();
-        $command = Docker::command() . " build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
+        $command = Docker::command() . " build --build-arg SDK_DIR=/sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
 
         if ($this->userId) {
             $this->runProc(
