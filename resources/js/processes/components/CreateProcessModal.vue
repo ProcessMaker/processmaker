@@ -46,10 +46,14 @@
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
-        <project-select :label="$t('Project')" api-get="projects"
-        api-list="projects" v-model="projects"
-        :errors="addError?.projects"
-        name="project"></project-select>
+        <project-select 
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="projects"
+          :errors="addError?.projects"
+          name="project"
+        ></project-select>
        <b-form-group
           :label="$t('Process Manager')"
         >

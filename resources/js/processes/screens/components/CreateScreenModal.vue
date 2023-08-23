@@ -52,6 +52,13 @@
           ></b-form-select>
         </b-form-group>
         <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id"></category-select>
+        <project-select
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="formData.projects"
+          :errors="errors.projects"
+        ></project-select>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a screen') }}</div>
@@ -65,9 +72,10 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 
   export default {
-    components: { Modal, Required },
+    components: { Modal, Required, ProjectSelect },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "types"],
     data() {
@@ -80,6 +88,7 @@
           'category': null,
         },
         disabled: false,
+        projects: [],
       }
     },
     mounted() {

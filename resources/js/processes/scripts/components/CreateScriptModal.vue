@@ -42,6 +42,14 @@
           :errors="addError.script_category_id"
           name="script_category_id"
         ></category-select>
+        <project-select 
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="projects"
+          :errors="addError.projects"
+          name="project"
+        ></project-select>
         <b-form-group
           required
           :label="$t('Language')"
@@ -118,9 +126,10 @@
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   import SliderWithInput from "../../../components/shared/SliderWithInput";
+  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 
   export default {
-    components: { Modal, Required, SliderWithInput },
+    components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "scriptExecutors"],
     data: function() {
@@ -140,6 +149,7 @@
         disabled: false,
         createScriptHooks: [],
         script: null,
+        projects: [],
       }
     },
     methods: {
