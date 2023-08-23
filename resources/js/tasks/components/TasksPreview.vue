@@ -11,6 +11,7 @@
         <div />
       </pane>
       <pane
+        id="pane-task-preview"
         :min-size="paneMinSize"
         max-size="99"
         style="background-color: white;"
@@ -233,9 +234,17 @@ export default {
 <style>
 #splitpane {
   top: 0;
+  min-height: 100vh;
   width: 100%;
-  height: 100%;
   position: absolute;
+}
+#pane-task-preview {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+#tasks-preview {
+  box-sizing: border-box;
+  display: block;
 }
 .loadingFrame {
   opacity: 0.5;
@@ -244,7 +253,6 @@ export default {
   display: grid;
 }
 .embed-responsive {
-  position: absolute;
   display: flex;
   width: 100%;
   padding: 0;
