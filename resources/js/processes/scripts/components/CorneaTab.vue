@@ -232,7 +232,7 @@ export default {
 
       if (startLineNumber === endLineNumber && startColumn === endColumn) {
         ProcessMaker.confirmModal(
-          this.$t("Notice"),
+          this.$t("Before you continue"),
           `<div class="mb-4 font-weight-bold">${this.$t("Ensure the cursor is positioned where you intend to place the generated script.")}</div>
           <div class="mb-2">${this.$t("Current cursor position:")}</div>
           <pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
