@@ -11,6 +11,7 @@
         <div />
       </pane>
       <pane
+        id="pane-task-preview"
         :min-size="paneMinSize"
         max-size="99"
         style="background-color: white;"
@@ -129,7 +130,9 @@ export default {
       const { width } = entries[0].contentRect;
       this.setPaneMinSize(width, 480);
     });
-    resizeOb.observe(this.$refs.inspectorSplitPanes.container);
+    if (this.$refs.inspectorSplitPanes) {
+      resizeOb.observe(this.$refs.inspectorSplitPanes.container);
+    }
   },
   methods: {
     /**
@@ -233,22 +236,31 @@ export default {
 <style>
 #splitpane {
   top: 0;
-  width: 100%;
-  height: 100%;
+  min-height: 80vh;
+  width: 99%;
   position: absolute;
+}
+#pane-task-preview {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+#tasks-preview {
+  box-sizing: border-box;
+  display: block;
 }
 .loadingFrame {
   opacity: 0.5;
 }
 .frame-container {
   display: grid;
+  height: 70vh;
 }
 .embed-responsive {
-  position: absolute;
   display: flex;
+  min-width: 100vh;
   width: 100%;
   padding: 0;
-  overflow: hidden
-  grid-row;
+  overflow: auto;
+  grid-row: 1;
 }
 </style>
