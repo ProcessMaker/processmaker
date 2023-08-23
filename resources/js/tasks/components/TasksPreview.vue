@@ -130,7 +130,9 @@ export default {
       const { width } = entries[0].contentRect;
       this.setPaneMinSize(width, 480);
     });
-    resizeOb.observe(this.$refs.inspectorSplitPanes.container);
+    if (this.$refs.inspectorSplitPanes) {
+      resizeOb.observe(this.$refs.inspectorSplitPanes.container);
+    }
   },
   methods: {
     /**
