@@ -243,7 +243,7 @@ export default {
           this.$t("Before you continue"),
           `<div class="mb-4 font-weight-bold">${this.$t("Ensure the cursor is positioned where you intend to place the generated script.")}</div>
           <div class="mb-2">${this.$t("Current cursor position:")}</div>
-          <pre class="d-flex pt-4 mb-0 text-muted flex-column code-preview">
+          <pre class="d-flex mb-0 text-muted flex-column code-preview">
             ${this.lineContext.previousLine === null ? "" : '<div class="w-100 text-center pb-3">...</div>'}
             <div class="d-flex">
               <div class="line-number-preview">${(startLineNumber - 1) > 0 ? startLineNumber - 1 : ''}</div>
@@ -264,19 +264,14 @@ export default {
           "",
           () => {
             this.callGenerateScript();
-          }
+          },
+          "xl",
         );
       } else {
         this.callGenerateScript();
       }
 
       await this.$nextTick();
-
-      const modal = document.getElementsByClassName('modal-dialog modal-md');
-      if (modal.length > 0) {
-        console.log(modal);
-        modal[0].classList.replace('modal-md','modal-lg');
-      }
     },
 
     callGenerateScript() {
@@ -432,6 +427,7 @@ export default {
 .code-preview {
   background: #e7f3fa;
   padding: 4px;
+  border-radius: 8px;
 }
 
 .line-number-preview {
