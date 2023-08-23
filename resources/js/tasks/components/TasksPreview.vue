@@ -236,7 +236,7 @@ export default {
 <style>
 #splitpane {
   top: 0;
-  min-height: 100vh;
+  min-height: 80vh;
   width: 99%;
   position: absolute;
 }
@@ -253,12 +253,13 @@ export default {
 }
 .frame-container {
   display: grid;
+  height: 70vh;
 }
 .embed-responsive {
   display: flex;
   width: 100%;
   padding: 0;
-  overflow: hidden
-  grid-row;
+  overflow: auto;
+  grid-row: 1;
 }
 </style>
