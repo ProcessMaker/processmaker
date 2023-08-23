@@ -257,6 +257,7 @@ export default {
 }
 .embed-responsive {
   display: flex;
+  min-width: 100vh;
   width: 100%;
   padding: 0;
   overflow: auto;
