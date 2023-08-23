@@ -247,6 +247,7 @@ export default {
 #tasks-preview {
   box-sizing: border-box;
   display: block;
+  overflow: hidden;
 }
 .loadingFrame {
   opacity: 0.5;
@@ -256,13 +257,12 @@ export default {
   height: 70vh;
 }
 .embed-responsive {
-  display: flex;
-  position: absolute;
-  max-width: -webkit-fill-available;
-  max-height: -webkit-fill-available;
-  margin-right: 15px;
+  position: relative;
+  display: block;
   width: 100%;
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
+  grid-row-start: 1;
+  grid-column-start: 1;
 }
 </style>
