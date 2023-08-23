@@ -28,7 +28,7 @@ class ChangePasswordTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-                 ->assertSeeText('Password must be at least 8 characters');
+                 ->assertSeeText('The password field must be at least 8 characters');
 
         // Password must contain one or more uppercase characters
         $response = $this->apiCall('PUT', self::API_TEST_URL, [

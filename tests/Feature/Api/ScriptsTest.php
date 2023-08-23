@@ -96,7 +96,7 @@ class ScriptsTest extends TestCase
 
         $params['script_category_id'] = '';
         $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals('The Script category id field is required.', $err($response));
+        $this->assertEquals('The script category id field is required.', $err($response));
 
         $category1 = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
         $category2 = ScriptCategory::factory()->create(['status' => 'ACTIVE']);
@@ -134,7 +134,7 @@ class ScriptsTest extends TestCase
             'script_category_id' => $script->script_category_id,
         ]);
         $response->assertStatus(422);
-        $response->assertSeeText('The Name has already been taken');
+        $response->assertSeeText('The name has already been taken');
     }
 
     /**
@@ -154,7 +154,7 @@ class ScriptsTest extends TestCase
             'script_category_id' => $script->script_category_id,
         ]);
         $response->assertStatus(422);
-        $response->assertSeeText('The Key has already been taken');
+        $response->assertSeeText('The key has already been taken');
     }
 
     /**
@@ -343,7 +343,7 @@ class ScriptsTest extends TestCase
         ]);
         // Validate the answer is correct
         $response->assertStatus(422);
-        $response->assertSeeText('The Name has already been taken');
+        $response->assertSeeText('The name has already been taken');
     }
 
     /**
