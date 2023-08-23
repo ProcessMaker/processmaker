@@ -257,7 +257,10 @@ export default {
 }
 .embed-responsive {
   display: flex;
-  min-width: 100vh;
+  position: absolute;
+  max-width: -webkit-fill-available;
+  max-height: -webkit-fill-available;
+  margin-right: 15px;
   width: 100%;
   padding: 0;
   overflow: auto;
