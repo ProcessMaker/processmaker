@@ -263,7 +263,6 @@ export default {
   margin-right: 15px;
   width: 100%;
   padding: 0;
-  overflow: auto;
-  grid-row: 1;
+  overflow: hidden;
 }
 </style>
