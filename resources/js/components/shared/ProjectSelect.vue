@@ -111,7 +111,6 @@
             .then(response => {
               this.loading = false;
               this.options = response.data.data;
-              console.log('THIS.OPTIONS', this.options);
             })
             .catch(err => {
               this.loading = false;
@@ -122,7 +121,6 @@
           .get(this.apiList + "?per_page=1&order_by=id&order_direction=DESC")
           .then(response => {
             this.defaultProject = response.data.data[0];
-            console.log('DEFAULT PROJECT', this.defaultProject);
             this.$emit("defaultProjectLoaded", this.defaultProject);
           });
         },
@@ -134,7 +132,6 @@
           if (this.content.length === 0) {
             // No projects so give it the default project
             this.content.push(this.defaultProject);
-            console.log('THIS.CONTENT', this.content);
             return;
           }
         },
