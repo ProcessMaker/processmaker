@@ -382,6 +382,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
+            $process->assignAssetsToProjects($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),

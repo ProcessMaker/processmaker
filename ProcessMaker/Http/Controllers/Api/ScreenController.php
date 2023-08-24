@@ -264,6 +264,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $original = $screen->getOriginal();
         $screen->saveOrFail();
+        $screen->assignAssetsToProjects($request, Screen::class);
 
         //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
