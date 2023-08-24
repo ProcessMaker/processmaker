@@ -89,6 +89,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      confirmSize: "md",
       messageTitle: "",
       messageMessage: "",
       messageVariant: "",
@@ -207,12 +208,13 @@ window.ProcessMaker.closeSessionModal = function () {
 };
 
 // Set out own specific confirm modal.
-window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
+window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md") {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.confirmSize = size;
 };
 
 // Set out own specific message modal.
