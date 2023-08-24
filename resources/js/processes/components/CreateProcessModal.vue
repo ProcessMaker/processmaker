@@ -161,6 +161,7 @@
         this.name = "";
         this.description = "";
         this.process_category_id = "";
+        this.projects = [];
         this.status = "";
         this.addError = {};
         this.selectedFile = '';
@@ -184,6 +185,8 @@
           return;
         }
         this.disabled = true;
+
+        //TODO: ADD SELECTED PROJECT TO FORMDATA, ADD PROCESS TO PROJECT
         
         let formData = new FormData();
         formData.append("name", this.name);
