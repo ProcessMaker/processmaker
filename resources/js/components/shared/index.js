@@ -1,4 +1,5 @@
 import BasicSearch from "./BasicSearch";
+import CategorySelect from "./CategorySelect";
 import ChangeLog from "./ChangeLog";
 import ColorSchemeSelector from "./ColorSchemeSelector";
 import Column from "./Column";
@@ -17,12 +18,15 @@ import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
 import Required from "./Required";
+import SelectUserGroup from "./SelectUserGroup";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
+import DownloadSvgButton from "./DownloadSvgButton.vue";
 
 export {
   BasicSearch,
+  CategorySelect,
   ChangeLog,
   ColorSchemeSelector,
   Column,
@@ -41,7 +45,9 @@ export {
   PTab,
   PTabs,
   Required,
+  SelectUserGroup,
   SidebarButton,
   SidebarNav,
   SliderWithInput,
+  DownloadSvgButton,
 };

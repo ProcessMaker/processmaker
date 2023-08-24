@@ -53,10 +53,11 @@
               :description="formDescription('Choose an icon for this PM Block.', 'icon', errors)"
             >
               <icon-selector
-                v-model="meta"
+                v-model="meta.icon"
                 name="icon"
                 @error="fileError"
                 @input="clearFileError"
+                :allowCustom="false"
               />
               <small v-if="fileUploadError === true" class="text-danger">
                 {{ $t('The custom icon file is too large. File size must be less than 2KB.') }}

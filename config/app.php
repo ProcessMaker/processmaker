@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
 
 return [
 
@@ -111,6 +111,9 @@ return [
 
     // Security log
     'security_log' => env('SECURITY_LOG', 'true'),
+
+    // Security log custom S3 URI
+    'security_log_s3_uri' => env('SECURITY_LOG_S3_URI', 'security-logs'),
 
     // Security log
     'analytics_reporting_default_graph_1' => env('ANALYTICS_REPORTING_DEFAULT_GRAPH_1', 'https://localhost'),
