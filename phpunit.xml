@@ -39,6 +39,7 @@
       <env name="LOG_AUTH_EVENTS" value="false" />
       <env name="BROADCAST_DRIVER" value="log"/>
       <env name="SAVED_SEARCH_COUNT" value="false"/>
+      <env name="SAVED_SEARCH_ADD_DEFAULTS" value="false"/>
       <env name="APP_CONFIG_CACHE" value="bootstrap/cache/config.test.php"/>
 
       <!-- Caching config -->
