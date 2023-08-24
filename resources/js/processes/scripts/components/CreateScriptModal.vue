@@ -42,7 +42,8 @@
           :errors="addError.script_category_id"
           name="script_category_id"
         ></category-select>
-        <project-select 
+        <project-select
+          v-if="isProjectsInstalled"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
@@ -131,7 +132,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors"],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled'],
     data: function() {
       return {
         title: '',
@@ -186,6 +187,7 @@
           description: this.description,
           script_category_id: this.script_category_id,
           run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
+          projects: this.projects,
           code: "[]",
           timeout: this.timeout,
           retry_attempts: this.retry_attempts,
