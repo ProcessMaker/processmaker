@@ -104,7 +104,7 @@ class DownloadSecurityLog implements ShouldQueue
 
         $s3Uri = empty(config('app.security_log_s3_uri')) ? 'security-logs' : config('app.security_log_s3_uri');
 
-        return $s3Uri .'/'. $uuid . '.' . $this->format;
+        return $s3Uri . '/' . $uuid . '.' . $this->format;
     }
 
     /**
