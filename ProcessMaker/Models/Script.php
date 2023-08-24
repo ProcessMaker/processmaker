@@ -13,6 +13,7 @@ use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -64,6 +65,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasCategories;
     use HasVersioning;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ScriptCategory::class;
 

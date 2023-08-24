@@ -12,6 +12,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -69,6 +70,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     use HasVersioning;
     use ExtendedPMQL;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ScreenCategory::class;
 

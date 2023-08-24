@@ -265,6 +265,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
+            $process->assignAssetsToProjects($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),

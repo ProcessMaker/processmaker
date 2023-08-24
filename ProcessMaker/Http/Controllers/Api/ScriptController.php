@@ -332,27 +332,12 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
+        $script->assignAssetsToProjects($request, Script::class);
+
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
         $changes['tmp_script_category_id'] = $request->input('script_category_id');
         ScriptCreated::dispatch($script, $changes);
-
-        if ($request->input('projects')) {
-            $projectAssetModelClass = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
-            $projectAssets = new $projectAssetModelClass;
-            $projectIds = (array) $request->input('projects');
-            $assetData = [];
-
-            foreach ($projectIds as $id) {
-                $assetData[] = [
-                    'asset_id' => $script->id,
-                    'project_id' => $id,
-                    'asset_type' => Script::class,
-                ];
-            }
-
-            $projectAssets::createMany($assetData);
-        }
 
         return new ScriptResource($script);
     }

@@ -216,6 +216,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
         $screen->saveOrFail();
+        $screen->assignAssetsToProjects($request, Screen::class);
+
         //Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
         //Call event to store New Screen data in LOG

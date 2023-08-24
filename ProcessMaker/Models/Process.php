@@ -40,6 +40,7 @@ use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -149,6 +150,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use HasSelfServiceTasks;
     use ProcessTrait;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ProcessCategory::class;
 
