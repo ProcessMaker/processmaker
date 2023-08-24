@@ -260,6 +260,19 @@ class Script extends ProcessMakerModel implements ScriptInterface
     }
 
     /**
+     * Get the associated projects
+     */
+    public function projects()
+    {
+        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+            'project_assets',
+            'project_id',
+            'asset_id'
+        )->wherePivot('asset_type', static::class)
+            ->withTimestamps();
+    }
+
+    /**
      * Return the a user for service tasks
      *
      * @return ProcessMaker\Models\User

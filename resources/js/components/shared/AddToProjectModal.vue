@@ -25,8 +25,11 @@
   </template>
   
   <script>
-  import { FormErrorsMixin, Modal, Required} from "SharedComponents";
-  import ProjectSelect from "./ProjectSelect.vue";
+
+  import FormErrorsMixin from "./FormErrorsMixin";
+  import Modal from "./Modal";
+  import Required from "./Required";
+  import ProjectSelect from "./ProjectSelect";
   
   export default {
     components: { Modal, ProjectSelect, Required },

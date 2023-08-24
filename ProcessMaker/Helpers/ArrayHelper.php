@@ -59,10 +59,10 @@ class ArrayHelper
     }
 
     /**
-     * This method is analogous to the function array_diff_assoc, with the difference 
-     * that it supports the comparison of array-type elements in the content of the 
+     * This method is analogous to the function array_diff_assoc, with the difference
+     * that it supports the comparison of array-type elements in the content of the
      * compared arrays.
-     * 
+     *
      * @param array $array1
      * @param array $arrays
      * @return array
@@ -86,6 +86,7 @@ class ArrayHelper
                 $diff[$key] = $value;
             }
         }
+
         return $diff;
     }
 }

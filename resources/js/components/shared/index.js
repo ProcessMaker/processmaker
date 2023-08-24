@@ -1,3 +1,4 @@
+import AddToProjectModal from "./AddToProjectModal";
 import BasicSearch from "./BasicSearch";
 import ChangeLog from "./ChangeLog";
 import ColorSchemeSelector from "./ColorSchemeSelector";
@@ -16,12 +17,14 @@ import Modal from "./Modal";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
+import ProjectSelect from "./ProjectSelect";
 import Required from "./Required";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 
 export {
+  AddToProjectModal,
   BasicSearch,
   ChangeLog,
   ColorSchemeSelector,
@@ -38,6 +41,7 @@ export {
   IconSelector,
   Modal,
   PmqlInput,
+  ProjectSelect,
   PTab,
   PTabs,
   Required,
