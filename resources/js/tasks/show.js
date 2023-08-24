@@ -7,8 +7,6 @@ import TaskView from "./components/TaskView.vue";
 import AvatarImage from "../components/AvatarImage.vue";
 import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
-import DataTreeToggle from "../components/common/data-tree-toggle.vue";
-import TreeView from "../components/TreeView.vue";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -17,7 +15,6 @@ Vue.component("AvatarImage", AvatarImage);
 Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
-Vue.component("DataTreeToggle", DataTreeToggle);
-Vue.component("TreeView", TreeView);
+
 window.debounce = debounce;
 window.Vuex = Vuex;
