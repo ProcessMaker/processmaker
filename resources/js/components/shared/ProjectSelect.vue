@@ -54,7 +54,6 @@
           handler() {
             this.setDefaultProject();
             this.$emit("input", this.content instanceof Array ? this.content.map(item => item.id).join(',') : (this.content ? this.content.id : ''));
-            this.$emit("update:duplicateScreenCategory", this.content);
           }
         },
         value: {
@@ -137,15 +136,6 @@
             this.content.push(this.defaultProject);
             console.log('THIS.CONTENT', this.content);
             return;
-          }
-  
-          const defaultProjectIndex = this.content.findIndex(c => {
-            return c.id === this.defaultProject.id;
-          });
-
-          if (defaultProjectIndex >= 0 && this.content.length > 1) {
-            // The user picked a project so remove default project
-            this.content.splice(defaultProjectIndex, 1);
           }
         },
       },
