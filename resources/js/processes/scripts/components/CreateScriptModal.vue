@@ -177,6 +177,9 @@
           return
         }
         this.disabled = true;
+
+        //TODO: ADD SCRIPT TO PROJECT IF PROJECT SELECTED
+
         ProcessMaker.apiClient.post("/scripts", {
           title: this.title,
           script_executor_id: this.script_executor_id,

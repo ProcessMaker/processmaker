@@ -1,7 +1,8 @@
 <template>
-    <div class="form-group" required>
+    <div class="form-group">
       <label>{{ $t(label) }}</label>
-      <multiselect v-model="content"
+      <multiselect 
+        v-model="content"
         :aria-label="$t(label)"
         track-by="id"
         label="title"
@@ -42,7 +43,6 @@
           loading: false,
           options: [],
           error: '',
-          defaultProject: null,
           lastSelectedId: null,
         };
       },
@@ -52,7 +52,6 @@
       watch: {
         content: {
           handler() {
-            this.setDefaultProject();
             this.$emit("input", this.content instanceof Array ? this.content.map(item => item.id).join(',') : (this.content ? this.content.id : ''));
           }
         },
@@ -73,14 +72,12 @@
             });
           } else {
             this.content.splice(0);
-            this.setDefaultProject();
           }
         },
         completeSelectedLoading(content) {
           this.loading = false;
           this.content.splice(0);
           this.content.push(...content);
-          this.setDefaultProject();
         },
         getOptionData(id, content) {
           const option = this.options.concat(this.content).find(item => item.id == id);
@@ -116,30 +113,9 @@
               this.loading = false;
             });
         },
-        loadDefaultProject() {
-          return ProcessMaker.apiClient
-          .get(this.apiList + "?per_page=1&order_by=id&order_direction=DESC")
-          .then(response => {
-            this.defaultProject = response.data.data[0];
-            this.$emit("defaultProjectLoaded", this.defaultProject);
-          });
-        },
-        setDefaultProject() {
-          if (!this.defaultProject) {
-            return;
-          }
-  
-          if (this.content.length === 0) {
-            // No projects so give it the default project
-            this.content.push(this.defaultProject);
-            return;
-          }
-        },
       },
       mounted() {
-        this.loadDefaultProject().then(() => {
           this.setUpOptions();
-        });
       },
     };
   </script>
