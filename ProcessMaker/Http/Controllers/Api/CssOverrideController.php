@@ -58,7 +58,7 @@ class CssOverrideController extends Controller
             throw new AuthorizationException(__('Not authorized to complete this request.'));
         }
 
-        $request->request->add(['config' => $this->formatConfig($request)]);
+        $request->merge(['config' => $this->formatConfig($request)]);
 
         $setting = Setting::byKey('css-override');
 
@@ -234,7 +234,7 @@ class CssOverrideController extends Controller
         }
 
         $setting = Setting::byKey('css-override');
-        $request->request->add(['config' => $this->formatConfig($request)]);
+        $request->merge(['config' => $this->formatConfig($request)]);
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
