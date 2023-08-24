@@ -20,7 +20,7 @@ class TerminatedEndEventTest extends TestCase
     public function testTerminateEndEventClosesAllTokens()
     {
         // Create the process to test
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../Fixtures/terminate_end_event.json')
         );
 
@@ -48,7 +48,7 @@ class TerminatedEndEventTest extends TestCase
     public function testEndEventDoesNotClosePendingTasks()
     {
         // Create the process to test
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../Fixtures/terminate_end_event.json')
         );
 

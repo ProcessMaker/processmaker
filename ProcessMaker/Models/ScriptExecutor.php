@@ -164,7 +164,7 @@ class ScriptExecutor extends ProcessMakerModel
         $tag = $this->imageTag();
         $instance = config('app.instance');
 
-        return "processmaker4/executor-${instance}-${lang}-${id}:${tag}";
+        return "processmaker4/executor-{$instance}-{$lang}-{$id}:{$tag}";
     }
 
     public function imageTag()
@@ -202,7 +202,7 @@ class ScriptExecutor extends ProcessMakerModel
         $instance = config('app.instance');
 
         return array_values(array_filter($result, function ($image) use ($filterByLanguage, $instance) {
-            $filter = "processmaker4/executor-${instance}-";
+            $filter = "processmaker4/executor-{$instance}-";
             if ($filterByLanguage) {
                 $filter .= $filterByLanguage . '-';
             }

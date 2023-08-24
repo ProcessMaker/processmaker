@@ -560,7 +560,7 @@ class ProcessRequestController extends Controller
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
-        CancelRequest::dispatchNow($request);
+        CancelRequest::dispatchSync($request);
         // Close process request
         $request->status = 'CANCELED';
         $request->save();
@@ -580,7 +580,7 @@ class ProcessRequestController extends Controller
         Notification::send($notifiables, new ProcessCanceledNotification($request));
 
         // Terminate request
-        TerminateRequest::dispatchNow($request);
+        TerminateRequest::dispatchSync($request);
 
         event(new RequestAction($request, RequestAction::ACTION_COMPLETED));
 

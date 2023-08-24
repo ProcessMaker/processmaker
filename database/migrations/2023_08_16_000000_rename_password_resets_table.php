@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use ProcessMaker\Models\ProcessTemplates;
 
 return new class extends Migration
 {
@@ -14,9 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        ProcessTemplates::where('user_id', null)
-        ->where('version', null)
-        ->update(['version' => '1.0.0']);
+        Schema::rename('password_resets', 'password_reset_tokens');
     }
 
     /**
@@ -26,8 +23,6 @@ return new class extends Migration
      */
     public function down()
     {
-        ProcessTemplates::where('user_id', null)
-        ->where('version', '1.0.0')
-        ->update(['version' => null]);
+        Schema::rename('password_reset_tokens', 'password_resets');
     }
 };

@@ -45,7 +45,7 @@ class PackageLanguage
             $response = true;
             foreach ($this->languages as $language) {
                 //Language local
-                $resourceLocal = resource_path('lang') . '/' . $language;
+                $resourceLocal = app()->langPath($language);
                 $localLanguage = [];
                 if (File::exists($resourceLocal)) {
                     $localLanguage = json_decode(file_get_contents($resourceLocal), true);

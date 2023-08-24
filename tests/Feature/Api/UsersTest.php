@@ -101,7 +101,7 @@ class UsersTest extends TestCase
 
         $this->assertArrayHasKey('username', $response->json()['errors']);
 
-        $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
+        $this->assertEquals('The username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
     public function testDefaultValuesOfUser()
@@ -420,7 +420,7 @@ class UsersTest extends TestCase
         ]);
         // Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The Username has already been taken');
+        $response->assertSeeText('The username has already been taken');
     }
 
     /**
@@ -581,13 +581,13 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password field is required.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field is required.', $json['errors']['password'][0]);
 
         $payload['password'] = 'abc';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
@@ -601,7 +601,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);

@@ -34,6 +34,8 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected $instance;
 
+    protected $instanceId;
+
     protected $tokenId = null;
 
     protected $disableGlobalEvents = false;

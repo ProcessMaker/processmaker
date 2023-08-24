@@ -18,7 +18,7 @@ class ScreenConsolidatorTest extends TestCase
         $content = file_get_contents(
             __DIR__ . '/Fixtures/nested_screen_process.json'
         );
-        ImportProcess::dispatchNow($content);
+        ImportProcess::dispatchSync($content);
 
         $screen = Screen::where('title', 'parent')->firstOrFail();
 
