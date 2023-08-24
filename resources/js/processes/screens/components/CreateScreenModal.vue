@@ -53,6 +53,7 @@
         </b-form-group>
         <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id"></category-select>
         <project-select
+          v-if="isProjectsInstalled"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
@@ -77,7 +78,7 @@
   export default {
     components: { Modal, Required, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "types"],
+    props: ["countCategories", "types", 'isProjectsInstalled'],
     data() {
       return {
         formData: {},
