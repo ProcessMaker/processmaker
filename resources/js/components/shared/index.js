@@ -20,6 +20,7 @@ import Required from "./Required";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
+import DownloadSvgButton from "./DownloadSvgButton.vue";
 
 export {
   BasicSearch,
@@ -44,4 +45,5 @@ export {
   SidebarButton,
   SidebarNav,
   SliderWithInput,
+  DownloadSvgButton,
 };
