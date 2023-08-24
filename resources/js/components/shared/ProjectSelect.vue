@@ -119,20 +119,13 @@
             });
         },
         loadDefaultProject() {
-          console.log('window.location.origin', window.location.origin);
-          // const envDomain = window.location.origin;
-          var envDomain = "http://madidi-release.processmaker.net/";
-          // var envDomain = "http://processmaker.test"
-          // var envDomain = "http://testing.processmaker.net/";
-          var regexPattern = /^http:\/\/([^./]+)\./;
-          this.defaultProject = envDomain.match(regexPattern)[1];
-          console.log('THIS.DEFAULTPROJECT', this.defaultProject);
-          return this.defaultProject;
-          // return ProcessMaker.apiClient
-          // .get(this.apiList + "?filter=Uncategorized&per_page=1&order_by=id&order_direction=ASC")
-          // .then(response => {
-          //   this.defaultProject = response.data.data[0];
-          // });
+          return ProcessMaker.apiClient
+          .get(this.apiList + "?per_page=1&order_by=id&order_direction=DESC")
+          .then(response => {
+            this.defaultProject = response.data.data[0];
+            console.log('DEFAULT PROJECT', this.defaultProject);
+            this.$emit("defaultProjectLoaded", this.defaultProject);
+          });
         },
         setDefaultProject() {
           if (!this.defaultProject) {
@@ -141,19 +134,8 @@
   
           if (this.content.length === 0) {
             // No projects so give it the default project
-            const defaultProjectInfo = {
-              // created_at: new Date(),
-              // deleted_at: null,
-              // id: null,
-              // status: "ACTIVE",
-              title: this.defaultProject,
-              // updated_at: new Date(),
-              // user_id: window.ProcessMaker.user.id,
-              // uuid: null,
-            }
-            this.content.push(defaultProjectInfo);
+            this.content.push(this.defaultProject);
             console.log('THIS.CONTENT', this.content);
-
             return;
           }
   
@@ -168,8 +150,9 @@
         },
       },
       mounted() {
-        this.loadDefaultProject();
+        this.loadDefaultProject().then(() => {
           this.setUpOptions();
+        });
       },
     };
   </script>
