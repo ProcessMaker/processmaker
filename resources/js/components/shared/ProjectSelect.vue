@@ -52,7 +52,13 @@
       watch: {
         content: {
           handler() {
-            this.$emit("input", this.content instanceof Array ? this.content.map(item => item.id).join(',') : (this.content ? this.content.id : ''));
+            if (Array.isArray(this.content)) {
+              this.$emit("input", this.content.map(item => item.id).join(','));
+            } else if (this.content) {
+              this.$emit("input", this.content.id);
+            } else {
+              this.$emit("input", '');
+            }
           }
         },
         value: {
@@ -84,7 +90,7 @@
           if (option) {
             this.loading--;
             content.push(option);
-            (!this.loading) ? this.completeSelectedLoading(content) : null;
+            this.handleCompleteSelectedLoading(content);
             return;
           }
           ProcessMaker.apiClient
@@ -92,14 +98,14 @@
             .then(response => {
               this.loading--;
               content.push(response.data.data);
-              (!this.loading) ? this.completeSelectedLoading(content) : null;
+              this.handleCompleteSelectedLoading(content);
             })
             .catch(error => {
               this.loading--;
               if (error.response.status === 404) {
                 this.error = this.$t('Selected not found');
               }
-              (!this.loading) ? this.completeSelectedLoading(content) : null;
+              this.handleCompleteSelectedLoading(content);
             });
         },
         load(filter) {
@@ -113,6 +119,11 @@
               this.loading = false;
             });
         },
+        handleCompleteSelectedLoading(content) {
+          if (!this.loading) {
+            this.completeSelectedLoading(content)
+          }
+        }
       },
       mounted() {
           this.setUpOptions();
