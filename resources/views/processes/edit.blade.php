@@ -80,6 +80,13 @@
                                 :errors="errors.category"
                                 >
                             </category-select>
+                            <project-select
+                                :label="$t('Project')"
+                                api-get="projects"
+                                api-list="projects"
+                                v-model="formData.projects"
+                                :errors="errors.projects">
+                            </project-select>
                             <div class="form-group">
                                 <label class="typo__label">{{__('Process Manager')}}</label>
                                 <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
@@ -449,6 +456,7 @@
               name: null,
               description: null,
               category: null,
+              projects: null,
               status: null,
               screen: null
             });
