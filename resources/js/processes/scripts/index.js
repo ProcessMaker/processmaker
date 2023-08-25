@@ -14,6 +14,12 @@ new Vue({
   data: {
     filter: "",
   },
+  mounted() {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.size > 0 && searchParams.get("create") === "true") {
+      this.$root.$emit("bv::show::modal", "createScript", "#createScriptModalButton");
+    }
+  },
   methods: {
     __(variable) {
       return __(variable);
