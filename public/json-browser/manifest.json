@@ -1,0 +1,24 @@
+{
+  "name": "JSON Crack",
+  "short_name": "JSON Crack",
+  "description": "Innovative and open-source visualization application that transforms various data formats, such as JSON, YAML, XML, CSV and more, into interactive graphs.",
+  "theme_color": "#36393e",
+  "background_color": "#36393e",
+  "display": "standalone",
+  "orientation": "landscape",
+  "scope": "/editor",
+  "start_url": "/editor",
+  "icons": [
+    {
+      "src": "assets/192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+
+    {
+      "src": "assets/512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

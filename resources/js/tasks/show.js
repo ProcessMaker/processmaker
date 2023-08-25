@@ -15,5 +15,6 @@ Vue.component("AvatarImage", AvatarImage);
 Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
+
 window.debounce = debounce;
 window.Vuex = Vuex;
