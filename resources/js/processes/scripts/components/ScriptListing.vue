@@ -23,7 +23,7 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            :href="generateScriptLink(props.rowData.id)"
+            :href="`/designer/scripts/${props.rowData.id}/builder`"
             v-uni-id="props.rowData.id.toString()"
           >{{ props.rowData.title }}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
@@ -201,9 +201,6 @@ export default {
   },
 
   methods: {
-    generateScriptLink(id) {
-      return `/designer/scripts/${id}/builder`;
-    },
     showModal() {
       this.$refs.myModalRef.show();
     },
