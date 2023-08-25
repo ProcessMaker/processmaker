@@ -43,6 +43,10 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
 window.SharedComponents = require("./components/shared");
 
 /**
+ * Exporting Modeler inspector components
+ */
+window.ModelerInspector = require("./processes/modeler/components/inspector");
+/**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
