@@ -14,12 +14,10 @@ use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
-use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ProcessController extends Controller
 {
     use HasControllerAddons;
-    use ProjectAssetTrait;
 
     /**
      * A whitelist of attributes that should not be
