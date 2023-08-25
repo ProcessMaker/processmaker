@@ -23,9 +23,9 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            :href='generateScriptLink(props.rowData.id)'
+            :href="generateScriptLink(props.rowData.id)"
             v-uni-id="props.rowData.id.toString()"
-          >{{props.rowData.title}}</b-link>
+          >{{ props.rowData.title }}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
