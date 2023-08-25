@@ -23,7 +23,7 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            :href="onAction('edit-script', props.rowData, props.rowIndex)"
+            :href='generateScriptLink(props.rowData.id)'
             v-uni-id="props.rowData.id.toString()"
           >{{props.rowData.title}}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
@@ -39,6 +39,9 @@
           />
         </template>
       </vuetable>
+
+      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
+
       <pagination
         :single="$t('Script')"
         :plural="$t('Scripts')"
@@ -86,15 +89,18 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu },
+  components: { EllipsisMenu, AddToProjectModal },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
+      assetId: null,
+      assetName: "",
       actions: [
         {
           value: "edit-script",
@@ -111,6 +117,11 @@ export default {
           href: "/designer/scripts/{{id}}/edit",
           permission: "edit-scripts",
           icon: "fas fa-cog",
+        },
+        { 
+          value: "add-to-project", 
+          content: "Assign to Project",
+          icon: "fas nav-icon fa-folder" 
         },
         {
           value: "duplicate-item",
@@ -190,6 +201,9 @@ export default {
   },
 
   methods: {
+    generateScriptLink(id) {
+      return `/designer/scripts/${id}/builder`;
+    },
     showModal() {
       this.$refs.myModalRef.show();
     },
@@ -210,9 +224,8 @@ export default {
           }
         });
     },
-    onAction(action, data, index) {
-      if (action.value) {
-        switch (action.value) {
+    onAction(action, data) {
+      switch (action.value) {
         case "duplicate-item":
           this.dupScript.title = data.title + " Copy";
           this.dupScript.language = data.language;
@@ -236,14 +249,9 @@ export default {
             }
           );
           break;
-        }
-      } else {
-        switch (action) {
-        case "edit-script":
-          let link = "/designer/scripts/" + data.id + "/builder";
-          return link;
+        case 'add-to-project':
+          this.showAddToProjectModal(data.name, data.id);
           break;
-        }
       }
     },
     formatLanguage(language) {
@@ -271,7 +279,12 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    }
+    },
+    showAddToProjectModal(name, id) {        
+      this.assetId = id;
+      this.assetName = name;
+      this.$refs["add-to-project-modal"].show();
+    },
   },
 
   computed: {}

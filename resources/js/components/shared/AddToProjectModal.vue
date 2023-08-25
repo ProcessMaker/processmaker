@@ -79,7 +79,7 @@
           this.customModalButtons[1].disabled = true;
           ProcessMaker.apiClient.post("/projects/assets/assign", formData)
           .then(response => {
-            ProcessMaker.alert(this.$t("Asset successfully assigned to project"), "success");
+            ProcessMaker.alert(response.data.message, "success");
             this.close();
           }).catch(error => {
             this.errors = error.response.data;
