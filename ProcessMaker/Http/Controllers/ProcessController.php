@@ -96,8 +96,6 @@ class ProcessController extends Controller
             ->pluck('name', 'id')
             ->toArray();
 
-        // $process->getAssignedAssetProjects(Process::class);
-
         $screenCancel = Screen::find($process->cancel_screen_id);
         $screenRequestDetail = Screen::find($process->request_detail_screen_id);
 
