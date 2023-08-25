@@ -340,7 +340,7 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }

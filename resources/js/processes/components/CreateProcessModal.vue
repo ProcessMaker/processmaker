@@ -186,13 +186,12 @@
           return;
         }
         this.disabled = true;
-
-        //TODO: ADD SELECTED PROJECT TO FORMDATA, ADD PROCESS TO PROJECT
         
         let formData = new FormData();
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("process_category_id", this.process_category_id);
+        formData.append("projects", this.projects);
         formData.append("manager_id", this.manager.id);
         if (this.file) {
           formData.append("file", this.file);

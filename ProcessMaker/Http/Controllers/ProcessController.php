@@ -14,10 +14,12 @@ use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\ProjectAssetTrait;
 
 class ProcessController extends Controller
 {
     use HasControllerAddons;
+    use ProjectAssetTrait;
 
     /**
      * A whitelist of attributes that should not be
@@ -93,6 +95,8 @@ class ProcessController extends Controller
             ->get()
             ->pluck('name', 'id')
             ->toArray();
+
+        // $process->getAssignedAssetProjects(Process::class);
 
         $screenCancel = Screen::find($process->cancel_screen_id);
         $screenRequestDetail = Screen::find($process->request_detail_screen_id);
