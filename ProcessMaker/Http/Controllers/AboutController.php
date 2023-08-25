@@ -70,7 +70,16 @@ class AboutController extends Controller
             $microServices = [$aiMicroService];
         }
 
-        return view('about.index', compact('packages', 'indexedSearch', 'versionTitle', 'versionNumber', 'commit_hash', 'microServices'));
+        return view('about.index',
+            compact(
+                'packages',
+                'indexedSearch',
+                'versionTitle',
+                'versionNumber',
+                'commit_hash',
+                'microServices'
+            )
+        );
     }
 
     private function getAiMicroService()
@@ -78,9 +87,8 @@ class AboutController extends Controller
         if (hasPackage('package-ai')) {
             $url = config('app.ai_microservice_host') . '/pm/getVersion';
             $response = Http::post($url, []);
-            $aiMicroService = $response->json();
 
-            return $aiMicroService;
+            return $response->json();
         }
 
         return null;
