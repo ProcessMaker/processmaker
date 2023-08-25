@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Setting;
 
@@ -62,6 +63,26 @@ class AboutController extends Controller
             ]);
         }
 
-        return view('about.index', compact('packages', 'indexedSearch', 'versionTitle', 'versionNumber', 'commit_hash'));
+        $microServices = [];
+
+        $aiMicroService = $this->getAiMicroService();
+        if ($aiMicroService) {
+            $microServices = [$aiMicroService];
+        }
+
+        return view('about.index', compact('packages', 'indexedSearch', 'versionTitle', 'versionNumber', 'commit_hash', 'microServices'));
+    }
+
+    private function getAiMicroService()
+    {
+        if (hasPackage('package-ai')) {
+            $url = config('app.ai_microservice_host') . '/pm/getVersion';
+            $response = Http::post($url, []);
+            $aiMicroService = $response->json();
+
+            return $aiMicroService;
+        }
+
+        return null;
     }
 }
