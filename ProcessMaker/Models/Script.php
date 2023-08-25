@@ -13,6 +13,7 @@ use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -64,6 +65,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasCategories;
     use HasVersioning;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ScriptCategory::class;
 
@@ -257,6 +259,19 @@ class Script extends ProcessMakerModel implements ScriptInterface
     public function runAsUser()
     {
         return $this->belongsTo(User::class, 'run_as_user_id');
+    }
+
+    /**
+     * Get the associated projects
+     */
+    public function projects()
+    {
+        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+            'project_assets',
+            'project_id',
+            'asset_id'
+        )->wherePivot('asset_type', static::class)
+            ->withTimestamps();
     }
 
     /**

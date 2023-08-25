@@ -44,6 +44,8 @@ class PackageHelper
 
     const PM_PACKAGE_VERSIONS = 'ProcessMaker\Package\Versions\PluginServiceProvider';
 
+    const PM_PACKAGE_PROJECTS = 'ProcessMaker\Package\Projects\PackageServiceProvider';
+
     public static function isPackageInstalled(string $serviceProviderClass): bool
     {
         if (!$serviceProviderClass) {

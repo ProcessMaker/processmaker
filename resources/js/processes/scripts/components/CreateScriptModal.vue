@@ -61,7 +61,16 @@
           api-get="script_categories"
           api-list="script_categories"
           name="script_category_id"
-        />
+        ></category-select>
+        <project-select
+          v-if="isProjectsInstalled"
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="projects"
+          :errors="addError.projects"
+          name="project"
+        ></project-select>
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
           :label="$t('Language')"
@@ -171,73 +180,71 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
-import SliderWithInput from "../../../components/shared/SliderWithInput";
+  import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+  import SliderWithInput from "../../../components/shared/SliderWithInput";
 
-const channel = new BroadcastChannel("assetCreation");
+  const channel = new BroadcastChannel("assetCreation");
 
-export default {
-  components: {
-    Modal,
-    Required,
-    SliderWithInput,
-  },
-  mixins: [FormErrorsMixin],
-  props: ["countCategories", "scriptExecutors"],
-  data() {
-    return {
-      title: "",
-      language: "",
-      script_executor_id: null,
-      description: "",
-      script_category_id: "",
-      code: "",
-      addError: {},
-      selectedUser: "",
-      users: [],
-      timeout: 60,
-      retry_attempts: 0,
-      retry_wait_time: 5,
-      disabled: false,
-      createScriptHooks: [],
-      script: null,
-    };
-  },
-  destroyed() {
-    channel.close();
-  },
-  methods: {
-    onClose() {
-      this.title = "";
-      this.language = "";
-      this.script_executor_id = null;
-      this.description = "";
-      this.script_category_id = "";
-      this.code = "";
-      this.timeout = 60;
-      this.retry_attempts = 0;
-      this.retry_wait_time = 5;
-      this.addError = {};
-    },
-    onSubmit() {
-      this.errors = {
-        name: null,
-        description: null,
-        status: null,
-        script_category_id: null,
-      };
-      // single click
-      if (this.disabled) {
-        return;
+  export default {
+    components: { Modal, Required, SliderWithInput, ProjectSelect },
+    mixins: [ FormErrorsMixin ],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled'],
+    data: function() {
+      return {
+        title: '',
+        language: '',
+        script_executor_id: null,
+        description: '',
+        script_category_id: '',
+        code: '',
+        addError: {},
+        selectedUser: '',
+        users: [],
+        timeout: 60,
+        retry_attempts: 0,
+        retry_wait_time: 5,
+        disabled: false,
+        createScriptHooks: [],
+        script: null,
+        projects: [],
       }
-      this.disabled = true;
-      ProcessMaker.apiClient
-        .post("/scripts", {
+    },
+    destroyed() {
+      channel.close();
+    },
+    methods: {
+      onClose() {
+        this.title = '';
+        this.language = '';
+        this.script_executor_id = null;
+        this.description = '';
+        this.script_category_id = '';
+        this.code = '';
+        this.timeout = 60;
+        this.retry_attempts = 0;
+        this.retry_wait_time = 5;
+        this.addError = {};
+      },
+      onSubmit() {
+        this.errors = {
+          name: null,
+          description: null,
+          status: null,
+          script_category_id: null,
+        };
+        //single click
+        if (this.disabled) {
+          return
+        }
+        this.disabled = true;
+
+        ProcessMaker.apiClient.post("/scripts", {
           title: this.title,
           script_executor_id: this.script_executor_id,
           description: this.description,
           script_category_id: this.script_category_id,
           run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
+          projects: this.projects,
           code: "[]",
           timeout: this.timeout,
           retry_attempts: this.retry_attempts,
