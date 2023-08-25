@@ -6,7 +6,6 @@ trait ProjectAssetTrait
 {
     public function assignAssetsToProjects($request, $assetModelClass)
     {
-        dd('ASSIGN ASSET', $request, $assetModelClass);
         if ($request->input('projects')) {
             $projectAssetModelClass = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
             $projectAssets = new $projectAssetModelClass;

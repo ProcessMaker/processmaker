@@ -123,7 +123,6 @@
         }
         this.disabled = true;
 
-        //TODO: ADD SCREEN TO PROJECT IF PROJECT SELECTED
         ProcessMaker.apiClient.post('screens', this.formData)
           .then(response => {
             ProcessMaker.alert(this.$t('The screen was created.'), 'success');
