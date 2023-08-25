@@ -195,10 +195,12 @@ export default {
           ? value.fullname
           : "",
         name:
-          value.name !== undefined
+          value.name
             ? value.name
             : value.fullname
             ? value.fullname
+            : value.firstname && value.lastname
+            ? value.firstname + ' ' + value.lastname
             : "",
         initials: value.initials
           ? value.initials
