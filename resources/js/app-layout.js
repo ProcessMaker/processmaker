@@ -283,9 +283,13 @@ window.addEventListener("unhandledrejection", (event) => {
     // Already handeled
     event.preventDefault(); // stops the unhandled rejection error
   } else if (error.response && error.response.data && error.response.data.message) {
-    window.ProcessMaker.alert(error.response.data.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.response.data.message, "danger");
+    }
   } else if (error.message) {
-    window.ProcessMaker.alert(error.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.message, "danger");
+    }
   }
 });
 
