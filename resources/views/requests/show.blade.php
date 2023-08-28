@@ -423,6 +423,7 @@
             remove: false,
           },
           iframeLoading: false,
+          showTree: false,
         };
       },
       computed: {
