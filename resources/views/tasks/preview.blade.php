@@ -185,7 +185,7 @@
             handler(task, oldTask) {
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
-                history.replaceState(null, null, `/tasks/${task.id}/edit`);
+                history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
               }
             }
           },
@@ -243,13 +243,15 @@
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-            this.redirect(`/requests/${processRequestId}`);
+            setTimeout(() => {
+              parent.location.reload();
+            }, 200);
           },
           error(processRequestId) {
             this.$refs.task.showSimpleErrorMessage();
           },
           redirectToTask(task, force = false) {
-            this.redirect(`/tasks/${task}/edit`, force);
+            this.redirect(`/tasks/${task}/edit/preview`, force);
           },
           closed(taskId) {
             // avoid redirection if using a customized renderer
@@ -425,3 +427,4 @@
             color: white !important;
         }
     </style>
+    

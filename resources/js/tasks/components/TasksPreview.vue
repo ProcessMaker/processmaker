@@ -159,6 +159,22 @@ export default {
     },
     onClose() {
       this.showPreview = false;
+      this.linkTasks1 = "";
+      this.linkTasks2 = "";
+      this.task = {};
+      this.data = [];
+      this.taskTitle = "";
+      this.prevTask = {};
+      this.nextTask = {};
+      this.existPrev = false;
+      this.existNext = false;
+      this.loading = true;
+      this.paneMinSize = 0;
+      this.showFrame = 1;
+      this.showFrame1 = false;
+      this.showFrame2 = false;
+      this.isLoading = "";
+      this.stopFrame = false;
     },
     setPaneMinSize(splitpanesWidth, minPixelWidth) {
       this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
