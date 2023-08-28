@@ -13,6 +13,7 @@ import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
+import ProjectSelect from "./components/shared/ProjectSelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
@@ -51,6 +52,7 @@ Vue.component("SelectStatus", SelectStatus);
 Vue.component("SelectUser", SelectUser);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("CategorySelect", CategorySelect);
+Vue.component("ProjectSelect", ProjectSelect);
 Vue.component("SelectFromApi", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -87,6 +89,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      confirmSize: "md",
       messageTitle: "",
       messageMessage: "",
       messageVariant: "",
@@ -205,12 +208,13 @@ window.ProcessMaker.closeSessionModal = function () {
 };
 
 // Set out own specific confirm modal.
-window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
+window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md") {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.confirmSize = size;
 };
 
 // Set out own specific message modal.
@@ -279,9 +283,13 @@ window.addEventListener("unhandledrejection", (event) => {
     // Already handeled
     event.preventDefault(); // stops the unhandled rejection error
   } else if (error.response && error.response.data && error.response.data.message) {
-    window.ProcessMaker.alert(error.response.data.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.response.data.message, "danger");
+    }
   } else if (error.message) {
-    window.ProcessMaker.alert(error.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.message, "danger");
+    }
   }
 });
 

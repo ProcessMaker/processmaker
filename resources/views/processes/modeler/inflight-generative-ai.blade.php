@@ -32,10 +32,9 @@
       enableProcessMapping: false,
     }
 
-    window.ProcessMaker.EventBus.$on('modeler-start', ({
-      loadXML
-    }) => {
-      loadXML(window.ProcessMaker.modeler.xml);
+    window.ProcessMaker.EventBus.$on('modeler-start', async ({ loadXML }) => {
+      await loadXML(window.ProcessMaker.modeler.xml);
+      window.ProcessMaker.EventBus.$emit('parsed');
     });
   </script>
   @foreach ($manager->getScripts() as $script)

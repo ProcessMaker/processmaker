@@ -1,4 +1,6 @@
+import AddToProjectModal from "./AddToProjectModal";
 import BasicSearch from "./BasicSearch";
+import CategorySelect from "./CategorySelect";
 import ChangeLog from "./ChangeLog";
 import ColorSchemeSelector from "./ColorSchemeSelector";
 import Column from "./Column";
@@ -16,13 +18,18 @@ import Modal from "./Modal";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
+import ProjectSelect from "./ProjectSelect";
 import Required from "./Required";
+import SelectUserGroup from "./SelectUserGroup";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
+import DownloadSvgButton from "./DownloadSvgButton.vue";
 
 export {
+  AddToProjectModal,
   BasicSearch,
+  CategorySelect,
   ChangeLog,
   ColorSchemeSelector,
   Column,
@@ -38,10 +45,13 @@ export {
   IconSelector,
   Modal,
   PmqlInput,
+  ProjectSelect,
   PTab,
   PTabs,
   Required,
+  SelectUserGroup,
   SidebarButton,
   SidebarNav,
   SliderWithInput,
+  DownloadSvgButton,
 };

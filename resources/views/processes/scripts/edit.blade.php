@@ -51,6 +51,13 @@
                         </div>
                         <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="formData.script_category_id" :errors="errors.script_category_id">
                         </category-select>
+                        <project-select
+                          :label="$t('Project')"
+                          api-get="projects"
+                          api-list="projects"
+                          v-model="formData.projects"
+                          :errors="errors.projects">
+                        </project-select>
                         <div class="form-group">
                             <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">

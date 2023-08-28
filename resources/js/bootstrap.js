@@ -27,6 +27,8 @@ import Vue from 'vue'
 import VueCookies from 'vue-cookies'
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import GlobalSearch from "./components/shared/GlobalSearch.vue";
+import DataTreeToggle from "./components/common/data-tree-toggle.vue";
+import TreeView from "./components/TreeView.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -42,6 +44,10 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
  */
 window.SharedComponents = require("./components/shared");
 
+/**
+ * Exporting Modeler inspector components
+ */
+window.ModelerInspector = require("./processes/modeler/components/inspector");
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
@@ -78,6 +84,8 @@ window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("global-search", GlobalSearch);
+window.Vue.component("data-tree-toggle", DataTreeToggle);
+window.Vue.component("tree-view", TreeView);
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
@@ -232,6 +240,10 @@ const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pm
 if (openAiEnabled) {
   window.ProcessMaker.openAi = {
     enabled: openAiEnabled.content,
+  };
+} else {
+  window.ProcessMaker.openAi = {
+    enabled: false,
   };
 }
 

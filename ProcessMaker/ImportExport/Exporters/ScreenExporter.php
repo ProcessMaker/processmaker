@@ -80,7 +80,12 @@ class ScreenExporter extends ExporterBase
         $screenFinder = new ScreensInScreen();
         foreach ($screenFinder->referencesToExport($this->model, [], null, false) as $screen) {
             try {
-                $screens[] = Screen::findOrFail($screen[1]);
+                $screen = Screen::find($screen[1]);
+                if ($screen) {
+                    $screens[] = $screen;
+                } else {
+                    \Log::debug("NestedScreen screenId: $screen[1] not exists");
+                }
             } catch (ModelNotFoundException $error) {
                 \Log::error($error->getMessage());
                 continue;

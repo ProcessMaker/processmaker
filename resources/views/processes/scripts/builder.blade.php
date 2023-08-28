@@ -20,9 +20,17 @@
 
 @section('content')
   <div id="script-container">
-    <script-editor :script="{{ $script }}" :script-executor='{!! json_encode($script->scriptExecutor) !!}'
-      test-data="{{ json_encode($testData, JSON_PRETTY_PRINT) }}" :auto-save-delay="{{ $autoSaveDelay }}"
-      :is-versions-installed="@json($isVersionsInstalled)" :is-draft="@json($isDraft)"></script-editor>
+    <script-editor 
+      :script="{{ $script }}" 
+      :script-executor='{!! json_encode($script->scriptExecutor) !!}'
+      test-data="{{ json_encode($testData, JSON_PRETTY_PRINT) }}" 
+      :auto-save-delay="{{ $autoSaveDelay }}"
+      :is-versions-installed="@json($isVersionsInstalled)" 
+      :is-draft="@json($isDraft)"
+      :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
+      :user="{{ $user }}"
+      >
+    </script-editor>
   </div>
 @endsection
 

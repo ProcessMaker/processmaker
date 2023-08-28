@@ -14,7 +14,7 @@
 
     <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
-                            :variant="confirmVariant" :callback="confirmCallback"
+                            :variant="confirmVariant" :callback="confirmCallback" :size="confirmSize"
                             @close="confirmShow=false">
         </confirmation-modal>
         <message-modal class="d-none d-lg-block" id="messageModal" :show="messageShow" :title="messageTitle" :message="messageMessage"

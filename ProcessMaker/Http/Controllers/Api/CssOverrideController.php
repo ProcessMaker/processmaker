@@ -59,78 +59,32 @@ class CssOverrideController extends Controller
         }
 
         $request->request->add(['config' => $this->formatConfig($request)]);
-
         $setting = Setting::byKey('css-override');
 
-        // If setting does not exist will define
         if (!$setting) {
             $setting = new Setting();
         }
-        $changes = [];
-        $initConfig = $request->input('config');
+        // Custom Logo
         if ($request->has('fileLogo')) {
-            $this->uploadFile(
-                $setting->refresh(),
-                $request,
-                'fileLogo',
-                Setting::COLLECTION_CSS_LOGO,
-                Setting::DISK_CSS
-            );
+            $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
             Cache::forget('css-logo');
-            // Check if the default logo value was updated
-            if (isset($initConfig['logo']) && $initConfig['logo'] != "null" && !is_null($initConfig['logo'])) {
-                $changes['logo'] = $initConfig['logo'];
-            }
         }
+        // Custom Icon
         if ($request->has('fileIcon')) {
-            $this->uploadFile(
-                $setting->refresh(),
-                $request,
-                'fileIcon',
-                Setting::COLLECTION_CSS_ICON,
-                Setting::DISK_CSS
-            );
+            $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
-            // Check if the default icon value was updated
-            if (isset($initConfig['icon']) && $initConfig['icon'] != "null" && !is_null($initConfig['icon'])) {
-                $changes['icon'] = $initConfig['icon'];
-            }
         }
+        // Custom Favicon
         if ($request->has('fileFavicon')) {
-            $this->uploadFile(
-                $setting->refresh(),
-                $request,
-                'fileFavicon',
-                Setting::COLLECTION_CSS_FAVICON,
-                Setting::DISK_CSS
-            );
+            $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
             Cache::forget('css-favicon');
-            // Check if the default favicon value was updated
-            if (isset($initConfig['favicon']) && $initConfig['favicon'] != "null" && !is_null($initConfig['favicon'])) {
-                $changes['favicon'] = $initConfig['favicon'];
-            }
         }
+        // Custom Login Logo
         if ($request->has('fileLogin')) {
-            $this->uploadFile(
-                $setting->refresh(),
-                $request,
-                'fileLogin',
-                Setting::COLLECTION_CSS_LOGIN,
-                Setting::DISK_CSS
-            );
+            $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
             Cache::forget('css-login');
-            // Check if the default value was updated
-            if (isset($initConfig['login']) && $initConfig['login'] != "null" && !is_null($initConfig['login'])) {
-                $changes['login'] = $initConfig['login'];
-            }
         }
-        if ($request->has('variables')) {
-            $changes['variables'] = $initConfig['variables'];
-        }
-        if ($request->has('sansSerifFont')) {
-            $changes['sansSerifFont'] = $initConfig['sansSerifFont'];
-        }
-        // Review if the reset is true
+        // Review the reset action
         $reset = false;
         if ($request->has('reset') && $request->input('reset')) {
             Setting::destroy($setting->id);
@@ -139,35 +93,16 @@ class CssOverrideController extends Controller
 
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
-        // Get the original values
-        $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
-        // Save the changes
         $setting->saveOrFail();
-        // Get the changes
-        if (isset($setting->getChanges()['config'])) {
-            $changes = (array) json_decode($setting->getChanges()['config']);
-        }
 
-        $footer = $this->setLoginFooter($request);
-        $altText = $this->setAltText($request);
+        $this->setLoginFooter($request);
+        $this->setAltText($request);
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
 
-        $changes = array_merge(
-            $footer['changes'] ?? [],
-            $altText['changes'] ?? [],
-            $changes
-        );
-
-        if (!empty($changes)) {
-            $original['config'] = array_merge(
-                $footer['original'] ?? [],
-                $altText['original'] ?? [],
-                $original['config'] ?? []
-            );
-            event(new CustomizeUiUpdated($original, $changes, $reset));
-        }
+        // Register the Event
+        CustomizeUiUpdated::dispatch([], [], $reset);
 
         return new ApiResource($setting);
     }
@@ -179,24 +114,11 @@ class CssOverrideController extends Controller
             $footerContent = '';
         }
 
-        $original = Setting::where('key', 'login-footer')->first();
-
-        $setting = Setting::updateOrCreate([
+        Setting::updateOrCreate([
             'key' => 'login-footer',
         ], [
             'config' => ['html' => $footerContent],
         ]);
-
-        $response = [];
-
-        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = [
-                'changes' => ['loginFooter' => $setting->getAttribute('config')['html'] ?? ''],
-                'original' => ['loginFooter' => $original->getAttribute('config')['html'] ?? ''],
-            ];
-        }
-
-        return $response;
     }
 
     private function setAltText(Request $request)
@@ -206,25 +128,12 @@ class CssOverrideController extends Controller
             $altText = '';
         }
 
-        $original = Setting::where('key', 'logo-alt-text')->first();
-
-        $setting = Setting::updateOrCreate([
+        Setting::updateOrCreate([
             'key' => 'logo-alt-text',
         ], [
             'format' => 'text',
             'config' => $altText,
         ]);
-
-        $response = [];
-
-        if ((!$setting->wasRecentlyCreated && $setting->wasChanged()) || $setting->wasRecentlyCreated) {
-            $response = [
-                'changes' => ['altText' => $setting->getAttribute('config') ?? ''],
-                'original' => ['altText' => $original->getAttribute('config') ?? ''],
-            ];
-        }
-
-        return $response;
     }
 
     public function update(Request $request)
@@ -258,7 +167,6 @@ class CssOverrideController extends Controller
 
         $this->setLoginFooter($request);
         $this->setAltText($request);
-
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
@@ -336,7 +244,7 @@ class CssOverrideController extends Controller
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
             'favicon' => $request->input('fileFaviconName', ''),
-            'variables' => $request->input('variables', '[]'),
+            'variables' => $request->input('variables', ''),
             'sansSerifFont' => $request->input('sansSerifFont', $this->sansSerifFontDefault()),
         ];
     }
