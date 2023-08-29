@@ -24,6 +24,7 @@
                             <create-screen-modal
                                 :count-categories='@json($config->countCategories)'
                                 :types='@json($config->types)'
+                                is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
                             ></create-screen-modal>
                         @endcan
                     </div>

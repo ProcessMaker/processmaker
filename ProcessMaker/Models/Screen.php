@@ -12,6 +12,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -69,6 +70,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     use HasVersioning;
     use ExtendedPMQL;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ScreenCategory::class;
 
@@ -152,6 +154,19 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     public function category()
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
+    }
+
+    /**
+     * Get the associated projects
+     */
+    public function projects()
+    {
+        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+            'project_assets',
+            'project_id',
+            'asset_id'
+        )->wherePivot('asset_type', static::class)
+            ->withTimestamps();
     }
 
     public function scopeExclude($query, $value = [])

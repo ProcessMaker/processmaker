@@ -13,6 +13,7 @@ import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
+import ProjectSelect from "./components/shared/ProjectSelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
@@ -51,6 +52,7 @@ Vue.component("SelectStatus", SelectStatus);
 Vue.component("SelectUser", SelectUser);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("CategorySelect", CategorySelect);
+Vue.component("ProjectSelect", ProjectSelect);
 Vue.component("SelectFromApi", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -281,9 +283,13 @@ window.addEventListener("unhandledrejection", (event) => {
     // Already handeled
     event.preventDefault(); // stops the unhandled rejection error
   } else if (error.response && error.response.data && error.response.data.message) {
-    window.ProcessMaker.alert(error.response.data.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.response.data.message, "danger");
+    }
   } else if (error.message) {
-    window.ProcessMaker.alert(error.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.message, "danger");
+    }
   }
 });
 

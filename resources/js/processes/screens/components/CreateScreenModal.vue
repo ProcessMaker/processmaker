@@ -71,6 +71,14 @@
           api-get="screen_categories"
           api-list="screen_categories"
         />
+        <project-select
+          v-if="isProjectsInstalled"
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="formData.projects"
+          :errors="errors.projects"
+        ></project-select>
       </template>
       <template v-else>
         <div>{{ $t("Categories are required to create a screen") }}</div>
@@ -86,7 +94,7 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -94,9 +102,10 @@ export default {
   components: {
     Modal,
     Required,
+    ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types"],
+  props: ["countCategories", "types", "isProjectsInstalled"],
   data() {
     return {
       formData: {},
