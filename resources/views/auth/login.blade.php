@@ -80,8 +80,24 @@ Login
 @endif
 
 @endsection
+
+@section('js')
+    <script>
+        const browser = navigator.userAgent;
+        const isMobileDevice  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+        if (isMobileDevice) {
+            document.cookie = "isMobile=true"
+        }
+    </script>
+@endsection
+
 @section('css')
   <style media="screen">
+  @media (max-width: 579px) {
+    img {
+      width: 100%;
+    }
+  }
   .formContainer {
       width:504px;
   }
