@@ -71,9 +71,14 @@
     <slot></slot>
     <template v-if="setCustomButtons" #modal-footer>
       <div class="d-flex align-items-center w-100"
-        :class="{'justify-content-end': !showAiSlogan, 'justify-content-between': showAiSlogan}">
-        <div v-if="showAiSlogan" class="slogan">
-          <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+        :class="{'justify-content-end': !showAiSlogan || !requiredInFooter, 'justify-content-between': showAiSlogan || requiredInFooter}">
+        <div>
+          <div v-if="requiredInFooter">
+            <required class="required-footer"></required>
+          </div>
+          <div v-if="showAiSlogan" class="slogan">
+            <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+          </div>
         </div>
         <div>
           <b-button v-for="button in customButtons" 
@@ -110,7 +115,8 @@
       "headerButtons", 
       "hasTitleButtons", 
       "titleButtons",
-      "showAiSlogan"
+      "showAiSlogan",
+      "requiredInFooter"
     ],
     methods: {
       onEvent(name, event) {
@@ -154,5 +160,9 @@
   .slogan img {
     display: inline-block;
     height: 16px;
+  }
+
+  .required-footer {
+    text-align: left !important;
   }
 </style>
