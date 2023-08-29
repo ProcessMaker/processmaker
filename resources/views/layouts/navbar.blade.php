@@ -162,9 +162,9 @@
         margin-right: 1rem;
     }
 </style>
-<script>
+
+<script type="text/javascript">
     function switchToMobile() {
-        console.log('aver');
         document.cookie = "isMobile=true"
     }
 </script>
