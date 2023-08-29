@@ -88,6 +88,7 @@
                 class="btn btn-primary"
                 variant="primary"
                 style="text-transform: none"
+                @click="switchToMobile()"
             >
                 <i class="fas fa-mobile"></i>
                 Switch to Mobile View
@@ -161,3 +162,9 @@
         margin-right: 1rem;
     }
 </style>
+<script>
+    function switchToMobile() {
+        console.log('aver');
+        document.cookie = "isMobile=true"
+    }
+</script>
