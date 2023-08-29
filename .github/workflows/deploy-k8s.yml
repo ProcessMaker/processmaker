@@ -15,6 +15,7 @@ env:
   CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  DEPLOY: ${{ secrets.DEPLOY }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -75,11 +76,11 @@ jobs:
       #    access-token: ${{ secrets.ACCESS_TOKEN }}
       - name: Clone repo K8S
         run: |
-          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+          git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
           cd pm4-k8s-distribution
       - name: Clone private repository
         run: |
-          git clone --depth 1 -b cicd "https://$GIT_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+          git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
           cd argocd
       - run: git config --global user.email "cloudops@processmaker.com"
       - run: git config --global user.name "cloudops"
