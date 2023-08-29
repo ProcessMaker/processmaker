@@ -73,12 +73,14 @@ jobs:
       #    owner: 'processmaker'
       #    repository: 'pm4-k8s-distribution'
       #    access-token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Clone repo K8S
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+          cd pm4-k8s-distribution
       - name: Clone private repository
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.1
-        with:
-          owner: 'processmaker'
-          repository: 'argocd'
-          access-token: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+          cd argocd
       - run: git config --global user.email "cloudops@processmaker.com"
       - run: git config --global user.name "cloudops"
       - name: View Connection             
