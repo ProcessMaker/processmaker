@@ -80,22 +80,24 @@ jobs:
           ls -la
           cd argocd 
           ls -la
-        #  echo "---------------------------2"
-        #  deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-        #  echo ci-$deploy
-        #  cp template-argocd.yaml ci/ci-$deploy.yaml
-        #  sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
-        #  sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
-        #  echo "---------------------------3"
-        #  git status
-        #  echo "---------------------------4"
-        #  git add .
-        #  echo "---------------------------5 "
-        #  git commit -m "Develop CICD"
-        #  echo "---------------------------6"
-        #  git push origin develop
-        #  echo "---------------------------7"
-        #  pwd
-        #  echo "---------------------------8"
-        #  ls -la
-        #  echo "---------------------------"
+          echo "---------------------------2"
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          echo ci-$deploy
+          cp template-argocd.yaml ci/ci-$deploy.yaml
+          cp template-db.yaml job_database.yaml
+          sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
+          sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
+          sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
+          echo "---------------------------3"
+          git status
+          echo "---------------------------4"
+          git add .
+          echo "---------------------------5 "
+          git commit -m "Deploy CICD : ci-$deploy"
+          echo "---------------------------6"
+          git push origin main
+          echo "---------------------------7"
+          pwd
+          echo "---------------------------8"
+          ls -la
+          echo "---------------------------"
