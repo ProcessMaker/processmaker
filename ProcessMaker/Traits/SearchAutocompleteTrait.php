@@ -11,6 +11,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Projects\Models\ProjectCategory;
 
 trait SearchAutocompleteTrait
 {
@@ -163,6 +164,32 @@ trait SearchAutocompleteTrait
             $results = ProcessRequest::limit(50)->get();
         } else {
             $results = ProcessRequest::pmql('name = "' . $query . '"', function ($expression) {
+                return function ($query) use ($expression) {
+                    $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                };
+            })->get();
+        }
+
+        return $results->map(function ($request) {
+            return $request->only(['id', 'name']);
+        });
+    }
+
+    private function searchProjectAll($query)
+    {
+        return [
+            // 'categories' => $this->searchStatus($query),
+            'categories' => $this->searchProjectCategories($query),
+            'participants' => $this->searchParticipants($query),
+        ];
+    }
+
+    private function searchProjectCategories($query)
+    {
+        if (empty($query)) {
+            $results = ProjectCategory::limit(50)->get();
+        } else {
+            $results = ProjectCategory::pmql('name = "' . $query . '"', function ($expression) {
                 return function ($query) use ($expression) {
                     $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
                 };

@@ -192,6 +192,87 @@
               </template>
             </multiselect>
         </div>
+        <div v-if="type == 'projects'" class="card-body">
+            <label for="project_participant_filter">{{$t('Participants')}}</label>
+            <multiselect id="project_participant_filter" v-model="participants"
+              @search-change="getParticipants"
+              @input="buildPmql"
+              class="mb-3"
+              :show-labels="true"
+              :loading="isLoading.participants"
+              open-direction="bottom"
+              label="fullname"
+              :options="participantsOptions"
+              :track-by="'id'"
+              :multiple="true"
+              :aria-label="$t('Participants')"
+              :placeholder="$t('Participants')">
+              <template slot="noResult">
+                  {{ $t('No Results') }}
+              </template>
+              <template slot="noOptions">
+                  {{ $t('No Data Available') }}
+              </template>
+              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
+              </template>
+              <template slot="option" slot-scope="props">
+                  <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
+                      :src="props.option.avatar">
+                  <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                  <span class="ml-1">{{props.option.fullname}}</span>
+              </template>
+            </multiselect>
+              <label for="project_category_filter">{{$t('Category')}}</label>
+            <multiselect id="project_category_filter"
+                v-model="categories"
+                @search-change="getProjectCategories"
+                @input="buildPmql"
+                class="mb-3"
+                :show-labels="true"
+                :loading="isLoading.categories"
+                open-direction="bottom"
+                label="name"
+                :options="categoriesOptions"
+                :track-by="'name'"
+                :multiple="true"
+                :aria-label="$t('Category')"
+                :placeholder="$t('Category')">
+                  <template slot="noResult">
+                      {{ $t('No Results') }}
+                  </template>
+                  <template slot="noOptions">
+                      {{ $t('No Data Available') }}
+                  </template>
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
+                  </template>
+              </multiselect>
+                <!-- <label for="project_status_options_filter">{{$t('Others')}}</label>
+              <multiselect id="project_status_options_filter"
+                v-model="status"
+                class="mb-3"
+                :show-labels="true"
+                @input="buildPmql"
+                :loading="isLoading.status"
+                open-direction="bottom"
+                label="name"
+                :options="statusOptions"
+                track-by="value"
+                :multiple="true"
+                :aria-label="$t('Others')"
+                :placeholder="$t('Others')">
+                  <template slot="noResult">
+                      {{ $t('No Results') }}
+                  </template>
+                  <template slot="noOptions">
+                      {{ $t('No Data Available') }}
+                  </template>
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
+                  </template>
+              </multiselect> -->
+          </div>
         <div class="card-footer bg-white text-right">
           <button class="btn btn-secondary-outline btn-sm" @click="resetFilters">Reset</button>
           <button class="btn btn-primary btn-sm" @click="applyFilters">Apply</button>
@@ -240,6 +321,8 @@ export default {
       request: [],
       name: [],
       participants: [],
+      categories: [],
+      categoriesOptions: [],
       processOptions: [],
       statusOptions: [],
       requesterOptions: [],
@@ -247,6 +330,7 @@ export default {
       requestOptions: [],
       nameOptions: [],
       selectedFilters: [],
+      projects: [],
       isLoading: {
         process: false,
         requester: false,
@@ -389,6 +473,22 @@ export default {
         case 'tasks':
           this.buildTaskPmql();
           break;
+        case 'projects':
+          console.log('buildProjectPmql');
+          this.buildProjectPmql();
+          break;
+      }
+    },
+    buildProjectPmql() {
+      console.log(this.projects);
+      //Parse requester
+      if (this.projects.length) {
+        let string = '';
+        this.requester.forEach((requester, key) => {
+          string += 'requester = "' + requester.username + '"';
+          if (key < this.requester.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
       }
     },
     buildRequestPmql() {
@@ -514,6 +614,9 @@ export default {
           case 'tasks':
               this.getAllTasks();
               break;
+          case 'projects':
+              this.getAllProjects();
+              break;
       }
     },
     getAllRequests(){
@@ -539,6 +642,17 @@ export default {
           this.allLoading(false);
           setTimeout(3000)
         });
+    },
+    getAllProjects() {
+      this.allLoading(true);
+      ProcessMaker.apiClient
+          .get("/requests/search?type=project_all", { baseURL: '' })
+          .then(response => {
+              this.categoriesOptions = response.data.categories;
+              this.participantsOptions = response.data.participants;
+              this.allLoading(false);
+              
+          });
     },
     getStatus() {
       this.isLoading.status = true;
@@ -570,16 +684,7 @@ export default {
                 setTimeout(3000)
             });
     },
-    getParticipants(query) {
-        this.isLoading.participants = true
-        ProcessMaker.apiClient
-            .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
-            .then(response => {
-                this.participantsOptions = response.data;
-                this.isLoading.participants = false
-                setTimeout(3000)
-            });
-    },
+
     getTaskStatus() {
       this.isLoading.status = true;
       ProcessMaker.apiClient
