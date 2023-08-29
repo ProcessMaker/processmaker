@@ -427,4 +427,3 @@
             color: white !important;
         }
     </style>
-    
