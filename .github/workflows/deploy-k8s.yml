@@ -67,12 +67,12 @@ jobs:
       #    ref: 'develop'
       #    token: '${{ secrets.ACCESS_TOKEN }}'
       #    submodules: recursive
-      - name: Clone repo K8S
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.1
-        with:
-          owner: 'processmaker'
-          repository: 'pm4-k8s-distribution'
-          access-token: ${{ secrets.ACCESS_TOKEN }}
+      #- name: Clone repo K8S
+      #  uses: GuillaumeFalourd/clone-github-repo-action@v2.1
+      #  with:
+      #    owner: 'processmaker'
+      #    repository: 'pm4-k8s-distribution'
+      #    access-token: ${{ secrets.ACCESS_TOKEN }}
       - name: Clone private repository
         uses: GuillaumeFalourd/clone-github-repo-action@v2.1
         with:
