@@ -1,11 +1,109 @@
-name: Build Package Collections
-on:
+name: deploy-k8s
+run-name: ${{ github.actor }} is testing out GitHub Actions NEXT 🚀
+on: 
   push:
     branches:
-      - FOUR-9465
-  workflow_dispatch:  
+      - cicd
+  workflow_dispatch:
+env:
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: ${{ secrets.AWS_REGION }}  
+  aws-url: ${{ secrets.AWS_URL }}
+  DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  BRANCH: next
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
-  run_collections:
-    name: Run Build PM4-workflow
-    uses: processmaker/pm4-k8s-distribution/.github/workflows/deploy-k8s.yml@cicd
-    secrets: inherit
+  #imageEKS:
+  #  name: build-docker-image-EKS
+  #  runs-on: ubuntu-22.04
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - name: Print Params
+  #      run: |
+  #        echo "***********************"
+  #        echo ${{env.IMAGE_TAG}}
+  #        deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+  #        echo ci-$deploy
+  #        echo "************************"
+  #    - name: Generate image EKS
+  #      run: |          
+  #        bash ./images/build.local.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}}
+  #    - name: List Images
+  #      run: |
+  #        docker images
+  #        echo "Version: $VERSION"
+  #    - name: Configure AWS Credentials
+  #      uses: aws-actions/configure-aws-credentials@v1
+  #      with:
+  #        aws-access-key-id: ${{ env.aws-access-key-id }}
+  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
+  #        aws-region: ${{ env.aws-region }}
+  #    - name: Login to ECR
+  #      run: |
+  #        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
+  #    - name: Push OpenSource Image to ECR
+  #      run: |
+  #        docker tag local/processmaker:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+  #        docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+  #    - name: Push Enterprise Image to ECR
+  #      run: |
+  #        docker tag local/enterprise:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+  #        docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+  deployEKS:
+    name: build-deploy-EKS
+    runs-on: ubuntu-22.04    
+    steps:
+      #- uses: actions/checkout@v3
+      #- name: Preparing Repositories
+      #  uses: actions/checkout@v3
+      #  with:
+      #    repository: 'mavalosn/deployEKS'
+      #    ref: 'develop'
+      #    token: '${{ secrets.ACCESS_TOKEN }}'
+      #    submodules: recursive
+      - name: Clone repo K8S
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.1
+        with:
+          owner: 'processmaker'
+          repository: 'pm4-k8s-distribution'
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Clone private repository
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.1
+        with:
+          owner: 'processmaker'
+          repository: 'argocd'
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+      - run: git config --global user.email "cloudops@processmaker.com"
+      - run: git config --global user.name "cloudops"
+      - name: View Connection             
+        run: |
+          echo "---------------------------1"
+          pwd
+          ls -la
+          cd argocd 
+          ls -la
+        #  echo "---------------------------2"
+        #  deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+        #  echo ci-$deploy
+        #  cp template-argocd.yaml ci/ci-$deploy.yaml
+        #  sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
+        #  sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
+        #  echo "---------------------------3"
+        #  git status
+        #  echo "---------------------------4"
+        #  git add .
+        #  echo "---------------------------5 "
+        #  git commit -m "Develop CICD"
+        #  echo "---------------------------6"
+        #  git push origin develop
+        #  echo "---------------------------7"
+        #  pwd
+        #  echo "---------------------------8"
+        #  ls -la
+        #  echo "---------------------------"
