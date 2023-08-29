@@ -2,6 +2,7 @@ import { BNavbar } from "bootstrap-vue";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
@@ -18,7 +19,6 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 
@@ -67,8 +67,9 @@ window.ProcessMaker.events = new Vue();
 // Verify if is mobile
 const browser = navigator.userAgent;
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+window.ProcessMaker.mobileApp = false;
 if (isMobileDevice) {
-  window.ProcessMaker.mobile = true;
+  window.ProcessMaker.mobileApp = true;
 }
 
 window.ProcessMaker.nodeTypes = [];
