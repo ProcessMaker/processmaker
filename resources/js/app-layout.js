@@ -110,6 +110,7 @@ window.ProcessMaker.navbar = new Vue({
       sessionWarnSeconds: "",
       taskTitle: "",
       isMobile: false,
+      isMobileDevice: window.ProcessMaker.mobile,
     };
   },
   watch: {
@@ -157,6 +158,9 @@ window.ProcessMaker.navbar = new Vue({
     saveLocalAlerts(array) {
       const nextScreenAlerts = array.filter((alert) => alert.stayNextScreen);
       window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
+    },
+    switchToMobile() {
+      document.cookie = "isMobile=true";
     },
     getRoutes() {
       if (this.$refs.breadcrumbs) {

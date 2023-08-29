@@ -84,7 +84,7 @@
 
         <b-navbar-nav class="d-flex align-items-center" style="z-index:100">
             <b-button
-                v-if="isMobile"
+                v-if="isMobileDevice"
                 class="btn btn-primary"
                 variant="primary"
                 style="text-transform: none"
@@ -162,9 +162,3 @@
         margin-right: 1rem;
     }
 </style>
-
-<script type="text/javascript">
-    function switchToMobile() {
-        document.cookie = "isMobile=true"
-    }
-</script>
