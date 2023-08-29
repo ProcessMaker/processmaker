@@ -64,6 +64,13 @@ Vue.component("Required", Required);
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
 
+// Verify if is mobile
+const browser = navigator.userAgent;
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+if (isMobileDevice) {
+  window.ProcessMaker.mobile = true;
+}
+
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
   return this.find((node) => node.id === id);

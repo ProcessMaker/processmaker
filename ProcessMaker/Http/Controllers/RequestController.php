@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -48,6 +49,12 @@ class RequestController extends Controller
         }
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+
+        if (MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('requests.mobile', compact(
+                ['type', 'title', 'currentUser']
+            ));
+        }
 
         return view('requests.index', compact(
             ['type', 'title', 'currentUser']
