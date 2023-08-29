@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is testing out GitHub Actions NEXT 🚀
 on: 
   push:
     branches:
-      - cicd
+      - FOUR-9465
   workflow_dispatch:
 env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
