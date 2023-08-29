@@ -84,7 +84,7 @@ jobs:
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           echo ci-$deploy
           cp template-argocd.yaml ci/ci-$deploy.yaml
-          cp template-db.yaml job_database.yaml
+          cp template-db.yaml ./ci/job_database.yaml
           sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
           sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
           sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
