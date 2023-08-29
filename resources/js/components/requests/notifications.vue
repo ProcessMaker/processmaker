@@ -28,14 +28,24 @@
             <b-row align-h="between">
               <b-col>
                 <b-tabs>
-                  <b-tab>
+                  <b-tab @click="_ => filterComments = null">
                     <template #title>
-                      <b-badge pill variant="warning">5</b-badge>
+                      <b-badge v-if="totalMessages" pill variant="warning lighten">{{ totalMessages }}</b-badge>
                       {{ $t('Inbox') }}
                     </template>
                   </b-tab>
-                  <b-tab :title="$t('Notifications')"></b-tab>
-                  <b-tab :title="$t('Comments')"></b-tab>
+                  <b-tab @click="_ => filterComments = false">
+                    <template #title>
+                      <b-badge v-if="notifications.length" pill variant="warning lighten">{{ notifications.length }}</b-badge>
+                      {{ $t('Notifications') }}
+                    </template>
+                  </b-tab>
+                  <b-tab @click="_ => filterComments = true">
+                    <template #title>
+                      <b-badge v-if="comments.length" pill variant="warning lighten">{{ comments.length }}</b-badge>
+                      {{ $t('Comments') }}
+                    </template>
+                  </b-tab>
                 </b-tabs>
               </b-col>
               <b-col align-self="center" lg="auto">
@@ -47,7 +57,9 @@
           <div v-if="messages.length == 0">
             {{ $t('No Notifications Found') }}
           </div>
-          <notification-item v-else v-for="(item, index) in messages" :key="index" :notification="item"></notification-item>
+          <template v-else>
+            <notification-item v-for="(item, index) in filteredMessages" :key="index" :notification="item"></notification-item>
+          </template>
 
         </div>
       </b-popover>
@@ -56,7 +68,6 @@
 </template>
 
 <script>
-import moment from "moment";
 import { PopoverPlugin } from "bootstrap-vue"
 import NotificationItem from "./notification-item.vue";
 
@@ -85,7 +96,8 @@ export default {
       arrowStyle: {
         top: "0px",
         left: "0px"
-      }
+      },
+      filterComments: null,
     };
   },
   computed: {
@@ -110,9 +122,30 @@ export default {
     },
     hasMessages() {
       return this.totalMessages > 0;
+    },
+    filteredMessages() {
+      return this.messages.filter(this.commentFilterFn(this.filterComments));
+    },
+    notifications() {
+      return this.messages.filter(this.commentFilterFn(false));
+    },
+    comments() {
+      return this.messages.filter(this.commentFilterFn(true));
     }
   },
   methods: {
+    commentFilterFn(onlyComments) {
+      return (message) => {
+        if (onlyComments !== null) {
+          if (onlyComments) {
+            return message.data?.type === "COMMENT";
+          } else {
+            return message.data?.type !== "COMMENT";
+          }
+        }
+        return true;
+      }
+    },
     onShown() {
       this.isOpen = true;
     },
@@ -132,8 +165,9 @@ export default {
     updateTotalMessages() {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient
-        .get("/notifications?per_page=5&filter=unread&include=user")
+        .get("/notifications?per_page=10&filter=unread&include=user")
         .then(response => {
+          console.log(response);
           ProcessMaker.notifications.splice(0);
           response.data.data.forEach(function(element) {
             ProcessMaker.pushNotification(element);
@@ -166,6 +200,9 @@ export default {
 <style lang="scss" scoped>
 @import "../../../sass/variables";
 
+.lighten {
+  background-color: lighten($warning, 40%);;
+}
 
 .button-dismiss {
   font-size: 12px;
@@ -180,7 +217,7 @@ export default {
 .notification-popover::v-deep .tabs {
   .nav-tabs {
     border: 0;
-    font-size: 1.1em;
+    font-size: 1.2em;
   }
 
   .nav-link {
@@ -235,9 +272,10 @@ export default {
 }
 
 .notification-menu-button {
+  color: $light;
 }
 .notification-menu-button i {
-  color: $secondary; 
+  color: $light; 
 }
 
 .notification-menu-button.is-open i {
