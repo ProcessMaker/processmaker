@@ -12,7 +12,7 @@ env:
   aws-url: ${{ secrets.AWS_URL }}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   BRANCH: next
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'develop' }}
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'FOUR-9465' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   DEPLOY: ${{ secrets.DEPLOY }}
