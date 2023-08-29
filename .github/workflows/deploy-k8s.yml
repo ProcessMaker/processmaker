@@ -20,51 +20,52 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  #imageEKS: 
-  #  name: build-docker-image-EKS
-  #  runs-on: ubuntu-22.04
-  #  steps:
-  #    #- uses: actions/checkout@v3
-  #    - name: Clone repo K8S
-  #      run: |
-  #        git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
-  #        cd pm4-k8s-distribution
-  #    - name: Print Params
-  #      run: |
-  #        echo "***********************"
-  #        echo ${{env.IMAGE_TAG}}
-  #        deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-  #        echo ci-$deploy
-  #        echo "************************"
-  #    - name: Generate image EKS
-  #      run: |
-  #        cd pm4-k8s-distribution      
-  #        bash ./images/build.local.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}}
-  #    - name: List Images
-  #      run: |
-  #        docker images
-  #        echo "Version: $VERSION"
-  #    - name: Configure AWS Credentials
-  #      uses: aws-actions/configure-aws-credentials@v1
-  #      with:
-  #        aws-access-key-id: ${{ env.aws-access-key-id }}
-  #        aws-secret-access-key: ${{ env.aws-secret-access-key }}
-  #        aws-region: ${{ env.aws-region }}
-  #    - name: Login to ECR
-  #      run: |
-  #        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
-  #    - name: Push OpenSource Image to ECR
-  #      run: |
-  #        cd pm4-k8s-distribution
-  #        docker tag local/processmaker:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
-  #        docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
-  #    - name: Push Enterprise Image to ECR
-  #      run: |
-  #        cd pm4-k8s-distribution
-  #        docker tag local/enterprise:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
-  #        docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+  imageEKS: 
+    name: build-docker-image-EKS
+    runs-on: ubuntu-22.04
+    steps:
+      #- uses: actions/checkout@v3
+      - name: Clone repo K8S
+        run: |
+          git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+          cd pm4-k8s-distribution
+      - name: Print Params
+        run: |
+          echo "***********************"
+          echo ${{env.IMAGE_TAG}}
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          echo ci-$deploy
+          echo "************************"
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution      
+          bash ./images/build.local.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}}
+      - name: List Images
+        run: |
+          docker images
+          echo "Version: $VERSION"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
+      - name: Push OpenSource Image to ECR
+        run: |
+          cd pm4-k8s-distribution
+          docker tag local/processmaker:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+          docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+      - name: Push Enterprise Image to ECR
+        run: |
+          cd pm4-k8s-distribution
+          docker tag local/enterprise:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+          docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
+    needs: imageEKS
     runs-on: ubuntu-22.04    
     steps:      
       - name: Clone private repository
@@ -96,8 +97,3 @@ jobs:
           git commit -m "Deploy CICD : ci-$deploy"
           echo "---------------------------6"
           git push origin main
-          echo "---------------------------7"
-          pwd
-          echo "---------------------------8"
-          ls -la
-          echo "---------------------------"
