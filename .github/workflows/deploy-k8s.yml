@@ -1,0 +1,11 @@
+name: Build Package Collections
+on:
+  push:
+    branches:
+      - FOUR-9465
+  workflow_dispatch:  
+jobs:
+  run_collections:
+    name: Run Build PM4-workflow
+    uses: processmaker/pm4-k8s-distribution/.github/workflows/deploy-k8s.yml@cicd
+    secrets: inherit
