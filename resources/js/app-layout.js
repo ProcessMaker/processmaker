@@ -161,6 +161,7 @@ window.ProcessMaker.navbar = new Vue({
     },
     switchToMobile() {
       document.cookie = "isMobile=true";
+      window.location.reload();
     },
     getRoutes() {
       if (this.$refs.breadcrumbs) {
