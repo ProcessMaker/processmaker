@@ -65,7 +65,10 @@
     </template>
 
     <template #modal-title v-else>
-      <div>{{title}}</div>
+      <div>
+        <i v-if="titleIcon" class="pr-1 fa-fw" :class="titleIcon"/>
+        {{title}}
+      </div>
       <small v-if="subtitle" class="text-muted subtitle mt-1">{{subtitle}}</small>
     </template>
     <slot></slot>
@@ -116,7 +119,8 @@
       "hasTitleButtons", 
       "titleButtons",
       "showAiSlogan",
-      "requiredInFooter"
+      "requiredInFooter",
+      "titleIcon"
     ],
     methods: {
       onEvent(name, event) {
