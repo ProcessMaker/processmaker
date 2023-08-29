@@ -65,7 +65,7 @@ jobs:
   #        docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
-    needs: imageEKS
+    #needs: imageEKS
     runs-on: ubuntu-22.04    
     steps:      
       - name: Clone private repository
