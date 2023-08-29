@@ -159,9 +159,9 @@ export default {
     },
     onClose() {
       this.showPreview = false;
-      this.changeToDefault();
+      this.resetToDefault();
     },
-    changeToDefault() {
+    resetToDefault() {
       this.linkTasks1 = "";
       this.linkTasks2 = "";
       this.task = {};
