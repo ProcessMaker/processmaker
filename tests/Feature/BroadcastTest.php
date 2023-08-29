@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Event;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\BuildScriptExecutor;
@@ -129,11 +130,11 @@ class BroadcastTest extends TestCase
      */
     public function testScreenBuilderStartingBroadcast()
     {
-        $this->expectsEvents([
-            ScreenBuilderStarting::class,
-        ]);
+        Event::fake();
         $manager = new ScreenBuilder();
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
+
+        Event::assertDispatched(ScreenBuilderStarting::class);
     }
 
     /**
@@ -141,11 +142,11 @@ class BroadcastTest extends TestCase
      */
     public function testModelerStartingBroadcast()
     {
-        $this->expectsEvents([
-            ModelerStarting::class,
-        ]);
+        Event::fake();
         $manager = new Modeler();
         event(new ModelerStarting($manager));
+
+        Event::assertDispatched(ModelerStarting::class);
     }
 
     /**
@@ -178,12 +179,12 @@ class BroadcastTest extends TestCase
      */
     public function testScriptBuilderStartingBroadcast()
     {
-        $this->expectsEvents([
-            ScreenBuilderStarting::class,
-        ]);
+        Event::fake();
         $manager = new ScreenBuilderManager();
         $type = 'FORM';
         event(new ScreenBuilderStarting($manager, $type));
+
+        Event::assertDispatched(ScreenBuilderStarting::class);
     }
 
     /**
@@ -191,11 +192,11 @@ class BroadcastTest extends TestCase
      */
     public function testImportedScreenSavedBroadcast()
     {
-        $this->expectsEvents([
-            ImportedScreenSaved::class,
-        ]);
+        Event::fake();
         $screen = Screen::factory()->create();
         event(new ImportedScreenSaved($screen->id, $screen->toArray()));
+
+        Event::assertDispatched(ImportedScreenSaved::class);
     }
 
     /**
@@ -203,10 +204,10 @@ class BroadcastTest extends TestCase
      */
     public function testTestStatusEventBroadcast()
     {
-        $this->expectsEvents([
-            TestStatusEvent::class,
-        ]);
+        Event::fake();
         event(new TestStatusEvent('test', 'test status event'));
+
+        Event::assertDispatched(TestStatusEvent::class);
     }
 
     /**
@@ -214,10 +215,9 @@ class BroadcastTest extends TestCase
      */
     public function testScriptResponseEventBroadcast()
     {
-        $this->expectsEvents([
-            ScriptResponseEvent::class,
-        ]);
+        Event::fake();
         $user = User::factory()->create();
         event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
+        Event::assertDispatched(ScriptResponseEvent::class);
     }
 }

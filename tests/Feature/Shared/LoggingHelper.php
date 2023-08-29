@@ -22,7 +22,7 @@ trait LoggingHelper
             $matches = 0;
 
             foreach ($data as $key => $value) {
-                if (array_key_exists($key, $record)) {
+                if (property_exists($record, $key)) {
                     if ($record[$key] == $value) {
                         $matches++;
                     }
@@ -52,8 +52,8 @@ trait LoggingHelper
         $records = app('log')->getHandlers()[0]->getRecords();
 
         foreach ($records as $record) {
-            if (array_key_exists('message', $record)) {
-                $doesMatch = preg_match('/Broadcasting \[(?<name>.+)\].+ with payload:(?<payload>.+)/s', $record['message'], $matches);
+            if (property_exists($record, 'message')) {
+                $doesMatch = preg_match('/Broadcasting \[(?<name>.+)\].+ with payload:(?<payload>.+)/s', $record->message, $matches);
                 if ($doesMatch) {
                     if ($matches['name'] == $name) {
                         $length = strlen($matches['payload']);
@@ -69,7 +69,7 @@ trait LoggingHelper
     /**
      * Assert that a log entry exists that contains specific text
      *
-     * @param array $data
+     * @param string $data
      *
      * @return mixed
      */
@@ -81,9 +81,8 @@ trait LoggingHelper
 
         foreach ($records as $record) {
             $matches = 0;
-
-            if (array_key_exists('message', $record)) {
-                $message = $record['message'];
+            if (property_exists($record, 'message')) {
+                $message = $record->message;
                 if (strpos($message, $data) !== false) {
                     $matches = 1;
                 }
