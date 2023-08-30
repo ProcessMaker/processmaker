@@ -4,7 +4,7 @@
       @php
         $loginLogo = \ProcessMaker\Models\Setting::getLogin();
       @endphp
-      <a href="#" class="navbar-brand pl-2"><img class="navbar-logo" src={{$loginLogo}}></a>
+      <a href="#" class="navbar-brand pl-2"><img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}></a>
       <div class="content-nav">
         <ul class="nav justify-content-end">
           <li class="nav-item">
@@ -15,10 +15,10 @@
               >
                 <i class="fas fa-plus"></i>
               </button>
-            </a>  
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link">  
+            <a class="nav-link">
               <button
                 type="buttom"
                 class="btn btn-outline-light"
