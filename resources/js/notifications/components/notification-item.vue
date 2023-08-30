@@ -3,30 +3,21 @@
     <b-container>
       <b-row>
         <notification-user :notification="notification"></notification-user>
-        <b-col>
-          <strong v-if="displayUser !== null">{{ displayUser }}</strong> {{ displayAction }} <strong>{{ displaySubject }}</strong>
-          <template v-if="displayAdditional">
-            {{ displayAdditional[0] }} <strong>{{ displayAdditional[1] }}</strong>
-          </template>
-          <notification-time v-if="showTime" :notification="notification"></notification-time>
-          <div v-if="displayBubble" class="bubble">
-            {{ displayBubble }}
-          </div>
-        </b-col>
-      </b-row>
+        <notification-message :notification="notification" :show-time="showTime"></notification-message>
+        </b-row>
     </b-container>
   </div>
 </template>
 
 <script>
 import notificationsMixin from '../notifications-mixin';
-import NotificationTime from './notification-time';
 import NotificationUser from './notification-user';
+import NotificationMessage from './notification-message';
 export default {
   mixins: [notificationsMixin],
   components: {
-    NotificationTime,
-    NotificationUser
+    NotificationUser,
+    NotificationMessage,
   },
   props: {
     notification: {
@@ -43,46 +34,6 @@ export default {
     }
   },
   computed: {
-    displayAction() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return this.$t('has been assigned to the task');
-        case "PROCESS_CREATED":
-          return this.$t('started the process');
-        case "COMMENT":
-          return this.$t('commented on');
-        default:
-          return this.data.name || ''
-      }
-      return null;
-    },
-    displaySubject() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return this.data.name;
-        case "PROCESS_CREATED":
-          return this.data.uid;
-        case "COMMENT":
-          return this.data.processName;
-        default:
-          return this.data.processName || ''
-      }
-      return null;
-    },
-    displayAdditional() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return [this.$t('in the process'), this.data.processName];
-      }
-      return null;
-    },
-    displayBubble()
-    {
-      switch(this.data.type) {
-        case "COMMENT":
-          return this.data.message.substring(0, 200);
-      }
-    },
     url() {
       return this.notification.data?.url;
     },
@@ -103,12 +54,6 @@ export default {
 <style lang="scss" scoped>
 @import "../../../sass/variables";
 
-.bubble {
-  background-color: lighten($primary, 55%);
-  border-radius: 1em;
-  padding: 1em;
-  margin-top: 1em;
-}
 .item.clickable {
   cursor: pointer;
 }
