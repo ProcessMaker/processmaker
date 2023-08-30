@@ -86,6 +86,10 @@
     <div v-cloak id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
+                <div v-if="isSelfService" class="alert alert-primary" role="alert">
+                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                </div>
                 <div class="container-fluid h-100 d-flex flex-column">
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <task
@@ -267,7 +271,8 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.location.reload();
+                window.ProcessMaker.alert('The task was successfully claimed', 'primary', 5, true);
+                parent.location.reload();
               });
           },
           // Data editor
