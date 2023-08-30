@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class PackageInstallCommandTest extends TestCase
 {
-    public function setUp() : void
+    protected function setUp() : void
     {
         parent::setUp();
         $this->app->register(TestPackage\TestPackageServiceProvider::class);

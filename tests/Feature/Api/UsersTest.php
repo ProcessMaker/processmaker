@@ -65,7 +65,7 @@ class UsersTest extends TestCase
             'username' => 'newuser',
             'firstname' => 'name',
             'lastname' => 'name',
-            'email' => $faker->email,
+            'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->sentence(10),
         ]);
@@ -101,7 +101,7 @@ class UsersTest extends TestCase
 
         $this->assertArrayHasKey('username', $response->json()['errors']);
 
-        $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
+        $this->assertEquals('The username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
     public function testDefaultValuesOfUser()
@@ -115,9 +115,9 @@ class UsersTest extends TestCase
         // Create a user without setting fields that have default.
         $response = $this->apiCall('POST', $url, [
             'username' => 'username1',
-            'firstname' => $faker->firstName,
-            'lastname' => $faker->lastName,
-            'email' => $faker->email,
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+            'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->password(8) . 'A' . '1',
         ]);
@@ -139,9 +139,9 @@ class UsersTest extends TestCase
         $dateFormat = 'testFormat';
         $response = $this->apiCall('POST', $url, [
             'username' => 'username2',
-            'firstname' => $faker->firstName,
-            'lastname' => $faker->lastName,
-            'email' => $faker->email,
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+            'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->password(8) . 'A' . '1',
             'datetime_format' => $dateFormat,
@@ -157,9 +157,9 @@ class UsersTest extends TestCase
         // Create a new user and define a timezone on the request.
         $response = $this->apiCall('POST', $url, [
             'username' => 'username3',
-            'firstname' => $faker->firstName,
-            'lastname' => $faker->lastName,
-            'email' => $faker->email,
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+            'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->password(8) . 'A' . '1',
             'timezone' => 'America/Monterrey',
@@ -184,7 +184,7 @@ class UsersTest extends TestCase
         $faker = Faker::create();
         $response = $this->apiCall('POST', self::API_TEST_URL, [
             'username' => 'mytestusername',
-            'email' => $faker->email,
+            'email' => $faker->email(),
             'deuserion' => $faker->sentence(10),
         ]);
 
@@ -345,22 +345,22 @@ class UsersTest extends TestCase
         // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
-            'email' => $faker->email,
-            'firstname' => $faker->firstName,
-            'lastname' => $faker->lastName,
-            'phone' => $faker->phoneNumber,
-            'cell' => $faker->phoneNumber,
-            'fax' => $faker->phoneNumber,
-            'address' => $faker->streetAddress,
-            'city' => $faker->city,
-            'state' => $faker->stateAbbr,
-            'postal' => $faker->postcode,
-            'country' => $faker->country,
-            'timezone' => $faker->timezone,
+            'email' => $faker->email(),
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+            'phone' => $faker->phoneNumber(),
+            'cell' => $faker->phoneNumber(),
+            'fax' => $faker->phoneNumber(),
+            'address' => $faker->streetAddress(),
+            'city' => $faker->city(),
+            'state' => $faker->stateAbbr(),
+            'postal' => $faker->postcode(),
+            'country' => $faker->country(),
+            'timezone' => $faker->timezone(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
+            'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
             'password' => $faker->password(8) . 'A' . '1',
-            'force_change_password' => $faker->boolean,
+            'force_change_password' => $faker->boolean(),
         ]);
 
         // Validate the header status code
@@ -385,9 +385,9 @@ class UsersTest extends TestCase
         // Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',
-            'email' => $faker->email,
-            'firstname' => $faker->firstName,
-            'lastname' => $faker->lastName,
+            'email' => $faker->email(),
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'password' => $faker->password(8) . 'A' . '1',
             'force_change_password' => 0,
@@ -420,7 +420,7 @@ class UsersTest extends TestCase
         ]);
         // Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The Username has already been taken');
+        $response->assertSeeText('The username has already been taken');
     }
 
     /**
@@ -581,13 +581,13 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password field is required.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field is required.', $json['errors']['password'][0]);
 
         $payload['password'] = 'abc';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
@@ -601,7 +601,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
@@ -656,7 +656,7 @@ class UsersTest extends TestCase
                 'username' => $username,
                 'firstname' => $faker->firstName(),
                 'lastname' => $faker->lastName(),
-                'email' => $faker->email,
+                'email' => $faker->email(),
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
                 'password' => $faker->sentence(10),
             ]);
@@ -686,7 +686,7 @@ class UsersTest extends TestCase
                 'username' => $username,
                 'firstname' => $faker->firstName(),
                 'lastname' => $faker->lastName(),
-                'email' => $faker->email,
+                'email' => $faker->email(),
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
                 'password' => $faker->sentence(10),
             ]);

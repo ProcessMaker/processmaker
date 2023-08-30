@@ -20,7 +20,7 @@ class GroupFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(3),
-            'description' => $this->faker->sentence,
+            'description' => $this->faker->sentence(),
             'status' => $this->faker->randomElement(['ACTIVE', 'INACTIVE']),
         ];
     }

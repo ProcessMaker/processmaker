@@ -879,8 +879,6 @@ class ImportProcess implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return bool
      */
     public function handle()
     {

@@ -18,10 +18,10 @@ class ScriptFactory extends Factory
     {
         return [
             'key' => null,
-            'title' => $this->faker->sentence,
+            'title' => $this->faker->sentence(),
             'language' => 'php',
-            'code' => $this->faker->sentence($this->faker->randomDigitNotNull),
-            'description' => $this->faker->sentence,
+            'code' => $this->faker->sentence($this->faker->randomDigitNotNull()),
+            'description' => $this->faker->sentence(),
             'run_as_user_id' => function () {
                 return User::factory()->create()->getKey();
             },

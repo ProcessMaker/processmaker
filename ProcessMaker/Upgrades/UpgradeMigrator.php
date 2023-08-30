@@ -204,4 +204,9 @@ class UpgradeMigrator extends Migrator
 
         return true;
     }
+
+    private function note($note)
+    {
+        $this->output->writeln($note);
+    }
 }

@@ -339,7 +339,7 @@ class ProcessRequestsTest extends TestCase
 
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
-            'name' => $faker->unique()->name,
+            'name' => $faker->unique()->name(),
             'data' => '{"test":1}',
             'process_id' => json_decode($verify->getContent())->process_id,
         ]);
@@ -372,7 +372,7 @@ class ProcessRequestsTest extends TestCase
         ]);
         //Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The Name has already been taken');
+        $response->assertSeeText('The name has already been taken');
     }
 
     /**

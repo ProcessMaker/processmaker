@@ -84,6 +84,7 @@ class TaskController extends Controller
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                 ]);
             }
+
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
