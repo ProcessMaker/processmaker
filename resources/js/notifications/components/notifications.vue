@@ -49,7 +49,7 @@
                 </b-tabs>
               </b-col>
               <b-col align-self="center" lg="auto">
-                <i class="fas fa-external-link-alt fa-lg pr-3 external-link"></i>
+                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link"></i></a>
               </b-col>
             </b-row>
           </b-container>
@@ -58,7 +58,7 @@
             {{ $t('No Notifications Found') }}
           </div>
           <template v-else>
-            <notification-item v-for="(item, index) in filteredMessages" :key="index" :notification="item"></notification-item>
+            <notification-item v-for="(item, index) in filteredMessages" :key="index" :notification="item" :show-time="true"></notification-item>
           </template>
 
         </div>
