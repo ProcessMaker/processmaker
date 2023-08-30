@@ -14,15 +14,15 @@ import notificationsMixin from '../notifications-mixin';
 import moment from "moment";
 
 const messages = {
-  'TASK_CREATED': '{{user}} has been assigned to the task {{subject}} in the process {{processName}}',
-  'TASK_COMPLETED': 'Task {{subject}} completed by {{user}}',
-  'TASK_REASSIGNED': 'Task {{subject}} reassigned to {{user}}',
-  'TASK_OVERDUE': 'Task {{subject}} is overdue. Originally due on {{due}}',
-  'PROCESS_CREATED': '{{user}} started the process {{subject}}',
-  'PROCESS_COMPLETED': '{{subject}} completed',
-  'ERROR_EXECUTION': '{{subject}} caused an error',
-  'COMMENT': '{{user}} commented on {{subject}}',
-  'ProcessMaker\\Notifications\\ImportReady': 'Imported {{subject}}'
+  'TASK_CREATED': '{{- user }} has been assigned to the task {{- subject }} in the process {{- processName }}',
+  'TASK_COMPLETED': 'Task {{- subject }} completed by {{- user }}',
+  'TASK_REASSIGNED': 'Task {{- subject }} reassigned to {{- user }}',
+  'TASK_OVERDUE': 'Task {{- subject }} is overdue. Originally due on {{- due }}',
+  'PROCESS_CREATED': '{{- user}} started the process {{- subject }}',
+  'PROCESS_COMPLETED': '{{- subject }} completed',
+  'ERROR_EXECUTION': '{{- subject }} caused an error',
+  'COMMENT': '{{- user}} commented on {{- subject}}',
+  'ProcessMaker\\Notifications\\ImportReady': 'Imported {{- subject }}'
 }
 export default {
   mixins: [ notificationsMixin ],
@@ -42,15 +42,14 @@ export default {
   computed: {
     message() {
       let message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
-      message = this.$t(message, this.bindings);
-      return this.format(message);
+      return this.$t(message, this.bindings);
     },
     bindings() {
       return {
-        user: this.displayUser,
-        subject: this.displaySubject,
-        processName: this.data.processName || this.$t('Unknown Process'),
-        due: this.data.due_in ? moment(this.data.due_in).format() : null
+        user: '<strong>' + this.displayUser + '</strong>',
+        subject: '<strong>' + this.displaySubject + '</strong>',
+        processName: '<strong>' + (this.data.processName || this.$t('Unknown Process')) + '</strong>',
+        due: '<strong>' + (this.data.due_in ? moment(this.data.due_in).format() : null) + '</strong>'
       }
     },
     displaySubject() {
@@ -64,13 +63,9 @@ export default {
       }
     },
   },
+  mounted() {
+  },
   methods: {
-    format(message) {
-      Object.values(this.bindings).forEach((value) => {
-        message = message.replace(value, `<strong>${value}</strong>`);
-      });
-      return message;
-    }
   }
 }
 </script>

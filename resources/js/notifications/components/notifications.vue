@@ -18,9 +18,9 @@
           <i class="fas fa-bell"></i>
           <span class="dot" v-if="hasMessages"></span>
         </div>
-        <span class="message-count" v-if="hasMessages">{{totalMessages}}</span>
+        <span class="message-count" v-if="hasMessages">{{ displayTotalCount }}</span>
       </b-button>
-      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden">
+      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click" @shown="onShown" @hidden="onHidden">
         
         <div class="notification-popover">
 
@@ -30,19 +30,19 @@
                 <b-tabs>
                   <b-tab @click="_ => filterComments = null">
                     <template #title>
-                      <b-badge v-if="totalMessages" pill variant="warning lighten">{{ totalMessages }}</b-badge>
+                      <b-badge v-if="allCount" pill variant="warning lighten">{{ allCount }}</b-badge>
                       {{ $t('Inbox') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = false">
                     <template #title>
-                      <b-badge v-if="notifications.length" pill variant="warning lighten">{{ notifications.length }}</b-badge>
+                      <b-badge v-if="notificationsCount" pill variant="warning lighten">{{ notificationsCount }}</b-badge>
                       {{ $t('Notifications') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = true">
                     <template #title>
-                      <b-badge v-if="comments.length" pill variant="warning lighten">{{ comments.length }}</b-badge>
+                      <b-badge v-if="commentsCount" pill variant="warning lighten">{{ commentsCount }}</b-badge>
                       {{ $t('Comments') }}
                     </template>
                   </b-tab>
@@ -54,8 +54,10 @@
             </b-row>
           </b-container>
           
-          <div v-if="messages.length == 0">
-            {{ $t('No Notifications Found') }}
+          <div v-if="messages.length == 0" class="no-notifications">
+            <img src="/img/all-cleared.png"/>
+            <h2>{{ $t('All Cleared!') }}</h2>
+            <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
           <template v-else>
             <notification-item v-for="(item, index) in filteredMessages" :key="index" :notification="item" :show-time="true"></notification-item>
@@ -125,6 +127,9 @@ export default {
     hasMessages() {
       return this.totalMessages > 0;
     },
+    displayTotalCount() {
+      return this.totalMessages > 10 ? "10+" : this.totalMessages;
+    }
   },
   methods: {
     onShown() {
@@ -181,6 +186,16 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.no-notifications {
+  text-align: center;
+
+  img {
+    width: 190px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+  }
+}
 
 .lighten {
   background-color: lighten($warning, 40%);;
@@ -253,9 +268,10 @@ export default {
 
 .popover {
   max-width: 450px;
-  max-height: 600px;
+  height: 600px;
   top: -8px;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .notification-menu-button {
@@ -275,7 +291,7 @@ export default {
 
   i {
     font-size: 19px;
-    // color: $secondary;
+    color: $secondary;
   }
   .dot {
     height: 10px;
