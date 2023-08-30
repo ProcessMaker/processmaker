@@ -20,7 +20,7 @@
         </div>
         <span class="message-count" v-if="hasMessages">{{totalMessages}}</span>
       </b-button>
-      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click" @shown="onShown" @hidden="onHidden">
+      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden">
         
         <div class="notification-popover">
 
@@ -132,6 +132,7 @@ export default {
     },
     onHidden() {
       this.isOpen = false;
+      this.filterComments = null;
     },
     icon(task) {
       return ProcessMaker.$notifications.icons[task.type];
@@ -183,6 +184,11 @@ export default {
 
 .lighten {
   background-color: lighten($warning, 40%);;
+}
+
+.has-messages {
+  // background-color: lighten($warning, 20%);
+  // border-color: lighten($warning, 20%);
 }
 
 .button-dismiss {
@@ -269,6 +275,7 @@ export default {
 
   i {
     font-size: 19px;
+    // color: $secondary;
   }
   .dot {
     height: 10px;

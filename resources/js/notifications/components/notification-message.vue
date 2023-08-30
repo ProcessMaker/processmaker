@@ -34,8 +34,14 @@ export default {
       switch(this.data.type) {
         case "TASK_CREATED":
           return this.$t('has been assigned to the task');
+        case "TASK_COMPLETED":
+          return this.$t('completed the task');
         case "PROCESS_CREATED":
           return this.$t('started the process');
+        case "PROCESS_COMPLETED":
+          return this.$t('Process completed') + ':';
+        case "ERROR_EXCECUTION":
+          return this.$t('Process error') + ':';
         case "COMMENT":
           return this.$t('commented on');
         default:
@@ -48,6 +54,7 @@ export default {
         case "TASK_CREATED":
           return this.data.name;
         case "PROCESS_CREATED":
+        case "PROCESS_COMPLETED":
           return this.data.uid;
         case "COMMENT":
           return this.data.processName;
