@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7dacf536b73f73f10960c0839f148eb6",
+    "content-hash": "5335dca47c314c8a1c40a984f16277e2",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7002,20 +7002,20 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-feature/FOUR-9714",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "f9dfcc7d672e14547457f6851d451445a87f612d"
+                "reference": "aa5138de52541f3d103f79873e1040449b3339eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f9dfcc7d672e14547457f6851d451445a87f612d",
-                "reference": "f9dfcc7d672e14547457f6851d451445a87f612d",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/aa5138de52541f3d103f79873e1040449b3339eb",
+                "reference": "aa5138de52541f3d103f79873e1040449b3339eb",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^10"
+                "laravel/framework": "^5.7|^6|^7|^8|^9|^10"
             },
             "require-dev": {
                 "orchestra/testbench": "^4.8.0",
@@ -7042,9 +7042,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/feature/FOUR-9714"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.10.0"
             },
-            "time": "2023-08-17T03:04:54+00:00"
+            "time": "2023-08-30T01:59:09+00:00"
         },
         {
             "name": "psr/cache",
@@ -14762,8 +14762,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20,
-        "processmaker/pmql": 20
+        "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
