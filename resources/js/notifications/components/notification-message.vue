@@ -1,9 +1,6 @@
 <template>
   <b-col>
-    <strong v-if="displayUser !== null">{{ displayUser }}</strong> {{ displayAction }} <strong>{{ displaySubject }}</strong>
-    <template v-if="displayAdditional">
-      {{ displayAdditional[0] }} <strong>{{ displayAdditional[1] }}</strong>
-    </template>
+    <div v-html="message"></div>
     <notification-time v-if="showTime" :notification="notification"></notification-time>
     <div v-if="displayBubble" class="bubble">
       {{ displayBubble }}
@@ -14,6 +11,19 @@
 <script>
 import NotificationTime from './notification-time';
 import notificationsMixin from '../notifications-mixin';
+import moment from "moment";
+
+const messages = {
+  'TASK_CREATED': '{{user}} has been assigned to the task {{subject}} in the process {{processName}}',
+  'TASK_COMPLETED': 'Task {{subject}} completed by {{user}}',
+  'TASK_REASSIGNED': 'Task {{subject}} reassigned to {{user}}',
+  'TASK_OVERDUE': 'Task {{subject}} is overdue. Originally due on {{due}}',
+  'PROCESS_CREATED': '{{user}} started the process {{subject}}',
+  'PROCESS_COMPLETED': '{{subject}} completed',
+  'ERROR_EXECUTION': '{{subject}} caused an error',
+  'COMMENT': '{{user}} commented on {{subject}}',
+  'ProcessMaker\\Notifications\\ImportReady': 'Imported {{subject}}'
+}
 export default {
   mixins: [ notificationsMixin ],
   components: {
@@ -30,45 +40,21 @@ export default {
     }
   },
   computed: {
-    displayAction() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return this.$t('has been assigned to the task');
-        case "TASK_COMPLETED":
-          return this.$t('completed the task');
-        case "PROCESS_CREATED":
-          return this.$t('started the process');
-        case "PROCESS_COMPLETED":
-          return this.$t('Process completed') + ':';
-        case "ERROR_EXCECUTION":
-          return this.$t('Process error') + ':';
-        case "COMMENT":
-          return this.$t('commented on');
-        default:
-          return this.data.name || ''
+    message() {
+      let message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
+      message = this.$t(message, this.bindings);
+      return this.format(message);
+    },
+    bindings() {
+      return {
+        user: this.displayUser,
+        subject: this.displaySubject,
+        processName: this.data.processName || this.$t('Unknown Process'),
+        due: this.data.due_in ? moment(this.data.due_in).format() : null
       }
-      return null;
     },
     displaySubject() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return this.data.name;
-        case "PROCESS_CREATED":
-        case "PROCESS_COMPLETED":
-          return this.data.uid;
-        case "COMMENT":
-          return this.data.processName;
-        default:
-          return this.data.processName || ''
-      }
-      return null;
-    },
-    displayAdditional() {
-      switch(this.data.type) {
-        case "TASK_CREATED":
-          return [this.$t('in the process'), this.data.processName];
-      }
-      return null;
+      return this.data.name || this.data.processName || ''
     },
     displayBubble()
     {
@@ -77,6 +63,14 @@ export default {
           return this.data.message.substring(0, 200);
       }
     },
+  },
+  methods: {
+    format(message) {
+      Object.values(this.bindings).forEach((value) => {
+        message = message.replace(value, `<strong>${value}</strong>`);
+      });
+      return message;
+    }
   }
 }
 </script>

@@ -73,8 +73,9 @@ class ProcessCreatedNotification extends Notification
 
         return [
             'type' => 'PROCESS_CREATED',
-            'name' => sprintf('Request started: %s', $this->processName),
+            'message' => sprintf('Request started: %s', $this->processName),
             'dateTime' => $instance->initiated_at->toIso8601String(),
+            'name' => $this->processName,
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
             'user_id' => $instance->user_id,
