@@ -1,5 +1,5 @@
 name: deploy-k8s
-run-name: ${{ github.actor }} is testing out GitHub Actions NEXT 🚀
+run-name: ${{ github.actor }} send deploy EKS 🚀
 on: 
   push:
     branches:
@@ -11,11 +11,12 @@ env:
   aws-region: ${{ secrets.AWS_REGION }}  
   aws-url: ${{ secrets.AWS_URL }}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
-  BRANCH: next
   CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'develop' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   DEPLOY: ${{ secrets.DEPLOY }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_EMAIL: ${{ secrets.GH_EMAIL }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -65,8 +66,8 @@ jobs:
         run: |
           git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
           cd argocd
-      - run: git config --global user.email "cloudops@processmaker.com"
-      - run: git config --global user.name "cloudops"
+      - run: git config --global user.email "$GH_EMAIL"
+      - run: git config --global user.name "$GH_USER"
       - name: View Connection             
         run: |
           cd argocd 
