@@ -12,5 +12,28 @@ export default {
     data() {
       return this.notification.data; 
     },
+    filteredMessages() {
+      return this.messages.filter(this.commentFilterFn(this.filterComments));
+    },
+    notifications() {
+      return this.messages.filter(this.commentFilterFn(false));
+    },
+    comments() {
+      return this.messages.filter(this.commentFilterFn(true));
+    }
   },
+  methods: {
+    commentFilterFn(onlyComments) {
+      return (message) => {
+        if (onlyComments !== null) {
+          if (onlyComments) {
+            return message.data?.type === "COMMENT";
+          } else {
+            return message.data?.type !== "COMMENT";
+          }
+        }
+        return true;
+      }
+    },
+  }
 }

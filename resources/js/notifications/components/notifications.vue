@@ -70,9 +70,11 @@
 <script>
 import { PopoverPlugin } from "bootstrap-vue"
 import NotificationItem from "./notification-item.vue";
+import notificationsMixin from "../notifications-mixin";
 
 Vue.use(PopoverPlugin);
 export default {
+  mixins: [notificationsMixin],
   components: { NotificationItem },
   props: {
     messages: Array
@@ -123,29 +125,8 @@ export default {
     hasMessages() {
       return this.totalMessages > 0;
     },
-    filteredMessages() {
-      return this.messages.filter(this.commentFilterFn(this.filterComments));
-    },
-    notifications() {
-      return this.messages.filter(this.commentFilterFn(false));
-    },
-    comments() {
-      return this.messages.filter(this.commentFilterFn(true));
-    }
   },
   methods: {
-    commentFilterFn(onlyComments) {
-      return (message) => {
-        if (onlyComments !== null) {
-          if (onlyComments) {
-            return message.data?.type === "COMMENT";
-          } else {
-            return message.data?.type !== "COMMENT";
-          }
-        }
-        return true;
-      }
-    },
     onShown() {
       this.isOpen = true;
     },
