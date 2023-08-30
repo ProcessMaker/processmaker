@@ -50,7 +50,7 @@ class RequestController extends Controller
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
-        if (MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('requests.mobile', compact(
                 ['type', 'title', 'currentUser']
             ));
