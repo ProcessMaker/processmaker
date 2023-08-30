@@ -271,7 +271,7 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.ProcessMaker.alert('The task was successfully claimed', 'primary', 5, true);
+                window.ProcessMaker.alert(this.$t ('The task was successfully claimed'), 'primary', 5, true);
                 parent.location.reload();
               });
           },
