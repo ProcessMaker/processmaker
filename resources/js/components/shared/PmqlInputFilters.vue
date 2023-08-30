@@ -193,27 +193,42 @@
             </multiselect>
         </div>
         <div v-if="type == 'projects'" class="card-body">
-            <select-user-group
-                :label="$t('Members')"
-                @search-change="getParticipants"
-                v-model="participants"
-                :hide-users="false"
-                :multiple="true"
-                @input="buildPmql"
-              />
-<!-- 
-              <label for="project_category_filter">{{$t('Category')}}</label>
-            <multiselect id="project_category_filter"
-                v-model="categories"
-                @search-change="getProjectCategories"
+          <label for="project_member_filter">{{$t('Members')}}</label>
+            <multiselect id="project_member_filter"
+                v-model="members"
                 @input="buildPmql"
                 class="mb-3"
                 :show-labels="true"
-                :loading="isLoading.categories"
+                :loading="isLoading.projects"
+                open-direction="bottom"
+                label="name"
+                :options="memberOptions"
+                :track-by="'id'"
+                :multiple="true"
+                :aria-label="$t('Member')"
+                :placeholder="$t('Member')">
+                  <template slot="noResult">
+                      {{ $t('No Results') }}
+                  </template>
+                  <template slot="noOptions">
+                      {{ $t('No Data Available') }}
+                  </template>
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('members') }}</span>
+                  </template>
+              </multiselect>
+
+            <label for="project_category_filter">{{$t('Category')}}</label>
+            <multiselect id="project_category_filter"
+                v-model="categories"
+                @input="buildPmql"
+                class="mb-3"
+                :show-labels="true"
+                :loading="isLoading.projects"
                 open-direction="bottom"
                 label="name"
                 :options="categoriesOptions"
-                :track-by="'name'"
+                :track-by="'id'"
                 :multiple="true"
                 :aria-label="$t('Category')"
                 :placeholder="$t('Category')">
@@ -227,7 +242,7 @@
                       <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
                   </template>
               </multiselect>
-                <label for="project_status_options_filter">{{$t('Others')}}</label>
+            <!--    <label for="project_status_options_filter">{{$t('Others')}}</label>
               <multiselect id="project_status_options_filter"
                 v-model="status"
                 class="mb-3"
@@ -262,7 +277,6 @@
 </template>
 
 <script>
-import SelectUserGroup from "./SelectUserGroup.vue";
 let myEvent;
 export default {
   directives: {
@@ -288,11 +302,9 @@ export default {
     "paramParticipants",
     "paramRequest",
     "paramName",
+    'paramProjects',
     "permission",
   ],
-  components: {
-    SelectUserGroup,
-  },
   data() {
     return {
       pmql: "",
@@ -303,6 +315,7 @@ export default {
       request: [],
       name: [],
       participants: [],
+      members: [],
       categories: [],
       categoriesOptions: [],
       memberOptions: [],
@@ -321,6 +334,7 @@ export default {
         participants: false,
         request: false,
         name: false,
+        projects: false,
       },
     };
   },
@@ -344,6 +358,11 @@ export default {
 
     if (this.paramParticipants && Array.isArray(this.paramParticipants)) {
       this.participants = this.paramParticipants;
+    }
+
+    // TODO: How does this work?
+    if (this.paramProjects && Array.isArray(this.paramProjects)) {
+      this.projects = this.paramProjects;
     }
 
     this.buildPmql();
@@ -463,7 +482,7 @@ export default {
       }
     },
     buildProjectPmql() {
-      console.log(this.projects);
+      console.log('projects', this.projects);
       //Parse requester
       if (this.projects.length) {
         let string = '';
@@ -588,6 +607,7 @@ export default {
       this.isLoading.status = value;
       this.isLoading.requester = value;
       this.isLoading.participants = value;
+      this.isLoading.projects = value;
     },
     getAll() {
       switch (this.type) {
@@ -627,16 +647,13 @@ export default {
         });
     },
     getAllProjects() {
-      console.log("getAllProjects");
-      this.allLoading(true);
+      this.isLoading.projects = true;
       ProcessMaker.apiClient
           .get("/projects/search?type=project_all")
           .then(response => {
-            console.log("RESPONSE", response)
-              // this.categoriesOptions = response.data.categories;
-              // this.memberOptions = response.data.members;
-              // this.allLoading(false);
-              
+              this.categoriesOptions = response.data.categories;
+              this.memberOptions = response.data.members;
+              this.isLoading.projects = false;
           });
     },
     getStatus() {

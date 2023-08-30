@@ -20,6 +20,7 @@
             :param-participants="this.urlPmql ? '' : paramParticipants"
             :param-request="this.urlPmql ? '' : paramRequest"
             :param-name="this.urlPmql ? '' : paramName"
+            :param-projects="this.urlPmql ? '' : paramProjects"
             :permission="permission"
             @filterspmqlchange="onFiltersPmqlChange">
           </pmql-input-filters>
@@ -120,6 +121,7 @@ export default {
     "paramRequester",
     "paramParticipants",
     "paramRequest",
+    'paramProjects',
     "paramName",
     "permission"
   ],

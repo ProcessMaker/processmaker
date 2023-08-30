@@ -5,6 +5,7 @@ namespace ProcessMaker\Traits;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -177,60 +178,45 @@ trait SearchAutocompleteTrait
 
     private function searchProjectAll($query)
     {
-        $projectModalClass = 'ProcessMaker\Package\Projects\Models\Project';
-        $project = new $projectModalClass;
+        return [
+            'categories' => $this->searchProjectCategories($query),
+            'members' => $this->searchProjectMembers($query),
+        ];
+    }
+
+    private function searchProjectMembers($query)
+    {
+        $projectMemberModalClass = 'ProcessMaker\Package\Projects\Models\ProjectMember';
+        $projectMember = new $projectMemberModalClass;
 
         if (empty($query)) {
-            $results = $project->limit(50)->get();
-            dd($results);
+            $results = $projectMember->with(['users', 'groups'])->get();
         } else {
-            $results = $project->pmql('name = "' . $query . '"', function ($expression) {
+            $results = $projectMember->pmql('name = "' . $query . '"', function ($expression) {
                 return function ($query) use ($expression) {
                     $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
                 };
             })->get();
         }
 
-        return $results->map(function ($request) {
-            return $request->only(['id', 'name']);
-        });
-        // return [
-        //     // 'categories' => $this->searchStatus($query),
-        //     'categories' => $this->searchProjectCategories($query),
-        //     'members' => $this->searchMembers($query),
-        // ];
-    }
+        return $results->map(function ($result) {
+            $userGroups = (object) [
+                'users' => $result->users,
+                'groups' => $result->groups,
+            ];
 
-    private function searchMembers($query)
-    {
-        $results = collect([]);
-        $results->push(Auth::user());
-
-        if (Auth::user()->can('view-users')) {
-            if (empty($query)) {
-                $users = User::limit(49)->where('id', '!=', Auth::user()->id)->get();
-                $groups = Group::get();
-                $results = $results->merge($users)->merge($groups);
-            } else {
-                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function ($expression) {
-                    return function ($query) use ($expression) {
-                        $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
-                    };
-                })->where('id', '!=', Auth::user()->id)->limit(49)->get());
-            }
-        }
-
-        return $results->map(function ($user) {
-            return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+            return $userGroups;
         });
     }
 
     private function searchProjectCategories($query)
     {
+        $projectCategoryModalClass = 'ProcessMaker\Package\Projects\Models\ProjectCategory';
+        $projectCategory = new $projectCategoryModalClass;
         if (empty($query)) {
-            $results = ProjectCategory::limit(50)->get();
+            $results = $projectCategory->limit(50)->get();
         } else {
-            $results = ProjectCategory::pmql('name = "' . $query . '"', function ($expression) {
+            $results = $projectCategory->pmql('name = "' . $query . '"', function ($expression) {
                 return function ($query) use ($expression) {
                     $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
                 };
