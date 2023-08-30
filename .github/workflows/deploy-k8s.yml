@@ -22,20 +22,13 @@ concurrency:
 jobs:
   imageEKS: 
     name: build-docker-image-EKS
+    if: contains(github.event.pull_request.body, 'ci:build-k8s')
     runs-on: ubuntu-22.04
     steps:
       #- uses: actions/checkout@v3
       - name: Clone repo K8S
         run: |
-          git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
-          cd pm4-k8s-distribution
-      - name: Print Params
-        run: |
-          echo "***********************"
-          echo ${{env.IMAGE_TAG}}
-          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-          echo ci-$deploy
-          echo "************************"
+          git clone --depth 1 -b cicd "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution      
@@ -43,7 +36,6 @@ jobs:
       - name: List Images
         run: |
           docker images
-          echo "Version: $VERSION"
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -65,6 +57,7 @@ jobs:
           docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
+    if: contains(github.event.pull_request.body, 'ci:build-k8s')
     needs: imageEKS
     runs-on: ubuntu-22.04    
     steps:      
@@ -76,24 +69,14 @@ jobs:
       - run: git config --global user.name "cloudops"
       - name: View Connection             
         run: |
-          echo "---------------------------1"
-          pwd
-          ls -la
           cd argocd 
-          ls -la
-          echo "---------------------------2"
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-          echo ci-$deploy
           cp template-argocd.yaml ci/ci-$deploy.yaml
           cp template-db.yaml ./ci/job_database.yaml
           sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
           sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
           sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
-          echo "---------------------------3"
           git status
-          echo "---------------------------4"
           git add .
-          echo "---------------------------5 "
           git commit -m "Deploy CICD : ci-$deploy"
-          echo "---------------------------6"
           git push origin main
