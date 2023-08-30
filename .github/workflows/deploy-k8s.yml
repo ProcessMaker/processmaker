@@ -1,9 +1,11 @@
 name: deploy-k8s
 run-name: ${{ github.actor }} send deploy EKS 🚀
 on: 
-  push:
-    branches:
-      - FOUR-9465
+  pull_request:
+    types: [opened, reopened, synchronize, edited, closed]
+  #push:
+  #  branches:
+  #    - FOUR-9465
   workflow_dispatch:
 env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -68,7 +70,7 @@ jobs:
           cd argocd
       - run: git config --global user.email "$GH_EMAIL"
       - run: git config --global user.name "$GH_USER"
-      - name: View Connection             
+      - name: Add instance EKS           
         run: |
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
@@ -80,4 +82,24 @@ jobs:
           git status
           git add .
           git commit -m "Deploy CICD : ci-$deploy"
+          git push origin main
+  deleteEKS:
+    name: Delete Instance
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
+          cd argocd
+      - run: git config --global user.email "$GH_EMAIL"
+      - run: git config --global user.name "$GH_USER"
+      - name: Remove instance EKS            
+        run: |
+          cd argocd/ci/
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          rm -rf ci-$deploy.yaml
+          git status
+          git add .
+          git commit -m "Delete Instance : ci-$deploy"
           git push origin main
