@@ -774,6 +774,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     {
         $store = $this->getDataStore();
         $latest = self::select('data')->find($this->getId());
+        $store->removeData('_request');
+        $store->removeData('_user');
         $this->data = $store->updateArray($latest->data);
 
         return $this->data;
