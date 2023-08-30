@@ -177,6 +177,26 @@ window.ProcessMaker.navbar = new Vue({
   },
 });
 
+// Assign our navbar component to our global ProcessMaker object
+window.ProcessMaker.navbarMobile = new Vue({
+  el: "#navbarMobile",
+  components: {
+  },
+  data() {
+    return {
+    };
+  },
+  methods: {
+    switchToDesktop() {
+      document.cookie = "isMobile=false";
+      window.location.reload();
+    },
+    onResize() {
+      this.isMobile = window.innerWidth < 992;
+    },
+  },
+});
+
 // Breadcrumbs are now part of the navbar component. Alias it here.
 window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
