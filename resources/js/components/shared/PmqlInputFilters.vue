@@ -193,36 +193,14 @@
             </multiselect>
         </div>
         <div v-if="type == 'projects'" class="card-body">
-            <label for="project_participant_filter">{{$t('Participants')}}</label>
-            <multiselect id="project_participant_filter" v-model="participants"
-              @search-change="getParticipants"
-              @input="buildPmql"
-              class="mb-3"
-              :show-labels="true"
-              :loading="isLoading.participants"
-              open-direction="bottom"
-              label="fullname"
-              :options="participantsOptions"
-              :track-by="'id'"
-              :multiple="true"
-              :aria-label="$t('Participants')"
-              :placeholder="$t('Participants')">
-              <template slot="noResult">
-                  {{ $t('No Results') }}
-              </template>
-              <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-              </template>
-              <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requesters') }}</span>
-              </template>
-              <template slot="option" slot-scope="props">
-                  <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image"
-                      :src="props.option.avatar">
-                  <span v-else class="initials bg-warning text-white p-1"> {{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                  <span class="ml-1">{{props.option.fullname}}</span>
-              </template>
-            </multiselect>
+            <select-user-group
+                :label="$t('Members')"
+                v-model="members"
+                :hide-users="false"
+                :multiple="true"
+                @input="buildPmql"
+              />
+
               <label for="project_category_filter">{{$t('Category')}}</label>
             <multiselect id="project_category_filter"
                 v-model="categories"
@@ -283,7 +261,7 @@
 </template>
 
 <script>
-
+import SelectUserGroup from "./SelectUserGroup.vue";
 let myEvent;
 export default {
   directives: {
@@ -311,6 +289,9 @@ export default {
     "paramName",
     "permission",
   ],
+  components: {
+    SelectUserGroup,
+  },
   data() {
     return {
       pmql: "",
@@ -323,6 +304,7 @@ export default {
       participants: [],
       categories: [],
       categoriesOptions: [],
+      memberOptions: [],
       processOptions: [],
       statusOptions: [],
       requesterOptions: [],
@@ -649,7 +631,7 @@ export default {
           .get("/requests/search?type=project_all", { baseURL: '' })
           .then(response => {
               this.categoriesOptions = response.data.categories;
-              this.participantsOptions = response.data.participants;
+              this.memberOptions = response.data.members;
               this.allLoading(false);
               
           });

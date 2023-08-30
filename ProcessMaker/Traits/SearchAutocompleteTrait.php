@@ -180,8 +180,32 @@ trait SearchAutocompleteTrait
         return [
             // 'categories' => $this->searchStatus($query),
             'categories' => $this->searchProjectCategories($query),
-            'participants' => $this->searchParticipants($query),
+            'members' => $this->searchMembers($query),
         ];
+    }
+
+    private function searchMembers($query)
+    {
+        $results = collect([]);
+        $results->push(Auth::user());
+
+        if (Auth::user()->can('view-users')) {
+            if (empty($query)) {
+                $users = User::limit(49)->where('id', '!=', Auth::user()->id)->get();
+                $groups = Group::get();
+                $results = $results->merge($users)->merge($groups);
+            } else {
+                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function ($expression) {
+                    return function ($query) use ($expression) {
+                        $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                    };
+                })->where('id', '!=', Auth::user()->id)->limit(49)->get());
+            }
+        }
+
+        return $results->map(function ($user) {
+            return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+        });
     }
 
     private function searchProjectCategories($query)
