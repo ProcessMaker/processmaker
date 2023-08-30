@@ -195,12 +195,13 @@
         <div v-if="type == 'projects'" class="card-body">
             <select-user-group
                 :label="$t('Members')"
-                v-model="members"
+                @search-change="getParticipants"
+                v-model="participants"
                 :hide-users="false"
                 :multiple="true"
                 @input="buildPmql"
               />
-
+<!-- 
               <label for="project_category_filter">{{$t('Category')}}</label>
             <multiselect id="project_category_filter"
                 v-model="categories"
@@ -226,7 +227,7 @@
                       <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
                   </template>
               </multiselect>
-                <!-- <label for="project_status_options_filter">{{$t('Others')}}</label>
+                <label for="project_status_options_filter">{{$t('Others')}}</label>
               <multiselect id="project_status_options_filter"
                 v-model="status"
                 class="mb-3"
@@ -249,8 +250,8 @@
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                       <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
                   </template>
-              </multiselect> -->
-          </div>
+              </multiselect> --> 
+        </div>
         <div class="card-footer bg-white text-right">
           <button class="btn btn-secondary-outline btn-sm" @click="resetFilters">Reset</button>
           <button class="btn btn-primary btn-sm" @click="applyFilters">Apply</button>
@@ -626,13 +627,15 @@ export default {
         });
     },
     getAllProjects() {
+      console.log("getAllProjects");
       this.allLoading(true);
       ProcessMaker.apiClient
-          .get("/requests/search?type=project_all", { baseURL: '' })
+          .get("/projects/search?type=project_all")
           .then(response => {
-              this.categoriesOptions = response.data.categories;
-              this.memberOptions = response.data.members;
-              this.allLoading(false);
+            console.log("RESPONSE", response)
+              // this.categoriesOptions = response.data.categories;
+              // this.memberOptions = response.data.members;
+              // this.allLoading(false);
               
           });
     },
@@ -663,6 +666,16 @@ export default {
             .then(response => {
                 this.requesterOptions = response.data;
                 this.isLoading.requester = false
+                setTimeout(3000)
+            });
+    },
+    getParticipants(query) {
+        this.isLoading.participants = true
+        ProcessMaker.apiClient
+            .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
+            .then(response => {
+                this.participantsOptions = response.data;
+                this.isLoading.participants = false
                 setTimeout(3000)
             });
     },
