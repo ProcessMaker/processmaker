@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71dcb4ea8643024e69c3d0fbc1e45041",
+    "content-hash": "99bf18e346d30ea923de500421952bac",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6849,17 +6849,11 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.9.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "e83d67072632fd178018905eba311e7a85e70622"
-            },
+            "version": "1.9.5",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e83d67072632fd178018905eba311e7a85e70622",
-                "reference": "e83d67072632fd178018905eba311e7a85e70622",
-                "shasum": ""
+                "type": "path",
+                "url": "/Users/ryancooley/Developer/ProcessMaker/nayra",
+                "reference": "f55c40174c1b6926e266a4e2ac8a4a03924d9ccb"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.5"
@@ -6870,16 +6864,32 @@
                     "ProcessMaker\\": "src/ProcessMaker/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\Feature\\": "tests/Feature/",
+                    "ProcessMaker\\": [
+                        "src/ProcessMaker/",
+                        "tests/unit/ProcessMaker/",
+                        "tests/ProcessMaker/"
+                    ]
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ],
+                "coverage": [
+                    "phpunit -d memory_limit=-1 --coverage-html coverage"
+                ]
+            },
             "license": [
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "support": {
-                "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
-            },
-            "time": "2022-09-03T00:32:24+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "processmaker/pmql",
