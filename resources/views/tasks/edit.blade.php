@@ -70,11 +70,7 @@
                               <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
                                           commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                                          :reactions="taskHasComments.reactions"
-                                          :voting="taskHasComments.voting"
-                                          :edit="taskHasComments.edit_comments"
-                                          :remove="taskHasComments.remove_comments"
-                                          :adding="taskHasComments.comments && userHasAccessToTask"
+                                          :adding="userHasAccessToTask"
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
@@ -287,12 +283,7 @@
             return {};
           },
           taskHasComments() {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            let config = {};
-            if (commentsPackage && this.task.definition && this.task.definition.config) {
-              config = JSON.parse(this.task.definition.config);
-            }
-            return config;
+            return 'comment-editor' in Vue.options.components;
           },
           dueLabel() {
             const dueLabels = {
