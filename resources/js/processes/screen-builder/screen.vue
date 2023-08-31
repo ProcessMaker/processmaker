@@ -276,8 +276,8 @@
         </b-col>
         <b-col cols="6">
           <tree-view
-            v-model="previewDataStringify" 
-            :iframeHeight="iframeHeight" 
+            v-model="previewDataStringify"
+            :iframeHeight="iframeHeight"
             style="border:1px; solid gray;"
           >
           </tree-view>

@@ -6,7 +6,7 @@
       <label for="show_tree" class="custom-control-label"></label>
     </div>
     <i width="16" height="15">
-      <img :src="treeViewIcon">
+      <img :src="treeViewIcon" alt="treeViewIcon">
     </i>
   </div>
 </template>
