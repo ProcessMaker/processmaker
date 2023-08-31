@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDataToProcessRequestTokens extends Migration
-{
+return new class extends Migration {
     /**
      * Add column to data to Process request tokens
      *
@@ -29,4 +28,4 @@ class AddDataToProcessRequestTokens extends Migration
             $table->dropColumn('data');
         });
     }
-}
+};
