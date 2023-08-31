@@ -67,7 +67,6 @@
           </b-input-group-prepend>
           <b-form-input
             id="search-box"
-            v-model="filter"
             class="search-input pl-0 border-0 font-italic"
             :placeholder="$t('Search for an Asset')"
           />
