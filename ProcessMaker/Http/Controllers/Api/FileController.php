@@ -279,9 +279,7 @@ class FileController extends Controller
      */
     public function download(Media $file)
     {
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-                $file->id . '/' .
-                $file->file_name;
+        $path = Storage::disk('public')->path($file->id . '/' . $file->file_name);
 
         // Register the Event
         if (!empty($file->file_name)) {

@@ -28,10 +28,11 @@ class ProcessTemplatesFactory extends Factory
 
         return [
             'name' => $this->faker->unique()->sentence(3),
-            'description' => $this->faker->unique()->name,
+            'description' => $this->faker->unique()->name(),
             'user_id' => User::factory()->create()->getKey(),
             'manifest' => json_encode($manifest),
             'svg' => $process->svg,
+            'version' => '1.0.0',
             'process_id' => $process->id,
             'process_category_id' => function () {
                 return ProcessCategory::factory()->create()->getKey();

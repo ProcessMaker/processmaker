@@ -30,6 +30,7 @@ storage/debugbar/*
 storage/api-docs/api-docs.json
 storage/ssl
 storage/api/*
+storage/data-sources/logs/*
 npm.sh
 laravel-echo-server.lock
 public/.htaccess
@@ -41,3 +42,6 @@ cypress/downloads
 .php-cs-fixer.cache
 .phpunit.result.cache
 .editorconfig
+resources/lang/de
+resources/lang/es
+resources/lang/fr

@@ -46,6 +46,15 @@
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
+        <project-select 
+          v-if="isProjectsInstalled"
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="projects"
+          :errors="addError?.projects"
+          name="project"
+        ></project-select>
        <b-form-group
           :label="$t('Process Manager')"
         >
@@ -84,11 +93,12 @@
 <script>
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   import TemplateSearch from "../../components/templates/TemplateSearch.vue";
+  import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 
   export default {
-    components: { Modal, Required, TemplateSearch },
+    components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled"],
     data: function() {
       return {
         showModal: false,
@@ -97,6 +107,8 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        projects: [],
+        template_version: null,
         addError: {},
         status: "",
         bpmn: "",
@@ -114,6 +126,7 @@
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
           this.process_category_id = this.templateData.category_id;
+          this.template_version = this.templateData.version;
         }
       },
       manager: function() {
@@ -149,6 +162,7 @@
         this.name = "";
         this.description = "";
         this.process_category_id = "";
+        this.projects = [];
         this.status = "";
         this.addError = {};
         this.selectedFile = '';
@@ -177,11 +191,13 @@
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("process_category_id", this.process_category_id);
+        formData.append("projects", this.projects);
         formData.append("manager_id", this.manager.id);
         if (this.file) {
           formData.append("file", this.file);
         }
         if (this.selectedTemplate) {
+          formData.append("version", this.template_version);
           this.handleCreateFromTemplate(this.templateData.id, formData);
         } else {
           if (this.generativeProcessData) {

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Bus;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\RunServiceTask;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -23,9 +24,7 @@ class ServiceTaskQueueTest extends TestCase
      */
     public function testCustomQueue()
     {
-        Bus::fake([
-            RunServiceTask::class,
-        ]);
+        Bus::fake();
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/ServiceTaskCustomQueue.bpmn'));
@@ -44,9 +43,7 @@ class ServiceTaskQueueTest extends TestCase
      */
     public function testDefaultQueue()
     {
-        Bus::fake([
-            RunServiceTask::class,
-        ]);
+        Bus::fake();
 
         // Create a process
         $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/ServiceTaskDefaultQueue.bpmn'));

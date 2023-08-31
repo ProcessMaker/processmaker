@@ -18,5 +18,6 @@ Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
 Vue.component("RequestScreens", RequestScreens);
+
 Vue.use("vue-form-renderer", VueFormRenderer);
 window.debounce = debounce;

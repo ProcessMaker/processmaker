@@ -66,7 +66,7 @@
         <div class="col-4">
             <div class="card card-body">
                 <div align="center">
-                    <avatar-image size="150" :input-data="avatar"></avatar-image>
+                    <avatar-image size="150" :input-data="avatar" :hide-name="true"></avatar-image>
                     <h1 style="font-weight:100" v-pre>{{ sanitizeVueExp($user->firstname) }} {{ sanitizeVueExp($user->lastname) }}</h1>
                     <h4 v-pre>{{ sanitizeVueExp($user->title) }}</h4>
                     <hr>

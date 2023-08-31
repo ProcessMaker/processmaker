@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[8123],{8123:function(n,e,t){t.r(e);var i=t(2729),r=t(5893);t(7294);var c=t(5437),u=t(1997);function s(){let n=(0,i._)(["\n  position: relative;\n  height: 100%;\n"]);return s=function(){return n},n}let a=c.ZP.div.withConfig({componentId:"sc-cea53b6b-0"})(s());e.default=()=>(0,r.jsx)(a,{children:(0,r.jsx)(u.Graph,{})})}}]);
+//# sourceMappingURL=8123.1efa7c63065e72bc.js.map

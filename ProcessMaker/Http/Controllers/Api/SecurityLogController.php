@@ -143,7 +143,7 @@ class SecurityLogController extends Controller
         if (!Media::s3IsReady()) {
             return response()->json([
                 'success' => false,
-                'message' => __('This feature requires the configured AWS S3 service. Please contact your Customer Success Manager to use it.'),
+                'message' => __('You seem to be missing access to this feature. Please contact ProcessMaker Support.'),
             ]);
         }
         $request->validate([

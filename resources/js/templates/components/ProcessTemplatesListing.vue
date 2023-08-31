@@ -112,6 +112,17 @@
               callback: this.formatUserName
             },
             {
+              title: () => this.$t("Version"),
+              name: "version",
+              sortField: "version",
+            },
+            {
+              title: () => this.$t("Version Date"),
+              name: "updated_at",
+              sortField: "updated_at",
+              callback: "formatDate"
+            },
+            {
               title: () => this.$t("Created"),
               name: "created_at",
               sortField: "created_at",

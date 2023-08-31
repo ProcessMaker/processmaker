@@ -233,8 +233,8 @@ class ProcessController extends Controller
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
-            $request->request->add(['bpmn' => $data['bpmn']]);
-            $request->request->remove('file');
+            $request->merge(['bpmn' => $data['bpmn']]);
+            $request->offsetUnset('file');
             unset($data['file']);
             $processCreated = ProcessCreated::BPMN_CREATION;
         }
@@ -265,6 +265,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
+            $process->assignAssetsToProjects($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -339,7 +340,7 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
@@ -381,6 +382,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
+            $process->assignAssetsToProjects($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -888,7 +890,7 @@ class ProcessController extends Controller
      */
     public function export(Request $request, Process $process)
     {
-        $fileKey = ExportProcess::dispatchNow($process);
+        $fileKey = (new ExportProcess($process))->handle();
 
         if ($fileKey) {
             $url = url("/processes/{$process->id}/download/{$fileKey}");
@@ -999,7 +1001,7 @@ class ProcessController extends Controller
                 'code' => $code,
             ];
         }
-        $import = ImportProcess::dispatchNow($content);
+        $import = (new ImportProcess($content))->handle();
 
         return response([
             'status' => $import->status,

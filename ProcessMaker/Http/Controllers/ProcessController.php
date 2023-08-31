@@ -246,11 +246,10 @@ class ProcessController extends Controller
 
     public function triggerStartEventApi(Process $process, Request $request)
     {
-        $api_request = new ApiProcessController();
-        $response = $api_request->triggerStartEvent($process, $request);
-        $instance_id = $response->data['_request']['id'];
+        $apiRequest = new ApiProcessController();
+        $response = $apiRequest->triggerStartEvent($process, $request);
 
-        return redirect('/requests/' . $instance_id);
+        return redirect('/requests/' . $response->id);
     }
 
     private function checkAuth()
