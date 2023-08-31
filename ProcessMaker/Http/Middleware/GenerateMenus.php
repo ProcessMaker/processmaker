@@ -32,12 +32,20 @@ class GenerateMenus
                     ['route' => 'tasks.index', 'id' => 'tasks']
                 )->active('tasks/*');
             });
+            // if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
+            //     $menu->group(['prefix' => 'processes'], function ($request_items) {
+            //         $request_items->add(
+            //             __('Designer'),
+            //             ['route' => 'processes.index', 'id' => 'designer']
+            //         )->active('processes/*');
+            //     });
+            // }
             if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
-                $menu->group(['prefix' => 'processes'], function ($request_items) {
+                $menu->group(['prefix' => 'designer'], function ($request_items) {
                     $request_items->add(
                         __('Designer'),
-                        ['route' => 'processes.index', 'id' => 'designer']
-                    )->active('processes/*');
+                        ['route' => 'designer.index', 'id' => 'designer']
+                    )->active('designer/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients|view-settings')) {
