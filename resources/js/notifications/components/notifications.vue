@@ -20,7 +20,7 @@
         </div>
         <span class="message-count" v-if="hasMessages">{{ displayTotalCount }}</span>
       </b-button>
-      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click" @shown="onShown" @hidden="onHidden">
+      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden">
         
         <div class="notification-popover">
 
@@ -102,6 +102,7 @@ export default {
         left: "0px"
       },
       filterComments: null,
+      reloadOnClose: false,
     };
   },
   computed: {
@@ -134,10 +135,14 @@ export default {
   methods: {
     onShown() {
       this.isOpen = true;
+      this.markAsRead();
     },
     onHidden() {
       this.isOpen = false;
       this.filterComments = null;
+      if (this.reloadOnClose) {
+        this.updateTotalMessages();
+      }
     },
     icon(task) {
       return ProcessMaker.$notifications.icons[task.type];
@@ -165,6 +170,14 @@ export default {
           });
         });
     },
+    markAsRead() {
+      if (!this.hasMessages) {
+        return;
+      }
+      const messageIds = this.messages.map(m => m.id);
+      window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: [] });
+      this.reloadOnClose = true;
+    }
   },
   mounted() {
     if ($("#navbar-request-button").length > 0) {

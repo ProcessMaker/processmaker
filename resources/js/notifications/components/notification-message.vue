@@ -1,6 +1,6 @@
 <template>
   <b-col>
-    <div v-html="message"></div>
+    <div class="message" v-html="message"></div>
     <notification-time v-if="showTime" :notification="notification"></notification-time>
     <div v-if="displayBubble" class="bubble">
       {{ displayBubble }}
@@ -72,6 +72,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.message {
+  font-size: 1.2em;
+}
 .bubble {
   background-color: lighten($primary, 55%);
   border-radius: 1em;
