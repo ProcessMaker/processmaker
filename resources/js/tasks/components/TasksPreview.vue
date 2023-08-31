@@ -13,6 +13,7 @@
       <pane
         id="pane-task-preview"
         :min-size="paneMinSize"
+        size="50"
         max-size="99"
         style="background-color: white;"
       >
