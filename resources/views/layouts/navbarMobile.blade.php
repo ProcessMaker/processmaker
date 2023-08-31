@@ -10,7 +10,12 @@
           <li class="nav-item">
             <a class="nav-link">
               @if (shouldShow('requestButton'))
-                <component v-bind:is="'request-modal-mobile'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
+                <component 
+                  v-bind:is="'request-modal-mobile'" 
+                  url="{{ route('processes.index') }}" 
+                  v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+                >
+                </component>
               @endif
             </a>
           </li>
