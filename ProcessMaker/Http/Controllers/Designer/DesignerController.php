@@ -20,7 +20,7 @@ class DesignerController extends Controller
     public function index(Request $request)
     {
         $redirect = $this->checkAuth();
-        if ($redirect !== false) {
+        if ($redirect) {
             return redirect()->route($redirect);
         }
 
@@ -30,7 +30,7 @@ class DesignerController extends Controller
     private function checkAuth()
     {
         $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables';
-        switch (\Auth::user()->canAnyFirst($perm)) {
+        switch (Auth::user()->canAnyFirst($perm)) {
             case 'view-processes':
                 return false; // already on index, continue with it
             case 'view-process-categories':
