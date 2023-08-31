@@ -4,6 +4,7 @@ import moment from "moment";
 import moment_timezone from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import requestModal from "./components/requests/modal";
+import requestModalMobile from "./components/requests/modalMobile";
 import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
@@ -186,6 +187,7 @@ window.ProcessMaker.navbar = new Vue({
 window.ProcessMaker.navbarMobile = new Vue({
   el: "#navbarMobile",
   components: {
+    requestModalMobile,
   },
   data() {
     return {
