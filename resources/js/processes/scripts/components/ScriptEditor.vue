@@ -439,23 +439,6 @@ export default {
       window.ProcessMaker.EventBus.$emit("new-changes");
       this.handleAutosave();
     },
-    // showDiffEditor() {
-    //   if (this.showDiffEditor) {
-    //     const monaco = this.$refs.diffEditor.monaco;
-    //     if (monaco) {
-    //       monaco.editor.defineTheme("default", {
-    //         base: "vs",
-    //         inherit: true,
-    //         rules: [],
-    //         colors: {
-    //           "diffEditor.insertedTextBackground": "#c7f8d3",
-    //           "diffEditor.removedTextBackground": "#fbd2d6",
-    //         },
-    //       });
-    //       monaco.editor.setTheme("default");
-    //     }
-    //   }
-    // },
   },
   mounted() {
     if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
@@ -499,9 +482,6 @@ export default {
   },
 
   methods: {
-    editorDidMount(editor) {
-      // const monaco = this.$refs.editor.monaco
-    },
     applyChanges() {
       this.code = this.newCode;
       this.newCode = "";
