@@ -77,7 +77,7 @@ class EnvironmentVariable extends ProcessMakerModel
         return [
             'description' => 'required',
             'value' => 'nullable',
-            'name' => ['required', "regex:${validVariableName}", $unique],
+            'name' => ['required', "regex:{$validVariableName}", $unique],
         ];
     }
 

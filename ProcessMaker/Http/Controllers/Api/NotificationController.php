@@ -152,7 +152,7 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url'] ?? null]);
+        $request->merge(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules());
         $notification = new Notification();
@@ -233,7 +233,7 @@ class NotificationController extends Controller
     public function update(Notification $notification, Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url'] ?? null]);
+        $request->merge(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());

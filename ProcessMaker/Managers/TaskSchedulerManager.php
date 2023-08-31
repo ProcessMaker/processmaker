@@ -572,7 +572,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             ->where('status', 'ACTIVE')
             ->get();
         foreach ($processes as $process) {
-            StartEventConditional::dispatchNow($process);
+            StartEventConditional::dispatchSync($process);
         }
     }
 
