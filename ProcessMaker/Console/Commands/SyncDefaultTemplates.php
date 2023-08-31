@@ -43,7 +43,7 @@ class SyncDefaultTemplates extends Command
             $randomDelay = random_int(10, 120);
             Job::dispatch()->delay(now()->addMinutes($randomDelay));
         } else {
-            Job::dispatchNow();
+            Job::dispatchSync();
         }
 
         return 0;

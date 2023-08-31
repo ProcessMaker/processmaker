@@ -17,8 +17,8 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', []);
 
-        $this->assertEquals('The Name field is required.', $response->json()['errors']['name'][0]);
-        $this->assertEquals('The Types field is required.', $response->json()['errors']['types'][0]);
+        $this->assertEquals('The name field is required.', $response->json()['errors']['name'][0]);
+        $this->assertEquals('The types field is required.', $response->json()['errors']['types'][0]);
 
         $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => []]);
@@ -28,7 +28,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', ['name' => 'foo', 'types' => ['authorization_code_grant']]);
 
-        $this->assertEquals('The Redirect field is required.', $response->json()['errors']['redirect'][0]);
+        $this->assertEquals('The redirect field is required.', $response->json()['errors']['redirect'][0]);
 
         $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);

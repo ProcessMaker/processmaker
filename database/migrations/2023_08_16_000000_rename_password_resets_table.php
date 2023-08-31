@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -12,9 +13,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('environment_variables', function (Blueprint $table) {
-            $table->longText('value')->change();
-        });
+        Schema::rename('password_resets', 'password_reset_tokens');
     }
 
     /**
@@ -24,8 +23,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('environment_variables', function (Blueprint $table) {
-            $table->text('value')->change();
-        });
+        Schema::rename('password_reset_tokens', 'password_resets');
     }
 };
