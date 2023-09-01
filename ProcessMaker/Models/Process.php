@@ -201,6 +201,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'canceled',
         'completed',
         'error',
+        'comment',
     ];
 
     public $taskNotifiableTypes = [

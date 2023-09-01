@@ -1823,5 +1823,6 @@
   "{{- subject }} completed": "{{- subject }} completed",
   "{{- subject }} caused an error": "{{- subject }} caused an error",
   "{{- user}} commented on {{- subject}}": "{{- user}} commented on {{- subject}}",
-  "Imported {{- subject }}": "Imported {{- subject }}"
+  "Imported {{- subject }}": "Imported {{- subject }}",
+  "Comments on Request": "Comments on Request"
 }
