@@ -1,8 +1,7 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100" >
-      <top-menu v-if="!previewChanges" ref="menuScript" :options="optionsMenu" />
-
+      <top-menu v-show="!previewChanges" ref="menuScript" :options="optionsMenu" />
       <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
           <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
@@ -890,8 +889,6 @@ export default {
 }
 .explanation-header {
   font-size: 130%;
-}
-.explanation-content {
 }
 
 .blink {
