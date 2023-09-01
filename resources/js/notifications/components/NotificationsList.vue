@@ -1,166 +1,269 @@
 <template>
-    <div class="data-table">
-        <div class="card card-body table-card">
-        <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
-                  @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta" :noDataTemplate="$t('No Data Available')">
+  <div class="data-table">
+    <div
+      class="card card-body table-card"
+      style="margin-right: 34px;"
+    >
+      <vuetable
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
+        :css="css"
+        :api-mode="false"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        pagination-path="meta"
+        :no-data-template="$t('No Data Available')"
+      >
+        <template
+          slot="from"
+          slot-scope="props"
+        >
+          <notification-user :notification="props.rowData" />
+        </template>
 
-            <template slot="subject" slot-scope="props">
-                <i class="fas fa-fw fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
-                <i class="fas fa-fw fa-play-circle" v-if="props.rowData.type==='PROCESS_CREATED'"></i>
-                <i class="fas fa-fw fa-check-circle" v-if="props.rowData.type==='PROCESS_COMPLETED'"></i>
-                <i class="fas fa-fw fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
-                <i class="fas fa-fw fa-check-circle" v-if="props.rowData.type==='TASK_COMPLETED'"></i>
-                <i class="fas fa-fw fa-user-friends" v-if="props.rowData.type==='TASK_REASSIGNED'"></i>
-                <i class="fas fa-fw fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
-                <i class="fas fa-fw fa-file-download" v-if="props.rowData.type==='FILE_READY'"></i>
-                <span v-if="props.rowData.type==='FILE_READY'">
-                    <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
-                </span>
-                <span v-else>
-                    <a v-bind:href="props.rowData.url">#{{ props.rowData.request_id }} {{props.rowData.name}}</a>
-                    ({{props.rowData.processName}})
-                </span>
-            </template>
+        <template
+          slot="subject"
+          slot-scope="props"
+        >
+          <a :href="props.rowData.url">
+            <span v-if="props.rowData.type==='FILE_READY'" />
+            <span v-else>
+              <notification-message
+                :notification="props.rowData"
+                :show-time="false"
+              />
+            </span>
+          </a>
+        </template>
 
-            <template slot="changeStatus" slot-scope="props">
-                <span v-if="props.rowData.read_at === null" style="cursor:pointer" @click="read(props.rowData.id)"
-                      class="far fa-envelope fa-lg">
-                </span>
-
-                <span v-if="props.rowData.read_at !==  null" style="cursor:pointer" @click="unread(props.rowData.id)">
-                   <i class="far fa-envelope-open fa-lg"></i>
-                </span>
-            </template>
-
-        </vuetable>
-        <pagination :single="$t('Task')" :plural="$t('Tasks')" :perPageSelectEnabled="true" @changePerPage="changePerPage"
-                    @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
-        </div>
+        <template
+          slot="changeStatus"
+          slot-scope="props"
+        >
+          <span
+            v-if="props.rowData.read_at === null"
+            style="cursor:pointer"
+            class="far fa-envelope fa-lg blue-envelope"
+            @click="read(props.rowData.id)"
+          />
+          <span
+            v-if="props.rowData.read_at !== null"
+            style="cursor:pointer"
+            @click="unread(props.rowData.id)"
+          >
+            <i class="far fa-envelope-open fa-lg gray-envelope" />
+          </span>
+        </template>
+        <tr
+          v-for="row in filteredData"
+          :key="row.id"
+          :class="{ 'highlighted-row': row.id === highlightedRowId }"
+        >
+          <td v-for="field in fields" :key="field.name">
+            {{ row[field.name] }}
+          </td>
+        </tr>
+      </vuetable>
+      <pagination
+        ref="pagination"
+        :single="$t('Task')"
+        :plural="$t('Tasks')"
+        :per-page-select-enabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+      />
     </div>
+  </div>
 </template>
 
 <script>
-    import datatableMixin from "../../components/common/mixins/datatable";
-    import AvatarImage from "../../components/AvatarImage"
-    import moment from "moment";
+import datatableMixin from "../../components/common/mixins/datatable";
+import notificationsMixin from "../notifications-mixin";
+import AvatarImage from "../../components/AvatarImage";
+import NotificationMessage from "./notification-message";
+import NotificationUser from "./notification-user";
 
-    Vue.component('avatar-image', AvatarImage);
+Vue.component("AvatarImage", AvatarImage);
 
-    export default {
-        mixins: [datatableMixin],
-        props: ["filter"],
-        data() {
-            return {
+export default {
+  components: {
+    NotificationMessage,
+    NotificationUser,
+  },
+  mixins: [datatableMixin, notificationsMixin],
+  props: ["filter", "status"],
+  notification: {
+    type: Object,
+    required: true,
+  },
+  data() {
+    return {
 
-                orderBy: "",
+      orderBy: "",
 
-                sortOrder: [
-                ],
-                fields: [
-                    {
-                        title: () => this.$t("Status"),
-                        name: "__slot:changeStatus",
-                        sortField: "read_at",
-                        width:"80px"
-                    },
-                    {
-                        title: () => this.$t("User"),
-                        name: "userName",
-                        sortField: "userName",
-                    },
-                    {
-                        title: () => this.$t("Subject"),
-                        name: "__slot:subject",
-                        sortField: "name",
-                    },
-                    {
-                        title: () => this.$t("Created"),
-                        name: "created_at",
-                        sortField: "created_at"
-                    }
-                ]
-            };
+      sortOrder: [
+      ],
+      fields: [
+        {
+          title: () => this.$t("Status"),
+          name: "__slot:changeStatus",
+          sortField: "read_at",
+          width: "80px",
         },
-        mounted: function mounted() {
-            let params = new URL(document.location).searchParams;
-            let successRouting = params.get("successfulRouting") === "true";
-            if (successRouting) {
-                ProcessMaker.alert(this.$t("The request was completed."), "success");
-            }
+        {
+          title: () => this.$t("From"),
+          name: "__slot:from",
+          sortField: "userName",
         },
-        methods: {
-            read(id) {
-                ProcessMaker.removeNotifications([id]).then(() => {
-                    this.fetch();
-                });
-            },
-
-            unread(id){
-                ProcessMaker.unreadNotifications([id]).then(() => {
-                    this.fetch();
-                });
-            },
-
-            getSortParam: function () {
-                if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
-                    return "&order_by=" + this.sortOrder[0].sortField +
-                        "&order_direction=" + this.sortOrder[0].direction;
-                } else {
-                    return '';
-                }
-            },
-
-            transform(data) {
-                for (let record of data.data) {
-                    record['created_at'] = this.formatDate(record['created_at']);
-                    if (record['read_at']) {
-                        record['read_at'] = this.formatDate(record['read_at']);
-                    } else {
-                        record['read_at'] = null;
-                    }
-                }
-                return data;
-            },
-
-            fetch() {
-                this.loading = true;
-                if (this.cancelToken) {
-                    this.cancelToken();
-                    this.cancelToken = null;
-                }
-                const CancelToken = ProcessMaker.apiClient.CancelToken;
-
-                // Load from our api client
-                ProcessMaker.apiClient
-                    .get(
-                        "notifications?page=" +
-                        this.page +
-                        "&per_page=" +
-                        this.perPage +
-                        "&filter=" +
-                        this.filter +
-                        "&status=" +
-                        new URLSearchParams(window.location.search).get('status') +
-                        this.getSortParam()
-                        , {
-                            cancelToken: new CancelToken(c => {
-                                this.cancelToken = c;
-                            })
-                        }
-                    )
-                    .then(response => {
-                        this.data = this.transform(response.data);
-                        this.loading = false;
-                    });
-            }
-        }
+        {
+          title: () => this.$t("Message"),
+          name: "__slot:subject",
+          sortField: "name",
+        },
+        {
+          title: () => this.$t("Time"),
+          name: "created_at",
+          sortField: "created_at",
+        },
+      ],
     };
+  },
+  computed: {
+    filteredData() {
+      if (this.currentTab === "all") {
+        return this.data;
+      } if (this.currentTab === "inbox") {
+        return this.data.filter((item) => item.type === "inbox");
+      } if (this.currentTab === "comments") {
+        return this.data.filter((item) => item.type === "comments");
+      }
+      return [];
+    },
+    url() {
+      return this.notification.data?.url;
+    },
+    isComment() {
+      return this.data.type === "COMMENT";
+    },
+  },
+  mounted: function mounted() {
+    const params = new URL(document.location).searchParams;
+    const successRouting = params.get("successfulRouting") === "true";
+    if (successRouting) {
+      ProcessMaker.alert(this.$t("The request was completed."), "success");
+    }
+  },
+  methods: {
+    read(id) {
+      this.highlightedRowId = id;
+      ProcessMaker.removeNotifications([id]).then(() => {
+        this.fetch();
+      });
+    },
+
+    unread(id) {
+      ProcessMaker.unreadNotifications([id]).then(() => {
+        this.fetch();
+      });
+    },
+
+    getSortParam() {
+      if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
+        return `&order_by=${this.sortOrder[0].sortField
+        }&order_direction=${this.sortOrder[0].direction}`;
+      }
+      return "";
+    },
+
+    transform(data) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const record of data.data) {
+        record.created_at = this.formatDate(record.created_at);
+        if (record.read_at) {
+          record.read_at = this.formatDate(record.read_at);
+        } else {
+          record.read_at = null;
+        }
+      }
+      return data;
+    },
+
+    formatDate(dateTime) {
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+      ];
+
+      const dateObj = new Date(dateTime);
+      const currentDate = new Date();
+
+      if (
+        dateObj.getDate() === currentDate.getDate()
+        && dateObj.getMonth() === currentDate.getMonth()
+        && dateObj.getFullYear() === currentDate.getFullYear()
+      ) {
+        const hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
+        return `${this.addLeadingZero(hours)}:${this.addLeadingZero(minutes)}`;
+      }
+      const month = dateObj.getMonth();
+      const day = dateObj.getDate();
+      const formattedMonth = months[month];
+      return `${formattedMonth} ${day}`;
+    },
+
+    addLeadingZero(value) {
+      return value < 10 ? `0${value}` : value;
+    },
+
+    fetch() {
+      this.loading = true;
+      if (this.cancelToken) {
+        this.cancelToken();
+        this.cancelToken = null;
+      }
+      const { CancelToken } = ProcessMaker.apiClient;
+
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          `notifications?page=${
+            this.page
+          }&per_page=${
+            this.perPage
+          }&filter=${
+            this.filter
+          }&status=${
+            new URLSearchParams(window.location.search).get("status")
+          }${this.getSortParam()}`,
+          {
+            cancelToken: new CancelToken((c) => {
+              this.cancelToken = c;
+            }),
+          },
+        )
+        .then((response) => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
     .icon {
         width:1em;
+    }
+    .gray-envelope {
+    color: gray;
+    }
+    .blue-envelope {
+    color: rgb(55, 55, 87);
+    }
+    .highlighted-row:hover {
+      background-color: rgba(249, 249, 115, 0.755);
     }
     :deep(.vuetable-th-slot-subject) {
         min-width: 450px;

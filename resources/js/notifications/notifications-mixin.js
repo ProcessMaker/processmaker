@@ -1,16 +1,16 @@
 export default {
   computed: {
     displayUser() {
-      if ('user_id' in this.data) {
-        return this.data.user?.fullname || this.$t('Unknown User');
+      if ("user_id" in this.data) {
+        return this.data.user?.fullname || this.$t("Unknown User");
       }
       return null;
     },
     user() {
-      return this.notification.data.user || {"name": this.$t('Unknown User')};
+      return this.notification.data.user || { name: this.$t("Unknown User") };
     },
     data() {
-      return this.notification.data; 
+      return this.notification.data;
     },
     filteredMessages() {
       return this.messages.filter(this.commentFilterFn(this.filterComments));
@@ -20,7 +20,7 @@ export default {
     },
     comments() {
       return this.messages.filter(this.commentFilterFn(true));
-    }
+    },
   },
   methods: {
     commentFilterFn(onlyComments) {
@@ -28,12 +28,11 @@ export default {
         if (onlyComments !== null) {
           if (onlyComments) {
             return message.data?.type === "COMMENT";
-          } else {
-            return message.data?.type !== "COMMENT";
           }
+          return message.data?.type !== "COMMENT";
         }
         return true;
-      }
+      };
     },
-  }
-}
+  },
+};
