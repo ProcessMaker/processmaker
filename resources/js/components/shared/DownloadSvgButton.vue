@@ -22,11 +22,12 @@
     <!-- Used for the design -->
     <!-- Page -->
     <div ref="modelPrintSection" style="
-        position: absolute;
+        position: fixed;
         z-index: 0;
         color: #000;
         min-width: 90em;
-        left: -9999999px;
+        left: 0px;
+        top: -9999999px;
         padding: 1rem;
         background: #ffffff;
         text-transform: initial;
@@ -55,7 +56,7 @@
             background: #ffffff;
         ">
           <div class="w-50 p-3" style="background: #E5F1FF; border-radius: 8px 0 0 8px"><h5><b>{{ title }}</b></h5></div>
-          <div class="w-50 p-3 text-muted" style="border-radius: 0 8px 8px 0"><small>{{ description }}</small></div>
+          <div class="w-50 p-3 text-muted" style="border-radius: 0 8px 8px 0"><small>{{ prompt }}</small></div>
         </div>
       </div>
     </div>
@@ -77,6 +78,10 @@ export default {
       default: "",
     },
     description: {
+      type: String,
+      default: "",
+    },
+    prompt: {
       type: String,
       default: "",
     },
@@ -157,3 +162,8 @@ export default {
   },
 };
 </script>
+<style>
+#app-container .main {
+  overflow: hidden !important;
+}
+</style>
