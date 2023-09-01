@@ -106,9 +106,9 @@ class ErrorExecutionNotification extends Notification
         $processRequest = $this->tokenInterface->processRequest;
 
         return [
-            'type' => 'ERROR_EXCECUTION',
-            'message' => $this->tokenInterface->process->name . ' #' . $processRequest->id . ' - ' . $this->tokenInterface->element_name,
-            'name' => __('Execution Error') . ': ' . $processRequest->name,
+            'type' => 'ERROR_EXECUTION',
+            'message' => __('Execution Error') . ': ' . $this->tokenInterface->process->name . ' #' . $processRequest->id . ' - ' . $this->tokenInterface->element_name,
+            'name' => $processRequest->name,
             'processName' => $processRequest->name,
             'request_id' => $processRequest->id,
             'user_id' => $notifiable->id,
