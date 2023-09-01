@@ -54,9 +54,10 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * @param Definitions $definitions
      * @param StartEventInterface $event
      * @param array $data
+     * @param callable $beforeStart
      * @return ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data): ProcessRequest
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null): ProcessRequest
     {
         // Validate data
         $this->validateData($data, $definitions, $event);
@@ -83,6 +84,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'collaboration_uuid' => $collaboration->uuid,
             'process_collaboration_id' => $collaboration->id,
         ]);
+        if ($beforeStart) {
+            $beforeStart($request);
+        }
 
         // Serialize instance
         $state = $this->serializeState($request);
@@ -252,6 +256,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'session' => [
                 'user_id' => $userId,
             ],
+            'collaboration_id' => $instance->collaboration_uuid,
         ], 'scripts');
     }
 
@@ -577,12 +582,16 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 $tokensRows[] = $tokenRow;
             }
 
+            $data = $request->data;
+            unset($data['_user']);
+            unset($data['_request']);
+
             return [
                 'id' => $request->uuid,
                 'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
-                'data' => $request->data,
+                'data' => $data,
                 'tokens' => $tokensRows,
             ];
         });
