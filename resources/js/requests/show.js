@@ -1,7 +1,7 @@
 import Vue from "vue";
 import MonacoEditor from "vue-monaco";
 import debounce from "lodash/debounce";
-import VueFormRenderer from "@processmaker/screen-builder";
+import { VueFormRenderer } from "@processmaker/screen-builder";
 import DataSummary from "./components/DataSummary.vue";
 import RequestDetail from "./components/RequestDetail.vue";
 import AvatarImage from "../components/AvatarImage.vue";

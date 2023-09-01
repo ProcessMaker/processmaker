@@ -1,6 +1,8 @@
 import { BNavbar } from "bootstrap-vue";
 import { Multiselect } from "@processmaker/vue-multiselect";
-import moment from "moment";
+import moment from "moment-timezone";
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import VueHtml2Canvas from "vue-html2canvas";
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
@@ -17,10 +19,9 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-import VueHtml2Canvas from 'vue-html2canvas';
+import "regenerator-runtime/runtime";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -190,7 +191,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
-    showLoader: showLoader,
+    showLoader,
     stayNextScreen,
     timestamp: Date.now(),
   });

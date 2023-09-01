@@ -1,7 +1,6 @@
 import Vue from "vue";
-import globalProperties from "@processmaker/screen-builder/src/global-properties";
 import VueFormElements from "@processmaker/vue-form-elements";
-import { FormBuilderControls as initialControls } from "@processmaker/screen-builder";
+import { FormBuilderControls as initialControls, globalProperties } from "@processmaker/screen-builder";
 import { Multiselect } from "@processmaker/vue-multiselect";
 
 Vue.use(VueFormElements);

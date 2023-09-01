@@ -1,5 +1,4 @@
-import { DataTypeProperty } from "@processmaker/screen-builder/src/VariableDataTypeProperties";
-import Currencies from "@processmaker/screen-builder/src/currency";
+import { Currencies, DataTypeProperty } from "@processmaker/screen-builder";
 
 const formats = DataTypeProperty.config.options;
 const masks = Currencies;

@@ -53,6 +53,7 @@
 
 <script>
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.css";
 
 export default {
   components: {
@@ -168,7 +169,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.css";
-</style>

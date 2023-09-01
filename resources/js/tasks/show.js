@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Task from "@processmaker/screen-builder";
+import { Task } from "@processmaker/screen-builder";
 import MonacoEditor from "vue-monaco";
 import debounce from "lodash/debounce";
 import TaskView from "./components/TaskView.vue";
