@@ -7,14 +7,18 @@
       <a href="#" class="navbar-brand pl-2"><img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}></a>
       <div class="content-nav">
         <ul class="nav justify-content-end">
-          @if (shouldShow('requestButton'))
-            <component 
-              v-bind:is="'request-modal-mobile'" 
-              url="{{ route('processes.index') }}" 
-              v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
-            >
-            </component>
-          @endif
+          <li class="nav-item">
+            <a class="nav-link">
+              @if (shouldShow('requestButton'))
+                <component 
+                  v-bind:is="'request-modal-mobile'" 
+                  url="{{ route('processes.index') }}" 
+                  v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
+                >
+                </component>
+              @endif
+            </a>
+          </li>
           <li class="nav-item">
             <a class="nav-link">
               <button

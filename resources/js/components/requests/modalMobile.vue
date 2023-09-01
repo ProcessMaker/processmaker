@@ -1,5 +1,5 @@
 <template>
-  <li
+  <div
     v-cloak
     class="nav-item"
   >
@@ -23,7 +23,7 @@
     >
       <p> contenido </p>
     </b-modal>
-  </li>
+  </div>
 </template>
 
 <script>
