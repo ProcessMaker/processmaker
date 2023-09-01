@@ -90,6 +90,7 @@ class ScriptController extends Controller
             'autoSaveDelay' => config('versions.delay.script', 5000),
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
+            'user' => \Auth::user(),
         ]);
     }
 

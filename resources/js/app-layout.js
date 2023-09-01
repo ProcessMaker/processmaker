@@ -13,6 +13,7 @@ import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
+import ProjectSelect from "./components/shared/ProjectSelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
@@ -20,7 +21,7 @@ import Required from "./components/shared/Required";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-
+import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -29,6 +30,9 @@ import __ from "./modules/lang";
 require("bootstrap");
 
 const { Vue } = window;
+
+Vue.use(VueHtml2Canvas);
+
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);
   moment.defaultFormat = window.ProcessMaker.user.datetime_format;
@@ -51,6 +55,7 @@ Vue.component("SelectStatus", SelectStatus);
 Vue.component("SelectUser", SelectUser);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("CategorySelect", CategorySelect);
+Vue.component("ProjectSelect", ProjectSelect);
 Vue.component("SelectFromApi", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -87,6 +92,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      confirmSize: "md",
       messageTitle: "",
       messageMessage: "",
       messageVariant: "",
@@ -205,12 +211,13 @@ window.ProcessMaker.closeSessionModal = function () {
 };
 
 // Set out own specific confirm modal.
-window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
+window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md") {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.confirmSize = size;
 };
 
 // Set out own specific message modal.

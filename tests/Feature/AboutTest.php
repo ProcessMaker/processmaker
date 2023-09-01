@@ -46,9 +46,9 @@ class AboutTest extends TestCase
         // Test and make sure our custom property is present
         // and contains a string value
         $this->assertIsObject($composer_json);
-        $this->assertObjectHasAttribute('extra', $composer_json, 'The composer.json file is missing the "extra" attribute.');
-        $this->assertObjectHasAttribute('processmaker', $composer_json->extra, 'The composer.json file is missing the "extra->processmaker" attribute.');
-        $this->assertObjectHasAttribute('build', $composer_json->extra->processmaker, 'The composer.json file is missing the "extra->processmaker->build" attribute.');
+        $this->assertObjectHasProperty('extra', $composer_json, 'The composer.json file is missing the "extra" attribute.');
+        $this->assertObjectHasProperty('processmaker', $composer_json->extra, 'The composer.json file is missing the "extra->processmaker" attribute.');
+        $this->assertObjectHasProperty('build', $composer_json->extra->processmaker, 'The composer.json file is missing the "extra->processmaker->build" attribute.');
         $this->assertIsString($composer_json->extra->processmaker->build, 'The composer.json file "extra->processmaker->build" attribute is not a string.');
         $this->assertNotEmpty($composer_json->extra->processmaker->build, 'The composer.json file "extra->processmaker->build" attribute is empty.');
 
@@ -71,7 +71,7 @@ class AboutTest extends TestCase
 
         // Make sure we removed it
         $this->assertIsObject($composer_json);
-        $this->assertObjectNotHasAttribute('processmaker', $composer_json->extra);
+        $this->assertObjectNotHasProperty('processmaker', $composer_json->extra);
 
         // Call the about page again
         $response = $this->webCall('GET', '/about');

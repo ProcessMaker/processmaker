@@ -216,6 +216,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
         $screen->saveOrFail();
+        $screen->assignAssetsToProjects($request, Screen::class);
+
         //Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
         //Call event to store New Screen data in LOG
@@ -262,6 +264,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $original = $screen->getOriginal();
         $screen->saveOrFail();
+        $screen->assignAssetsToProjects($request, Screen::class);
 
         //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
@@ -448,7 +451,7 @@ class ScreenController extends Controller
      */
     public function export(Request $request, Screen $screen)
     {
-        $fileKey = ExportScreen::dispatchNow($screen);
+        $fileKey = (new ExportScreen($screen))->handle();
 
         if ($fileKey) {
             return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
@@ -504,7 +507,7 @@ class ScreenController extends Controller
             );
         }
 
-        $import = ImportScreen::dispatchNow($content);
+        $import = (new ImportScreen($content))->handle();
 
         return ['status' => $import];
     }

@@ -89,6 +89,19 @@ The instance will stay active until the PR is merged.
 
 You can wipe the database on the CI Server by adding the tag `ci:db:clean`. Remember to remove the tag from your PR description or the DB will be wiped clean every time the PR is updated.
 
+### Use `next` branch
+To use the `next` branch instead of `develop` for all packages by default, use `ci:next` in your PR body.
+
+### Environment Variables
+You can add or overwrite environment variables on the deployed server using this syntax in your PR body
+```
+ci:MY_ENVIRONMENT_VARIABLE=value
+```
+Or with double quotes if the value has spaces
+```
+ci:MY_ENVIRONMENT_VARIABLE="custom value"
+```
+
 ### PHPUnit Tests
 We use PHPUnit for both integration and unit testing. Most of our PHPUnit tests are integration tests that use the framework and database.
 
