@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Bus;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Jobs\StartEventConditional;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\Process;
@@ -12,22 +14,32 @@ class ConditionalStartEventTest extends TestCase
 {
     public function testConditionalEventMustTriggeredWhenActive()
     {
+        Bus::fake([
+            StartEventConditional::class,
+            RefreshArtisanCaches::class,
+        ]);
+
         //Create a conditional process with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
         );
 
-        //Evaluates that StartEventConditional is triggering
-        $this->expectsJobs(StartEventConditional::class);
-
         $manager = new TaskSchedulerManager();
         $manager->evaluateConditionals();
+
+        //Evaluates that StartEventConditional is triggering
+        Bus::assertDispatched(StartEventConditional::class);
     }
 
     public function testConditionalEventMustNotTriggeredWhenInactive()
     {
+        Bus::fake([
+            StartEventConditional::class,
+            RefreshArtisanCaches::class,
+        ]);
+
         //Create a conditional process with ACTIVE status by default
-        ImportProcess::dispatchNow(
+        ImportProcess::dispatchSync(
             file_get_contents(__DIR__ . '/../../Fixtures/conditional_event_process.json')
         );
 
@@ -36,10 +48,10 @@ class ConditionalStartEventTest extends TestCase
         $process->status = 'INACTIVE';
         $process->save();
 
-        //Evaluates that StartEventConditional is NOT triggering because process is INACTIVE
-        $this->doesntExpectJobs(StartEventConditional::class);
-
         $manager = new TaskSchedulerManager();
         $manager->evaluateConditionals();
+
+        //Evaluates that StartEventConditional is NOT triggering because process is INACTIVE
+        Bus::assertNotDispatched(StartEventConditional::class);
     }
 }

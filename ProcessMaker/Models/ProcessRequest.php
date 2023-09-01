@@ -896,9 +896,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             return null;
         }
 
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-            $filtered['id'] . '/' .
-            $filtered['file_name'];
+        $path = Storage::disk('public')->path($filtered['id'] . '/' . $filtered['file_name']);
 
         return $path;
     }

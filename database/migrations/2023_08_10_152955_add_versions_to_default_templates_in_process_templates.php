@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessTemplates;
 
-class AddVersionsToDefaultTemplatesInProcessTemplates extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -30,4 +30,4 @@ class AddVersionsToDefaultTemplatesInProcessTemplates extends Migration
         ->where('version', '1.0.0')
         ->update(['version' => null]);
     }
-}
+};
