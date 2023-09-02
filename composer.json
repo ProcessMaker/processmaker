@@ -132,7 +132,8 @@
                 "package-translations": "2.5.0",
                 "package-versions": "1.6.0",
                 "package-vocabularies": "2.11.2",
-                "package-webentry": "2.16.6"
+                "package-webentry": "2.16.6",
+                "packages": "^0"
             },
             "release": "Summer 2023"
         }
