@@ -33,8 +33,17 @@ class RefreshArtisanCaches implements ShouldQueue
     {
         Artisan::call('clear-compiled', $options = [
             '--no-interaction' => true,
-            '--quiet' => true
+            '--quiet' => true,
+            '--env' => app()->environment(),
         ]);
+
+        if (app()->routesAreCached()) {
+            Artisan::call('route:cache', $options);
+        }
+
+        if (app()->eventsAreCached()) {
+            Artisan::call('event:cache', $options);
+        }
 
         if (app()->configurationIsCached()) {
             Artisan::call('config:cache', $options);
