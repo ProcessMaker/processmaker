@@ -3,7 +3,7 @@ import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
 import requestModal from "./components/requests/modal";
-import notifications from "./components/requests/notifications";
+import notifications from "./notifications/components/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -21,7 +21,7 @@ import Required from "./components/shared/Required";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-
+import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -30,6 +30,9 @@ import __ from "./modules/lang";
 require("bootstrap");
 
 const { Vue } = window;
+
+Vue.use(VueHtml2Canvas);
+
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);
   moment.defaultFormat = window.ProcessMaker.user.datetime_format;

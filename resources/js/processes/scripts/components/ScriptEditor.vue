@@ -1,8 +1,7 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100" >
-      <top-menu v-if="!previewChanges" ref="menuScript" :options="optionsMenu" />
-
+      <top-menu v-show="!previewChanges" ref="menuScript" :options="optionsMenu" />
       <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
           <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
@@ -12,21 +11,21 @@
                   <div class="d-flex">
                     <div class="left-header-width pb-3 pl-3">
                       <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
-                        <b>{{ $t('Current Script') }}</b>
+                        <span>{{ $t('Current Script') }}</span>
                       </div>
                     </div>
                     <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
-                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse">
-                        <b>{{ $t('AI Generated Response') }}</b>
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse header-x-padding">
+                        <span>{{ $t('AI Generated Response') }}</span>
                         <div>
                           <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
-                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply') }}</button>
+                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply changes  ') }}</button>
                         </div>
                       </div>
                     </div>
                     <div v-else-if="showExplainEditor" class="right-header-width pb-3 pl-3">
-                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
-                        <b>{{ $t('AI Explanation') }}</b>
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border header-x-padding">
+                        <span>{{ $t('AI Explanation') }}</span>
                         <div>
                           <button class="btn" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
                             <i class="fa fa-times"></i>
@@ -390,6 +389,7 @@ export default {
         readOnly: true,
         enableSplitViewResizing: false,
         renderSideBySide: true,
+        renderOverviewRuler: false,
       },
       monacoOptionsOutput: {
         language: "json",
@@ -647,6 +647,7 @@ export default {
         },
       );
     },
+
     diffEditorMounted() {
     },
     resizeEditor() {
@@ -870,10 +871,15 @@ export default {
 }
 
 .editor-header-border {
-  border: 0;
-  border-radius: 5px;
+  border: 1px solid;
+  border-radius: 0.125rem;
+  padding: 0.52rem;
+  border-color: #e3e3e3;
 }
 
+.editor-header-border.bg-primary-light {
+  border-color: #8AB8FF;
+}
 .progress {
   height: 0.7rem;
   border-radius: 1em;
@@ -903,7 +909,10 @@ export default {
 .pulse {
   animation: pulse-animation 2s infinite;
 }
-
+.header-x-padding {
+  padding-left: .8rem;
+  padding-right: .8rem;
+}
 @keyframes pulse-animation {
   0% {
     box-shadow: 0 0 0 0px rgb(28 114 194 / 50%);;
@@ -930,8 +939,6 @@ export default {
 .explanation-header {
   font-size: 130%;
 }
-.explanation-content {
-}
 
 .blink {
   animation: blink-animation .8s infinite;
@@ -940,10 +947,32 @@ export default {
   0% { opacity: 0 }
   100% { opacity: 1 }
 }
+
+//JSON Browser
 .tree-button {
       box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
 }
 .editor-modal {
   height: 600px;
+}
+
+// Monaco editor diff styles
+.monaco-diff-editor .line-insert, .monaco-diff-editor .char-insert, .monaco-editor .margin-view-overlays .cldr {
+  background: #e6ffec !important;
+}
+.monaco-editor .gutter-insert, .monaco-diff-editor .gutter-insert {
+  background-color: #c7f8d3 !important;
+}
+.cldr.insert-sign.codicon.codicon-diff-insert {
+    background: #c7f8d3 !important;
+}
+.monaco-diff-editor .line-delete, .monaco-diff-editor .char-delete, .monaco-editor .margin-view-overlays .cldr {
+  background: #ffebe9 !important;
+}
+.monaco-editor .gutter-delete, .monaco-diff-editor .gutter-delete {
+  background-color: rgba(255, 0, 0, 0.2) !important;
+}
+.cldr.delete-sign.codicon.codicon-diff-remove {
+    background: #fbc7c7 !important;
 }
 </style>
