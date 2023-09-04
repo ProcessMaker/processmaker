@@ -184,6 +184,17 @@
                         <i class="far fa-caret-square-right" />
                         {{ $t('Output') }}
                       </b-col>
+                      <b-col class="text-right">
+                        <b-button
+                          v-b-modal.data-preview
+                          squared
+                          variant="outline-dark"
+                          class="fas ml-auto btn-sm tree-button"
+                          @click.stop
+                        >
+                          <i class="fas ml-auto fas fa-expand" />
+                        </b-button>
+                      </b-col>
                       <b-col
                         align-self="end"
                         cols="1"
@@ -273,6 +284,32 @@
         </span>
       </b-card-footer>
     </b-card>
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="stringifyJson"
+            :options="monacoOptionsOutput"
+            class="editor-modal"
+            language="json"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="stringifyJson"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
   </b-container>
 </template>
 
@@ -341,6 +378,8 @@ export default {
 
     return {
       executionKey: null,
+      iframeHeight: "600px",
+      stringifyJson: "",
       resizing: false,
       monacoOptions: {
         automaticLayout: true,
@@ -351,6 +390,15 @@ export default {
         readOnly: true,
         enableSplitViewResizing: false,
         renderSideBySide: true,
+      },
+      monacoOptionsOutput: {
+        language: "json",
+        lineNumbers: "off",
+        readOnly: true,
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
       },
       code: this.script.code,
       newCode: "",
@@ -618,6 +666,7 @@ export default {
       if (output && !this.outputOpen) {
         this.outputOpen = true;
       }
+      this.stringifyJson = JSON.stringify(output, null, 2);
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
@@ -890,5 +939,11 @@ export default {
 @keyframes blink-animation {
   0% { opacity: 0 }
   100% { opacity: 1 }
+}
+.tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+}
+.editor-modal {
+  height: 600px;
 }
 </style>
