@@ -293,12 +293,6 @@ class UserController extends Controller
 
         $request->validate(User::rules($user));
         $fields = $request->json()->all();
-        if (($fields['username'] !== $user->getAttribute('username') || isset($fields['password'])) && 
-        (!Auth::user()->hasPermission('edit-user-and-password') || !Auth::user()->is_administrator)) {
-            var_dump($fields['username'], $user->getAttribute('username'));
-            throw new AuthorizationException(__('Not authorized to update the username and password.'));
-            
-        }
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
         }
