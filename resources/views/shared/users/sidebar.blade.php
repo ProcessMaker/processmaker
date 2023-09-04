@@ -22,8 +22,10 @@
         </div>
     </div>
     <div class="card card-body mt-3">
-        <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
         <fieldset :disabled="{{ \Auth::user()->hasPermission('edit-user-and-password') || \Auth::user()->is_administrator ? 'false' : 'true' }}">  
+            <legend> 
+                <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
+            </legend>
             <div class="form-group">
                {!! Form::label('username', __('Username') . '<small class="ml-1">*</small>',  [], false) !!}
                {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
