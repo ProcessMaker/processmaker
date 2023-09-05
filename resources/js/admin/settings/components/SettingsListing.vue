@@ -63,34 +63,36 @@
                   <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
-            <b-button 
-              :aria-label="$t('Copy to Clipboard')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              @click="onCopy(row)"
-              variant="link"
-              v-b-tooltip.hover
-              :title="$t('Copy to Clipboard')">
-                <i class="fa-lg fas fa-copy"></i>
-              </b-button>
-
-            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+            <span v-if="row.item.key !== 'sso.default.login'" >
               <b-button 
-              :aria-label="$t('Clear')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              :disabled="disableClear(row.item)" 
-              @click="onClear(row)" 
-              variant="link" 
-             >
-                <i class="fa-lg fas fa-trash-alt"></i>
-              </b-button>
-            </span>
-            <span v-else class="invisible">
-              <b-button 
+                :aria-label="$t('Copy to Clipboard')"
+                v-uni-aria-describedby="row.item.id.toString()"
+                @click="onCopy(row)"
+                variant="link"
+                v-b-tooltip.hover
+                :title="$t('Copy to Clipboard')">
+                  <i class="fa-lg fas fa-copy"></i>
+                </b-button>
+  
+              <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+                <b-button 
+                :aria-label="$t('Clear')"
+                v-uni-aria-describedby="row.item.id.toString()"
+                :disabled="disableClear(row.item)" 
+                @click="onClear(row)" 
                 variant="link" 
-                size="lg"
-                v-uni-aria-describedby="row.item.id.toString()">
-                  <i class="fas fa-trash-alt"></i>
-              </b-button>
+               >
+                  <i class="fa-lg fas fa-trash-alt"></i>
+                </b-button>
+              </span>
+              <span v-else class="invisible">
+                <b-button 
+                  variant="link" 
+                  size="lg"
+                  v-uni-aria-describedby="row.item.id.toString()">
+                    <i class="fas fa-trash-alt"></i>
+                </b-button>
+              </span>
             </span>
           </template>
         </template>
