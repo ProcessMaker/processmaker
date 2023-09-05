@@ -13,23 +13,26 @@
     >
       <i class="fas fa-plus" />
     </button>
-    <b-modal
-      id="requests-modal-mobile"
-      ref="requestModalMobileAdd"
-      class="requests-modal-mobile modal-dialog-scrollable"
-      :title="$t('New Request')"
-      header-close-content="&times;"
-      hide-footer
-    >
-      <p> contenido </p>
-    </b-modal>
+    <new-request-modal
+      ref="requestModal"
+      size="md"
+      :permission="permission"
+      :url="url"
+    />
   </div>
 </template>
 
 <script>
+import newRequestModal from "./requestModal.vue";
 
 export default {
-  props: {},
+  components: {
+    "new-request-modal": newRequestModal,
+  },
+  props: {
+    permission: Array,
+    url: "",
+  },
   data() {
     return {
     };
@@ -37,7 +40,7 @@ export default {
   methods: {
     showRequestModal() {
       // Perform initial load of requests from backend
-      this.$refs.requestModalMobileAdd.show();
+      this.$refs.requestModal.showModal();
     },
   },
 };

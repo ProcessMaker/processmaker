@@ -336,7 +336,9 @@ if (userID) {
               enabled: window.ProcessMaker.AccountTimeoutEnabled
             }
           });
-          window.ProcessMaker.closeSessionModal();
+          if (window.ProcessMaker.closeSessionModal) {
+            window.ProcessMaker.closeSessionModal();
+          }
         }
       })
       .listen('.Logout', (e) => {
