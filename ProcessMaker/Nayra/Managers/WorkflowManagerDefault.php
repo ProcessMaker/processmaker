@@ -76,6 +76,28 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     }
 
     /**
+     * Fail a task.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface|ProcessRequestToken $token
+     * @param string $error
+     *
+     * @return void
+     */
+    public function taskFailed(ExecutionInstanceInterface $instance, TokenInterface $token, string $message)
+    {
+        $element = $token->getOwnerElement();
+        $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+
+        $error = $element->getRepository()->createError();
+        $error->setName($message);
+
+        $token->setProperty('error', $error);
+
+        Log::error('Script failed: ' . $element->getId() . ' - ' . $message);
+    }
+
+    /**
      * Complete a catch event
      *
      * @param Definitions $definitions
@@ -121,10 +143,12 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      *
      * @param Definitions $definitions
      * @param StartEventInterface $event
+     * @param array $data
+     * @param callable $beforeStart
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null)
     {
         //Validate data
         $this->validateData($data, $definitions, $event);
