@@ -10,7 +10,12 @@
         size="md"
       >
         <template>
-            <required></required>
+            <div class="d-flex justify-content-between pb-3">
+              <h6>
+                <span class="text-capitalize">{{ assetType }}:</span> {{ assetName }}
+              </h6>
+              <required></required>
+            </div>
             <project-select
                 v-model="projects"
                 :label="$t('Select Project')"
@@ -19,6 +24,14 @@
                 name="proeject"
                 :errors="addError.project"
             />
+            <b-form-group>
+              <b-form-checkbox
+                v-model="copyAsset"
+                class="pt-3"
+              >
+                Use a copy of this asset
+              </b-form-checkbox>
+            </b-form-group>
         </template>
       </modal>
     </div>
@@ -39,6 +52,7 @@
       return {
         errors: {},
         projects: [],
+        copyAsset: false,
         addError: {},
         showModal: false,
         disabled: true,
@@ -56,8 +70,8 @@
       watch: {
         projects() {
             this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
-        }
-      },  
+        },
+      },
       methods: {
         show() {
           this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
@@ -97,7 +111,6 @@
 </script>
   
 <style scoped>
-
     .overflow-modal {
     max-height: 30vh;
     overflow-y: auto;
