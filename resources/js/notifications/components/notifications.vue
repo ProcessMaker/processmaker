@@ -24,10 +24,7 @@
             class="dot"
           />
         </div>
-        <span
-          v-if="hasMessages"
-          class="message-count"
-        >{{ totalMessages }}</span>
+        <span class="message-count" v-if="hasMessages">{{ displayTotalCount }}</span>
       </b-button>
       <b-popover
         target="notification-menu-button"
@@ -47,37 +44,19 @@
                 <b-tabs>
                   <b-tab @click="_ => filterComments = null">
                     <template #title>
-                      <b-badge
-                        v-if="totalMessages"
-                        pill
-                        variant="warning lighten"
-                      >
-                        {{ totalMessages }}
-                      </b-badge>
+                      <b-badge v-if="allCount" pill variant="warning lighten">{{ allCount }}</b-badge>
                       {{ $t('Inbox') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = false">
                     <template #title>
-                      <b-badge
-                        v-if="notifications.length"
-                        pill
-                        variant="warning lighten"
-                      >
-                        {{ notifications.length }}
-                      </b-badge>
+                      <b-badge v-if="notificationsCount" pill variant="warning lighten">{{ notificationsCount }}</b-badge>
                       {{ $t('Notifications') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = true">
                     <template #title>
-                      <b-badge
-                        v-if="comments.length"
-                        pill
-                        variant="warning lighten"
-                      >
-                        {{ comments.length }}
-                      </b-badge>
+                      <b-badge v-if="commentsCount" pill variant="warning lighten">{{ commentsCount }}</b-badge>
                       {{ $t('Comments') }}
                     </template>
                   </b-tab>
@@ -91,9 +70,11 @@
               </b-col>
             </b-row>
           </b-container>
-
-          <div v-if="messages.length == 0">
-            {{ $t('No Notifications Found') }}
+          
+          <div v-if="messages.length == 0" class="no-notifications">
+            <img src="/img/all-cleared.svg"/>
+            <h2>{{ $t('All Cleared!') }}</h2>
+            <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
           <template v-else>
             <notification-item
@@ -131,6 +112,7 @@ export default {
         left: "0px",
       },
       filterComments: null,
+      reloadOnClose: false,
     };
   },
   computed: {
@@ -155,6 +137,9 @@ export default {
     hasMessages() {
       return this.totalMessages > 0;
     },
+    displayTotalCount() {
+      return this.totalMessages > 10 ? "10+" : this.totalMessages;
+    }
   },
   watch: {
     messages(value, mutation) {
@@ -182,10 +167,14 @@ export default {
   methods: {
     onShown() {
       this.isOpen = true;
+      this.markAsRead();
     },
     onHidden() {
       this.isOpen = false;
       this.filterComments = null;
+      if (this.reloadOnClose) {
+        this.updateTotalMessages();
+      }
     },
     icon(task) {
       return ProcessMaker.$notifications.icons[task.type];
@@ -200,8 +189,7 @@ export default {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient
         .get("/notifications?per_page=10&filter=unread&include=user")
-        .then((response) => {
-          console.log(response);
+        .then(response => {
           ProcessMaker.notifications.splice(0);
           response.data.data.forEach((element) => {
             ProcessMaker.pushNotification(element);
@@ -212,12 +200,30 @@ export default {
           });
         });
     },
+    markAsRead() {
+      if (!this.hasMessages) {
+        return;
+      }
+      const messageIds = this.messages.map(m => m.id);
+      window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: [] });
+      this.reloadOnClose = true;
+    }
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.no-notifications {
+  text-align: center;
+
+  img {
+    width: 190px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+  }
+}
 
 .lighten {
   background-color: lighten($warning, 40%);;
@@ -290,9 +296,10 @@ export default {
 
 .popover {
   max-width: 450px;
-  max-height: 600px;
+  height: 600px;
   top: -8px;
-  overflow: scroll;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .notification-menu-button {
@@ -312,7 +319,7 @@ export default {
 
   i {
     font-size: 19px;
-    // color: $secondary;
+    color: $secondary;
   }
   .dot {
     height: 10px;

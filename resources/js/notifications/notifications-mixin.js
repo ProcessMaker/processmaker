@@ -15,11 +15,14 @@ export default {
     filteredMessages() {
       return this.messages.filter(this.commentFilterFn(this.filterComments));
     },
-    notifications() {
-      return this.messages.filter(this.commentFilterFn(false));
+    allCount() {
+      return this.messages.filter(this.commentFilterFn(null)).length;
     },
-    comments() {
-      return this.messages.filter(this.commentFilterFn(true));
+    notificationsCount() {
+      return this.messages.filter(this.commentFilterFn(false)).length;
+    },
+    commentsCount() {
+      return this.messages.filter(this.commentFilterFn(true)).length;
     },
   },
   methods: {

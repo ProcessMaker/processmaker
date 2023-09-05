@@ -1,14 +1,8 @@
 <template>
   <b-col>
-    <div v-html="message" />
-    <notification-time
-      v-if="showTime"
-      :notification="notification"
-    />
-    <div
-      v-if="displayBubble"
-      class="bubble"
-    >
+    <div class="message" v-html="message"></div>
+    <notification-time v-if="showTime" :notification="notification"></notification-time>
+    <div v-if="displayBubble" class="bubble">
       {{ displayBubble }}
     </div>
   </b-col>
@@ -20,16 +14,16 @@ import NotificationTime from "./notification-time";
 import notificationsMixin from "../notifications-mixin";
 
 const messages = {
-  TASK_CREATED: "{{user}} has been assigned to the task {{subject}} in the process {{processName}}",
-  TASK_COMPLETED: "Task {{subject}} completed by {{user}}",
-  TASK_REASSIGNED: "Task {{subject}} reassigned to {{user}}",
-  TASK_OVERDUE: "Task {{subject}} is overdue. Originally due on {{due}}",
-  PROCESS_CREATED: "{{user}} started the process {{subject}}",
-  PROCESS_COMPLETED: "{{subject}} completed",
-  ERROR_EXECUTION: "{{subject}} caused an error",
-  COMMENT: "{{user}} commented on {{subject}}",
-  "ProcessMaker\\Notifications\\ImportReady": "Imported {{subject}}",
-};
+  'TASK_CREATED': '{{- user }} has been assigned to the task {{- subject }} in the process {{- processName }}',
+  'TASK_COMPLETED': 'Task {{- subject }} completed by {{- user }}',
+  'TASK_REASSIGNED': 'Task {{- subject }} reassigned to {{- user }}',
+  'TASK_OVERDUE': 'Task {{- subject }} is overdue. Originally due on {{- due }}',
+  'PROCESS_CREATED': '{{- user}} started the process {{- subject }}',
+  'PROCESS_COMPLETED': '{{- subject }} completed',
+  'ERROR_EXECUTION': '{{- subject }} caused an error',
+  'COMMENT': '{{- user}} commented on {{- subject}}',
+  'ProcessMaker\\Notifications\\ImportReady': 'Imported {{- subject }}'
+}
 export default {
   components: {
     NotificationTime,
@@ -48,16 +42,15 @@ export default {
   computed: {
     message() {
       let message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
-      message = this.$t(message, this.bindings);
-      return this.format(message);
+      return this.$t(message, this.bindings);
     },
     bindings() {
       return {
-        user: this.displayUser,
-        subject: this.displaySubject,
-        processName: this.data.processName || this.$t("Unknown Process"),
-        due: this.data.due_in ? moment(this.data.due_in).format() : null,
-      };
+        user: '<strong>' + this.displayUser + '</strong>',
+        subject: '<strong>' + this.displaySubject + '</strong>',
+        processName: '<strong>' + (this.data.processName || this.$t('Unknown Process')) + '</strong>',
+        due: '<strong>' + (this.data.due_in ? moment(this.data.due_in).format() : null) + '</strong>'
+      }
     },
     displaySubject() {
       return this.data.name || this.data.processName || "";
@@ -69,19 +62,19 @@ export default {
       }
     },
   },
-  methods: {
-    format(message) {
-      Object.values(this.bindings).forEach((value) => {
-        message = message.replace(value, `<strong>${value}</strong>`);
-      });
-      return message;
-    },
+  mounted() {
   },
-};
+  methods: {
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 @import "../../../sass/variables";
+
+.message {
+  font-size: 1.2em;
+}
 .bubble {
   background-color: lighten($primary, 55%);
   border-radius: 1em;
