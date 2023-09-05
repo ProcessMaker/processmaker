@@ -22,6 +22,7 @@ env:
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   DOM_EKS: ${{ secrets.DOM_EKS }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base-php82' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -38,7 +39,7 @@ jobs:
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution      
-          bash ./images/build.local.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}}
+          bash ./images/build.local.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}} $BASE
       - name: List Images
         run: |
           docker images
