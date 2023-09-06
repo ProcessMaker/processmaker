@@ -21,19 +21,16 @@ class ScriptExecutorExporter extends ExporterBase
 
     public function import() : bool
     {
-        $authenticatedUser = Auth::user();
-        $userId = $authenticatedUser ? $authenticatedUser->id : null;
-
         switch ($this->mode) {
             case 'copy':
             case 'new':
-                BuildScriptExecutor::dispatch($this->model->id, $userId);
+                BuildScriptExecutor::dispatch($this->model->id);
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {
                     $original = $this->model->getAttributes();
                     ScriptExecutorUpdated::dispatch($this->model->id, $original, $this->model->getChanges());
-                    BuildScriptExecutor::dispatch($this->model->id, $userId);
+                    BuildScriptExecutor::dispatch($this->model->id);
                 }
                 break;
 
