@@ -120,8 +120,8 @@ export default {
         },
         { 
           value: "add-to-project", 
-          content: "Assign to Project",
-          icon: "fas nav-icon fa-folder" 
+          content: "Add to Project",
+          icon: "fas fa-folder-plus" 
         },
         {
           value: "duplicate-item",
