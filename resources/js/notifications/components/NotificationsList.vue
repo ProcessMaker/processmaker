@@ -70,23 +70,20 @@
 </template>
 
 <script>
-import Pagination from "vue-pagination-2";
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
 
 Vue.component("AvatarImage", AvatarImage);
-Vue.component("Pagination", Pagination);
 
 export default {
   components: {
     NotificationMessage,
     NotificationUser,
-    Pagination,
   },
   mixins: [datatableMixin],
-  props: ["filter"],
+  props: ["filter", "type"],
   notification: {
     type: Object,
     required: true,
@@ -227,7 +224,12 @@ export default {
           },
         )
         .then((response) => {
-          this.data = this.transform(response.data);
+          if (this.type) {
+            const filteredData = response.data.data.filter((item) => item.data && (item.data.type === this.type || !item.data.type));
+            this.data = this.transform({ data: filteredData });
+          } else {
+            this.data = this.transform(response.data);
+          }
           this.loading = false;
         });
     },

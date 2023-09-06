@@ -39,7 +39,7 @@
               <notifications-list :filter="filter" status="{{ $status }}" style="margin: 16px;" />
             </b-tab>
             <b-tab title="{{ __('Comments') }}">
-              <notifications-list :filter="filter" status="{{ $status }}" style="margin: 16px;" />
+              <notifications-list :type="'COMMENT'" status="{{ $status }}" style="margin: 16px;" />
             </b-tab>
           </div>
         </div>
