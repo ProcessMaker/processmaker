@@ -3,6 +3,7 @@ import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import newRequestModal from "./components/requests/requestModal";
 import requestModal from "./components/requests/modal";
 import requestModalMobile from "./components/requests/modalMobile";
 import notifications from "./components/requests/notifications";
@@ -92,6 +93,7 @@ window.ProcessMaker.navbar = new Vue({
     ConfirmationModal,
     MessageModal,
     NavbarProfile,
+    newRequestModal,
   },
   data() {
     return {
@@ -187,25 +189,27 @@ window.ProcessMaker.navbar = new Vue({
 });
 
 // Assign our navbar component to our global ProcessMaker object
-window.ProcessMaker.navbarMobile = new Vue({
-  el: "#navbarMobile",
-  components: {
-    requestModalMobile,
-  },
-  data() {
-    return {
-    };
-  },
-  methods: {
-    switchToDesktop() {
-      document.cookie = "isMobile=false";
-      window.location.reload();
+if (isMobileDevice) {
+  window.ProcessMaker.navbarMobile = new Vue({
+    el: "#navbarMobile",
+    components: {
+      requestModalMobile,
     },
-    onResize() {
-      this.isMobile = window.innerWidth < 992;
+    data() {
+      return {
+      };
     },
-  },
-});
+    methods: {
+      switchToDesktop() {
+        document.cookie = "isMobile=false";
+        window.location.reload();
+      },
+      onResize() {
+        this.isMobile = window.innerWidth < 992;
+      },
+    },
+  });
+}
 
 // Breadcrumbs are now part of the navbar component. Alias it here.
 window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
