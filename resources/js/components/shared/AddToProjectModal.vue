@@ -22,7 +22,7 @@
               :label="$t('Select Project')"
               api-get="projects"
               api-list="projects"
-              name="proeject"
+              name="project"
               :errors="addError.project"
             />
             <b-form-group>
@@ -90,8 +90,15 @@
         },
         clear() {
           this.projects = [];
+          this.copyAsset = false;
+        },
+        validateProject() {
+          //TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
         },
         addToProject() {
+          // if (this.copyAsset) {
+          //   //TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
+          // }
           let formData = new FormData();
           formData.append("asset_type", this.assetType);
           formData.append("asset_id", this.assetId);

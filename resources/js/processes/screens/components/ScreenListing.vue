@@ -236,9 +236,9 @@ export default {
           }
         });
     },
-    showAddToProjectModal(name, id) {        
+    showAddToProjectModal(title, id) {        
       this.screenId = id;
-      this.assetName = name;
+      this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
     onAction(actionType, data, index) {
@@ -275,7 +275,7 @@ export default {
           );
             break;
             case 'add-to-project':
-              this.showAddToProjectModal(data.name, data.id);
+              this.showAddToProjectModal(data.title, data.id);
             break;
         }
     } else {

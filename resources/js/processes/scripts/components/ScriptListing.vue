@@ -247,7 +247,7 @@ export default {
           );
           break;
         case 'add-to-project':
-          this.showAddToProjectModal(data.name, data.id);
+          this.showAddToProjectModal(data.title, data.id);
           break;
       }
     },
@@ -277,9 +277,9 @@ export default {
           this.loading = false;
         });
     },
-    showAddToProjectModal(name, id) {        
+    showAddToProjectModal(title, id) {        
       this.assetId = id;
-      this.assetName = name;
+      this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
   },
