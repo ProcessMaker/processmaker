@@ -2,7 +2,6 @@
   <div class="data-table">
     <div
       class="card card-body table-card"
-      style="margin-right: 34px;"
     >
       <vuetable
         :data-manager="dataManager"
@@ -15,28 +14,6 @@
         pagination-path="meta"
         :no-data-template="$t('No Data Available')"
       >
-        <template
-          slot="from"
-          slot-scope="props"
-        >
-          <notification-user :notification="props.rowData" />
-        </template>
-
-        <template
-          slot="subject"
-          slot-scope="props"
-        >
-          <a :href="props.rowData.url">
-            <span v-if="props.rowData.type==='FILE_READY'" />
-            <span v-else>
-              <notification-message
-                :notification="props.rowData"
-                :show-time="false"
-              />
-            </span>
-          </a>
-        </template>
-
         <template
           slot="changeStatus"
           slot-scope="props"
@@ -55,15 +32,30 @@
             <i class="far fa-envelope-open fa-lg gray-envelope" />
           </span>
         </template>
-        <tr
-          v-for="row in filteredData"
-          :key="row.id"
-          :class="{ 'highlighted-row': row.id === highlightedRowId }"
+
+        <template
+          slot="from"
+          slot-scope="props"
         >
-          <td v-for="field in fields" :key="field.name">
-            {{ row[field.name] }}
-          </td>
-        </tr>
+          <notification-user
+            :notification="props.rowData"
+          />
+        </template>
+
+        <template
+          slot="subject"
+          slot-scope="props"
+        >
+          <a :href="props.rowData.url">
+            <span v-if="props.rowData.type==='FILE_READY'" />
+            <span v-else>
+              <notification-message
+                :notification="props.rowData"
+                :style="{ fontSize: '14px' }"
+              />
+            </span>
+          </a>
+        </template>
       </vuetable>
       <pagination
         ref="pagination"
@@ -78,21 +70,23 @@
 </template>
 
 <script>
+import Pagination from "vue-pagination-2";
 import datatableMixin from "../../components/common/mixins/datatable";
-import notificationsMixin from "../notifications-mixin";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
 
 Vue.component("AvatarImage", AvatarImage);
+Vue.component("Pagination", Pagination);
 
 export default {
   components: {
     NotificationMessage,
     NotificationUser,
+    Pagination,
   },
-  mixins: [datatableMixin, notificationsMixin],
-  props: ["filter", "status"],
+  mixins: [datatableMixin],
+  props: ["filter"],
   notification: {
     type: Object,
     required: true,
@@ -114,12 +108,12 @@ export default {
         {
           title: () => this.$t("From"),
           name: "__slot:from",
-          sortField: "userName",
+          sortField: "from",
         },
         {
           title: () => this.$t("Message"),
           name: "__slot:subject",
-          sortField: "name",
+          sortField: "subject",
         },
         {
           title: () => this.$t("Time"),
@@ -130,16 +124,6 @@ export default {
     };
   },
   computed: {
-    filteredData() {
-      if (this.currentTab === "all") {
-        return this.data;
-      } if (this.currentTab === "inbox") {
-        return this.data.filter((item) => item.type === "inbox");
-      } if (this.currentTab === "comments") {
-        return this.data.filter((item) => item.type === "comments");
-      }
-      return [];
-    },
     url() {
       return this.notification.data?.url;
     },
@@ -156,7 +140,6 @@ export default {
   },
   methods: {
     read(id) {
-      this.highlightedRowId = id;
       ProcessMaker.removeNotifications([id]).then(() => {
         this.fetch();
       });
@@ -225,7 +208,7 @@ export default {
       }
       const { CancelToken } = ProcessMaker.apiClient;
 
-      // Load from our api client
+      // Load from your API client (adjust the API endpoint and parameters as needed)
       ProcessMaker.apiClient
         .get(
           `notifications?page=${
@@ -261,9 +244,6 @@ export default {
     }
     .blue-envelope {
     color: rgb(55, 55, 87);
-    }
-    .highlighted-row:hover {
-      background-color: rgba(249, 249, 115, 0.755);
     }
     :deep(.vuetable-th-slot-subject) {
         min-width: 450px;
