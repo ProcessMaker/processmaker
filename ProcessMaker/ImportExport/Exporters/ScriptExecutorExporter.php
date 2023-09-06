@@ -22,7 +22,7 @@ class ScriptExecutorExporter extends ExporterBase
     public function import() : bool
     {
         $authenticatedUser = Auth::user();
-        $userId = $authenticatedUser ? $authenticatedUser->id : User::where('username', 'admin')->pluck('id');
+        $userId = $authenticatedUser ? $authenticatedUser->id : null;
 
         switch ($this->mode) {
             case 'copy':
