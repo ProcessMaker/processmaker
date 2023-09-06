@@ -19,6 +19,8 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter;
+use ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable;
 
 class ExportController extends Controller
 {
@@ -27,6 +29,7 @@ class ExportController extends Controller
         'process' => [Process::class, ProcessExporter::class],
         'script' => [Script::class, ScriptExporter::class],
         'process_templates' => [ProcessTemplates::class, TemplateExporter::class],
+        'decisiontable' => [DecisionTable::class, DecisionTableExporter::class],
     ];
 
     /**
