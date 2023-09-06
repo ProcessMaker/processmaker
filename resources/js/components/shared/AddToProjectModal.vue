@@ -12,24 +12,30 @@
         <template>
             <div class="d-flex justify-content-between pb-3">
               <h6>
-                <span class="text-capitalize">{{ assetType }}:</span> {{ assetName }}
+                <span class="text-capitalize">{{ formatAssetType(assetType) }}:</span> {{ assetName }}
               </h6>
               <required></required>
             </div>
             <project-select
-                v-model="projects"
-                :label="$t('Select Project')"
-                api-get="projects"
-                api-list="projects"
-                name="proeject"
-                :errors="addError.project"
+              required
+              v-model="projects"
+              :label="$t('Select Project')"
+              api-get="projects"
+              api-list="projects"
+              name="proeject"
+              :errors="addError.project"
             />
             <b-form-group>
               <b-form-checkbox
                 v-model="copyAsset"
                 class="pt-3"
               >
-                Use a copy of this asset
+                <span
+                v-b-tooltip.hover.bottom
+                :title="$t('Use a copy if you are planning on making changes to this asset.')"
+                >
+                  Use a copy of this asset
+                </span>
               </b-form-checkbox>
             </b-form-group>
         </template>
@@ -58,13 +64,13 @@
         disabled: true,
         customModalButtons: [
           {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-          {"content": "Assign", "action": "addToProject", "variant": "primary", "disabled": true, "hidden": false},
+          {"content": "Add", "action": "addToProject", "variant": "primary", "disabled": true, "hidden": false},
         ],
       }
     },
       computed: {
         title() {
-          return this.$t('Assign to Project');
+          return this.$t('Add to a Project');
         },
       },
       watch: {
@@ -105,6 +111,9 @@
               ProcessMaker.alert(this.$t(message), "danger");
             }
           });
+        },
+        formatAssetType(assetType) {
+          return assetType.replace(/-/g, " ");
         },
       },
     };
