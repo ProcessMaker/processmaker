@@ -20,16 +20,17 @@ import PTab from "./PTab";
 import PTabs from "./PTabs";
 import ProjectSelect from "./ProjectSelect";
 import Required from "./Required";
+// import SelectTemplateModal from "./SelectTemplateModal";
 import SelectUserGroup from "./SelectUserGroup";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 import DownloadSvgButton from "./DownloadSvgButton.vue";
 import CreateScreenModal from "./CreateScreenModal.vue";
+import CreateScriptModal from "./CreateScriptModal.vue";
 
 export {
   AddToProjectModal,
-  CreateScreenModal,
   BasicSearch,
   CategorySelect,
   ChangeLog,
@@ -37,6 +38,8 @@ export {
   Column,
   ColumnChooser,
   ColumnConfig,
+  CreateScreenModal,
+  CreateScriptModal,
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
@@ -51,6 +54,7 @@ export {
   PTab,
   PTabs,
   Required,
+  // SelectTemplateModal,
   SelectUserGroup,
   SidebarButton,
   SidebarNav,

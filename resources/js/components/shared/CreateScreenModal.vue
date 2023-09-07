@@ -54,11 +54,11 @@
                 />
               </b-form-group>
               <category-select
-                v-model="formData.screen_category_id"
+                v-model="categoryType ? category_type_id : formData.screen_category_id"
                 :errors="errors.screen_category_id"
                 :label="$t('Category')"
-                api-get="screen_categories"
-                api-list="screen_categories"
+                :api-get="categoryType || screen_categories"
+                :api-list="categoryType || screen_categories"
               />
               <project-select
                 v-if="isProjectsInstalled"
@@ -96,7 +96,7 @@ export default {
         ProjectSelect,
     },
     mixins: [FormErrorsMixin],
-    props: ["countCategories", "types", "isProjectsInstalled", 'hideAddBtn'],
+    props: ["countCategories", "types", "isProjectsInstalled", 'hideAddBtn', 'categoryType'],
     data() {
         return {
             formData: {},
@@ -110,6 +110,7 @@ export default {
         };
     },
     mounted() {
+      console.log(this.categoryType, 'this.categoryType');
         this.resetFormData();
         this.resetErrors();
     },
