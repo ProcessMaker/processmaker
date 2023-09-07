@@ -41,7 +41,7 @@
             name="description"
           ></b-form-textarea>
         </b-form-group>
-        <category-select
+        <!-- <category-select
           v-if="projectCategories"
           :label="$t('Category')"
           api-get="projects-categories"
@@ -49,13 +49,12 @@
           v-model="process_category_id"
           :errors="addError?.process_category_id"
           name="category"
-        ></category-select>
+        ></category-select> -->
         <category-select
-          v-else
           :label="$t('Category')"
-          api-get="process_categories"
-          api-list="process_categories"
-          v-model="process_category_id"
+          :api-get="category_type || 'process_categories'"
+          :api-list="category_type || 'process_categories'"
+          v-model="category_type ? category_type_id : process_category_id"
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
@@ -111,7 +110,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'category_type'],
     data: function() {
       return {
         showModal: false,
@@ -120,6 +119,7 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        category_type_id: "",
         projects: [],
         projectCategories: false,
         template_version: null,
@@ -139,7 +139,11 @@
         if (this.selectedTemplate) {
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
-          this.process_category_id = this.templateData.category_id;
+          if (this.category_type) {
+            this.category_type_id = this.templateData.category_id;
+          } else {
+            this.process_category_id = this.templateData.category_id;
+          }
           this.template_version = this.templateData.version;
         }
       },
@@ -176,6 +180,7 @@
         this.name = "";
         this.description = "";
         this.process_category_id = "";
+        this.category_type_id = "";
         this.projects = [];
         this.status = "";
         this.addError = {};
