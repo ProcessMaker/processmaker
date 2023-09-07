@@ -35,7 +35,7 @@
 
 
   <script>
-    test = new Vue({
+    modelerApp = new Vue({
       el: '#modeler-app',
       data() {
         return {
