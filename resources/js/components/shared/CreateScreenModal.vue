@@ -117,6 +117,9 @@ export default {
         channel.close();
     },
     methods: {
+        show() {
+            this.$bvModal.show("createScreen");
+        },
         resetFormData() {
             this.formData = {
                 title: null,
