@@ -52,9 +52,9 @@
         ></category-select> -->
         <category-select
           :label="$t('Category')"
-          :api-get="category_type || 'process_categories'"
-          :api-list="category_type || 'process_categories'"
-          v-model="category_type ? category_type_id : process_category_id"
+          :api-get="categoryType || 'process_categories'"
+          :api-list="categoryType || 'process_categories'"
+          v-model="categoryType ? category_type_id : process_category_id"
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
@@ -110,7 +110,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'category_type'],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType'],
     data: function() {
       return {
         showModal: false,
@@ -139,7 +139,7 @@
         if (this.selectedTemplate) {
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
-          if (this.category_type) {
+          if (this.categoryType) {
             this.category_type_id = this.templateData.category_id;
           } else {
             this.process_category_id = this.templateData.category_id;
