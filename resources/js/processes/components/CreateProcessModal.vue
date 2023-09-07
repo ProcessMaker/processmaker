@@ -41,8 +41,21 @@
             name="description"
           ></b-form-textarea>
         </b-form-group>
-        <category-select :label="$t('Category')" api-get="process_categories"
-          api-list="process_categories" v-model="process_category_id"
+        <category-select
+          v-if="projectCategories"
+          :label="$t('Category')"
+          api-get="projects-categories"
+          api-list="projects-categories"
+          v-model="process_category_id"
+          :errors="addError?.process_category_id"
+          name="category"
+        ></category-select>
+        <category-select
+          v-else
+          :label="$t('Category')"
+          api-get="process_categories"
+          api-list="process_categories"
+          v-model="process_category_id"
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
@@ -108,6 +121,7 @@
         description: "",
         process_category_id: "",
         projects: [],
+        projectCategories: false,
         template_version: null,
         addError: {},
         status: "",
