@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ExporterBase;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
@@ -21,6 +20,8 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter;
 use ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable;
+use ProcessMaker\Packages\Connectors\DataSources\ImportExport\DataSourceExporter;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
 
 class ExportController extends Controller
 {
@@ -30,6 +31,7 @@ class ExportController extends Controller
         'script' => [Script::class, ScriptExporter::class],
         'process_templates' => [ProcessTemplates::class, TemplateExporter::class],
         'decisiontable' => [DecisionTable::class, DecisionTableExporter::class],
+        'datasource' => [DataSource::class, DataSourceExporter::class],
     ];
 
     /**
