@@ -25,9 +25,11 @@ import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 import DownloadSvgButton from "./DownloadSvgButton.vue";
+import CreateScreenModal from "./CreateScreenModal.vue";
 
 export {
   AddToProjectModal,
+  CreateScreenModal,
   BasicSearch,
   CategorySelect,
   ChangeLog,
