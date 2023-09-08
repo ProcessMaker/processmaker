@@ -100,6 +100,7 @@
         "vue-template-compiler": "^2.6.12",
         "vue-uniq-ids": "^1.0.0",
         "vuedraggable": "^2.24.3",
+        "vuetable-2": "^1.7.5",
         "vuex": "^3.6.2",
         "xml-js": "^1.6.7"
     },
