@@ -644,8 +644,11 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * @param string $subject
      * @return void
      */
-    private function dispatchAction(array $action, $subject = $this->TOPIC_REQUESTS): void
+    private function dispatchAction(array $action, $subject = null): void
     {
+        if ($subject === null) {
+            $subject = $this->TOPIC_REQUESTS;
+        }
         // add environment variables to session
         $environmentVariables = $this->getEnvironmentVariables();
         $action['session']['env'] = $environmentVariables;
