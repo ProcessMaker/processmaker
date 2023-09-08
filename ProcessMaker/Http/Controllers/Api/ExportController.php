@@ -40,10 +40,10 @@ class ExportController extends Controller
     public function __construct()
     {
         if (PackageHelper::isPackageInstalled(self::DATA_SOURCE_CLASS)) {
-            $this->types['datasource'] = [self::DATA_SOURCE_CLASS, self::DATA_SOURCE_EXPORTER_CLASS];
+            $this->types['data_source'] = [self::DATA_SOURCE_CLASS, self::DATA_SOURCE_EXPORTER_CLASS];
         }
         if (PackageHelper::isPackageInstalled(self::DECISION_TABLE_CLASS)) {
-            $this->types['decisiontable'] = [self::DECISION_TABLE_CLASS, self::DECISION_TABLE_EXPORTER_CLASS];
+            $this->types['decision_table'] = [self::DECISION_TABLE_CLASS, self::DECISION_TABLE_EXPORTER_CLASS];
         }
     }
 
