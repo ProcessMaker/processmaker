@@ -148,6 +148,24 @@ class RequestController extends Controller
             $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
         }
 
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('requests.showMobile', compact(
+                'request',
+                'files',
+                'canCancel',
+                'canViewComments',
+                'canManuallyComplete',
+                'canRetry',
+                'manager',
+                'canPrintScreens',
+                'screenRequested',
+                'addons',
+                'isProcessManager',
+                'eligibleRollbackTask',
+                'errorTask',
+            ));
+        }
+
         return view('requests.show', compact(
             'request',
             'files',
