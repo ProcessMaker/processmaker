@@ -361,6 +361,18 @@
           </template>
         </div>
       @endif
+      @can('view-comments')
+      <pan-comment 
+          commentable_id="{{ $request->getKey() }}" 
+          commentable_type="{{ get_class($request) }}"
+          :reactions="configurationComments.reactions" 
+          :voting="configurationComments.voting"
+          :edit="configurationComments.edit" 
+          :remove="configurationComments.remove"
+          :adding="configurationComments.comments" 
+          :readonly="request.status === 'COMPLETED'"
+          />
+      @endcan
     </div>
   </div>
 
