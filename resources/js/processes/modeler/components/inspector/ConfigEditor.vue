@@ -150,7 +150,7 @@ export default {
     .sidebar-tree-view::v-deep .b-sidebar {
       margin-top: 128px;
       margin-right: 315px;
-      width: 800px;
+      width: 65%;
     }
     .sidebar-header {
       padding: 10px;
