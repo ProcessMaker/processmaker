@@ -28,6 +28,7 @@ import SliderWithInput from "./SliderWithInput";
 import DownloadSvgButton from "./DownloadSvgButton.vue";
 import CreateScreenModal from "../../processes/screens/components/CreateScreenModal.vue";
 import CreateScriptModal from "../../processes/scripts/components/CreateScriptModal.vue";
+import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
 export {
   AddToProjectModal,
@@ -38,6 +39,7 @@ export {
   Column,
   ColumnChooser,
   ColumnConfig,
+  CreateProcessModal,
   CreateScreenModal,
   CreateScriptModal,
   DataFormatSelector,
