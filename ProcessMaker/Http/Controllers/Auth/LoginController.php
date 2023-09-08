@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cookie;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -55,6 +56,19 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        $default = Setting::where('key', 'sso.default.login')->first();
+
+        // Redirectind to default login
+        if (!empty($default) && !empty($addons->toArray())) {
+            $position = $default->getAttribute('config');
+            $element = $default->getAttribute('ui')->elements[$position];
+            $drivers = $addons->toArray()[0]->data['drivers'];
+            
+            if ( array_key_exists(strtolower($element->name), $drivers)) {
+                return redirect()->route('sso.redirect', ['driver' => strtolower($element->name)]);
+            }
+        }
+        
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
