@@ -41,21 +41,12 @@
             name="description"
           ></b-form-textarea>
         </b-form-group>
-        <!-- <category-select
-          v-if="projectCategories"
-          :label="$t('Category')"
-          api-get="projects-categories"
-          api-list="projects-categories"
-          v-model="process_category_id"
-          :errors="addError?.process_category_id"
-          name="category"
-        ></category-select> -->
         <category-select
           :label="$t('Category')"
           :api-get="categoryType || 'process_categories'"
           :api-list="categoryType || 'process_categories'"
-          v-model="categoryType ? category_type_id : process_category_id"
-          :errors="addError?.process_category_id"
+          :value="categoryType ? category_type_id : process_category_id"
+          :errors="categoryType ? addError?.category_type_id : addError?.process_category_id"
           name="category"
         ></category-select>
         <project-select 
