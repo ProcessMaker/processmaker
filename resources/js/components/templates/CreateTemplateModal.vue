@@ -95,7 +95,9 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import Required from "../shared/Required.vue";
+import Modal from "../shared/Modal.vue";
+import FormErrorsMixin from "../shared/FormErrorsMixin";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-button
+    <b-button v-if="!hideAddBtn"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
@@ -180,7 +180,10 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+  import Modal from "../../../components/shared/Modal.vue";
+  import Required from "../../../components/shared/Required.vue";
+  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
   import SliderWithInput from "../../../components/shared/SliderWithInput";
 
   const channel = new BroadcastChannel("assetCreation");
@@ -188,7 +191,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn'],
     data: function() {
       return {
         title: '',
@@ -270,6 +273,9 @@
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScript');
+    }
   },
 };
 </script>

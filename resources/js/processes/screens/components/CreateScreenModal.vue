@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!hideAddBtn"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
@@ -94,7 +95,10 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Modal from "../../../components/shared/Modal.vue";
+import Required from "../../../components/shared/Required.vue";
+import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -105,7 +109,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn"],
   data() {
     return {
       formData: {},
@@ -168,6 +172,9 @@ export default {
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScreen');
+    }
   },
 };
 </script>

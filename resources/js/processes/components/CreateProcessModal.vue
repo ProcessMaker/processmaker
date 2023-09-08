@@ -103,7 +103,9 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import Required from "../../components/shared/Required.vue";
+  import Modal from "../../components/shared/Modal.vue";
+  import FormErrorsMixin from "../../components/shared/FormErrorsMixin";
   import TemplateSearch from "../../components/templates/TemplateSearch.vue";
   import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 

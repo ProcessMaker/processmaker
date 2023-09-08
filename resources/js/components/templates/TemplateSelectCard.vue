@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 
 Vue.filter('str_limit', function (value, size) {
   if (!value) return '';
