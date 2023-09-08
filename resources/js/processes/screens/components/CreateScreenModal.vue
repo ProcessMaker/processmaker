@@ -66,12 +66,13 @@
           />
         </b-form-group>
         <category-select
-          v-model="categoryType ? formData.category_type_id : formData.screen_category_id"
+          :value="categoryType ? formData.category_type_id : formData.screen_category_id"
           :errors="categoryType ? errors.category_type_id : errors.screen_category_id"
           :label="$t('Category')"
-          :api-get="categoryType || screen_categories"
-          :api-list="categoryType || screen_categories"
-        />
+          :api-get="categoryType || 'screen_categories'"
+          :api-list="categoryType || 'screen_categories'"
+          name="category"
+        ></category-select>
         <project-select
           v-if="isProjectsInstalled"
           :label="$t('Project')"

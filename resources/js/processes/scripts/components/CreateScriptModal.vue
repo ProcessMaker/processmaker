@@ -56,7 +56,7 @@
           />
         </b-form-group>
         <category-select
-          v-model="categoryType ? category_type_id : script_category_id"
+          :value="categoryType ? category_type_id : script_category_id"
           :errors="categoryType ? addError.category_type_id : addError.script_category_id"
           :label="$t('Category')"
           :api-get="categoryType || 'script_categories'"
