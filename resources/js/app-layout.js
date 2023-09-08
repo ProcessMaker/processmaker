@@ -349,8 +349,3 @@ new Vue({
     this.expanded === false;
   },
 });
-/*
-window.verifyDevice = () => {
-  document.cookie;
-}
-*/
