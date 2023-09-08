@@ -42,7 +42,7 @@ export default {
       disabled: false,
       spin: 0,
       showtip: true,
-      showdetail: false
+      showdetail: false,
     };
   },
   methods: {
@@ -59,7 +59,11 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
-          window.location = "/requests/" + instance.id;
+          if (this.$cookies.get("isMobile")) {
+            window.location = "/requests/mobile/" + instance.id;
+          } else {
+            window.location = "/requests/" + instance.id;
+          }
         }).catch((err) => {
           this.disabled = false;
           const data = err.response.data;
