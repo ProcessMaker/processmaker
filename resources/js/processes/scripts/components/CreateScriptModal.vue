@@ -1,6 +1,7 @@
 <template>
   <div>
-    <b-button v-if="!hideAddBtn"
+    <b-button
+      v-if="!hideAddBtn"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
@@ -55,11 +56,11 @@
           />
         </b-form-group>
         <category-select
-          v-model="script_category_id"
-          :errors="addError.script_category_id"
+          v-model="categoryType ? category_type_id : script_category_id"
+          :errors="categoryType ? addError.category_type_id : addError.script_category_id"
           :label="$t('Category')"
-          api-get="script_categories"
-          api-list="script_categories"
+          :api-get="categoryType || 'script_categories'"
+          :api-list="categoryType || 'script_categories'"
           name="script_category_id"
         ></category-select>
         <project-select
@@ -191,7 +192,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'categoryType'],
     data: function() {
       return {
         title: '',
@@ -199,6 +200,7 @@
         script_executor_id: null,
         description: '',
         script_category_id: '',
+        category_type_id: '',
         code: '',
         addError: {},
         selectedUser: '',
@@ -222,6 +224,7 @@
         this.script_executor_id = null;
         this.description = '';
         this.script_category_id = '';
+        this.category_type_id = "";
         this.code = '';
         this.timeout = 60;
         this.retry_attempts = 0;
