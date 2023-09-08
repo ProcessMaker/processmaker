@@ -2,7 +2,7 @@
   <div>
     <modal 
       id="createProcess"
-      :title="$t('Create Process')"
+      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Process')"
       :ok-disabled="disabled"
       @ok.prevent="onSubmit"
       @hidden="onClose"
@@ -103,7 +103,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType'],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType', 'copyAssetMode'],
     data: function() {
       return {
         showModal: false,

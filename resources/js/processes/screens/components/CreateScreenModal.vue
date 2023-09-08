@@ -12,7 +12,7 @@
     <modal
       id="createScreen"
       :ok-disabled="disabled"
-      :title="$t('Create Screen')"
+      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Screen')"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -109,7 +109,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "categoryType"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "categoryType", "copyAssetMode"],
   data() {
     return {
       formData: {},

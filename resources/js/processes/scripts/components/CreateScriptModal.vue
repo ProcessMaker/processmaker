@@ -12,7 +12,7 @@
     <modal
       id="createScript"
       :ok-disabled="disabled"
-      :title="$t('Create Script')"
+      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Script')"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -192,7 +192,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'categoryType'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'categoryType', 'copyAssetMode'],
     data: function() {
       return {
         title: '',
