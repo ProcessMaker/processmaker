@@ -18,21 +18,34 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter;
-use ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable;
-use ProcessMaker\Packages\Connectors\DataSources\ImportExport\DataSourceExporter;
-use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
+use ProcessMaker\PackageHelper;
 
 class ExportController extends Controller
 {
+    const DATA_SOURCE_CLASS = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
+
+    const DATA_SOURCE_EXPORTER_CLASS = 'ProcessMaker\Packages\Connectors\DataSources\ImportExport\DataSourceExporter';
+
+    const DECISION_TABLE_CLASS = 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable';
+
+    const DECISION_TABLE_EXPORTER_CLASS = 'ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter';
+
     protected array $types = [
         'screen' => [Screen::class, ScreenExporter::class],
         'process' => [Process::class, ProcessExporter::class],
         'script' => [Script::class, ScriptExporter::class],
         'process_templates' => [ProcessTemplates::class, TemplateExporter::class],
-        'decisiontable' => [DecisionTable::class, DecisionTableExporter::class],
-        'datasource' => [DataSource::class, DataSourceExporter::class],
     ];
+
+    public function __construct()
+    {
+        if (PackageHelper::isPackageInstalled(self::DATA_SOURCE_CLASS)) {
+            $this->types['datasource'] = [self::DATA_SOURCE_CLASS, self::DATA_SOURCE_EXPORTER_CLASS];
+        }
+        if (PackageHelper::isPackageInstalled(self::DECISION_TABLE_CLASS)) {
+            $this->types['decisiontable'] = [self::DECISION_TABLE_CLASS, self::DECISION_TABLE_EXPORTER_CLASS];
+        }
+    }
 
     /**
      * Return only the manifest
