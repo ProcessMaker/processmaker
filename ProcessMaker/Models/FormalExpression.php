@@ -42,7 +42,7 @@ class FormalExpression implements FormalExpressionInterface
     /**
      * Initialize the expression language evaluator
      */
-    private function initFormalExpression()
+    protected function initFormalExpression()
     {
         $this->feelExpression = new ExpressionLanguage();
         $this->registerPMFunctions();
