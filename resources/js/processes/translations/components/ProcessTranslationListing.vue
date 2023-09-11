@@ -278,12 +278,7 @@ export default {
 
         // Subscribe to streamed responses
         this.addSocketListener(channel, streamProgressEvent, (response) => {
-          console.log('response 1 -------');
-          console.log(response);
-          console.log(key);
-          console.log('response 1 -------');
           if (response.stream && this.translatingLanguages[key]) {
-            console.log(response.progress);
             this.$set(this.translatingLanguages[key], "stream", response.stream);
             this.$set(this.translatingLanguages[key], "progress", response.progress);
           }
@@ -291,10 +286,6 @@ export default {
 
         // Subscribe to chunk progress
         this.addSocketListener(channel, batchProgressEvent, (response) => {
-          console.log('response 2');
-          console.log(response);
-          console.log(key);
-          console.log('response 2 -------');
           if (response.batch && this.translatingLanguages[key]) {
             this.$set(this.translatingLanguages[key], "batch", response.batch);
             if (this.translatingLanguages[key].progress) {
