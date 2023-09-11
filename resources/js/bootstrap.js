@@ -43,6 +43,8 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
  */
 window.SharedComponents = require("./components/shared");
 
+window.ProcessesComponents = require("./processes/components");
+
 /**
  * Exporting Modeler inspector components
  */

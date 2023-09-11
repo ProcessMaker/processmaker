@@ -4,7 +4,7 @@ import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import VueHtml2Canvas from "vue-html2canvas";
 import requestModal from "./components/requests/modal";
-import notifications from "./components/requests/notifications";
+import notifications from "./notifications/components/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
