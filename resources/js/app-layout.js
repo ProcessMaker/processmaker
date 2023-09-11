@@ -6,7 +6,7 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import newRequestModal from "./components/requests/requestModal";
 import requestModal from "./components/requests/modal";
 import requestModalMobile from "./components/requests/modalMobile";
-import notifications from "./components/requests/notifications";
+//import notifications from "./components/requests/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -88,7 +88,7 @@ window.ProcessMaker.navbar = new Vue({
   components: {
     "b-navbar": BNavbar,
     requestModal,
-    notifications,
+    //notifications,
     sessionModal,
     ConfirmationModal,
     MessageModal,
@@ -117,7 +117,7 @@ window.ProcessMaker.navbar = new Vue({
       sessionWarnSeconds: "",
       taskTitle: "",
       isMobile: false,
-      isMobileDevice: window.ProcessMaker.mobile,
+      isMobileDevice: window.ProcessMaker.mobileApp,
     };
   },
   watch: {
@@ -201,7 +201,7 @@ if (isMobileDevice) {
     },
     methods: {
       switchToDesktop() {
-        document.cookie = "isMobile=false";
+        this.$cookies.set("isMobile", false);
         window.location.reload();
       },
       onResize() {
