@@ -2,7 +2,7 @@
   <div>
     <modal 
       id="createProcess"
-      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Process')"
+      :title="$t('Create Process')"
       :ok-disabled="disabled"
       @ok.prevent="onSubmit"
       @hidden="onClose"
@@ -43,10 +43,10 @@
         </b-form-group>
         <category-select
           :label="$t('Category')"
-          :api-get="categoryType || 'process_categories'"
-          :api-list="categoryType || 'process_categories'"
-          :value="categoryType ? category_type_id : process_category_id"
-          :errors="categoryType ? addError?.category_type_id : addError?.process_category_id"
+          api-get="process_categories"
+          api-list="process_categories"
+          v-model="process_category_id"
+          :errors="addError?.process_category_id"
           name="category"
         ></category-select>
         <project-select 
@@ -103,7 +103,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType', 'copyAssetMode'],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType'],
     data: function() {
       return {
         showModal: false,
