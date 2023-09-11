@@ -73,8 +73,9 @@ class ProcessCompletedNotification extends Notification
 
         return [
             'type' => 'PROCESS_COMPLETED',
-            'name' => sprintf('Request completed: %s', $this->processName),
+            'message' => sprintf('Request completed: %s', $this->processName),
             'dateTime' => $instance->completed_at->toIso8601String(),
+            'name' => $this->processName,
             'uid' => $this->processName,
             'request_id' => $instance->getKey(),
             'url' => sprintf(

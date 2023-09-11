@@ -2,7 +2,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import Router from "vue-router";
-import ScreenBuilder from "@processmaker/screen-builder";
+import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
 
 /**
@@ -15,6 +15,8 @@ import XHR from "i18next-xhr-backend";
 import VueI18Next from "@panter/vue-i18next";
 import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
+import Vue from "vue";
+import VueCookies from "vue-cookies";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import translator from "./modules/lang.js";
@@ -22,9 +24,6 @@ import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
-import { initializeScreenCache } from "@processmaker/screen-builder";
-import Vue from 'vue'
-import VueCookies from 'vue-cookies'
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
@@ -43,6 +42,8 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
  * Give node plugins access to additional components
  */
 window.SharedComponents = require("./components/shared");
+
+window.ProcessesComponents = require("./processes/components");
 
 /**
  * Exporting Modeler inspector components
@@ -286,80 +287,80 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
-  let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
   window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
   window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
   window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
-  window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
-    if (e.data.method === 'countdown') {
+  window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
+    if (e.data.method === "countdown") {
       window.ProcessMaker.sessionModal(
-        'Session Warning',
-        '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>',
+        "Session Warning",
+        "<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>",
         e.data.data.time,
-        window.ProcessMaker.AccountTimeoutWarnSeconds
+        window.ProcessMaker.AccountTimeoutWarnSeconds,
       );
     }
-    if (e.data.method === 'timedOut') {
-      window.location = '/logout?timeout=true';
+    if (e.data.method === "timedOut") {
+      window.location = "/logout?timeout=true";
     }
   });
 
-  //in some cases it's necessary to start manually
+  // in some cases it's necessary to start manually
   window.ProcessMaker.AccountTimeoutWorker.postMessage({
-    method: 'start',
+    method: "start",
     data: {
       timeout: window.ProcessMaker.AccountTimeoutLength,
       warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-      enabled: window.ProcessMaker.AccountTimeoutEnabled
-    }
+      enabled: window.ProcessMaker.AccountTimeoutEnabled,
+    },
   });
 
   const isSameDevice = (e) => {
     const localDeviceId = Vue.$cookies.get(e.device_variable);
     const remoteDeviceId = e.device_id;
     return localDeviceId && localDeviceId === remoteDeviceId;
-  }
+  };
 
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
-      .notification((token) => {
-        ProcessMaker.pushNotification(token);
-      })
-      .listen('.SessionStarted', (e) => {
-        const lifetime = parseInt(eval(e.lifetime));
-        if (isSameDevice(e)) {
-          window.ProcessMaker.AccountTimeoutWorker.postMessage({
-            method: 'start',
-            data: {
-              timeout: lifetime,
-              warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
-              enabled: window.ProcessMaker.AccountTimeoutEnabled
-            }
-          });
-          window.ProcessMaker.closeSessionModal();
-        }
-      })
-      .listen('.Logout', (e) => {
-        if (isSameDevice(e) && window.location.pathname.indexOf('/logout') === -1) {
-          const localDeviceId = Vue.$cookies.get(e.device_variable);
-          let redirectLogoutinterval = setInterval(() => {
-            const newDeviceId = Vue.$cookies.get(e.device_variable);
-            if (localDeviceId !== newDeviceId) {
-              clearInterval(redirectLogoutinterval);
-              window.location.href = '/logout';
-            }
-          }, 100);
-        }
-      })
-      .listen('.SecurityLogDownloadJobCompleted', (e) => {
-        if (e.success) {
-          const link = e.link;
-          const message = e.message;
-          window.ProcessMaker.alert(message, "success", 0, false, false, link);
-        } else {
-          window.ProcessMaker.alert(e.message, "warning");
-        }
-      });
+    .notification((token) => {
+      ProcessMaker.pushNotification(token);
+    })
+    .listen(".SessionStarted", (e) => {
+      const lifetime = parseInt(eval(e.lifetime));
+      if (isSameDevice(e)) {
+        window.ProcessMaker.AccountTimeoutWorker.postMessage({
+          method: "start",
+          data: {
+            timeout: lifetime,
+            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds,
+            enabled: window.ProcessMaker.AccountTimeoutEnabled,
+          },
+        });
+        window.ProcessMaker.closeSessionModal();
+      }
+    })
+    .listen(".Logout", (e) => {
+      if (isSameDevice(e) && window.location.pathname.indexOf("/logout") === -1) {
+        const localDeviceId = Vue.$cookies.get(e.device_variable);
+        const redirectLogoutinterval = setInterval(() => {
+          const newDeviceId = Vue.$cookies.get(e.device_variable);
+          if (localDeviceId !== newDeviceId) {
+            clearInterval(redirectLogoutinterval);
+            window.location.href = "/logout";
+          }
+        }, 100);
+      }
+    })
+    .listen(".SecurityLogDownloadJobCompleted", (e) => {
+      if (e.success) {
+        const { link } = e;
+        const { message } = e;
+        window.ProcessMaker.alert(message, "success", 0, false, false, link);
+      } else {
+        window.ProcessMaker.alert(e.message, "warning");
+      }
+    });
 }
 
 // Configuration Global object used by ScreenBuilder
