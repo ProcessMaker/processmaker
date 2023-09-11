@@ -13,6 +13,7 @@
       <pane
         id="pane-task-preview"
         :min-size="paneMinSize"
+        size="50"
         max-size="99"
         style="background-color: white;"
       >
@@ -159,6 +160,25 @@ export default {
     },
     onClose() {
       this.showPreview = false;
+      this.resetToDefault();
+    },
+    resetToDefault() {
+      this.linkTasks1 = "";
+      this.linkTasks2 = "";
+      this.task = {};
+      this.data = [];
+      this.taskTitle = "";
+      this.prevTask = {};
+      this.nextTask = {};
+      this.existPrev = false;
+      this.existNext = false;
+      this.loading = true;
+      this.paneMinSize = 0;
+      this.showFrame = 1;
+      this.showFrame1 = false;
+      this.showFrame2 = false;
+      this.isLoading = "";
+      this.stopFrame = false;
     },
     setPaneMinSize(splitpanesWidth, minPixelWidth) {
       this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;

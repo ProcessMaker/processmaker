@@ -159,7 +159,6 @@ export default {
       ProcessMaker.apiClient
         .get("/notifications?per_page=10&filter=unread&include=user")
         .then(response => {
-          console.log(response);
           ProcessMaker.notifications.splice(0);
           response.data.data.forEach(function(element) {
             ProcessMaker.pushNotification(element);

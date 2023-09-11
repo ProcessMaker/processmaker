@@ -86,6 +86,10 @@
     <div v-cloak id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
+                <div v-if="isSelfService" class="alert alert-primary" role="alert">
+                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                </div>
                 <div class="container-fluid h-100 d-flex flex-column">
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <task
@@ -185,7 +189,7 @@
             handler(task, oldTask) {
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
-                history.replaceState(null, null, `/tasks/${task.id}/edit`);
+                history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
               }
             }
           },
@@ -235,13 +239,15 @@
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
-            this.redirect(`/requests/${processRequestId}`);
+            setTimeout(() => {
+              parent.location.reload();
+            }, 200);
           },
           error(processRequestId) {
             this.$refs.task.showSimpleErrorMessage();
           },
           redirectToTask(task, force = false) {
-            this.redirect(`/tasks/${task}/edit`, force);
+            this.redirect(`/tasks/${task}/edit/preview`, force);
           },
           closed(taskId) {
             // avoid redirection if using a customized renderer
@@ -257,7 +263,8 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.location.reload();
+                window.ProcessMaker.alert(this.$t('The task was successfully claimed'), 'primary', 5, true);
+                parent.location.reload();
               });
           },
           // Data editor
