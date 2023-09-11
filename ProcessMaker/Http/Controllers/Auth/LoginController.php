@@ -62,7 +62,7 @@ class LoginController extends Controller
         if (!empty($default) && !empty($addons->toArray())) {
             $position = $default->getAttribute('config');
             $element = $default->getAttribute('ui')->elements[$position];
-            $drivers = $addons->toArray()[0]->data['drivers'];
+            $drivers = head($addons->toArray())->data['drivers'];
             if ( array_key_exists(strtolower($element->name), $drivers)) {
                 return redirect()->route('sso.redirect', ['driver' => strtolower($element->name)]);
             }
