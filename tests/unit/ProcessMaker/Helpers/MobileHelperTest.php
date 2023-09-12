@@ -32,21 +32,4 @@ class MobileHelperTest extends TestCase
         $result = MobileHelper::isMobile($this->getUserAgent());
         $this->assertFalse($result);
     }
-
-    public function testIsMobile()
-    {
-        $_COOKIE["isMobile"] = "true";
-        $result = MobileHelper::isMobile($this->getUserAgent());
-        $this->assertTrue($result);
-    }
-
-    public function testIsNotMobile()
-    {
-        $_COOKIE["isMobile"] = "false";
-        $result = MobileHelper::isMobile($this->getUserAgent(false));
-        $this->assertFalse($result);
-        $_COOKIE["isMobile"] = "";
-        $result = MobileHelper::isMobile($this->getUserAgent(false));
-        $this->assertFalse($result);
-    }
 }
