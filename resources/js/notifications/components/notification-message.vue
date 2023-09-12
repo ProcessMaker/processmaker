@@ -1,34 +1,43 @@
 <template>
   <b-col>
-    <div class="message" v-html="message"></div>
-    <notification-time v-if="showTime" :notification="notification"></notification-time>
-    <div v-if="displayBubble" class="bubble">
+    <div
+      class="message"
+      v-html="message"
+    />
+    <notification-time
+      v-if="showTime"
+      :notification="notification"
+    />
+    <div
+      v-if="displayBubble"
+      class="bubble"
+    >
       {{ displayBubble }}
     </div>
   </b-col>
 </template>
 
 <script>
-import NotificationTime from './notification-time';
-import notificationsMixin from '../notifications-mixin';
 import moment from "moment";
+import NotificationTime from "./notification-time";
+import notificationsMixin from "../notifications-mixin";
 
 const messages = {
-  'TASK_CREATED': '{{- user }} has been assigned to the task {{- subject }} in the process {{- processName }}',
-  'TASK_COMPLETED': 'Task {{- subject }} completed by {{- user }}',
-  'TASK_REASSIGNED': 'Task {{- subject }} reassigned to {{- user }}',
-  'TASK_OVERDUE': 'Task {{- subject }} is overdue. Originally due on {{- due }}',
-  'PROCESS_CREATED': '{{- user}} started the process {{- subject }}',
-  'PROCESS_COMPLETED': '{{- subject }} completed',
-  'ERROR_EXECUTION': '{{- subject }} caused an error',
-  'COMMENT': '{{- user}} commented on {{- subject}}',
-  'ProcessMaker\\Notifications\\ImportReady': 'Imported {{- subject }}'
-}
+  TASK_CREATED: "{{- user }} has been assigned to the task {{- subject }} in the process {{- processName }}",
+  TASK_COMPLETED: "Task {{- subject }} completed by {{- user }}",
+  TASK_REASSIGNED: "Task {{- subject }} reassigned to {{- user }}",
+  TASK_OVERDUE: "Task {{- subject }} is overdue. Originally due on {{- due }}",
+  PROCESS_CREATED: "{{- user}} started the process {{- subject }}",
+  PROCESS_COMPLETED: "{{- subject }} completed",
+  ERROR_EXECUTION: "{{- subject }} caused an error",
+  COMMENT: "{{- user}} commented on {{- subject}}",
+  "ProcessMaker\\Notifications\\ImportReady": "Imported {{- subject }}",
+};
 export default {
-  mixins: [ notificationsMixin ],
   components: {
-    NotificationTime
+    NotificationTime,
   },
+  mixins: [notificationsMixin],
   props: {
     notification: {
       type: Object,
@@ -37,27 +46,26 @@ export default {
     showTime: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   computed: {
     message() {
-      let message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
+      const message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
       return this.$t(message, this.bindings);
     },
     bindings() {
       return {
-        user: '<strong>' + this.displayUser + '</strong>',
-        subject: '<strong>' + this.displaySubject + '</strong>',
-        processName: '<strong>' + (this.data.processName || this.$t('Unknown Process')) + '</strong>',
-        due: '<strong>' + (this.data.due_in ? moment(this.data.due_in).format() : null) + '</strong>'
-      }
+        user: `<strong>${this.displayUser}</strong>`,
+        subject: `<strong>${this.displaySubject}</strong>`,
+        processName: `<strong>${this.data.processName || this.$t("Unknown Process")}</strong>`,
+        due: `<strong>${this.data.due_at ? moment(this.data.due_at).format() : null}</strong>`,
+      };
     },
     displaySubject() {
-      return this.data.name || this.data.processName || ''
+      return this.data.name || this.data.processName || "";
     },
-    displayBubble()
-    {
-      switch(this.data.type) {
+    displayBubble() {
+      switch (this.data.type) {
         case "COMMENT":
           return this.data.message.substring(0, 200);
       }
@@ -66,8 +74,8 @@ export default {
   mounted() {
   },
   methods: {
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
