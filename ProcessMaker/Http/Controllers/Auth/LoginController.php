@@ -14,6 +14,8 @@ use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
+use function Widmogrod\Functional\length;
+
 class LoginController extends Controller
 {
     use HasControllerAddons;
@@ -61,12 +63,12 @@ class LoginController extends Controller
         // Redirectind to default login
         if (!empty($default) && !empty($addons->toArray())) {
             $position = $default->getAttribute('config'); // Type int
-            if (isset($position)) {
+            $data = head($addons->toArray())->data;
+            $drivers = array_key_exists('drivers', $data) ? $data['drivers'] : [];
+            if (isset($position) && !empty($drivers)) {
                 $elements = $default->getAttribute('ui')->elements;
-                if ($elements >= $position) {
+                if (count($elements) >= $position + 1) {
                     $element = $elements[$position];
-                    $data = head($addons->toArray())->data;
-                    $drivers = array_key_exists('drivers', $data) ? $data['drivers'] : [];
                     if (array_key_exists(strtolower($element->name), $drivers)) {
                         return redirect()->route('sso.redirect', ['driver' => strtolower($element->name)]);
                     }
