@@ -70,6 +70,7 @@
                   <monaco-editor
                     v-model="code"
                     :options="monacoLargeOptions"
+                    data-cy="editorViewFrame"
                     language="json"
                     class="editor"
                     @focusout.native="handleBlur"
@@ -85,7 +86,7 @@
               </template>
               <b-card-text>
                 <div class="editor-container">
-                  <tree-view v-model="code" style="border:1px; solid gray; min-height:700px;"></tree-view>
+                  <tree-view v-model="code" :key="componentKey" style="border:1px; solid gray; min-height:700px;"></tree-view>
                 </div>
               </b-card-text>
             </b-card>
@@ -110,6 +111,8 @@ export default {
       },
       code: "",
       treeView: false,
+      componentKey: 0,
+      valid: false,
     };
   },
   watch: {
@@ -121,6 +124,12 @@ export default {
     },
     code() {
       this.$emit("input", this.code);
+      try {
+        JSON.parse(this.code);
+        this.componentKey += 1;
+      } catch (e) {
+        this.valid = false;
+      }
     },
   },
   methods: {
