@@ -2,7 +2,15 @@
   <div class="flex-container">
     <i class="fas fa-code"></i>
     <div class="mb-2 custom-control custom-switch switch-padding">
-      <input id="show_tree" type="checkbox" v-model="showTree"  class="custom-control-input" :checked="value" @input="emitSwitchValue">
+      <input
+        id="show_tree"
+        v-model="showTree"
+        type="checkbox"
+        :data-cy="showTree ? 'treeViewToggle-checked' : 'treeViewToggle'"
+        class="custom-control-input"
+        :checked="value"
+        @input="emitSwitchValue"
+      >
       <label for="show_tree" class="custom-control-label"></label>
     </div>
     <i width="16" height="15">
