@@ -184,15 +184,14 @@
                         {{ $t('Output') }}
                       </b-col>
                       <b-col class="text-right">
-                        <b-button
+                        <button
+                          type="button"
                           v-b-modal.data-preview
-                          squared
-                          variant="outline-dark"
-                          class="fas ml-auto btn-sm tree-button"
+                          class="btn-sm float-right"
                           @click.stop
                         >
                           <i class="fas ml-auto fas fa-expand" />
-                        </b-button>
+                        </button>
                       </b-col>
                       <b-col
                         align-self="end"
@@ -295,6 +294,7 @@
           <monaco-editor
             v-model="stringifyJson"
             :options="monacoOptionsOutput"
+            data-cy="editorViewFrame"
             class="editor-modal"
             language="json"
           />
