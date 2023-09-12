@@ -120,8 +120,8 @@ export default {
         },
         { 
           value: "add-to-project", 
-          content: "Assign to Project",
-          icon: "fas nav-icon fa-folder" 
+          content: "Add to Project",
+          icon: "fas fa-folder-plus" 
         },
         {
           value: "duplicate-item",
@@ -247,7 +247,7 @@ export default {
           );
           break;
         case 'add-to-project':
-          this.showAddToProjectModal(data.name, data.id);
+          this.showAddToProjectModal(data.title, data.id);
           break;
       }
     },
@@ -277,9 +277,9 @@ export default {
           this.loading = false;
         });
     },
-    showAddToProjectModal(name, id) {        
+    showAddToProjectModal(title, id) {        
       this.assetId = id;
-      this.assetName = name;
+      this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
   },

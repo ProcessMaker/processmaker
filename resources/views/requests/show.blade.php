@@ -261,9 +261,7 @@
         </div>
         @can('view-comments')
           <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-            :reactions="configurationComments.reactions" :voting="configurationComments.voting"
-            :edit="configurationComments.edit" :remove="configurationComments.remove"
-            :adding="configurationComments.comments" :readonly="request.status === 'COMPLETED'" />
+            :adding="true" :readonly="request.status === 'COMPLETED'" />
         @endcan
       </div>
       @if (shouldShow('requestStatusContainer'))
@@ -415,13 +413,6 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          configurationComments: {
-            comments: false,
-            reactions: false,
-            edit: false,
-            voting: false,
-            remove: false,
-          },
           iframeLoading: false,
           showTree: false,
         };
@@ -725,28 +716,8 @@
             } 
           )
         },
-        getConfigurationComments() {
-          if (this.canViewComments) {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            if (commentsPackage) {
-              ProcessMaker.apiClient.get(`comments/configuration`, {
-                params: {
-                  id: this.processId,
-                  type: 'Process',
-                },
-              }).then(response => {
-                this.configurationComments.comments = !!response.data.comments;
-                this.configurationComments.reactions = !!response.data.reactions;
-                this.configurationComments.voting = !!response.data.voting;
-                this.configurationComments.edit = !!response.data.edit;
-                this.configurationComments.remove = !!response.data.remove;
-              });
-            }
-          }
-        },
       },
       mounted() {
-        this.getConfigurationComments();
         this.packages = window.ProcessMaker.requestShowPackages;
         this.listenRequestUpdates();
         this.cleanScreenButtons();
