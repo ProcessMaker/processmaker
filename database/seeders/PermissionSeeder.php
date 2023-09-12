@@ -85,6 +85,9 @@ class PermissionSeeder extends Seeder
             'view-other-users-profiles',
             'edit-personal-profile',
         ],
+        'Username and Password' => [
+            'edit-user-and-password',
+        ],
         'Requests' => [
             'view-all_requests',
             'edit-request_data',

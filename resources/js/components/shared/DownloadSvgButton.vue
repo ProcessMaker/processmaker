@@ -21,12 +21,11 @@
 
     <!-- Used for the design -->
     <!-- Page -->
-    <div ref="modelPrintSection" style="
-        position: absolute;
-        z-index: 0;
+    <div ref="modelPrintSection" id="modelPrintSection" style="
+        display: none;
+        position: relative;
         color: #000;
         min-width: 90em;
-        left: -9999999px;
         padding: 1rem;
         background: #ffffff;
         text-transform: initial;
@@ -55,7 +54,7 @@
             background: #ffffff;
         ">
           <div class="w-50 p-3" style="background: #E5F1FF; border-radius: 8px 0 0 8px"><h5><b>{{ title }}</b></h5></div>
-          <div class="w-50 p-3 text-muted" style="border-radius: 0 8px 8px 0"><small>{{ description }}</small></div>
+          <div class="w-50 p-3 text-muted" style="border-radius: 0 8px 8px 0"><small>{{ prompt }}</small></div>
         </div>
       </div>
     </div>
@@ -77,6 +76,10 @@ export default {
       default: "",
     },
     description: {
+      type: String,
+      default: "",
+    },
+    prompt: {
       type: String,
       default: "",
     },
@@ -108,22 +111,27 @@ export default {
     async download(event) {
       this.isLoading = true;
       const el = this.$refs.modelPrintSection;
-      const options = {
+
+      this.$html2canvas(el, {
+        logging: false,
         type: "dataURL",
-      };
-      this.img = await this.$html2canvas(el, options);
+        onclone(clone) {
+          clone.getElementById("modelPrintSection").style.display = "block";
+        },
+      }).then((canvas) => {
+        this.img = canvas;
+        const dataURL = this.img;
 
-      const dataURL = this.img;
+        const downloadLink = document.createElement("a");
+        downloadLink.href = dataURL;
+        downloadLink.download = `${this.fileName}.png`;
 
-      const downloadLink = document.createElement("a");
-      downloadLink.href = dataURL;
-      downloadLink.download = `${this.fileName}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
 
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-
-      document.body.removeChild(downloadLink);
-      this.isLoading = false;
+        document.body.removeChild(downloadLink);
+        this.isLoading = false;
+      });
     },
 
     async convertImagesToBase64(svgString) {

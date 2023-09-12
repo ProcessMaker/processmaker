@@ -10,15 +10,34 @@
         size="md"
       >
         <template>
-            <required></required>
+            <div class="d-flex justify-content-between pb-3">
+              <h6>
+                <span class="text-capitalize">{{ formatAssetType(assetType) }}:</span> {{ assetName }}
+              </h6>
+              <required></required>
+            </div>
             <project-select
-                v-model="projects"
-                :label="$t('Select Project')"
-                api-get="projects"
-                api-list="projects"
-                name="proeject"
-                :errors="addError.project"
+              required
+              v-model="projects"
+              :label="$t('Select Project')"
+              api-get="projects"
+              api-list="projects"
+              name="project"
+              :errors="addError.project"
             />
+            <b-form-group>
+              <b-form-checkbox
+                v-model="copyAsset"
+                class="pt-3"
+              >
+                <span
+                v-b-tooltip.hover.bottom
+                :title="$t('Use a copy if you are planning on making changes to this asset.')"
+                >
+                  Use a copy of this asset
+                </span>
+              </b-form-checkbox>
+            </b-form-group>
         </template>
       </modal>
     </div>
@@ -39,25 +58,26 @@
       return {
         errors: {},
         projects: [],
+        copyAsset: false,
         addError: {},
         showModal: false,
         disabled: true,
         customModalButtons: [
           {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-          {"content": "Assign", "action": "addToProject", "variant": "primary", "disabled": true, "hidden": false},
+          {"content": "Add", "action": "addToProject", "variant": "primary", "disabled": true, "hidden": false},
         ],
       }
     },
       computed: {
         title() {
-          return this.$t('Assign to Project');
+          return this.$t('Add to a Project');
         },
       },
       watch: {
         projects() {
             this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
-        }
-      },  
+        },
+      },
       methods: {
         show() {
           this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
@@ -70,8 +90,15 @@
         },
         clear() {
           this.projects = [];
+          this.copyAsset = false;
+        },
+        validateProject() {
+          //TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
         },
         addToProject() {
+          // if (this.copyAsset) {
+          //   //TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
+          // }
           let formData = new FormData();
           formData.append("asset_type", this.assetType);
           formData.append("asset_id", this.assetId);
@@ -92,12 +119,14 @@
             }
           });
         },
+        formatAssetType(assetType) {
+          return assetType.replace(/-/g, " ");
+        },
       },
     };
 </script>
   
 <style scoped>
-
     .overflow-modal {
     max-height: 30vh;
     overflow-y: auto;

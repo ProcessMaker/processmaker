@@ -1,10 +1,12 @@
 <template>
   <b-dropdown
-    variant="ellipsis"
+    :variant="variant ? variant : 'ellipsis'"
     no-caret
     no-flip
     lazy
-    class="dropdown-right ellipsis-dropdown-main"
+    right
+    offset="0"
+    class="ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
     v-if="filterActions.length > 0"    
@@ -56,6 +58,20 @@
       </b-dropdown-item>
     </div>
     <div v-else>
+      <div>
+        <b-input-group v-if="searchBar">
+          <b-input-group-prepend>
+            <b-btn class="btn-search-run px-2" :title="$t('Search for an Asset')" @click="fetch()">
+              <i class="fas fa-search search-icon" />
+            </b-btn>
+          </b-input-group-prepend>
+          <b-form-input
+            id="search-box"
+            class="search-input pl-0 border-0 font-italic"
+            :placeholder="$t('Search for an Asset')"
+          />
+        </b-input-group>
+      </div>
       <div v-for="action in filterActions">
         <b-dropdown-divider v-if="action.value == 'divider'"/>
         <b-dropdown-item v-else
@@ -81,15 +97,17 @@
 <script>
 import { Parser } from "expr-eval";
 import Mustache from 'mustache';
+import PmqlInput from "./PmqlInput.vue";
 
 export default {
-  components: { },
+  components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", 'isPackageInstalled'],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
   data() {
     return {
       active: false,
+      lastProgress: 0,
     };
   },
   computed: {
@@ -159,6 +177,12 @@ export default {
         totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
       }
 
+      if (totalProgress < this.lastProgress) {
+        totalProgress = this.lastProgress;
+      } else {
+        this.lastProgress = totalProgress;
+      }
+
       return Math.trunc(totalProgress);
     },
   },
@@ -185,5 +209,27 @@ export default {
 
 .ellipsis-menu-icon.no-padding {
   padding: 0 !important;
+}
+
+.btn-search-run {
+  border: none;
+  background-color: #ffffff;
+}
+
+.btn-search-run:active,
+  .btn-search-run:focus {
+    border-right-width: 0;
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+
+.search-input:active,
+  .search-input:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+.search-icon {
+  color: #6C757D;
 }
 </style>
