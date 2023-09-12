@@ -90,6 +90,7 @@ export default {
   data() {
     return {
       active: false,
+      lastProgress: 0,
     };
   },
   computed: {
@@ -153,6 +154,12 @@ export default {
 
       if (chunkProgress?.percentage > 0) {
         totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
+      }
+
+      if (totalProgress < this.lastProgress) {
+        totalProgress = this.lastProgress;
+      } else {
+        this.lastProgress = totalProgress;
       }
 
       return Math.trunc(totalProgress);
