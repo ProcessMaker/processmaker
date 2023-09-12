@@ -1,6 +1,6 @@
 <div class="flex-grow-1">
   <div id="navbarMobile">
-  <nav class="navbar navbar-light bg-primary d-print-none">
+    <nav class="navbar navbar-light bg-primary d-print-none">
       @php
         $loginLogo = \ProcessMaker\Models\Setting::getLogin();
       @endphp
@@ -57,6 +57,17 @@
         </ul>
       </div>
     </nav>
+    <!-- Nav tabs -->
+    <div>
+      <ul class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+        <li class="nav-item" role="presentation" role="presentation">
+          <a class="nav-link" data-toggle="tab" href="/tasks" role="tab" aria-selected="false">{{ __('Tasks') }}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="/requests" role="tab" aria-selected="true">{{ __('Requests') }}</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -71,5 +82,21 @@
   }
   .dropdown-toggle::after {
     display:none;
+  }
+  .nav-tabs {
+    list-style-type:none;
+    background-color: #EFF5FF;
+    flex-direction: row !important;
+  }
+  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: black;
+    background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 3px solid #1572C2 !important;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .nav-tabs a{
+    color: #333;
   }
 </style>
