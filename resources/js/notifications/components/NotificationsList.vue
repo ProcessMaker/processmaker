@@ -1,8 +1,6 @@
 <template>
   <div class="data-table">
-    <div
-      class="card card-body table-card"
-    >
+    <div class="card card-body table-card">
       <vuetable
         :data-manager="dataManager"
         :sort-order="sortOrder"
@@ -14,40 +12,39 @@
         pagination-path="meta"
         :no-data-template="$t('No Data Available')"
       >
+        <!-- Change Status Slot -->
         <template
           slot="changeStatus"
           slot-scope="props"
         >
           <span
-            v-if="props.rowData.read_at === null"
-            style="cursor:pointer"
-            class="far fa-envelope fa-lg blue-envelope"
-            @click="read(props.rowData.id)"
+            :class="{
+              'far fa-envelope fa-lg blue-envelope': props.rowData.read_at === null,
+              'far fa-envelope-open fa-lg gray-envelope': props.rowData.read_at !== null,
+            }"
+            style="cursor: pointer"
+            @click="toggleReadStatus(props.rowData.id, props.rowData.read_at === null)"
           />
-          <span
-            v-if="props.rowData.read_at !== null"
-            style="cursor:pointer"
-            @click="unread(props.rowData.id)"
-          >
-            <i class="far fa-envelope-open fa-lg gray-envelope" />
-          </span>
         </template>
 
+        <!-- From Slot -->
         <template
           slot="from"
           slot-scope="props"
         >
-          <notification-user
-            :notification="props.rowData"
-          />
+          <notification-user :notification="props.rowData" />
         </template>
 
+        <!-- Subject Slot -->
         <template
           slot="subject"
           slot-scope="props"
         >
-          <a :href="props.rowData.url">
-            <span v-if="props.rowData.type==='FILE_READY'" />
+          <a
+            style="cursor: pointer;"
+            @click="redirectToURL(props.rowData.url)"
+          >
+            <span v-if="props.rowData.type === 'FILE_READY'" />
             <span v-else>
               <notification-message
                 :notification="props.rowData"
@@ -57,6 +54,7 @@
           </a>
         </template>
       </vuetable>
+
       <pagination
         ref="pagination"
         :single="$t('Task')"
@@ -84,17 +82,10 @@ export default {
   },
   mixins: [datatableMixin],
   props: ["filter", "type"],
-  notification: {
-    type: Object,
-    required: true,
-  },
   data() {
     return {
-
       orderBy: "",
-
-      sortOrder: [
-      ],
+      sortOrder: [],
       fields: [
         {
           title: () => this.$t("Status"),
@@ -128,7 +119,7 @@ export default {
       return this.data.type === "COMMENT";
     },
   },
-  mounted: function mounted() {
+  mounted() {
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -136,37 +127,34 @@ export default {
     }
   },
   methods: {
-    read(id) {
-      ProcessMaker.removeNotifications([id]).then(() => {
-        this.fetch();
-      });
+    redirectToURL(url) {
+      if (url) {
+        window.location.href = url;
+      }
     },
-
-    unread(id) {
-      ProcessMaker.unreadNotifications([id]).then(() => {
+    toggleReadStatus(id, isRead) {
+      const action = isRead ? ProcessMaker.unreadNotifications : ProcessMaker.removeNotifications;
+      action([id]).then(() => {
         this.fetch();
       });
     },
 
     getSortParam() {
-      if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
-        return `&order_by=${this.sortOrder[0].sortField
-        }&order_direction=${this.sortOrder[0].direction}`;
+      if (this.sortOrder.length > 0) {
+        const { sortField, direction } = this.sortOrder[0];
+        return `&order_by=${sortField}&order_direction=${direction}`;
       }
       return "";
     },
 
     transform(data) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const record of data.data) {
-        record.created_at = this.formatDate(record.created_at);
-        if (record.read_at) {
-          record.read_at = this.formatDate(record.read_at);
-        } else {
-          record.read_at = null;
-        }
-      }
-      return data;
+      return {
+        data: data.data.map((record) => ({
+          ...record,
+          created_at: this.formatDate(record.created_at),
+          read_at: record.read_at ? this.formatDate(record.read_at) : null,
+        })),
+      };
     },
 
     formatDate(dateTime) {
@@ -208,15 +196,7 @@ export default {
       // Load from your API client (adjust the API endpoint and parameters as needed)
       ProcessMaker.apiClient
         .get(
-          `notifications?page=${
-            this.page
-          }&per_page=${
-            this.perPage
-          }&filter=${
-            this.filter
-          }&status=${
-            new URLSearchParams(window.location.search).get("status")
-          }${this.getSortParam()}`,
+          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}&status=${new URLSearchParams(window.location.search).get("status")}${this.getSortParam()}&include=user`,
           {
             cancelToken: new CancelToken((c) => {
               this.cancelToken = c;
@@ -238,20 +218,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .icon {
-        width:1em;
-    }
-    .gray-envelope {
-    color: gray;
-    }
-    .blue-envelope {
-    color: rgb(55, 55, 87);
-    }
-    :deep(.vuetable-th-slot-subject) {
-        min-width: 450px;
-        white-space: nowrap;
-    }
-    :deep(tr td:nth-child(1) span) {
-        padding: 6px 0px 0px 12px;
-    }
+.icon {
+  width: 1em;
+}
+.gray-envelope {
+  color: gray;
+}
+.blue-envelope {
+  color: rgb(55, 55, 87);
+}
+:deep(.vuetable-th-slot-subject) {
+  min-width: 450px;
+  white-space: nowrap;
+}
+:deep(tr td:nth-child(1) span) {
+  padding: 6px 0px 0px 12px;
+}
 </style>
