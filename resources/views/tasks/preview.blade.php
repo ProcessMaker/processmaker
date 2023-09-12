@@ -202,14 +202,6 @@
             }
             return {};
           },
-          taskHasComments() {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            let config = {};
-            if (commentsPackage && this.task.definition && this.task.definition.config) {
-              config = JSON.parse(this.task.definition.config);
-            }
-            return config;
-          },
           dueLabel() {
             const dueLabels = {
               'open': 'Due',
