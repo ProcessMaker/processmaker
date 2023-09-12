@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.8.0+next-20230829",
+    "version": "4.8.0+next-20230908B",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -43,7 +43,7 @@
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.9.4",
+        "processmaker/nayra": "1.9.6",
         "processmaker/pmql": "1.10.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
@@ -95,7 +95,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "03e727f5",
+            "build": "c407df26",
             "custom": {
                 "package-ellucian-ethos": "1.12.4"
             },
@@ -129,6 +129,7 @@
                 "package-savedsearch": "1.27.5",
                 "package-sentry": "1.5.1",
                 "package-signature": "1.8.0",
+                "package-testing": "0.1.0",
                 "package-translations": "2.5.0",
                 "package-versions": "1.6.0",
                 "package-vocabularies": "2.11.2",

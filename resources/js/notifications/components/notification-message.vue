@@ -58,7 +58,7 @@ export default {
         user: `<strong>${this.displayUser}</strong>`,
         subject: `<strong>${this.displaySubject}</strong>`,
         processName: `<strong>${this.data.processName || this.$t("Unknown Process")}</strong>`,
-        due: `<strong>${this.data.due_in ? moment(this.data.due_in).format() : null}</strong>`,
+        due: `<strong>${this.data.due_at ? moment(this.data.due_at).format() : null}</strong>`,
       };
     },
     displaySubject() {
