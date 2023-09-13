@@ -10,10 +10,7 @@
       <div class="card card-body p-3">
           <span>Welcome Mobile Tasks ProcessMaker</span>
       </div>
-
     </div>
-
-
   </div>
 </div>
 @endsection
