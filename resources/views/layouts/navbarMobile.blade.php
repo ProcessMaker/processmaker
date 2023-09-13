@@ -57,16 +57,33 @@
         </ul>
       </div>
     </nav>
+    @php
+      $menuItems = [
+        [
+          'name' => __('Tasks'),
+          'url' => route('tasks.index'),
+          'isActive' => Request::path() === 'tasks',
+        ],
+        [
+          'name' => __('Requests'),
+          'url' => route('requests.index'),
+          'isActive' => Request::path() === 'requests',
+        ],
+      ];
+    @endphp
     <!-- Nav tabs -->
     <div>
-      <ul class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-        <li class="nav-item" role="presentation" role="presentation">
-          <a class="nav-link" data-toggle="tab" href="/tasks" role="tab" aria-selected="false">{{ __('Tasks') }}</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="/requests" role="tab" aria-selected="true">{{ __('Requests') }}</a>
-        </li>
-      </ul>
+      <b-navbar-nav class="nav-tabs nav-fill" id="nav-tab" role="tablist">
+        <template v-for="item in {{ json_encode ($menuItems) }}">
+          <b-nav-item class="nav-item nav-link p-0"
+          role="presentation"
+          :href="item.url"
+          :active="item.isActive"
+          >
+            <span v-html="item.name"></span>
+          </b-nav-item>
+        </template>
+      </b-navbar-nav >
     </div>
   </div>
 </div>
