@@ -111,6 +111,7 @@
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
+                    :process-id="processId"
                     :default-prompt="prompt"
                     :lineContext="lineContext"
                     @get-selection="onGetSelection"
@@ -317,6 +318,9 @@ export default {
       default: false,
     },
     packageAi: {
+      default: 0,
+    },
+    processId: {
       default: 0,
     },
     user: {
