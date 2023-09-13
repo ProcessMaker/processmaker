@@ -1,41 +1,53 @@
 <template>
   <div>
-    <span class="text-muted" v-b-tooltip.hover :title="time">{{ formattedTime }}</span>
+    <span
+      v-b-tooltip.hover
+      class="text-muted"
+      :title="time"
+    >{{ formatDate }}</span>
   </div>
 </template>
 
 <script>
-import moment from "moment";
 
 export default {
   props: {
     notification: {
       type: Object,
       required: true,
-    }
+    },
   },
   data() {
     return {
-    }
+    };
   },
   computed: {
     time() {
       return this.notification.created_at;
     },
-    formattedTime() {
-      let d = new Date(this.time);
-      let formatted = moment(d).format();
+    formatDate() {
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
+      ];
 
-      // Check if its the same day
-      if (d.setHours(0,0,0,0) !== (new Date()).setHours(0,0,0,0)) {
-        // return the day
-        return formatted.split(' ')[0];
-        
-      } else {
-        // return the time
-        return formatted.split(' ')[1];
+      const dateObj = new Date(this.time);
+      const currentDate = new Date();
+
+      if (
+        dateObj.getDate() === currentDate.getDate()
+                && dateObj.getMonth() === currentDate.getMonth()
+                && dateObj.getFullYear() === currentDate.getFullYear()
+      ) {
+        const hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
+        return `${hours}:${minutes}`;
       }
+      const month = dateObj.getMonth();
+      const day = dateObj.getDate();
+      const formattedMonth = months[month];
+      return `${formattedMonth} ${day}`;
     },
-  }
-}
+  },
+};
 </script>

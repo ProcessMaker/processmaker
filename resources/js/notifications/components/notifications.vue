@@ -1,5 +1,8 @@
 <template>
-  <li class="nav-item d-none d-lg-block" v-cloak>
+  <li
+    v-cloak
+    class="nav-item d-none d-lg-block"
+  >
     <div id="notificationMenu">
       <b-button
         id="notification-menu-button"
@@ -15,54 +18,95 @@
         size="sm"
       >
         <div class="bell-icon">
-          <i class="fas fa-bell"></i>
-          <span class="dot" v-if="hasMessages"></span>
+          <i class="fas fa-bell" />
+          <span
+            v-if="hasMessages"
+            class="dot"
+          />
         </div>
-        <span class="message-count" v-if="hasMessages">{{ displayTotalCount }}</span>
+        <span
+          v-if="hasMessages"
+          class="message-count"
+        >{{ displayTotalCount }}</span>
       </b-button>
-      <b-popover target="notification-menu-button" placement="bottomleft" offset="1" triggers="click blur" @shown="onShown" @hidden="onHidden">
-        
+      <b-popover
+        target="notification-menu-button"
+        placement="bottomleft"
+        offset="1"
+        triggers="click blur"
+        @shown="onShown"
+        @hidden="onHidden"
+      >
         <div class="notification-popover">
-
-          <b-container fluid class="">
+          <b-container
+            fluid
+            class=""
+          >
             <b-row align-h="between">
               <b-col>
                 <b-tabs>
                   <b-tab @click="_ => filterComments = null">
                     <template #title>
-                      <b-badge v-if="allCount" pill variant="warning lighten">{{ allCount }}</b-badge>
+                      <b-badge
+                        v-if="allCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ allCount }}
+                      </b-badge>
                       {{ $t('Inbox') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = false">
                     <template #title>
-                      <b-badge v-if="notificationsCount" pill variant="warning lighten">{{ notificationsCount }}</b-badge>
+                      <b-badge
+                        v-if="notificationsCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ notificationsCount }}
+                      </b-badge>
                       {{ $t('Notifications') }}
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = true">
                     <template #title>
-                      <b-badge v-if="commentsCount" pill variant="warning lighten">{{ commentsCount }}</b-badge>
+                      <b-badge
+                        v-if="commentsCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ commentsCount }}
+                      </b-badge>
                       {{ $t('Comments') }}
                     </template>
                   </b-tab>
                 </b-tabs>
               </b-col>
-              <b-col align-self="center" lg="auto">
-                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link"></i></a>
+              <b-col
+                align-self="center"
+                lg="auto"
+              >
+                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link" /></a>
               </b-col>
             </b-row>
           </b-container>
-          
-          <div v-if="messages.length == 0" class="no-notifications">
-            <img src="/img/all-cleared.svg"/>
+          <div
+            v-if="messages.length == 0"
+            class="no-notifications"
+          >
+            <img src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
           <template v-else>
-            <notification-item v-for="(item, index) in filteredMessages" :key="index" :notification="item" :show-time="true"></notification-item>
+            <notification-item
+              v-for="(item, index) in filteredMessages"
+              :key="index"
+              :notification="item"
+              :show-time="true"
+            />
           </template>
-
         </div>
       </b-popover>
     </div>
@@ -70,27 +114,16 @@
 </template>
 
 <script>
-import { PopoverPlugin } from "bootstrap-vue"
+import { PopoverPlugin } from "bootstrap-vue";
 import NotificationItem from "./notification-item.vue";
 import notificationsMixin from "../notifications-mixin";
 
 Vue.use(PopoverPlugin);
 export default {
-  mixins: [notificationsMixin],
   components: { NotificationItem },
+  mixins: [notificationsMixin],
   props: {
-    messages: Array
-  },
-  watch: {
-    messages(value, mutation) {
-      //update the number of messages just whe the number has been initialized (in mounted)
-      if (this.incrementTotalMessages) {
-        this.updateTotalMessages();
-        $(this.$el)
-          .find(".dropdown")
-          .dropdown("toggle");
-      }
-    }
+    messages: Array,
   },
   data() {
     return {
@@ -99,7 +132,7 @@ export default {
       incrementTotalMessages: false,
       arrowStyle: {
         top: "0px",
-        left: "0px"
+        left: "0px",
       },
       filterComments: null,
       reloadOnClose: false,
@@ -107,18 +140,17 @@ export default {
   },
   computed: {
     ariaLabel() {
-      let count = this.totalMessages;
+      const count = this.totalMessages;
       if (count === 0) {
-        return this.$t('Notifications, No New Messages', {count});
-      } else if (count === 1) {
-        return this.$t('Notifications, {{count}} New Messages', {count});
-      } else {
-        return this.$t('Notifications, {{count}} New Messages', {count});
+        return this.$t("Notifications, No New Messages", { count });
+      } if (count === 1) {
+        return this.$t("Notifications, {{count}} New Messages", { count });
       }
+      return this.$t("Notifications, {{count}} New Messages", { count });
     },
     buttonVariant() {
       if (this.isOpen) {
-        return "primary"
+        return "primary";
       }
       if (this.hasMessages) {
         return "warning";
@@ -130,7 +162,30 @@ export default {
     },
     displayTotalCount() {
       return this.totalMessages > 10 ? "10+" : this.totalMessages;
+    },
+  },
+  watch: {
+    messages(value, mutation) {
+      // update the number of messages just whe the number has been initialized (in mounted)
+      if (this.incrementTotalMessages) {
+        this.updateTotalMessages();
+        $(this.$el)
+          .find(".dropdown")
+          .dropdown("toggle");
+      }
+    },
+  },
+  mounted() {
+    if ($("#navbar-request-button").length > 0) {
+      this.arrowStyle.top = `${$("#navbar-request-button").offset().top + 45}px`;
+      this.arrowStyle.left = `${$("#navbar-request-button").offset().left + 53}px`;
+
+      window.addEventListener("resize", () => {
+        this.arrowStyle.top = `${$("#navbar-request-button").offset().top + 42}px`;
+        this.arrowStyle.left = `${$("#navbar-request-button").offset().left + 32}px`;
+      });
     }
+    this.updateTotalMessages();
   },
   methods: {
     onShown() {
@@ -150,17 +205,16 @@ export default {
     url(task) {
       if (task.url) {
         return task.url;
-      } else {
-        return '/notifications';
       }
+      return "/notifications";
     },
     updateTotalMessages() {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient
         .get("/notifications?per_page=10&filter=unread&include=user")
-        .then(response => {
+        .then((response) => {
           ProcessMaker.notifications.splice(0);
-          response.data.data.forEach(function(element) {
+          response.data.data.forEach((element) => {
             ProcessMaker.pushNotification(element);
           });
           this.totalMessages = response.data.meta.total;
@@ -173,26 +227,11 @@ export default {
       if (!this.hasMessages) {
         return;
       }
-      const messageIds = this.messages.map(m => m.id);
+      const messageIds = this.messages.map((m) => m.id);
       window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: [] });
       this.reloadOnClose = true;
-    }
+    },
   },
-  mounted() {
-    if ($("#navbar-request-button").length > 0) {
-      this.arrowStyle.top = $("#navbar-request-button").offset().top + 45 + "px";
-      this.arrowStyle.left =
-        $("#navbar-request-button").offset().left + 53 + "px";
-
-      window.addEventListener("resize", () => {
-        this.arrowStyle.top =
-          $("#navbar-request-button").offset().top + 42 + "px";
-        this.arrowStyle.left =
-          $("#navbar-request-button").offset().left + 32 + "px";
-      });
-    }
-    this.updateTotalMessages();
-  }
 };
 </script>
 
@@ -250,7 +289,7 @@ export default {
   .nav-link.hover {
     border: 0;
   }
- 
+
 }
 
 .external-link {
@@ -290,7 +329,7 @@ export default {
   color: $light;
 }
 .notification-menu-button i {
-  color: $light; 
+  color: $light;
 }
 
 .notification-menu-button.is-open i {
