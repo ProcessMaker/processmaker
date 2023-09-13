@@ -18,6 +18,7 @@
         <img
           class="image"
           src="/img/recent_projects.svg"
+          alt="recent projects"
         >
         <div class="content-text">
           <span class="title">
@@ -79,12 +80,10 @@ export default {
 }
 .title {
   color: var(--secondary-800, #44494E);
-  /* Heading 2/Semi-Bold */
-  font-family: Open Sans;
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
-  line-height: 38px; /* 118.75% */
+  line-height: 38px;
   letter-spacing: -1.28px;
 }
 </style>
