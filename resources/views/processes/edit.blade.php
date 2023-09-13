@@ -265,7 +265,7 @@
                                         <th class="action">{{__('Request Canceled')}}</th>
                                         <th class="action">{{__('Request Completed')}}</th>
                                         <th class="action">{{__('Request Error')}}</th>
-                                        <th class="action">{{__('Comments On Request')}}</th>
+                                        <th class="action">{{__('Request Commented')}}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
