@@ -66,10 +66,7 @@
                 </b-button>
               </div>
             </div>
-            <div
-              v-if="!stopFrame"
-              class="frame-container"
-            >
+            <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
                 id="tasksFrame1"
@@ -86,9 +83,10 @@
                 :src="linkTasks2"
                 @load="frameLoaded()"
               />
-            </div>
-            <div v-else>
-              <task-loading />
+              <task-loading
+                v-show="stopFrame"
+                class="load-frame"
+              />
             </div>
           </div>
         </div>
@@ -221,7 +219,7 @@ export default {
       this.isLoading = setTimeout(() => {
         this.stopFrame = true;
         this.taskTitle = this.$t("Task Lorem");
-      }, 5000);
+      }, 4900);
 
       this.stopFrame = false;
       this.linkTasks = "";
@@ -239,6 +237,7 @@ export default {
     frameLoaded() {
       this.loading = false;
       clearTimeout(this.isLoading);
+      this.stopFrame = false;
       if (this.showFrame === 1) {
         this.showFrame1 = true;
         this.showFrame2 = false;
@@ -276,7 +275,8 @@ export default {
   display: grid;
   height: 70vh;
 }
-.embed-responsive {
+.embed-responsive,
+.load-frame {
   position: relative;
   display: block;
   width: 100%;
