@@ -90,6 +90,7 @@ class Setting extends ProcessMakerModel implements HasMedia
         'helper',
         'group',
         'hidden',
+        'ui',
     ];
 
     /**

@@ -77,8 +77,19 @@
               :title="$t('Copy to Clipboard')">
                 <i class="fa-lg fas fa-copy"></i>
               </b-button>
+              
+            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
+              <b-button 
+              :aria-label="$t('Delete')"
+              v-uni-aria-describedby="row.item.id.toString()"
+              @click="onDelete(row)" 
+              variant="link" 
+              >
+                <i class="fa-lg fas fa-trash-alt"></i>
+              </b-button>
+            </span>
 
-            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+            <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
               <b-button 
               :aria-label="$t('Clear')"
               v-uni-aria-describedby="row.item.id.toString()"
@@ -231,6 +242,9 @@ export default {
       sortable: false,
       tdClass: "align-middle text-right",
     });
+    ProcessMaker.EventBus.$on('refresh-settings-table', () => {
+      this.refresh();
+    });
   },
   methods: {
     loadButtons() {
@@ -291,6 +305,7 @@ export default {
         const { noDataSettings, otherSettings } = this.separateSettings(this.settings);
 
         this.shouldDisplayNoDataMessage = this.shouldDisplayNoData(noDataSettings, this.settings);
+        this.noDataMessageConfig = noDataSettings[0];
 
         if (!this.shouldDisplayNoDataMessage) {
           this.settings = otherSettings; // Use the other settings
@@ -379,6 +394,30 @@ export default {
       }
       this.onChange(row.item);
     },
+    onDelete(row) {
+      ProcessMaker.confirmModal(
+        this.$t("Caution!"),
+        this.$t("Are you sure you want to delete the setting") +
+          " " + '<strong>' +
+          row.item.name + '</strong>' +
+          this.$t("?"),
+        "",
+        () => {
+          this.handleDeleteSetting(row.index, row.item.id);
+        }
+      );
+    },
+    handleDeleteSetting(index, id) {
+      if (index !== -1) {
+        this.settings.splice(index, 1);
+        ProcessMaker.apiClient.delete(`${this.url}/${id}`).then(response => {
+          if (response.status == 204) {
+            ProcessMaker.alert(this.$t("The setting was deleted."), "success");
+            this.refresh();
+          }
+        });
+      }
+    },
     onEdit(row) {
       this.$refs[`settingComponent_${row.index}`].onEdit();
     },
@@ -401,7 +440,7 @@ export default {
 
       return url;
     },
-    settingUrl(id) {
+    settingUrl() {
       return `${this.url}/${id}`;
     },
     /**
@@ -495,6 +534,9 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
+    },
+    enableDeleteSetting(row) {
+      return row.item.ui?.deleteSettingEnabled || false;
     }
   }
 };
