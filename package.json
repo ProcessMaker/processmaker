@@ -93,7 +93,6 @@
         "vue-events": "^3.1.0",
         "vue-html2canvas": "^0.0.4",
         "vue-monaco": "^1.2.1",
-        "vue-pagination-2": "^3.1.0",
         "vue-password": "^1.2.0",
         "vue-resource": "^1.5.1",
         "vue-router": "^3.4.9",
