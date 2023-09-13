@@ -72,6 +72,11 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->create($request);
     }
 
+    public function updateAssets(Request $request)
+    {
+        return (new $this->types['process'][1])->updateAssets($request);
+    }
+
     public function deleteTemplate(string $type, Request $request)
     {
         $id = $request->id;

@@ -281,6 +281,17 @@ class ProcessTemplateTest extends TestCase
         );
 
         $response->assertStatus(200);
+
+        // // Update assets mode
+        // $updatePageResponse = $response->json();
+        // $updatePageResponse['existingAssets'][0]['mode'] = 'update';
+        // $updatePageResponse['existingAssets'][1]['mode'] = 'discard';
+
+        // // New Request to update assets mode
+        // $route = route('api.template.updateAssets');
+        // $response = $this->apiCall('POST', $route, $updatePageResponse);
+
+        // $response->assertStatus(200);
     }
 
     /**

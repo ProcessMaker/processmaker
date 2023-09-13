@@ -135,11 +135,10 @@ class TemplateController extends Controller
 
         if (!empty($assetsResponse)) {
             $response = [
-                'template_id' => $request->id,
+                'id' => $request->id,
                 'request' => $request->toArray(),
                 'existingAssets' => $assetsResponse,
             ];
-            dd($response);
         } else {
             dd('Assets not found');
             $response = $this->template->create($type, $request);
@@ -149,6 +148,13 @@ class TemplateController extends Controller
                 ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
             }
         }
+
+        return $response;
+    }
+
+    public function updateAssets(Request $request)
+    {
+        $response = $this->template->updateAssets($request);
 
         return $response;
     }
