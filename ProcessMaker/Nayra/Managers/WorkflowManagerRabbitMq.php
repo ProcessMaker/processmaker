@@ -457,7 +457,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             'bpmn' => $version,
             'action' => self::ACTION_TRIGGER_MESSAGE_EVENT,
             'params' => [
-                'instance_id' => $instanceId,
+                'instance_id' => $instance->uuid,
                 'element_id' => $elementId,
                 'message_ref' => $messageRef,
                 'data' => $payload,

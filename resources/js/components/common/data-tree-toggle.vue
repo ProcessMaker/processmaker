@@ -1,6 +1,8 @@
 <template>
   <div class="flex-container">
-    <i class="fas fa-code"></i>
+    <i width="16" height="15">
+      <img :src="codeViewIcon" alt="codeViewIcon">
+    </i>
     <div class="mb-2 custom-control custom-switch switch-padding">
       <input
         id="show_tree"
@@ -28,6 +30,7 @@ export default {
     return {
       showTree: this.value,
       treeViewIcon: require("../../../img/tree_view.svg"),
+      codeViewIcon: require("../../../img/code.svg"),
     };
   },
   methods: {
