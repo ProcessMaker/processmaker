@@ -30,6 +30,7 @@
                     :permission="permissions"
                     :data="props.rowData"
                     :divider="true"
+                    data-cy="category-ellipsis"
                   />
                 </template>
             </vuetable>

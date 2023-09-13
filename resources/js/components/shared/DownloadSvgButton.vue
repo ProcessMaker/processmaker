@@ -113,6 +113,7 @@ export default {
       const el = this.$refs.modelPrintSection;
 
       this.$html2canvas(el, {
+        logging: false,
         type: "dataURL",
         onclone(clone) {
           clone.getElementById("modelPrintSection").style.display = "block";

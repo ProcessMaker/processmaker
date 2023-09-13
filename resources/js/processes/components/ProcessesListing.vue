@@ -95,7 +95,7 @@
         { value: "edit-designer", content: "Edit Process", link: true, href:"/modeler/{{id}}", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "create-template", content: "Save as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
         { value: "create-pm-block", content: "Save as PM Block", permission: "create-pm-blocks", icon: "fas nav-icon fa-cube" },
-        { value: "add-to-project", content: "Assign to Project", icon: "fas nav-icon fa-folder" },
+        { value: "add-to-project", content: "Add to Project", icon: "fas fa-folder-plus" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
         { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-archive", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
