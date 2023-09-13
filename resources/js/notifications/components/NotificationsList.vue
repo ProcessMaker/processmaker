@@ -6,12 +6,12 @@
         :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
         pagination-path="meta"
         :no-data-template="$t('No Data Available')"
+        @vuetable:pagination-data="onPaginationData"
       >
         <!-- Change Status Slot -->
         <template
@@ -19,13 +19,19 @@
           slot-scope="props"
         >
           <span
-            :class="{
-              'far fa-envelope fa-lg blue-envelope': props.rowData.read_at === null,
-              'far fa-envelope-open fa-lg gray-envelope': props.rowData.read_at !== null,
-            }"
-            style="cursor: pointer"
-            @click="toggleReadStatus(props.rowData.id, props.rowData.read_at === null)"
+            v-if="props.rowData.read_at === null"
+            style="cursor:pointer"
+            class="far fa-envelope fa-lg blue-envelope"
+            @click="read(props.rowData.id)"
           />
+
+          <span
+            v-if="props.rowData.read_at !== null"
+            style="cursor:pointer"
+            @click="unread(props.rowData.id)"
+          >
+            <i class="far fa-envelope-open fa-lg gray-envelope" />
+          </span>
         </template>
 
         <!-- From Slot -->
@@ -120,19 +126,19 @@ export default {
       return this.data.type === "COMMENT";
     },
   },
-  mounted() {
-    const params = new URL(document.location).searchParams;
-    const successRouting = params.get("successfulRouting") === "true";
-    if (successRouting) {
-      ProcessMaker.alert(this.$t("The request was completed."), "success");
-    }
-  },
   watch: {
     filterComments() {
       this.transformResponse();
     },
     response() {
       this.transformResponse();
+    },
+  },
+  mounted() {
+    const params = new URL(document.location).searchParams;
+    const successRouting = params.get("successfulRouting") === "true";
+    if (successRouting) {
+      ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
   },
   methods: {
@@ -144,6 +150,17 @@ export default {
     toggleReadStatus(id, isRead) {
       const action = isRead ? ProcessMaker.unreadNotifications : ProcessMaker.removeNotifications;
       action([id]).then(() => {
+        this.fetch();
+      });
+    },
+    read(id) {
+      ProcessMaker.removeNotifications([id]).then(() => {
+        this.fetch();
+      });
+    },
+
+    unread(id) {
+      ProcessMaker.unreadNotifications([id]).then(() => {
         this.fetch();
       });
     },
@@ -169,10 +186,10 @@ export default {
 
     transformResponse() {
       if (this.filterComments === true) {
-        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === 'COMMENT');
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === "COMMENT");
         this.data = this.transform({ data: filteredData });
       } else if (this.filterComments === false) {
-        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== 'COMMENT');
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== "COMMENT");
         this.data = this.transform({ data: filteredData });
       } else {
         this.data = this.transform(this.response.data);
