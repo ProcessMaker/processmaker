@@ -86,6 +86,10 @@ class Setting extends ProcessMakerModel implements HasMedia
         'key',
         'config',
         'format',
+        'name',
+        'helper',
+        'group',
+        'hidden',
     ];
 
     /**
@@ -244,7 +248,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param $filter string
      */
-    public function scopeFilterGroups($query, $filter)
+    public function notHiddenGroups($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 
