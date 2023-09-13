@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!callFromAiModeler"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
@@ -105,7 +106,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled"],
+  props: ["countCategories", "types", "isProjectsInstalled", "callFromAiModeler"],
   data() {
     return {
       formData: {},
@@ -126,6 +127,9 @@ export default {
     channel.close();
   },
   methods: {
+    show() {
+      this.$bvModal.show("createScreen");
+    },
     resetFormData() {
       this.formData = {
         title: null,
