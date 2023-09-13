@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use DOMElement;
 use Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -646,8 +647,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
+        $assignedUsers = $usersVariable ? Arr::get($instanceData, $usersVariable) : [];
+        $assignedGroups = $groupsVariable ? Arr::get($instanceData, $groupsVariable) : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];
