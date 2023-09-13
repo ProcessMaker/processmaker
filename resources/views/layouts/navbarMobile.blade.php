@@ -81,7 +81,7 @@
             :href="item.url"
             :active="item.isActive"
           >
-            <span > {{item.name}} </span>
+            <span v-html="item.name"></span>
           </b-nav-item>
         </template>
       </b-navbar-nav >
