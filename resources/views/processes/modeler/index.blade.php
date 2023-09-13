@@ -74,6 +74,11 @@ div.main {
       { value: "rule_expression", label: "Rule Expression" },
       { value: "process_manager", label: "Process Manager" },
     ],
+    countScreenCategories: @json($countScreenCategories),
+    countScriptCategories: @json($countScriptCategories),
+    screenTypes: @json($screenTypes),
+    scriptExecutors: @json($scriptExecutors),
+    isProjectsInstalled: @json($isProjectsInstalled),
   }
   const warnings = @json($process->warnings);
 
