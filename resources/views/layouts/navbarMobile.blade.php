@@ -74,13 +74,14 @@
     <!-- Nav tabs -->
     <div>
       <b-navbar-nav class="nav-tabs nav-fill" id="nav-tab" role="tablist">
-        <template v-for="item in {{ json_encode ($menuItems) }}">
-          <b-nav-item class="nav-item nav-link p-0"
-          role="presentation"
-          :href="item.url"
-          :active="item.isActive"
+        <template v-for="item in {{ json_encode ($menuItems) }}" :key="item">
+          <b-nav-item 
+            class="nav-item nav-link p-0"
+            role="presentation"
+            :href="item.url"
+            :active="item.isActive"
           >
-            <span v-html="item.name"></span>
+            <span > {{item.name}} </span>
           </b-nav-item>
         </template>
       </b-navbar-nav >
@@ -101,15 +102,15 @@
     display:none;
   }
   .nav-tabs {
-    list-style-type:none;
+    list-style-type: none;
     background-color: #EFF5FF;
-    flex-direction: row !important;
+    flex-direction: row;
   }
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
     color: black;
     background-color: transparent;
     border-color: transparent transparent #f3f3f3;
-    border-bottom: 3px solid #1572C2 !important;
+    border-bottom: 3px solid #1572C2;
     font-size: 16px;
     font-weight: 600;
   }
