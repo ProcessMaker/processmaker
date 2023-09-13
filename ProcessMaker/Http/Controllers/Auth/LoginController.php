@@ -59,11 +59,11 @@ class LoginController extends Controller
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
         $default = Setting::where('key', 'sso.default.login')->first();
-
+        $arrayAddons = $addons->toArray();
         // Redirectind to default login
-        if (!empty($default) && !empty($addons->toArray())) {
+        if (!empty($default) && !empty($arrayAddons)) {
             $position = $default->getAttribute('config'); // Type int
-            $data = head($addons->toArray())->data;
+            $data = head($arrayAddons)->data ?? [];
             $drivers = array_key_exists('drivers', $data) ? $data['drivers'] : [];
             if (isset($position) && !empty($drivers)) {
                 $elements = $default->getAttribute('ui')->elements;
@@ -74,7 +74,6 @@ class LoginController extends Controller
                     }
                 }
             }
-            
         }
         
         $block = $manager->getBlock();
