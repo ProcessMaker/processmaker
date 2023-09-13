@@ -83,36 +83,36 @@ export default {
       });
       console.log(this.items);
     },
-    fetchInitData() {
-      let pmql = "";
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          `requests?page=${this.page}&per_page=${this.perPage}&include=process,participants,data` +
-            `&pmql=${encodeURIComponent(pmql)}&filter=${filter}&order_by=${
-              this.orderBy === "__slot:ids" ? "id" : this.orderBy
-            }&order_direction=${this.orderDirection}${this.additionalParams}`
-        )
-        .then((response) => {
-          this.data = this.transform(response.data);
-          console.log('Consulta GET');
-          console.log(this.data);
-        })
-        .catch((error) => {
-          console.log('Error');
-          if (_.has(error, "response.data.message")) {
-            ProcessMaker.alert(error.response.data.message, "danger");
-          } else if (_.has(error, "response.data.error")) {
-          } else {
-            throw error;
-          }
-        });
-    },
+    // fetchInitData() {
+    //   let pmql = "";
+    //   // Load from our api client
+    //   ProcessMaker.apiClient
+    //     .get(
+    //       `requests?page=${this.page}&per_page=${this.perPage}&include=process,participants,data` +
+    //         `&pmql=${encodeURIComponent(pmql)}&filter=${filter}&order_by=${
+    //           this.orderBy === "__slot:ids" ? "id" : this.orderBy
+    //         }&order_direction=${this.orderDirection}${this.additionalParams}`
+    //     )
+    //     .then((response) => {
+    //       this.data = this.transform(response.data);
+    //       console.log('Consulta GET');
+    //       console.log(this.data);
+    //     })
+    //     .catch((error) => {
+    //       console.log('Error');
+    //       if (_.has(error, "response.data.message")) {
+    //         ProcessMaker.alert(error.response.data.message, "danger");
+    //       } else if (_.has(error, "response.data.error")) {
+    //       } else {
+    //         throw error;
+    //       }
+    //     });
+    // },
   },
   mounted() {
     // Llamar a fetchData() cuando se cargue el componente por primera vez
-    //this.fetchData();
-    this.fetchInitData();
+    this.fetchData();
+    //this.fetchInitData();
   },
   formatStatus(status) {
     let color = "success";
