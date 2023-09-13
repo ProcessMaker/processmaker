@@ -3,7 +3,7 @@ import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
 import requestModal from "./components/requests/modal";
-import notifications from "./components/requests/notifications";
+import notifications from "./notifications/components/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";

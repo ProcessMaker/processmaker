@@ -59,10 +59,12 @@ interface WorkflowManagerInterface
      *
      * @param Definitions $definitions
      * @param StartEventInterface $event
+     * @param array $data
+     * @param callable $beforeStart
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data);
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null);
 
     /**
      * Start a process instance.
