@@ -6,6 +6,7 @@
         :sort-order="sortOrder"
         :css="css"
         :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
@@ -54,7 +55,6 @@
           </a>
         </template>
       </vuetable>
-
       <pagination
         ref="pagination"
         :single="$t('Task')"
@@ -81,9 +81,10 @@ export default {
     NotificationUser,
   },
   mixins: [datatableMixin],
-  props: ["filter", "type"],
+  props: ["filter", "filterComments", "type"],
   data() {
     return {
+      response: null,
       orderBy: "",
       sortOrder: [],
       fields: [
@@ -126,6 +127,14 @@ export default {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
   },
+  watch: {
+    filterComments() {
+      this.transformResponse();
+    },
+    response() {
+      this.transformResponse();
+    }
+  },
   methods: {
     redirectToURL(url) {
       if (url) {
@@ -154,7 +163,20 @@ export default {
           created_at: this.formatDate(record.created_at),
           read_at: record.read_at ? this.formatDate(record.read_at) : null,
         })),
+        meta: data.meta,
       };
+    },
+
+    transformResponse() {
+      if (this.filterComments === true) {
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === 'COMMENT');
+        this.data = this.transform({ data: filteredData });
+      } else if (this.filterComments === false) {
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== 'COMMENT');
+        this.data = this.transform({ data: filteredData });
+      } else {
+        this.data = this.transform(this.response.data);
+      }
     },
 
     formatDate(dateTime) {
@@ -196,7 +218,7 @@ export default {
       // Load from your API client (adjust the API endpoint and parameters as needed)
       ProcessMaker.apiClient
         .get(
-          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}&status=${new URLSearchParams(window.location.search).get("status")}${this.getSortParam()}&include=user`,
+          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}${this.getSortParam()}&include=user`,
           {
             cancelToken: new CancelToken((c) => {
               this.cancelToken = c;
@@ -204,12 +226,7 @@ export default {
           },
         )
         .then((response) => {
-          if (this.type) {
-            const filteredData = response.data.data.filter((item) => item.data && (item.data.type === this.type || !item.data.type));
-            this.data = this.transform({ data: filteredData });
-          } else {
-            this.data = this.transform(response.data);
-          }
+          this.response = response;
           this.loading = false;
         });
     },

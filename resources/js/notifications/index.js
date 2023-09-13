@@ -4,7 +4,15 @@ import NotificationsList from "./components/NotificationsList";
 new Vue({
   el: "#notifications",
   components: { NotificationsList },
-  data: {
-    filter: "",
+  data() {
+    return {
+      filter: "",
+      filterComments: null,
+    }
   },
+  methods: {
+    setFilterComments(filter) {
+      this.filterComments = filter;
+    }
+  }
 });
