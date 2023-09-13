@@ -143,6 +143,7 @@ import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
+import SettingForm from './SettingForm';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -161,7 +162,8 @@ export default {
     SettingsImport,
     SettingsExport,
     SettingsRange,
-    SettingSelect
+    SettingSelect,
+    SettingForm
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -268,6 +270,8 @@ export default {
           return 'setting-file';
         case 'range':
           return 'settings-range';
+        case 'form':
+          return 'setting-form';
         default:
           return 'setting-text-area';
       }
@@ -284,11 +288,12 @@ export default {
       this.orderBy = context.sortBy;
       this.apiGet().then(response => {
         this.settings = response.data.data;
-        const noDataSettings = this.settings.filter(setting => setting.format === 'no-data');
+        const { noDataSettings, otherSettings } = this.separateSettings(this.settings);
 
-        if (this.settings.length === 1 && noDataSettings.length > 0) {
-          this.shouldDisplayNoDataMessage = true;
-          this.noDataMessageConfig = noDataSettings[0];
+        this.shouldDisplayNoDataMessage = this.shouldDisplayNoData(noDataSettings, this.settings);
+
+        if (!this.shouldDisplayNoDataMessage) {
+          this.settings = otherSettings; // Use the other settings
         }
         
         this.totalRows = response.data.meta.total;
@@ -306,6 +311,29 @@ export default {
           callback(this.settings);
         });
       });
+    },
+    separateSettings(settings) {
+      const noDataSettings = [];
+      const otherSettings = [];
+
+      settings.forEach(setting => {
+        if (setting.format === 'no-data') {
+          noDataSettings.push(setting);
+        } else {
+          otherSettings.push(setting);
+        }
+      });
+
+      return { noDataSettings, otherSettings };
+    },
+    shouldDisplayNoData(noDataSettings, allSettings) {
+      if (noDataSettings.length === allSettings.length) {
+        return true; // All settings are 'no-data' settings
+      } else if (noDataSettings.length > 0) {
+        return false; // Some settings are 'no-data' settings
+      } else {
+        return false; // No 'no-data' settings found, display all configured settings
+      }
     },
     getTooltip(row) {
       if (row.item.readonly) {
