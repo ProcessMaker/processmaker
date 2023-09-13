@@ -71,6 +71,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
         Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
         Route::get('screen-builder/{screen}/edit', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        //Route::get('screens/{screen}/preview', [ScreenController::class, 'preview'])->name('screen-builder.edit')->middleware('can:view-screens');
+        Route::post('screens/preview', [ScreenController::class, 'preview'])->name('screen-builder.edit')->middleware('can:view-screens');
 
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
@@ -85,6 +87,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('designer/screens/categories', [ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
+
+
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
