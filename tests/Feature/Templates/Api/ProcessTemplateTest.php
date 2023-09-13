@@ -4,11 +4,12 @@ namespace Tests\Feature\Templates\Api;
 
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\DB;
+use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Screen as ScreenModel;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
@@ -239,6 +240,49 @@ class ProcessTemplateTest extends TestCase
         }
     }
 
+    public function testUpdateAssetsWhenCreatingProcess()
+    {
+        $this->addGlobalSignalProcess();
+        $user = User::factory()->create();
+
+        $screen = ScreenModel::factory()->create(['title' => 'Test Screen']);
+        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
+        Utils::setAttributeAtXPath(
+            $process,
+            '/bpmn:definitions/bpmn:process/bpmn:task[1]',
+            'pm:screenRef',
+            $screen->id
+        );
+        $process->save();
+
+        $manifest = $this->getManifest('process', $process->id);
+
+        $template = ProcessTemplates::factory()->create(
+            [
+                'name' => 'Test Duplicate Name Template',
+                'process_id' => $process->id,
+                'process_category_id' => $process->process_category_id,
+                'manifest' => json_encode($manifest),
+            ]);
+
+        $response = $this->apiCall(
+            'POST',
+            route('api.template.create', [
+                'type' => 'process',
+                'id' => $template->id,
+            ]),
+            [
+                'user_id' => $user->id,
+                'name' => 'Test Create Process from Template',
+                'description' => 'Process from template description',
+                'process_category_id' => $template['process_category_id'],
+                'version' => $template->version,
+            ]
+        );
+
+        $response->assertStatus(200);
+    }
+
     /**
      * Tests the fixtures of the private PHP function.
      *
@@ -296,5 +340,21 @@ class ProcessTemplateTest extends TestCase
         );
 
         return $response;
+    }
+
+    /**
+     * Get asset manifest.
+     *
+     * @param string $type
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function getManifest(string $type, int $id) : array
+    {
+        $response = (new ExportController)->manifest($type, $id);
+
+        return json_decode($response->getContent(), true);
     }
 }

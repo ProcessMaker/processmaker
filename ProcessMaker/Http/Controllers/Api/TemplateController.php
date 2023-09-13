@@ -9,6 +9,7 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
@@ -130,11 +131,23 @@ class TemplateController extends Controller
     public function create(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $response = $this->template->create($type, $request);
-        if (isset($response->getData()->processId) && $type === 'process') {
-            $process = Process::find($response->getData()->processId);
-            // Register the Event
-            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        $assetsResponse = $this->checkIfAssetsExist($request);
+
+        if (!empty($assetsResponse)) {
+            $response = [
+                'template_id' => $request->id,
+                'request' => $request->toArray(),
+                'existingAssets' => $assetsResponse,
+            ];
+            dd($response);
+        } else {
+            dd('Assets not found');
+            $response = $this->template->create($type, $request);
+            if (isset($response->getData()->processId) && $type === 'process') {
+                $process = Process::find($response->getData()->processId);
+                // Register the Event
+                ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+            }
         }
 
         return $response;
@@ -181,5 +194,33 @@ class TemplateController extends Controller
         if ($validType) {
             return (new ImportController())->preview($request, $decoded->version);
         }
+    }
+
+    private function checkIfAssetsExist($request)
+    {
+        $templateId = (int) $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $payload = json_decode($template->manifest, true);
+
+        // Get assets form the template
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[] = [
+                'type' => $asset['type'],
+                'uuid' => $key,
+                'model' => $asset['model'],
+                'name' => $asset['name'],
+                'mode' => 'copy',
+            ];
+        }
+        // Check if assets exist in database
+        $existingOptions = [];
+        foreach ($postOptions as $asset) {
+            if ($asset['model']::where('uuid', $asset['uuid'])->exists()) {
+                $existingOptions[] = $asset;
+            }
+        }
+
+        return $existingOptions;
     }
 }
