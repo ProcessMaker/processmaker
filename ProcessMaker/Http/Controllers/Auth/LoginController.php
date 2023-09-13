@@ -14,8 +14,6 @@ use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
-use function Widmogrod\Functional\length;
-
 class LoginController extends Controller
 {
     use HasControllerAddons;
