@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!callFromAiModeler"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
@@ -188,7 +189,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'callFromAiModeler'],
     data: function() {
       return {
         title: '',
@@ -213,6 +214,9 @@
       channel.close();
     },
     methods: {
+      show() {
+        this.$bvModal.show("createScript");
+      },
       onClose() {
         this.title = '';
         this.language = '';
@@ -255,11 +259,18 @@
           (this.$refs.createScriptHooks || []).forEach((hook) => {
             hook.onsave(data);
           });
-          channel.postMessage({
-            assetType: "script",
-            id: data.id,
-          });
-          window.location = `/designer/scripts/${data.id}/builder`;
+
+          const url = `/designer/scripts/${data.id}/builder`;
+
+          if (this.callFromAiModeler) {
+            this.$emit("script-created-from-modeler", url);
+          } else {
+            channel.postMessage({
+              assetType: "script",
+              id: data.id,
+            });
+            window.location = url;
+          }
         })
         .catch((error) => {
           this.disabled = false;
