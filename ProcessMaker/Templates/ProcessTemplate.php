@@ -258,7 +258,6 @@ class ProcessTemplate implements TemplateInterface
 
         $postOptions = [];
 
-        // dump($request->existingAssets);
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => 'copy',
@@ -270,23 +269,22 @@ class ProcessTemplate implements TemplateInterface
                 foreach ($request->existingAssets as $item) {
                     $uuid = $item['uuid'];
                     if (isset($postOptions[$uuid])) {
-                        // dump($postOptions[$uuid]);
-                        // dd($item["mode"]);
-                        $item['mode'] = $postOptions[$uuid]['mode'];
+                        $postOptions[$uuid]['mode'] = $item['mode'];
                     }
                 }
             }
 
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $request['name'];
-                $payload['export'][$key]['attributes']['description'] = $request['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
 
-                $payload['export'][$key]['name'] = $request['name'];
-                $payload['export'][$key]['description'] = $request['description'];
-                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
-                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
+                $payload['export'][$key]['attributes']['name'] = $request->toArray()['request']['name'];
+                $payload['export'][$key]['attributes']['description'] = $request->toArray()['request']['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $request->toArray()['request']['process_category_id'];
+
+                $payload['export'][$key]['name'] = $request->toArray()['request']['name'];
+                $payload['export'][$key]['description'] = $request->toArray()['request']['description'];
+                $payload['export'][$key]['process_category_id'] = $request->toArray()['request']['process_category_id'];
+                // $payload['export'][$key]['process_manager_id'] =$request->toArray()['request']['manager_id'];
             }
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
@@ -295,7 +293,6 @@ class ProcessTemplate implements TemplateInterface
         }
 
         $options = new Options($postOptions);
-        // dd($options);
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
