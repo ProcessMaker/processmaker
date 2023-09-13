@@ -12,6 +12,9 @@
           <li><span class="fw-semibold text-primary">Duplicate:</span> {{ duplicateAsset() }}</li>
         </ul>
       </div>
+      <div>
+        <template-asset-table />
+      </div>
       <div
         class="card-footer bg-light text-right pr-0"
       >
@@ -29,11 +32,12 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import TemplateAssetTable from "./TemplateAssetTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: {},
+  components: { TemplateAssetTable },
   filters: {
     titleCase: function (value) {
       value = value.toString();
