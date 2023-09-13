@@ -242,8 +242,12 @@ export default {
       sortable: false,
       tdClass: "align-middle text-right",
     });
-    ProcessMaker.EventBus.$on('refresh-settings-table', () => {
-      this.refresh();
+    
+    ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
+      this.shouldDisplayNoDataMessage = false;
+      this.$nextTick(() => {
+        this.$emit('refresh-all');
+      });  
     });
   },
   methods: {
