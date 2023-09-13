@@ -26,7 +26,12 @@
         </template>
     </pmql-input>
 
-    <div class="card card-body table-card">
+    <div class="p-5 text-center" v-if="shouldDisplayNoDataMessage">
+        <h3>{{ noDataMessageConfig.name }}</h3>
+        <small>{{noDataMessageConfig.helper }}</small>
+    </div>
+
+    <div v-else class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
         :current-page="currentPage"
@@ -179,7 +184,9 @@ export default {
       settings: [],
       to: 0,
       totalRows: 0,
-      url: '/settings'
+      url: '/settings',
+      shouldDisplayNoDataMessage: false,
+      noDataMessageConfig: null,
     };
   },
   computed: {
@@ -277,6 +284,13 @@ export default {
       this.orderBy = context.sortBy;
       this.apiGet().then(response => {
         this.settings = response.data.data;
+        const noDataSettings = this.settings.filter(setting => setting.format === 'no-data');
+
+        if (this.settings.length === 1 && noDataSettings.length > 0) {
+          this.shouldDisplayNoDataMessage = true;
+          this.noDataMessageConfig = noDataSettings[0];
+        }
+        
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
