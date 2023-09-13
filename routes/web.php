@@ -75,6 +75,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts/{script}/builder/{processId}', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
 
         Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
         Route::get('signals/{signalId}/edit', [SignalController::class, 'edit'])->name('signals.edit')->middleware('can:edit-signals');
