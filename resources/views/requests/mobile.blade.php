@@ -6,7 +6,7 @@
   $path = Request::path();
 @endphp
 @section('content_mobile')
-<div class="d-flex flex-column" style="min-height: 100vh" id="requests-listing">
+<div id="requests-listing" class="d-flex flex-column" style="min-height: 100vh">
 <div class="flex-fill">
   <div class="row">
     <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">

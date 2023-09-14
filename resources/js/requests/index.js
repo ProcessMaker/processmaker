@@ -2,7 +2,6 @@ import Vue from "vue";
 import CounterCard from "./components/CounterCard";
 import CounterCardGroup from "./components/CounterCardGroup";
 import RequestsListing from "./components/RequestsListing";
-import FilterMobile from "./components/FilterMobile";
 import AvatarImage from "../components/AvatarImage";
 
 Vue.component("AvatarImage", AvatarImage);
@@ -10,7 +9,7 @@ Vue.component("AvatarImage", AvatarImage);
 new Vue({
   el: "#requests-listing",
   components: {
-    CounterCard, CounterCardGroup, RequestsListing, FilterMobile
+    CounterCard, CounterCardGroup, RequestsListing
   },
   data: {
     filter: "",
