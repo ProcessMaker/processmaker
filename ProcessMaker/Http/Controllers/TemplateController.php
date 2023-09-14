@@ -61,7 +61,6 @@ class TemplateController extends Controller
 
     public function chooseTemplateAssets()
     {
-        // dd('here');
         return view('templates.assets');
     }
 }
