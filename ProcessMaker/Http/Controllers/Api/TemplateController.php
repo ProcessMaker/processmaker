@@ -154,6 +154,11 @@ class TemplateController extends Controller
     public function updateAssets(Request $request)
     {
         $response = $this->template->updateAssets($request);
+        if (isset($response->getData()->processId)) {
+            $process = Process::find($response->getData()->processId);
+            // Register the Event
+            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
 
         return $response;
     }
