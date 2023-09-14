@@ -272,33 +272,29 @@ class ProcessTemplateTest extends TestCase
                 'manifest' => json_encode($manifest),
             ]);
 
-        $response = $this->apiCall(
-            'POST',
-            route('api.template.create', [
-                'type' => 'process',
-                'id' => $template->id,
-            ]),
-            [
-                'user_id' => $user->id,
-                'name' => 'Test Create Process from Template',
-                'description' => 'Process from template description',
-                'process_category_id' => $template['process_category_id'],
-                'version' => $template->version,
-            ]
-        );
+        $params = [
+            'user_id' => $user->id,
+            'name' => 'Test Create Process from Template',
+            'description' => 'Process from template description',
+            'process_category_id' => $template['process_category_id'],
+            'version' => $template->version,
+        ];
 
+        // First Request
+        $route = route('api.template.create', ['type' => 'process', 'id' => $template->id]);
+        $response = $this->apiCall('POST', $route, $params);
         $response->assertStatus(200);
 
-        // Update assets mode
+        // Response for the update assets page
         $updatePageResponse = $response->json();
-
+        // Update some of the assets mode
         $updatePageResponse['existingAssets'][0]['mode'] = 'discard';
         $updatePageResponse['existingAssets'][1]['mode'] = 'discard'; // First Screen
         $updatePageResponse['existingAssets'][2]['mode'] = 'update';  // Second Screen
         $updatePageResponse['existingAssets'][3]['mode'] = 'copy'; // First Script
         $updatePageResponse['existingAssets'][4]['mode'] = 'discard'; // Second Script
 
-        // New Request to update assets mode
+        // New Request with updated assets mode
         $route = route('api.template.updateAssets');
         $response = $this->apiCall('POST', $route, $updatePageResponse);
 
