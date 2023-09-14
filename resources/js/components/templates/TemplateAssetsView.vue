@@ -55,6 +55,7 @@ export default {
   watch: {
   },
   mounted() {
+    console.log('this.root', this.$root);
   },
   methods: {
     reload() {
