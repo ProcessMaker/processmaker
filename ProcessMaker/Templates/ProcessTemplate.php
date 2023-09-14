@@ -246,17 +246,19 @@ class ProcessTemplate implements TemplateInterface
         return response()->json(['processId' => $processId]);
     }
 
-    public function updateAssets($request) : JsonResponse
+    public function updateAssets($request): JsonResponse
     {
         $templateId = (int) $request->id;
         $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
         $template->fill($request->except('id'));
 
         $payload = json_decode($template->manifest, true);
-        $payload['name'] = $request['name'];
-        $payload['description'] = $request['description'];
 
         $postOptions = [];
+        $existingAssets = $request->existingAssets;
+        $requestData = $request->toArray()['request'];
+        $payload['name'] = $requestData['name'];
+        $payload['description'] = $requestData['description'];
 
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
@@ -265,8 +267,8 @@ class ProcessTemplate implements TemplateInterface
                 'saveAssetsMode' => 'saveAllAssets',
             ];
 
-            if ($request->existingAssets) {
-                foreach ($request->existingAssets as $item) {
+            if ($existingAssets) {
+                foreach ($existingAssets as $item) {
                     $uuid = $item['uuid'];
                     if (isset($postOptions[$uuid])) {
                         $postOptions[$uuid]['mode'] = $item['mode'];
@@ -276,16 +278,15 @@ class ProcessTemplate implements TemplateInterface
 
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
+                $payload['export'][$key]['attributes']['name'] = $requestData['name'];
+                $payload['export'][$key]['attributes']['description'] = $requestData['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
 
-                $payload['export'][$key]['attributes']['name'] = $request->toArray()['request']['name'];
-                $payload['export'][$key]['attributes']['description'] = $request->toArray()['request']['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $request->toArray()['request']['process_category_id'];
-
-                $payload['export'][$key]['name'] = $request->toArray()['request']['name'];
-                $payload['export'][$key]['description'] = $request->toArray()['request']['description'];
-                $payload['export'][$key]['process_category_id'] = $request->toArray()['request']['process_category_id'];
-                // $payload['export'][$key]['process_manager_id'] =$request->toArray()['request']['manager_id'];
+                $payload['export'][$key]['name'] = $requestData['name'];
+                $payload['export'][$key]['description'] = $requestData['description'];
+                $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
             }
+
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
                 $payload['export'][$key]['is_template'] = false;
