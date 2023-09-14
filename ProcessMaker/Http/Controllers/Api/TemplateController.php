@@ -209,21 +209,23 @@ class TemplateController extends Controller
 
         // Get assets form the template
         $postOptions = [];
+        $existingOptions = [];
+
         foreach ($payload['export'] as $key => $asset) {
-            $postOptions[] = [
+            $item = [
                 'type' => $asset['type'],
                 'uuid' => $key,
                 'model' => $asset['model'],
                 'name' => $asset['name'],
                 'mode' => 'copy',
             ];
-        }
-        // Check if assets exist in database
-        $existingOptions = [];
-        foreach ($postOptions as $asset) {
-            if ($asset['model']::where('uuid', $asset['uuid'])->exists()) {
-                $existingOptions[] = $asset;
+
+            if (!$asset['model']::where('uuid', $key)->exists() || $asset['type'] === 'Process') {
+                continue;
             }
+
+            $postOptions[] = $item;
+            $existingOptions[] = $item;
         }
 
         return $existingOptions;

@@ -11,6 +11,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen as ScreenModel;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -245,14 +246,20 @@ class ProcessTemplateTest extends TestCase
         $this->addGlobalSignalProcess();
         $user = User::factory()->create();
 
-        $screen = ScreenModel::factory()->create(['title' => 'Test Screen']);
-        $process = $this->createProcess('process-with-task-screen', ['name' => 'Test Process']);
-        Utils::setAttributeAtXPath(
-            $process,
-            '/bpmn:definitions/bpmn:process/bpmn:task[1]',
-            'pm:screenRef',
-            $screen->id
-        );
+        $process = $this->createProcess('process-with-multiple-assets', ['name' => 'Test Process']);
+        $screen = ScreenModel::factory()->create(['title' => 'First Screen']);
+        $screen_2 = ScreenModel::factory()->create(['title' => 'Second Screen']);
+
+        $script = Script::factory()->create(['title' => 'First Script']);
+        $script_2 = Script::factory()->create(['title' => 'Second Script']);
+
+        $definition = '/bpmn:definitions/bpmn:process/bpmn:';
+
+        Utils::setAttributeAtXPath($process, $definition . 'task[1]', 'pm:screenRef', $screen->id);
+        Utils::setAttributeAtXPath($process, $definition . 'scriptTask[1]', 'pm:scriptRef', $script->id);
+        Utils::setAttributeAtXPath($process, $definition . 'task[2]', 'pm:screenRef', $screen_2->id);
+        Utils::setAttributeAtXPath($process, $definition . 'scriptTask[2]', 'pm:scriptRef', $script_2->id);
+
         $process->save();
 
         $manifest = $this->getManifest('process', $process->id);
@@ -284,14 +291,21 @@ class ProcessTemplateTest extends TestCase
 
         // Update assets mode
         $updatePageResponse = $response->json();
+
         $updatePageResponse['existingAssets'][0]['mode'] = 'discard';
-        $updatePageResponse['existingAssets'][1]['mode'] = 'copy';
+        $updatePageResponse['existingAssets'][1]['mode'] = 'discard'; // First Screen
+        $updatePageResponse['existingAssets'][2]['mode'] = 'update';  // Second Screen
+        $updatePageResponse['existingAssets'][3]['mode'] = 'copy'; // First Script
+        $updatePageResponse['existingAssets'][4]['mode'] = 'discard'; // Second Script
 
         // New Request to update assets mode
         $route = route('api.template.updateAssets');
         $response = $this->apiCall('POST', $route, $updatePageResponse);
 
         $response->assertStatus(200);
+        $this->assertEquals('2', ScreenModel::count());
+        $this->assertDatabaseHas('scripts', ['title' => 'First Script 2']);
+        $this->assertEquals('3', Script::count());
     }
 
     /**
