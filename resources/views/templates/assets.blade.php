@@ -14,16 +14,16 @@
         __('Processes') => route('processes.index')
     ]])
 @endsection
-@section('content')
-    <div class="container" id="templateAssets" v-cloak>
-        <template-assets></template-assets>
-    </div>
 
+@section('content')
+<div id="template-asset-manager">
+    <router-view></router-view>
+</div>
 @endsection
 
 @section('js')
     <script src="{{mix('js/templates/assets.js')}}"></script>
-    <script>
+    {{-- <script>
       test = new Vue({
         el: '#templateAssets',
         data() {
@@ -36,11 +36,11 @@
           },
         }
       });
-    </script>
+    </script> --}}
 @endsection
 
-@section('css')
+{{-- @section('css')
     <style>
 
     </style>
-@endsection
+@endsection --}}

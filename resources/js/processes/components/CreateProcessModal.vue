@@ -114,8 +114,8 @@
         bpmn: "",
         disabled: false,
         customModalButtons: [
-            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+            {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
+            {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
         ],
         manager: "",
       }
@@ -165,10 +165,10 @@
         this.projects = [];
         this.status = "";
         this.addError = {};
-        this.selectedFile = '';
+        this.selectedFile = "";
         this.file = null;
         this.manager = "";
-        this.$emit('resetModal');
+        this.$emit("resetModal");
       },
       onSubmit () {
         this.errors = Object.assign({}, {
@@ -214,8 +214,17 @@
           }
         })
         .then(response => {
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
-          window.location = "/modeler/" + response.data.processId;
+          console.log("handleCreateFromTemplate response", response);
+          console.log("response data", response.data);
+          console.log("existingAssets", response.data.existingAssets);
+          if (response.data.existingAssets) {
+            console.log('HIT HERE');
+            console.log(this.$router);
+            this.$router.push({ name: "choose-template-assets" });
+          } else {
+            ProcessMaker.alert(this.$t("The process was created."), "success");
+            window.location = "/modeler/" + response.data.id;
+          }
         })
         .catch(error => {
           this.disabled = false;
@@ -233,7 +242,7 @@
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
+          ProcessMaker.alert(this.$t("The process was created."), "success");
           window.location = "/modeler/" + response.data.id;
         })
         .catch(error => {
