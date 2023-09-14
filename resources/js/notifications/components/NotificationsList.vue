@@ -11,6 +11,7 @@
         data-path="data"
         pagination-path="meta"
         :no-data-template="$t('No Data Available')"
+        @vuetable:pagination-data="onPaginationData"
       >
         <!-- Change Status Slot -->
         <template
@@ -18,13 +19,19 @@
           slot-scope="props"
         >
           <span
-            :class="{
-              'far fa-envelope fa-lg blue-envelope': props.rowData.read_at === null,
-              'far fa-envelope-open fa-lg gray-envelope': props.rowData.read_at !== null,
-            }"
-            style="cursor: pointer"
-            @click="toggleReadStatus(props.rowData.id, props.rowData.read_at === null)"
+            v-if="props.rowData.read_at === null"
+            style="cursor:pointer"
+            class="far fa-envelope fa-lg blue-envelope"
+            @click="read(props.rowData.id)"
           />
+
+          <span
+            v-if="props.rowData.read_at !== null"
+            style="cursor:pointer"
+            @click="unread(props.rowData.id)"
+          >
+            <i class="far fa-envelope-open fa-lg gray-envelope" />
+          </span>
         </template>
 
         <!-- From Slot -->
@@ -54,7 +61,6 @@
           </a>
         </template>
       </vuetable>
-
       <pagination
         ref="pagination"
         :single="$t('Task')"
@@ -81,9 +87,10 @@ export default {
     NotificationUser,
   },
   mixins: [datatableMixin],
-  props: ["filter", "type"],
+  props: ["filter", "filterComments", "type"],
   data() {
     return {
+      response: null,
       orderBy: "",
       sortOrder: [],
       fields: [
@@ -119,6 +126,14 @@ export default {
       return this.data.type === "COMMENT";
     },
   },
+  watch: {
+    filterComments() {
+      this.transformResponse();
+    },
+    response() {
+      this.transformResponse();
+    },
+  },
   mounted() {
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
@@ -138,6 +153,17 @@ export default {
         this.fetch();
       });
     },
+    read(id) {
+      ProcessMaker.removeNotifications([id]).then(() => {
+        this.fetch();
+      });
+    },
+
+    unread(id) {
+      ProcessMaker.unreadNotifications([id]).then(() => {
+        this.fetch();
+      });
+    },
 
     getSortParam() {
       if (this.sortOrder.length > 0) {
@@ -154,7 +180,20 @@ export default {
           created_at: this.formatDate(record.created_at),
           read_at: record.read_at ? this.formatDate(record.read_at) : null,
         })),
+        meta: data.meta,
       };
+    },
+
+    transformResponse() {
+      if (this.filterComments === true) {
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === "COMMENT");
+        this.data = this.transform({ data: filteredData });
+      } else if (this.filterComments === false) {
+        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== "COMMENT");
+        this.data = this.transform({ data: filteredData });
+      } else {
+        this.data = this.transform(this.response.data);
+      }
     },
 
     formatDate(dateTime) {
@@ -196,7 +235,7 @@ export default {
       // Load from your API client (adjust the API endpoint and parameters as needed)
       ProcessMaker.apiClient
         .get(
-          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}&status=${new URLSearchParams(window.location.search).get("status")}${this.getSortParam()}&include=user`,
+          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}${this.getSortParam()}&include=user`,
           {
             cancelToken: new CancelToken((c) => {
               this.cancelToken = c;
@@ -204,12 +243,7 @@ export default {
           },
         )
         .then((response) => {
-          if (this.type) {
-            const filteredData = response.data.data.filter((item) => item.data && (item.data.type === this.type || !item.data.type));
-            this.data = this.transform({ data: filteredData });
-          } else {
-            this.data = this.transform(response.data);
-          }
+          this.response = response;
           this.loading = false;
         });
     },
