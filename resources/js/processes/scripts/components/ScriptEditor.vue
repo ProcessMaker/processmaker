@@ -337,7 +337,7 @@ export default {
         icon: "fas fa-save",
         loaderAction: "",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-script");
+          ProcessMaker.EventBus.$emit("save-script", this.processId);
         },
       },
     ];
@@ -453,8 +453,8 @@ export default {
     this.subscribeToProgress();
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
-      this.save(onSuccess, onError);
+    ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
+      this.save(onSuccess, onError, processId);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -669,7 +669,7 @@ export default {
         this.executionKey = response.data.key;
       });
     },
-    save(onSuccess, onError) {
+    save(onSuccess, onError, processId) {
       ProcessMaker.apiClient
         .put(`scripts/${this.script.id}`, {
           code: this.code,
@@ -685,6 +685,9 @@ export default {
           this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
+          }
+          if (processId !== 0 && processId !== undefined) {
+            window.location = `/modeler/${this.processId}`;
           }
         }).catch((err) => {
           if (typeof onError === "function") {

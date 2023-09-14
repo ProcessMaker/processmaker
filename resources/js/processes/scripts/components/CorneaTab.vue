@@ -36,7 +36,7 @@
     <b-list-group-item
       class="p-0 border-left-0 border-right-0 border-top-0 mb-0"
     >
-      <b-collapse id="assistant" :visible="showPromptArea || processId !== 0">
+      <b-collapse id="assistant" :visible="showPromptArea">
         <div v-if="!showPromptArea">
           <div class="card-header m-0 d-flex border-0 pb-1">
             <div class="d-flex w-50 p-2 ai-button-container">
@@ -113,8 +113,9 @@
           </div>
         </div>
         <generate-script-text-prompt
-          v-if="showPromptArea || defaultSelected === 'generate' || processId !== 0"
+          v-if="showPromptArea || defaultSelected === 'generate'"
           :prompt-session-id="promptSessionId"
+          :autofocus="true"
           @generate-script="onGenerateScript"
         />
       </b-collapse>
@@ -169,6 +170,10 @@ export default {
 
     if (this.defaultPrompt) {
       this.prompt = this.defaultPrompt;
+    }
+
+    if (this.processId !== 0) {
+      this.showPromptArea = true;
     }
   },
   methods: {

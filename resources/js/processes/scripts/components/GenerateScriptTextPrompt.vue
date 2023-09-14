@@ -49,7 +49,7 @@ import _, { debounce } from "lodash";
 import Suggestions from "./Suggestions";
 
 export default {
-  props: ["promptSessionId", "defaultPrompt"],
+  props: ["promptSessionId", "defaultPrompt", "autofocus"],
   name: "GenerateScriptTextPrompt",
   components: {
     Suggestions,
@@ -84,6 +84,9 @@ export default {
   mounted() {
     this.fetchSuggestions();
     this.text = this.defaultPrompt;
+    if (this.autofocus) {
+      this.$refs.textArea.focus();
+    }
   },
   methods: {
     toggleSuggestions() {
