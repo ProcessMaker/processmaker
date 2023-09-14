@@ -23,7 +23,8 @@
                    :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
-                   :is-draft="@json($isDraft)">
+                   :is-draft="@json($isDraft)"
+                   :process-id="{{ $processId }}">
         </component>
     </div>
 @endsection

@@ -159,15 +159,22 @@ export default {
         .post("screens", this.formData)
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
-          channel.postMessage({
-            assetType: "screen",
-            id: data.id,
-          });
-          window.location = `/designer/screen-builder/${data.id}/edit`;
+
+          const url = `/designer/screen-builder/${data.id}/edit`;
+
+          if (this.callFromAiModeler) {
+            this.$emit("screen-created-from-modeler", url);
+          } else {
+            channel.postMessage({
+              assetType: "screen",
+              id: data.id,
+            });
+            window.location = url;
+          }
         })
         .catch((error) => {
           this.disabled = false;
-          if (error.response.status && error.response.status === 422) {
+          if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
         });
