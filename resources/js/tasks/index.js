@@ -1,9 +1,11 @@
 import Vue from "vue";
+import FilterMobile from "../requests/components/FilterMobile";
 import TasksList from "./components/TasksList";
+
 
 new Vue({
   el: "#tasks",
-  components: { TasksList },
+  components: { TasksList, FilterMobile },
   data: {
     filter: "",
     pmql: "",
