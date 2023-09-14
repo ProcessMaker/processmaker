@@ -87,6 +87,7 @@
         </a>
       </template>
     </modal>
+    <!-- <router-view :key="$route.path"></router-view> -->
   </div>
 </template>
 
@@ -94,11 +95,14 @@
   import { FormErrorsMixin, Modal, Required } from "SharedComponents";
   import TemplateSearch from "../../components/templates/TemplateSearch.vue";
   import ProjectSelect from "../../components/shared/ProjectSelect.vue";
+  import TemplateAssetsView from "../../components/templates/TemplateAssetsView.vue";
+  import router from "../../templates/routes";
 
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
     props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled"],
+    router,
     data: function() {
       return {
         showModal: false,
@@ -134,6 +138,12 @@
           this.manager = "";
         }
       },
+    },
+    // beforeMount() {
+    //   this.addRoutes();
+    // },
+    mounted() {
+      console.log('MOUNTED');
     },
     methods: {
       onShown() {
@@ -214,13 +224,10 @@
           }
         })
         .then(response => {
-          console.log("handleCreateFromTemplate response", response);
-          console.log("response data", response.data);
-          console.log("existingAssets", response.data.existingAssets);
           if (response.data.existingAssets) {
-            console.log('HIT HERE');
-            console.log(this.$router);
-            this.$router.push({ name: "choose-template-assets" });
+            this.$router.push({ name: "choose-template-assets", force: true, meta: { assets: JSON.stringify(response.data.existingAssets) } });
+            console.log('THIS.ROUTER', this.$router);
+            this.$router.go(this.$router.currentRoute);
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
             window.location = "/modeler/" + response.data.id;
@@ -250,6 +257,10 @@
           this.addError = error.response.data.errors;
         });
       },
+      // addRoutes() {
+      //   this.$router.addRoutes([{ path: "/template/assets", name: "choose-template-assets", component: TemplateAssetsView,
+      // }]);
+      // },
     },
   };
 </script>

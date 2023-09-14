@@ -23,24 +23,5 @@
 
 @section('js')
     <script src="{{mix('js/templates/assets.js')}}"></script>
-    {{-- <script>
-      test = new Vue({
-        el: '#templateAssets',
-        data() {
-          return {
-          }
-        },
-        methods: {
-          onClose() {
-            window.location.href = '/processes';
-          },
-        }
-      });
-    </script> --}}
 @endsection
 
-{{-- @section('css')
-    <style>
-
-    </style>
-@endsection --}}

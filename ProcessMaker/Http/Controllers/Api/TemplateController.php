@@ -139,9 +139,9 @@ class TemplateController extends Controller
                 'request' => $request->toArray(),
                 'existingAssets' => $assetsResponse,
             ];
-            dd($response);
+            // dd($response);
         } else {
-            dd('Assets not found');
+            // dd('Assets not found');
             $response = $this->template->create($type, $request);
             if (isset($response->getData()->processId) && $type === 'process') {
                 $process = Process::find($response->getData()->processId);

@@ -55,7 +55,9 @@ export default {
   watch: {
   },
   mounted() {
-    console.log('this.root', this.$root);
+    console.log('this.route', this.$route);
+    console.log('route params', this.$route.params);
+    console.log('this.ROUTER', this.$router);
   },
   methods: {
     reload() {
