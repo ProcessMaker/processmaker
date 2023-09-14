@@ -59,7 +59,7 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
-          window.location = "/requests/" + instance.id;
+          window.location = "/requests/" + instance.id + '?fromRedirect=true';
         }).catch((err) => {
           this.disabled = false;
           const data = err.response.data;
