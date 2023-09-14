@@ -135,19 +135,30 @@ class TemplateController extends Controller
 
         if (!empty($assetsResponse)) {
             $response = [
-                'template_id' => $request->id,
+                'id' => $request->id,
                 'request' => $request->toArray(),
                 'existingAssets' => $assetsResponse,
             ];
-            // dd($response);
         } else {
-            // dd('Assets not found');
+            dd('Assets not found');
             $response = $this->template->create($type, $request);
             if (isset($response->getData()->processId) && $type === 'process') {
                 $process = Process::find($response->getData()->processId);
                 // Register the Event
                 ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
             }
+        }
+
+        return $response;
+    }
+
+    public function updateAssets(Request $request)
+    {
+        $response = $this->template->updateAssets($request);
+        if (isset($response->getData()->processId)) {
+            $process = Process::find($response->getData()->processId);
+            // Register the Event
+            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
 
         return $response;
@@ -204,21 +215,23 @@ class TemplateController extends Controller
 
         // Get assets form the template
         $postOptions = [];
+        $existingOptions = [];
+
         foreach ($payload['export'] as $key => $asset) {
-            $postOptions[] = [
+            $item = [
                 'type' => $asset['type'],
                 'uuid' => $key,
                 'model' => $asset['model'],
                 'name' => $asset['name'],
                 'mode' => 'copy',
             ];
-        }
-        // Check if assets exist in database
-        $existingOptions = [];
-        foreach ($postOptions as $asset) {
-            if ($asset['model']::where('uuid', $asset['uuid'])->exists()) {
-                $existingOptions[] = $asset;
+
+            if (!$asset['model']::where('uuid', $key)->exists() || $asset['type'] === 'Process') {
+                continue;
             }
+
+            $postOptions[] = $item;
+            $existingOptions[] = $item;
         }
 
         return $existingOptions;

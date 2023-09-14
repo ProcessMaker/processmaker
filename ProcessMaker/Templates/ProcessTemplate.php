@@ -236,6 +236,62 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['is_template'] = false;
             }
         }
+        $options = new Options($postOptions);
+
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $processId = $rootLog['newId'];
+
+        return response()->json(['processId' => $processId]);
+    }
+
+    public function updateAssets($request): JsonResponse
+    {
+        $templateId = (int) $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template->fill($request->except('id'));
+
+        $payload = json_decode($template->manifest, true);
+
+        $postOptions = [];
+        $existingAssets = $request->existingAssets;
+        $requestData = $request->toArray()['request'];
+        $payload['name'] = $requestData['name'];
+        $payload['description'] = $requestData['description'];
+
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+                'isTemplate' => false,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+
+            if ($existingAssets) {
+                foreach ($existingAssets as $item) {
+                    $uuid = $item['uuid'];
+                    if (isset($postOptions[$uuid])) {
+                        $postOptions[$uuid]['mode'] = $item['mode'];
+                    }
+                }
+            }
+
+            if ($payload['root'] === $key) {
+                // Set name and description for the new process
+                $payload['export'][$key]['attributes']['name'] = $requestData['name'];
+                $payload['export'][$key]['attributes']['description'] = $requestData['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
+
+                $payload['export'][$key]['name'] = $requestData['name'];
+                $payload['export'][$key]['description'] = $requestData['description'];
+                $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+            }
+
+            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
+                $payload['export'][$key]['attributes']['is_template'] = false;
+                $payload['export'][$key]['is_template'] = false;
+            }
+        }
 
         $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
