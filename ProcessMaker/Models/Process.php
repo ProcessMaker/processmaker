@@ -245,12 +245,17 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
-            'project_assets',
-            'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+        $projectModelClass = 'ProcessMaker\Package\Projects\Models\Project';
+
+        if (!class_exists($projectModelClass)) {
+            return [];
+        }
+
+        return $this->morphToMany(
+            $projectModelClass,
+            'asset',
+            'project_assets'
+        );
     }
 
     /**
