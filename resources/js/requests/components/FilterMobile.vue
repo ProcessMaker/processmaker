@@ -27,13 +27,17 @@
                 class="dropdown-item"
                 href="#"
                 @click="selectOption('In Progress', 'status')"
-                ><i class="fas fa-circle text-warning"/> {{ $t('In Progress') }}
+              >
+                <i class="fas fa-circle text-warning"/>
+                {{ $t('In Progress') }}
               </a>
               <a
                 class="dropdown-item"
                 href="#"
                 @click="selectOption('Completed', 'status')"
-                ><i class="fas fa-circle text-primary"/> {{ $t('Completed') }}
+              >
+                <i class="fas fa-circle text-primary"/>
+                {{ $t('Completed') }}
               </a>
             </div>
           </div>
@@ -61,13 +65,17 @@
                 class="dropdown-item"
                 href="#"
                 @click="selectOption(`(requester = 'admin')`, 'filter')"
-                ><i class="fas fa-user"/> {{ $t('Requested by Me') }}
+              >
+                <i class="fas fa-user"/>
+                {{ $t('Requested by Me') }}
               </a>
               <a
                 class="dropdown-item"
                 href="#"
                 @click="selectOption(`(participant = 'admin')`, 'filter')"
-                ><i class="fas fa-users"/> {{ $t('With me as Participant') }}
+              >
+                <i class="fas fa-users"/>
+                {{ $t('With me as Participant') }}
               </a>
             </div>
           </div>
@@ -142,32 +150,19 @@ export default {
       searchCriteria: "",
       selectedOption: "In Progress",
       apiData: [],
-      items: [],
-      orderBy: "id",
-      orderDirection: "DESC",
-      additionalParams: "",
-      sortOrder: [
-        {
-          field: "id",
-          sortField: "id",
-          direction: "desc",
-        },
-      ],
-      fields: [],
-      previousFilter: "",
-      previousPmql: "",
     };
   },
   methods: {
+    /* This metod receives parameters from dropdown controls 
+      options selected by user
+      */
     selectOption(option, controlName) {
-      /* This metod receives parameters from dropdown controls 
-      options selected by user*/
-      let apiPath = buildApiPath(option, controlName);
-      callApiFilter(apiPath);
+      this.callApiFilter(this.buildApiPath(option, controlName));
     },
+    /*This method builds a specific url api string depending 
+      of filter used by user
+      */
     buildapiPath(option, controlName) {
-      /*This method builds a specific url api string depending 
-      of filter used by user*/
       let basePath = this.type + "?page=1&per_page=10&include=process,participants,data&";
       if (controlName === "status") {
         return basePath + 'pmql=(status = "' + option + '")';
@@ -182,10 +177,10 @@ export default {
         return basePath + 'pmql=(fulltext LIKE "%' + option + '%")';
       }
     },
-    callApiFilter(apiPath) {
-      /* This is a generic method to call API with previous builded apiPath 
+    /* This is a generic method to call API with previous builded apiPath 
       related to Filters selected by user
       */ 
+    callApiFilter(apiPath) {
       ProcessMaker.apiClient
         .get(apiPath, { baseURL: "" })
         .then((response) => {
@@ -195,8 +190,8 @@ export default {
           console.error("Error calling API:", error);
         });
     },
+    // This method sends users's input criteria to filter specific tasks or requests
     performSearch() {
-      // This method sends users's input criteria to filter specific tasks or requests
       this.callApiFilter(this.buildApiPath(this.searchCriteria, "search"))
     },
   },

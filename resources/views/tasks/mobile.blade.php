@@ -20,7 +20,7 @@
 @endsection
 
 @section('js')
-  
+
 @endsection
 
 @section('css')
