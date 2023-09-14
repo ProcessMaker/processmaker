@@ -1,15 +1,17 @@
 import Vue from "vue";
 import TemplateAssetsView from "../components/templates/TemplateAssetsView.vue";
-import router from "./routes";
 
 new Vue({
   el: '#template-asset-manager',
-  components: { TemplateAssetsView },
-  mixins: [],
-  router,
+  components: {TemplateAssetsView},
+  props: [],
   data() {
     return {
+      assets: [],
     };
   },
+  mounted() {
+    this.assets = JSON.parse(window.history.state.assets);
+  }
 });
 

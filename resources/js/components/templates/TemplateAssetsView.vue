@@ -45,19 +45,21 @@ export default {
     }
   },
   mixins: [uniqIdsMixin],
-  props: [],
+  props: ['assets'],
   data() {
     return {
+      templateAssets: [],
     };
   },
   computed: {
   },
   watch: {
+    assets() {
+      console.log("ASSETS CHANGED", this.assets);
+    }
   },
   mounted() {
-    console.log('this.route', this.$route);
-    console.log('route params', this.$route.params);
-    console.log('this.ROUTER', this.$router);
+    this.templateAssets = this.assets;
   },
   methods: {
     reload() {

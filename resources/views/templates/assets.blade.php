@@ -17,11 +17,10 @@
 
 @section('content')
 <div id="template-asset-manager">
-    <router-view></router-view>
+    <template-assets-view :assets="assets"></template-assets-view>
 </div>
 @endsection
 
 @section('js')
-    <script src="{{mix('js/templates/assets.js')}}"></script>
+     <script src="{{ mix('js/templates/assets.js') }}"></script>
 @endsection
-
