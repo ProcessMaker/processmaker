@@ -150,7 +150,6 @@ export default {
       selectedOptionStatus: "In Progress",
       selectedIconStatus: "fas fa-circle text-warning",
       selectedIconFilter: "fas fa-user",
-      selectedIconOrderBy: "",
       apiData: [],
       showInput: false,
       showDropdowns: true,
@@ -176,14 +175,14 @@ export default {
         this.selectedOptionStatus = option;
         this.selectedIconStatus = icon;
         return basePath + 'pmql=(status = "' + option + '")';
-      } 
+      }
       if (controlName === "filter") {
         this.selectedIconFilter = icon;
         return basePath + 'filter = "' + option + '"';
-      } 
+      }
       if (controlName === "orderBy") {
         return basePath + 'order_by = "' + option + '"';
-      } 
+      }
       if (controlName === "search") {
         return basePath + 'pmql=(fulltext LIKE "%' + option + '%")';
       }
@@ -193,7 +192,7 @@ export default {
       */ 
     callApiFilter(apiPath) {
       ProcessMaker.apiClient
-        .get(apiPath, { baseURL: "" })
+        .get(apiPath)
         .then((response) => {
           this.apiData = response.data;
         })
