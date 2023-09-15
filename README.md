@@ -56,7 +56,7 @@ https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deploy
 
 The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
 
-https://processmaker.gitbook.io/processmaker/
+https://docs.processmaker.com/
 
 ## Testing
 All PRs for PM4 and it's packages should be accompanied by a test.
@@ -338,6 +338,22 @@ And for a show method
     {
     ...
 ```
+
+#### NAYRA
+
+Please add/change the next configuration in .env file to define the message broker driver that is used for Nayra
+
+# Message broker driver, possible values: rabbitmq, kafka, this is optional, if not exists or is empty, the Nayra will be work as normally with local execution
+MESSAGE_BROKER_DRIVER=rabbitmq
+
+# Rabbit MQ connection, only when you use RabbitMQ
+RABBITMQ_HOST=127.0.0.1
+RABBITMQ_PORT=30672
+RABBITMQ_LOGIN=guest
+RABBITMQ_PASSWORD=guest
+
+# Kafka connection, only when you use Kafka
+KAFKA_BROKERS=127.0.0.1:30092
 
 **Notes**
 

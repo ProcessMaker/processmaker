@@ -19,37 +19,119 @@
           v-for="(info, key) in infoData"
           :key="key"
         >
-          <template v-if="typeof info === 'string'">
+          <template v-if="isString(info)">
             <p>
               <b>{{ $t(key) }}:</b>
               <span>{{ info }}</span>
             </p>
           </template>
-          <template v-if="info.link && info.label">
+          <template v-if="isLink(info)">
             <p class="link-value">
               <b>{{ $t(key) }}:</b>
-              <a :href="info.link">
+              <a :href="$sanitize(info.link)">
                 {{ info.label }}
               </a>
             </p>
           </template>
-          <template v-if="info.old">
+          <template v-if="hasOldValue(info)">
             <p class="old-value">
               <b>- {{ $t(key) }}:</b>
-              <span>{{ info.old }}</span>
+              <template v-if="isCollection(info.old)">
+                <div class="subItem">
+                  <template
+                    v-for="(subInfo, skey) in info.old"
+                  >
+                    <span
+                      v-if="isLink(subInfo)"
+                      :key="skey"
+                    >
+                      <a :href="$sanitize(subInfo.link)">
+                        {{ subInfo.label }}
+                      </a>
+                    </span>
+                    <span
+                      v-if="isString(subInfo)"
+                      :key="skey"
+                    >
+                      {{ subInfo }}
+                    </span>
+                  </template>
+                </div>
+              </template>
+              <span
+                v-if="isLink(info.old)"
+                class="link-value"
+              >
+                <a :href="$sanitize(info.old.link)">
+                  {{ info.old.label }}
+                </a>
+              </span>
+              <span v-if="isString(info.old)">{{ info.old }}</span>
             </p>
           </template>
-          <template v-if="info.new">
+          <template v-if="hasNewValue(info)">
             <p class="new-value">
               <b>+ {{ $t(key) }}:</b>
-              <span>{{ info.new }}</span>
+              <template v-if="isCollection(info.new)">
+                <div class="subItem">
+                  <template
+                    v-for="(subInfo, skey) in info.new"
+                  >
+                    <span
+                      v-if="isLink(subInfo)"
+                      :key="skey"
+                    >
+                      <a :href="$sanitize(subInfo.link)">
+                        {{ subInfo.label }}
+                      </a>
+                    </span>
+                    <span
+                      v-if="isString(subInfo)"
+                      :key="skey"
+                    >
+                      {{ subInfo }}
+                    </span>
+                  </template>
+                </div>
+              </template>
+              <span
+                v-if="isLink(info.new)"
+                class="link-value"
+              >
+                <a :href="$sanitize(info.new.link)">
+                  {{ info.new.label }}
+                </a>
+              </span>
+              <span v-if="isString(info.new)">{{ info.new }}</span>
+            </p>
+          </template>
+          <template v-if="isCollectionLink(info)">
+            <p>
+              <b>{{ $t(key) }}:</b>
+              <template v-for="(subInfo, skey) in info">
+                <p
+                  v-if="isLink(subInfo)"
+                  :key="skey"
+                  class="link-value"
+                >
+                  <a :href="$sanitize(subInfo.link)">
+                    {{ subInfo.label }}
+                  </a>
+                </p>
+                <p
+                  v-if="isString(subInfo)"
+                  :key="skey"
+                >
+                  {{ subInfo }}
+                </p>
+              </template>
             </p>
           </template>
         </div>
       </div>
       <template #modal-footer>
         <b-button @click="closeModal">
-          {{ $t('Close') }}
+          {{ $t("Close") }}
         </b-button>
       </template>
     </b-modal>
@@ -57,6 +139,7 @@
 </template>
 
 <script>
+
 export default {
   props: ["data"],
   data() {
@@ -96,28 +179,126 @@ export default {
 
       for ([key, value] of Object.entries(data)) {
         if (key.startsWith("+")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
-            auxArray[auxKey].new = value.toString();
+            auxArray[auxKey].new = this.booleanToString(value);
           } else {
             auxArray[auxKey] = {
-              new: value.toString(),
+              new: this.booleanToString(value),
             };
           }
         } else if (key.startsWith("-")) {
-          auxKey = key.split(" ")[1];
+          auxKey = this.capitalizeKey(key.split(" ")[1]);
           if (auxArray[auxKey]) {
-            auxArray[auxKey].old = value.toString();
+            auxArray[auxKey].old = this.booleanToString(value);
           } else {
             auxArray[auxKey] = {
-              old: value.toString(),
+              old: this.booleanToString(value),
             };
           }
         } else {
-          auxArray[key] = typeof value === 'boolean' ? value.toString() : value;
+          auxArray[this.capitalizeKey(key)] = this.booleanToString(value);
         }
       }
-      return auxArray;
+
+      return this.sortModalArray(auxArray);
+    },
+    /**
+     * Sort modal Array
+     */
+    sortModalArray(auxArray) {
+      const sortKey = [];
+      const auxArraySorted = {};
+      const dateKey = Object.keys(auxArray).find((key) => [
+        "Created_at",
+        "Deleted_at",
+        "Updated_at",
+        "Last_modified",
+        "Accessed_at",
+      ].includes(key));
+
+      Object.keys(auxArray).forEach((key) => {
+        if (key.includes("name") || key.includes("Name")) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
+
+      if (dateKey) {
+        sortKey.push(dateKey);
+      }
+
+      sortKey.push("Description");
+
+      Object.keys(auxArray).forEach((key) => {
+        if (!sortKey.includes(key)) {
+          sortKey.push(key);
+        }
+      });
+
+      sortKey.forEach((key) => {
+        if (key in auxArray) {
+          auxArraySorted[key] = auxArray[key];
+        }
+      });
+
+      return auxArraySorted;
+    },
+    /**
+     * Verify if value is a string o null
+     */
+    isString(value) {
+      return (
+        typeof value === "string" || typeof value === "number" || value === null
+      );
+    },
+    /**
+     * Verify if value has link and label
+     */
+    isLink(value) {
+      if (value !== null && typeof value === "object") {
+        return value.link && value.label;
+      }
+      return false;
+    },
+    /**
+     * Verify if value is an array
+     */
+    isCollection(value) {
+      return Array.isArray(value);
+    },
+    /**
+     * Verify if value is an array and children has link
+     */
+    isCollectionLink(value) {
+      const auxValue = structuredClone(value);
+      return Array.isArray(auxValue) && this.isLink(auxValue.shift());
+    },
+    /**
+     * Convert boolean value's to string
+     */
+    booleanToString(value) {
+      return typeof value === "boolean" ? value.toString() : value;
+    },
+    /**
+     * Verify if value has old value
+     */
+    hasOldValue(value) {
+      if (value !== null) {
+        return value.old;
+      }
+      return false;
+    },
+    /**
+     * Veify if value has new value
+     */
+    hasNewValue(value) {
+      if (value !== null) {
+        return value.new;
+      }
+      return false;
+    },
+    capitalizeKey(value) {
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
 };
@@ -141,9 +322,17 @@ export default {
   background-color: #e9ffee;
 }
 .link-value {
-  white-space: nowrap
+  white-space: nowrap;
 }
 p {
-  word-break: break-all;
+  word-break: break-word;
+}
+.subItem {
+  display: block;
+  padding-left: 10%;
+  margin-top: -3%;
+}
+.subItem span {
+  display: contents;
 }
 </style>

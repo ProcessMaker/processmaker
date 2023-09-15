@@ -4,7 +4,9 @@ namespace ProcessMaker\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
+use ProcessMaker\Helpers\ArrayHelper;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\FormatSecurityLogChanges;
 
 class ScriptUpdated implements SecurityLogEventInterface
@@ -13,8 +15,15 @@ class ScriptUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $changes;
+
     private array $original;
+
     private Script $script;
+
+    public const REMOVE_KEYS = [
+        'script_category_id',
+        'tmp_script_category_id',
+    ];
 
     /**
      * Create a new event instance.
@@ -28,6 +37,17 @@ class ScriptUpdated implements SecurityLogEventInterface
         $this->script = $script;
         $this->changes = $changes;
         $this->original = $original;
+
+        // Get category name
+        $this->original['script_category'] = isset($original['tmp_script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->original['tmp_script_category_id']) : '';
+        $this->changes['script_category'] = isset($changes['tmp_script_category_id'])
+        ? ScriptCategory::getNamesByIds($this->changes['tmp_script_category_id']) : '';
+        $this->changes = array_diff_key($this->changes, array_flip($this::REMOVE_KEYS));
+        $this->original = array_diff_key($this->original, array_flip($this::REMOVE_KEYS));
+        if (empty($this->changes['script_category'])) {
+            $this->original['script_category'] = '';
+        }
     }
 
     /**
@@ -37,9 +57,9 @@ class ScriptUpdated implements SecurityLogEventInterface
      */
     public function getChanges(): array
     {
-        return array_merge([
-            'script_id' => $this->script->id
-        ], $this->changes);
+        return [
+            'script_id' => $this->script->id,
+        ];
     }
 
     /**
@@ -49,17 +69,22 @@ class ScriptUpdated implements SecurityLogEventInterface
      */
     public function getData(): array
     {
-        $changes = $this->changes;
-        $original = $this->original;
-        $basic = isset($changes['code']) ? [
-            'Name' => $this->script->getAttribute('title'),
-            'Script Last Modified' => $this->script->getAttribute('updated_at'),
-        ] : [
-            'Name' => $this->script->getAttribute('title'),
+        unset($this->changes['code']);
+        unset($this->original['code']);
+
+        $linkName = [
+            'label' => $this->script->getAttribute('title'),
+            'link' => route('scripts.index'),
         ];
-        unset($changes['code']);
-        unset($original['code']);
-        return array_merge($basic, $this->formatChanges($changes, $original));
+
+        return array_merge(
+            [
+                'name' => $linkName,
+                'script_name' => $this->script->getAttribute('title'),
+                'last_modified' => $this->script->getAttribute('updated_at'),
+            ],
+            ArrayHelper::getArrayDifferencesWithFormat($this->changes, $this->original)
+        );
     }
 
     public function getEventName(): string

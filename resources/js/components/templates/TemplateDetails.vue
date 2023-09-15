@@ -10,6 +10,9 @@
             :input-data="template.user"
           ></avatar-image>
         </p>
+        <p class="mb-2" v-if="template.version">
+          <span class="text-muted">{{ $t("Version: ") }} {{template.version}} </span>
+        </p>
       <b-badge pill v-for="category in categories" :key="category.id" class="category-badge mb-2 mr-1">
         {{ category.name }}
       </b-badge>

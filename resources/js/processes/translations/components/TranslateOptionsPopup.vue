@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="position-relative">
-      <button ref="optionsButton" class="btn btn-outline-secondary mr-1 mt-3 d-flex align-items-center" @click="toggleOptionsPopup">
+      <button
+        ref="optionsButton"
+        class="btn btn-outline-secondary mr-1 mt-3 d-flex align-items-center"
+        @click="toggleOptionsPopup"
+        data-test="translation-translate-option">
         <font-awesome-icon :icon="['fpm', 'fa-translations']" class="mr-1" />
         <span class="text-capitalize">{{$t('Translation Options')}}</span>
       </button>
@@ -14,6 +18,7 @@
               :key="'all'"
               value="all"
               :disabled="false"
+              data-test="translation-auto-all"
             >
               <span class="fw-medium">{{ $t('Auto Translate') }} <strong>{{ $t('All') }}</strong></span>
               <div>
@@ -28,6 +33,7 @@
               :key="'empty'"
               value="empty"
               :disabled="false"
+              data-test="translation-auto-empty"
             >
               <span class="fw-medium">{{ $t('Auto Translate') }} <strong>{{ $t('Empty') }}</strong></span>
               <div>
@@ -40,7 +46,7 @@
         </div>
         <div class="card-footer bg-white text-right">
           <button class="btn btn-white btn-sm" @click="toggleOptionsPopup">Cancel</button>
-          <button class="btn btn-primary btn-sm" @click="reTranslate">Translate</button>
+          <button class="btn btn-primary btn-sm" @click="reTranslate" data-test="translation-translate-button">Translate</button>
         </div>
       </div>
     </div>

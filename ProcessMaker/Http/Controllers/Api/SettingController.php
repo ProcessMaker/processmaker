@@ -211,6 +211,7 @@ class SettingController extends Controller
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
 
+        // Register the Event
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);
 
         return response([], 204);

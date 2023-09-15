@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Database\Seeders\PermissionSeeder;
+use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Facades\WorkflowManager;
@@ -14,6 +15,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
@@ -704,5 +706,51 @@ class TasksTest extends TestCase
         $response = $this->apiCall('PUT', $route, ['user_id' => $this->user->id]);
 
         Notification::assertSentTo([$this->user], ActivityActivatedNotification::class);
+    }
+
+    public function testRollback()
+    {
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/rollback_test.bpmn');
+        $bpmn = str_replace('[task_user_id]', $this->user->id, $bpmn);
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+        ]);
+        ProcessTaskAssignment::factory()->create([
+            'process_id' => $process->id,
+            'process_task_id' => 'node_255',
+            'assignment_id' => $this->user->id,
+            'assignment_type' => 'ProcessMaker\Models\User',
+        ]);
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('node_1');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
+
+        $formTask = $request->tokens()->where('element_id', 'node_255')->firstOrFail();
+
+        // Next task should fail because the rule expression variable 'foo' does not exist
+        WorkflowManager::completeTask($process, $request, $formTask, ['someValue' => 123]);
+
+        $this->assertEquals('ERROR', $request->refresh()->status);
+
+        $errorTask = RollbackProcessRequest::getErrorTask($request);
+        $processDefinitions = $process->getDefinitions();
+        $newTask = RollbackProcessRequest::rollback($errorTask, $processDefinitions);
+
+        $this->assertEquals('ACTIVE', $request->refresh()->status);
+        $this->assertEquals($newTask->id, $request->tokens()->where('status', 'ACTIVE')->first()->id);
+
+        // Set data to make the rule expression pass
+        WorkflowManager::completeTask($process, $request, $newTask, ['foo' => 123]);
+
+        // Now we have a valid task we can use to complete the request
+        $ruleExpressionTask = $request->refresh()->tokens()
+            ->where('element_id', 'node_272')
+            ->where('status', 'ACTIVE')
+            ->firstOrFail();
+
+        WorkflowManager::completeTask($process, $request, $ruleExpressionTask, []);
+
+        $this->assertEquals('CLOSED', $newTask->refresh()->status);
+        $this->assertEquals('COMPLETED', $request->refresh()->status);
     }
 }

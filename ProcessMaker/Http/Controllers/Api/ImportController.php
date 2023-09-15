@@ -5,13 +5,12 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessTemplates;
 
 class ImportController extends Controller
 {
@@ -73,6 +72,9 @@ class ImportController extends Controller
         $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
+
+        // Call Event to store Template Changes in Log
+        TemplateCreated::dispatch($payload);
 
         return response()->json([], 200);
     }

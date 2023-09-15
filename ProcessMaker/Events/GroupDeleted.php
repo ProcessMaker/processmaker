@@ -15,9 +15,13 @@ class GroupDeleted implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private Group $group;
+
     private array $userIds;
+
     private array $userMembers;
+
     private array $groupIds;
+
     private array $groupMembers;
 
     /**
@@ -35,10 +39,8 @@ class GroupDeleted implements SecurityLogEventInterface
         foreach ($this->userIds as $user) {
             $user = User::find($user['member_id']);
             $this->userMembers[] = [
-                'username' => [
-                    'label' => $user->username,
-                    'link' => route('users.edit', $user),
-                ]
+                'label' => $user->username,
+                'link' => route('users.edit', $user),
             ];
         }
         // Get information about the groups assigned in the group
@@ -46,10 +48,8 @@ class GroupDeleted implements SecurityLogEventInterface
         foreach ($this->groupIds as $group) {
             $group = Group::find($group['member_id']);
             $this->groupMembers[] = [
-                'name' => [
-                    'label' => $group->name,
-                    'link' => route('groups.edit', $group),
-                ]
+                'label' => $group->name,
+                'link' => route('groups.edit', $group),
             ];
         }
     }
@@ -63,13 +63,9 @@ class GroupDeleted implements SecurityLogEventInterface
     {
         return [
             'name' => $this->group->getAttribute('name'),
-            'user_members' => [
-                $this->userMembers
-            ],
-            'group_members' => [
-                $this->groupMembers
-            ],
-            'deleted_at' => Carbon::now()
+            'user_members' => $this->userMembers,
+            'group_members' => $this->groupMembers,
+            'deleted_at' => Carbon::now(),
         ];
     }
 
@@ -82,14 +78,10 @@ class GroupDeleted implements SecurityLogEventInterface
     {
         return [
             'group_name' => [
-                $this->group
+                $this->group,
             ],
-            'user_members' => [
-                $this->userMembers
-            ],
-            'group_members' => [
-                $this->groupMembers
-            ]
+            'user_members' => $this->userMembers,
+            'group_members' => $this->groupMembers,
         ];
     }
 

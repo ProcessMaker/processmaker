@@ -21,14 +21,18 @@ class HttpResponseException extends Exception implements HttpExceptionInterface
     /**
      * @param Response $response
      */
-    public function __construct(Response $response)
+    public function __construct(Response $response, $note = null)
     {
         $this->status = $response->getStatusCode();
         $this->body = $response->getBody()->getContents();
         $this->headers = $response->getHeaders();
+        if ($note) {
+            $this->body = $note . "\n" . $this->body;
+        }
+        $body = Str::limit($this->body, 100);
         parent::__construct(__("Unexpected response (status=:status)\n:body", [
             'status' => $this->status,
-            'body' => Str::limit($this->body, 100),
+            'body' => $body,
         ]), 0);
     }
 

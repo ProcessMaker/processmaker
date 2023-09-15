@@ -152,6 +152,8 @@ export default {
                         importingName: asset.name,
                         existingId: asset.existing_id,
                         matchedBy: asset.matched_by,
+                        existingUpdatedAt: asset.existing_attributes?.updated_at,
+                        importingUpdatedAt: asset.attributes?.updated_at,
                     };
                 });
             }

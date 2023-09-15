@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
@@ -10,37 +11,39 @@ class ScriptExecutorDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
-    private array $changes;
 
     /**
      * Create a new event instance.
      *
+     * @param array $data
+     *
      * @return void
      */
-    public function __construct(array $deleted_values)
+    public function __construct(array $data)
     {
-        $this->changes = $deleted_values;
-        $this->data = [
-            'script_executor_id' => $deleted_values['id'],
-            'title' => $deleted_values['title'],
-            'description' => $deleted_values['description']
-        ];
+        $this->data = $data;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'name' => $this->data['title'] ?? '',
+            'description' => $this->data['description'] ?? '',
+            'deleted_at' => Carbon::now(),
+        ];
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [
+            'id' => $this->data['id'] ?? '',
+        ];
     }
 
     /**

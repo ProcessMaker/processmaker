@@ -25,22 +25,22 @@ class SensitiveDataHelperTest extends TestCase
     {
         $this->assertEquals([
             'password' => '****',
-            'name' => 'User Name'
+            'name' => 'User Name',
         ], SensitiveDataHelper::parseArray([
             'password' => '1234',
-            'name' => 'User Name'
+            'name' => 'User Name',
         ]));
 
         $this->assertEquals([
             'user' => [
                 'name' => 'User Name',
-                'password' => '****'
-            ]
+                'password' => '****',
+            ],
         ], SensitiveDataHelper::parseArray([
             'user' => [
                 'name' => 'User Name',
-                'password' => '1234'
-            ]
+                'password' => '1234',
+            ],
         ]));
 
         $this->assertEquals([
@@ -48,15 +48,15 @@ class SensitiveDataHelperTest extends TestCase
             'task' => null,
             'user' => [
                 'name' => 'User Name',
-                'email' => 'user@example.com'
-            ]
+                'email' => 'user@example.com',
+            ],
         ], SensitiveDataHelper::parseArray([
             'process_name' => 'Process Name',
             'task' => null,
             'user' => [
                 'name' => 'User Name',
-                'email' => 'user@example.com'
-            ]
+                'email' => 'user@example.com',
+            ],
         ]));
     }
 }

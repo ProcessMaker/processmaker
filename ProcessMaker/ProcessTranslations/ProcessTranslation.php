@@ -52,8 +52,11 @@ class ProcessTranslation
         }
 
         $nestedScreens = [];
-        foreach ($screensInProcess as $screen) {
-            $nestedScreens = array_merge($nestedScreens, Screen::findOrFail($screen)->nestedScreenIds());
+        foreach ($screensInProcess as $screenId) {
+            $screen = Screen::find($screenId);
+            if ($screen) {
+                $nestedScreens = array_merge($nestedScreens, $screen->nestedScreenIds());
+            }
         }
 
         $screensInProcess = collect(array_merge($screensInProcess, $nestedScreens))->unique();
@@ -93,14 +96,20 @@ class ProcessTranslation
         foreach ($screensTranslations as $screenTranslation) {
             if ($screenTranslation['translations']) {
                 foreach ($screenTranslation['translations'] as $key => $translation) {
-                    $createdAt = $translation['created_at'];
-                    $updatedAt = $translation['updated_at'];
+                    if (array_key_exists('created_at', $translation)) {
+                        $createdAt = $translation['created_at'];
+                    }
+
+                    if (array_key_exists('updated_at', $translation)) {
+                        $updatedAt = $translation['updated_at'];
+                    }
 
                     // If updated is greater than existing in array, modify it with the newest
                     if (array_key_exists($key, $languages)) {
                         $createdAt = $languages[$key]['createdAt'];
                         $updatedAt = $languages[$key]['updatedAt'];
-                        if ($languages[$key]['updatedAt'] < $translation['updated_at']) {
+
+                        if (array_key_exists('updated_at', $translation) && $languages[$key]['updatedAt'] < $translation['updated_at']) {
                             $createdAt = $translation['created_at'];
                             $updatedAt = $translation['updated_at'];
                         }
@@ -180,7 +189,9 @@ class ProcessTranslation
                 if ($item['component'] === 'FormSelectList') {
                     if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
                         foreach ($item['config']['options']['optionsList'] as $option) {
-                            $elements[] = $option['content'];
+                            if (array_key_exists('content', $option)) {
+                                $elements[] = $option['content'];
+                            }
                         }
                     }
                 }
@@ -207,9 +218,17 @@ class ProcessTranslation
 
     public function applyTranslations($screen)
     {
+        if (!$screen) {
+            return;
+        }
         $config = $screen['config'];
         $translations = $screen['translations'];
-        $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        $targetLanguage = '';
+
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+        }
+
         $targetLanguage = in_array($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
 
         if (Auth::user()) {
@@ -318,6 +337,8 @@ class ProcessTranslation
             'bpmn:callActivity',
         ];
 
+        $screenIds = [];
+
         foreach (Utils::getElementByMultipleTags($this->process->getDefinitions(true), $tags) as $element) {
             $screenId = $element->getAttribute('pm:screenRef');
             $interstitialScreenId = $element->getAttribute('pm:interstitialScreenRef');
@@ -339,6 +360,11 @@ class ProcessTranslation
 
             if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('screenRef', $pmConfig) && is_numeric($pmConfig['screenRef'])) {
                 $screenIds[] = $pmConfig['screenRef'];
+            }
+
+            if (isset($pmConfig) && $pmConfig !== '' && array_key_exists('web_entry', $pmConfig) && $pmConfig['web_entry']) {
+                $screenIds[] = $pmConfig['web_entry']['screen_id'];
+                $screenIds[] = $pmConfig['web_entry']['completed_screen_id'];
             }
         }
 
@@ -372,11 +398,30 @@ class ProcessTranslation
         if ($processTranslationToken) {
             $token = $processTranslationToken->token;
             $processTranslationToken->delete();
+
+            // Cancel pending batch jobs
+            $batch = Bus::findBatch($token);
+            $batch->cancel();
         }
 
-        // Cancel pending batch jobs
-        $batch = Bus::findBatch($token);
-        $batch->cancel();
+        return true;
+    }
+
+    public function cancelTranslation($language)
+    {
+        // Remove pending token
+        $processTranslationToken = ProcessTranslationToken::where('process_id', $this->process->id)
+            ->where('language', $language)
+            ->first();
+
+        if ($processTranslationToken) {
+            $token = $processTranslationToken->token;
+            $processTranslationToken->delete();
+
+            // Cancel pending batch jobs
+            $batch = Bus::findBatch($token);
+            $batch->cancel();
+        }
 
         return true;
     }
@@ -387,8 +432,8 @@ class ProcessTranslation
             $screen = Screen::findOrFail($screenTranslation['id']);
             $translations = $screen->translations;
 
-            if (!$screenTranslation['translations']) {
-                $screenTranslation['translations'][$language] = [];
+            if (!$screenTranslation['translations'] || !array_key_exists($language, $screenTranslation['translations'])) {
+                $screenTranslation['translations'][$language]['strings'] = [];
             }
 
             foreach ($screenTranslation['translations'] as $key => $value) {
@@ -415,6 +460,9 @@ class ProcessTranslation
         $translations = null;
         $exportList = [];
         foreach ($screensTranslations as $screenTranslation) {
+            $screen = Screen::findOrFail($screenTranslation['id']);
+            $uuid = $screen->uuid;
+
             $availableStrings = $screenTranslation['availableStrings'];
 
             if ($screenTranslation['translations']) {
@@ -430,11 +478,104 @@ class ProcessTranslation
                         }
                     }
                 }
-                $exportList[$screenTranslation['id']][$language][] = $translation;
+                $exportList[$uuid][$language][] = $translation;
             }
         }
 
         // Generate json file to export
         return $exportList;
+    }
+
+    public function getImportData($payload)
+    {
+        $screens = [];
+        foreach ($payload as $screenId => $value) {
+            $languages = [];
+            $screen = Screen::where('uuid', $screenId)->first();
+            if ($screen) {
+                foreach ($value as $languageCode => $translations) {
+                    $languages[] = [
+                        'language' => $languageCode,
+                        'languageHuman' => Languages::ALL[$languageCode],
+                    ];
+                }
+                $screens[] = [
+                    'id' => $screen->id,
+                    'uuid' => $screenId,
+                    'title' => $screen->title,
+                    'languages' => $languages,
+                ];
+            }
+        }
+
+        // Group by language
+        $languageGrouped = [];
+        foreach ($screens as $uuid => $value) {
+            foreach ($value['languages'] as $key => $translations) {
+                $languageGrouped[$translations['language']]['languageHuman'] = $translations['languageHuman'];
+                $languageGrouped[$translations['language']]['screens'][$value['uuid']] = $value['title'];
+            }
+        }
+
+        return $languageGrouped;
+    }
+
+    public function importTranslations($payload)
+    {
+        foreach ($payload as $screenUuid => $value) {
+            $screen = Screen::where('uuid', $screenUuid)->first();
+            if ($screen) {
+                $screen->translations = $this->generateNewTranslations($value, $screen);
+                $screen->save();
+            }
+        }
+    }
+
+    protected function generateNewTranslations($value, $screen)
+    {
+        $newScreenTranslations = $screen->translations;
+        $availableStrings = $this->getStringsInScreen($screen);
+        foreach ($value as $languageCode => $translations) {
+            $newScreenTranslations[$languageCode]['strings'] = $this->generateNewLanguageTranslations(
+                $translations,
+                $availableStrings,
+                $newScreenTranslations[$languageCode]['strings'] ?? []
+            );
+            $createdAt = $newScreenTranslations[$languageCode]['created_at'] ?? Carbon::now();
+            $newScreenTranslations[$languageCode]['updated_at'] = Carbon::now();
+            $newScreenTranslations[$languageCode]['created_at'] = $createdAt;
+        }
+
+        return $newScreenTranslations;
+    }
+
+    protected function generateNewLanguageTranslations($translations, $availableStrings, $existingTranslations)
+    {
+        $newTranslations = [];
+        foreach ($availableStrings as $availableString) {
+            $oldTranslation = $this->getTranslation($availableString, $existingTranslations);
+            $inFileTranslation = $this->getTranslation($availableString, $translations);
+            if (($oldTranslation !== null && $inFileTranslation === null)
+                || ($oldTranslation !== null && $inFileTranslation !== null && $inFileTranslation['string'] === null)) {
+                $newTranslations[] = $oldTranslation;
+            }
+            if ($inFileTranslation !== null
+                && ($oldTranslation === null || $oldTranslation !== null && $inFileTranslation !== null)) {
+                $newTranslations[] = $inFileTranslation;
+            }
+        }
+
+        return $newTranslations;
+    }
+
+    protected function getTranslation($key, $translationArray)
+    {
+        foreach ($translationArray as $translation) {
+            if ($key === $translation['key']) {
+                return $translation;
+            }
+        }
+
+        return null;
     }
 }

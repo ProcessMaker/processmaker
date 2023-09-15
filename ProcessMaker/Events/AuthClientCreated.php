@@ -10,42 +10,46 @@ class AuthClientCreated implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
-    private array $changes;
 
     /**
      * Create a new event instance.
      *
+     * @param array $data
+     *
      * @return void
      */
-    public function __construct(array $created_values)
+    public function __construct(array $data)
     {
-        $this->data = [
-            'auth_client_id' => $created_values['id'],
-            'name' => $created_values['name'],
-            'user_id' => $created_values['user_id'],
-            'revoked' => $created_values['revoked'],
-            'provider' => $created_values['provider'],
-            'redirect' => $created_values['redirect'],
-            'password_client' => $created_values['password_client'],
-            'personal_access_client' => $created_values['personal_access_client']
-        ];
-        $this->changes = $created_values;
+        $this->data = $data;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'name' => [
+                'label' => $this->data['name'],
+                'link' => route('auth-clients.index'),
+            ],
+            'revoked' => $this->data['revoked'] ?? '',
+            'provider' => $this->data['provider'] ?? '',
+            'redirect' => $this->data['redirect'] ?? '',
+            'personal_access_client' => $this->data['personal_access_client'] ?? '',
+            'created_at' => $this->data['created_at'] ?? '',
+        ];
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {
-        return $this->changes;
+        return [
+            'id' => $this->data['id'],
+            'user_id' => $this->data['user_id'] ?? '',
+        ];
     }
 
     /**

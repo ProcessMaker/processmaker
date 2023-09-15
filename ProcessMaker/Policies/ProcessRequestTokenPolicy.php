@@ -88,4 +88,18 @@ class ProcessRequestTokenPolicy
 
         return true;
     }
+
+    /**
+     * Determine if a user can rollback the process request.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
+     *
+     * @return bool
+     */
+    public function rollback(User $user, ProcessRequestToken $task)
+    {
+        // For now, only the process manager can rollback the request
+        return $user->id === $task->process->managerId;
+    }
 }

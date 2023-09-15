@@ -2,11 +2,17 @@
 
 namespace ProcessMaker\Ai\Handlers;
 
+use Illuminate\Support\Facades\Auth;
 use OpenAI\Client;
+use ProcessMaker\Events\ProcessTranslationChunkEvent;
 
 class LanguageTranslationHandler extends OpenAiHandler
 {
     protected $targetLanguage = 'Spanish';
+
+    protected $processId = null;
+
+    protected $json_list = '';
 
     public function __construct()
     {
@@ -28,6 +34,11 @@ class LanguageTranslationHandler extends OpenAiHandler
         $this->targetLanguage = $language;
     }
 
+    public function setProcessId($processId)
+    {
+        $this->processId = $processId;
+    }
+
     public function getPromptFile($type = null)
     {
         return file_get_contents($this->getPromptsPath() . 'language_translation_' . $type . '.md');
@@ -35,10 +46,10 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     public function generatePrompt(String $type = null, String $json_list) : Object
     {
-        $this->$json_list = $json_list;
+        $this->json_list = $json_list;
         $prompt = $this->getPromptFile($type);
         $prompt = $this->replaceJsonList($prompt, $json_list);
-        $prompt = $this->replaceLanguage($prompt, $this->targetLanguage);
+        $prompt = $this->replaceLanguage($prompt, $this->targetLanguage['humanLanguage']);
         $prompt = $this->replaceStopSequence($prompt);
         $this->config['prompt'] = $prompt;
 
@@ -47,21 +58,32 @@ class LanguageTranslationHandler extends OpenAiHandler
 
     public function execute()
     {
-        $client = app(Client::class);
-        $response = $client
-            ->completions()
-            ->create(array_merge($this->getConfig()));
+        $listCharCount = strlen($this->json_list);
+        $totalChars = $listCharCount * 3;
+        $currentChunkCount = 0;
 
-        return $this->formatResponse($response);
+        $client = app(Client::class);
+        $stream = $client
+            ->completions()
+            ->createStreamed(array_merge($this->getConfig()));
+
+        $fullResponse = '';
+        foreach ($stream as $response) {
+            $currentChunkCount += strlen($response->choices[0]->text);
+            self::sendResponse($response->choices[0]->text, $currentChunkCount, $totalChars);
+            $fullResponse .= $response->choices[0]->text;
+        }
+
+        return $this->formatResponse($fullResponse);
     }
 
     private function formatResponse($response)
     {
-        $result = ltrim($response->choices[0]->text);
+        $result = ltrim($response);
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
 
-        return [$result, $response->usage, $this->question];
+        return [$result, 0, $this->question];
     }
 
     public function replaceStopSequence($prompt)
@@ -83,5 +105,19 @@ class LanguageTranslationHandler extends OpenAiHandler
         $replaced = str_replace('{language}', $language . " \n", $prompt);
 
         return $replaced;
+    }
+
+    private function sendResponse($response, $currentChunkCount, $totalChars)
+    {
+        $percentage = $currentChunkCount * 100 / $totalChars;
+
+        if ($percentage > 100) {
+            $percentage = 100;
+        }
+
+        $progress = ['currentChunkCount' => $currentChunkCount, 'totalChars' => $totalChars, 'percentage' => $percentage];
+        if ($this->processId) {
+            event(new ProcessTranslationChunkEvent($this->processId, $this->targetLanguage['language'], $response, $progress));
+        }
     }
 }

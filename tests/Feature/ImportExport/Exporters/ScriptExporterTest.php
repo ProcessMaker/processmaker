@@ -111,4 +111,33 @@ class ScriptExporterTest extends TestCase
         $this->assertEquals('test category A 2', $newCategory1->name);
         $this->assertEquals('test category B 2', $newCategory2->name);
     }
+
+    public function testNoMatchingRunAsUser()
+    {
+        DB::beginTransaction();
+        $user = User::factory()->create(['username' => 'test']);
+        $script = Script::factory()->create(['title' => 'test', 'run_as_user_id' => $user->id]);
+
+        $payload = $this->export($script, ScriptExporter::class, null, false);
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
+
+        $this->import($payload);
+
+        $script = Script::where('title', 'test')->firstOrFail();
+        $this->assertNull($script->run_as_user_id);
+    }
+
+    public function testRunAsUserIdNull()
+    {
+        DB::beginTransaction();
+        $script = Script::factory()->create(['title' => 'test', 'run_as_user_id' => null]);
+
+        $payload = $this->export($script, ScriptExporter::class, null, false);
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
+
+        $this->import($payload);
+
+        $script = Script::where('title', 'test')->firstOrFail();
+        $this->assertNull($script->run_as_user_id);
+    }
 }

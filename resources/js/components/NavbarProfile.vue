@@ -61,7 +61,7 @@
         </li>
         <li class="list-group-item px-2">
           <a
-            href="https://processmaker.gitbook.io/processmaker/"
+            href="https://docs.processmaker.com/"
             role="menuitem"
             :aria-label="$t('Documentation')"
             target="_blank"

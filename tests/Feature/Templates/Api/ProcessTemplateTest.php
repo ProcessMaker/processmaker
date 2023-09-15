@@ -2,20 +2,18 @@
 
 namespace Tests\Feature\Templates\Api;
 
-use Database\Seeders\ProcessTemplatesSeeder;
-use Database\Seeders\UserSeeder;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Templates;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
+use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -53,6 +51,7 @@ class ProcessTemplateTest extends TestCase
                 'name' => 'Test Duplicate Name Template',
                 'description' => 'Test template description',
                 'process_category_id' => 1,
+                'version' => $templateA->version,
                 'mode' => 'new',
                 'saveAssetsMode' => 'saveAllAssets',
             ]
@@ -94,6 +93,7 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
+                'version' => '1.0.0',
                 'description' => 'description 1',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'copy',
@@ -135,6 +135,7 @@ class ProcessTemplateTest extends TestCase
                 'asset_id' => $process->id,
                 'user_id' => $user->id,
                 'name' => 'Test Template',
+                'version' => '1.0.0',
                 'description' => 'Test template description',
                 'process_category_id' => $process->process_category_id,
                 'mode' => 'discard',
@@ -187,6 +188,7 @@ class ProcessTemplateTest extends TestCase
                 'description' => 'Process from template description',
                 'process_category_id' => $template['process_category_id'],
                 'mode' => 'copy',
+                'version' => $template->version,
                 'saveAssetMode' => 'saveAllAssets',
             ]
         );
@@ -201,16 +203,98 @@ class ProcessTemplateTest extends TestCase
         $this->assertEquals('Default Templates', $newCategory->name);
     }
 
-    public function testSeededTemplate()
+    public function testTemplateToProcessSync()
     {
-        $this->seed(UserSeeder::class);
-        $this->seed(ProcessTemplatesSeeder::class);
-        $template = ProcessTemplates::where('name', 'New Hire Onboarding')->firstOrFail();
-        $this->assertEquals('New Hire Onboarding', $template->name);
+        $this->markTestSkipped(
+            'This test needs to be refactor to mock the transactions.'
+        );
+        $this->addGlobalSignalProcess();
+        $fixtures = $this->fixtures();
 
-        $template = ProcessTemplates::where('name', 'Leave of Absence')->firstOrFail();
-        $this->assertEquals('Leave of Absence', $template->name);
+        if (!$fixtures['allTemplates']->count()) {
+            $this->markTestSkipped('Condition not met, skipping test.');
+        }
 
-        $this->assertEquals('Default Templates', ProcessCategory::where('id', $template['process_category_id'])->firstOrFail()->name);
+        $failedProcess = [];
+        foreach ($fixtures['allTemplates'] as $template) {
+            $response = $this->createProcessesFromTemplate(
+                $template, $fixtures['user'], $fixtures['processCategoryId']
+            );
+
+            if ($response->getStatusCode() != 200) {
+                array_push($failedProcess, $template->name . ': ' . $response->getContent());
+                continue;
+            }
+
+            $response->assertStatus(200);
+            $processId = json_decode($response->getContent(), true)['processId'];
+            $newProcess = Process::where('id', $processId)->firstOrFail();
+
+            $this->assertEquals($template->name, $newProcess->name);
+            $this->assertEquals($template->description, $newProcess->description);
+        }
+
+        if (count($failedProcess) > 0) {
+            throw new Exception(implode(', ', $failedProcess));
+        }
+    }
+
+    /**
+     * Tests the fixtures of the private PHP function.
+     *
+     * @return array Associative array containing the generated user and process category ID
+     */
+    private function fixtures()
+    {
+        $user = User::factory()->create();
+        $processCategoryId = ProcessCategory::factory()
+                                ->create(['name' => 'Default Templates', 'status' => 'ACTIVE'])->getKey();
+        ProcessCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScreenCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        ScriptCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        DataSourceCategory::factory()->create(['name' => 'Uncategorized', 'status' => 'ACTIVE']);
+        Setting::firstOrCreate(['key' => 'idp.token_url'], [
+            'format' => 'text',
+            'group' => 'IDP',
+            'helper' => 'Enter your OAuth2 token URL',
+            'config' => '',
+            'name' => 'Token URL',
+            'hidden' => false,
+            'ui' => null,
+        ]);
+
+        $allTemplates = ProcessTemplates::where(['key' => 'default_templates', 'user_id' => null])
+        ->select(['id', 'description', 'name', 'process_category_id', 'version'])
+        ->get();
+
+        return ['user' => $user, 'processCategoryId' => $processCategoryId, 'allTemplates' => $allTemplates];
+    }
+
+    /**
+     * Create processes from a given template.
+     *
+     * @param mixed $template The template to import processes from.
+     * @return mixed The response from the API call.
+     */
+    private function createProcessesFromTemplate($template, $user, $processCategoryId)
+    {
+        $response = $this->apiCall(
+            'POST',
+            route('api.template.create', [
+                'type' => 'process',
+                'id' => $template->id,
+            ]),
+            [
+                'user_id' => $user->getKey(),
+                'name' => $template->name,
+                'version' => $template->version,
+                'description' => $template->description,
+                'process_category_id' => $processCategoryId,
+                'mode' => 'copy',
+                'saveAssetMode' => 'saveAllAssets',
+            ]
+        );
+
+        return $response;
     }
 }

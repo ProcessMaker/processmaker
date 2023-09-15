@@ -21,7 +21,7 @@
       </button>
     </div>
     <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" :style="styles">
+      <div class="card-body h-100" :style="cardStyles">
         <component
           ref="print"
           :is="component"
@@ -86,7 +86,7 @@
         opacity: 0.85,
         blur: '2px',
         isPhotoVideo: false,
-        styles: '',
+        cardStyles: 'pointer-events: none;',
       }
     },
     computed: {
@@ -216,7 +216,7 @@
         }
       },
       isPhotoVideo() {
-        this.styles = this.isPhotoVideo ? 'pointer-events : all' : 'pointer-events : none';
+        this.cardStyles = this.isPhotoVideo ? 'pointer-events : all' : 'pointer-events : none';
       }
     }
   }

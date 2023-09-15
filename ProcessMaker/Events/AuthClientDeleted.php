@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 
@@ -10,6 +11,7 @@ class AuthClientDeleted implements SecurityLogEventInterface
     use Dispatchable;
 
     private array $data;
+
     private array $changes;
 
     /**
@@ -17,22 +19,25 @@ class AuthClientDeleted implements SecurityLogEventInterface
      *
      * @return void
      */
-    public function __construct(array $deleted_values)
+    public function __construct(array $values)
     {
-        $this->data = ['auth_client_id' => $deleted_values['id']];
-        $this->changes = $deleted_values;
+        $this->changes = $values;
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'auth_client_id' => $this->changes['id'] ?? 0,
+            'name' => $this->changes['name'] ?? 0,
+            'deleted_at' => Carbon::now(),
+        ];
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

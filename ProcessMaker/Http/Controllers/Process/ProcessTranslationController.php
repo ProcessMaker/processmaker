@@ -24,39 +24,8 @@ class ProcessTranslationController extends Controller
         return view('processes.translations.export', compact('process', 'language'));
     }
 
-    /**
-     * Get page import
-     *
-     * @param Screen $screen
-     *
-     * @return Factory|View
-     */
-    public function import(Screen $screen)
+    public function import(Process $process)
     {
-        return view('processes.translations.import');
-    }
-
-    /**
-     * Download the JSON definition of the screen
-     *
-     * @param Screen $screen
-     * @param string $key
-     *
-     * @return stream
-     */
-    public function download($processId, $language)
-    {
-        $fileName = trim($screen->title) . '.json';
-        $fileContents = Cache::get($key);
-
-        if (!$fileContents) {
-            return abort(404);
-        } else {
-            return response()->streamDownload(function () use ($fileContents) {
-                echo $fileContents;
-            }, $fileName, [
-                'Content-type' => 'application/json',
-            ]);
-        }
+        return view('processes.translations.import', compact('process'));
     }
 }

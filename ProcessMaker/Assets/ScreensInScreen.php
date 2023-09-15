@@ -44,9 +44,13 @@ class ScreensInScreen
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     if ($recursive) {
-                        $screen = app(Screen::class)->findOrFail($item['config']['screen']);
+                        $screen = app(Screen::class)->find($item['config']['screen']);
                         $this->recursion++;
-                        $screens = $this->referencesToExport($screen, $screens, $manager, $recursive);
+
+                        if ($screen) {
+                            $screens = $this->referencesToExport($screen, $screens, $manager, $recursive);
+                        }
+
                         $this->recursion--;
                     }
                 }
@@ -61,17 +65,31 @@ class ScreensInScreen
      *
      * @param Screen $process
      * @param array $references
+     * @param ExportManager $exportManager
      *
      * @return void
      */
-    public function updateReferences(Screen $screen, array $references = [])
+    public function updateReferences(Screen $screen, array $references, ExportManager $exportManager)
     {
         $config = $screen->config;
         if (is_array($config)) {
-            $this->findInArray($config, function ($item, $key) use ($references, &$config) {
+            $this->findInArray($config, function ($item, $key) use ($references, &$config, $exportManager) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $oldRef = $item['config']['screen'];
-                    $newRef = $references[Screen::class][$oldRef]->getKey();
+                    if ((array_key_exists($oldRef, $references[Screen::class]))) {
+                        $newRef = $references[Screen::class][$oldRef]->getKey();
+                    } else {
+                        $newRef = null;
+                        $exportManager->addLogMessage(
+                            'ScreensInScreen:references',
+                            __(
+                                'Imported file does not contain the screen #:screen assigned to a nested screen',
+                                ['screen' => $oldRef]
+                            ),
+                            false,
+                            __("Missing Nested Screen's screen")
+                        );
+                    }
                     Arr::set($config, "$key.config.screen", $newRef);
                 }
             });

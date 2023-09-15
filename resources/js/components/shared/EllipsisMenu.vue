@@ -15,7 +15,7 @@
         :class="customButton.icon"
       />
       <span>
-        {{ customButton.content }} <b v-if="showProgress"> {{ data.batchInfo.progress }}%</b>
+        {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
     </template>
     <template v-else #button-content>
@@ -27,6 +27,7 @@
         :key="action.value"
         :href="action.link ? itemLink(action, data) : null"
         class="ellipsis-dropdown-item mx-auto"
+        :data-test="action.dataTest"
         @click="!action.link ? onClick(action, data) : null"
       >
         <div class="ellipsis-dropdown-content">
@@ -55,21 +56,24 @@
       </b-dropdown-item>
     </div>
     <div v-else>
-      <b-dropdown-item
-        v-for="action in filterActions"
-        :key="action.value"
-        :href="action.link ? itemLink(action, data) : null"
-        class="ellipsis-dropdown-item mx-auto"
-        @click="!action.link ? onClick(action, data) : null"
-      >
-        <div class="ellipsis-dropdown-content">
-          <i
-            class="pr-1 fa-fw"
-            :class="action.icon"
-          />
-          <span>{{ $t(action.content) }}</span>
-        </div>
-      </b-dropdown-item>
+      <div v-for="action in filterActions">
+        <b-dropdown-divider v-if="action.value == 'divider'"/>
+        <b-dropdown-item v-else
+            :key="action.value"
+            :href="action.link ? itemLink(action, data) : null"
+            class="ellipsis-dropdown-item mx-auto"
+            @click="!action.link ? onClick(action, data) : null"
+        >
+          <div class="ellipsis-dropdown-content">
+            <i
+                class="pr-1 fa-fw"
+                :class="action.icon"
+            />
+            <span>{{ $t(action.content) }}</span>
+          </div>
+        </b-dropdown-item>
+
+      </div>
     </div>
   </b-dropdown>
 </template>
@@ -86,6 +90,7 @@ export default {
   data() {
     return {
       active: false,
+      lastProgress: 0,
     };
   },
   computed: {
@@ -141,6 +146,23 @@ export default {
     },
     onHide() {
       this.$emit('hide');
+    },
+
+    getTotalProgress(batchProgress, chunkProgress) {
+      const progressSlot = 100 / batchProgress.totalJobs;
+      let totalProgress = batchProgress.progress;
+
+      if (chunkProgress?.percentage > 0) {
+        totalProgress += ((chunkProgress.percentage * progressSlot) / 100);
+      }
+
+      if (totalProgress < this.lastProgress) {
+        totalProgress = this.lastProgress;
+      } else {
+        this.lastProgress = totalProgress;
+      }
+
+      return Math.trunc(totalProgress);
     },
   },
 };

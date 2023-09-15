@@ -72,19 +72,37 @@
                             'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
-                        <div class="form-group">
-                            {!! Form::label('timeout', __('Timeout')) !!}
-                            <div class="form-row ml-0">
-                                {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-1',
-                                'v-model' => 'formData.timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.timeout}']) !!}
-                                {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
-                                'aria-label' => __('Use the slider to select a range'),
-                                'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
-                                <div class="invalid-feedback" role="alert" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
-                            </div>
-                            <small class="form-text text-muted"
-                                  v-if="! errors.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
-                        </div>
+
+                        <slider-with-input
+                            :label="$t('Timeout')"
+                            :description="$t('How many seconds the script should be allowed to run (0 is unlimited).')"
+                            :error="errors.timeout ? errors.timeout[0] : null"
+                            :value="formData.timeout"
+                            :min="0"
+                            :max="300"
+                            @input="formData.timeout = $event"
+                        ></slider-with-input>
+
+                        <slider-with-input
+                            :label="$t('Retry Attempts')"
+                            :description="$t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts. This setting is only used when running a script task in a process.')"
+                            :error="errors.retry_attempts ? errors.retry_attempts[0] : null"
+                            :value="formData.retry_attempts"
+                            :min="0"
+                            :max="10"
+                            @input="formData.retry_attempts = $event"
+                        ></slider-with-input>
+
+                        <slider-with-input
+                            :label="$t('Retry Wait Time')"
+                            :description="$t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time. This setting is only used when running a script task in a process.')"
+                            :error="errors.retry_wait_time ? errors.retry_wait_time[0] : null"
+                            :value="formData.retry_wait_time"
+                            :min="0"
+                            :max="3600"
+                            @input="formData.retry_wait_time = $event"
+                        ></slider-with-input>
+
                         <component
                             v-for="(cmp,index) in editScriptHooks"
                             :key="`edit-script-hook-${index}`"
@@ -128,6 +146,8 @@
               'language': null,
               'description': null,
               'timeout': null,
+              'retry_attempts': null,
+              'retry_wait_time': null,
               'status': null
             },
             editScriptHooks: [],
@@ -154,6 +174,8 @@
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
               timeout: this.formData.timeout,
+              retry_attempts: this.formData.retry_attempts,
+              retry_wait_time: this.formData.retry_wait_time,
               script_executor_id: this.formData.script_executor_id,
             })
               .then(response => {

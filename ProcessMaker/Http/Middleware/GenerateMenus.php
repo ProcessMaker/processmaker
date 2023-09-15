@@ -20,20 +20,32 @@ class GenerateMenus
     {
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function ($request_items) {
-                $request_items->add(__('Requests'), ['route' => 'requests.index'])->active('requests/*');
+                $request_items->add(
+                    __('Requests'),
+                    ['route' => 'requests.index', 'id' => 'requests']
+                )->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
-                $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
+                $request_items->add(
+                    __('Tasks'),
+                    ['route' => 'tasks.index', 'id' => 'tasks']
+                )->active('tasks/*');
             });
             if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
-                    $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
+                    $request_items->add(
+                        __('Designer'),
+                        ['route' => 'processes.index', 'id' => 'designer']
+                    )->active('processes/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients|view-settings')) {
                 $menu->group(['prefix' => 'admin'], function ($admin_items) {
-                    $admin_items->add(__('Admin'), ['route' => 'admin.index'])->active('admin/*');
+                    $admin_items->add(
+                        __('Admin'),
+                        ['route' => 'admin.index', 'id' => 'admin']
+                    )->active('admin/*');
                 });
             }
         });
@@ -136,35 +148,35 @@ class GenerateMenus
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes',
-                ]);
+                ])->data('order', 0);
             }
             if (\Auth::check() && \Auth::user()->can('view-scripts')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',
                     'icon' => 'fa-code',
                     'id' => 'process-scripts',
-                ]);
+                ])->data('order', 2);
             }
             if (\Auth::check() && \Auth::user()->can('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
-                ]);
+                ])->data('order', 3);
             }
             if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
-                ]);
+                ])->data('order', 4);
             }
             if (\Auth::check() && \Auth::user()->can('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
                     'id' => 'signal',
-                ]);
+                ])->data('order', 5);
             }
         });
 
@@ -179,7 +191,7 @@ class GenerateMenus
                 'id' => 'dropdownItem',
             ]);
             $submenu->add(__('Documentation'), [
-                'url' => 'https://processmaker.gitbook.io/processmaker',
+                'url' => 'https://docs.processmaker.com',
                 'icon' => 'fa-question-circle',
                 'id' => 'dropdownItem',
                 'target' => '_blank',

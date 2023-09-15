@@ -12,9 +12,12 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     formData.append('password', password);
+
+    let timeout = ProcessMaker.apiClient.defaults.timeout > 90000 ? ProcessMaker.apiClient.defaults.timeout : 90000;// default 90 seconds
     
     return ProcessMaker.apiClient.post('/import/do-import', formData,
     {
+        timeout: timeout,
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -29,7 +32,7 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     
-    return ProcessMaker.apiClient.post(`/template/do-import/${type}`, formData,
+    return ProcessMaker.apiClient.post(`/template/${type}/do-import`, formData,
     {
         headers: {
             'Content-Type': 'multipart/form-data'
@@ -83,7 +86,7 @@ export default {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", exportInfo.name.replace(' ', '_') + ".json");
+      link.setAttribute("download", exportInfo.name.replace(/ /g, "_").toLowerCase() + ".json");
       document.body.appendChild(link);
       link.click();
       return exportInfo;
@@ -103,6 +106,7 @@ export default {
         typeHuman: asset.type_human,
         typeHumanPlural: asset.type_human_plural,
         name: asset.name,
+        translatedLanguages: this.getTranslatedLanguages(asset.extraAttributes.translatedLanguages),
         categories: this.getCategories(asset, assets),
         extraAttributes: asset.extraAttributes || [],
         description: asset.description || null,
@@ -164,6 +168,13 @@ export default {
   //   const match = exporter.match(/([^\\]+)Exporter$/);
   //   return match[1] || "N/A";
   // },
+  getTranslatedLanguages(translatedLanguages) {
+    let languages = null;
+    if (translatedLanguages) {
+      languages = translatedLanguages;
+    }
+    return languages;
+  },
   getCategories(asset, allAssets) {
     const categories = asset.dependents.filter((d) => d.type === "categories").map((category) => category.name);
     if (categories.length === 0) {

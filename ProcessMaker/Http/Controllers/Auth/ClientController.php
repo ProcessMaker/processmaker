@@ -54,7 +54,12 @@ class ClientController extends PassportClientController
         $redirect = in_array('authorization_code_grant', $request->types) ? $request->redirect : '';
 
         $client = $this->clients->create(
-            $request->user()->getKey(), $request->name, $redirect, null, $personalAccess, $password
+            $request->user()->getKey(),
+            $request->name,
+            $redirect,
+            null,
+            $personalAccess,
+            $password
         )->makeVisible('secret');
 
         AuthClientCreated::dispatch($client->getAttributes());
@@ -77,7 +82,7 @@ class ClientController extends PassportClientController
         }
 
         $original_values = $client->getAttributes();
-        
+
         $this->validate($request);
 
         $personalAccess = in_array('personal_access_client', $request->types);
@@ -90,12 +95,12 @@ class ClientController extends PassportClientController
             'personal_access_client' => $personalAccess,
             'password_client' => $password,
         ]);
-        
+
         $original = array_intersect_key($client->getOriginal(), $client->getDirty());
 
         $client->save();
 
-        AuthClientUpdated::dispatch($clientId, $original, $client->getChanges());
+        AuthClientUpdated::dispatch($clientId, $original, $client->getChanges(), $request->name);
 
         return new AuthClientResource($client);
     }

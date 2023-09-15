@@ -6,6 +6,7 @@
 
 @section('content')
   <div id="modeler-app"></div>
+  @include('processes.modeler.partials.map-legend')
 @endsection
 
 @section('css')
@@ -28,10 +29,12 @@
   <script>
     const breadcrumbData = [];
     window.ProcessMaker.modeler = {
-      process: @json($process),
-      processName: @json($process->name),
       xml: @json($bpmn),
       configurables: [],
+      requestCompletedNodes: @json($requestCompletedNodes),
+      requestInProgressNodes: @json($requestInProgressNodes),
+      requestIdleNodes: @json($requestIdleNodes),
+      requestId: @json($requestId),
     }
 
     window.ProcessMaker.EventBus.$on('modeler-start', ({

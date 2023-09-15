@@ -52,7 +52,8 @@ class Handler extends ExceptionHandler
         if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
             try {
                 UnauthorizedAccessAttempt::dispatch();
-            } catch (\Exception $e){}
+            } catch (\Exception $e) {
+            }
         }
         parent::report($exception);
     }
@@ -143,5 +144,19 @@ class Handler extends ExceptionHandler
         ] : [
             'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
         ];
+    }
+
+    /**
+     * Errors in the console must have an exit status > 0 for CI to see it as an error.
+     * This prevents the symfony console from handling the error and returning an
+     * exit status of 0, which it does by default surprisingly.
+     *
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @param  \Throwable  $e
+     * @return void
+     */
+    public function renderForConsole($output, Throwable $e)
+    {
+        throw $e;
     }
 }

@@ -12,13 +12,19 @@ class GroupUsersUpdated implements SecurityLogEventInterface
     use Dispatchable;
 
     const ADDED = 'added';
+
     const DELETED = 'deleted';
 
     private array $data;
+
     private int $groupUpdated;
+
     private User|Group $member;
+
     private string $action;
+
     private array $changes;
+
     private string $memberType;
 
     /**
@@ -37,16 +43,17 @@ class GroupUsersUpdated implements SecurityLogEventInterface
             'memberType' => $memberType,
             'memberId' => $memberId,
             'group' => $groupUpdated,
-            'action' => $action
+            'action' => $action,
         ];
     }
 
     /**
      * Building the data
      */
-    public function buildData() {
+    public function buildData()
+    {
         $group = Group::findOrFail($this->groupUpdated);
-        
+
         if ($this->memberType === User::class) {
             $type = 'user';
             $link = 'users.edit';
@@ -55,46 +62,46 @@ class GroupUsersUpdated implements SecurityLogEventInterface
             $type = 'group';
             $link = 'groups.edit';
             $label = $this->member->name;
-        } 
+        }
 
         switch ($this->action) {
-            case GroupUsersUpdated::ADDED:
+            case self::ADDED:
                 $this->data = [
                     'group' => [
                         'link' => route('groups.edit', $group),
-                        'label' => $group->name
+                        'label' => $group->name,
                     ],
                     '+ ' . $type => [
                         'link' => route($link, $this->member),
-                        'label' => $label
-                    ]
+                        'label' => $label,
+                    ],
                 ];
                 break;
-            case GroupUsersUpdated::DELETED:
+            case self::DELETED:
                 $this->data = [
                     'group' => [
                         'link' => route('groups.edit', $group),
-                        'label' => $group->name
+                        'label' => $group->name,
                     ],
                     '- ' . $type => [
-                        'link' => route( $link, $this->member),
-                        'label' => $label
-                    ]
+                        'link' => route($link, $this->member),
+                        'label' => $label,
+                    ],
                 ];
                 break;
         }
     }
-    
+
     /**
-     * Return event data 
+     * Return event data
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
-     * Return event changes 
+     * Return event changes
      */
     public function getChanges(): array
     {

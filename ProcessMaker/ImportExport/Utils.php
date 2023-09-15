@@ -29,6 +29,13 @@ class Utils
         return json_decode($element->getAttribute('pm:config'), true);
     }
 
+    // public static function getPmConfigAtXPath(Process $process, string $xmlPath)
+    // {
+    //     $definitions = $process->getDefinitions(true);
+    //     $element = self::getElementByPath($definitions, $xmlPath);
+    //     return self::getPmConfig($element);
+    // }
+
     public static function getElementByPath($document, $path)
     {
         $elements = self::getElementsByPath($document, $path);

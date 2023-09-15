@@ -51,11 +51,12 @@
             :permission="permission"
             :data="props.rowData"
             :is-documenter-installed="isDocumenterInstalled"
-            :divider="true"
+            :divider="false"
           />
         </template>
       </vuetable>
-      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId"/>
+      <create-template-modal id="create-template-modal" ref="create-template-modal" assetType="process" :currentUserId="currentUserId" :assetName="processTemplateName" :assetId="processId" />
+      <create-pm-block-modal id="create-pm-block-modal" ref="create-pm-block-modal" :currentUserId="currentUserId" :assetName="pmBlockName" :assetId="processId" />
       <pagination
               :single="$t('Process')"
               :plural="$t('Processes')"
@@ -75,12 +76,13 @@
   import isPMQL from "../../modules/isPMQL";
   import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
   import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
+  import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
   import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu },
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal},
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
@@ -90,15 +92,19 @@
         { value: "pause-start-timer", content: "Pause Start Timer Events", icon: "fas fa-pause", conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)"},
         { value: "edit-designer", content: "Edit Process", link: true, href:"/modeler/{{id}}", permission: "edit-processes", icon: "fas fa-edit", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "create-template", content: "Save as Template", permission: "create-process-templates", icon: "fas fa-layer-group" },
+        { value: "create-pm-block", content: "Save as PM Block", permission: "create-pm-blocks", icon: "fas nav-icon fa-cube" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: "edit-processes", icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: "view-processes", icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
+        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-archive", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "divider" },
         { value: "export-item", content: "Export", link: true, href:"/processes/{{id}}/export", permission: "export-processes", icon: "fas fa-file-export"},
-        { value: "remove-item", content: "Archive", permission: "archive-processes", icon: "fas fa-download", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
         { value: "restore-item", content: "Restore", permission: "archive-processes", icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
+        { value: "download-bpmn", content: "Download BPMN", permission: "view-processes", icon: "fas fa-file-download"},
       ],
         orderBy: "name",
         processId: null,
         processTemplateName: '',
+        pmBlockName: '',
         processData: {},
         sortOrder: [
           {
@@ -158,6 +164,12 @@
         this.processTemplateName = name;
         this.$refs["create-template-modal"].show();
       },
+      showPmBlockModal(name, id) {        
+        this.processId = id;
+        this.pmBlockName = name;
+        this.$refs["create-pm-block-modal"].show();
+      },
+
       onNavigate(action, data) {
         let putData = {
           name: data.name,
@@ -191,6 +203,9 @@
           case "create-template":
             this.showCreateTemplateModal(data.name, data.id);
             break;
+          case "create-pm-block":
+            this.showPmBlockModal(data.name, data.id);
+            break;
           case "restore-item":
             ProcessMaker.apiClient
                 .put("processes/" + data.id + "/restore")
@@ -218,6 +233,33 @@
                             "success"
                         );
                         this.$refs.pagination.loadPage(1);
+                      });
+                }
+            );
+            break;
+
+          case "download-bpmn":
+            ProcessMaker.confirmModal(
+                this.$t("Caution!"),
+                this.$t("Are you sure you want to download the BPMN definition of the process?"),
+                "",
+                () => {
+                  ProcessMaker.apiClient
+                      .get("processes/" + data.id + "/bpmn")
+                      .then(response => {
+
+                        const link = document.createElement("a");
+                        const file = new Blob([response.data], { type: 'text/plain' });
+
+                        link.href = URL.createObjectURL(file);
+                        link.download = "bpmnProcess.xml";
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+
+                        ProcessMaker.alert(
+                            this.$t("The process BPMN has been downloaded."),
+                            "success"
+                        );
                       });
                 }
             );

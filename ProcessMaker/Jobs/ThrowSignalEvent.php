@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 
@@ -47,11 +48,11 @@ class ThrowSignalEvent implements ShouldQueue
             ->pluck('id')
             ->toArray();
         foreach ($processes as $process) {
-            CatchSignalEventProcess::dispatch(
+            WorkflowManager::throwSignalEventProcess(
                 $process,
                 $this->signalRef,
                 $this->data
-            )->onQueue('bpmn');
+            );
         }
         $count = ProcessRequest::whereNotIn('id', $this->excludeRequests)
             ->where('status', 'ACTIVE')

@@ -13,11 +13,18 @@
       </b-col>
       <b-col cols="2">
         <b-button
-          id="downloadLogUser"
+          id="downloadCSV"
           variant="primary"
-          @click="prepareDownloadLogs"
+          @click="requestLogs('csv')"
         >
-          {{ $t('Download') }}
+          {{ $t('CSV') }}
+        </b-button>
+        <b-button
+          id="downloadXML"
+          variant="primary"
+          @click="requestLogs('xml')"
+        >
+          {{ $t('XML') }}
         </b-button>
       </b-col>
     </b-row>
@@ -145,6 +152,7 @@ export default {
           name: "__slot:actions",
         },
       ],
+      fileTitle: "security-logs",
     };
   },
   computed: {
@@ -204,86 +212,15 @@ export default {
       this.$refs["modal-logs"].showLogInfo(data);
     },
     /**
-     * Download all user's logs
+     * Request the user log activity in CSV or XML format.
      */
-    prepareDownloadLogs() {
-      const headers = {
-        id: "id",
-        user_id: "user_id",
-        event: "event",
-        occurred_at: "occurred_at",
-        meta: "meta",
-        data: "data",
-      };
-      const itemsNotFormatted = [...this.data.data];
-      const itemsFormatted = [];
-
-      // format the data
-      itemsNotFormatted.forEach((item) => {
-        itemsFormatted.push({
-          id: item.id,
-          user_id: item.user_id,
-          event: item.event,
-          occurred_at: item.occurred_at,
-          meta: JSON.stringify(item.meta).replace(/,/g, "__").replace(/;/g, "_"),
-          data: JSON.stringify(item.data).replace(/,/g, "__"),
+    requestLogs(format) {
+      const url = `security-logs/download/${this.userId}?format=${format}`;
+      ProcessMaker.apiClient
+        .get(url)
+        .then((response) => {
+          window.ProcessMaker.alert(response.data.message, "success");
         });
-      });
-
-      const fileTitle = "security-logs"; // or 'my-unique-title'
-
-      this.exportCSVFile(headers, itemsFormatted, fileTitle);
-    },
-    /**
-     * Export the JSON data to CSV
-     */
-    exportCSVFile(headers, items, fileTitle) {
-      if (headers) {
-        items.unshift(headers);
-      }
-
-      // Convert Object to JSON
-      const jsonObject = JSON.stringify(items);
-      const csv = this.convertToCSV(jsonObject);
-      const exportedFilenmae = `${fileTitle}.csv` || "export.csv";
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-
-      if (navigator.msSaveBlob) {
-        navigator.msSaveBlob(blob, exportedFilenmae);
-      } else {
-        const link = document.createElement("a");
-        if (link.download !== undefined) {
-          const url = URL.createObjectURL(blob);
-          link.setAttribute("href", url);
-          link.setAttribute("download", exportedFilenmae);
-          link.style.visibility = "hidden";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      }
-    },
-    /**
-     * Convert array to CSV format
-     */
-    convertToCSV(objArray) {
-      const array = typeof objArray !== "object" ? JSON.parse(objArray) : objArray;
-      let str = "";
-      let i;
-      let index;
-      let line = "";
-
-      for (i = 0; i < array.length; i += 1) {
-        line = "";
-        for (index in array[i]) {
-          if (line !== "") {
-            line += ",";
-          }
-          line += array[i][index];
-        }
-        str += `${line}\r\n`;
-      }
-      return str;
     },
   },
 };

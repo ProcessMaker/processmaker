@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false" pm:config="{&#34;web_entry&#34;:null}">
+      <bpmn:outgoing>node_270</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="node_206" name="End Event">
+      <bpmn:incoming>node_283</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="node_255" name="Form Task" pm:screenRef="13" pm:allowInterstitial="false" pm:assignment="user_group" pm:assignedUsers="[task_user_id]" pm:assignedGroups="" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;reactions&#34;:false,&#34;voting&#34;:false,&#34;edit_comments&#34;:false,&#34;remove_comments&#34;:false,&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+      <bpmn:incoming>node_270</bpmn:incoming>
+      <bpmn:outgoing>node_281</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_270" name="" sourceRef="node_1" targetRef="node_255" />
+    <bpmn:task id="node_272" name="Bad Assignment" pm:screenRef="13" pm:allowInterstitial="false" pm:assignment="rule_expression" pm:assignedUsers="" pm:assignedGroups="" pm:assignmentLock="false" pm:allowReassignment="false" pm:assignmentRules="[{&#34;type&#34;:&#34;user&#34;,&#34;assignee&#34;:[task_user_id],&#34;expression&#34;:&#34;foo == 123&#34;,&#34;assignmentName&#34;:&#34;Admin User (admin)&#34;}]" pm:config="{&#34;reactions&#34;:false,&#34;voting&#34;:false,&#34;edit_comments&#34;:false,&#34;remove_comments&#34;:false,&#34;web_entry&#34;:null,&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+      <bpmn:incoming>node_281</bpmn:incoming>
+      <bpmn:outgoing>node_283</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_281" name="" sourceRef="node_255" targetRef="node_272" />
+    <bpmn:sequenceFlow id="node_283" name="" sourceRef="node_272" targetRef="node_206" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="204" y="242.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_206_di" bpmnElement="node_206">
+        <dc:Bounds x="698" y="243.5" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_255_di" bpmnElement="node_255">
+        <dc:Bounds x="332" y="223" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_270_di" bpmnElement="node_270">
+        <di:waypoint x="222" y="260.5" />
+        <di:waypoint x="390" y="261" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_272_di" bpmnElement="node_272">
+        <dc:Bounds x="497" y="224" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_281_di" bpmnElement="node_281">
+        <di:waypoint x="390" y="261" />
+        <di:waypoint x="555" y="262" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_283_di" bpmnElement="node_283">
+        <di:waypoint x="555" y="262" />
+        <di:waypoint x="716" y="261.5" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

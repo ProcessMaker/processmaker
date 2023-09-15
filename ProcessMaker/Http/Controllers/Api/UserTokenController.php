@@ -155,7 +155,7 @@ class UserTokenController extends Controller
             $request->scopes ?: []
         );
 
-        event(new TokenCreated($token->token));
+        event(new TokenCreated($token->token, $user, $request->name));
 
         return new UserTokenResource($token);
     }
@@ -264,7 +264,7 @@ class UserTokenController extends Controller
 
         $token->revoke();
 
-        event(new TokenDeleted($token));
+        event(new TokenDeleted($token, $user, $token->name));
 
         return response([], 204);
     }

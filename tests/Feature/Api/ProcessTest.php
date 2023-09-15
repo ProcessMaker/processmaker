@@ -1190,4 +1190,21 @@ class ProcessTest extends TestCase
         // Assert draft version is deleted.
         $this->assertEquals(0, $process->versions()->draft()->count());
     }
+
+    public function testTriggerStartEventWeb()
+    {
+        $this->withoutExceptionHandling();
+        $process = Process::factory()->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
+        ]);
+
+        $route = route('process_events.trigger', [
+            'process' => $process->id,
+            'event' => 'StartEventUID',
+        ]);
+        $response = $this->webCall('GET', $route);
+
+        // Assert redirect status.
+        $response->assertStatus(302);
+    }
 }

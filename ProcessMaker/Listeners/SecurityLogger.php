@@ -35,7 +35,7 @@ class SecurityLogger
                 'meta' => $this->getMeta(),
                 'user_id' => isset($event->user) ? $event->user->id : Auth::id(),
                 'data' => $data ? SensitiveDataHelper::parseArray($data) : null,
-                'changes' => $changes ? SensitiveDataHelper::parseArray($changes) : null
+                'changes' => $changes ? SensitiveDataHelper::parseArray($changes) : null,
             ]);
         } elseif (array_key_exists($class, $this->eventTypes)) {
             $eventType = $this->eventTypes[$class];
@@ -43,7 +43,7 @@ class SecurityLogger
                 'event' => $eventType,
                 'ip' => request()->ip(),
                 'meta' => $this->getMeta(),
-                'user_id' => isset($event->user) ? $event->user->id : null
+                'user_id' => isset($event->user) ? $event->user->id : null,
             ]);
         }
     }

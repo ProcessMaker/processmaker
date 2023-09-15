@@ -16,9 +16,10 @@ trait FormatSecurityLogChanges
             $formatted['+ ' . $translated] = is_array($newValue) || is_object($newValue) ? json_encode($newValue) : $newValue;
             if (isset($original[$key])) {
                 $oldValue = $original[$key];
-                $formatted['- ' . $translated] = is_array($oldValue) || is_object($oldValue) ? json_encode($oldValue) : $oldValue;;
+                $formatted['- ' . $translated] = is_array($oldValue) || is_object($oldValue) ? json_encode($oldValue) : $oldValue;
             }
         }
+
         return $formatted;
     }
 }

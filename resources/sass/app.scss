@@ -29,7 +29,6 @@ html {
   font-weight: 400;
   font-style: normal;
   background-color: $body-bg;
-  overflow-x: hidden;
 }
 
 .fw-medium {
@@ -943,6 +942,7 @@ nav {
 
 .prevBtn > span, .prevBtn > button {
   padding-left: 0px !important;
+}
 
 //styles for simple error message
 .simple-error-message-main {
@@ -952,7 +952,6 @@ nav {
 .simple-error-message-icon {
   color: var(--warning);
   font-size: 144px;
-  margin-top: 25px;
 }
 
 .simple-error-message-title {
@@ -962,5 +961,4 @@ nav {
 .simple-error-message-message {
   display: inline-block;
   width: 400px;
-}
 }

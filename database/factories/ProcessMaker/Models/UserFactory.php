@@ -4,7 +4,6 @@ namespace Database\Factories\ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\User;
 
 /**
  * Model factory for a User
@@ -13,10 +12,8 @@ class UserFactory extends Factory
 {
     /**
      * Define the model's default state.
-     *
-     * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         if (!isset($GLOBALS['testPassword'])) {
             $GLOBALS['testPassword'] = Hash::make('oneOnlyPassword');
@@ -52,5 +49,14 @@ class UserFactory extends Factory
             'force_change_password' => 0,
 
         ];
+    }
+
+    public function admin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_administrator' => true,
+            ];
+        });
     }
 }

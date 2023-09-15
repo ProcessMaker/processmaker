@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Events\Dispatchable;
 use ProcessMaker\Contracts\SecurityLogEventInterface;
 use ProcessMaker\Models\Script;
@@ -32,7 +33,7 @@ class ScriptDeleted implements SecurityLogEventInterface
     public function getChanges(): array
     {
         return [
-            'script_id' => $this->script->id
+            'script_id' => $this->script->id,
         ];
     }
 
@@ -44,7 +45,8 @@ class ScriptDeleted implements SecurityLogEventInterface
     public function getData(): array
     {
         return [
-            'Name' => $this->script->getAttribute('title'),
+            'name' => $this->script->getAttribute('title'),
+            'deleted_at' => Carbon::now(),
         ];
     }
 
