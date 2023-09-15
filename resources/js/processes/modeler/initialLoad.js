@@ -26,8 +26,8 @@ import {
   loopCharacteristicsHandler,
   loopCharacteristicsData,
   NodeIdentifierInput,
+  registerNodes,
 } from "@processmaker/modeler";
-import { registerNodes } from "@processmaker/modeler";
 import i18next from "i18next";
 import ModelerScreenSelect from "./components/inspector/ScreenSelect";
 import UserSelect from "./components/inspector/UserSelect";
@@ -221,7 +221,7 @@ ProcessMaker.EventBus.$on(
         required: true,
       },
     });
- 
+
     registerInspectorExtension(scriptTask, {
       component: "FormAccordion",
       container: true,
@@ -233,32 +233,31 @@ ProcessMaker.EventBus.$on(
       },
       items: [
         {
-          component: 'ErrorHandlingTimeout',
+          component: "ErrorHandlingTimeout",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryAttempts',
+          component: "ErrorHandlingRetryAttempts",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryWaitTime',
+          component: "ErrorHandlingRetryWaitTime",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'NotifyProcessManager',
+          component: "NotifyProcessManager",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
       ],
     });
-    
 
     registerInspectorExtension(scriptTask, {
       component: "ConfigEditor",

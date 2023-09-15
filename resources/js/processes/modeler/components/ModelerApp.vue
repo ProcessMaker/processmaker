@@ -15,7 +15,7 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
-          :validationBar="validationBar"
+          :validation-bar="validationBar"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
@@ -38,8 +38,20 @@
         :key="`external-${index}`"
         :options="component.options"
       />
-      <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
-      <create-pm-block-modal ref="create-pm-block-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
+      <create-template-modal
+        ref="create-template-modal"
+        asset-type="process"
+        :asset-name="processName"
+        :asset-id="processId"
+        :current-user-id="currentUserId"
+      />
+      <create-pm-block-modal
+        ref="create-pm-block-modal"
+        asset-type="process"
+        :asset-name="processName"
+        :asset-id="processId"
+        :current-user-id="currentUserId"
+      />
     </b-card>
   </b-container>
 </template>
@@ -122,8 +134,8 @@ export default {
       };
     },
     closeHref() {
-      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
-    }
+      return this.process?.asset_type === "PM_BLOCK" ? "/designer/pm-blocks" : "/processes";
+    },
   },
   watch: {
     validationErrors: {
