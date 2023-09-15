@@ -209,57 +209,15 @@ class ProcessTemplate implements TemplateInterface
         $template->fill($request->except('id'));
 
         $payload = json_decode($template->manifest, true);
-        $payload['name'] = $request['name'];
-        $payload['description'] = $request['description'];
-
-        $postOptions = [];
-        foreach ($payload['export'] as $key => $asset) {
-            $postOptions[$key] = [
-                'mode' => 'copy',
-                'isTemplate' => false,
-                'saveAssetsMode' => 'saveAllAssets',
-            ];
-
-            if ($payload['root'] === $key) {
-                // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $request['name'];
-                $payload['export'][$key]['attributes']['description'] = $request['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
-
-                $payload['export'][$key]['name'] = $request['name'];
-                $payload['export'][$key]['description'] = $request['description'];
-                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
-                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
-            }
-            if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
-                $payload['export'][$key]['attributes']['is_template'] = false;
-                $payload['export'][$key]['is_template'] = false;
-            }
-        }
-        $options = new Options($postOptions);
-
-        $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
-
-        return response()->json(['processId' => $processId]);
-    }
-
-    public function updateAssets($request): JsonResponse
-    {
-        $templateId = (int) $request->id;
-        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
-        $template->fill($request->except('id'));
-
-        $payload = json_decode($template->manifest, true);
-
-        $postOptions = [];
+        // Check for existing assets
         $existingAssets = $request->existingAssets;
-        $requestData = $request->toArray()['request'];
+
+        $requestData = $existingAssets ? $request->toArray()['request'] : $request;
+
         $payload['name'] = $requestData['name'];
         $payload['description'] = $requestData['description'];
 
+        $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => 'copy',
@@ -285,15 +243,16 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+                // TODO:Check on manager ['manager_id'] when updating assets
+                // $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
             }
-
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
                 $payload['export'][$key]['is_template'] = false;
             }
         }
-
         $options = new Options($postOptions);
+
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;

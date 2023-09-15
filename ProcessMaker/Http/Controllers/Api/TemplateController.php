@@ -130,34 +130,31 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $assetsResponse = $this->checkIfAssetsExist($request);
-
-        if (!empty($assetsResponse)) {
-            $response = [
-                'id' => $request->id,
-                'request' => $request->toArray(),
-                'existingAssets' => $assetsResponse,
-            ];
-        } else {
+        if ($type === 'process') {
+            $request->validate(Template::rules($request->id, $this->types[$type][4]));
+            $assetsResponse = $this->checkIfAssetsExist($request);
+            if (!empty($assetsResponse)) {
+                $response = [
+                    'id' => $request->id,
+                    'request' => $request->toArray(),
+                    'existingAssets' => $assetsResponse,
+                ];
+            } else {
+                $response = $this->template->create($type, $request);
+                if (isset($response->getData()->processId) && $type === 'process') {
+                    $process = Process::find($response->getData()->processId);
+                    // Register the Event
+                    ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+                }
+            }
+        }
+        if ($type === 'update-assets') {
             $response = $this->template->create($type, $request);
             if (isset($response->getData()->processId) && $type === 'process') {
                 $process = Process::find($response->getData()->processId);
                 // Register the Event
                 ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
             }
-        }
-
-        return $response;
-    }
-
-    public function updateAssets(Request $request)
-    {
-        $response = $this->template->updateAssets($request);
-        if (isset($response->getData()->processId)) {
-            $process = Process::find($response->getData()->processId);
-            // Register the Event
-            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
 
         return $response;

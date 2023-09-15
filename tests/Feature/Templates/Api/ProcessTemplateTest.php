@@ -274,10 +274,12 @@ class ProcessTemplateTest extends TestCase
 
         $params = [
             'user_id' => $user->id,
-            'name' => 'Test Create Process from Template',
-            'description' => 'Process from template description',
+            'name' => 'Test Updating Assets of a template',
+            'description' => 'Description of the process',
             'process_category_id' => $template['process_category_id'],
+            'mode' => 'copy',
             'version' => $template->version,
+            'saveAssetMode' => 'saveAllAssets',
         ];
 
         // First Request
@@ -287,6 +289,7 @@ class ProcessTemplateTest extends TestCase
 
         // Response for the update assets page
         $updatePageResponse = $response->json();
+
         // Update some of the assets mode
         $updatePageResponse['existingAssets'][0]['mode'] = 'discard';
         $updatePageResponse['existingAssets'][1]['mode'] = 'discard'; // First Screen
@@ -295,13 +298,19 @@ class ProcessTemplateTest extends TestCase
         $updatePageResponse['existingAssets'][4]['mode'] = 'discard'; // Second Script
 
         // New Request with updated assets mode
-        $route = route('api.template.updateAssets');
+        $route = route('api.template.create', ['type' => 'update-assets', 'id' => $updatePageResponse['id']]);
         $response = $this->apiCall('POST', $route, $updatePageResponse);
 
         $response->assertStatus(200);
         $this->assertEquals('2', ScreenModel::count());
         $this->assertDatabaseHas('scripts', ['title' => 'First Script 2']);
         $this->assertEquals('3', Script::count());
+
+        $id = json_decode($response->getContent(), true)['processId'];
+        $newProcess = Process::where('id', $id)->firstOrFail();
+
+        $this->assertEquals('Test Updating Assets of a template', $newProcess->name);
+        $this->assertEquals('Description of the process', $newProcess->description);
     }
 
     /**
