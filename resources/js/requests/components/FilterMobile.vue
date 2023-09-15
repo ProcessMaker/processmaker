@@ -1,143 +1,142 @@
 <template>
-  <div class="row">
-    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-      <div>
-        <b-nav pills>
-          <div
-            class="dropdown"
-            left
+  <b-container class="bv-example-row">
+    <b-row align-h="between">
+      <b-col cols="8">
+        <div
+          v-if="showDropdowns"
+          class="dropdown"
+        >
+          <button
+            id="statusDropdown"
+            class="btn btn-secondary dropdown-toggle dropdown-style"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
           >
-            <button
-              id="dropdownMenuButton"
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
+            <i :class="selectedIconStatus"/>
+            {{ selectedOptionStatus }}
+            <i class="fas fa-caret-down"/>
+          </button>
+          <div
+            class="dropdown-menu"
+            aria-labelledby="statusDropdown"
+          >
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption('In Progress', 'status', 'fas fa-circle text-warning')"
             >
               <i class="fas fa-circle text-warning"/>
-              {{ selectedOption }}
-              <i class="fas fa-caret-down"/>
-            </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="dropdownMenuButton"
+              {{ $t('In Progress') }}
+            </a>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption('Completed', 'status', 'fas fa-circle text-primary')"
             >
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption('In Progress', 'status')"
-              >
-                <i class="fas fa-circle text-warning"/>
-                {{ $t('In Progress') }}
-              </a>
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption('Completed', 'status')"
-              >
-                <i class="fas fa-circle text-primary"/>
-                {{ $t('Completed') }}
-              </a>
-            </div>
+              <i class="fas fa-circle text-primary"/>
+              {{ $t('Completed') }}
+            </a>
           </div>
-
-          <div
-            v-if="type === 'requests'"
-            class="dropdown"
+        </div>
+      </b-col>
+      <b-col cols="1" class="d-flex">
+        <div
+          v-if="showDropdowns && type === 'requests'"
+          class="dropdown"
+        >
+          <button
+            id="requestsDropdown"
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
           >
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              id="dropdownMenuButton"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
+            <i :class="selectedIconFilter"/>
+            <i class="fas fa-caret-down"/>
+          </button>
+          <div
+            class="dropdown-menu"
+            aria-labelledby="requestsDropdown"
+          >
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption(`(requester = 'admin')`, 'filter', 'fas fa-user')"
             >
               <i class="fas fa-user"/>
-              <i class="fas fa-caret-down"/>
-            </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="dropdownMenuButton"
+              {{ $t('Requested by Me') }}
+              <i v-if="selectedIconFilter=== 'fas fa-user'" class="fas fa-check ml-auto text-success"/>
+            </a>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption(`(participant = 'admin')`, 'filter', 'fas fa-users')"
             >
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption(`(requester = 'admin')`, 'filter')"
-              >
-                <i class="fas fa-user"/>
-                {{ $t('Requested by Me') }}
-              </a>
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption(`(participant = 'admin')`, 'filter')"
-              >
-                <i class="fas fa-users"/>
-                {{ $t('With me as Participant') }}
-              </a>
-            </div>
+              <i class="fas fa-users"/>
+              {{ $t('With me as Participant') }}
+              <i v-if="selectedIconFilter === 'fas fa-users'" class="fas fa-check ml-auto text-success"/>
+            </a>
           </div>
+        </div>
 
-          <div
-            class="dropdown"
-            v-if="type === 'tasks'"
+        <div
+          class="dropdown"
+          v-if="showDropdowns && type === 'tasks'"
+        >
+          <button
+            id="tasksDropdown"
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
           >
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              id="dropdownMenuButton"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
+            <i class="fas fa-list"/>
+            <i class="fas fa-caret-down"/>
+          </button>
+          <div
+            class="dropdown-menu"
+            aria-labelledby="tasksDropdown"
+          >
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption('By Due Date', 'orderBy')"
             >
-              <i class="fas fa-list"/>
-              <i class="fas fa-caret-down"/>
-            </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="dropdownMenuButton"
+              {{ $t('By Due Date') }}
+            </a>
+            <a
+              class="dropdown-item"
+              href="#"
+              @click="selectOption('By Creation Date', 'orderBy')"
             >
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption('By Due Date', 'orderBy')"
-              >
-                {{ $t('By Due Date') }}
-              </a>
-              <a
-                class="dropdown-item"
-                href="#"
-                @click="selectOption('By Creation Date', 'orderBy')"
-              >
-                {{ $t('By Creation Date') }}
-              </a>
-            </div>
+              {{ $t('By Creation Date') }}
+            </a>
           </div>
-
-          <div>
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control narrow-input"
-                v-model="searchCriteria"
-                placeholder="(fulltext LIKE '%someText%')"
-              />
-              <div class="input-group-append">
-                <button
-                  class="btn btn-primary"
-                  @click="performSearch"
-                >
-                  <i class="fas fa-search"/>
-                </button>
-              </div>
-            </div>
-          </div>
-        </b-nav>
+        </div>
+      </b-col>
+      <div class="d-flex align-items-end">
+        <button
+          class="btn btn-primary ml-2"
+          @click="toggleInput"
+        >
+          <i class="fas fa-search"/>
+        </button>
+        <input
+          v-if="showInput"
+          ref="input"
+          type="text"
+          class="form-control narrow-input"
+          v-model="searchCriteria"
+          placeholder="(fulltext LIKE '%someText%')"
+          @keyup.enter="performSearch"
+        />
       </div>
-    </div>
-  </div>
+    </b-row>  
+  </b-container>
 </template>
 
 <script>
@@ -148,26 +147,38 @@ export default {
   data() {
     return {
       searchCriteria: "",
-      selectedOption: "In Progress",
+      selectedOptionStatus: "In Progress",
+      selectedIconStatus: "fas fa-circle text-warning",
+      selectedIconFilter: "fas fa-user",
+      selectedIconOrderBy: "",
       apiData: [],
+      showInput: false,
+      showDropdowns: true,
     };
   },
   methods: {
+    toggleInput() {
+      this.showInput = !this.showInput;
+      this.showDropdowns = !this.showInput;
+    },
     /* This metod receives parameters from dropdown controls 
       options selected by user
       */
-    selectOption(option, controlName) {
-      this.callApiFilter(this.buildApiPath(option, controlName));
+    selectOption(option, controlName, icon) {
+      this.callApiFilter(this.buildApiPath(option, controlName, icon));
     },
     /*This method builds a specific url api string depending 
       of filter used by user
       */
-    buildapiPath(option, controlName) {
+    buildApiPath(option, controlName, icon) {
       let basePath = this.type + "?page=1&per_page=10&include=process,participants,data&";
       if (controlName === "status") {
+        this.selectedOptionStatus = option;
+        this.selectedIconStatus = icon;
         return basePath + 'pmql=(status = "' + option + '")';
       } 
       if (controlName === "filter") {
+        this.selectedIconFilter = icon;
         return basePath + 'filter = "' + option + '"';
       } 
       if (controlName === "orderBy") {
@@ -215,7 +226,40 @@ export default {
   color: #aaa;
 }
 
-.narrow-input {
-  width: 100px;
+.expanded .dropdown {
+  display: none; /* Oculta los dropdowns cuando el input está expandido */
+}
+
+.hidden-input {
+  display: none;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+  }
+
+.dropdown-item .fas.fa-check {
+  margin-left: auto;
+  color: black;
+}
+
+@media (max-width: 767px) {
+  .dropdown-toggle {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .dropdown-item {
+    font-size: 12px;
+  }
+  .narrow-input {
+    font-size: 12px;
+    width: 100%;
+    padding: 5px 10px;
+  }
+  .dropdown-style {
+    background-color: white !important;
+    color: black !important;
+  }
 }
 </style>
