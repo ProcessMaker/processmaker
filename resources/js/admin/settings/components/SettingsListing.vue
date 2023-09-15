@@ -288,7 +288,7 @@ export default {
           return 'setting-file';
         case 'range':
           return 'settings-range';
-        case 'driver-authorization':
+        case 'driver-auth':
           return 'setting-driver-authorization';
         default:
           return 'setting-text-area';
