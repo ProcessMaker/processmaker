@@ -211,7 +211,6 @@ class ProcessTemplate implements TemplateInterface
         $payload = json_decode($template->manifest, true);
         // Check for existing assets
         $existingAssets = $request->existingAssets;
-
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
         $payload['name'] = $requestData['name'];
@@ -244,7 +243,9 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
                 // TODO:Check on manager ['manager_id'] when updating assets
-                // $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
+                if (!isset($existingAssets)) {
+                    $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
+                }
             }
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
