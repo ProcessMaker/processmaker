@@ -1,7 +1,7 @@
 <template>
   <li
     v-cloak
-    class="nav-item d-none d-lg-block"
+    class="nav-item"
   >
     <div id="notificationMenu">
       <b-button
@@ -36,6 +36,7 @@
         triggers="click blur"
         @shown="onShown"
         @hidden="onHidden"
+        custom-class="notification-popover-wrapper"
       >
         <div class="notification-popover">
           <b-container
@@ -85,7 +86,7 @@
               </b-col>
               <b-col
                 align-self="center"
-                lg="auto"
+                cols="auto"
               >
                 <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link" /></a>
               </b-col>
@@ -271,6 +272,7 @@ export default {
   .nav-tabs {
     border: 0;
     font-size: 1.2em;
+    flex-direction: row;
   }
 
   .nav-link {
@@ -356,6 +358,18 @@ export default {
   }
 
   .message-count {
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .notification-popover-wrapper.popover {
+    transform: translate3d(0px, 0px, 0px) !important;
+    right: 0;
+    max-width: 100%;
+  }
+
+  .notification-popover {
+    width: auto;
   }
 }
 </style>
