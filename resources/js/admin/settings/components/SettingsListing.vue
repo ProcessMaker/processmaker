@@ -154,7 +154,7 @@ import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
-import SettingForm from './SettingForm';
+import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -165,6 +165,7 @@ export default {
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
+    SettingDriverAuthorization,
     SettingFile,
     SettingObject,
     SettingScreen,
@@ -174,7 +175,6 @@ export default {
     SettingsExport,
     SettingsRange,
     SettingSelect,
-    SettingForm
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -288,8 +288,8 @@ export default {
           return 'setting-file';
         case 'range':
           return 'settings-range';
-        case 'form':
-          return 'setting-form';
+        case 'driver-authorization':
+          return 'setting-driver-authorization';
         default:
           return 'setting-text-area';
       }
@@ -423,7 +423,7 @@ export default {
       }
     },
     onEdit(row) {
-      this.$refs[`settingComponent_${row.index}`].onEdit();
+      this.$refs[`settingComponent_${row.index}`].onEdit(row);
     },
     onNLQConversion(pmql) {
       this.searchQuery = pmql;
@@ -444,7 +444,7 @@ export default {
 
       return url;
     },
-    settingUrl() {
+    settingUrl(id = null) {
       return `${this.url}/${id}`;
     },
     /**

@@ -48,6 +48,8 @@
                         autofocus
                         v-model="formData.client_secret"
                         autocomplete="off"
+                        trim
+                        type="password"
                         :state="errorState('client_secret', errors)"
                         name="client_secret"
                     ></b-form-input>
@@ -61,9 +63,9 @@
                     :state="errorState('callback_url', errors)"
                 >
                     <b-form-input
-                        required
                         autofocus
                         v-model="formData.callback_url"
+                        readonly
                         autocomplete="off"
                         :state="errorState('callback_url', errors)"
                         name="callback_url"
@@ -75,8 +77,8 @@
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
                     {{ $t('Cancel') }}
                 </button>
-                <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled=" isInvalid || ! changed">
-                    {{ $t('Save')}}
+                <button type="button" class="btn btn-secondary ml-3" @click="authorizeConnection" :disabled=" isInvalid || !changed ">
+                    {{ $t('Authorize')}}
                 </button>
             </div>
         </b-modal>
@@ -116,7 +118,7 @@ export default {
         },
         changed() {
             return JSON.stringify(this.formData) !== JSON.stringify(this.transformed)
-        },
+        }, 
     },
     watch: {
         formData: {
@@ -136,17 +138,26 @@ export default {
         onCancel() {
             this.showModal = false;
         },
-        onEdit() {
+        onEdit(row) {
+            this.generateCallbackUrl(row.item);
             this.showModal = true;
         },
         onModalHidden() {
             this.transformed = this.copy(this.formData);
         },
-        onSave() {
-            this.formData = this.copy(this.transformed);
-            this.showModal = false;
-            this.emitSaved(this.input);
+        authorizeConnection() {
+            console.log("AUTHORIZE CONNECTION");
+            this.onSave();
         },
+        onSave() {
+            this.showModal = false;
+            this.emitSaved(this.formData);
+        },
+        generateCallbackUrl(data) {
+            const name = data.key.split('cdata.')[1];
+            const app_url = document.head.querySelector('meta[name="app-url"]').content;
+            this.formData.callback_url = `${app_url}/external-integrations/${name}`;
+        }
     },
     mounted() {
         if (this.value === null) {
