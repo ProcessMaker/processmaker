@@ -132,13 +132,12 @@ class TemplateController extends Controller
     {
         if ($type === 'process') {
             $request->validate(Template::rules($request->id, $this->types[$type][4]));
-            $assetsResponse = $this->checkIfAssetsExist($request);
-
-            if (!empty($assetsResponse)) {
+            $postOptions = $this->checkIfAssetsExist($request);
+            if (!empty($postOptions)) {
                 $response = [
                     'id' => $request->id,
                     'request' => $request->toArray(),
-                    'existingAssets' => $assetsResponse,
+                    'existingAssets' => $postOptions,
                 ];
             } else {
                 $response = $this->template->create($type, $request);
@@ -153,7 +152,7 @@ class TemplateController extends Controller
         }
 
         // Register the Event
-        if (empty($assetsResponse) && isset($response->getData()->processId)) {
+        if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
