@@ -75,7 +75,7 @@
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
                     {{ $t('Cancel') }}
                 </button>
-                <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed">
+                <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled=" isInvalid || ! changed">
                     {{ $t('Save')}}
                 </button>
             </div>
@@ -94,11 +94,16 @@ export default {
     data() {
         return {
             input: '',
-            formData: {},
+            formData: {
+                client_id: "",
+                client_secret: "",
+                callback_url: "",
+            },
             selected: null,
             showModal: false,
             transformed: null,
             errors: {},
+            isInvalid: true,
         }
     },
     computed: {
@@ -110,14 +115,24 @@ export default {
             return hasAuthorizedBadge;
         },
         changed() {
-            return JSON.stringify(this.formData) !== JSON.stringify(this.transformed);
+            return JSON.stringify(this.formData) !== JSON.stringify(this.transformed)
         },
     },
+    watch: {
+        formData: {
+            handler() {
+                this.isInvalid = this.validateData();
+            },
+            deep: true,
+        }
+    },
     created() {
-
         console.log("GET SETTING CONNECTION PROPERTIES", this.setting);
     },
     methods: {
+        validateData() {
+            return _.isEmpty(this.formData) || _.some(this.formData, _.isEmpty);
+        },
         onCancel() {
             this.showModal = false;
         },
@@ -135,10 +150,15 @@ export default {
     },
     mounted() {
         if (this.value === null) {
-            this.formData = {};
+            this.formData = {
+                client_id: "",
+                client_secret: "",
+                callback_url: "",
+            };
         } else {
             this.formData = this.value;
         }
+        this.isInvalid = this.validateData();
         this.transformed = this.copy(this.formData);
     } 
 }
