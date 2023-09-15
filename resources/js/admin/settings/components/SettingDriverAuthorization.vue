@@ -14,7 +14,7 @@
                 <div>
                 <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
                 <h5 class="mb-0" v-else>{{ setting.key }}</h5>
-                <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
+                <small class="form-text text-muted">{{ $t('Configure the driver connection properties here.') }}}</small>
                 </div>
                 <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
             </template>
