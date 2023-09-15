@@ -216,11 +216,11 @@
         .then(response => {
           if (response.data.existingAssets) {
             const assets = JSON.stringify(response.data.existingAssets);
-            window.history.pushState({assets: assets}, "", '/template/assets');
+            window.history.pushState({assets: assets, name: this.templateData.name}, "", '/template/assets');
             window.location = '/template/assets';
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
-            window.location = "/modeler/" + response.data.id;
+            window.location = "/modeler/" + response.data.processId;
           }
         })
         .catch(error => {

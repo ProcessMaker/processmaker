@@ -1,6 +1,10 @@
 <template>
   <div class="mt-4 mb-5 data-card-container">
-    <b-table-simple>
+    <b-table-simple
+      v-for="groupType in groupAssets"
+      :key="groupType.type"
+      class="simple-table"
+    >
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
@@ -16,7 +20,7 @@
           <b-th class="align-middle" colspan="2">
             <div>
               <i class="fas fa-file-alt d-inline align-middle mr-1" />
-              <h5 class="d-inline align-middle">Screens</h5>
+              <h5 class="d-inline align-middle">{{ formatName(groupType[0].type) }}</h5>
             </div>
           </b-th>
           <b-td class="text-center align-middle">
@@ -46,9 +50,13 @@
         </b-tr>
       </b-thead>
       <b-tbody>
-        <b-tr class="border-left border-right border-bottom">
+        <b-tr
+          v-for="asset in groupType"
+          :key="asset.name"
+          class="border-left border-right border-bottom"
+        >
           <b-td class="align-middle" colspan="2">
-            Lorem Ipsum Other Latin Words
+            {{ asset.name }}
           </b-td>
           <b-td class="text-center align-middle">
             <b-form-group>
@@ -86,7 +94,7 @@ export default {
   components: {
   },
   mixins: [],
-  props: [],
+  props: ["assets"],
   data() {
     return {
       fields: ["Update", "Keep Previous", "Duplicate"],
@@ -103,33 +111,32 @@ export default {
     };
   },
   computed: {
+    groupAssets() {
+      const assets = JSON.parse(JSON.stringify(this.assets));
+
+      const groupType = assets.reduce((group, asset) => {
+        const { type } = asset;
+        group[type] = group[type] ?? [];
+        group[type].push(asset);
+        return group;
+      }, {});
+
+      console.log('GROUPTYPE', groupType);
+      return groupType;
+    },
   },
   mounted() {
   },
   methods: {
+    formatName(value) {
+      return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-
-.low-elevation {
-    box-shadow: 0px 1px 2px 0px rgb(60 64 67 / 25%), 0px 2px 6px 2px rgb(60 64 67 / 10%);
-}
-
-.data-card-header {
-    display: inline;
-}
-
-.data-card-metadata {
-    padding-left: 0;
-}
-
-.export-all {
-    float: right;
-}
-
-.export-status-label {
-    padding-right: 0;
+.simple-table {
+  margin-bottom: 2rem;
 }
 </style>

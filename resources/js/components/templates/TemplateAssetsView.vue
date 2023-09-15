@@ -2,7 +2,7 @@
   <div id="importProcess" class="container mb-3" v-cloak>
     <div class="card p-4">
       <div class="text-left">
-        <h4 class="pb-4 mb-0">{{ title() }}</h4>
+        <h4 class="pb-4 mb-0">{{ title() }}{{  name }}</h4>
         <p class="mb-0"><span class="fw-semibold">{{ boldSubtitle() }}</span>
           {{ subtitle() }}</p>
         <h4 class="py-4">Choose what to do with the assets:</h4>
@@ -13,7 +13,7 @@
         </ul>
       </div>
       <div>
-        <template-asset-table />
+        <template-asset-table :assets="templateAssets" />
       </div>
       <div
         class="card-footer bg-light text-right pr-0"
@@ -45,21 +45,23 @@ export default {
     }
   },
   mixins: [uniqIdsMixin],
-  props: ['assets'],
+  props: ['assets', 'name'],
   data() {
     return {
       templateAssets: [],
+      templateName: "",
     };
   },
   computed: {
   },
   watch: {
     assets() {
-      console.log("ASSETS CHANGED", this.assets);
-    }
+      this.templateAssets = this.assets;
+    },
   },
   mounted() {
     this.templateAssets = this.assets;
+    this.templateName = this.name;
   },
   methods: {
     reload() {
@@ -72,10 +74,10 @@ export default {
       console.log('hit onContinue');
     },
     title() {
-      return this.$t("Use Template: [[ Template Name ]]");
+      return this.$t("Use Template: ") + this.templateName;
     },
     boldSubtitle() {
-      return this.$t("The project you've recently created includes assets that closely resemble those found in other existing projects.");
+      return this.$t("The process you've recently created includes assets that closely resemble those found in other existing processes.");
     },
     subtitle() {
       return this.$t("We advise against duplicating assets if you plan to use the same content as the existing ones.");
@@ -84,10 +86,10 @@ export default {
       return this.$t("Updates the already existing asset with a new blank version. Any previous customization of it will be erased.");
     },
     keepAsset() {
-      return this.$t("The new project will be using the already existing asset.");
+      return this.$t("The new process will be using the already existing asset.");
     },
     duplicateAsset() {
-      return this.$t("A new blank asset will be created for this project, without modifying the previously existing one.");
+      return this.$t("A new blank asset will be created for the new process, without modifying the previously existing one.");
     },
   },
 };
@@ -100,17 +102,5 @@ export default {
 
      strong {
          font-weight: 700;
-     }
-
-     .card-body {
-         transition: all 1s;
-     }
-
-     .border-dotted {
-         border: 3px dotted #e0e0e0;
-     }
-
-     .fw-medium {
-         font-weight:500;
      }
  </style>

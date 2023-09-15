@@ -17,7 +17,7 @@
 
 @section('content')
 <div id="template-asset-manager">
-    <template-assets-view :assets="assets"></template-assets-view>
+    <template-assets-view :assets="assets" :name="name"></template-assets-view>
 </div>
 @endsection
 
