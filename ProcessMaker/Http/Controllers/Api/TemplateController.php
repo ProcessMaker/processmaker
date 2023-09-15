@@ -144,6 +144,11 @@ class TemplateController extends Controller
                 $response = $this->template->create($type, $request);
             }
         } elseif ($type === 'update-assets') {
+            $request->validate([
+                'id' => 'required|numeric',
+                'request' => 'required|array',
+                'existingAssets' => 'required|array',
+            ]);
             $response = $this->template->create($type, $request);
         }
 
