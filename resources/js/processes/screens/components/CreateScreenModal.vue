@@ -163,7 +163,7 @@ export default {
           const url = `/designer/screen-builder/${data.id}/edit`;
 
           if (this.callFromAiModeler) {
-            this.$emit("screen-created-from-modeler", url);
+            this.$emit("screen-created-from-modeler", url, data.id);
           } else {
             channel.postMessage({
               assetType: "screen",
