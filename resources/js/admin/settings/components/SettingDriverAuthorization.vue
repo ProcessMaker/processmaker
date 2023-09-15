@@ -43,16 +43,23 @@
                     :invalid-feedback="errorMessage('client_secret', errors)"
                     :state="errorState('client_secret', errors)"
                 >
-                    <b-form-input
-                        required
-                        autofocus
-                        v-model="formData.client_secret"
-                        autocomplete="off"
-                        trim
-                        type="password"
-                        :state="errorState('client_secret', errors)"
-                        name="client_secret"
-                    ></b-form-input>
+                    <b-input-group>
+                        <b-form-input
+                            required
+                            autofocus
+                            v-model="formData.client_secret"
+                            autocomplete="off"
+                            trim
+                            :type="type"
+                            :state="errorState('client_secret', errors)"
+                            name="client_secret"
+                        ></b-form-input>
+                        <b-input-group-append>
+                            <b-button :aria-label="$t('Toggle Show Password')" variant="secondary" @click="togglePassword">
+                                <i class="fas" :class="icon"></i>
+                            </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
                 </b-form-group>
 
                 <b-form-group
@@ -62,14 +69,21 @@
                     :invalid-feedback="errorMessage('callback_url', errors)"
                     :state="errorState('callback_url', errors)"
                 >
-                    <b-form-input
-                        autofocus
-                        v-model="formData.callback_url"
-                        readonly
-                        autocomplete="off"
-                        :state="errorState('callback_url', errors)"
-                        name="callback_url"
-                    ></b-form-input>
+                    <b-input-group>
+                        <b-form-input
+                            autofocus
+                            v-model="formData.callback_url"
+                            readonly
+                            autocomplete="off"
+                            :state="errorState('callback_url', errors)"
+                            name="callback_url"
+                        ></b-form-input>
+                        <b-input-group-append>
+                            <b-button :aria-label="$t('Copy')" variant="secondary" @click="onCopy">
+                                <i class="fas fa-copy"></i>
+                            </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
                 </b-form-group>
                 
             </div>
@@ -106,6 +120,7 @@ export default {
             transformed: null,
             errors: {},
             isInvalid: true,
+            type: 'password',
         }
     },
     computed: {
@@ -118,7 +133,14 @@ export default {
         },
         changed() {
             return JSON.stringify(this.formData) !== JSON.stringify(this.transformed)
-        }, 
+        },
+        icon() {
+            if (this.type == 'password') {
+                return 'fa-eye';
+            } else {
+                return 'fa-eye-slash';
+            }
+        },
     },
     watch: {
         formData: {
@@ -132,6 +154,20 @@ export default {
         console.log("GET SETTING CONNECTION PROPERTIES", this.setting);
     },
     methods: {
+        onCopy() {
+            navigator.clipboard.writeText(this.formData.callback_url).then(() => {
+                ProcessMaker.alert(this.$t("The setting was copied to your clipboard."), "success");
+            }, () => {
+                ProcessMaker.alert(this.$t("The setting was not copied to your clipboard."), "danger");
+            });
+        },
+        togglePassword() {
+            if (this.type == 'text') {
+                this.type = 'password';
+            } else {
+                this.type = 'text';
+            }
+        },
         validateData() {
             return _.isEmpty(this.formData) || _.some(this.formData, _.isEmpty);
         },
@@ -141,9 +177,12 @@ export default {
         onEdit(row) {
             this.generateCallbackUrl(row.item);
             this.showModal = true;
+            if (this.value !== null) {
+                this.formData = this.value;
+            }
         },
         onModalHidden() {
-            this.transformed = this.copy(this.formData);
+            this.resetFormData();
         },
         authorizeConnection() {
             console.log("AUTHORIZE CONNECTION");
@@ -152,20 +191,24 @@ export default {
         onSave() {
             this.showModal = false;
             this.emitSaved(this.formData);
+            this.transformed = this.copy(this.formData);
         },
         generateCallbackUrl(data) {
             const name = data.key.split('cdata.')[1];
             const app_url = document.head.querySelector('meta[name="app-url"]').content;
             this.formData.callback_url = `${app_url}/external-integrations/${name}`;
-        }
-    },
-    mounted() {
-        if (this.value === null) {
+        },
+        resetFormData() {
             this.formData = {
                 client_id: "",
                 client_secret: "",
                 callback_url: "",
             };
+        }
+    },
+    mounted() {
+        if (this.value === null) {
+            this.resetFormData();
         } else {
             this.formData = this.value;
         }
