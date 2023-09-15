@@ -468,9 +468,9 @@ ProcessMaker.EventBus.$on(
 ProcessMaker.EventBus.$on(
   "modeler-init",
   (evento) => {
-    console.log('evento...', evento);
     evento.registerPreview({
-      url:'designer/screens/preview',
+      url:'/designer/screens/preview',
+      receivingParams: ['screenRef'],
       matcher: (nodeData) => {
         return nodeData.$type && nodeData.$type === 'bpmn:Task'
           && nodeData.screenRef;

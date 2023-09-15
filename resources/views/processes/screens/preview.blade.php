@@ -1,9 +1,12 @@
-@extends('layouts.layout')
+@extends('layouts.preview')
 
 
 @section('content')
     <div class="container" id="screenPreview">
         <div class="row">
+            <div class="col-12 preview-item-title">
+                {{ $screen->title }}
+            </div>
             <div class="col-12">
                 <screen-detail
                     :can-print="false"

@@ -121,7 +121,7 @@ class ScreenController extends Controller
 
     public function preview(Request $request)
     {
-        $data = json_decode($request->get('data'), true) ?: [];
+        $data = json_decode($request->query('node'), true) ?? [];
         $screen = Screen::find($data['screenRef']);
         return view('processes.screens.preview', compact('screen'));
     }

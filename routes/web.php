@@ -72,7 +72,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
         Route::get('screen-builder/{screen}/edit', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
         //Route::get('screens/{screen}/preview', [ScreenController::class, 'preview'])->name('screen-builder.edit')->middleware('can:view-screens');
-        Route::post('screens/preview', [ScreenController::class, 'preview'])->name('screen-builder.edit')->middleware('can:view-screens');
+        Route::get('screens/preview', [ScreenController::class, 'preview'])->name('screen-builder.edit')->middleware('can:view-screens');
 
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
