@@ -140,7 +140,6 @@ class TemplateController extends Controller
                 'existingAssets' => $assetsResponse,
             ];
         } else {
-            dd('Assets not found');
             $response = $this->template->create($type, $request);
             if (isset($response->getData()->processId) && $type === 'process') {
                 $process = Process::find($response->getData()->processId);
