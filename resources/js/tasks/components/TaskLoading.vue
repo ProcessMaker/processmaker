@@ -34,6 +34,7 @@ export default {
   align-items: center;
   flex: 1 0 0;
   align-self: stretch;
+  background-color: #fff;
 }
 .content {
   display: flex;
