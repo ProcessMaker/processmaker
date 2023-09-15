@@ -242,7 +242,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
-                // TODO:Check on manager ['manager_id'] when updating assets
+                // TODO:Check on ['manager_id'] when updating assets
                 if (!isset($existingAssets)) {
                     $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
                 }

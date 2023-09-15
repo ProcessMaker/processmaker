@@ -211,7 +211,6 @@ class TemplateController extends Controller
         $payload = json_decode($template->manifest, true);
 
         // Get assets form the template
-        $postOptions = [];
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
@@ -227,7 +226,6 @@ class TemplateController extends Controller
                 continue;
             }
 
-            $postOptions[] = $item;
             $existingOptions[] = $item;
         }
 
