@@ -209,8 +209,12 @@ class ProcessTemplate implements TemplateInterface
         $template->fill($request->except('id'));
 
         $payload = json_decode($template->manifest, true);
-        $payload['name'] = $request['name'];
-        $payload['description'] = $request['description'];
+        // Check for existing assets
+        $existingAssets = $request->existingAssets;
+        $requestData = $existingAssets ? $request->toArray()['request'] : $request;
+
+        $payload['name'] = $requestData['name'];
+        $payload['description'] = $requestData['description'];
 
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
@@ -220,24 +224,36 @@ class ProcessTemplate implements TemplateInterface
                 'saveAssetsMode' => 'saveAllAssets',
             ];
 
+            if ($existingAssets) {
+                foreach ($existingAssets as $item) {
+                    $uuid = $item['uuid'];
+                    if (isset($postOptions[$uuid])) {
+                        $postOptions[$uuid]['mode'] = $item['mode'];
+                    }
+                }
+            }
+
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $request['name'];
-                $payload['export'][$key]['attributes']['description'] = $request['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
+                $payload['export'][$key]['attributes']['name'] = $requestData['name'];
+                $payload['export'][$key]['attributes']['description'] = $requestData['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
 
-                $payload['export'][$key]['name'] = $request['name'];
-                $payload['export'][$key]['description'] = $request['description'];
-                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
-                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
+                $payload['export'][$key]['name'] = $requestData['name'];
+                $payload['export'][$key]['description'] = $requestData['description'];
+                $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+                // TODO:Check on ['manager_id'] when updating assets
+                if (!isset($existingAssets)) {
+                    $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
+                }
             }
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
                 $payload['export'][$key]['is_template'] = false;
             }
         }
-
         $options = new Options($postOptions);
+
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
