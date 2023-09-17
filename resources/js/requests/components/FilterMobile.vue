@@ -119,21 +119,21 @@
         </div>
       </b-col>
       <div class="d-flex align-items-end">
-        <button
-          class="btn btn-primary ml-2"
-          @click="toggleInput"
-        >
-          <i class="fas fa-search"/>
-        </button>
         <input
           v-if="showInput"
           ref="input"
           type="text"
-          class="form-control narrow-input"
+          class="form-control narrow-input ml-2"
           v-model="searchCriteria"
           placeholder="(fulltext LIKE '%someText%')"
           @keyup.enter="performSearch"
         />
+        <button
+          class="btn btn-primary"
+          @click="toggleInput"
+        >
+          <i class="fas fa-search"/>
+        </button>
       </div>
     </b-row>  
   </b-container>
@@ -254,7 +254,7 @@ export default {
   .narrow-input {
     font-size: 12px;
     width: 100%;
-    padding: 5px 10px;
+    padding: 5px 100px;
   }
   .dropdown-style {
     background-color: white !important;
