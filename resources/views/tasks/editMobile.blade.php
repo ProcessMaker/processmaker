@@ -4,9 +4,24 @@
   {{ __('Edit Task') }}
 @endsection
 
+@section('navbar-mobile')
+@endsection
+
 @section('content_mobile')
-<div v-cloak id="taskMobile" class="container-fluid">
-  <navbar-task-mobile><navbar-task-mobile/>
+<div v-cloak id="taskMobile">
+  <navbar-task-mobile></navbar-task-mobile>
+  
+  <div class="d-flex flex-column" style="min-height: 100vh">
+    <div class="flex-fill">
+      <div class="row">
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+          <div class="card card-body p-3">
+            <span>Task here</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 @endsection
 
