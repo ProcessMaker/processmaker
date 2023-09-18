@@ -81,7 +81,6 @@
             </a>
           </div>
         </div>
-
         <div
           class="dropdown"
           v-if="showDropdowns && type === 'tasks'"
@@ -119,26 +118,32 @@
         </div>
       </b-col>
       <div class="d-flex align-items-end">
+        <button
+          class="btn btn-primary ml-2"
+          @click="toggleInput"
+        >
+          <i class="fas fa-search"/>
+        </button>
         <input
           v-if="showInput"
           ref="input"
           type="text"
-          class="form-control narrow-input ml-2"
+          class="form-control narrow-input"
           v-model="searchCriteria"
           placeholder="(fulltext LIKE '%someText%')"
           @keyup.enter="performSearch"
         />
         <button
-          class="btn btn-primary"
-          @click="toggleInput"
+          v-if="showInput"
+          class="btn btn-clear"
+          @click="clearSearch"
         >
-          <i class="fas fa-search"/>
-        </button>
+        <i class="fas fa-times"/>
+    </button>
       </div>
-    </b-row>  
+    </b-row>
   </b-container>
 </template>
-
 <script>
 export default {
   props: {
@@ -160,13 +165,13 @@ export default {
       this.showInput = !this.showInput;
       this.showDropdowns = !this.showInput;
     },
-    /* This metod receives parameters from dropdown controls 
+    /* This metod receives parameters from dropdown controls
       options selected by user
       */
     selectOption(option, controlName, icon) {
       this.callApiFilter(this.buildApiPath(option, controlName, icon));
     },
-    /*This method builds a specific url api string depending 
+    /*This method builds a specific url api string depending
       of filter used by user
       */
     buildApiPath(option, controlName, icon) {
@@ -187,9 +192,9 @@ export default {
         return basePath + 'pmql=(fulltext LIKE "%' + option + '%")';
       }
     },
-    /* This is a generic method to call API with previous builded apiPath 
+    /* This is a generic method to call API with previous builded apiPath
       related to Filters selected by user
-      */ 
+      */
     callApiFilter(apiPath) {
       ProcessMaker.apiClient
         .get(apiPath)
@@ -204,45 +209,51 @@ export default {
     performSearch() {
       this.callApiFilter(this.buildApiPath(this.searchCriteria, "search"))
     },
+    clearSearch() {
+      this.searchCriteria = '';
+      this.toggleInput();
+    }
   },
 };
 </script>
-
 <style>
-.has-search .form-control {
-  padding-left: 2.375rem;
-}
-
-.has-search .form-control-feedback {
-  position: absolute;
-  z-index: 2;
-  display: block;
-  width: 2.375rem;
-  height: 2.375rem;
-  line-height: 2.375rem;
-  text-align: center;
-  pointer-events: none;
-  color: #aaa;
-}
-
-.expanded .dropdown {
-  display: none; /* Oculta los dropdowns cuando el input está expandido */
-}
-
-.hidden-input {
-  display: none;
-}
-
-.dropdown-item {
+  .has-search .form-control {
+    padding-left: 2.375rem;
+  }
+  .has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+  }
+  .expanded .dropdown {
+    display: none; /* Oculta los dropdowns cuando el input está expandido */
+  }
+  .hidden-input {
+    display: none;
+  }
+  .dropdown-item {
     display: flex;
     align-items: center;
   }
-
-.dropdown-item .fas.fa-check {
-  margin-left: auto;
-  color: black;
-}
-
+  .dropdown-item .fas.fa-check {
+    margin-left: auto;
+    color: black;
+  }
+  .btn-clear {
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 8px 4px;
+    margin-left: 5px;
+    color: #888;
+    }
 @media (max-width: 767px) {
   .dropdown-toggle {
     font-size: 12px;
@@ -254,7 +265,7 @@ export default {
   .narrow-input {
     font-size: 12px;
     width: 100%;
-    padding: 5px 100px;
+    padding: 5px 60px;
   }
   .dropdown-style {
     background-color: white !important;
