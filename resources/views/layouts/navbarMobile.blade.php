@@ -5,8 +5,7 @@
     $showPrincipalNavbar = 0;
   }
 @endphp
-
-<div  class="flex-grow-1">
+<div class="flex-grow-1">
   <div id="navbarMobile">
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
@@ -66,6 +65,36 @@
           </ul>
         </div>
       </nav>
+      @php
+        $menuItems = [
+          [
+            'name' => __('Tasks'),
+            'url' => route('tasks.index'),
+            'isActive' => Request::path() === 'tasks',
+          ],
+          [
+            'name' => __('Requests'),
+            'url' => route('requests.index'),
+            'isActive' => Request::path() === 'requests',
+          ],
+        ];
+      @endphp
+      <!-- Nav tabs -->
+      <div>
+        <b-navbar-nav class="nav-tabs nav-fill" id="nav-tab" role="tablist">
+          <template v-for="item in {{ json_encode ($menuItems) }}">
+            <b-nav-item 
+              class="nav-item nav-link p-0"
+              role="presentation"
+              :href="item.url"
+              :active="item.isActive"
+              :key="item"
+            >
+              <span v-html="item.name"></span>
+            </b-nav-item>
+          </template>
+        </b-navbar-nav >
+      </div>
     @endif
   </div>
 </div>
@@ -81,5 +110,21 @@
   }
   .dropdown-toggle::after {
     display:none;
+  }
+  .nav-tabs {
+    list-style-type: none;
+    background-color: #EFF5FF;
+    flex-direction: row;
+  }
+  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    color: black;
+    background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 3px solid #1572C2;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .nav-tabs a{
+    color: #333;
   }
 </style>

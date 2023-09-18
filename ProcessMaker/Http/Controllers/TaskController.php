@@ -34,6 +34,10 @@ class TaskController extends Controller
             $title = 'Completed Tasks';
         }
 
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('tasks.mobile', compact('title'));
+        }
+
         return view('tasks.index', compact('title'));
     }
 
