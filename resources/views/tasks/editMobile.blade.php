@@ -4,9 +4,6 @@
   {{ __('Edit Task') }}
 @endsection
 
-@section('navbar-mobile')
-@endsection
-
 @section('content_mobile')
 <div v-cloak id="taskMobile">
   <navbar-task-mobile></navbar-task-mobile>
