@@ -1,42 +1,12 @@
 @extends('layouts.mobile')
 
 @section('title')
-  {{__('Edit Task')}}
+  {{ __('Edit Task') }}
 @endsection
 
 @section('content_mobile')
 <div v-cloak id="taskMobile">
-  <div id="navbarTaskMobile" class="d-flex bg-primary p-2 justify-content-between">
-    <button
-      type="buttom"
-      class="dropleft btn btn-primary"
-      @click="returnTasks()"
-    >
-      <i class="fas fa-arrow-left"></i>
-    </button>
-    <div>
-      <button
-        type="buttom"
-        class="dropleft btn btn-primary text-capitalize"
-      >
-        <i class="fas fa-chevron-left mr-1"></i>
-        {{__('Prev')}}
-      </button>
-      <button
-        type="buttom"
-        class="dropleft btn btn-primary text-capitalize"
-      >
-        {{__('Next')}}
-        <i class="fas fa-chevron-right ml-1"></i>
-    </button>
-    </div>
-    <button
-      type="buttom"
-      class="dropleft btn btn-primary"
-    >
-      <i class="fas fa-info-circle"></i>
-    </button>
-  </div>
+  <navbar-task-mobile><navbar-task-mobile/>
   
   <div class="d-flex flex-column" style="min-height: 100vh">
   <div class="flex-fill">
@@ -63,11 +33,7 @@
       store: store,
       el: "#taskMobile",
       data: {},
-      methods: {
-        returnTasks() {
-            window.location = `/tasks`
-        },
-      },
+      methods: {},
     });
   </script>
     
