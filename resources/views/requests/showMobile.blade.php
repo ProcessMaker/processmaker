@@ -3,13 +3,18 @@
   {{ __('Request Detail') }}
 @endsection
 @section('content_mobile')
-<div id="requestMobile" class="d-flex flex-column" style="min-height: 100vh">
-  <navbar-request-mobile></navbar-request-mobile>
-  rrrrrrrrrr
-  <div class="flex-fill">
-    <div class="row">
-      <div class="mt-1">
-        <img class="img-under" src="https://h2o-digital.com/wp-content/uploads/2015/09/websites-why-you-should-never-use-under-construction-pages.jpg" alt="to do" />
+<div v-cloak id="requestMobile">
+  <navbar-request-mobile :title="request.name"></navbar-request-mobile>
+  <div class="d-flex flex-column" style="min-height: 100vh">
+    <div class="flex-fill">
+      <div class="row">
+        <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+          <div class="card card-body p-3">
+            <div class="mt-1">
+              <img class="img-under" src="https://h2o-digital.com/wp-content/uploads/2015/09/websites-why-you-should-never-use-under-construction-pages.jpg" alt="to do" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -25,12 +30,14 @@
   <script src="{{ mix('js/requests/show.js') }}"></script>
 
   <script>
-    const store = new Vuex.Store();
     const main = new Vue({
-      mixins:addons,
-      store: store,
       el: "#requestMobile",
-      data: {},
+      mixins: addons,
+      data() {
+        return {
+          request: @json($request),
+        }
+      },
       methods: {},
     });
   </script>

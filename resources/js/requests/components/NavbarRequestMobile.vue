@@ -3,7 +3,6 @@
     id="navbarRequestMobile"
     class="d-flex bg-primary p-2 justify-content-start"
   >
-  holoiii
     <button
       type="buttom"
       class="dropleft btn btn-primary"
@@ -11,16 +10,23 @@
     >
       <i class="fas fa-arrow-left" />
     </button>
+
+    <div class="mx-1">
+      <span class="lead text-white">
+        {{ title }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: ["title"],
   data() {
     return {};
   },
   mounted() {
-    console.log('aquiiii navabar');
+    console.log('holi', this.title);
   },
   methods: {
     returnTasks() {
