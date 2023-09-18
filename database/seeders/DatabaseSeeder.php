@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             ScreenSystemSeeder::class,
             ScriptExecutorSeeder::class,
             SignalSeeder::class,
-            ProcessTemplatesSeeder::class,
         ]);
         $this->callPluginSeeders();
     }

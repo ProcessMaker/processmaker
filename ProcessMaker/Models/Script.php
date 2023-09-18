@@ -4,8 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
 use ProcessMaker\Contracts\ScriptInterface;
+use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
@@ -77,6 +77,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     protected $casts = [
         'timeout' => 'integer',
+        'retry_attempts' => 'integer',
+        'retry_wait_time' => 'integer',
     ];
 
     /**
@@ -126,8 +128,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config, $tokenId = '')
+    public function runScript(array $data, array $config, $tokenId = '', $timeout = null)
     {
+        if (!$timeout) {
+            $timeout = $this->timeout;
+        }
+
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
@@ -135,10 +141,10 @@ class Script extends ProcessMakerModel implements ScriptInterface
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
-            throw new \RuntimeException('A user is required to run scripts');
+            throw new ConfigurationException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $this->timeout, $user);
+        return $runner->run($this->code, $data, $config, $timeout, $user);
     }
 
     /**

@@ -13,8 +13,12 @@
                 </div>
             </div>
             @can('create-users')
-                <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <b-button aria-label="{{__('Create User')}}" @click="showModal()">
+                <div class="ml-md-2 flex-column flex-md-row">
+                    <b-button aria-label="{{__('Download Logs')}}" @click="downloadAllLogs()">
+                        <i class="fas fa-download"></i>
+                        {{__('Logs')}}
+                    </b-button>
+                    <b-button variant="primary" aria-label="{{__('Create User')}}" @click="showModal()">
                         <i class="fas fa-plus"></i>
                         {{__('User')}}
                     </b-button>

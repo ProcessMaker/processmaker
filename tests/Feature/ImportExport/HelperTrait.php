@@ -55,11 +55,11 @@ trait HelperTrait
         SignalManager::addSignal($this->globalSignal);
     }
 
-    public function runExportAndImport($model, $exporterClass, $between)
+    public function runExportAndImport($model, $exporterClass, $between, $ignoreExplicitExport = true)
     {
         $this->addGlobalSignalProcess();
 
-        $payload = $this->export($model, $exporterClass);
+        $payload = $this->export($model, $exporterClass, null, $ignoreExplicitExport);
 
         $between();
 

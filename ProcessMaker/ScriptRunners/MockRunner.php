@@ -8,7 +8,7 @@ use ProcessMaker\Exception\ScriptTimeoutException;
 
 class MockRunner
 {
-    public function __construct($_executor)
+    public function __construct($scriptExecutor)
     {
     }
 

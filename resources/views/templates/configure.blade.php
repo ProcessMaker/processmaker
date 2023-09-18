@@ -65,21 +65,23 @@
                                 !!}
                                 <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
+                             <div class="form-group">
+                                {!!Form::label('version', __('Version') . '<small class="ml-1">*</small>', [], false)!!}
+                                {!!Form::text('version', null,
+                                    [ 'id'=> 'version',
+                                        'class'=> 'form-control',
+                                        'v-model'=> 'formData.version',
+                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.version}'
+                                    ])
+                                !!}
+                                <div class="invalid-feedback" role="alert"
+                                    v-if="errors.version">@{{errors.version[0]}}</div>
+                            </div>
                             <category-select :label="$t('Category')" api-get="process_categories"
                                 api-list="process_categories" v-model="formData.process_category_id"
                                 :errors="errors.category"
                                 >
                             </category-select>
-                            {{-- <div class="form-group">
-                                <label class="typo__label">{{__('Process Manager')}}</label>
-                                <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
-                                </select-user>
-                                <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
-                            </div> --}}
-                            {{-- <div class="form-group">
-                                {!! Form::label('status', __('Status')) !!}
-                                <select-status v-model="formData.status" :multiple="false"></select-status>
-                            </div> --}}
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}

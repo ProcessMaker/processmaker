@@ -5,10 +5,9 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
@@ -18,7 +17,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -61,8 +59,13 @@ class TokenRepository implements TokenRepositoryInterface
         return $token;
     }
 
-    public function loadTokenByUid($uid): TokenInterface
+    public function loadTokenByUid($uid): ? TokenInterface
     {
+        if (is_numeric($uid)) {
+            return Token::find($uid);
+        }
+
+        return Token::where('uuid', $uid)->first();
     }
 
     /**
@@ -200,7 +203,7 @@ class TokenRepository implements TokenRepositoryInterface
      * Persists instance and token data when a token within an activity change to error state
      *
      * @param ActivityInterface $activity
-     * @param TokenInterface $token
+     * @param TokenInterface|ProcessRequestToken $token
      *
      * @return mixed
      */
@@ -234,6 +237,9 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
+        if ($token->getInstance()->status === 'ERROR') {
+            $token->getInstance()->status = 'ACTIVE';
+        }
         $process = $token->getInstance()->getProcess();
         if ($process->isNonPersistent()) {
             return;
@@ -519,19 +525,19 @@ class TokenRepository implements TokenRepositoryInterface
 
     private function getActivityType($activity)
     {
-        if ($activity instanceof  ScriptTaskInterface) {
+        if ($activity instanceof ScriptTaskInterface) {
             return 'scriptTask';
         }
 
-        if ($activity instanceof  ServiceTaskInterface) {
+        if ($activity instanceof ServiceTaskInterface) {
             return 'serviceTask';
         }
 
-        if ($activity instanceof  CallActivityInterface) {
+        if ($activity instanceof CallActivityInterface) {
             return 'callActivity';
         }
 
-        if ($activity instanceof  ActivityInterface) {
+        if ($activity instanceof ActivityInterface) {
             return 'task';
         }
 

@@ -284,7 +284,8 @@ class User extends Authenticatable implements HasMedia
     {
         $media = $this->getMedia(self::COLLECTION_PROFILE);
         $lastUpload = $media->last();
-        $url = $lastUpload ? $lastUpload->getFullUrl() : "";
+        $url = $lastUpload ? $lastUpload->getFullUrl() : '';
+
         return $url;
     }
 

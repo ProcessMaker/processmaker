@@ -61,11 +61,14 @@ mix.extract([
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
   .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
+  .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
   .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix.js("resources/js/app-layout.js", "public/js")
+  .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
+  .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
   .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/admin/settings/index.js", "public/js/admin/settings")
@@ -104,6 +107,8 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/requests/index.js", "public/js/requests")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
+
+  .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")

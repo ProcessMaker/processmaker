@@ -58,12 +58,20 @@ class ProcessExporter extends ExporterBase
 
         // Screens
         if ($process->cancel_screen_id) {
-            $screen = Screen::findOrFail($process->cancel_screen_id);
-            $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+            $screen = Screen::find($process->cancel_screen_id);
+            if ($screen) {
+                $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
+            } else {
+                \Log::debug("Cancel ScreenId: $process->cancel_screen_id not exists");
+            }
         }
         if ($process->request_detail_screen_id) {
-            $screen = Screen::findOrFail($process->request_detail_screen_id);
-            $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
+            $screen = Screen::find($process->request_detail_screen_id);
+            if ($screen) {
+                $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
+            } else {
+                \Log::debug("Request Detail ScreenId: $process->request_detail_screen_id not exists");
+            }
         }
 
         $this->exportSubprocesses();
@@ -121,10 +129,16 @@ class ProcessExporter extends ExporterBase
 
     private function importSubprocesses()
     {
-        foreach ($this->getDependents(DependentType::SUB_PROCESSES) as $dependent) {
-            Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
-            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
-            Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
+        foreach ($this->getDependents(DependentType::SUB_PROCESSES, true) as $dependent) {
+            $id = $dependent->model->id;
+            if ($id) {
+                Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+                Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'calledElement', 'ProcessId-' . $dependent->model->id);
+                Utils::setPmConfigValueAtXPath($this->model, $dependent->meta, 'processId', $dependent->model->id);
+            } else {
+                Utils::setAttributeAtXPath($this->model, $dependent->meta, 'calledElement', '');
+                Utils::setAttributeAtXPath($this->model, $dependent->meta, 'pm:config', '{}');
+            }
         }
     }
 
@@ -133,7 +147,7 @@ class ProcessExporter extends ExporterBase
         $userAssignments = [];
         $groupAssignments = [];
 
-        foreach ($this->getDependents(DependentType::USER_ASSIGNMENT) as $dependent) {
+        foreach ($this->getDependents(DependentType::USER_ASSIGNMENT, true) as $dependent) {
             if (!array_key_exists($dependent->meta['path'], $userAssignments)) {
                 $userAssignments[$dependent->meta['path']] = [];
             }
@@ -143,7 +157,7 @@ class ProcessExporter extends ExporterBase
             ];
         }
 
-        foreach ($this->getDependents(DependentType::GROUP_ASSIGNMENT) as $dependent) {
+        foreach ($this->getDependents(DependentType::GROUP_ASSIGNMENT, true) as $dependent) {
             if (!array_key_exists($dependent->meta['path'], $groupAssignments)) {
                 $groupAssignments[$dependent->meta['path']] = [];
             }
@@ -155,12 +169,12 @@ class ProcessExporter extends ExporterBase
 
         foreach ($userAssignments as $path => $ids) {
             Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
-            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedUsers', implode(',', $ids));
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedUsers', implode(',', array_filter($ids)));
         }
 
         foreach ($groupAssignments as $path => $ids) {
             Utils::setAttributeAtXPath($this->model, $path, 'pm:assignment', $dependent->meta['assignmentType']);
-            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedGroups', implode(',', $ids));
+            Utils::setAttributeAtXPath($this->model, $path, 'pm:assignedGroups', implode(',', array_filter($ids)));
         }
     }
 
@@ -295,14 +309,22 @@ class ProcessExporter extends ExporterBase
             $allowInterstitial = $element->getAttribute('pm:allowInterstitial');
 
             if (is_numeric($screenId)) {
-                $screen = Screen::findOrFail($screenId);
-                $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
+                $screen = Screen::find($screenId);
+                if ($screen) {
+                    $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
+                } else {
+                    \Log::debug("ScreenId: $screenId not exists");
+                }
             }
 
             // Let's check if interstitialScreen exist
             if (is_numeric($interstitialScreenId) && $allowInterstitial === 'true') {
-                $interstitialScreen = Screen::findOrFail($interstitialScreenId);
-                $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
+                $interstitialScreen = Screen::find($interstitialScreenId);
+                if ($interstitialScreen) {
+                    $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
+                } else {
+                    \Log::debug("Interstitial screenId: $interstitialScreenId not exists");
+                }
             }
         }
     }
@@ -337,8 +359,12 @@ class ProcessExporter extends ExporterBase
             $scriptId = $element->getAttribute('pm:scriptRef');
 
             if (is_numeric($scriptId)) {
-                $script = Script::findOrFail($scriptId);
-                $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
+                $script = Script::find($scriptId);
+                if ($script) {
+                    $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
+                } else {
+                    \Log::debug("ScriptId: $scriptId not exists");
+                }
             }
         }
     }

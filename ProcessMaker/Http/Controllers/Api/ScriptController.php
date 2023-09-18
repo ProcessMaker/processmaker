@@ -4,6 +4,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Events\ScriptCreated;
+use ProcessMaker\Events\ScriptDeleted;
+use ProcessMaker\Events\ScriptDuplicated;
+use ProcessMaker\Events\ScriptUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
@@ -328,6 +332,10 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
+        $changes = $script->getChanges();
+        //Creating temporary Key to store multiple id categories
+        $changes['tmp_script_category_id'] = $request->input('script_category_id');
+        ScriptCreated::dispatch($script, $changes);
 
         return new ScriptResource($script);
     }
@@ -368,8 +376,15 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
-
-        $script->fill($request->input())->saveOrFail();
+        $script->fill($request->input());
+        $original = array_intersect_key($script->getOriginal(), $script->getDirty());
+        //Creating temporary Key to store multiple id categories
+        $original['tmp_script_category_id'] = $script->script_category_id;
+        $script->saveOrFail();
+        $changes = $script->getChanges();
+        //Creating temporary Key to store multiple id categories
+        $changes['tmp_script_category_id'] = $request->input('script_category_id');
+        ScriptUpdated::dispatch($script, $changes, $original);
 
         return response($request, 204);
     }
@@ -470,6 +485,7 @@ class ScriptController extends Controller
         }
 
         $newScript->saveOrFail();
+        ScriptDuplicated::dispatch($newScript, $newScript->getChanges());
 
         return new ScriptResource($newScript);
     }
@@ -504,6 +520,7 @@ class ScriptController extends Controller
     public function destroy(Script $script)
     {
         $script->delete();
+        ScriptDeleted::dispatch($script);
 
         return response([], 204);
     }

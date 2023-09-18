@@ -15,31 +15,23 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
+          :validationBar="validationBar"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
           @discard="emitDiscardEvent"
           @close="onClose"
           @publishTemplate="publishTemplate"
+          @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
-
-      <validation-status
-        ref="validationStatus"
-        :validation-errors="validationErrors"
-        :warnings="warnings"
+      <component
+        :is="component.panel"
+        v-for="(component, index) in validationBar"
+        :key="`validation-status-${index}`"
         :owner="self"
-        :xml-manager="xmlManager"
-      >
-        <component
-          :is="component"
-          v-for="(component, index) in validationBar"
-          :key="`validation-status-${index}`"
-          :owner="self"
-        />
-      </validation-status>
-
+      />
       <component
         :is="component.type"
         v-for="(component, index) in external"
@@ -47,6 +39,7 @@
         :options="component.options"
       />
       <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
+      <create-pm-block-modal ref="create-pm-block-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
     </b-card>
   </b-container>
 </template>
@@ -54,6 +47,7 @@
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
 
 export default {
@@ -62,6 +56,7 @@ export default {
     Modeler,
     ValidationStatus,
     CreateTemplateModal,
+    CreatePmBlockModal,
   },
   mixins: [...autosaveMixins],
   data() {
@@ -84,7 +79,6 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
-      closeHref: "/processes",
     };
   },
   computed: {
@@ -111,7 +105,7 @@ export default {
             window.ProcessMaker.EventBus.$emit("save-changes");
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
+              window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
             }
             // Set draft status.
             this.setVersionIndicator(true);
@@ -127,6 +121,9 @@ export default {
           });
       };
     },
+    closeHref() {
+      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
+    }
   },
   watch: {
     validationErrors: {
@@ -252,7 +249,7 @@ export default {
         window.ProcessMaker.EventBus.$emit("save-changes");
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
-          this.$refs.validationStatus.autoValidate = true;
+          window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
         }
         if (typeof onSuccess === "function") {
           onSuccess(response);
@@ -284,6 +281,9 @@ export default {
     },
     publishTemplate() {
       this.$refs["create-template-modal"].show();
+    },
+    publishPmBlock() {
+      this.$refs["create-pm-block-modal"].show();
     },
   },
 };

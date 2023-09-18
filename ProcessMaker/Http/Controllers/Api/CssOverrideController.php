@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Events\CustomizeUiUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
@@ -58,33 +59,36 @@ class CssOverrideController extends Controller
         }
 
         $request->request->add(['config' => $this->formatConfig($request)]);
-
         $setting = Setting::byKey('css-override');
 
         if (!$setting) {
             $setting = new Setting();
         }
-
+        // Custom Logo
         if ($request->has('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
             Cache::forget('css-logo');
         }
+        // Custom Icon
         if ($request->has('fileIcon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
         }
+        // Custom Favicon
         if ($request->has('fileFavicon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileFavicon', Setting::COLLECTION_CSS_FAVICON, Setting::DISK_CSS);
             Cache::forget('css-favicon');
         }
-
+        // Custom Login Logo
         if ($request->has('fileLogin')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
             Cache::forget('css-login');
         }
-
+        // Review the reset action
+        $reset = false;
         if ($request->has('reset') && $request->input('reset')) {
             Setting::destroy($setting->id);
+            $reset = true;
         }
 
         $request->validate(Setting::rules($setting));
@@ -93,10 +97,12 @@ class CssOverrideController extends Controller
 
         $this->setLoginFooter($request);
         $this->setAltText($request);
-
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
+
+        // Register the Event
+        CustomizeUiUpdated::dispatch([], [], $reset);
 
         return new ApiResource($setting);
     }
@@ -161,7 +167,6 @@ class CssOverrideController extends Controller
 
         $this->setLoginFooter($request);
         $this->setAltText($request);
-
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input('sansSerifFont', '')));
         $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));

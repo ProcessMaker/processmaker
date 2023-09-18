@@ -9,7 +9,9 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route as RouteFacade;
+use ProcessMaker\Events\UnauthorizedAccessAttempt;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -46,6 +48,12 @@ class Handler extends ExceptionHandler
             echo $exception->getMessage() . "\n";
             echo $exception->getFile() . ': Line: ' . $exception->getLine() . "\n";
             echo $exception;
+        }
+        if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
+            try {
+                UnauthorizedAccessAttempt::dispatch();
+            } catch (\Exception $e) {
+            }
         }
         parent::report($exception);
     }
@@ -136,5 +144,19 @@ class Handler extends ExceptionHandler
         ] : [
             'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
         ];
+    }
+
+    /**
+     * Errors in the console must have an exit status > 0 for CI to see it as an error.
+     * This prevents the symfony console from handling the error and returning an
+     * exit status of 0, which it does by default surprisingly.
+     *
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @param  \Throwable  $e
+     * @return void
+     */
+    public function renderForConsole($output, Throwable $e)
+    {
+        throw $e;
     }
 }

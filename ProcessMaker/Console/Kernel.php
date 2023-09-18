@@ -4,6 +4,8 @@ namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Jobs\SyncDefaultTemplates;
 
 class Kernel extends ConsoleKernel
 {
@@ -30,6 +32,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('package-data-sources:delete-logs')
             ->weekly();
+
+        $schedule->command('processmaker:sync-default-templates --queue')->daily();
     }
 
     /**

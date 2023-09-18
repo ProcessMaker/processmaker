@@ -17,10 +17,10 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-
+import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -29,6 +29,9 @@ import __ from "./modules/lang";
 require("bootstrap");
 
 const { Vue } = window;
+
+Vue.use(VueHtml2Canvas);
+
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);
   moment.defaultFormat = window.ProcessMaker.user.datetime_format;
@@ -42,6 +45,8 @@ Vue.prototype.moment = moment;
 // initializing global instance of a moment object
 window.moment = moment;
 /** ***** */
+
+Vue.prototype.$sanitize = sanitizeUrl;
 
 Vue.component("Multiselect", Multiselect);
 Vue.component("Sidebaricon", Sidebaricon);
@@ -85,6 +90,10 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      messageTitle: "",
+      messageMessage: "",
+      messageVariant: "",
+      messageCallback: "",
       confirmShow: false,
       sessionShow: false,
       messageShow: false,
@@ -165,7 +174,7 @@ window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
@@ -176,6 +185,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
   }
   ProcessMaker.navbar.alerts.push({
     alertText: msg,
+    alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
     showLoader: showLoader,
@@ -208,10 +218,10 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
 
 // Set out own specific message modal.
 window.ProcessMaker.messageModal = function (title, message, variant, callback) {
-  ProcessMaker.navbar.confirmTitle = title || __("Message");
-  ProcessMaker.navbar.confirmMessage = message || __("");
-  ProcessMaker.navbar.confirmVariant = variant;
-  ProcessMaker.navbar.confirmCallback = callback;
+  ProcessMaker.navbar.messageTitle = title || __("Message");
+  ProcessMaker.navbar.messageMessage = message || __("");
+  ProcessMaker.navbar.messageVariant = variant;
+  ProcessMaker.navbar.messageCallback = callback;
   ProcessMaker.navbar.messageShow = true;
 };
 
@@ -272,9 +282,13 @@ window.addEventListener("unhandledrejection", (event) => {
     // Already handeled
     event.preventDefault(); // stops the unhandled rejection error
   } else if (error.response && error.response.data && error.response.data.message) {
-    window.ProcessMaker.alert(error.response.data.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.response.data.message, "danger");
+    }
   } else if (error.message) {
-    window.ProcessMaker.alert(error.message, "danger");
+    if (!(error.code && error.code === "ECONNABORTED")) {
+      window.ProcessMaker.alert(error.message, "danger");
+    }
   }
 });
 

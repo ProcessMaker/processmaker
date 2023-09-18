@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Facades\Docker;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -196,7 +197,7 @@ class ScriptExecutor extends ProcessMakerModel
 
     public static function listOfExecutorImages($filterByLanguage = null)
     {
-        exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);
+        exec(Docker::command() . ' images | awk \'{r=$1":"$2; print r}\'', $result);
 
         $instance = config('app.instance');
 

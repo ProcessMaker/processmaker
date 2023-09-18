@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Carbon\Carbon;
+use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -332,6 +334,7 @@ class TaskController extends Controller
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
             $sendActivityActivatedNotifications = false;
+            $reassingAction = false;
             if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
                 // Claim task
                 $task->is_self_service = 0;
@@ -343,17 +346,23 @@ class TaskController extends Controller
                 $task->authorizeAssigneeEscalateToManager();
                 $userToAssign = $task->escalateToManager();
                 $task->persistUserData($userToAssign);
+                $reassingAction = true;
             } else {
                 // Validate if user can reassign
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
                 $task->reassignTo($userToAssign);
                 $task->persistUserData($userToAssign);
+                $reassingAction = true;
             }
             $task->save();
 
             if ($sendActivityActivatedNotifications) {
                 $task->sendActivityActivatedNotifications();
+            }
+            // Register the Event
+            if ($reassingAction) {
+                ActivityReassignment::dispatch($task);
             }
 
             // Send a notification to the user
@@ -408,5 +417,23 @@ class TaskController extends Controller
     {
         // Authorized in policy
         return new ApiResource($screen->versionFor($task->processRequest));
+    }
+
+    public function eligibleRollbackTask(Request $request, ProcessRequestToken $task)
+    {
+        $eligibleTask = RollbackProcessRequest::eligibleRollbackTask($task);
+        if (!$eligibleTask) {
+            return ['message' => __('Task can not be rolled back')];
+        }
+
+        return new Resource($eligibleTask);
+    }
+
+    public function rollbackTask(Request $request, ProcessRequestToken $task)
+    {
+        $processDefinitions = $task->process->getDefinitions();
+        $newTask = RollbackProcessRequest::rollback($task, $processDefinitions);
+
+        return new Resource($newTask);
     }
 }

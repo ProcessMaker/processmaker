@@ -6,6 +6,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Events\ScriptExecutorCreated;
+use ProcessMaker\Events\ScriptExecutorDeleted;
+use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -104,8 +107,10 @@ class ScriptExecutorController extends Controller
         $request->validate(ScriptExecutor::rules());
 
         $scriptExecutor = ScriptExecutor::create(
-            $request->only((new ScriptExecutor)->getFillable())
+            $request->only((new ScriptExecutor())->getFillable())
         );
+
+        ScriptExecutorCreated::dispatch($scriptExecutor->getAttributes());
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -164,9 +169,15 @@ class ScriptExecutorController extends Controller
         $this->checkAuth($request);
         $request->validate(ScriptExecutor::rules());
 
+        $original = $scriptExecutor->getAttributes();
+
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
+
+        if (!empty($scriptExecutor->getChanges())) {
+            ScriptExecutorUpdated::dispatch($scriptExecutor->id, $original, $scriptExecutor->getChanges());
+        }
 
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -236,13 +247,15 @@ class ScriptExecutorController extends Controller
 
         ScriptExecutor::destroy($scriptExecutor->id);
 
+        ScriptExecutorDeleted::dispatch($scriptExecutor->getAttributes());
+
         return ['status' => 'done'];
     }
 
     private function checkAuth($request)
     {
         if (!$request->user()->is_administrator) {
-            throw new AuthorizationException;
+            throw new AuthorizationException();
         }
     }
 

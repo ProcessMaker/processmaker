@@ -8,6 +8,7 @@ use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Str;
+use Lavary\Menu\Menu;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
@@ -16,6 +17,7 @@ use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\Managers;
+use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Models;
 use ProcessMaker\Observers;
 use ProcessMaker\PolicyExtension;
@@ -27,6 +29,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->app->singleton(Menu::class, function ($app) {
+            return new MenuManager();
+        });
+
         static::bootObservers();
 
         static::extendValidators();
@@ -93,11 +99,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(PmHash::class, function () {
-            return new PmHash;
+            return new PmHash();
         });
 
         $this->app->singleton(Models\RequestDevice::class, function () {
-            return new Models\RequestDevice;
+            return new Models\RequestDevice();
         });
 
         /*

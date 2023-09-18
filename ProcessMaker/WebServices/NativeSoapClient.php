@@ -105,7 +105,7 @@ class NativeSoapClient implements SoapClientInterface
             $connectorName = StringHelper::friendlyFileName($this->options['datasource_name']) . '_(' . $this->options['datasource_id'] . ')';
             Log::build([
                 'driver' => 'daily',
-                'path' => storage_path("logs/data-sources/$connectorName.log"),
+                'path' => storage_path("data-sources/logs/$connectorName.log"),
                 'days' => env('DATA_SOURCE_CLEAR_LOG', 21),
             ])->info($label . $doc->saveXML());
         } catch (\Throwable $th) {

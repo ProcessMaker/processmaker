@@ -3,7 +3,6 @@
 namespace ProcessMaker\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Http\Request;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -26,6 +25,15 @@ class ProcessPolicy
         if ($user->is_administrator) {
             return true;
         }
+    }
+
+    public function edit(User $user, Process $process)
+    {
+        if ($this->isPmBlockImportedLocked($process)) {
+            return false;
+        }
+
+        return $user->can('edit-processes');
     }
 
     /**
@@ -121,5 +129,16 @@ class ProcessPolicy
         }
 
         return false;
+    }
+
+    /**
+     * Check if the PM Block package is installed and if so,
+     * it checks if the related pmBlock of the given Process is imported and locked.
+     */
+    private function isPmBlockImportedLocked(Process $process): bool
+    {
+        $className = 'ProcessMaker\Package\PackagePmBlocks\Models\PmBlock';
+
+        return class_exists($className) && $process->pmBlock?->is_imported_locked;
     }
 }

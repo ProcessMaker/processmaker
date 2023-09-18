@@ -3,8 +3,14 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use ProcessMaker\Events\ProcessCreated;
+use ProcessMaker\Events\TemplateDeleted;
+use ProcessMaker\Events\TemplatePublished;
+use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
 
 class TemplateController extends Controller
@@ -30,6 +36,10 @@ class TemplateController extends Controller
     public function index(string $type, Request $request)
     {
         $templates = $this->template->index($type, $request);
+
+        if ($request->input('per_page') === '0') {
+            return $templates;
+        }
 
         return new TemplateCollection($templates);
     }
@@ -58,21 +68,23 @@ class TemplateController extends Controller
             ], 409);
         }
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $storeTemplate = $this->template->store($type, $request);
+        TemplatePublished::dispatch($request->request->all());
 
-        return $this->template->store($type, $request);
+        return $storeTemplate;
     }
 
-     /**
-      * Update the template manifest
-      *
-      * @param  string  $type
-      * @param  Request $request
-      * @return \Illuminate\Http\Response
-      */
-     public function updateTemplateManifest(string $type, int $processId, Request $request)
-     {
-         return $this->template->updateTemplateManifest($type, $processId, $request);
-     }
+    /**
+     * Update the template manifest
+     *
+     * @param  string  $type
+     * @param  Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTemplateManifest(string $type, int $processId, Request $request)
+    {
+        return $this->template->updateTemplateManifest($type, $processId, $request);
+    }
 
     /**
      * Update stored template with new.
@@ -98,8 +110,14 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $proTemplates = ProcessTemplates::select()->find($request->id);
+        $changes = $request->all();
+        $original = array_intersect_key($proTemplates->getOriginal(), $changes);
+        $response = $this->template->updateTemplateConfigs($type, $request);
+        //Call event to log Template Config changes
+        TemplateUpdated::dispatch($changes, $original, false, $proTemplates);
 
-        return $this->template->updateTemplateConfigs($type, $request);
+        return $response;
     }
 
     /**
@@ -112,8 +130,14 @@ class TemplateController extends Controller
     public function create(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
+        $response = $this->template->create($type, $request);
+        if (isset($response->getData()->processId) && $type === 'process') {
+            $process = Process::find($response->getData()->processId);
+            // Register the Event
+            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
 
-        return $this->template->create($type, $request);
+        return $response;
     }
 
     /**
@@ -124,7 +148,12 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
-        return $this->template->deleteTemplate($type, $request);
+        $template = ProcessTemplates::find($request->id);
+        $response = $this->template->deleteTemplate($type, $request);
+        //Call event to Store Template Deleted on LOG
+        TemplateDeleted::dispatch($template);
+
+        return $response;
     }
 
     public function preimportValidation(string $type, Request $request)

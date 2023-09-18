@@ -53,7 +53,7 @@ class ScriptRunner
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";
 
-            return new $class($executor);
+            return app()->make($class, ['scriptExecutor' => $executor]);
         }
     }
 
