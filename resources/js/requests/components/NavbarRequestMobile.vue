@@ -12,7 +12,7 @@
     </button>
 
     <div class="mx-1">
-      <span class="lead text-white">
+      <span class="lead text-white font-weight-normal">
         {{ title }}
       </span>
     </div>
