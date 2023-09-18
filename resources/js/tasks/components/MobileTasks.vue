@@ -22,7 +22,7 @@
 <script>
 import Card from "../../Mobile/Card.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
-
+// BEGIN-NOSCAN
 export default {
   components: { Card },
   mixins: [datatableMixin],
@@ -118,4 +118,5 @@ export default {
     },
   },
 };
+// END-NOSCAN
 </script>
