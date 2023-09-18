@@ -24,26 +24,33 @@
             </div>
           </b-th>
           <b-td class="text-center align-middle">
+            {{ groupType }}
             <b-form-group>
               <b-form-radio-group
-                v-model="selected"
+                :id="groupType + '_global_update'"
+                v-model="selectedAllUpdate"
                 :options="optionUpdate"
+                name="update"
               />
             </b-form-group>
           </b-td>
           <b-td class="text-center align-middle">
             <b-form-group>
               <b-form-radio-group
-                v-model="selected"
+                id="radioKeep"
+                v-model="selectedAllKeep"
                 :options="optionKeep"
+                name="keep"
               />
             </b-form-group>
           </b-td>
           <b-td class="text-center align-middle">
             <b-form-group>
               <b-form-radio-group
-                v-model="selected"
+                id="radioDuplicate"
+                v-model="selectedAllDuplicate"
                 :options="optionDuplicate"
+                name="duplicate"
               />
             </b-form-group>
           </b-td>
@@ -98,15 +105,18 @@ export default {
   data() {
     return {
       fields: ["Update", "Keep Previous", "Duplicate"],
-      selected: 'duplicate',
+      selectedAllUpdate: null,
+      selectedAllKeep: null,
+      selectedAllDuplicate: null,
+      selected: "selectDuplicate",
       optionUpdate: [
-        { text: "", value: 'update' },
+        { text: "", value: "update" },
       ],
       optionKeep: [
-        { text: "", value: 'keep' },
+        { text: "", value: "keep" },
       ],
       optionDuplicate: [
-        { text: "", value: 'duplicate' },
+        { text: "", value: "duplicate" },
       ],
     };
   },
@@ -121,7 +131,7 @@ export default {
         return group;
       }, {});
 
-      console.log('GROUPTYPE', groupType);
+      console.log("GROUPTYPE", groupType);
       return groupType;
     },
   },
@@ -129,7 +139,7 @@ export default {
   },
   methods: {
     formatName(value) {
-      return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+      return value.replace(/([a-z])([A-Z])/g, "$1 $2");
     },
   },
 };

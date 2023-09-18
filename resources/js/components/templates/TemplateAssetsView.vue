@@ -27,23 +27,19 @@
         </button>
       </div>
     </div>
+    <asset-confirmation-modal ref="asset-confirmation-modal"></asset-confirmation-modal>
   </div>
 </template>
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import TemplateAssetTable from "./TemplateAssetTable.vue";
+import AssetConfirmationModal from "./AssetConfirmationModal.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { TemplateAssetTable },
-  filters: {
-    titleCase: function (value) {
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    }
-  },
+  components: { TemplateAssetTable, AssetConfirmationModal },
   mixins: [uniqIdsMixin],
   props: ['assets', 'name'],
   data() {
@@ -71,7 +67,7 @@ export default {
       window.location = "/processes";
     },
     onContinue() {
-      console.log('hit onContinue');
+      this.$refs["asset-confirmation-modal"].show();
     },
     title() {
       return this.$t("Use Template: ") + this.templateName;

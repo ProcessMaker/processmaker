@@ -10,6 +10,7 @@
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
     :hide-footer="hideFooter"
+    :hide-header="hideHeader"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -114,6 +115,7 @@
       "subtitle", 
       "size", 
       "hideFooter", 
+      "hideHeader",
       "hasHeaderButtons", 
       "headerButtons", 
       "hasTitleButtons", 
