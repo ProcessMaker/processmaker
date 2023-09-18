@@ -161,19 +161,22 @@ export default {
     };
   },
   methods: {
+    /** 
+     * This boolean method shows or hide elements
+     */
     toggleInput() {
       this.showInput = !this.showInput;
       this.showDropdowns = !this.showInput;
     },
-    /** This metod receives parameters from dropdown controls
-      * options selected by user
-      */
+    /** 
+     * This method receives parameters from dropdown controls options selected by user
+     */
     selectOption(option, controlName, icon) {
       this.callApiFilter(this.buildApiPath(option, controlName, icon));
     },
-    /** This method builds a specific url api string depending
-      * of filter used by user
-      */
+    /** 
+     * This method builds a specific url api string depending of filter used by user
+     */
     buildApiPath(option, controlName, icon) {
       let basePath = this.type + "?page=1&per_page=10&include=process,participants,data&";
       if (controlName === "status") {
@@ -192,9 +195,10 @@ export default {
         return basePath + 'pmql=(fulltext LIKE "%' + option + '%")';
       }
     },
-    /** This is a generic method to call API with previous builded apiPath
-      * related to Filters selected by user
-      */
+    /** 
+     * This is a generic method to call API with previous builded apiPath 
+     * related to Filters selected by user
+     */
     callApiFilter(apiPath) {
       ProcessMaker.apiClient
         .get(apiPath)
@@ -205,8 +209,8 @@ export default {
           console.error("Error calling API:", error);
         });
     },
-    /** This method sends users's input criteria 
-     *  to filter specific tasks or requests 
+    /** 
+     * This method sends users's input criteria to filter specific tasks or requests 
      */ 
     performSearch() {
       this.callApiFilter(this.buildApiPath(this.searchCriteria, "search"))
