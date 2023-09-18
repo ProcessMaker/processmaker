@@ -25,9 +25,6 @@ export default {
   data() {
     return {};
   },
-  mounted() {
-    console.log('holi', this.title);
-  },
   methods: {
     returnTasks() {
       window.location = `/requests`;
