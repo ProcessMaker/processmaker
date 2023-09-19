@@ -1058,7 +1058,7 @@ export default {
             if (typeof onSuccess === "function") {
               onSuccess(response);
             }
-            if (this.processId !== 0 && this.processId !== undefined) {
+            if (this.processId !== 0 && this.processId !== undefined && !this.exportScreen) {
               window.location = `/modeler/${this.processId}`;
             }
           })
