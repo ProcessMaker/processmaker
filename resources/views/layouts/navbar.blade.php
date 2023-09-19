@@ -108,6 +108,7 @@
                     left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
+                        :key="subItem.url"                    
                         :href="subItem.url"
                         :target="subItem.attributes.target"
                     >

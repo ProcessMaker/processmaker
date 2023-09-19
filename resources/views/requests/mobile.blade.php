@@ -3,23 +3,21 @@
 {{__($title)}}
 @endsection
 @section('content_mobile')
-<div class="d-flex flex-column" style="min-height: 100vh">
-<div class="flex-fill">
-  <div class="row">
-    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
-      <div class="card card-body p-3">
-          <span>Welcome Mobile ProcessMaker</span>
+<div class="d-flex flex-column">
+  <div class="flex-fill">
+    <div class="row">
+      <div class="col-12">
+        <div id="requests-mobile" class="card card-body p-3">
+          <mobile-requests />
+        </div>
       </div>
-
     </div>
-
-
   </div>
 </div>
 @endsection
 
 @section('js')
-    
+<script src="{{mix('js/requests/mobile.js')}}"></script>
 @endsection
 
 @section('css')
