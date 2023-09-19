@@ -208,7 +208,7 @@ export default {
       this.dataXmlSvg.svg = svg;
 
       if (this.externalEmit.includes("open-modal-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions");
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl);
         return;
       }
       window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl);
