@@ -13,7 +13,7 @@
         </ul>
       </div>
       <div>
-        <template-asset-table :assets="templateAssets" />
+        <template-asset-table :assets="templateAssets" @assetChanged="updateAssets"/>
       </div>
       <div
         class="card-footer bg-light text-right pr-0"
@@ -91,6 +91,9 @@ export default {
     duplicateAsset() {
       return this.$t("A new blank asset will be created for the new process, without modifying the previously existing one.");
     },
+    updateAssets(assets) {
+      this.templateAssets = assets;
+    }
   },
 };
 </script>
