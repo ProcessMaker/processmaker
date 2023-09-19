@@ -14,9 +14,9 @@
       v-model="screen"
       :label="$t('Screen Interstitial')"
       :required="true"
-      :placeholder="$t('Default Screen')"
       :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
       :params="parameters"
+      default-key="interstitial"
     />
   </div>
 </template>
@@ -26,7 +26,7 @@ import ScreenSelect from "./ScreenSelect";
 
 export default {
   components: { ScreenSelect },
-  props: ["value", "label", "helper"],
+  props: ["value", "label", "helper", "enabledByDefault"],
   data() {
     return {
       screen: null,
@@ -45,7 +45,7 @@ export default {
       const { node } = this;
 
       // Get the value of allowInterstitial or set it to true if it hasn't been defined yet.
-      const value = _.get(node, "allowInterstitial", true);
+      const value = _.get(node, "allowInterstitial", this.enabledByDefault || false);
 
       this.screen = _.get(node, "interstitialScreenRef");
       return value;

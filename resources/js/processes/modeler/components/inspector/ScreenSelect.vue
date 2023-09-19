@@ -59,7 +59,7 @@ export default {
   components: {
     ModelerAssetQuickCreate,
   },
-  props: ["value", "label", "helper", "params", "required", "placeholder"],
+  props: ["value", "label", "helper", "params", "required", "placeholder", "defaultKey"],
   data() {
     return {
       content: "",
@@ -99,6 +99,7 @@ export default {
     if (this.value) {
       this.loadScreen(this.value);
     }
+    this.setDefault();
   },
   methods: {
     type() {
@@ -114,6 +115,7 @@ export default {
       return false;
     },
     loadScreen(value) {
+      this.loading = true;
       ProcessMaker.apiClient
         .get(`screens/${value}`)
         .then(({ data }) => {
@@ -121,14 +123,6 @@ export default {
           this.content = data;
         })
         .catch((error) => {
-          if (this.flag && data.key === "interstitial") {
-            this.flag = false;
-            this.value = "0";
-          } else if (this.flag) {
-            this.value = (parseInt(this.value) + 1).toString();
-            this.loadScreen(this.value);
-          }
-
           this.loading = false;
           if (error.response.status === 404) {
             this.content = "";
@@ -159,6 +153,19 @@ export default {
           this.loading = false;
         });
     },
+    setDefault() {
+      if (!this.defaultKey || this.value) {
+        // No need to set a default
+        return;
+      }
+
+      ProcessMaker.apiClient
+        .get("screens", { params: { key: this.defaultKey }})
+        .then(({ data }) => {
+          this.content = data.data[0];
+        });
+
+    },
     /**
      * @param {Object} data - The response we get from the emitter
      * @param {string} data.id - the screen id
@@ -172,12 +179,7 @@ export default {
         return;
       }
 
-      if (this.value === undefined) {
-        this.value = "0";
-      }
-      this.flag = true;
-      this.value = (parseInt(this.value) + 1).toString();
-      this.loadScreen(this.value);
+      this.error = this.$t("A screen selection is required");
     },
   },
 };
