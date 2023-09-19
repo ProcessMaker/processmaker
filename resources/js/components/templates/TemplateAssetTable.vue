@@ -69,10 +69,10 @@ export default {
     },
     filteredAssetGroups: {
       handler() {
-        this.$emit('asset-changed', this.filteredAssetGroups);
+        this.$emit("assetChanged", this.filteredAssetGroups);
       },
-    deep: true
-   }
+    deep: true,
+   },
   },
   methods: {
     setGroupAction(group, action) {

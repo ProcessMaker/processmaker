@@ -27,17 +27,24 @@
         </button>
       </div>
     </div>
+    <asset-confirmation-modal
+      ref="assetConfirmationModal"
+      :templateName="name"
+      @submitAssets="submitAssets"
+    >
+    </asset-confirmation-modal>
   </div>
 </template>
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import AssetConfirmationModal from "./AssetConfirmationModal.vue";
 import TemplateAssetTable from "./TemplateAssetTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { TemplateAssetTable },
+  components: { TemplateAssetTable, AssetConfirmationModal },
   filters: {
     titleCase: function (value) {
       value = value.toString();
@@ -50,12 +57,14 @@ export default {
     return {
       templateAssets: [],
       templateName: "",
+      updatedAssets: [],
     };
   },
   computed: {
   },
   watch: {
     assets() {
+      console.log('HIT HERE');
       this.templateAssets = this.assets;
     },
   },
@@ -71,7 +80,32 @@ export default {
       window.location = "/processes";
     },
     onContinue() {
-      console.log('hit onContinue');
+      this.$refs.assetConfirmationModal.show();
+    },
+    submitAssets() {
+      console.log('hit submitAssets');
+      let formData = new FormData();
+        console.log('UPDATED ASSETS', this.updatedAssets);
+        // formData.append(this.templateAssets);
+        // console.log('this.assetType', this.assetType);
+        // console.log('this.assetId', this.assetId);
+        // console.log('formData', formData);
+        // ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.assetId, formData)
+        // .then(response => {
+        //   ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
+        //   window.setTimeout(() => {
+        //     window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
+        //   }, 1000);
+        // }).catch(error => {
+        //   this.errors = error.response?.data;
+        //   this.customModalButtons[1].disabled = false;
+        //   if (this.errors.hasOwnProperty('errors')) {
+        //     this.errors = this.errors?.errors;
+        //   } else {
+        //     const message = error.response?.data?.error;
+        //     ProcessMaker.alert(this.$t(message), "danger");
+        //   }
+        // });
     },
     title() {
       return this.$t("Use Template: ") + this.templateName;
@@ -92,8 +126,9 @@ export default {
       return this.$t("A new blank asset will be created for the new process, without modifying the previously existing one.");
     },
     updateAssets(assets) {
-      this.templateAssets = assets;
-    }
+      console.log('assets', assets);
+      this.updatedAssets = assets;
+    },
   },
 };
 </script>
