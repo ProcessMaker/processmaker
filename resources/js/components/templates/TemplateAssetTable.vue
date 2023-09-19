@@ -20,8 +20,8 @@
             </div>
           </b-th>
           <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + action.value">
-            <b-form-group>
-              <b-form-radio v-model="group.mode" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
+            <b-form-group id="group-action">
+              <b-form-radio v-model="group.mode" @input="setGroupActionInput(group, action)" @change="setGroupAction(group, action)" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
             </b-form-group>
           </b-td>
         </b-tr>
@@ -85,10 +85,26 @@ export default {
     deep: true
    }
   },
-  mounted() {
-    this.filterAssetsByGroup();
-  },
   methods: {
+    isGroupActionSelected(group, action) {
+      console.log('check for default', action.value, group.mode);
+      if (group.mode === action.value) {
+        console.log('return true', group)
+        return true;
+      }
+      return false;
+    },
+    setGroupActionInput(group, action){
+      console.log('setGroupActionInput', group, action);
+      group.mode = action.value;
+    },
+    setGroupAction(group, action) {
+      console.log('group chnaged', group, action);
+      group.mode = action.value;
+      group.items.forEach(item => {
+        item.mode = group.mode;
+      });
+    },
     filterAssetsByGroup() {
       // Initialize an empty array to store items grouped by 'type'
       const groupedItems = [];
