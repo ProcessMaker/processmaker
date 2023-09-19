@@ -21,7 +21,7 @@
           </b-th>
           <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + action.value">
             <b-form-group>
-              <b-form-radio v-model="group.action" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
+              <b-form-radio v-model="group.mode" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
             </b-form-group>
           </b-td>
         </b-tr>
@@ -37,7 +37,7 @@
           </b-td>
           <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + asset.name + '-' + action.value">
             <b-form-group>
-              <b-form-radio v-model="asset.action" :value="action.value" :name="group.type + '-' + asset.name + '-' + action.value"></b-form-radio>
+              <b-form-radio v-model="asset.mode" :value="action.value" :name="group.type + '-' + asset.name + '-' + action.value"></b-form-radio>
             </b-form-group>
           </b-td>
         </b-tr>
@@ -59,7 +59,7 @@ export default {
       actions: [ 
         {label: "Update", value:'update'},
         {label: "Keep Previous", value:'keep'},
-        {label: "Duplicate", value:'duplicate'},
+        {label: "Duplicate", value:'copy'},
       ],
     };
   },
@@ -74,10 +74,10 @@ export default {
         console.log("filteredAssetGroups", this.filteredAssetGroups);
         this.filteredAssetGroups.forEach(group => {
           console.log("ASSET TYPE", group);
-        if (group.action) {
+        if (group.mode) {
           group.items.forEach(item => {
             console.log("ITEM", item);
-            item.action = group.action;
+            item.mode = group.mode;
           });
         }
       });
@@ -100,10 +100,10 @@ export default {
         if (existingGroup) {
           // If the 'type' exists, push the item into its items array
           existingGroup.items.push(asset);
-          existingGroup.action = null;
+          existingGroup.mode = 'copy';
         } else {
           // If the 'type' doesn't exist, create a new group and push the item
-          groupedItems.push({ type: asset.type, action: null, items: [asset] });
+          groupedItems.push({ type: asset.type, mode: 'copy', items: [asset] });
         }
       });
 
