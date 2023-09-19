@@ -38,10 +38,12 @@ window.Popper = require("popper.js").default;
  */
 window.ProcessmakerComponents = require("./processes/screen-builder/components");
 
+window.CommonMixins = import("./components/common/mixins");
+
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+window.SharedComponents = import("./components");
 
 window.ProcessesComponents = require("./processes/components");
 
