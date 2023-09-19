@@ -1,10 +1,6 @@
 <template>
   <div class="mt-4 mb-5 data-card-container">
-    <b-table-simple
-      v-for="groupType in groupAssets"
-      :key="groupType.type"
-      class="simple-table"
-    >
+    <b-table-simple v-for="group in filteredAssetGroups" :key="group.type" class="simple-table" :name="group.type + '-table'">
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
@@ -12,74 +8,36 @@
       <b-thead>
         <b-tr>
           <b-td class="border-top-0" colspan="2"/>
-          <b-td class="border-top-0 text-center">Update</b-td>
-          <b-td class="border-top-0 text-center">Keep Previous</b-td>
-          <b-td class="border-top-0 text-center">Duplicate</b-td>
+          <b-td v-for="action in actions" class="border-top-0 text-center" :key="action.value">
+              {{ action.label }}
+          </b-td>
         </b-tr>
         <b-tr class="card-header border-left border-right">
           <b-th class="align-middle" colspan="2">
             <div>
               <i class="fas fa-file-alt d-inline align-middle mr-1" />
-              <h5 class="d-inline align-middle">{{ formatName(groupType[0].type) }}</h5>
+              <h5 class="d-inline align-middle">{{ formatName(group.type) }}</h5>
             </div>
           </b-th>
-          <b-td class="text-center align-middle">
+          <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + action.value">
             <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionUpdate"
-              />
-            </b-form-group>
-          </b-td>
-          <b-td class="text-center align-middle">
-            <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionKeep"
-              />
-            </b-form-group>
-          </b-td>
-          <b-td class="text-center align-middle">
-            <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionDuplicate"
-              />
+              <b-form-radio v-model="group.action" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
             </b-form-group>
           </b-td>
         </b-tr>
       </b-thead>
       <b-tbody>
         <b-tr
-          v-for="asset in groupType"
+          v-for="asset in group.items"
           :key="asset.name"
           class="border-left border-right border-bottom"
         >
           <b-td class="align-middle" colspan="2">
             {{ asset.name }}
           </b-td>
-          <b-td class="text-center align-middle">
+          <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + asset.name + '-' + action.value">
             <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionUpdate"
-              />
-            </b-form-group>
-          </b-td>
-          <b-td class="text-center align-middle">
-            <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionKeep"
-              />
-            </b-form-group>
-          </b-td>
-          <b-td class="text-center align-middle">
-            <b-form-group>
-              <b-form-radio-group
-                v-model="selected"
-                :options="optionDuplicate"
-              />
+              <b-form-radio v-model="asset.action" :value="action.value" :name="group.type + '-' + asset.name + '-' + action.value"></b-form-radio>
             </b-form-group>
           </b-td>
         </b-tr>
@@ -97,37 +55,61 @@ export default {
   props: ["assets"],
   data() {
     return {
-      fields: ["Update", "Keep Previous", "Duplicate"],
       selected: 'duplicate',
-      optionUpdate: [
-        { text: "", value: 'update' },
-      ],
-      optionKeep: [
-        { text: "", value: 'keep' },
-      ],
-      optionDuplicate: [
-        { text: "", value: 'duplicate' },
+      actions: [ 
+        {label: "Update", value:'update'},
+        {label: "Keep Previous", value:'keep'},
+        {label: "Duplicate", value:'duplicate'},
       ],
     };
   },
   computed: {
-    groupAssets() {
-      const assets = JSON.parse(JSON.stringify(this.assets));
-
-      const groupType = assets.reduce((group, asset) => {
-        const { type } = asset;
-        group[type] = group[type] ?? [];
-        group[type].push(asset);
-        return group;
-      }, {});
-
-      console.log('GROUPTYPE', groupType);
-      return groupType;
+    filteredAssetGroups() {
+     return this.filterAssetsByGroup();
     },
   },
+  watch: {
+    filteredAssetGroups: {
+      handler() {
+        console.log("filteredAssetGroups", this.filteredAssetGroups);
+        this.filteredAssetGroups.forEach(group => {
+          console.log("ASSET TYPE", group);
+        if (group.action) {
+          group.items.forEach(item => {
+            console.log("ITEM", item);
+            item.action = group.action;
+          });
+        }
+      });
+    },
+    deep: true
+   }
+  },
   mounted() {
+    this.filterAssetsByGroup();
   },
   methods: {
+    filterAssetsByGroup() {
+      // Initialize an empty array to store items grouped by 'type'
+      const groupedItems = [];
+
+      this.assets.forEach(asset => {
+        // Check if the 'type' already exists in groupedItems
+        const existingGroup = groupedItems.find(group => group.type === asset.type);
+
+        if (existingGroup) {
+          // If the 'type' exists, push the item into its items array
+          existingGroup.items.push(asset);
+          existingGroup.action = null;
+        } else {
+          // If the 'type' doesn't exist, create a new group and push the item
+          groupedItems.push({ type: asset.type, action: null, items: [asset] });
+        }
+      });
+
+      // Set the result in data property
+      return groupedItems;
+    },
     formatName(value) {
       return value.replace(/([a-z])([A-Z])/g, '$1 $2');
     },
