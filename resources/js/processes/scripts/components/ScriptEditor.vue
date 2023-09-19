@@ -680,6 +680,7 @@ export default {
           timeout: this.script.timeout,
         })
         .then((response) => {
+          window.ProcessMaker.EventBus.$emit("save-changes");
           ProcessMaker.alert(this.$t("The script was saved."), "success");
           // Set published status.
           this.setVersionIndicator(false);
