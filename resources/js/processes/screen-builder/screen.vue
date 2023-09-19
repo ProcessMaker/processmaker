@@ -490,7 +490,7 @@ export default {
         variant: "secondary",
         icon: "fas fa-save",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-screen", false, this.processId);
+          ProcessMaker.EventBus.$emit("save-screen", false);
         },
       },
     ];
@@ -787,8 +787,8 @@ export default {
         that.previewInput = "{}";
         that.preview.custom_css = that.customCSS;
         ProcessMaker.EventBus.$emit("screen-builder-start", that);
-        ProcessMaker.EventBus.$on("save-screen", (value, processId, onSuccess, onError) => {
-          that.saveScreen(value, processId, onSuccess, onError);
+        ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
+          that.saveScreen(value, onSuccess, onError);
         });
         ProcessMaker.EventBus.$on("screen-change", () => {
           this.handleAutosave();
@@ -1029,7 +1029,7 @@ export default {
           window.location.reload();
         });
     },
-    saveScreen(exportScreen, processId, onSuccess, onError) {
+    saveScreen(exportScreen, onSuccess, onError) {
       if (this.allErrors !== 0) {
         ProcessMaker.alert(
           this.$t("This screen has validation errors."),
@@ -1058,7 +1058,7 @@ export default {
             if (typeof onSuccess === "function") {
               onSuccess(response);
             }
-            if (processId !== 0 && processId !== undefined) {
+            if (this.processId !== 0 && this.processId !== undefined) {
               window.location = `/modeler/${this.processId}`;
             }
           })
