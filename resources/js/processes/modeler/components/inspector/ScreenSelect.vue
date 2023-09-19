@@ -66,6 +66,7 @@ export default {
       loading: false,
       screens: [],
       error: null,
+      localValue: this.value,
     };
   },
   watch: {
@@ -113,7 +114,6 @@ export default {
       return false;
     },
     loadScreen(value) {
-      this.loading = true;
       ProcessMaker.apiClient
         .get(`screens/${value}`)
         .then(({ data }) => {
@@ -121,6 +121,14 @@ export default {
           this.content = data;
         })
         .catch((error) => {
+          if (this.flag && data.key === "interstitial") {
+            this.flag = false;
+            this.value = "0";
+          } else if (this.flag) {
+            this.value = (parseInt(this.value) + 1).toString();
+            this.loadScreen(this.value);
+          }
+
           this.loading = false;
           if (error.response.status === 404) {
             this.content = "";
@@ -164,7 +172,12 @@ export default {
         return;
       }
 
-      this.error = this.$t("A screen selection is required");
+      if (this.value === undefined) {
+        this.value = "0";
+      }
+      this.flag = true;
+      this.value = (parseInt(this.value) + 1).toString();
+      this.loadScreen(this.value);
     },
   },
 };
