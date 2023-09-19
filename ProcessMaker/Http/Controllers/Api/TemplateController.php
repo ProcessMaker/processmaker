@@ -130,33 +130,30 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $assetsResponse = $this->checkIfAssetsExist($request);
-
-        if (!empty($assetsResponse)) {
-            $response = [
-                'id' => $request->id,
-                'request' => $request->toArray(),
-                'existingAssets' => $assetsResponse,
-            ];
-        } else {
-            $response = $this->template->create($type, $request);
-            if (isset($response->getData()->processId) && $type === 'process') {
-                $process = Process::find($response->getData()->processId);
-                // Register the Event
-                ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        if ($type === 'process') {
+            $request->validate(Template::rules($request->id, $this->types[$type][4]));
+            $postOptions = $this->checkIfAssetsExist($request);
+            if (!empty($postOptions)) {
+                $response = [
+                    'id' => $request->id,
+                    'request' => $request->toArray(),
+                    'existingAssets' => $postOptions,
+                ];
+            } else {
+                $response = $this->template->create($type, $request);
             }
+        } elseif ($type === 'update-assets') {
+            $request->validate([
+                'id' => 'required|numeric',
+                'request' => 'required|array',
+                'existingAssets' => 'required|array',
+            ]);
+            $response = $this->template->create($type, $request);
         }
 
-        return $response;
-    }
-
-    public function updateAssets(Request $request)
-    {
-        $response = $this->template->updateAssets($request);
-        if (isset($response->getData()->processId)) {
+        // Register the Event
+        if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
-            // Register the Event
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
 
@@ -213,7 +210,6 @@ class TemplateController extends Controller
         $payload = json_decode($template->manifest, true);
 
         // Get assets form the template
-        $postOptions = [];
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
@@ -229,7 +225,6 @@ class TemplateController extends Controller
                 continue;
             }
 
-            $postOptions[] = $item;
             $existingOptions[] = $item;
         }
 
