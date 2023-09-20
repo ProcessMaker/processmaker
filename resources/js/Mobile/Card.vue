@@ -8,7 +8,7 @@
               {{ item.element_name }}
             </template>
             <template v-if="type === 'requests'">
-              {{ item.element_name }}
+              {{ item.name }}
             </template>
           </span>
         </b-col>
@@ -40,14 +40,21 @@
             pill
             variant="custom"
           >
-            {{ showDate(item) }}
+            {{ showBadge(item) }}
           </b-badge>
         </b-col>
         <b-col
           v-if="type === 'requests'"
           cols="4"
+          class="align-left"
         >
-          {{ item.id }}
+          <avatar-image
+            v-for="participant in item.participants"
+            :key="participant.id"
+            size="25"
+            hide-name="true"
+            :input-data="participant"
+          />
         </b-col>
       </b-row>
     </b-card-text>
@@ -55,79 +62,55 @@
 </template>
 
 <script>
+import AvatarImage from "../components/AvatarImage.vue";
+
 export default {
+  components: { AvatarImage },
   props: ["type", "item"],
   data() {
     return {
       colorStatus: "",
-      labelStatus: "",
+      requestBadge: "",
     };
   },
-  mounted() {
-    this.setStatus();
-  },
   methods: {
-    setStatus() {
-      if (this.type === "requests") {
-        this.colorRequest();
-      }
-      if (this.type === "tasks") {
-        this.colorTasks();
-      }
-    },
-    colorRequest() {
-      switch (this.item.status) {
-        case "DRAFT":
-          this.colorStatus = "danger";
-          this.labelStatus = "Draft";
-          break;
-        case "CANCELED":
-          this.colorStatus = "danger";
-          this.labelStatus = "Canceled";
-          break;
-        case "COMPLETED":
-          this.colorStatus = "primary";
-          this.labelStatus = "Completed";
-          break;
-        case "ERROR":
-          this.colorStatus = "danger";
-          this.labelStatus = "Error";
-          break;
-        default:
-          this.colorStatus = "warning";
-          this.labelStatus = "In Progress";
-          break;
-      }
-    },
-    colorTasks() {
-      const { status } = this.item;
-      const isSelfService = this.item.is_self_service;
-      if (status === "ACTIVE" && isSelfService) {
-        this.colorStatus = "warning";
-        this.labelStatus = "Self Service";
-        return;
-      }
-      if (status === "ACTIVE") {
-        this.colorStatus = "warning";
-        this.labelStatus = "In Progress";
-        return;
-      }
-      if (status === "CLOSED") {
-        this.colorStatus = "primary";
-        this.labelStatus = "Completed";
-        return;
-      }
-      this.colorStatus = "secondary";
-      this.labelStatus = "status";
-    },
-    showDate(item) {
+    /**
+     * Show info in the badge
+     */
+    showBadge(item) {
       if (this.type === "tasks") {
         if (item.due_notified === 1) {
           return this.formatDate(item.due_at);
         }
         return this.formatDate(item.created_at);
       }
+      switch (this.item.status) {
+        case "DRAFT":
+          this.colorStatus = "danger";
+          this.requestBadge = "Draft";
+          break;
+        case "CANCELED":
+          this.colorStatus = "danger";
+          this.requestBadge = "Canceled";
+          break;
+        case "COMPLETED":
+          this.colorStatus = "primary";
+          this.requestBadge = "Completed";
+          break;
+        case "ERROR":
+          this.colorStatus = "danger";
+          this.requestBadge = "Error";
+          break;
+        default:
+          this.colorStatus = "warning";
+          this.requestBadge = "In Progress";
+          break;
+      }
+      return this.requestBadge;
     },
+    /**
+     * Format the date
+     */
     formatDate(value, format) {
       const formatDate = format || "";
       if (value) {

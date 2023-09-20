@@ -82,7 +82,7 @@
       <!-- Nav tabs -->
       <div>
         <b-navbar-nav class="nav-tabs nav-fill" id="nav-tab" role="tablist">
-          <template v-for="(item, index) in {{ json_encode ($menuItems) }}">
+          <template v-for="(item, index) in {{ json_encode($menuItems) }}">
             <b-nav-item 
               class="nav-item nav-link p-0"
               role="presentation"
@@ -95,6 +95,7 @@
           </template>
         </b-navbar-nav >
       </div>
+    @endif
   </div>
 </div>
 

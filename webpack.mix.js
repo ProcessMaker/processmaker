@@ -106,6 +106,7 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
   .js("resources/js/leave-warning.js", "public/js")
   .js("resources/js/requests/index.js", "public/js/requests")
+  .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
 
