@@ -2,6 +2,9 @@
 @section('title')
 {{__($title)}}
 @endsection
+@php
+  $path = Request::path();
+@endphp
 @section('content_mobile')
 <div class="d-flex flex-column">
   <div class="flex-fill">
