@@ -79,7 +79,7 @@ export default {
     submitAssets() {
       let formData = new FormData();
         formData.append("id", this.$root.responseId);
-        formData.append("request", JSON.stringify(this.request));
+        formData.append("request", this.request);
         formData.append("existingAssets", JSON.stringify(this.updatedAssets));
         ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
         .then(response => {
