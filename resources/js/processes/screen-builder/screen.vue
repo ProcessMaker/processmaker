@@ -136,6 +136,15 @@
                 >
                   <i class="fas fa-file-code mr-2" />
                   {{ $t('Data Preview') }}
+                  <b-button
+                    v-b-modal.data-preview
+                    squared
+                    variant="outline-dark"
+                    class="fas ml-auto btn-sm tree-button"
+                    @click.stop
+                  >
+                    <i class="fas ml-auto fas fa-expand" />
+                  </b-button>
                   <i
                     class="fas ml-auto"
                     :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"
@@ -248,6 +257,33 @@
       </b-card-footer>
     </b-card>
     <!-- Modals -->
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="previewDataStringify"
+            :options="monacoOptions"
+            class="editor"
+            language="json"
+            @editorDidMount="monacoMounted"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="previewDataStringify"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
     <computed-properties
       ref="computedProperties"
       v-model="computed"
@@ -518,6 +554,7 @@ export default {
         ],
       },
       closeHref: "/designer/screens",
+      iframeHeight: "600px",
     };
   },
   computed: {
@@ -1109,5 +1146,8 @@ export default {
     }
     .editor {
       height: 30em;
+    }
+    .tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
     }
 </style>

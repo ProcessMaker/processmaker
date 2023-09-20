@@ -82,6 +82,7 @@ class TaskController extends Controller
                     'files' => $task->processRequest->requestFiles(),
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                    'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 ]);
             }
 
@@ -93,6 +94,7 @@ class TaskController extends Controller
                 'files' => $task->processRequest->requestFiles(),
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
             ]);
         }
     }

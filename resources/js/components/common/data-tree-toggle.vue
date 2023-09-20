@@ -1,11 +1,23 @@
 <template>
   <div class="flex-container">
-    <i class="fas fa-code"></i>
+    <i width="16" height="15">
+      <img :src="codeViewIcon" alt="codeViewIcon">
+    </i>
     <div class="mb-2 custom-control custom-switch switch-padding">
-      <input id="show_tree" type="checkbox" v-model="showTree"  class="custom-control-input" :checked="value" @input="emitSwitchValue">
+      <input
+        id="show_tree"
+        v-model="showTree"
+        type="checkbox"
+        :data-cy="showTree ? 'treeViewToggle-checked' : 'treeViewToggle'"
+        class="custom-control-input"
+        :checked="value"
+        @input="emitSwitchValue"
+      >
       <label for="show_tree" class="custom-control-label"></label>
     </div>
-    <i class="fas fa-project-diagram"></i>
+    <i width="16" height="15">
+      <img :src="treeViewIcon" alt="treeViewIcon">
+    </i>
   </div>
 </template>
 
@@ -17,6 +29,8 @@ export default {
   data() {
     return {
       showTree: this.value,
+      treeViewIcon: require("../../../img/tree_view.svg"),
+      codeViewIcon: require("../../../img/code.svg"),
     };
   },
   methods: {
@@ -33,7 +47,10 @@ export default {
   align-items: center;
 }
 .switch-padding {
-    margin-bottom: 0rem !important;
-    padding-left: 2.75rem;
+  margin-bottom: 0rem !important;
+  padding-left: 2.75rem;
+}
+.tree-view-icon {
+  font-weight: bold;
 }
 </style>
