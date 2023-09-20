@@ -9,6 +9,7 @@ import RequestErrors from "./components/RequestErrors.vue";
 import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
 import RequestScreens from "./components/RequestScreens.vue";
+import NavbarRequestMobile from "./components/NavbarRequestMobile.vue";
 
 Vue.component("DataSummary", DataSummary);
 Vue.component("RequestDetail", RequestDetail);
@@ -18,6 +19,7 @@ Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
 Vue.component("RequestScreens", RequestScreens);
+Vue.component("NavbarRequestMobile", NavbarRequestMobile);
 
 Vue.use("vue-form-renderer", VueFormRenderer);
 window.debounce = debounce;
