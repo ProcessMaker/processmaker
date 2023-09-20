@@ -102,7 +102,7 @@
             },
             "enterprise": {
                 "connector-docusign": "1.4.0",
-                "connector-idp": "1.4.0",
+                "connector-idp": "1.4.2",
                 "connector-pdf-print": "1.13.1",
                 "connector-send-email": "1.21.3",
                 "connector-slack": "1.5.0",
@@ -111,7 +111,7 @@
                 "package-advanced-user-manager": "1.6.0",
                 "package-ai": "1.1.3",
                 "package-analytics-reporting": "1.1.0",
-                "package-auth": "1.13.0",
+                "package-auth": "1.13.1",
                 "package-collections": "2.11.4",
                 "package-comments": "1.7.0",
                 "package-conversational-forms": "1.4.1",
