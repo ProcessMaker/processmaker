@@ -230,6 +230,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('can:view-settings');
     Route::get('settings/groups', [SettingController::class, 'groups'])->name('settings.groups')->middleware('can:view-settings');
     Route::post('settings/import', [SettingController::class, 'import'])->name('settings.import')->middleware('can:update-settings');
+    Route::delete('settings/{setting}', [SettingController::class, 'destroy'])->name('settings.destroy')->middleware('can:update-settings');
     Route::put('settings/{setting}', [SettingController::class, 'update'])->name('settings.update')->middleware('can:update-settings');
     Route::get('settings/group/{group}/buttons', [SettingController::class, 'buttons'])->name('settings.buttons')->middleware('can:view-settings')->where('group', '[A-Za-z0-9 -_]+');
     Route::post('settings/upload-file', [SettingController::class, 'upload'])->name('settings.upload-file')->middleware('can:update-settings');
