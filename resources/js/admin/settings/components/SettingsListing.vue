@@ -112,6 +112,7 @@
             </span>
           </template>
         </template>
+        </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
           <div class="h-100 w-100 text-center">
