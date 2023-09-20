@@ -55,7 +55,7 @@ export default {
       filteredAssetGroups: null,
       actions: [ 
         {label: "Update", value: 'update'},
-        {label: "Keep Previous", value: 'keep'},
+        {label: "Keep Previous", value: 'discard'},
         {label: "Duplicate", value: 'copy'},
       ],
     };

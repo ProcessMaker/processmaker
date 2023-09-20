@@ -45,26 +45,20 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { TemplateAssetTable, AssetConfirmationModal },
-  filters: {
-    titleCase: function (value) {
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    }
-  },
   mixins: [uniqIdsMixin],
-  props: ['assets', 'name'],
+  props: ['assets', 'name', 'responseId', 'request'],
   data() {
     return {
       templateAssets: [],
       templateName: "",
       updatedAssets: [],
+      assetType: "update-assets",
     };
   },
   computed: {
   },
   watch: {
     assets() {
-      console.log('HIT HERE');
       this.templateAssets = this.assets;
     },
   },
@@ -83,29 +77,26 @@ export default {
       this.$refs.assetConfirmationModal.show();
     },
     submitAssets() {
-      console.log('hit submitAssets');
       let formData = new FormData();
-        console.log('UPDATED ASSETS', this.updatedAssets);
-        // formData.append(this.templateAssets);
-        // console.log('this.assetType', this.assetType);
-        // console.log('this.assetId', this.assetId);
-        // console.log('formData', formData);
-        // ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.assetId, formData)
-        // .then(response => {
-        //   ProcessMaker.alert(this.$t("PM Block successfully created"), "success");
-        //   window.setTimeout(() => {
-        //     window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
-        //   }, 1000);
-        // }).catch(error => {
-        //   this.errors = error.response?.data;
-        //   this.customModalButtons[1].disabled = false;
-        //   if (this.errors.hasOwnProperty('errors')) {
-        //     this.errors = this.errors?.errors;
-        //   } else {
-        //     const message = error.response?.data?.error;
-        //     ProcessMaker.alert(this.$t(message), "danger");
-        //   }
-        // });
+        formData.append("id", this.$root.responseId);
+        formData.append("request", JSON.stringify(this.request));
+        formData.append("existingAssets", JSON.stringify(this.updatedAssets));
+        ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
+        .then(response => {
+          ProcessMaker.alert(this.$t("Process successfully created from template"), "success");
+          // window.setTimeout(() => {
+          //   window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
+          // }, 1000);
+        }).catch(error => {
+          this.errors = error.response?.data;
+          // this.customModalButtons[1].disabled = false;
+          // if (this.errors.hasOwnProperty('errors')) {
+          //   this.errors = this.errors?.errors;
+          // } else {
+          //   const message = error.response?.data?.error;
+          //   ProcessMaker.alert(this.$t(message), "danger");
+          // }
+        });
     },
     title() {
       return this.$t("Use Template: ") + this.templateName;
@@ -126,8 +117,11 @@ export default {
       return this.$t("A new blank asset will be created for the new process, without modifying the previously existing one.");
     },
     updateAssets(assets) {
-      console.log('assets', assets);
-      this.updatedAssets = assets;
+      const formattedAssets = assets.reduce((accumulator, group) => {
+        return accumulator.concat(group.items);
+      }, []);
+
+      this.updatedAssets = formattedAssets;
     },
   },
 };

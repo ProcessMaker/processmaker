@@ -9,10 +9,14 @@ new Vue({
     return {
       assets: [],
       name: "",
+      responseId: null,
+      request: {},
     };
   },
   mounted() {
     this.name = window.history.state.name;
     this.assets = JSON.parse(window.history.state.assets);
+    this.responseId = window.history.state.responseId;
+    this.request = window.history.state.request;
   }
 });
