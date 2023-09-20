@@ -12,9 +12,21 @@
           data-target="#fileModal"
           @click="modalData(file)"
         >
-          <div class="d-flex justify-content-start align-items-center">
-            <i class="fas fa-file text-primary mr-2" />
-            <span>{{ file.file_name }}</span>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-start align-items-center">
+              <i class="fas fa-file text-primary mr-2" />
+              <span>{{ file.file_name }}</span>
+            </div>
+            <avatar-image
+              id="avatarMenu"
+              ref="userMenuButton"
+              class-container="d-flex"
+              size="30"
+              class-image="m-0"
+              :input-data="file.createdBy"
+              hide-name="true"
+              popover
+            />
           </div>
         </div>
       </div>
@@ -25,10 +37,9 @@
       class="modal fade"
       role="dialog"
       aria-labelledby="fileModalLabel"
-      style="display: none;"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-bottom w-100 mx-0 mb-0">
+      <div class="modal-dialog m-0">
         <div class="modal-content">
           <div
             class="d-flex modal-header align-items-center py-2"
@@ -52,7 +63,7 @@
               <tbody>
                 <tr>
                   <td aria-colindex="1" role="cell">
-                    <span class="font-weight-bold"> {{ $t("Name of the File") }} </span>
+                    <span class="font-weight-bold"> {{ $t("Name of the File") }}: </span>
                   </td>
                   <td aria-colindex="2" role="cell">
                     {{ fileName }}
@@ -60,17 +71,41 @@
                 </tr>
                 <tr>
                   <td aria-colindex="1" role="cell">
-                    <span class="font-weight-bold"> {{ $t("Uploaded") }} </span>
+                    <span class="font-weight-bold"> {{ $t("Uploaded") }}: </span>
                   </td>
                   <td aria-colindex="2" role="cell">
-                    {{ uploadDate }}
+                    {{ moment(uploadDate).format()}}
+                  </td>
+                </tr>
+                <tr>
+                  <td aria-colindex="1" role="cell">
+                    <span class="font-weight-bold"> {{ $t("Uploaded By") }}: </span>
+                  </td>
+                  <td aria-colindex="2" role="cell">
+                    <avatar-image
+                      id="avatarMenu"
+                      ref="userMenuButton"
+                      class-container="d-flex"
+                      size="30"
+                      class-image="m-0"
+                      :input-data="information"
+                      hide-name="true"
+                      popover
+                    />
                   </td>
                 </tr>
               </tbody>
             </table>
-            <button type="button" class="btn btn-outline-primary">
-              <i class="" />
-            </button>
+            <div class="w-100 py-2 px-3">
+              <button
+                type="button"
+                class="btn btn-outline-primary w-100"
+                @click="fileUrl(fileId)"
+              >
+                <i class="fas fa-download mr-2" />
+                {{ $t("Download") }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -79,6 +114,10 @@
 </template>
 
 <script>
+import AvatarImage from "../../components/AvatarImage.vue";
+
+Vue.component("AvatarImage", AvatarImage);
+
 export default {
   props: ["files", "request"],
   data() {
@@ -86,17 +125,63 @@ export default {
       arrayFiles: [],
       fileName: "",
       uploadDate: "",
+      fileId: "",
+      userInformation: [],
+      information: [],
     };
   },
   mounted() {
-    this.arrayFiles = JSON.parse(this.files);
+    this.createNewFilesArray(JSON.parse(this.files));
     console.log("xd", this.arrayFiles);
   },
   methods: {
+    createNewFilesArray(files) {
+      files.forEach((file) => {
+        ProcessMaker.apiClient.get(`/users/${file.custom_properties.createdBy}`).then((response) => {
+          if (response.data) {
+            this.arrayFiles.push({
+              id: file.id,
+              created_at: file.created_at,
+              file_name: file.file_name,
+              createdBy: [
+                {
+                  id: response.data.id,
+                  tooltip: response.data.fullname,
+                  src: response.data.avatar
+                    ? `${response.data.avatar}?${new Date().getTime()}`
+                    : response.data.avatar,
+                  title: "",
+                  initials:
+                  response.data.firstname && response.data.lastname
+                    ? response.data.firstname.match(/./u)[0] + response.data.lastname.match(/./u)[0]
+                    : "",
+                },
+              ],
+            });
+          }
+        })
+          .catch((error) => {
+            user = [];
+          });
+      });
+    },
     modalData(file) {
       this.fileName = file.file_name;
       this.uploadDate = file.created_at;
+      this.fileId = file.id;
+      this.information = file.createdBy;
+    },
+    fileUrl(file) {
+      window.location = "/request/".concat(this.request.id, "/files/", file);
     },
   },
 };
 </script>
+
+<style>
+  .modal-dialog {
+    position: absolute;
+    bottom: 0;
+    min-width: 100%;
+  }
+</style>
