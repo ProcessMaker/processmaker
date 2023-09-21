@@ -142,6 +142,9 @@ export default {
     this.createNewFilesArray(JSON.parse(this.files));
   },
   methods: {
+    /*
+    * Fixing the files array to get the user
+    */
     createNewFilesArray(files) {
       files.forEach((file) => {
         ProcessMaker.apiClient.get(`/users/${file.custom_properties.createdBy}`).then((response) => {
@@ -172,12 +175,18 @@ export default {
           });
       });
     },
+    /*
+    * Updates the data displayed in the modal
+    */
     modalData(file) {
       this.fileName = file.file_name;
       this.uploadDate = file.created_at;
       this.fileId = file.id;
       this.information = file.createdBy;
     },
+    /*
+    * Return url to download file
+    */
     fileUrl(file) {
       window.location = `/request/${this.request.id}/files/${file}`;
     },
