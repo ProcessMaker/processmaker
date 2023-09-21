@@ -28,31 +28,6 @@ export default {
           direction: "asc",
         },
       ],
-      fields: [
-        {
-          name: "__slot:ids",
-          title: "#",
-          field: "id",
-          sortField: "id",
-        },
-        {
-          title: () => this.$t("TASK"),
-          name: "__slot:name",
-          field: "element_name",
-          sortField: "element_name",
-        },
-        {
-          title: () => this.$t("ASSIGNED"),
-          name: "__slot:participants",
-          field: "participants",
-          sortField: "user.lastname",
-        },
-        {
-          title: () => this.$t("DUE"),
-          name: "due_at",
-          sortField: "due_at",
-        },
-      ],
     };
   },
   methods: {
