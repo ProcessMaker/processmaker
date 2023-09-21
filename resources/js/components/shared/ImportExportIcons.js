@@ -4,6 +4,7 @@ const ICONS = {
   Screen: "fa-file-alt",
   ScreenCategory: "fa-file-alt",
   Script: "fa-code",
+  ScriptCategory: "fa-code",
   Process: "fa-play-circle",
   ProcessCategory: "fa-play-circle",
   Category: "",
