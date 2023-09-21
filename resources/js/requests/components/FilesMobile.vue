@@ -57,9 +57,17 @@
           </div>
           <div class="modal-body" style="padding: 0 !important;">
             <table
+              title="fileDetails"
               role="table"
               class="table b-table m-0"
             >
+              <!-- Need header for Sonar problemas-->
+              <thead>
+                <tr>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
               <tbody>
                 <tr>
                   <td aria-colindex="1" role="cell">
