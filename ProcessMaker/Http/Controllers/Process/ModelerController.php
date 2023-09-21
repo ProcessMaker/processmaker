@@ -9,6 +9,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
@@ -34,6 +35,9 @@ class ModelerController extends Controller
          * can customize the modeler controls list.
          */
         event(new ModelerStarting($manager));
+
+        // For create subprocess modal in modeler
+        $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // For create screen modal in modeler
         $screenTypes = [];
@@ -62,6 +66,7 @@ class ModelerController extends Controller
             'isDraft' => $draft !== null,
             'screenTypes' => $screenTypes,
             'scriptExecutors' => $scriptExecutors,
+            'countProcessCategories' => $countProcessCategories,
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
