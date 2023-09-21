@@ -202,7 +202,7 @@ export default {
         let putData = {
           name: this.name,
           description: this.description,
-          description: this.version,
+          version: this.version,
           user_id: this.currentUserId,
           mode: this.saveAssetsMode,
           process_id: this.assetId,
