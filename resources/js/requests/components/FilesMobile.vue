@@ -39,7 +39,7 @@
       aria-labelledby="fileModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog m-0">
+      <div class="modal-dialog custo m-0">
         <div class="modal-content">
           <div
             class="d-flex modal-header align-items-center py-2"
@@ -186,7 +186,7 @@ export default {
 </script>
 
 <style>
-  .modal-dialog {
+  .modal-dialog .custom {
     position: absolute;
     bottom: 0;
     min-width: 100%;
