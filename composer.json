@@ -138,6 +138,9 @@
                 "package-webentry": "2.16.5",
                 "packages": "^0"
             },
+            "microservices": {
+                "pmai": "fall-2023"
+            },
             "release": "Fall 2023"
         }
     },
