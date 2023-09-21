@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
-class AddMultipleToProcessRequestLocks extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -32,4 +31,4 @@ class AddMultipleToProcessRequestLocks extends Migration
             $table->dropColumn('request_ids');
         });
     }
-}
+};

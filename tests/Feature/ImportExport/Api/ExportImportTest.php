@@ -166,7 +166,7 @@ class ExportImportTest extends TestCase
     {
         $content = file_get_contents(base_path('tests/Feature/ImportExport/fixtures/old-process-payload-41.json'));
         // Run old process importer job
-        $response = ImportProcess::dispatchNow($content);
+        $response = (new ImportProcess($content))->handle();
         $process = Process::where('id', $response->process->id)->firstOrFail();
 
         $this->assertEquals('old_process_test_41', $process->name);

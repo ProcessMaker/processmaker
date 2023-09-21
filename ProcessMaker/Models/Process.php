@@ -5,9 +5,11 @@ namespace ProcessMaker\Models;
 use DOMElement;
 use Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
@@ -40,6 +42,7 @@ use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\ProcessTrait;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -149,6 +152,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     use HasSelfServiceTasks;
     use ProcessTrait;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ProcessCategory::class;
 
@@ -235,6 +239,19 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id')->withDefault();
+    }
+
+    /**
+     * Get the associated projects
+     */
+    public function projects()
+    {
+        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+            'project_assets',
+            'project_id',
+            'asset_id'
+        )->wherePivot('asset_type', static::class)
+            ->withTimestamps();
     }
 
     /**
@@ -646,8 +663,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
+        $assignedUsers = $usersVariable ? Arr::get($instanceData, $usersVariable) : [];
+        $assignedGroups = $groupsVariable ? Arr::get($instanceData, $groupsVariable) : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];

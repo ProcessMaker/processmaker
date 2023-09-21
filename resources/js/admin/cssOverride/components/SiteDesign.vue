@@ -140,7 +140,7 @@
       </b-form-group>
       
       <br>
-      <div class="d-flex">
+      <div class="d-flex group-button">
           <b-button variant="outline-danger" :disabled="isLoading" @click="onReset">
               <i class="fas fa-undo"></i> {{ $t('Reset') }}
           </b-button>
@@ -555,4 +555,7 @@ export default {
 </script>
 
 <style>
+.group-button {
+  padding-bottom: 50px;
+}
 </style>

@@ -265,6 +265,7 @@
           submitting: false,
           userIsAdmin,
           userIsProcessManager,
+          showTree: false,
         },
         watch: {
           task: {

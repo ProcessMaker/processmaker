@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Setting;
 
-class UpdateUiInSettingsTable extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -140,4 +139,4 @@ class UpdateUiInSettingsTable extends Migration
             'ui' => '{"props":{"variant":"primary","target":"_blank","href":"/admin/ldap-logs"}}',
         ]);
     }
-}
+};

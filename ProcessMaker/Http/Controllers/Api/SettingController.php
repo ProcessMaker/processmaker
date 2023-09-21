@@ -217,12 +217,19 @@ class SettingController extends Controller
         return response([], 204);
     }
 
+    public function destroy(Setting $setting)
+    {
+        $setting->delete();
+
+        return response([], 204);
+    }
+
     public function import(Request $request)
     {
         $content = $request->file('file')->get();
 
         try {
-            $imported = ImportSettings::dispatchNow($content);
+            $imported = (new ImportSettings($content))->handle();
         } catch (Throwable $e) {
             return response([
                 'error' => $e->getMessage(),

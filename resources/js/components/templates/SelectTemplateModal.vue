@@ -24,7 +24,14 @@
         @ai-process-button-clicked="createAiProcess()"
         :package-ai="packageAi" />
     </modal>
-    <create-process-modal ref="create-process-modal" :blank-template="blankTemplate" :count-categories="countCategories" :selected-template="selectedTemplate" :template-data="templateData" @resetModal="resetModal()"/>
+    <create-process-modal ref="create-process-modal" 
+      :blank-template="blankTemplate" 
+      :count-categories="countCategories" 
+      :selected-template="selectedTemplate" 
+      :template-data="templateData" 
+      :isProjectsInstalled="isProjectsInstalled"
+      @resetModal="resetModal()"
+      />
   </div>
 </template>
 
@@ -35,7 +42,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled'],
     data: function() {
       return {
         title: '',

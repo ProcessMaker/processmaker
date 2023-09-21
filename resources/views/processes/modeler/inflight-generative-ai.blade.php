@@ -31,13 +31,50 @@
       xml: @json($bpmn),
       enableProcessMapping: false,
     }
+  </script>
 
-    window.ProcessMaker.EventBus.$on('modeler-start', ({
-      loadXML
-    }) => {
-      loadXML(window.ProcessMaker.modeler.xml);
+
+  <script>
+    app = new Vue({
+      el: '#modeler-app',
+      data() {
+        return {
+          iframeLoaded: false,
+          modelerStarted: false,
+          loadModel: null
+        }
+      },
+      mounted() {
+        window.ProcessMaker.EventBus.$on('modeler-start', async ({ loadXML }) => {
+          this.loadModel = loadXML;
+          this.modelerStarted = true;
+        });
+        window.ProcessMaker.EventBus.$on('iframe-loaded', () => {
+          this.iframeLoaded = true;
+        });
+      },
+      watch: {
+        modelerStarted(value) {
+          if (value && this.iframeLoaded) {
+            this.load();
+          }
+        },
+        iframeLoaded(value) {
+          if (value && this.modelerStarted) {
+            this.load();
+          }
+        }
+      },
+      methods: {
+        async load() {
+          await this.loadModel(window.ProcessMaker.modeler.xml);
+          window.ProcessMaker.EventBus.$emit('parsed');
+        }
+      }
     });
   </script>
+
+
   @foreach ($manager->getScripts() as $script)
     <script src="{{ $script }}"></script>
   @endforeach

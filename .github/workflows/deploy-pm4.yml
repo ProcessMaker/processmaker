@@ -36,6 +36,7 @@ env:
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
   run_number: ${{ github.run_number }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -70,9 +71,11 @@ jobs:
         if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
         run: |
           cd $run_number/pm4-stm-docker
-          docker-compose build --no-cache base
+          docker-compose build --no-cache base-php82
+          cd pm4-stm-docker
+          docker-compose build --no-cache base-php82
           docker-compose build --no-cache cache
-          docker push ${REPOSITORY}:ci-base
+          docker push ${REPOSITORY}:ci-base-php82
           docker push ${REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |

@@ -14,9 +14,13 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
     use FormatSecurityLogChanges;
 
     private array $data;
+
     private array $changes;
+
     private array $original;
+
     private bool $reset;
+
     private string $defaultVariables = '[
         {"id":"$primary","value":"#0872C2","title":"Primary"},
         {"id":"$secondary","value":"#6C757D","title":"Secondary"},
@@ -27,6 +31,7 @@ class CustomizeUiUpdated implements SecurityLogEventInterface
         {"id":"$dark","value":"#000000","title":"Dark"},
         {"id":"$light","value":"#FFFFFF","title":"Light"}
     ]';
+
     private string $defaultFont = '{"id":"\'Open Sans\'","title":"Default Font"}';
 
     /**

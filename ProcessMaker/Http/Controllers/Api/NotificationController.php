@@ -75,19 +75,7 @@ class NotificationController extends Controller
         // This creates notifications for overdue tasks
         $this->notifyOverdueTasks();
 
-        $query = Notification::select(
-            'id',
-            'read_at',
-            'created_at',
-            'updated_at',
-            'data->type as type',
-            'data->name as name',
-            'data->message as message',
-            'data->processName as processName',
-            'data->userName as userName',
-            'data->request_id as request_id',
-            'url')
-            ->where('notifiable_type', User::class)
+        $query = Notification::where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
@@ -122,7 +110,7 @@ class NotificationController extends Controller
                 $request->input('order_direction', 'DESC')
             )->paginate($request->input('per_page', 10));
 
-        return new ApiCollection($response);
+        return NotificationResource::collection($response);
     }
 
     /**
@@ -152,7 +140,7 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url'] ?? null]);
+        $request->merge(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules());
         $notification = new Notification();
@@ -233,7 +221,7 @@ class NotificationController extends Controller
     public function update(Notification $notification, Request $request)
     {
         $data = json_decode($request->data, true);
-        $request->request->add(['url' => $data['url'] ?? null]);
+        $request->merge(['url' => $data['url'] ?? null]);
 
         $request->validate(Notification::rules($notification));
         $notification->fill($request->input());
@@ -316,6 +304,8 @@ class NotificationController extends Controller
         $routes = $request->input('routes');
 
         Notification::query()
+            ->where('notifiable_id', $request->user()->id)
+            ->where('notifiable_type', User::class)
             ->whereIn('id', $messageIds)
             ->orWhereIn('url', $routes)
             ->update(['read_at' => Carbon::now()]);
@@ -363,11 +353,15 @@ class NotificationController extends Controller
         $routes = $request->input('routes');
 
         $updated = Notification::query()
+            ->where('notifiable_id', $request->user()->id)
+            ->where('notifiable_type', User::class)
             ->whereIn('id', $messageIds)
             ->orWhereIn('url', $routes)
             ->get();
 
         Notification::query()
+            ->where('notifiable_id', $request->user()->id)
+            ->where('notifiable_type', User::class)
             ->whereIn('id', $messageIds)
             ->orWhereIn('url', $routes)
             ->update(['read_at' => null]);

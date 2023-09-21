@@ -72,9 +72,11 @@ trait Indexable
                 return 'process_request_tokens';
                 break;
             case 'collection':
-                $collectionId = $meta->collection_id;
+                if ($meta && isset($meta->collection_id)) {
+                    $collectionId = $meta->collection_id;
 
-                return 'collection_' . $collectionId;
+                    return 'collection_' . $collectionId;
+                }
                 break;
         }
     }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSelfServiceTasksToProcesses extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -35,4 +34,4 @@ class AddSelfServiceTasksToProcesses extends Migration
             $table->dropColumn(['self_service_tasks']);
         });
     }
-}
+};

@@ -48,6 +48,8 @@ abstract class ExporterBase implements ExporterInterface
 
     public $discard = false;
 
+    public static $forceUpdate = false;
+
     // public $ignoreExplicitDiscard = false;
 
     public static $fallbackMatchColumn = null;
