@@ -164,6 +164,7 @@
         return {
           canViewComments: @json($canViewComments),
           request: @json($request),
+          files: @json($files),
           canCancel: @json($canCancel),
           canManuallyComplete: @json($canManuallyComplete),
           canRetry: @json($canRetry),

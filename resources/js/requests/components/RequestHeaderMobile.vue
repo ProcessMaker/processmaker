@@ -59,7 +59,7 @@
       </tbody>
     </table>
     <ul class="list-group list-group-flush w-100">
-      <template v-if="canCancel == true && request.status === 'ACTIVE'">
+      <template v-if="canCancel && request.status === 'ACTIVE'">
         <li class="list-group-item">
           <button
             type="button"
