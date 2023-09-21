@@ -57,15 +57,15 @@
           </div>
           <div class="modal-body" style="padding: 0 !important;">
             <table
-              title="fileDetails"
-              role="table"
               class="table b-table m-0"
+              aria-label="fileDetails"
+              role="table"
             >
               <!-- Need header for Sonar problemas-->
               <thead>
                 <tr>
-                  <th></th>
-                  <th></th>
+                  <th class="p-0 m-0 border-0"></th>
+                  <th class="p-0 m-0 border-0"></th>
                 </tr>
               </thead>
               <tbody>
