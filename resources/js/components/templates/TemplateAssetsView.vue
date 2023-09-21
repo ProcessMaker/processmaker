@@ -100,14 +100,8 @@ export default {
           this.postComplete = true;
           this.$refs.assetConfirmationModal.show();
         }).catch(error => {
-          this.errors = error.response?.data;
-          // this.customModalButtons[1].disabled = false;
-          // if (this.errors.hasOwnProperty('errors')) {
-          //   this.errors = this.errors?.errors;
-          // } else {
-          //   const message = error.response?.data?.error;
-          //   ProcessMaker.alert(this.$t(message), "danger");
-          // }
+          const message = error.response?.data?.error;
+          ProcessMaker.alert(this.$t(message), "danger");
         });
     },
     title() {
