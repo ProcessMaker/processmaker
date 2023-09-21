@@ -148,6 +148,9 @@ export default {
     participants() {
       return this.request.participants;
     },
+    /*
+    * Get title for header by status
+    */
     statusLabel() {
       const status = {
         ACTIVE: "In Progress",
@@ -158,6 +161,9 @@ export default {
 
       return status[this.request.status.toUpperCase()];
     },
+    /*
+    * Get class for header by status
+    */
     classStatusCard() {
       const header = {
         ACTIVE: "bg-success",
@@ -167,9 +173,15 @@ export default {
       };
       return `card-header border-0 text-capitalize text-white  ${header[this.request.status.toUpperCase()]}`;
     },
+    /*
+    * Get user requester
+    */
     requestBy() {
       return [this.request.user];
     },
+    /*
+    * Get end date
+    */
     statusDate() {
       const status = {
         ACTIVE: "N/A",
@@ -180,6 +192,9 @@ export default {
 
       return status[this.request.status.toUpperCase()];
     },
+    /*
+    * Get status date label
+    */
     statusDateLabel() {
       const status = {
         ACTIVE: "End",
@@ -190,14 +205,17 @@ export default {
 
       return status[this.request.status.toUpperCase()];
     },
+    /*
+    * Get start date
+    */
     startDate() {
       return this.request.created_at;
     },
   },
-  mounted() {
-    console.log(this.request, this.canCancel, this.canManuallyComplete, this.canRetry, this.eligibleRollbackTask, this.errorTask);
-  },
   methods: {
+    /*
+    * Get class by status
+    */
     requestStatusClass(status) {
       const statusLower = status.toLowerCase();
       const bubbleColor = {
@@ -210,8 +228,11 @@ export default {
       };
       return `fas fa-circle ${bubbleColor[statusLower]} small`;
     },
+    /*
+    * Cancel request
+    */
     okCancel() {
-      //single click
+      // single click
       if (this.disabled) {
         return;
       }
@@ -225,6 +246,9 @@ export default {
         this.disabled = false;
       });
     },
+    /*
+    * Ask of cancel request
+    */
     onCancel() {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
@@ -235,6 +259,9 @@ export default {
         },
       );
     },
+    /*
+    * Complete request manually
+    */
     completeRequest() {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
@@ -250,6 +277,9 @@ export default {
         },
       );
     },
+    /*
+    * Retry request
+    */
     retryRequest() {
       const apiRequest = () => {
         this.retryDisabled = true;
