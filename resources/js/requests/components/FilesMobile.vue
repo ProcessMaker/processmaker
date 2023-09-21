@@ -61,7 +61,7 @@
               aria-label="fileDetails"
               role="table"
             >
-              <!-- Need header for Sonar problemas-->
+              <!-- Need header for Sonar problems, it is not needed in the view-->
               <thead>
                 <tr>
                   <th class="p-0 m-0 border-0"></th>
