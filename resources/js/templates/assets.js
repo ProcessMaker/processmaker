@@ -18,5 +18,9 @@ new Vue({
     this.assets = JSON.parse(window.history.state.assets);
     this.responseId = window.history.state.responseId;
     this.request = window.history.state.request;
-  }
+
+    window.addEventListener('popstate', function(event) {
+      window.location.href = '/processes';
+    });
+  },
 });

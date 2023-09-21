@@ -218,7 +218,14 @@
             const assets = JSON.stringify(response.data.existingAssets);
             const responseId = response.data.id;
             const request = JSON.stringify(response.data.request);
-            window.history.pushState({assets: assets, name: this.templateData.name, responseId: responseId, request: request}, "", '/template/assets');
+            window.history.pushState({
+              assets: assets,
+              name: this.templateData.name,
+              responseId: responseId,
+              request: request},
+              "",
+              '/template/assets'
+            );
             window.location = '/template/assets';
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
