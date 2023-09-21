@@ -15,7 +15,7 @@
         <b-tr class="card-header border-left border-right">
           <b-th class="align-middle" colspan="2">
             <div>
-              <i class="fas fa-file-alt d-inline align-middle mr-1" />
+              <i class="d-inline align-middle mr-1 fas" :class="group.icon"/>
               <h5 class="d-inline align-middle">{{ formatName(group.type) }}</h5>
             </div>
           </b-th>
@@ -47,6 +47,7 @@
 </template>
 
 <script>
+import ImportExportIcons from "../../components/shared/ImportExportIcons";
 
 export default {
   props: ["assets"],
@@ -99,7 +100,15 @@ export default {
         }
       });
 
-      return groupedItems;
+      const icons = ImportExportIcons.ICONS;
+      const groupedItemsWithIcons = groupedItems.map((item) => {
+        const newItem = { ...item };
+        const iconKey = icons[item.type];
+        newItem.icon = iconKey;
+        return newItem;
+      });
+
+      return groupedItemsWithIcons;
     },
     formatName(value) {
       return value.replace(/([a-z])([A-Z])/g, '$1 $2');
