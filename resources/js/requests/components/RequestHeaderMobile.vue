@@ -20,8 +20,8 @@
                 {{ moment(startDate).format() }}
               </p>
               <p class="small m-0">
-                {{ $t('End') }}:
-                {{ moment(statusDate).format() }}
+                {{ $t(statusDateLabel) }}:
+                {{ statusDate }}
               </p>
             </div>
           </th>
@@ -137,6 +137,7 @@ export default {
       canRetry: authValues.canRetry,
       eligibleRollbackTask: authValues.eligibleRollbackTask,
       errorTask: authValues.errorTask,
+      disabled: false,
     };
   },
   computed: {
@@ -171,10 +172,20 @@ export default {
     },
     statusDate() {
       const status = {
-        ACTIVE: this.request.created_at,
-        COMPLETED: this.request.completed_at,
-        CANCELED: this.request.updated_at,
-        ERROR: this.request.updated_at,
+        ACTIVE: "N/A",
+        COMPLETED: this.moment(this.request.completed_at).format(),
+        CANCELED: this.moment(this.request.updated_at).format(),
+        ERROR: this.moment(this.request.updated_at).format(),
+      };
+
+      return status[this.request.status.toUpperCase()];
+    },
+    statusDateLabel() {
+      const status = {
+        ACTIVE: "End",
+        COMPLETED: "End",
+        CANCELED: "Canceled",
+        ERROR: "Error",
       };
 
       return status[this.request.status.toUpperCase()];
@@ -198,6 +209,21 @@ export default {
         completed: "text-primary",
       };
       return `fas fa-circle ${bubbleColor[statusLower]} small`;
+    },
+    okCancel() {
+      //single click
+      if (this.disabled) {
+        return;
+      }
+      this.disabled = true;
+      ProcessMaker.apiClient.put(`requests/${this.request.id}`, {
+        status: 'CANCELED',
+      }).then(response => {
+        ProcessMaker.alert(this.$t('The request was canceled.'), 'success');
+        window.location.reload();
+      }).catch(error => {
+        this.disabled = false;
+      });
     },
     onCancel() {
       ProcessMaker.confirmModal(
