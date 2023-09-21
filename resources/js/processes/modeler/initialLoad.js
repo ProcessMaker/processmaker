@@ -467,20 +467,20 @@ ProcessMaker.EventBus.$on(
 
 ProcessMaker.EventBus.$on(
   "modeler-init",
-  (evento) => {
-    evento.registerPreview({
+  (event) => {
+    event.registerPreview({
       url:'/designer/screens/preview',
       receivingParams: ['screenRef'],
       matcher: (nodeData) => {
-        return nodeData.$type && nodeData.$type === 'bpmn:Task'
+        return nodeData?.$type === 'bpmn:Task'
           && nodeData.screenRef;
       }
     });
-    evento.registerPreview({
+    event.registerPreview({
       url:'/designer/scripts/preview',
       receivingParams: ['scriptRef'],
       matcher: (nodeData) => {
-        return nodeData.$type && nodeData.$type === 'bpmn:ScriptTask'
+        return nodeData.$type === 'bpmn:ScriptTask'
           && nodeData.scriptRef;
       }
     });
