@@ -132,7 +132,6 @@ export default {
   },
   mounted() {
     this.createNewFilesArray(JSON.parse(this.files));
-    console.log("xd", this.arrayFiles);
   },
   methods: {
     createNewFilesArray(files) {
@@ -172,7 +171,7 @@ export default {
       this.information = file.createdBy;
     },
     fileUrl(file) {
-      window.location = "/request/".concat(this.request.id, "/files/", file);
+      window.location = `/request/${this.request.id}/files/${file}`;
     },
   },
 };

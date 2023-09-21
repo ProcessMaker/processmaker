@@ -70,7 +70,12 @@
           role="tabpanel"
           aria-labelledby="tasks-tab"
         >
-          TASKS HERE
+          <request-detail-mobile
+            ref="pending"
+            :process-request-id="request.id"
+            :is-process-manager="{{ $isProcessManager ? 'true' : 'false' }}"
+            :is-admin="{{ Auth::user()->is_administrator ? 'true' : 'false' }}">
+          </request-detail-mobile>
         </div>
         <div 
           id="summary"
