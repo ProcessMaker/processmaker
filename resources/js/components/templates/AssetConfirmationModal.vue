@@ -1,45 +1,21 @@
 <template>
     <div>
       <modal
-        v-if="!loading"
         id="assetConfirmation"
         size="md"
-        class="proceed-modal"
         :title="title"
+        :titleIcon="titleIcon"
         :setCustomButtons="true"
         :customButtons="customModalButtons"
-        @onSubmit="onSubmit"
+        @goToModeler="goToModeler"
         @hidden="close"
       >
         <div>
-          <p class="mt-1">Are you sure you want to proceed with your selection?</p>
+          <p class="mt-1">
+            The process <span class="font-weight-bold">{{ processName }}</span> was created successfully from the template <span class="font-weight-bold">{{ templateName }}</span>.
+          </p>
         </div>
-      </modal>
-      <modal
-        v-if="loading"
-        id="assetConfirmation"
-        size="md"
-        :hide-header="true"
-        :hide-footer="true"
-      >
-        <div class="text-center py-3">
-          <span class="d-block mb-4"><h4>Applying Changes</h4></span>
-          <span class="d-block mb-4"><p>Some assets can take some time to be ready</p></span>
-          <b-spinner class="text-center" variant="primary" label="Loading..."></b-spinner>
-        </div>
-      </modal>
-      <modal
-        v-if="success"
-        id="assetConfirmation"
-        size="md"
-        :title="title"
-        :setCustomButtons="true"
-        :customButtons="customModalButtons"
-        @ok.prevent="onSubmit"
-      >
-        <div>
-          <p class="mt-1">The process [[Name of Process]] was created successfully from the template {{ templateName }}.</p>
-        </div>
+
       </modal>
     </div>
   </template>
@@ -49,26 +25,20 @@
     
   export default {
     components: { Modal },
-    props: ["templateName"],
+    props: ["templateName", "submitResponse", "processName"],
     data: function() {
       return {
-        loading: false,
-        success: false,
+        postComplete: false,
         customModalButtons: [
-          {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-          {"content": "Yes", "action": "onSubmit", "variant": "primary", "disabled": false, "hidden": false},
+          {"content": "OK", "action": "goToModeler", "variant": "primary", "size": "md"},
         ],
+        titleIcon: "fas fa-check-circle text-success",
+        processId: null,
       }
     },
     computed: {
       title() {
-        if (!this.loading) {
-          return this.$t("Confirmation");
-        } else if (this.success) {
-          return this.$t("Process Created Successfully");
-        }
-  
-        return;
+        return this.$t("Process Created Successfully");
       },
     },
     methods: {
@@ -78,17 +48,11 @@
       close() {
         this.$bvModal.hide("assetConfirmation");
       },
-      onSubmit() {
-        //post to backend
-        //this.loading = true
-        //when done, this.loading = false, this.success = true;
-        console.log("submit");
-        this.loading = true;
-        this.$emit("submitAssets");
-      },
+      goToModeler() {
+        this.processId = this.submitResponse.processId;
+        window.location = "/modeler/" + this.processId;
+      }
     },
-    mounted() {
-    }
   };
   </script>
   
