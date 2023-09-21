@@ -27,10 +27,18 @@
         </button>
       </div>
     </div>
+    <asset-loading-modal
+      ref="assetLoadingModal"
+      :templateName="name"
+      @submitAssets="submitAssets"
+    >
+    </asset-loading-modal>
     <asset-confirmation-modal
       ref="assetConfirmationModal"
       :templateName="name"
-      @submitAssets="submitAssets"
+      :submitResponse="submitResponse"
+      :postComplete="postComplete"
+      :processName="processName"
     >
     </asset-confirmation-modal>
   </div>
@@ -38,13 +46,14 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import AssetLoadingModal from "./AssetLoadingModal.vue";
 import AssetConfirmationModal from "./AssetConfirmationModal.vue";
 import TemplateAssetTable from "./TemplateAssetTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { TemplateAssetTable, AssetConfirmationModal },
+  components: { TemplateAssetTable, AssetConfirmationModal, AssetLoadingModal },
   mixins: [uniqIdsMixin],
   props: ['assets', 'name', 'responseId', 'request'],
   data() {
@@ -53,6 +62,9 @@ export default {
       templateName: "",
       updatedAssets: [],
       assetType: "update-assets",
+      submitResponse: {},
+      postComplete: false,
+      processName: "",
     };
   },
   computed: {
@@ -70,23 +82,23 @@ export default {
     reload() {
       window.location.reload();
     },
-    onCancel() {
-      window.location = "/processes";
-    },
     onContinue() {
-      this.$refs.assetConfirmationModal.show();
+      this.$refs.assetLoadingModal.show();
     },
     submitAssets() {
       let formData = new FormData();
-        formData.append("id", this.$root.responseId);
-        formData.append("request", this.request);
-        formData.append("existingAssets", JSON.stringify(this.updatedAssets));
-        ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
+      formData.append("id", this.$root.responseId);
+      formData.append("request", this.request);
+      formData.append("existingAssets", JSON.stringify(this.updatedAssets));
+      ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
         .then(response => {
-          ProcessMaker.alert(this.$t("Process successfully created from template"), "success");
-          // window.setTimeout(() => {
-          //   window.location.href = `/designer/pm-blocks/${response.data.id}/edit/`;
-          // }, 1000);
+          this.$nextTick(() => {
+            this.$refs.assetLoadingModal.close();
+          });
+          this.processName = response.data.processName;
+          this.submitResponse = response.data;
+          this.postComplete = true;
+          this.$refs.assetConfirmationModal.show();
         }).catch(error => {
           this.errors = error.response?.data;
           // this.customModalButtons[1].disabled = false;
