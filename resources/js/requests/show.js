@@ -13,6 +13,7 @@ import RequestScreens from "./components/RequestScreens.vue";
 import NavbarRequestMobile from "./components/NavbarRequestMobile.vue";
 import SummaryMobile from "./components/SummaryMobile.vue";
 import FilesMobile from "./components/FilesMobile.vue";
+import RequestHeaderMobile from "./components/RequestHeaderMobile.vue";
 
 Vue.component("DataSummary", DataSummary);
 Vue.component("RequestDetail", RequestDetail);
@@ -26,6 +27,7 @@ Vue.component("RequestScreens", RequestScreens);
 Vue.component("NavbarRequestMobile", NavbarRequestMobile);
 Vue.component("SummaryMobile", SummaryMobile);
 Vue.component("FilesMobile", FilesMobile);
+Vue.component("RequestHeaderMobile", RequestHeaderMobile);
 
 Vue.use("vue-form-renderer", VueFormRenderer);
 window.debounce = debounce;
