@@ -36,7 +36,8 @@ jobs:
       #- uses: actions/checkout@v3
       - name: Clone repo K8S
         run: |
-          git clone --depth 1 -b cicd2 --recurse-submodules "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 -b cicd2 "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git" pm4-k8s-distribution/images/pm4-tools
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
