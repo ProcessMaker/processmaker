@@ -1,6 +1,7 @@
 <template>
   <b-card class="m-3">
-    <b-card-text>
+    <a :href="openURL">
+    <b-card-text @click="openCard()">
       <b-row>
         <b-col cols="9">
           <span class="titleInfo">
@@ -58,6 +59,7 @@
         </b-col>
       </b-row>
     </b-card-text>
+    </a>
   </b-card>
 </template>
 
@@ -69,6 +71,7 @@ export default {
   props: ["type", "item"],
   data() {
     return {
+      openURL: "",
       colorStatus: "",
       requestBadge: "",
     };
@@ -118,6 +121,12 @@ export default {
           .format(formatDate);
       }
       return "n/a";
+    },
+    openCard() {
+      if (this.type === "tasks") {
+        this.openURL = `tasks/${this.item.id}/edit`;
+      }
+      return "";
     },
   },
 };

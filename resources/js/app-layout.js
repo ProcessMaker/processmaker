@@ -167,7 +167,7 @@ window.ProcessMaker.navbar = new Vue({
       window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
     },
     switchToMobile() {
-      document.cookie = "isMobile=true";
+      this.$cookies.set("isMobile", true);
       window.location.reload();
     },
     getRoutes() {
