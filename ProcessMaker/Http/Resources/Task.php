@@ -134,7 +134,7 @@ class Task extends ApiResource
         return $array;
     }
 
-    private function loadUserRequestPermission($request, User $user = null, array $permissions)
+    private function loadUserRequestPermission(ProcessRequest $request, User $user = null, array $permissions)
     {
         $permissions[] = [
             'process_request_id' => $request->id,
