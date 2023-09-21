@@ -7,13 +7,13 @@
       <colgroup><col><col></colgroup>
       <b-thead>
         <b-tr>
-          <b-td class="border-top-0" colspan="2"/>
+          <b-td class="border-top-0 column-width" colspan="2"/>
           <b-td v-for="action in actions" class="border-top-0 text-center" :key="action.value">
               {{ action.label }}
           </b-td>
         </b-tr>
         <b-tr class="card-header border-left border-right">
-          <b-th class="align-middle" colspan="2">
+          <b-th class="align-middle column-width" colspan="2">
             <div>
               <i class="d-inline align-middle mr-1 fas" :class="group.icon"/>
               <h5 class="d-inline align-middle">{{ formatName(group.type) }}</h5>
@@ -120,5 +120,9 @@ export default {
 <style lang="scss" scoped>
 .simple-table {
   margin-bottom: 2rem;
+}
+
+.column-width {
+  width: 50%
 }
 </style>
