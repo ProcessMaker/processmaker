@@ -5,6 +5,23 @@
 @section('content_mobile')
 <div v-cloak id="requestMobile">
   <navbar-request-mobile :title="request.name"></navbar-request-mobile>
+  <!--Header-->
+  @if (shouldShow('requestStatusContainer'))
+  @php
+    $values = [
+      'canCancel' => "$canCancel",
+      'canManuallyComplete' => "$canManuallyComplete",
+      'canRetry' => "$canRetry",
+      'eligibleRollbackTask' => "$eligibleRollbackTask",
+      'errorTask' => "$errorTask"
+    ]
+  @endphp
+    <request-header-mobile
+      :request="request"
+      values="{{ json_encode($values)}}"
+    >
+    </request-header-mobile>
+  @endif
   <div class="d-flex flex-column" style="min-height: 100vh">
     <div class="flex-fill">
       <!-- Tabs navs -->
@@ -148,6 +165,11 @@
           canViewComments: @json($canViewComments),
           request: @json($request),
           files: @json($files),
+          canCancel: @json($canCancel),
+          canManuallyComplete: @json($canManuallyComplete),
+          canRetry: @json($canRetry),
+          errorTask: @json($errorTask),
+          eligibleRollbackTask: @json($eligibleRollbackTask),
         }
       },
       methods: {
