@@ -1,12 +1,12 @@
 <template>
   <b-card-text>
-    <b-card class="no-border">
+    <div class="button-container">
       <slot
         name="select-template-slot"
-        class="custom-button custom-text"
+        class="custom-slot"
       ></slot>
-    </b-card>
-    <b-card class="no-border">
+    </div>
+    <div class="button-container">
       <b-button
         variant="primary"
         size="sm"
@@ -17,7 +17,7 @@
         {{ asset_name_all }}
         <i class="fas fa-arrow-right ml-2 align-middle"></i>
       </b-button>
-    </b-card>
+    </div>
   </b-card-text>
 </template>
 
@@ -54,23 +54,16 @@ export default {
 </script>
 
 <style scoped>
-.no-border {
-  border: none !important;
+.button-container {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
 }
-
-.b-card .btn {
-  width: 100% !important;
-}
-
 .b-card {
+  border: none !important;
   padding: 0 !important;
-  margin: 0 !important;
 }
-
-.custom-button,
-.custom-text {
-  padding: 0 !important;
-  margin: 0 !important;
-  display: block !important;
+.b-card .btn {
+  width: 100%;
 }
 </style>

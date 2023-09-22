@@ -34,10 +34,11 @@
               <template v-slot:select-template-slot>
                 <div v-if="asset.flag === 1">
                   <select-template-modal
-                    :type="'Process'"
+                    :type="$t('Process')"
                     ref="selectTemplateModal"
                     :countCategories="countCategories"
-                    :customButton="'custom-button'"
+                    :customClass="customButtonClass"
+                    :customStyle="customButtonStyle"
                   >
                   </select-template-modal>
                 </div>
@@ -47,6 +48,8 @@
                     ref="create-screen-modal"
                     :count-categories="2"
                     :script-executors="false"
+                    :customClass="customButtonClass"
+                    :customStyle="customButtonStyle"
                     is-projects-installed="false"
                   />
                 </div>
@@ -56,6 +59,8 @@
                     ref="create-script-modal"
                     :count-categories="2"
                     :script-executors="false"
+                    :customClass="customButtonClass"
+                    :customStyle="customButtonStyle"
                     is-projects-installed="false"
                   />
                 </div>
@@ -92,9 +97,8 @@
                 <div v-if="asset.flag === 4">
                   <div>
                     <b-button
-                      :aria-label="createProcess"
-                      v-b-modal.selectTemplate
-                      class="mb-3 mb-md-0 ml-md-2"
+                      class="mb-3 mb-md-0 ml-md-0"
+                      :style="customButtonStyle"
                     >
                       <i class="fas fa-plus" /> Decision Tables
                     </b-button>
@@ -103,9 +107,8 @@
                 <div v-if="asset.flag === 5">
                   <div>
                     <b-button
-                      :aria-label="createProcess"
-                      v-b-modal.selectTemplate
-                      class="mb-3 mb-md-0 ml-md-2"
+                      class="mb-3 mb-md-0 ml-md-0"
+                      :style="customButtonStyle"
                     >
                       <i class="fas fa-plus" /> Collections
                     </b-button>
@@ -114,9 +117,8 @@
                 <div v-if="asset.flag === 6">
                   <div>
                     <b-button
-                      :aria-label="createProcess"
-                      v-b-modal.createScript
-                      class="mb-3 mb-md-0 ml-md-2"
+                      class="mb-3 mb-md-0 ml-md-0"
+                      :style="customButtonStyle"
                     >
                       <i class="fas fa-plus" /> Data Connectors
                     </b-button>
@@ -213,6 +215,11 @@ export default {
         },
       ],
       showButtons: new Array(6).fill(false),
+      customButtonClass: "mb-3 mb-md-0",
+      customButtonStyle: {
+        width: "100%",
+        fontSize: "14px",
+      },
     };
   },
   methods: {
@@ -227,52 +234,17 @@ export default {
 </script>
 
 <style scoped>
-.custom-button {
-  color: #5e6469;
-  font-family: "Open Sans", sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: -0.28px;
-  border-radius: 4px;
-  border: 1px solid #b7d8ff;
-  background: #d1e3fe;
-}
-
-.custom-text {
-  color: #5e6469;
-  font-family: "Open Sans", sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: -0.28px;
-}
-
 .assets {
   background-color: #f9f9f9;
 }
-.card {
-  border-radius: 8px;
+.b-card {
+  margin: 5px;
+  border: none !important;
+  padding: 0 !important;
 }
-
-.align-middle {
-  vertical-align: middle;
-}
-
-/* Establece el ancho de los botones al 100% del card */
-.b-card .btn {
-  width: 100%;
-}
-
-.custom-text {
-  color: #5e6469;
-  font-family: "Open Sans", sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: -0.28px;
+.b-card-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 </style>
