@@ -3,7 +3,7 @@
     <div id="filesList">
       <div
         v-for="file of arrayFiles"
-        :key="file.id"
+        :key="`files-${file.id}`"
       >
         <div
           type="button"

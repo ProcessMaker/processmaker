@@ -126,7 +126,9 @@ export default {
       if (this.type === "tasks") {
         this.openURL = `tasks/${this.item.id}/edit`;
       }
-      return "";
+      if (this.type === "requests") {
+        this.openURL = `requests/${this.item.id}`;
+      }
     },
   },
 };

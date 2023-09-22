@@ -1,5 +1,6 @@
 <template>
   <div>
+    <filter-mobile type="requests" />
     <template v-for="(item, index) in data.data">
       <card
         :key="index"
@@ -21,11 +22,12 @@
 
 <script>
 import Card from "../../Mobile/Card.vue";
+import FilterMobile from "../../Mobile/FilterMobile.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import ListMixin from "./ListMixin";
 
 export default {
-  components: { Card },
+  components: { Card, FilterMobile },
   mixins: [datatableMixin, ListMixin],
   data() {
     return {

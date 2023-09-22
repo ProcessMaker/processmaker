@@ -45,7 +45,7 @@
     >
       <div
         v-for="(category, index) in processes"
-        :key="index"
+        :key="`category-${index}`"
         class="mt-3"
       >
         <h5 class="mb-n2">
@@ -57,7 +57,7 @@
         <template v-for="(process, id) in category">
           <process-card
             v-if="hasEmptyStartEvents(process)"
-            :key="id"
+            :key="`process-${id}`"
             :filter="filter"
             :process="process"
           />
@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import card from "./card";
+import card from "./card.vue";
 import datatableMixin from "../common/mixins/datatable";
 
 export default {
@@ -149,9 +149,7 @@ export default {
       loading: false,
       error: false,
       loaded: false,
-      processes: {
-        // Blank
-      },
+      processes: {},
     };
   },
   methods: {
