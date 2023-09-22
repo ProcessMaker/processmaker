@@ -96,6 +96,12 @@ class LoginController extends Controller
             }
         }
 
+        if (class_exists(\ProcessMaker\Package\Auth\Auth\LDAPLogin::class)) {
+            $redirect = \ProcessMaker\Package\Auth\Auth\LDAPLogin::auth($user, $request->input('password'));
+            if ($redirect !== false) {
+                return $redirect;
+            }
+        }
         return $this->login($request);
     }
 
