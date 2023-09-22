@@ -57,17 +57,17 @@
                     <span class="font-weight-normal"> {{ $t("Name of the Task") }}: </span>
                   </td>
                   <td aria-colindex="2" role="cell">
-                    <span> {{ task.element_name }}</span>
+                    <span class="font-weight-light"> {{ task.element_name }}</span>
                   </td>
                 </tr>
                 <tr>
                   <td aria-colindex="1" role="cell" class="pl-3">
                     <span class="font-weight-normal"> {{ $t("Assigned") }}: </span>
                   </td>
-                  <td aria-colindex="2" role="cell">
+                  <td aria-colindex="2" role="cell" class="font-weight-light">
                     {{ moment(createdAt).format() }}
                     <br>
-                    <small> {{ $t('Assigned') }} {{ moment(createdAt).fromNow() }}</small>
+                    <small class="font-weight-light"> {{ $t('Assigned') }} {{ moment(createdAt).fromNow() }}</small>
                   </td>
                 </tr>
                 <tr>
@@ -75,7 +75,7 @@
                     <span class="font-weight-normal"> {{ $t("Request") }}: </span>
                   </td>
                   <td aria-colindex="2" role="cell">
-                    <span> #{{ task.process_request_id }} {{ task.process_request.name }} </span>
+                    <span class="font-weight-light"> #{{ task.process_request_id }} {{ task.process_request.name }} </span>
                   </td>
                 </tr>
                 <tr>
@@ -111,14 +111,16 @@
                 </tr>
               </tbody>
             </table>
-            <button
-              v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-              type="button"
-              class="btn btn-outline-primary btn-block mx-3 my-2"
-            >
-              <i class="fas fa-user-friends" />
-              {{ $t('Reassign') }}
-            </button>
+            <div class="py-2 px-3">
+              <button
+                v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                type="button"
+                class="btn btn-outline-primary btn-block"
+              >
+                <i class="fas fa-user-friends" />
+                {{ $t('Reassign') }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
