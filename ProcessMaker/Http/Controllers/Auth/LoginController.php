@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cookie;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -55,6 +56,24 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        $default = Setting::where('key', 'sso.default.login')->first();
+        $arrayAddons = $addons->toArray();
+        // Redirectind to default login
+        if (!empty($default) && !empty($arrayAddons)) {
+            $position = $default->getAttribute('config'); // Type int
+            $data = head($arrayAddons)->data ?? [];
+            $drivers = array_key_exists('drivers', $data) ? $data['drivers'] : [];
+            if (isset($position) && !empty($drivers)) {
+                $elements = $default->getAttribute('ui')->elements;
+                if (count($elements) >= $position + 1) {
+                    $element = $elements[$position];
+                    if (array_key_exists(strtolower($element->name), $drivers)) {
+                        return redirect()->route('sso.redirect', ['driver' => strtolower($element->name)]);
+                    }
+                }
+            }
+        }
+        
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
@@ -96,6 +115,12 @@ class LoginController extends Controller
             }
         }
 
+        if (class_exists(\ProcessMaker\Package\Auth\Auth\LDAPLogin::class)) {
+            $redirect = \ProcessMaker\Package\Auth\Auth\LDAPLogin::auth($user, $request->input('password'));
+            if ($redirect !== false) {
+                return $redirect;
+            }
+        }
         return $this->login($request);
     }
 
