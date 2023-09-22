@@ -30,9 +30,6 @@ trait HasControllerAddons
                 $addon['content'] = isset($addon['view']) && !isset($addon['content'])
                     ? view($addon['view'], $data)->render() : (isset($addon['content'])
                     ? $addon['content'] : '');
-                if (isset($addon['script_mix'])) {
-                    $addon['script_mix'] = $addon['script_mix'];
-                }
                 $addon['script'] = isset($addon['script']) && is_string($addon['script']) ? view($addon['script'], $data)->render() : '';
                 $addons[] = $addon;
             }
