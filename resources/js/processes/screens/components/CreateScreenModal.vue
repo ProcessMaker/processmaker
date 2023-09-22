@@ -144,6 +144,14 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
+    /**
+     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+     * @returns {boolean}
+     */
+    isQuickCreate() {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams?.get("create") === "true";
+    },
     onSubmit() {
       this.resetErrors();
       // single click
@@ -155,10 +163,12 @@ export default {
         .post("screens", this.formData)
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
-          channel.postMessage({
-            assetType: "screen",
-            id: data.id,
-          });
+          if (this.isQuickCreate()) {
+            channel.postMessage({
+              assetType: "screen",
+              id: data.id,
+            });
+          }
           window.location = `/designer/screen-builder/${data.id}/edit`;
         })
         .catch((error) => {
