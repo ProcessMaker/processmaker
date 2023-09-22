@@ -1,14 +1,5 @@
 <template>
-  <div class="d-flex align-items-center">
-    <button
-      type="buttom"
-      class="dropleft btn btn-primary"
-      data-toggle="modal"
-      data-target="#exampleModal"
-    >
-      <i class="fas fa-info-circle" />
-    </button>
-
+  <div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
