@@ -5,6 +5,8 @@
         {{ $t("Assets") }}
       </b-navbar-brand>
     </b-navbar>
+    
+    <!-- TODO: The section below must be refactored to avoid hard code in v-for -->
     <div class="mt-3">
       <b-card-group deck>
         <b-card
@@ -233,8 +235,8 @@ export default {
 }
 .b-card {
   margin: 5px;
-  border: none !important;
-  padding: 0 !important;
+  border: none;
+  padding: 0;
 }
 .b-card-group {
   display: flex;

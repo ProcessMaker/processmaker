@@ -60,8 +60,8 @@ export default {
   margin-bottom: 10px;
 }
 .b-card {
-  border: none !important;
-  padding: 0 !important;
+  border: none;
+  padding: 0;
 }
 .b-card .btn {
   width: 100%;
