@@ -31,7 +31,7 @@
         type="buttom"
         class="dropleft btn btn-primary"
         data-toggle="modal"
-        data-target="#exampleModal"
+        data-target="#detailsTaskModal"
       >
         <i class="fas fa-info-circle" />
       </button>
