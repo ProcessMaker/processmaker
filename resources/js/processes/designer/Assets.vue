@@ -37,8 +37,6 @@
                     :type="$t('Process')"
                     ref="selectTemplateModal"
                     :countCategories="countCategories"
-                    :customClass="customButtonClass"
-                    :customStyle="customButtonStyle"
                   >
                   </select-template-modal>
                 </div>
@@ -48,8 +46,6 @@
                     ref="create-screen-modal"
                     :count-categories="2"
                     :script-executors="false"
-                    :customClass="customButtonClass"
-                    :customStyle="customButtonStyle"
                     is-projects-installed="false"
                   />
                 </div>
@@ -59,8 +55,6 @@
                     ref="create-script-modal"
                     :count-categories="2"
                     :script-executors="false"
-                    :customClass="customButtonClass"
-                    :customStyle="customButtonStyle"
                     is-projects-installed="false"
                   />
                 </div>
