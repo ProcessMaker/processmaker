@@ -111,6 +111,14 @@
                 </tr>
               </tbody>
             </table>
+            <button
+              v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+              type="button"
+              class="btn btn-outline-primary btn-block mx-3 my-2"
+            >
+              <i class="fas fa-user-friends" />
+              {{ $t('Reassign') }}
+            </button>
           </div>
         </div>
       </div>
