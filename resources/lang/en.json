@@ -1814,7 +1814,7 @@
   "Unknown Process": "Unknown Process",
   "Unknown User": "Unknown User",
   "Inbox": "Inbox",
-  "All Cleared!": "All Cleared!",
+  "All Clear": "All Clear",
   "No new notifications at the moment.": "No new notifications at the moment.",
   "Notifications, No New Messages": "Notifications, No New Messages",
   "Notifications, {{count}} New Messages": "Notifications, {{count}} New Messages",
@@ -1825,5 +1825,6 @@
   "{{- subject }} completed": "{{- subject }} completed",
   "{{- subject }} caused an error": "{{- subject }} caused an error",
   "{{- user}} commented on {{- subject}}": "{{- user}} commented on {{- subject}}",
-  "Imported {{- subject }}": "Imported {{- subject }}"
+  "Imported {{- subject }}": "Imported {{- subject }}",
+  "Request Commented": "Request Commented"
 }

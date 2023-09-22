@@ -96,7 +96,7 @@
             class="no-notifications"
           >
             <img src="/img/all-cleared.svg">
-            <h2>{{ $t('All Cleared!') }}</h2>
+            <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
           <template v-else>
