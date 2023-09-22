@@ -111,7 +111,7 @@
                 </tr>
               </tbody>
             </table>
-            <div class="py-2 px-3">
+            <div class="p-3">
               <button
                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                 type="button"
