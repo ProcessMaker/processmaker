@@ -26,17 +26,17 @@
         <i class="fas fa-chevron-right ml-1" />
       </button>
     </div>
-    <button
-      type="buttom"
-      class="dropleft btn btn-primary"
-    >
-      <i class="fas fa-info-circle" />
-    </button>
+    <task-details-mobile :task="task" />
   </div>
 </template>
 
 <script>
+import TaskDetailsMobile from "./TaskDetailsMobile.vue";
+
+Vue.component("TaskDetailsMobile", TaskDetailsMobile);
+
 export default {
+  props: ["task"],
   data() {
     return {};
   },
