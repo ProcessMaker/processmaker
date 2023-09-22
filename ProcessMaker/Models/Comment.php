@@ -120,6 +120,15 @@ class Comment extends ProcessMakerModel
     }
 
     /**
+     * Replied message.
+     */
+    public function repliedMessage()
+    {
+        return $this->hasOne(self::class, 'id', 'parent_id')
+                ->with('user');
+    }
+
+    /**
      * Get element_name attribute for notifications
      */
     public function getElementNameAttribute()
