@@ -219,6 +219,48 @@ class TaskAssignmentByVariableTest extends TestCase
         $this->assertEquals(['users' => [$users->get(3)->id], 'groups' =>[]], $task->self_service_groups);
     }
 
+    // tests assignment using object values (FOUR-8708)
+    public function testProcessVariableAssignmentWithObjectVariable()
+    {
+        // test with variables with simple ids
+        $user = User::factory()->create(['status'=>'ACTIVE']);
+        $group = $this->createGroup(5);
+        $process = $this->createProcess('process_variable', 'obj.assign.usersVariable', 'obj.assign.groupsVariable', '', false);
+
+        // the assignment should go to the user
+        $dataObj = ['obj'=>['assign'=>['usersVariable'=>$user->id, 'groupsVariable'=>$group->id]]];
+        $response = $this->startTestProcess($process, $dataObj);
+        $requestId = $response['id'];
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
+        $this->assertEquals($user->id, $task->user_id);
+
+
+        // test with variables with array of ids
+        // Create users of a group and a user without group
+        $users = User::factory(2)->create(['status'=>'ACTIVE']);
+        $group1 = $this->createGroup(6);
+        $group2 = $this->createGroup(5);
+        $process = $this->createProcess('process_variable', 'obj.assign.usersVariable', 'obj.assign.groupsVariable', '', false);
+        $dataObj = ['obj'=>['assign'=>['usersVariable'=>$users->pluck('id')->toArray(), 'groupsVariable'=>[$group1->id, $group2->id]]]];
+
+        // The assignment should be to user (the first created user)
+        $response = $this->startTestProcess($process, $dataObj);
+
+        $requestId = $response['id'];
+        $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
+        $this->assertEquals($users->first()->id, $task->user_id);
+    }
+
+    /**
+     * Creates a process in which the assignment of the first task is configured based on the parameters of this function
+     *
+     * @param $assignment assignment type for the task
+     * @param $assignedUsers variable that has the list of userIds
+     * @param $assignedGroups variable that has the list of groupIds
+     * @param $rules list of rules whe $assignment is 'assignment_rules'
+     * @param $isSelfService if the assignment is self service
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     */
     private function createProcess($assignment, $assignedUsers, $assignedGroups, $rules, $isSelfService)
     {
         $bpmn = file_get_contents(__DIR__ . '/processes/AssignmentByProcessVariable.bpmn');

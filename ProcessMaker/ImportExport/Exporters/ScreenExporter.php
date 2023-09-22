@@ -29,7 +29,12 @@ class ScreenExporter extends ExporterBase
         foreach ((array) $this->model->watchers as $watcher) {
             if ($this->watcherType($watcher) === self::WATCHER_TYPE_SCRIPT) {
                 $id = $watcher['script_id'];
-                $this->addDependent(DependentType::SCRIPTS, Script::find($id), ScriptExporter::class, $id);
+                $script = Script::find($id);
+                if ($script) {
+                    $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $id);
+                } else {
+                    \Log::debug("ScriptId: $script not exists in watcher " . $watcher['name']);
+                }
             }
         }
 

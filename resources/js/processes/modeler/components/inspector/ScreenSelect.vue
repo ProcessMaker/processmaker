@@ -54,6 +54,7 @@
 
 <script>
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import { find } from "lodash";
 
 export default {
   components: {
@@ -130,7 +131,12 @@ export default {
           }
         });
     },
-    load(filter) {
+    /**
+     *
+     * @param {Object=} filter - The filters to apply for the GET request
+     * @returns {Promise<void>}
+     */
+    async load(filter) {
       const params = {
         type: this.type(),
         interactive: this.interactive(),
@@ -141,17 +147,14 @@ export default {
         ...this.params,
       };
       this.loading = true;
-      ProcessMaker.apiClient
-        .get("screens?exclude=config", {
-          params,
-        })
-        .then(({ data }) => {
-          this.loading = false;
-          this.screens = data.data;
-        })
-        .catch((err) => {
-          this.loading = false;
-        });
+      try {
+        const { data } = await ProcessMaker.apiClient.get("screens?exclude=config", { params });
+        this.loading = false;
+        this.screens = data.data;
+      } catch (err) {
+        console.error("There was a problem getting the screens", err);
+        this.loading = false;
+      }
     },
     setDefault() {
       if (!this.defaultKey || this.value) {
@@ -171,8 +174,11 @@ export default {
      * @param {string} data.id - the screen id
      * @param {string} data.assetType - The Asset type, ex: screen
      */
-    processAssetCreation({ id, assetType }) {
-      if (assetType === "screen") this.$emit("input", id);
+    async processAssetCreation({ id, assetType }) {
+      if (assetType === "screen") {
+        await this.load();
+        this.content = find(this.screens, (screen) => screen.id === id);
+      }
     },
     validate() {
       if (!this.required || (this.value && this.value !== undefined)) {
