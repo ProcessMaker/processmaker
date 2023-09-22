@@ -297,6 +297,9 @@ class ProcessTemplateTest extends TestCase
         $updatePageResponse['existingAssets'][3]['mode'] = 'copy'; // First Script
         $updatePageResponse['existingAssets'][4]['mode'] = 'discard'; // Second Script
 
+        $updatePageResponse['request'] = json_encode($updatePageResponse['request']);
+        $updatePageResponse['existingAssets'] = json_encode($updatePageResponse['existingAssets']);
+
         // New Request with updated assets mode
         $route = route('api.template.create', ['type' => 'update-assets', 'id' => $updatePageResponse['id']]);
         $response = $this->apiCall('POST', $route, $updatePageResponse);
