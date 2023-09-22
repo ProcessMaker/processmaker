@@ -1,7 +1,2 @@
-import CreateProcessModal from "./CreateProcessModal.vue";
-import ProcessesListing from "./ProcessesListing.vue";
-
-export {
-  CreateProcessModal,
-  ProcessesListing,
-};
+export { default as CreateProcessModal } from "./CreateProcessModal.vue";
+export { default as ProcessesListing } from "./ProcessesListing.vue";

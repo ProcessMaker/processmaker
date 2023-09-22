@@ -1,7 +1,1 @@
-import CreateScreenModal from "./CreateScreenModal.vue";
-import ScreenListing from "./ScreenListing.vue";
-
-export {
-  CreateScreenModal,
-  ScreenListing,
-};
+export { default as CreateScreenModal } from "./CreateScreenModal.vue";
