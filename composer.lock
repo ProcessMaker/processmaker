@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6812051a6db48277cce90b545cfc906",
+    "content-hash": "9e63fe2859264b4912b5cffa9d2d424c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6849,16 +6849,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.9.6",
+            "version": "1.9.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "d15df98702b7a492b7f5ce9b4b9f9d6237f65059"
+                "reference": "5ede0afb68107ac9fec713f6111dad37b05addaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/d15df98702b7a492b7f5ce9b4b9f9d6237f65059",
-                "reference": "d15df98702b7a492b7f5ce9b4b9f9d6237f65059",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/5ede0afb68107ac9fec713f6111dad37b05addaa",
+                "reference": "5ede0afb68107ac9fec713f6111dad37b05addaa",
                 "shasum": ""
             },
             "require-dev": {
@@ -6877,22 +6877,22 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.6"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.7"
             },
-            "time": "2023-09-09T02:55:56+00:00"
+            "time": "2023-09-22T01:26:41+00:00"
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.9.1",
+            "version": "1.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "7855236c81162d3501b096a6691c6f2e3c7b2cb2"
+                "reference": "7d27ad02ed9ce8734c0a07901e689278d47e68eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/7855236c81162d3501b096a6691c6f2e3c7b2cb2",
-                "reference": "7855236c81162d3501b096a6691c6f2e3c7b2cb2",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/7d27ad02ed9ce8734c0a07901e689278d47e68eb",
+                "reference": "7d27ad02ed9ce8734c0a07901e689278d47e68eb",
                 "shasum": ""
             },
             "require": {
@@ -6923,9 +6923,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.1"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.9.2"
             },
-            "time": "2023-07-08T02:31:00+00:00"
+            "time": "2023-09-22T01:26:59+00:00"
         },
         {
             "name": "psr/cache",
