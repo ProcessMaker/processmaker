@@ -16,6 +16,7 @@ use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
+use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
@@ -85,7 +86,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('designer/screens/categories', [ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
-
+    Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
