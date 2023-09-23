@@ -121,6 +121,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
     Route::get('requests', [RequestController::class, 'index'])->name('requests.index');
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
+    Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
     Route::get('tasks/search', [TaskController::class, 'search'])->name('tasks.search');

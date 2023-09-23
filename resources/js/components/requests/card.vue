@@ -2,21 +2,21 @@
     <div class="mt-3">
       <div class="card" v-for="event in emptyStartEvents" :key="event.id">
         <div class="card-body">
-          <div class="row">
-            <div class="col-10">
+          <div class="d-flex justify-content-between">
+            <div>
               <span v-uni-id="event.id.toString()">{{transformedName}}</span>
               <span v-if="process.startEvents.length > 1">: {{ event.name }}</span>
               <a href="#" @click="showRequestDetails" :aria-expanded="ariaExpanded" :aria-controls="getComputedId(process)">...</a>
             </div>
-            <div class="col-2 text-right">
-              <a 
+            <div class="text-right">
+              <button 
               :href="getNewRequestLinkHref(process, event)" 
               @click.prevent="newRequestLink(process, event);" 
               class="btn btn-primary btn-sm"
               v-uni-aria-describedby="event.id.toString()"
               >
-                <i class="fas fa-caret-square-right"></i> {{ $t('Start') }}
-              </a>
+                <i class="fas fa-caret-square-right mr-1"></i> {{ $t('Start') }}
+            </button>
             </div>
           </div>
           <div v-if="showdetail" :aria-hidden="ariaHidden" :id="getComputedId(process)">
@@ -42,7 +42,7 @@ export default {
       disabled: false,
       spin: 0,
       showtip: true,
-      showdetail: false
+      showdetail: false,
     };
   },
   methods: {
@@ -59,7 +59,11 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
-          window.location = "/requests/" + instance.id;
+          if (this.$cookies.get("isMobile")) {
+            window.location = "/requests/mobile/" + instance.id;
+          } else {
+            window.location = "/requests/" + instance.id;
+          }
         }).catch((err) => {
           this.disabled = false;
           const data = err.response.data;
