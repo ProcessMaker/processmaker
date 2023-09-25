@@ -116,6 +116,7 @@
           v-if="showPromptArea || defaultSelected === 'generate'"
           :prompt-session-id="promptSessionId"
           :autofocus="true"
+          :default-prompt="defaultPrompt"
           @generate-script="onGenerateScript"
         />
       </b-collapse>
@@ -140,6 +141,8 @@ export default {
     "defaultPrompt",
     "lineContext",
     "processId",
+    "scriptTitle",
+    "scriptDescription",
   ],
   data() {
     return {

@@ -478,6 +478,10 @@ export default {
 
     // Display ellipsis menu.
     this.setEllipsisMenu();
+
+    if (this.processId !== 0) {
+      this.prompt = `${this.script.title}\n${this.script.description}`;
+    }
   },
 
   beforeDestroy() {

@@ -263,7 +263,7 @@
           const url = `/designer/scripts/${data.id}/builder`;
 
           if (this.callFromAiModeler) {
-            this.$emit("script-created-from-modeler", url, data.id);
+            this.$emit("script-created-from-modeler", url, data.id, data.title);
           } else {
             channel.postMessage({
               assetType: "script",
