@@ -20,7 +20,6 @@
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
           @discard="emitDiscardEvent"
-          @close="onClose"
           @publishTemplate="publishTemplate"
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"

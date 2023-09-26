@@ -53,7 +53,7 @@
 
 <script>
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
-import "@processmaker/vue-multiselect/dist/vue-multiselect.css";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
   components: {

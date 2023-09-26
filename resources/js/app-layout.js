@@ -21,7 +21,7 @@ import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-import "regenerator-runtime/runtime";
+
 /** ****
  * Global adjustment parameters for moment.js.
  */

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import "@processmaker/vue-multiselect/dist/vue-multiselect.css";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
   props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList"],
