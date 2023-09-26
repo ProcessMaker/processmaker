@@ -118,9 +118,7 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        $data['group_id'] = hash('sha256', $request->input('group_name'));
         $data['user_id'] = Auth::user()->id;
-        file_put_contents("/srv/http/processmaker4/.work/error.json", json_encode($data) . "\n", FILE_APPEND);
         $request->merge($data);
         $request->validate(Comment::rules());
 
