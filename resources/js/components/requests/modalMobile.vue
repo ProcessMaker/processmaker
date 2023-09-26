@@ -1,22 +1,21 @@
 <template>
   <div
     v-cloak
-    class="nav-item p-2"
+    class="nav-item"
   >
     <button
-      id="navbar-request-button"
+      id="navbar-request-button-mobile"
       type="button"
-      class="btn btn-success btn-sm"
-      :aria-label="$t('New Request')"
+      class="btn btn-success border border-white"
       aria-haspopup="dialog"
+      :aria-label="$t('New Request')"
       @click="showRequestModal"
     >
       <i class="fas fa-plus" />
-      {{ $t('Request') }}
     </button>
     <new-request-modal
       ref="requestModal"
-      size="lg"
+      size="md"
       :permission="permission"
       :url="url"
     />
@@ -39,29 +38,10 @@ export default {
     };
   },
   methods: {
-    hasEmptyStartEvents(process) {
-      return !!process.events.find((event) => !event.eventDefinitions || event.eventDefinitions.length === 0);
-    },
     showRequestModal() {
+      // Perform initial load of requests from backend
       this.$refs.requestModal.showModal();
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-    .icon-container {
-        display:inline-block;
-        width: 5em;
-        margin-bottom: 1em;
-
-        i {
-            color: #b7bfc5;
-            font-size: 5em;
-        }
-
-        svg {
-            fill: #b7bfc5;
-        }
-    }
-</style>
