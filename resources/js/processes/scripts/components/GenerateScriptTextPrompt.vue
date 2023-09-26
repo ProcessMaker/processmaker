@@ -13,7 +13,7 @@
         ref="textArea"
         data-test="prompt-area"
         v-model="text"
-        placeholder="Enter your prompt!..."
+        placeholder="Enter your prompt..."
         rows="4"
         max-rows="4"
       ></b-form-textarea>

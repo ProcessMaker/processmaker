@@ -11,8 +11,8 @@
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
-          <img class="mb-1" :src="corneaIcon" />
-          {{ $t("Cornea AI Assistant") }}
+          <img class="mb-1 ai-icon" :src="proceC2Icon" width="18"/>
+          {{ $t("AI Assistant") }}
         </b-col>
         <b-col
           v-else
@@ -147,7 +147,7 @@ export default {
   data() {
     return {
       showPromptArea: false,
-      corneaIcon: require("./../../../../img/cornea_icon.svg"),
+      proceC2Icon: require("./../../../../img/proceC2Black.svg"),
       penSparkleIcon: require("./../../../../img/pen_sparkle_icon.svg"),
       bookIcon: require("./../../../../img/book_icon.svg"),
       brushIcon: require("./../../../../img/brush_icon.svg"),
@@ -476,5 +476,9 @@ export default {
 }
 .ai-button:hover {
   background: #f5f5f5 !important;
+}
+
+.ai-icon {
+  margin-left: -1px;
 }
 </style>
