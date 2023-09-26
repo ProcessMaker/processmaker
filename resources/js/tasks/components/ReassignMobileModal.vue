@@ -121,7 +121,7 @@ export default {
   },
   computed: {
     disabled() {
-      return this.selectedUser ? this.selectedUser.length === 0 : true;
+      return this.selectedUser.length === 0;
     },
   },
   methods: {
