@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47681b914aec8f8999352b0f45cc5bd6",
+    "content-hash": "d8e5fe55c38a96988efa4f28698ed1b9",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6849,16 +6849,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.9.7",
+            "version": "1.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "5ede0afb68107ac9fec713f6111dad37b05addaa"
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/5ede0afb68107ac9fec713f6111dad37b05addaa",
-                "reference": "5ede0afb68107ac9fec713f6111dad37b05addaa",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c61f0f4ccff5953a0f50352dbb612269a6b62567",
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567",
                 "shasum": ""
             },
             "require-dev": {
@@ -6877,9 +6877,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.7"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.8"
             },
-            "time": "2023-09-22T01:26:41+00:00"
+            "time": "2023-09-26T01:46:28+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -14352,5 +14352,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
