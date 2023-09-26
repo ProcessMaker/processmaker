@@ -10,6 +10,7 @@ use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
@@ -24,6 +25,8 @@ class ModelerController extends Controller
      */
     public function show(ModelerManager $manager, Process $process, Request $request)
     {
+        $pmBlockList = $this->getPmBlockList();
+
         /*
          * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
          * allow packages to add additional javascript for modeler initialization which
@@ -43,6 +46,7 @@ class ModelerController extends Controller
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+            'pmBlockList' => $pmBlockList,
         ]);
     }
 
@@ -51,6 +55,8 @@ class ModelerController extends Controller
      */
     public function inflight(ModelerManager $manager, Process $process, ProcessRequest $request)
     {
+        $pmBlockList = $this->getPmBlockList();
+
         event(new ModelerStarting($manager));
 
         $bpmn = $process->bpmn;
@@ -91,7 +97,26 @@ class ModelerController extends Controller
             'requestInProgressNodes' => $requestInProgressNodes,
             'requestIdleNodes' => $requestIdleNodes,
             'requestId' => $request->id,
+            'pmBlockList' => $pmBlockList,
         ]);
+    }
+
+    /**
+     * Load PMBlock list
+     */
+    private function getPmBlockList()
+    {
+        $pmBlockList = null;
+        if (hasPackage('package-pm-blocks')) {
+            $controller = new PmBlockController();
+            $newRequest = new Request(['per_page' => 10000]);
+            $response = $controller->index($newRequest);
+            if ($response->response()->status() === 200) {
+                $pmBlockList = json_decode($response->response()->content())->data;
+            }
+        }
+
+        return $pmBlockList;
     }
 
     /**
