@@ -11,7 +11,7 @@
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
-          <img class="mb-1 ai-icon" :src="proceC2Icon" width="18"/>
+          <img class="mb-1 ai-icon" :src="proceC2Icon" width="18" :alt="$t('AI Assistant Icon')"/>
           {{ $t("AI Assistant") }}
         </b-col>
         <b-col
