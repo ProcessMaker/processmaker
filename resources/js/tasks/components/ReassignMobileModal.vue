@@ -1,91 +1,106 @@
 <template>
-  <div>
-    <!-- Modal -->
+  <!-- Modal -->
+  <div
+    id="reassignModal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    size="md"
+    aria-labelledby="reassignModalLabel"
+    aria-hidden="true"
+  >
     <div
-      id="reassignModal"
-      class="modal fade"
-      tabindex="-1"
-      role="dialog"
-      size="md"
-      aria-labelledby="reassignModalLabel"
-      aria-hidden="true"
+      class="modal-dialog modal-dialog-centered"
+      role="document"
     >
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">{{ $t('Reassign To') }}</h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-              @click="cancelReassign"
+      <div class="modal-content">
+        <!-- Header -->
+        <div class="modal-header">
+          <h5
+            id="exampleModalLabel"
+            class="modal-title"
+          >
+            {{ $t('Reassign To') }}
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            @click="cancelReassign"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!-- Body -->
+        <div class="modal-body">
+          <div class="form-group">
+            <select-from-api
+              id="user"
+              v-model="selectedUser"
+              :placeholder="$t('Select the user to reassign to the task')"
+              api="users"
+              :multiple="false"
+              :show-labels="false"
+              :searchable="true"
+              :store-id="false"
+              label="fullname"
             >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <select-from-api
-                id="user"
-                v-model="selectedUser"
-                :placeholder="$t('Select the user to reassign to the task')"
-                api="users"
-                :multiple="false"
-                :show-labels="false"
-                :searchable="true"
-                :store-id="false"
-                label="fullname"
-              >
-                <template slot="noResult">
-                  {{ $t('No elements found. Consider changing the search query.') }}
-                </template>
-                <template slot="noOptions">
-                  {{ $t('No Data Available') }}
-                </template>
-                <template slot="tag" slot-scope="props">
-                  <span class="multiselect__tag  d-flex align-items-center"
-                        style="width:max-content;">
-                    <span class="option__desc mr-1">
-                      <span class="option__title">{{ props.option.fullname }}</span>
-                    </span>
-                    <i
-                      aria-hidden="true"
-                      class="multiselect__tag-icon"
-                      tabindex="1"
-                      @click="props.remove(props.option)"
-                    />
-                  </span>
-                </template>
-                <template
-                  slot="option"
-                  slot-scope="props"
+              <template slot="noResult">
+                {{ $t('No elements found. Consider changing the search query.') }}
+              </template>
+              <template slot="noOptions">
+                {{ $t('No Data Available') }}
+              </template>
+              <template slot="tag" slot-scope="props">
+                <span
+                  class="multiselect__tag  d-flex align-items-center"
+                  style="width:max-content;"
                 >
-                  <div class="option__desc d-flex align-items-center">
-                    <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                  </div>
-                </template>
-              </select-from-api>
-            </div>
+                  <span class="option__desc mr-1">
+                    <span class="option__title">
+                      {{ props.option.fullname }}
+                    </span>
+                  </span>
+                  <i
+                    aria-hidden="true"
+                    class="multiselect__tag-icon"
+                    tabindex="1"
+                    @click="props.remove(props.option)"
+                  />
+                </span>
+              </template>
+              <template
+                slot="option"
+                slot-scope="props"
+              >
+                <div class="option__desc d-flex align-items-center">
+                  <span class="option__title mr-1">
+                    {{ props.option.fullname }}
+                  </span>
+                </div>
+              </template>
+            </select-from-api>
           </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              data-dismiss="modal"
-              @click="cancelReassign"
-            >
-              {{ $t('Cancel') }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary ml-2"
-              :disabled="disabled"
-              @click="reassignUser"
-            >
-              {{ $t('Reassign') }}
-            </button>
-          </div>
+        </div>
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-dismiss="modal"
+            @click="cancelReassign"
+          >
+            {{ $t('Cancel') }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary ml-2"
+            :disabled="disabled"
+            @click="reassignUser"
+          >
+            {{ $t('Reassign') }}
+          </button>
         </div>
       </div>
     </div>
@@ -119,7 +134,7 @@ export default {
           .put(`tasks/${this.task.id}`, {
             user_id: this.selectedUser.id,
           })
-          .then(response => {
+          .then((response) => {
             this.selectedUser = [];
             window.location.href = "/tasks";
           });
@@ -152,22 +167,22 @@ export default {
   }
 
   .multiselect__tag-icon:after {
-    color: white !important;
+    color: white;
   }
 
   .multiselect__option--highlight {
-    background: #00bf9c !important;
+    background: #00bf9c;
   }
 
   .multiselect__option--selected.multiselect__option--highlight {
-    background: #00bf9c !important;
+    background: #00bf9c;
   }
 
   .multiselect__tag {
-    background: #788793 !important;
+    background: #788793;
   }
 
   .multiselect__tag-icon:after {
-    color: white !important;
+    color: white;
   }
 </style>
