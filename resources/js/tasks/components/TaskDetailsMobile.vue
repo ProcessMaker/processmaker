@@ -102,11 +102,14 @@
                 </tr>
               </tbody>
             </table>
-            <div class="p-3">
+            <div v-if="task.definition.allowReassignment || userIsAdmin || userIsProcessManager" class="p-3">
               <button
                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                 type="button"
                 class="btn btn-outline-primary btn-block"
+                data-dismiss="modal"
+                data-toggle="modal"
+                data-target="#reassignModal"
               >
                 <i class="fas fa-user-friends" />
                 {{ $t('Reassign') }}
@@ -116,16 +119,20 @@
         </div>
       </div>
     </div>
+    <reassign-mobile-modal :task="task" />
   </div>
 </template>
 
 <script>
 import AvatarImage from "../../components/AvatarImage.vue";
+import ReassignMobileModal from "./ReassignMobileModal.vue";
 
 Vue.component("AvatarImage", AvatarImage);
+Vue.component("ReassignMobileModal", ReassignMobileModal);
 
 export default {
-  props: ["task"],
+  components: { ReassignMobileModal },
+  props: ["task", "userIsAdmin", "userIsProcessManager"],
   data() {
     return {
       statusCard: "card-header text-capitalize text-white bg-success",
@@ -151,9 +158,6 @@ export default {
     },
     completedAt() {
       return this.task.completed_at;
-    },
-    disabled() {
-      return this.selectedUser ? this.selectedUser.length === 0 : true;
     },
   },
   methods: {
