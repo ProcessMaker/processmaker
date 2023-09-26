@@ -217,6 +217,13 @@ class SettingController extends Controller
         return response([], 204);
     }
 
+    public function destroy(Setting $setting)
+    {
+        $setting->delete();
+
+        return response([], 204);
+    }
+
     public function import(Request $request)
     {
         $content = $request->file('file')->get();

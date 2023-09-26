@@ -4,7 +4,7 @@
     <multiselect
       v-model="content"
       :aria-label="$t(label)"
-      :class="{'is-invalid':error}"
+      :class="{ 'is-invalid': error }"
       :internal-search="false"
       :loading="loading"
       :multiple="false"
@@ -25,21 +25,11 @@
         {{ $t("No Data Available") }}
       </template>
     </multiselect>
-    <div
-      v-if="error"
-      class="invalid-feedback"
-      role="alert"
-    >
+    <div v-if="error" class="invalid-feedback" role="alert">
       <div>{{ error }}</div>
     </div>
-    <small
-      v-if="helper"
-      class="form-text text-muted"
-    >{{ $t(helper) }}</small>
-    <modeler-asset-quick-create
-      label="script"
-      @asset="processAssetCreation"
-    />
+    <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
+    <modeler-asset-quick-create label="script" @asset="processAssetCreation" />
     <a
       v-if="content.id"
       :href="`/designer/scripts/${content.id}/builder`"
@@ -53,6 +43,7 @@
 
 <script>
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import { find } from "lodash";
 
 export default {
   components: {
@@ -79,7 +70,7 @@ export default {
     content: {
       handler() {
         this.validate();
-        if (this.content && this.content.id != this.value) {
+        if (this.content && this.content.id !== this.value) {
           this.error = "";
           this.$emit("input", this.content.id);
         }
@@ -125,24 +116,28 @@ export default {
     this.validate();
   },
   methods: {
-    load(filter) {
+    /**
+     *
+     * @param {Object=} filter - The filters to apply for the GET request
+     * @returns {Promise<void>}
+     */
+    async load(filter) {
       const params = {
         order_direction: "asc",
         selectList: true,
-        filter: (typeof filter === "string" ? filter : ""),
+        filter: typeof filter === "string" ? filter : "",
       };
       this.loading = true;
-      ProcessMaker.apiClient
-        .get("scripts", {
+      try {
+        const { data } = await ProcessMaker.apiClient.get("scripts", {
           params,
-        })
-        .then((response) => {
-          this.loading = false;
-          this.scripts = response.data.data;
-        })
-        .catch((err) => {
-          this.loading = false;
         });
+        this.loading = false;
+        this.scripts = data.data;
+      } catch (err) {
+        console.error("There was an error loading the scripts", err);
+        this.loading = false;
+      }
     },
     checkScriptRefExists() {
       if (this.definition.scriptRef) {
@@ -151,7 +146,7 @@ export default {
       this.$set(this.definition, "scriptRef", "");
     },
     validate() {
-      if (!this.required || this.value && this.value !== undefined) {
+      if (!this.required || this.value) {
         return;
       }
 
@@ -162,8 +157,11 @@ export default {
      * @param {string} data.id - the screen id
      * @param {string} data.assetType - The Asset type, ex: screen
      */
-    processAssetCreation({ id, assetType }) {
-      if (assetType === "script") this.$emit("input", id);
+    async processAssetCreation({ id, assetType }) {
+      if (assetType === "script") {
+        await this.load();
+        this.content = find(this.scripts, (script) => script.id === id);
+      }
     },
   },
 };
