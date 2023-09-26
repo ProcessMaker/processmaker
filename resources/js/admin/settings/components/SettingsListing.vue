@@ -26,7 +26,12 @@
         </template>
     </pmql-input>
 
-    <div class="card card-body table-card">
+    <div class="p-5 text-center" v-if="shouldDisplayNoDataMessage">
+        <h3>{{ noDataMessageConfig.name }}</h3>
+        <small>{{noDataMessageConfig.helper }}</small>
+    </div>
+
+    <div v-else class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
         :current-page="currentPage"
@@ -63,24 +68,37 @@
                   <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
-            <b-button 
-              :aria-label="$t('Copy to Clipboard')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              @click="onCopy(row)"
-              variant="link"
-              v-b-tooltip.hover
-              :title="$t('Copy to Clipboard')">
-                <i class="fa-lg fas fa-copy"></i>
+            <template v-if="row.item.key !== 'sso.default.login'">
+              <b-button
+                v-uni-aria-describedby="row.item.id.toString()"
+                v-b-tooltip.hover
+                variant="link"
+                :aria-label="$t('Copy to Clipboard')"
+                :title="$t('Copy to Clipboard')"
+                @click="onCopy(row)"
+              >
+                <i class="fa-lg fas fa-copy" />
               </b-button>
+              
+            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
+              <b-button 
+              :aria-label="$t('Delete')"
+              v-uni-aria-describedby="row.item.id.toString()"
+              @click="onDelete(row)" 
+              variant="link" 
+              >
+                <i class="fa-lg fas fa-trash-alt"></i>
+              </b-button>
+            </span>
 
-            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+            <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
               <b-button 
               :aria-label="$t('Clear')"
               v-uni-aria-describedby="row.item.id.toString()"
               :disabled="disableClear(row.item)" 
               @click="onClear(row)" 
               variant="link" 
-             >
+              >
                 <i class="fa-lg fas fa-trash-alt"></i>
               </b-button>
             </span>
@@ -93,6 +111,7 @@
               </b-button>
             </span>
           </template>
+        </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
@@ -138,6 +157,7 @@ import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
+import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -148,6 +168,7 @@ export default {
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
+    SettingDriverAuthorization,
     SettingFile,
     SettingObject,
     SettingScreen,
@@ -156,7 +177,7 @@ export default {
     SettingsImport,
     SettingsExport,
     SettingsRange,
-    SettingSelect
+    SettingSelect,
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -179,7 +200,9 @@ export default {
       settings: [],
       to: 0,
       totalRows: 0,
-      url: '/settings'
+      url: '/settings',
+      shouldDisplayNoDataMessage: false,
+      noDataMessageConfig: null,
     };
   },
   computed: {
@@ -222,6 +245,13 @@ export default {
       sortable: false,
       tdClass: "align-middle text-right",
     });
+    
+    ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
+      this.shouldDisplayNoDataMessage = false;
+      this.$nextTick(() => {
+        this.$emit('refresh-all');
+      });  
+    });
   },
   methods: {
     loadButtons() {
@@ -261,6 +291,8 @@ export default {
           return 'setting-file';
         case 'range':
           return 'settings-range';
+        case 'driver-auth':
+          return 'setting-driver-authorization';
         default:
           return 'setting-text-area';
       }
@@ -277,6 +309,15 @@ export default {
       this.orderBy = context.sortBy;
       this.apiGet().then(response => {
         this.settings = response.data.data;
+        const { noDataSettings, otherSettings } = this.separateSettings(this.settings);
+
+        this.shouldDisplayNoDataMessage = this.shouldDisplayNoData(noDataSettings, this.settings);
+        this.noDataMessageConfig = noDataSettings[0];
+
+        if (!this.shouldDisplayNoDataMessage) {
+          this.settings = otherSettings; // Use the other settings
+        }
+        
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
@@ -292,6 +333,29 @@ export default {
           callback(this.settings);
         });
       });
+    },
+    separateSettings(settings) {
+      const noDataSettings = [];
+      const otherSettings = [];
+
+      settings.forEach(setting => {
+        if (setting.format === 'no-data') {
+          noDataSettings.push(setting);
+        } else {
+          otherSettings.push(setting);
+        }
+      });
+
+      return { noDataSettings, otherSettings };
+    },
+    shouldDisplayNoData(noDataSettings, allSettings) {
+      if (noDataSettings.length === allSettings.length) {
+        return true; // All settings are 'no-data' settings
+      } else if (noDataSettings.length > 0) {
+        return false; // Some settings are 'no-data' settings
+      } else {
+        return false; // No 'no-data' settings found, display all configured settings
+      }
     },
     getTooltip(row) {
       if (row.item.readonly) {
@@ -337,8 +401,32 @@ export default {
       }
       this.onChange(row.item);
     },
+    onDelete(row) {
+      ProcessMaker.confirmModal(
+        this.$t("Caution!"),
+        this.$t("Are you sure you want to delete the setting") +
+          " " + '<strong>' +
+          row.item.name + '</strong>' +
+          this.$t("?"),
+        "",
+        () => {
+          this.handleDeleteSetting(row.index, row.item.id);
+        }
+      );
+    },
+    handleDeleteSetting(index, id) {
+      if (index !== -1) {
+        this.settings.splice(index, 1);
+        ProcessMaker.apiClient.delete(`${this.url}/${id}`).then(response => {
+          if (response.status == 204) {
+            ProcessMaker.alert(this.$t("The setting was deleted."), "success");
+            this.refresh();
+          }
+        });
+      }
+    },
     onEdit(row) {
-      this.$refs[`settingComponent_${row.index}`].onEdit();
+      this.$refs[`settingComponent_${row.index}`].onEdit(row);
     },
     onNLQConversion(pmql) {
       this.searchQuery = pmql;
@@ -359,7 +447,7 @@ export default {
 
       return url;
     },
-    settingUrl(id) {
+    settingUrl(id = null) {
       return `${this.url}/${id}`;
     },
     /**
@@ -453,6 +541,9 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
+    },
+    enableDeleteSetting(row) {
+      return row.item.ui?.deleteSettingEnabled || false;
     }
   }
 };

@@ -217,6 +217,14 @@
       show() {
         this.$bvModal.show("createScript");
       },
+      /**
+       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+       * @returns {boolean}
+       */
+      isQuickCreate() {
+        const searchParams = new URLSearchParams(window.location.search);
+        return searchParams?.get("create") === "true";
+      },
       onClose() {
         this.title = '';
         this.language = '';
@@ -265,10 +273,12 @@
           if (this.callFromAiModeler) {
             this.$emit("script-created-from-modeler", url, data.id, data.title);
           } else {
-            channel.postMessage({
-              assetType: "script",
-              id: data.id,
-            });
+            if (this.isQuickCreate()) {
+              channel.postMessage({
+                assetType: "script",
+                id: data.id,
+              });
+            }
             window.location = url;
           }
         })

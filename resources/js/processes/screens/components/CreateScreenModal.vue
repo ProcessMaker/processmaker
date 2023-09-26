@@ -148,6 +148,14 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
+    /**
+     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+     * @returns {boolean}
+     */
+    isQuickCreate() {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams?.get("create") === "true";
+    },
     onSubmit() {
       this.resetErrors();
       // single click
@@ -165,10 +173,12 @@ export default {
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
           } else {
-            channel.postMessage({
-              assetType: "screen",
-              id: data.id,
-            });
+            if (this.isQuickCreate()) {
+              channel.postMessage({
+                assetType: "screen",
+                id: data.id,
+              });
+            }
             window.location = url;
           }
         })
