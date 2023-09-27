@@ -31,6 +31,7 @@ export default {
     return {
       data: "",
       pmql: "",
+      filter: "",
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
