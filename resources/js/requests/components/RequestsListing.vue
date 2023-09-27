@@ -257,67 +257,81 @@ export default {
       return data;
     },
     fetch() {
-        Vue.nextTick(() => {
-            let pmql = '';
+      Vue.nextTick(() => {
+        if (this.cancelToken) {
+          this.cancelToken();
+          this.cancelToken = null;
+        }
 
-            if (this.pmql !== undefined) {
-                pmql = this.pmql;
+        const CancelToken = ProcessMaker.apiClient.CancelToken;
+
+        let pmql = '';
+
+        if (this.pmql !== undefined) {
+          pmql = this.pmql;
+        }
+
+        let filter = this.filter;
+
+        if (filter && filter.length) {
+          if (filter.isPMQL()) {
+            pmql = `(${pmql}) and (${filter})`;
+            filter = '';
+          }
+        }
+
+        if (this.previousFilter !== filter) {
+          this.page = 1;
+        }
+
+        this.previousFilter = filter;
+
+        if (this.previousPmql !== pmql) {
+          this.page = 1;
+        }
+
+        this.previousPmql = pmql;
+
+        // Load from our api client
+        ProcessMaker.apiClient
+          .get(
+            `${this.endpoint}?page=` +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&include=process,participants,data" +
+            "&pmql=" +
+            encodeURIComponent(pmql) +
+            "&filter=" +
+            filter +
+            "&order_by=" +
+            (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
+            "&order_direction=" +
+            this.orderDirection +
+            this.additionalParams,
+            {
+              cancelToken: new CancelToken((c) => {
+                this.cancelToken = c;
+              }),
+            },
+          )
+          .then((response) => {
+            this.data = this.transform(response.data);
+          }).catch((error) => {
+            if (error.code === "ERR_CANCELED") {
+              return;
             }
-
-            let filter = this.filter;
-
-            if (filter && filter.length) {
-              if (filter.isPMQL()) {
-                pmql = `(${pmql}) and (${filter})`;
-                filter = '';
-              }
+            if (_.has(error, 'response.data.message')) {
+              ProcessMaker.alert(error.response.data.message, 'danger');
+            } else if (_.has(error, 'response.data.error')) {
+              return;
+            } else {
+              throw error;
             }
-
-            if (this.previousFilter !== filter) {
-              this.page = 1;
-            }
-
-            this.previousFilter = filter;
-
-            if (this.previousPmql !== pmql) {
-              this.page = 1;
-            }
-
-            this.previousPmql = pmql;
-
-            // Load from our api client
-            ProcessMaker.apiClient
-              .get(
-                `${this.endpoint}?page=` +
-                  this.page +
-                  "&per_page=" +
-                  this.perPage +
-                  "&include=process,participants,data" +
-                  "&pmql=" +
-                  encodeURIComponent(pmql) +
-                  "&filter=" +
-                  filter +
-                  "&order_by=" +
-                  (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
-                  "&order_direction=" +
-                  this.orderDirection +
-                  this.additionalParams
-              )
-              .then(response => {
-                this.data = this.transform(response.data);
-              }).catch(error => {
-                if (_.has(error, 'response.data.message')) {
-                  ProcessMaker.alert(error.response.data.message, 'danger');
-                } else if(_.has(error, 'response.data.error')) {
-                  return;
-                }  else {
-                  throw error;
-                }
-              });
-
-        });
-    }
-  }
+          });
+      });
+    },
+  },
 };
 </script>
 <style>
