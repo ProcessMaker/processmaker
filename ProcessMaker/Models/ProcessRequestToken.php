@@ -337,6 +337,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
             $screen = Screen::firstWhere('key', $defaultScreen);
+
+            if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
+                $defaultScreen = 'default-ai-form-screen';
+                $screen = Screen::firstWhere('key', $defaultScreen);
+            }
         }
 
         return $screen;

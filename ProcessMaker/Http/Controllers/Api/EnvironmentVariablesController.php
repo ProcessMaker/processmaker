@@ -78,6 +78,7 @@ class EnvironmentVariablesController extends Controller
         } else {
             $environment_variables = EnvironmentVariable::orderBy($orderBy, $orderDirection)->paginate($perPage);
         }
+
         // Return fractal representation of paged data
         return new ApiCollection($environment_variables);
     }

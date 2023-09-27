@@ -911,6 +911,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if ($this->errors) {
             return $this->errors;
         }
+
         // select tokens with errors
         return $this->tokens()
             ->select('token_properties->error as message', 'created_at', 'element_name')

@@ -9,7 +9,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenType;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
@@ -31,6 +36,22 @@ class ModelerController extends Controller
          */
         event(new ModelerStarting($manager));
 
+        // For create subprocess modal in modeler
+        $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
+        // For create screen modal in modeler
+        $screenTypes = [];
+        foreach (ScreenType::pluck('name')->toArray() as $type) {
+            $screenTypes[$type] = __(ucwords(strtolower($type)));
+        }
+        asort($screenTypes);
+        $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
+
+        // For create script modal in modeler
+        $scriptExecutors = ScriptExecutor::list();
+        $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
         $draft = $process->versions()->draft()->first();
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
@@ -43,6 +64,12 @@ class ModelerController extends Controller
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+            'screenTypes' => $screenTypes,
+            'scriptExecutors' => $scriptExecutors,
+            'countProcessCategories' => $countProcessCategories,
+            'countScreenCategories' => $countScreenCategories,
+            'countScriptCategories' => $countScriptCategories,
+            'isProjectsInstalled' => $isProjectsInstalled,
         ]);
     }
 
