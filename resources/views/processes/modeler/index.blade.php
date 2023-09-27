@@ -55,6 +55,7 @@ div.main {
       'url':''
     },
   ]
+  window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.modeler = {
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
