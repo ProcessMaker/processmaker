@@ -161,7 +161,11 @@ class TaskController extends Controller
 
         //list only display elements type task
         $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
-        $query->where('element_type', '=', 'task')
+        $query->where(function ($query) {
+            $query->where('element_type', '=', 'task');
+            $query->orWhere('element_type', '=', 'serviceTask');
+            $query->where('element_name', '=', 'AI Assistant');
+        })
             ->when($nonSystem, function ($query) {
                 $query->nonSystem();
             });

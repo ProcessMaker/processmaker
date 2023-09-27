@@ -20,6 +20,7 @@ class FormController extends Controller
     {
         if ($process->id !== $form->process_id) {
             request()->session()->flash('_alert', json_encode(['danger', __('The form does not belong to process.')]));
+
             // @todo  This should actually redirect to designer url
             return view('designer.designer', compact('process'));
         }

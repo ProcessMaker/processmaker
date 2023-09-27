@@ -144,6 +144,11 @@ class ScreenController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
+
+        if ($request->has('key')) {
+            $query->where('key', $request->get('key'));
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
