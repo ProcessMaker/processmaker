@@ -35,7 +35,11 @@
       >
         <i class="fas fa-info-circle" />
       </button>
-      <task-details-mobile :task="task" />
+      <task-details-mobile
+        :task="task"
+        :userIsAdmin="userIsAdmin"
+        :userIsProcessManager="userIsProcessManager"
+      />
     </div>
   </div>
 </template>
@@ -46,7 +50,7 @@ import TaskDetailsMobile from "./TaskDetailsMobile.vue";
 Vue.component("TaskDetailsMobile", TaskDetailsMobile);
 
 export default {
-  props: ["task"],
+  props: ["task", "userIsAdmin", "userIsProcessManager"],
   data() {
     return {};
   },

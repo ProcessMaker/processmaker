@@ -6,7 +6,7 @@
 
 @section('content_mobile')
 <div v-cloak id="taskMobile">
-  <navbar-task-mobile :task="task"></navbar-task-mobile>
+  <navbar-task-mobile :task="task" :userIsAdmin="userIsAdmin" :userIsProcessManager="userIsProcessManager"></navbar-task-mobile>
   
   <div class="d-flex flex-column">
     <div class="flex-fill">
