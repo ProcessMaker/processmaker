@@ -9,7 +9,7 @@
         <div v-else>
             Empty
         </div>
-        <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
+        <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" centered>
             <template v-slot:modal-header class="d-block">
                 <div>
                 <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
@@ -91,9 +91,16 @@
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
                     {{ $t('Cancel') }}
                 </button>
-                <button type="button" class="btn btn-secondary ml-3" @click="authorizeConnection" :disabled=" isInvalid || !changed ">
+                <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled=" isInvalid || !changed ">
                     {{ $t('Authorize')}}
                 </button>
+            </div>
+        </b-modal>
+
+        <b-modal class="setting-object-modal" v-model="showAuthorizingModal" size="lg" hide-footer hide-header centered no-fade>
+            <div class="text-center">
+                <h3>{{ $t('Connecting Driver') }}</h3>
+                <i class="fas fa-circle-notch fa-spin"></i>
             </div>
         </b-modal>
     </div>
@@ -117,10 +124,12 @@ export default {
             },
             selected: null,
             showModal: false,
+            showAuthorizingModal: false,
             transformed: null,
             errors: {},
             isInvalid: true,
             type: 'password',
+            resetData: true,
         }
     },
     computed: {
@@ -150,9 +159,6 @@ export default {
             deep: true,
         }
     },
-    created() {
-        console.log("GET SETTING CONNECTION PROPERTIES", this.setting);
-    },
     methods: {
         onCopy() {
             navigator.clipboard.writeText(this.formData.callback_url).then(() => {
@@ -175,22 +181,40 @@ export default {
             this.showModal = false;
         },
         onEdit(row) {
-            this.generateCallbackUrl(row.item);
-            this.showModal = true;
             if (this.value !== null) {
                 this.formData = this.value;
             }
+            this.generateCallbackUrl(row.item);
+            this.$nextTick(() => {
+                this.showModal = true;
+                
+            });
         },
         onModalHidden() {
             this.resetFormData();
         },
         authorizeConnection() {
-            console.log("AUTHORIZE CONNECTION");
-            this.onSave();
+            this.showAuthorizingModal = true;
+            this.showModal = false;
+            this.resetData = false;
+            ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`)
+            .then(response => {
+                ProcessMaker.alert('successfully authorized', 'success');
+                this.setting.ui.authorizedBadge = true;
+                this.emitSaved(this.setting);
+                this.showAuthorizingModal = false;
+            })
+            .catch(error => {
+                ProcessMaker.alert(error.message, 'danger');
+                this.showModal = true;
+                this.showAuthorizingModal = false;
+            });
         },
         onSave() {
-            this.showModal = false;
-            this.emitSaved(this.formData);
+            const driver = this.setting.key.split('cdata.')[1];
+
+            this.formData.driver = driver;
+            this.authorizeConnection();
             this.transformed = this.copy(this.formData);
         },
         generateCallbackUrl(data) {
@@ -199,11 +223,13 @@ export default {
             this.formData.callback_url = `${app_url}/external-integrations/${name}`;
         },
         resetFormData() {
-            this.formData = {
-                client_id: "",
-                client_secret: "",
-                callback_url: "",
-            };
+            if (this.resetData) {
+                this.formData = {
+                    client_id: "",
+                    client_secret: "",
+                    callback_url: "",
+                };
+            }
         }
     },
     mounted() {
