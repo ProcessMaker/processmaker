@@ -98,7 +98,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled"],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", "callFromAiModeler"],
     data: function() {
       return {
         showModal: false,
@@ -241,15 +241,23 @@
         ProcessMaker.apiClient.post("/processes", formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
+
           ProcessMaker.alert(this.$t("The process was created."), "success");
-          window.location = "/modeler/" + response.data.id;
+
+          if (this.callFromAiModeler) {
+            const url = `http://processmaker.test/package-ai/processes/create/${response.data.id}`;
+            this.$emit("clear-ai-history");
+            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
+          } else {
+            window.location = `/modeler/${response.data.id}`;
+          }
         })
         .catch(error => {
           this.disabled = false;

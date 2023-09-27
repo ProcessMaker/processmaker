@@ -73,7 +73,7 @@ class LoginController extends Controller
                 }
             }
         }
-        
+
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
@@ -121,6 +121,7 @@ class LoginController extends Controller
                 return $redirect;
             }
         }
+
         return $this->login($request);
     }
 

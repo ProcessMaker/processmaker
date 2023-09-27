@@ -60,9 +60,9 @@ export default {
           this.spin = 0;
           var instance = response.data;
           if (this.$cookies.get("isMobile")) {
-            window.location = "/requests/mobile/" + instance.id;
+            window.location = "/requests/mobile/" + instance.id + '?fromRedirect=true';
           } else {
-            window.location = "/requests/" + instance.id;
+            window.location = "/requests/" + instance.id + '?fromRedirect=true';
           }
         }).catch((err) => {
           this.disabled = false;
