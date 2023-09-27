@@ -399,6 +399,36 @@ class ProcessController extends Controller
         return new Resource($process->refresh());
     }
 
+    public function updateBpmn(Request $request, Process $process)
+    {
+        $request->validate(Process::rules($process));
+
+        // bpmn validation
+        if ($schemaErrors = $this->validateBpmn($request)) {
+            $warnings = [];
+            foreach ($schemaErrors as $error) {
+                if (is_string($error)) {
+                    $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                    $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                } else {
+                    $warnings[] = $error;
+                }
+            }
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
+        }
+
+        $process->bpmn = $request->input('bpmn');
+        $process->name = $request->input('name');
+        $process->description = $request->input('description');
+        $process->saveOrFail();
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
+
     /**
      * Update draft process.
      *
