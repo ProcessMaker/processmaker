@@ -1,5 +1,3 @@
-import { forEach } from "lodash";
-
 const ListMixin = {
   methods: {
     getSortParam() {
