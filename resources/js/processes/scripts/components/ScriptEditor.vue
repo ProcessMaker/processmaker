@@ -111,6 +111,7 @@
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
+                    :process-id="processId"
                     :default-prompt="prompt"
                     :lineContext="lineContext"
                     @get-selection="onGetSelection"
@@ -182,6 +183,16 @@
                       <b-col>
                         <i class="far fa-caret-square-right" />
                         {{ $t('Output') }}
+                      </b-col>
+                      <b-col class="text-right">
+                        <button
+                          type="button"
+                          v-b-modal.data-preview
+                          class="btn-sm float-right"
+                          @click.stop
+                        >
+                          <i class="fas ml-auto fas fa-expand" />
+                        </button>
                       </b-col>
                       <b-col
                         align-self="end"
@@ -272,6 +283,33 @@
         </span>
       </b-card-footer>
     </b-card>
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="stringifyJson"
+            :options="monacoOptionsOutput"
+            data-cy="editorViewFrame"
+            class="editor-modal"
+            language="json"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="stringifyJson"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
   </b-container>
 </template>
 
@@ -319,6 +357,9 @@ export default {
     packageAi: {
       default: 0,
     },
+    processId: {
+      default: 0,
+    },
     user: {
     },
   },
@@ -333,13 +374,15 @@ export default {
         icon: "fas fa-save",
         loaderAction: "",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-script");
+          ProcessMaker.EventBus.$emit("save-script", this.processId);
         },
       },
     ];
 
     return {
       executionKey: null,
+      iframeHeight: "600px",
+      stringifyJson: "",
       resizing: false,
       monacoOptions: {
         automaticLayout: true,
@@ -351,6 +394,15 @@ export default {
         enableSplitViewResizing: false,
         renderSideBySide: true,
         renderOverviewRuler: false,
+      },
+      monacoOptionsOutput: {
+        language: "json",
+        lineNumbers: "off",
+        readOnly: true,
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
       },
       code: this.script.code,
       newCode: "",
@@ -449,8 +501,8 @@ export default {
     this.subscribeToProgress();
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
-      this.save(onSuccess, onError);
+    ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
+      this.save(onSuccess, onError, processId);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -474,6 +526,10 @@ export default {
 
     // Display ellipsis menu.
     this.setEllipsisMenu();
+
+    if (this.processId !== 0) {
+      this.prompt = `${this.script.title}\n${this.script.description}`;
+    }
   },
 
   beforeDestroy() {
@@ -619,6 +675,7 @@ export default {
       if (output && !this.outputOpen) {
         this.outputOpen = true;
       }
+      this.stringifyJson = JSON.stringify(output, null, 2);
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
@@ -665,7 +722,7 @@ export default {
         this.executionKey = response.data.key;
       });
     },
-    save(onSuccess, onError) {
+    save(onSuccess, onError, processId) {
       ProcessMaker.apiClient
         .put(`scripts/${this.script.id}`, {
           code: this.code,
@@ -676,11 +733,15 @@ export default {
           timeout: this.script.timeout,
         })
         .then((response) => {
+          window.ProcessMaker.EventBus.$emit("save-changes");
           ProcessMaker.alert(this.$t("The script was saved."), "success");
           // Set published status.
           this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
+          }
+          if (processId !== 0 && processId !== undefined) {
+            window.location = `/modeler/${this.processId}`;
           }
         }).catch((err) => {
           if (typeof onError === "function") {
@@ -897,6 +958,14 @@ export default {
 @keyframes blink-animation {
   0% { opacity: 0 }
   100% { opacity: 1 }
+}
+
+//JSON Browser
+.tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+}
+.editor-modal {
+  height: 600px;
 }
 
 // Monaco editor diff styles

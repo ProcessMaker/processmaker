@@ -68,14 +68,16 @@
                   <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
-            <b-button 
-              :aria-label="$t('Copy to Clipboard')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              @click="onCopy(row)"
-              variant="link"
-              v-b-tooltip.hover
-              :title="$t('Copy to Clipboard')">
-                <i class="fa-lg fas fa-copy"></i>
+            <template v-if="row.item.key !== 'sso.default.login'">
+              <b-button
+                v-uni-aria-describedby="row.item.id.toString()"
+                v-b-tooltip.hover
+                variant="link"
+                :aria-label="$t('Copy to Clipboard')"
+                :title="$t('Copy to Clipboard')"
+                @click="onCopy(row)"
+              >
+                <i class="fa-lg fas fa-copy" />
               </b-button>
               
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
@@ -96,7 +98,7 @@
               :disabled="disableClear(row.item)" 
               @click="onClear(row)" 
               variant="link" 
-             >
+              >
                 <i class="fa-lg fas fa-trash-alt"></i>
               </b-button>
             </span>
@@ -109,6 +111,7 @@
               </b-button>
             </span>
           </template>
+        </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
@@ -154,7 +157,7 @@ import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
-import SettingForm from './SettingForm';
+import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -165,6 +168,7 @@ export default {
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
+    SettingDriverAuthorization,
     SettingFile,
     SettingObject,
     SettingScreen,
@@ -174,7 +178,6 @@ export default {
     SettingsExport,
     SettingsRange,
     SettingSelect,
-    SettingForm
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -288,8 +291,8 @@ export default {
           return 'setting-file';
         case 'range':
           return 'settings-range';
-        case 'form':
-          return 'setting-form';
+        case 'driver-auth':
+          return 'setting-driver-authorization';
         default:
           return 'setting-text-area';
       }
@@ -423,7 +426,7 @@ export default {
       }
     },
     onEdit(row) {
-      this.$refs[`settingComponent_${row.index}`].onEdit();
+      this.$refs[`settingComponent_${row.index}`].onEdit(row);
     },
     onNLQConversion(pmql) {
       this.searchQuery = pmql;
@@ -444,7 +447,7 @@ export default {
 
       return url;
     },
-    settingUrl() {
+    settingUrl(id = null) {
       return `${this.url}/${id}`;
     },
     /**
