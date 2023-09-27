@@ -48,7 +48,11 @@ class ImportScreen extends ImportProcess
 
         $this->prepareStatus('screens', count($this->file->screens));
         foreach ($this->file->screens as $screen) {
-            $new[Screen::class][$screen->id] = $this->saveScreen($screen);
+            // $new[Screen::class][$screen->id] = $this->saveScreen($screen);
+            $newScreen = $this->saveScreen($screen);
+            $this->status['screens']['id'] = $newScreen->id;
+
+            $new[Screen::class][$screen->id] = $newScreen;
             //determine if the screen has watchers
             if (property_exists($screen, 'watchers')) {
                 $names = [];
@@ -69,7 +73,10 @@ class ImportScreen extends ImportProcess
         if (isset($this->file->scripts)) {
             $this->prepareStatus('scripts', count($this->file->screens));
             foreach ($this->file->scripts as $script) {
-                $new[Script::class][$script->id] = $this->saveScript($script);
+                // $new[Script::class][$script->id] = $this->saveScript($script);
+                $newScript = $this->saveScript($script);
+                $this->status['scripts']['id'] = $newScript->id;
+                $new[Script::class][$script->id] = $newScript;
             }
             $this->finishStatus('scripts');
         }
