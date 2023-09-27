@@ -51,11 +51,18 @@ const ListMixin = {
         }
 
         let { filter } = this;
+        let filterParams = "";
 
         if (filter && filter.length) {
           if (filter.isPMQL()) {
             pmql = `(${pmql}) and (${filter})`;
             filter = "";
+          } else {
+            filterParams = `&user_id=${
+              window.ProcessMaker.user.id
+            }&filter=${
+              filter
+            }&statusfilter=ACTIVE,CLOSED`;
           }
         }
 
@@ -79,15 +86,14 @@ const ListMixin = {
             }&per_page=${
               this.perPage
             }&include=process,participants,data`
-                  + `&pmql=${
-                    encodeURIComponent(pmql)
-                  }&filter=${
-                    filter
-                  }&order_by=${
-                    this.orderBy === "__slot:ids" ? "id" : this.orderBy
-                  }&order_direction=${
-                    this.orderDirection
-                  }${this.additionalParams}`,
+              + `&pmql=${
+                encodeURIComponent(pmql)
+              }${filterParams
+              }&order_by=${
+                this.orderBy === "__slot:ids" ? "id" : this.orderBy
+              }&order_direction=${
+                this.orderDirection
+              }${this.additionalParams}`,
           )
           .then((response) => {
             this.data = this.transform(response.data);

@@ -11,7 +11,8 @@
     <div class="row">
       <div class="col-12">
         <div id="tasks-mobile" class="card card-body p-3">
-          <mobile-tasks />
+          <filter-mobile type="tasks" @filterspmqlchange="onFiltersPmqlChange"></filter-mobile>
+          <mobile-tasks ref="taskMobileList" :filter="filter" :pmql="fullPmql"></mobile-tasks>
         </div>
       </div>
     </div>
