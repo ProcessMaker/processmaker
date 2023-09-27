@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
+use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Setting;
@@ -69,6 +70,11 @@ class AboutController extends Controller
         if ($aiMicroService) {
             $microServices = [$aiMicroService];
         }
+
+        $installed = app(PackageManifest::class)->list();
+        $packages = array_filter($packages, function ($package) use ($installed) {
+            return in_array($package->name, $installed);
+        });
 
         return view('about.index',
             compact(
