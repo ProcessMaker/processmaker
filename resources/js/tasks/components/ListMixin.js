@@ -1,3 +1,5 @@
+import { forEach } from "lodash";
+
 const ListMixin = {
   methods: {
     getSortParam() {
@@ -64,6 +66,13 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            if (this.$cookies.get("isMobile") === "true") {
+              const dataIds = [];
+              this.data.data.forEach((element) => {
+                dataIds.push(element.id);
+              });
+              this.$cookies.set("tasksListMobile", JSON.stringify(dataIds));
+            }
             this.$emit("in-overdue", response.data.meta.in_overdue);
           })
           .catch((error) => {
