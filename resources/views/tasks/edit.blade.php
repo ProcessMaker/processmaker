@@ -199,6 +199,12 @@
                 </div>
             </div>
             @endif
+            <div v-if="panCommentInVueOptionsComponents">
+                <pan-comment commentable_id="task.id"
+                             commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                             :readonly="task.status === 'CLOSED'"
+                             />
+            </div>
         </div>
     </div>
 @endsection
@@ -314,7 +320,10 @@
           styleDataMonaco () {
             let height = window.innerHeight * 0.55;
             return "height: " + height + "px; border:1px solid gray;";
-          }
+          },
+          panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
+          },
         },
         methods: {
           completed(processRequestId) {

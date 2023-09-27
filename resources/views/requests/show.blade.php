@@ -359,13 +359,12 @@
           </template>
         </div>
       @endif
-      @can('view-comments')
-      <pan-comment 
-          commentable_id="{{ $request->getKey() }}" 
-          commentable_type="{{ get_class($request) }}"
-          :readonly="request.status === 'COMPLETED'"
-          />
-      @endcan
+      <div v-if="panCommentInVueOptionsComponents">
+          <pan-comment commentable_id="{{ $request->getKey() }}" 
+                       commentable_type="{{ get_class($request) }}"
+                       :readonly="request.status === 'COMPLETED'"
+                       />
+      </div>
     </div>
   </div>
 
@@ -535,6 +534,9 @@
         },
         requestBy() {
           return [this.request.user];
+        },
+        panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
         },
       },
       methods: {

@@ -25,6 +25,10 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
+        <pan-comment commentable_id="1"
+                     commentable_type="1"
+                     :readonly="false"
+                     />
       </b-card-body>
       <component
         :is="component.panel"
