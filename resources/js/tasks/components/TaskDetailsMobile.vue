@@ -102,7 +102,7 @@
                 </tr>
               </tbody>
             </table>
-            <div v-if="task.definition.allowReassignment || userIsAdmin || userIsProcessManager" class="p-3">
+            <div v-if="task.definition.allowReassignment || userisadmin || userisprocessmanager" class="p-3">
               <button
                 v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                 type="button"
@@ -132,7 +132,7 @@ Vue.component("ReassignMobileModal", ReassignMobileModal);
 
 export default {
   components: { ReassignMobileModal },
-  props: ["task", "userIsAdmin", "userIsProcessManager"],
+  props: ["task", "userisadmin", "userisprocessmanager"],
   data() {
     return {
       statusCard: "card-header text-capitalize text-white bg-success",
