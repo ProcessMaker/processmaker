@@ -13,7 +13,7 @@
         :multiple="true"
         :show-labels="false"
         :searchable="true"
-        :internal-search="false"
+        :internal-search="true"
         @open="load()"
         @search-change="load"
         @select="(selected) => this.lastSelectedId = selected.id"

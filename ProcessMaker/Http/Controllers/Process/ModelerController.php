@@ -138,7 +138,7 @@ class ModelerController extends Controller
             $controller = new PmBlockController();
             $newRequest = new Request(['per_page' => 10000]);
             $response = $controller->index($newRequest);
-            if ($response->response()->status() === 200) {
+            if ($response->response($newRequest)->status() === 200) {
                 $pmBlockList = json_decode($response->response()->content())->data;
             }
         }
