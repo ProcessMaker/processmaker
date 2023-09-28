@@ -212,14 +212,23 @@ export default {
         },
         onSave() {
             const driver = this.setting.key.split('cdata.')[1];
+            const dsn = `CData ${this.setting.name} Source`;
 
             this.formData.driver = driver;
-            this.authorizeConnection();
-            this.transformed = this.copy(this.formData);
+            this.formData.dsn = dsn;
+
+            this.emitSaved(this.formData);
+            
+            this.transformed = { ...this.formData };
+
+            this.$nextTick(() => {
+                this.authorizeConnection();
+            });
         },
         generateCallbackUrl(data) {
             const name = data.key.split('cdata.')[1];
             const app_url = document.head.querySelector('meta[name="app-url"]').content;
+            
             this.formData.callback_url = `${app_url}/external-integrations/${name}`;
         },
         resetFormData() {
