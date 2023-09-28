@@ -132,6 +132,7 @@ class RequestController extends Controller
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
         $addons = $this->getPluginAddons('edit', compact(['request']));
+        $dataActionsAddons = $this->getPluginAddons('edit.dataActions', []);
 
         $isProcessManager = $request->process?->manager_id === Auth::user()->id;
 
@@ -152,6 +153,7 @@ class RequestController extends Controller
             'canPrintScreens',
             'screenRequested',
             'addons',
+            'dataActionsAddons',
             'isProcessManager',
             'eligibleRollbackTask',
             'errorTask',
