@@ -28,6 +28,7 @@
           :screen-type="type"
           :screen="screen"
           :render-controls="displayBuilder"
+          :process-id="processId"
           @change="updateConfig"
         >
           <data-loading-basic
@@ -372,6 +373,9 @@ export default {
     isDraft: {
       type: Boolean,
       default: false,
+    },
+    processId: {
+      default: 0,
     },
   },
   data() {
@@ -1053,6 +1057,10 @@ export default {
             ProcessMaker.EventBus.$emit("save-changes");
             if (typeof onSuccess === "function") {
               onSuccess(response);
+            }
+
+            if (this.processId !== 0 && this.processId !== undefined && !exportScreen) {
+              window.location = `/modeler/${this.processId}`;
             }
           })
           .catch((err) => {
