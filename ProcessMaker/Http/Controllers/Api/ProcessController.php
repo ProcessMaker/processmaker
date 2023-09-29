@@ -424,6 +424,20 @@ class ProcessController extends Controller
         $process->description = $request->input('description');
         $process->saveOrFail();
 
+        // If is a subprocess, we need to update the name in the BPMN too
+        if ($request->input('parentProcessId') && $request->input('nodeId')) {
+            $parentProcess = Process::findOrFail($request->input('parentProcessId'));
+            $definitions = $parentProcess->getDefinitions();
+            $elements = $definitions->getElementsByTagName('callActivity');
+            foreach ($elements as $element) {
+                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                    $element->setAttribute('name', $request->input('name'));
+                }
+            }
+            $parentProcess->bpmn = $definitions->saveXML();
+            $parentProcess->saveOrFail();
+        }
+
         return response()->json([
             'success' => true,
         ], 200);
