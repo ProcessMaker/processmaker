@@ -29,7 +29,12 @@ class DesignerController extends Controller
 
     private function checkAuth()
     {
-        $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects';
+        $perm = 'view-processes|
+            view-process-categories|
+            view-scripts|
+            view-screens|
+            view-environment_variables|
+            view-projects';
         switch (Auth::user()->canAnyFirst($perm)) {
             case 'view-processes':
                 return false; // already on index, continue with it
