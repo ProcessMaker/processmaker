@@ -85,6 +85,9 @@ abstract class Base
 
         // Set docker shared memory size
         $parameters .= ' --shm-size=' . env('DOCKER_SHARED_MEMORY', '256m');
+        
+        // Add any custom parameters specified in the config file
+        $parameters .= ' ' . config('app.processmaker_scripts_docker_params');
 
         $dockerConfig = $this->config($code, [
             'timeout' => $timeout,
