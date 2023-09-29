@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Auth;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Jobs\BuildScriptExecutor;
+use ProcessMaker\Models\User;
 
 class ScriptExecutorExporter extends ExporterBase
 {
@@ -28,7 +30,12 @@ class ScriptExecutorExporter extends ExporterBase
                 if (!empty($this->model->getChanges())) {
                     $original = $this->model->getAttributes();
                     ScriptExecutorUpdated::dispatch($this->model->id, $original, $this->model->getChanges());
-                    BuildScriptExecutor::dispatch($this->model->id, auth()->user()->id);
+                    if (!app()->runningInConsole()) {
+                        $user = Auth::user();
+                    } else {
+                        $user = User::where('is_administrator', 1)->first();
+                    }
+                    BuildScriptExecutor::dispatch($this->model->id, $user->id);
                 }
                 break;
 
