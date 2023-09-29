@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!callFromAiModeler"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
@@ -105,7 +106,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled"],
+  props: ["countCategories", "types", "isProjectsInstalled", "callFromAiModeler"],
   data() {
     return {
       formData: {},
@@ -126,6 +127,9 @@ export default {
     channel.close();
   },
   methods: {
+    show() {
+      this.$bvModal.show("createScreen");
+    },
     resetFormData() {
       this.formData = {
         title: null,
@@ -163,17 +167,24 @@ export default {
         .post("screens", this.formData)
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
-          if (this.isQuickCreate()) {
-            channel.postMessage({
-              assetType: "screen",
-              id: data.id,
-            });
+
+          const url = `/designer/screen-builder/${data.id}/edit`;
+
+          if (this.callFromAiModeler) {
+            this.$emit("screen-created-from-modeler", url, data.id, data.title);
+          } else {
+            if (this.isQuickCreate()) {
+              channel.postMessage({
+                assetType: "screen",
+                id: data.id,
+              });
+            }
+            window.location = url;
           }
-          window.location = `/designer/screen-builder/${data.id}/edit`;
         })
         .catch((error) => {
           this.disabled = false;
-          if (error.response.status && error.response.status === 422) {
+          if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
         });
