@@ -12,7 +12,6 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
-use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
@@ -90,7 +89,10 @@ class LoginController extends Controller
     protected function getDefaultSSO(array $addons): string
     {
         $addonsData = !empty($addons) ? head($addons)->data : [];
-        $defaultSSO = Setting::byKey(AuthDefaultSeeder::SSO_DEFAULT_LOGIN);
+        $defaultSSO = '';
+        if (class_exists(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::class)) {
+            $defaultSSO = Setting::byKey(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::SSO_DEFAULT_LOGIN);
+        }
         if (!empty($defaultSSO) && !empty($addonsData)) {
             // Get the config selected
             $position = $this->getColumnAttribute($defaultSSO, 'config', 'config');
