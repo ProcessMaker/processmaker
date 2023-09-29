@@ -313,6 +313,10 @@ export default {
     },
 
     async cleanScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        window.ProcessMaker.alert(this.$t("The text editor does not have any code to clean."), "danger");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
@@ -348,6 +352,10 @@ export default {
     },
 
     async documentScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        window.ProcessMaker.alert(this.$t("The text editor does not have any code to document."), "danger");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
@@ -386,6 +394,10 @@ export default {
         });
     },
     async explainScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        window.ProcessMaker.alert(this.$t("The text editor does not have any code to explain."), "danger");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", false);
