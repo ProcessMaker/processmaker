@@ -32,14 +32,7 @@ class GenerateMenus
                     ['route' => 'tasks.index', 'id' => 'tasks']
                 )->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('
-                view-processes|
-                view-process-categories|
-                view-scripts|
-                view-screens|
-                view-environment_variables|
-                view-projects'
-            )) {
+            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects')) {
                 $menu->group(['prefix' => 'designer'], function ($request_items) {
                     $request_items->add(
                         __('Designer'),
