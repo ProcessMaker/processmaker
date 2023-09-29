@@ -59,10 +59,11 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
+          this.$cookies.set('fromTriggerStartEvent', true, '1min');
           if (this.$cookies.get("isMobile")) {
-            window.location = "/requests/mobile/" + instance.id + '?fromRedirect=true';
+            window.location = "/requests/mobile/" + instance.id;
           } else {
-            window.location = "/requests/" + instance.id + '?fromRedirect=true';
+            window.location = "/requests/" + instance.id;
           }
         }).catch((err) => {
           this.disabled = false;
