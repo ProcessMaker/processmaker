@@ -61,6 +61,12 @@ export default {
         this.$set(this.node, "interstitialScreenRef", value);
       },
     },
+    allowInterstitialGetter: {
+      handler(value) {
+        this.allowInterstitialSetter(value);
+      },
+      immediate: true,
+    },
   },
   methods: {
     /**
