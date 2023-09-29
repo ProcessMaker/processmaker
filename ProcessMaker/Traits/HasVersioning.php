@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
@@ -53,7 +54,11 @@ trait HasVersioning
         $this->versions()->create($attributes);
 
         // Delete draft version.
-        $this->deleteDraft();
+        try {
+            $this->deleteDraft();
+        } catch(QueryException $e) {
+            // Skip delete if the screen version is used in a process.
+        }
     }
 
     /**
