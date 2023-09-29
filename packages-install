@@ -1,0 +1,492 @@
+"repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/processmaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/packages"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/connector-send-email"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/connector-pdf-print"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/docker-executor-node-ssr"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/connector-idp"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-advanced-user-manager"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/package-data-sources"
+        }
+    ],
+
+
+
+composer require git clone --branch v git@github.com:ProcessMaker/docker-executor-node-ssr
+php artisan docker-executor-node-ssr:install
+composer require git clone --branch v git@github.com:ProcessMaker/connector-send-email
+php artisan connector-send-email:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-data-sources
+php artisan package-data-sources:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-collections
+php artisan package-collections:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-savedsearch
+php artisan package-savedsearch:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-auth
+php artisan package-auth:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-webentry
+php artisan package-webentry:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-files
+php artisan package-files:install
+composer require git clone --branch v git@github.com:ProcessMaker/package-advanced-user-manager
+php artisan package-advanced-user-manager:install
+composer require git clone --branch v git@github.com:ProcessMaker/connector-idp
+php artisan connector-idp:install
+composer require git clone --branch v git@github.com:ProcessMaker/connector-pdf-print
+php artisan connector-pdf-print:install
+
+
+#version processmaker 4.5.0
+git clone --branch v1.2.0 git@github.com:ProcessMaker/connector-docusign.git
+git clone --branch v1.1.1 git@github.com:ProcessMaker/connector-idp.git
+git clone --branch v1.11.1 git@github.com:ProcessMaker/connector-pdf-print.git
+git clone --branch v1.16.1 git@github.com:ProcessMaker/connector-send-email.git
+git clone --branch v1.3.0 git@github.com:ProcessMaker/connector-slack.git
+git clone --branch v1.9.0 git@github.com:ProcessMaker/package-actions-by-email.git
+git clone --branch v1.4.0 git@github.com:ProcessMaker/package-advanced-user-manager.git
+git clone --branch v1.10.1 git@github.com:ProcessMaker/package-auth.git
+git clone --branch v2.7.0 git@github.com:ProcessMaker/package-collections.git
+git clone --branch v1.5.0 git@github.com:ProcessMaker/package-comments.git
+git clone --branch v1.14.0 git@github.com:ProcessMaker/package-data-sources.git
+git clone --branch v1.6.0 git@github.com:ProcessMaker/package-dynamic-ui.git
+git clone --branch v1.6.2  git@github.com:ProcessMaker/package-files.git
+git clone --branch v1.4.0 git@github.com:ProcessMaker/package-googleplaces.git
+git clone --branch v1.2.0 git@github.com:ProcessMaker/package-process-documenter.git
+git clone --branch v1.3.0 git@github.com:ProcessMaker/package-process-optimization.git
+git clone --branch v1.21.0 git@github.com:ProcessMaker/package-savedsearch.git
+git clone --branch v1.3.0 git@github.com:ProcessMaker/package-sentry.git
+git clone --branch v1.4.0 git@github.com:ProcessMaker/package-signature.git
+git clone --branch 1.0.13  git@github.com:ProcessMaker/package-stm
+git clone --branch v2.3.2 git@github.com:ProcessMaker/package-translations.git
+git clone --branch v1.3.1 git@github.com:ProcessMaker/package-versions.git
+git clone --branch v2.8.0 git@github.com:ProcessMaker/package-vocabularies.git
+git clone --branch v2.11.0 git@github.com:ProcessMaker/package-webentry.git
+git clone --branch v0.0.1-RC1 git@github.com:ProcessMaker/packages.git
+
+#version processmaker 4.6.1
+git clone --branch v0.0.1-RC1 git@github.com:ProcessMaker/packages.git
+git clone --branch v1.2.1 git@github.com:ProcessMaker/connector-docusign.git
+git clone --branch v1.2.2 git@github.com:ProcessMaker/connector-idp.git
+git clone --branch v1.11.2 git@github.com:ProcessMaker/connector-pdf-print.git
+git clone --branch v1.18.1 git@github.com:ProcessMaker/connector-send-email.git
+git clone --branch v1.3.1 git@github.com:ProcessMaker/connector-slack.git
+git clone --branch v1.11.1 git@github.com:ProcessMaker/package-actions-by-email.git
+git clone --branch v1.4.0 git@github.com:ProcessMaker/package-advanced-user-manager.git
+git clone --branch v1.10.1 git@github.com:ProcessMaker/package-auth.git
+git clone --branch v2.9.2 git@github.com:ProcessMaker/package-collections.git
+git clone --branch v1.5.1 git@github.com:ProcessMaker/package-comments.git
+git clone --branch v1.16.1 git@github.com:ProcessMaker/package-data-sources.git
+git clone --branch v1.9.1 git@github.com:ProcessMaker/package-dynamic-ui.git
+git clone --branch v1.7.1  git@github.com:ProcessMaker/package-files.git
+git clone --branch v1.4.1 git@github.com:ProcessMaker/package-googleplaces.git
+git clone --branch v1.4.0 git@github.com:ProcessMaker/package-process-documenter.git
+git clone --branch v1.3.0 git@github.com:ProcessMaker/package-process-optimization.git
+git clone --branch v1.23.2 git@github.com:ProcessMaker/package-savedsearch.git
+git clone --branch v1.3.1 git@github.com:ProcessMaker/package-sentry.git
+git clone --branch v1.4.1 git@github.com:ProcessMaker/package-signature.git
+#git clone --branch 1.0.13  git@github.com:ProcessMaker/package-stm
+git clone --branch v2.3.3 git@github.com:ProcessMaker/package-translations.git
+git clone --branch v1.4.2 git@github.com:ProcessMaker/package-versions.git
+git clone --branch v2.9.1 git@github.com:ProcessMaker/package-vocabularies.git
+git clone --branch v2.13.0 git@github.com:ProcessMaker/package-webentry.git
+
+
+
+#version processmaker develop
+git clone git@github.com:ProcessMaker/connector-docusign.git
+git clone git@github.com:ProcessMaker/connector-idp.git
+git clone git@github.com:ProcessMaker/connector-pdf-print.git
+git clone git@github.com:ProcessMaker/connector-send-email.git
+git clone git@github.com:ProcessMaker/connector-slack.git
+git clone git@github.com:ProcessMaker/package-actions-by-email.git
+git clone git@github.com:ProcessMaker/package-advanced-user-manager.git
+git clone git@github.com:ProcessMaker/package-auth.git
+git clone git@github.com:ProcessMaker/package-collections.git
+git clone git@github.com:ProcessMaker/package-comments.git
+git clone git@github.com:ProcessMaker/package-data-sources.git
+git clone git@github.com:ProcessMaker/package-dynamic-ui.git
+git clone git@github.com:ProcessMaker/package-files.git
+git clone git@github.com:ProcessMaker/package-googleplaces.git
+git clone git@github.com:ProcessMaker/package-process-documenter.git
+git clone git@github.com:ProcessMaker/package-process-optimization.git
+git clone git@github.com:ProcessMaker/package-savedsearch.git
+git clone git@github.com:ProcessMaker/package-sentry.git
+git clone git@github.com:ProcessMaker/package-signature.git
+git clone git@github.com:ProcessMaker/package-stm
+git clone git@github.com:ProcessMaker/package-translations.git
+git clone git@github.com:ProcessMaker/package-versions.git
+git clone git@github.com:ProcessMaker/package-vocabularies.git
+git clone git@github.com:ProcessMaker/package-webentry.git
+git clone git@github.com:ProcessMaker/packages.git
+
+"repositories": [
+        {
+            "type": "path",
+            "url": "/opt/github/develop/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/packages"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-node-ssr"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-python"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-php"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-lua"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-node"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-csharp"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-java"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-r"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/docker-executor-python"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/connector-docusign"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/connector-pdf-print"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/connector-idp"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/connector-send-email"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/connector-slack"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-actions-by-email"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-advanced-user-manager"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-auth"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-collections"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-comments"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-data-sources"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-dynamic-ui"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-files"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-googleplaces"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-process-documenter"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-process-optimization"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-savedsearch"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-sentry"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-signature"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-stm"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-translations"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-versions"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-vocabularies"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-webentry"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-ellucian-ethos"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-pm-blocks"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-ai"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-product-analytics"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-photo-video"
+        },
+        {
+            "type": "path",
+            "url": "/opt/github/develop/package-projects"
+        }
+    ],
+
+
+composer require socialiteproviders/providers
+#php artisan socialiteproviders/providers:install
+composer require processmaker/docker-executor-node-ssr
+php artisan docker-executor-node-ssr:install
+composer require processmaker/connector-send-email
+php artisan connector-send-email:install
+composer require processmaker/package-data-sources
+php artisan package-data-sources:install
+composer require processmaker/package-collections
+php artisan package-collections:install
+composer require processmaker/package-savedsearch
+php artisan package-savedsearch:install
+composer require processmaker/connector-docusign
+php artisan connector-docusign:install
+composer require processmaker/connector-pdf-print
+php artisan connector-pdf-print:install
+composer require processmaker/connector-idp
+php artisan connector-idp:install
+composer require processmaker/connector-slack
+#php artisan connector-slack:install
+composer require processmaker/package-actions-by-email
+php artisan package-actions-by-email:install
+composer require processmaker/package-advanced-user-manager
+php artisan package-advanced-user-manager:install
+composer require processmaker/package-auth
+php artisan package-auth:install
+composer require processmaker/package-comments
+php artisan package-comments:install
+composer require processmaker/package-dynamic-ui
+php artisan package-dynamic-ui:install
+composer require processmaker/package-files
+php artisan package-files:install
+composer require processmaker/package-googleplaces
+#php artisan package-googleplaces:install
+
+#AIzaSyD_kCcVR2e6ZbHBsMuzd-H9eJTdtJrwftc
+#AIzaSyD_kCcVR2e6ZbHBsMuzd-H9eJTdtJrwftc
+composer require processmaker/package-process-documenter
+php artisan package-process-documenter:install
+composer require processmaker/package-process-optimization
+php artisan package-process-optimization:install
+composer require processmaker/package-sentry
+php artisan package-sentry:install
+composer require processmaker/package-signature
+php artisan package-signature:install
+composer require processmaker/package-stm
+#php artisan package-stm
+composer require processmaker/package-translations
+php artisan package-translations:install
+composer require processmaker/package-versions
+php artisan package-versions:install
+composer require processmaker/package-vocabularies
+php artisan package-vocabularies:install
+composer require processmaker/package-webentry
+php artisan package-webentry:install
+composer require processmaker/package-ellucian-ethos
+php artisan package-ellucian-ethos:install
+
+
+
+
+
+
+
+
+composer require processmaker/docker-executor-node-ssr
+php artisan docker-executor-node-ssr:install
+composer require processmaker/package-comments
+php artisan package-comments:install
+composer require processmaker/package-pm-blocks --ignore-platform-req=ext-rdkafka
+php artisan package-pm-blocks:install
+
+
+composer require processmaker/connector-send-email
+php artisan connector-send-email:install
+composer require processmaker/package-data-sources
+php artisan package-data-sources:install
+composer require processmaker/package-savedsearch
+php artisan package-savedsearch:install
+composer require processmaker/package-collections
+php artisan package-collections:install
+
+composer require processmaker/package-ellucian-ethos
+php artisan package-ellucian-ethos:install
+
+
+
+composer require processmaker/docker-executor-node-ssr --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-node-ssr:install
+composer require processmaker/docker-executor-python --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-python:install
+composer require processmaker/package-files  --ignore-platform-req=ext-rdkafka
+php artisan package-files:install
+composer require processmaker/package-pm-blocks --ignore-platform-req=ext-rdkafka
+php artisan package-pm-blocks:install
+composer require processmaker/package-versions --ignore-platform-req=ext-rdkafka
+php artisan package-versions:install
+composer require processmaker/package-comments  --ignore-platform-req=ext-rdkafka
+php artisan package-comments:install
+composer require processmaker/connector-send-email --ignore-platform-req=ext-rdkafka
+php artisan connector-send-email:install
+composer require processmaker/package-webentry --ignore-platform-req=ext-rdkafka
+php artisan package-webentry:install
+composer require processmaker/connector-idp --ignore-platform-req=ext-rdkafka
+php artisan connector-idp:install
+composer require processmaker/connector-pdf-print --ignore-platform-req=ext-rdkafka
+php artisan connector-pdf-print:install
+composer require processmaker/package-data-sources --ignore-platform-req=ext-rdkafka
+php artisan package-data-sources:install
+composer require processmaker/package-collections --ignore-platform-req=ext-rdkafka
+php artisan package-collections:install
+composer require processmaker/package-savedsearch --ignore-platform-req=ext-rdkafka
+php artisan package-savedsearch:install
+composer require processmaker/package-collections --ignore-platform-req=ext-rdkafka
+php artisan package-collections:install
+composer require processmaker/package-actions-by-email --ignore-platform-req=ext-rdkafka
+php artisan package-actions-by-email:install
+composer require processmaker/package-ai --ignore-platform-req=ext-rdkafka
+php artisan package-ai:install
+composer require processmaker/package-product-analytics --ignore-platform-req=ext-rdkafka
+php artisan package-product-analytics:install
+composer require processmaker/package-photo-video --ignore-platform-req=ext-rdkafka
+php artisan package-photo-video:install
+composer require processmaker/package-translations --ignore-platform-req=ext-rdkafka
+php artisan package-translations:install
+composer require processmaker/package-auth --ignore-platform-req=ext-rdkafka
+php artisan package-auth:install
+composer require processmaker/package-ellucian-ethos --ignore-platform-req=ext-rdkafka
+php artisan package-ellucian-ethos:install
+
+
+
+
+composer require processmaker/docker-executor-php  --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-php:install
+composer require processmaker/docker-executor-lua --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-lua:install
+composer require processmaker/docker-executor-node --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-node:install
+composer require processmaker/docker-executor-csharp --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-csharp:install
+composer require processmaker/docker-executor-java --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-java:install
+composer require processmaker/docker-executor-r --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-r:install
+composer require processmaker/docker-executor-python --ignore-platform-req=ext-rdkafka
+php artisan docker-executor-python:install
+
+composer require processmaker/package-auth --ignore-platform-req=ext-rdkafka
+php artisan package-auth:install
+
+composer require processmaker/package-projects --ignore-platform-req=ext-rdkafka
+php artisan package-projects:install
+composer require processmaker/package-signature --ignore-platform-req=ext-rdkafka
+php artisan package-signature:install
+
+
+composer require processmaker/package-dynamic-ui --ignore-platform-req=ext-rdkafka
+php artisan package-dynamic-ui:install
+
