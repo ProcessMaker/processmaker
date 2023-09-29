@@ -91,7 +91,9 @@ class LoginController extends Controller
         $addonsData = !empty($addons) ? head($addons)->data : [];
         $defaultSSO = '';
         if (class_exists(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::class)) {
-            $defaultSSO = Setting::byKey(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::SSO_DEFAULT_LOGIN);
+            $defaultSSO = Setting::byKey(
+                \ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::SSO_DEFAULT_LOGIN
+            );
         }
         if (!empty($defaultSSO) && !empty($addonsData)) {
             // Get the config selected
