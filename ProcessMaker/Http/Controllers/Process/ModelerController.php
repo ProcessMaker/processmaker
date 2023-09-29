@@ -82,6 +82,19 @@ class ModelerController extends Controller
      */
     public function inflight(ModelerManager $manager, Process $process, ProcessRequest $request)
     {
+        // Use the process version that was active when the request was started. PR #4934
+        $processRequest = ProcessRequest::find($request->id);
+
+        return $this->renderInflight($manager, $process, $processRequest);
+    }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map.
+     * 
+     * This method is required by package-testing to overwrite the 3rd parameter ProcessRequest $request parameter.
+     */
+    public function renderInflight(ModelerManager $manager, Process $process, $processRequest)
+    {
         $pmBlockList = $this->getPmBlockList();
 
         event(new ModelerStarting($manager));
@@ -91,8 +104,6 @@ class ModelerController extends Controller
         $requestInProgressNodes = [];
         $requestIdleNodes = [];
 
-        // Use the process version that was active when the request was started.
-        $processRequest = ProcessRequest::find($request->id);
         if ($processRequest) {
             $bpmn = $process->versions()
                 ->where('id', $processRequest->process_version_id)
@@ -123,7 +134,7 @@ class ModelerController extends Controller
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
             'requestIdleNodes' => $requestIdleNodes,
-            'requestId' => $request->id,
+            'requestId' => $processRequest->id,
             'pmBlockList' => $pmBlockList,
         ]);
     }
