@@ -54,10 +54,10 @@ class CommentController extends Controller
             $tokenIds = $requestTokens->pluck('id');
             $query->where(function ($query) use ($commentable_id) {
                 $query->where('commentable_type', ProcessRequest::class)
-                        ->where('commentable_id', $commentable_id);
+                    ->where('commentable_id', $commentable_id);
             })->orWhere(function ($query) use ($tokenIds) {
                 $query->where('commentable_type', ProcessRequestToken::class)
-                        ->whereIn('commentable_id', $tokenIds);
+                    ->whereIn('commentable_id', $tokenIds);
             });
         } else {
             if ($commentable_type) {
@@ -87,7 +87,7 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index2(Request $request)
+    public function modern(Request $request)
     {
         $query = Comment::query()
             ->with('user')
@@ -98,6 +98,11 @@ class CommentController extends Controller
             $flag = 'all';
         }
         $query->hidden($flag);
+
+        $groupName = $request->input('group_name', '');
+        if (!empty($groupName)) {
+            $query->where('group_name', $groupName);
+        }
 
         $response = $query->orderBy(
                 $request->input('order_by', 'created_at'),

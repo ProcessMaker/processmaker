@@ -25,8 +25,9 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
-        <pan-comment commentable_id="1"
-                     commentable_type="1"
+        <pan-comment group_name="Designer"
+                     :commentable_id="processId"
+                     commentable_type="ProcessMaker\Models\Process"
                      :readonly="false"
                      />
       </b-card-body>
