@@ -27,4 +27,14 @@
 
 @section('js')
     <script src="{{mix('js/admin/settings/index.js')}}"></script>
+    @if($errors->has('error'))
+        <script>
+            window.ProcessMaker.alert("{{ $errors->first('error') }}", 'danger');
+        </script>
+    @endif
+     @if($errors->has('message'))
+        <script>
+            window.ProcessMaker.alert("{{ $message->first('message') }}", 'success');
+        </script>
+    @endif
 @endsection
