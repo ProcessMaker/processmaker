@@ -66,11 +66,12 @@
           />
         </b-form-group>
         <category-select
-          :value="categoryType ? formData.category_type_id : formData.screen_category_id"
-          :errors="categoryType ? errors.category_type_id : errors.screen_category_id"
+          v-show="!projectAsset"
+          v-model="formData.screen_category_id"
+          :errors="errors.screen_category_id"
           :label="$t('Category')"
-          :api-get="categoryType || 'screen_categories'"
-          :api-list="categoryType || 'screen_categories'"
+          api-get="screen_categories"
+          api-list="screen_categories"
           name="category"
         ></category-select>
         <project-select
@@ -110,7 +111,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "categoryType", "copyAssetMode"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset"],
   data() {
     return {
       formData: {},

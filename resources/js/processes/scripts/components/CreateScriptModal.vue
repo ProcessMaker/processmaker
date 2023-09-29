@@ -56,11 +56,12 @@
           />
         </b-form-group>
         <category-select
-          :value="categoryType ? category_type_id : script_category_id"
-          :errors="categoryType ? addError.category_type_id : addError.script_category_id"
+          v-show="!projectAsset"
+          v-model="script_category_id"
+          :errors="addError.script_category_id"
           :label="$t('Category')"
-          :api-get="categoryType || 'script_categories'"
-          :api-list="categoryType || 'script_categories'"
+          api-get="script_categories"
+          api-list="script_categories"
           name="script_category_id"
         ></category-select>
         <project-select
@@ -192,7 +193,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'categoryType', 'copyAssetMode'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset'],
     data: function() {
       return {
         title: '',
