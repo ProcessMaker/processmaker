@@ -59,7 +59,7 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
-          if (this.$cookies.get("isMobile")) {
+          if (this.$cookies.get("isMobile") === "true") {
             window.location = "/requests/mobile/" + instance.id + '?fromRedirect=true';
           } else {
             window.location = "/requests/" + instance.id + '?fromRedirect=true';
