@@ -69,7 +69,7 @@ trait HasVersioning
         $attributes = $this->getModelAttributes();
         $attributes['draft'] = true;
 
-        $this->versions()->updateOrCreate([
+        return $this->versions()->updateOrCreate([
             'draft' => true,
         ], $attributes);
     }

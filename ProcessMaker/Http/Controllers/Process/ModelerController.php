@@ -110,8 +110,8 @@ class ModelerController extends Controller
                 ->firstOrFail()
                 ->bpmn;
 
-            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'TRIGGERED'])->pluck('element_id');
-            $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
+            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()->whereIn('status', ['ACTIVE', 'INCOMING'])->pluck('element_id');
             // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
