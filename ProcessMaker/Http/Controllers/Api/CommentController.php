@@ -90,8 +90,8 @@ class CommentController extends Controller
     public function modern(Request $request)
     {
         $query = Comment::query()
-            ->with('user')
-            ->with('repliedMessage');
+                ->with('user')
+                ->with('repliedMessage');
 
         $flag = 'visible';
         if (\Auth::user()->is_administrator) {
@@ -99,15 +99,16 @@ class CommentController extends Controller
         }
         $query->hidden($flag);
 
+        $groupId = $request->input('group_id', '');
         $groupName = $request->input('group_name', '');
-        if (!empty($groupName)) {
-            $query->where('group_name', $groupName);
-        }
+        $query->where('group_id', $groupId);
+        $query->where('group_name', $groupName);
 
-        $response = $query->orderBy(
-                $request->input('order_by', 'created_at'),
-                $request->input('order_direction', 'ASC')
-            )->paginate($request->input('per_page', 100));
+        $column = $request->input('order_by', 'created_at');
+        $direction = $request->input('order_direction', 'ASC');
+        $perPage = $request->input('per_page', 100);
+        $response = $query->orderBy($column, $direction)
+                ->paginate($perPage);
 
         return new ApiCollection($response);
     }

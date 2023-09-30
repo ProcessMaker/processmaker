@@ -191,7 +191,8 @@
             </div>
             @endif
             <div v-if="panCommentInVueOptionsComponents">
-                <pan-comment group_name="RequestTask"
+                <pan-comment :group_id="task.id"
+                             group_name="ProcessMaker\Models\ProcessRequestToken"
                              :commentable_id="task.id"
                              commentable_type="ProcessMaker\Models\ProcessRequestToken"
                              :readonly="task.status === 'CLOSED'"

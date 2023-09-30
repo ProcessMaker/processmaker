@@ -25,7 +25,8 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
-        <pan-comment group_name="Designer"
+        <pan-comment :group_id="processId"
+                     group_name="ProcessMaker\Models\Process"
                      :commentable_id="processId"
                      commentable_type="ProcessMaker\Models\Process"
                      :readonly="false"

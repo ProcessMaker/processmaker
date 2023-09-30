@@ -356,8 +356,9 @@
         </div>
       @endif
       <div v-if="panCommentInVueOptionsComponents">
-          <pan-comment group_name="Request"
-                       commentable_id="{{ $request->getKey() }}" 
+          <pan-comment group_id="{{ $request->getKey() }}"
+                       group_name="{{ get_class($request) }}"
+                       commentable_id="{{ $request->getKey() }}"
                        commentable_type="{{ get_class($request) }}"
                        :readonly="request.status === 'COMPLETED'"
                        />
