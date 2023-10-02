@@ -412,11 +412,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
     /**
      * Run the service task implementation
+     *
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
-     *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
@@ -425,5 +425,17 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         $service = new $class();
 
         return $service->run($data, $config, $tokenId, $timeout);
+    }
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation)
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+        return $class;
     }
 }

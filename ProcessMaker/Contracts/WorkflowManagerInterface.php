@@ -178,11 +178,19 @@ interface WorkflowManagerInterface
     /**
      * Run the service task implementation
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
      *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '');
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation);
 }
