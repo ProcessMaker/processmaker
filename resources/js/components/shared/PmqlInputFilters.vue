@@ -193,7 +193,7 @@
             </multiselect>
         </div>
         <div v-if="type == 'projects'" class="card-body">
-          <label for="project_filter">{{$t('Project')}}</label>
+          <label for="project_filter">{{$t('Title')}}</label>
           <multiselect id="project_filter"
             v-model="projects"
             @search-change="getProjects"
