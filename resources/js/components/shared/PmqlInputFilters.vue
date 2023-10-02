@@ -193,8 +193,8 @@
             </multiselect>
         </div>
         <div v-if="type == 'projects'" class="card-body">
-          <label for="project_filter">{{$t('Title')}}</label>
-          <multiselect id="project_filter"
+          <label for="project_title_filter">{{$t('Title')}}</label>
+          <multiselect id="project_title_filter"
             v-model="projects"
             @search-change="getProjects"
             @input="buildPmql"
@@ -215,7 +215,7 @@
                   {{ $t('No Data Available') }}
               </template>
               <template slot="selection" slot-scope="{ values, search, isOpen }">
-                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
+                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('projects') }}</span>
               </template>
             </multiselect>
           
@@ -732,9 +732,9 @@ export default {
             });
     },
     getProjects(query) {
-      this.isLoading.projects = true;
+      this.isLoading.projects = true;     
       ProcessMaker.apiClient
-        .get("/projects/search?type=project&filter=" + query, { baseURL: '' })
+        .get("/projects/search?type=projects&filter=" + query)
         .then(response => {
             this.projectOptions = response.data;
             this.isLoading.projects = false
