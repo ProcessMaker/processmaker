@@ -21,6 +21,8 @@
             :param-request="this.urlPmql ? '' : paramRequest"
             :param-name="this.urlPmql ? '' : paramName"
             :param-projects="this.urlPmql ? '' : paramProjects"
+            :param-project-members="this.urlPmql ? '' : paramProjectMembers"
+            :param-project-categories="this.urlPmql ? '' : paramProjectCategories"
             :permission="permission"
             @filterspmqlchange="onFiltersPmqlChange">
           </pmql-input-filters>
@@ -121,7 +123,9 @@ export default {
     "paramRequester",
     "paramParticipants",
     "paramRequest",
-    'paramProjects',
+    "paramProjects",
+    'paramProjectMembers',
+    'paramProjectCategories',
     "paramName",
     "permission"
   ],

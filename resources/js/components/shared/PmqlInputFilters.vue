@@ -193,6 +193,32 @@
             </multiselect>
         </div>
         <div v-if="type == 'projects'" class="card-body">
+          <label for="project_filter">{{$t('Project')}}</label>
+          <multiselect id="project_filter"
+            v-model="projects"
+            @search-change="getProjects"
+            @input="buildPmql"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.projects"
+            open-direction="bottom"
+            label="title"
+            :options="projectOptions"
+            :track-by="'id'"
+            :multiple="true"
+            :aria-label="$t('Project')"
+            :placeholder="$t('Project')">
+              <template slot="noResult">
+                  {{ $t('No Results') }}
+              </template>
+              <template slot="noOptions">
+                  {{ $t('No Data Available') }}
+              </template>
+              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
+              </template>
+            </multiselect>
+          
           <label for="project_member_filter">{{$t('Members')}}</label>
             <multiselect id="project_member_filter"
                 v-model="members"
@@ -241,31 +267,7 @@
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                       <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
                   </template>
-              </multiselect>
-            <!--    <label for="project_status_options_filter">{{$t('Others')}}</label>
-              <multiselect id="project_status_options_filter"
-                v-model="status"
-                class="mb-3"
-                :show-labels="true"
-                @input="buildPmql"
-                :loading="isLoading.status"
-                open-direction="bottom"
-                label="name"
-                :options="statusOptions"
-                track-by="value"
-                :multiple="true"
-                :aria-label="$t('Others')"
-                :placeholder="$t('Others')">
-                  <template slot="noResult">
-                      {{ $t('No Results') }}
-                  </template>
-                  <template slot="noOptions">
-                      {{ $t('No Data Available') }}
-                  </template>
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
-                  </template>
-              </multiselect> --> 
+            </multiselect>
         </div>
         <div class="card-footer bg-white text-right">
           <button class="btn btn-secondary-outline btn-sm" @click="resetFilters">Reset</button>
@@ -302,7 +304,9 @@ export default {
     "paramParticipants",
     "paramRequest",
     "paramName",
-    'paramProjects',
+    "paramProjects",
+    'paramProjectMembers',
+    'paramProjectCategories',
     "permission",
   ],
   data() {
@@ -325,6 +329,7 @@ export default {
       participantsOptions: [],
       requestOptions: [],
       nameOptions: [],
+      projectOptions: [],
       selectedFilters: [],
       projects: [],
       isLoading: {
@@ -365,6 +370,14 @@ export default {
       this.projects = this.paramProjects;
     }
 
+    if (this.paramProjectCategories && Array.isArray(this.paramProjectCategories)) {
+      this.projectCategories = this.paramProjectCategories;
+    }
+
+    if (this.paramProjectMembers && Array.isArray(this.paramProjectMembers)) {
+      this.projectMembers = this.paramProjectMembers;
+    }
+    
     this.buildPmql();
     this.getAll();
   },
@@ -482,16 +495,43 @@ export default {
       }
     },
     buildProjectPmql() {
-      console.log('projects', this.projects);
-      //Parse requester
+      let clauses = [];
+      //Parse projects
       if (this.projects.length) {
         let string = '';
-        this.requester.forEach((requester, key) => {
-          string += 'requester = "' + requester.username + '"';
-          if (key < this.requester.length - 1) string += ' OR ';
+        this.projects.forEach((project, key) => {
+          string += 'title = "' + project.title + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
         });
         clauses.push(string);
       }
+
+      if (this.members.length) {
+        let string = '';
+        this.members.forEach((member, key) => {
+          string += 'participant = "' + member.name + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
+      }
+
+      if (this.categories.length) {
+        let string = '';
+        this.categories.forEach((category, key) => {
+          string += 'category = "' + category.name + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
+      }
+
+      this.pmql = '';
+      clauses.forEach((string, key) => {
+        this.pmql += '(';
+        this.pmql += string;
+        this.pmql += ')';
+        if (key < clauses.length - 1) this.pmql += ' AND ';
+      });
+      console.log("PMQL", this.pmql);
     },
     buildRequestPmql() {
       let clauses = [];
@@ -647,13 +687,23 @@ export default {
         });
     },
     getAllProjects() {
-      this.isLoading.projects = true;
+      this.allLoading(true);
       ProcessMaker.apiClient
           .get("/projects/search?type=project_all")
           .then(response => {
-              this.categoriesOptions = response.data.categories;
-              this.memberOptions = response.data.members;
-              this.isLoading.projects = false;
+            console.log("GET ALL PROJECTS", response);
+            this.projectOptions = response.data.projects;
+            const membersData = response.data.members[0];
+            // Filter users and map 'fullname' property to 'name'
+            const usersWithMappedNames = membersData.users
+                .filter(user => !!user)
+                .map(user => ({ ...user, name: user.fullname }));
+
+            const filteredGroups = membersData.groups.filter(group => !!group);
+            
+            this.categoriesOptions = response.data.categories;
+            this.memberOptions = usersWithMappedNames.concat(filteredGroups);
+            this.allLoading(false);
           });
     },
     getStatus() {
@@ -675,6 +725,16 @@ export default {
                 this.isLoading.process = false
                 setTimeout(3000)
             });
+    },
+    getProjects(query) {
+      this.isLoading.projects = true;
+      ProcessMaker.apiClient
+        .get("/projects/search?type=project&filter=" + query, { baseURL: '' })
+        .then(response => {
+            this.projectOptions = response.data;
+            this.isLoading.projects = false
+            setTimeout(3000)
+        });
     },
     getRequesters(query) {
         this.isLoading.requester = true
