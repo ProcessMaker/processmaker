@@ -85,7 +85,8 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
-                
+
+                <additional-driver-connection-properties :driverKey="setting.key" :formData="formData" @updateFormData="updateFormData"></additional-driver-connection-properties>  
             </div>
             <div slot="modal-footer" class="w-100 m-0 d-flex">
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
@@ -109,11 +110,12 @@
 <script>
 import settingMixin from "../mixins/setting";
 import { FormErrorsMixin,Required } from "SharedComponents";
+import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
 
 export default {
     mixins: [settingMixin, FormErrorsMixin, Required],
     props: ['setting', 'value'],
-    components: {},
+    components: {AdditionalDriverConnectionProperties},
     data() {
         return {
             input: '',
@@ -239,6 +241,9 @@ export default {
                     callback_url: "",
                 };
             }
+        },
+        updateFormData(val) {
+            this.formData = {...this.formData, ...val};
         }
     },
     mounted() {
