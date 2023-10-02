@@ -86,7 +86,7 @@
                     </b-input-group>
                 </b-form-group>
 
-                <additional-driver-connection-properties :driverKey="setting.key" :formData="formData" @updateFormData="updateFormData"></additional-driver-connection-properties>  
+                <additional-driver-connection-properties :driverKey="setting?.key" :formData="formData" @updateFormData="updateFormData"></additional-driver-connection-properties>  
             </div>
             <div slot="modal-footer" class="w-100 m-0 d-flex">
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
