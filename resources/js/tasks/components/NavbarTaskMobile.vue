@@ -41,8 +41,8 @@
       </button>
       <task-details-mobile
         :task="task"
-        :userIsAdmin="userIsAdmin"
-        :userIsProcessManager="userIsProcessManager"
+        :userisadmin="userisadmin"
+        :userisprocessmanager="userisprocessmanager"
       />
     </div>
   </div>
@@ -54,7 +54,7 @@ import TaskDetailsMobile from "./TaskDetailsMobile.vue";
 Vue.component("TaskDetailsMobile", TaskDetailsMobile);
 
 export default {
-  props: ["task", "userIsAdmin", "userIsProcessManager"],
+  props: ["task", "userisadmin", "userisprocessmanager"],
   data() {
     return {
       data: this.$cookies.get("tasksListMobile"),
