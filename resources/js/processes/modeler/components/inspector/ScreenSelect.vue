@@ -39,6 +39,7 @@
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
       label="screen"
+      :screen-type="params.type"
       @asset="processAssetCreation"
     />
     <a

@@ -58,7 +58,7 @@
         >
           <b-form-select
             v-model="formData.type"
-            :options="types"
+            :options="screenTypes"
             :state="errorState('type', errors)"
             name="type"
             required
@@ -94,7 +94,14 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+import {
+  FormErrorsMixin,
+  Modal,
+  ProjectSelect,
+  Required,
+} from "SharedComponents";
+import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
+import { filterScreenType } from "../../../utils/filterScreenType";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -115,12 +122,19 @@ export default {
         description: null,
         category: null,
       },
+      screenTypes: this.types,
       disabled: false,
+      isQuickCreate: isQuickCreateFunc(),
     };
   },
   mounted() {
     this.resetFormData();
     this.resetErrors();
+    if (this.isQuickCreate === true) {
+      this.screenTypes = filterScreenType();
+      // defaulting to the first and only screen type for the select list
+      this.formData.type = Object.keys(this.screenTypes)[0];
+    }
   },
   destroyed() {
     channel.close();
@@ -144,14 +158,6 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
-    /**
-     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-     * @returns {boolean}
-     */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
-    },
     onSubmit() {
       this.resetErrors();
       // single click
@@ -163,7 +169,7 @@ export default {
         .post("screens", this.formData)
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
-          if (this.isQuickCreate()) {
+          if (this.isQuickCreate === true) {
             channel.postMessage({
               assetType: "screen",
               id: data.id,

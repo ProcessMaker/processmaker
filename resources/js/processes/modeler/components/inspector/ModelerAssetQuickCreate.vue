@@ -11,12 +11,8 @@
 </template>
 <script>
 import { kebabCase } from "lodash";
-
-const AssetTypes = Object.freeze({
-  SCREEN: "screen",
-  SCRIPT: "script",
-  DECISION_TABLE: "decision table",
-});
+import { AssetTypes } from "../../../../models/AssetTypes";
+import { ScreenTypes } from "../../../../models/screens";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -31,15 +27,29 @@ export default {
           .includes(value);
       },
     },
+    screenType: {
+      type: String,
+      default: ScreenTypes.Display,
+      validator(value) {
+        return Object.values(ScreenTypes).includes(value);
+      }
+    }
   },
   mounted() {
     channel.addEventListener("message", ({ data }) => {
       this.$emit("asset", data);
     });
   },
+  beforeDestroyed() {
+    channel.close();
+  },
   methods: {
     goToAsset() {
-      return window.open(`/designer/${kebabCase(this.label)}s?create=true`, "_blank");
+      let url = `/designer/${kebabCase(this.label)}s?create=true`;
+      if (this.screenType) {
+        url += `&screenType=${this.screenType}`;
+      }
+      return window.open(url, "_blank");
     },
   },
 };
