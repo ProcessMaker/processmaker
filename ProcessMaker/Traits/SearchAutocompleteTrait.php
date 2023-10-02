@@ -179,9 +179,30 @@ trait SearchAutocompleteTrait
     private function searchProjectAll($query)
     {
         return [
+            'projects' => $this->searchProjects($query),
             'categories' => $this->searchProjectCategories($query),
             'members' => $this->searchProjectMembers($query),
         ];
+    }
+
+    private function searchProjects($query)
+    {
+        $projectModalClass = 'ProcessMaker\Package\Projects\Models\Project';
+        $project = new $projectModalClass;
+
+        if (empty($query)) {
+            $results = $project->get();
+        } else {
+            $results = $project->pmql('name = "' . $query . '"', function ($expression) {
+                return function ($query) use ($expression) {
+                    $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                };
+            })->get();
+        }
+
+        return $results->map(function ($request) {
+            return $request->only(['id', 'title']);
+        });
     }
 
     private function searchProjectMembers($query)
