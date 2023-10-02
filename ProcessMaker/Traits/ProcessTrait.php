@@ -161,4 +161,42 @@ trait ProcessTrait
             ? $query->wherePivot('process_version_id', '=', null)
             : $query;
     }
+
+    /**
+     * Get the tasks that can be completed by human users
+     *
+     * @return array
+     */
+    public function getHumanTasks()
+    {
+        $response = [];
+        if (empty($this->bpmn)) {
+            return $response;
+        }
+        $definitions = new BpmnDocument($this);
+        $definitions->loadXML($this->bpmn);
+        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task');
+        foreach ($tasks as $task) {
+            $response[] = [
+                'id' => $task->getAttribute('id'),
+                'name' => $task->getAttribute('name'),
+            ];
+        }
+        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'userTask');
+        foreach ($tasks as $task) {
+            $response[] = [
+                'id' => $task->getAttribute('id'),
+                'name' => $task->getAttribute('name'),
+            ];
+        }
+        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'manualTask');
+        foreach ($tasks as $task) {
+            $response[] = [
+                'id' => $task->getAttribute('id'),
+                'name' => $task->getAttribute('name'),
+            ];
+        }
+
+        return $response;
+    }
 }

@@ -293,6 +293,9 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   }
   return response;
 }, (error) => {
+  if (error.code && error.code === "ERR_CANCELED") {
+    return Promise.reject(error);
+  }
   window.ProcessMaker.EventBus.$emit("api-client-error", error);
   if (error.response && error.response.status && error.response.status === 401) {
     // stop 401 error consuming endpoints with data-sources
