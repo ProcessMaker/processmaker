@@ -690,16 +690,24 @@ export default {
           .get("/projects/search?type=project_all")
           .then(response => {
             this.projectOptions = response.data.projects;
-            const membersData = response.data.members[0];
-            // Filter users and map 'fullname' property to 'name'
-            const usersWithMappedNames = membersData.users
-                .filter(user => !!user)
-                .map(user => ({ ...user, name: user.fullname }));
-
-            const filteredGroups = membersData.groups.filter(group => !!group);
             
+            // Flatten and combine all users and groups
+            const combinedUsersAndGroups = response.data.members.reduce((accumulator, memberData) => {
+                const usersWithMappedNames = memberData.users
+                    .filter(user => !!user)
+                    .map(user => ({ ...user, name: user.fullname }));
+
+                const filteredGroups = memberData.groups.filter(group => !!group);
+
+                return [...accumulator, ...usersWithMappedNames, ...filteredGroups];
+            }, []);
+
+            // Extract categories
             this.categoriesOptions = response.data.categories;
-            this.memberOptions = usersWithMappedNames.concat(filteredGroups);
+
+            // Assign the combined users and groups to this.memberOptions
+            this.memberOptions = combinedUsersAndGroups;
+
             this.allLoading(false);
           });
     },
