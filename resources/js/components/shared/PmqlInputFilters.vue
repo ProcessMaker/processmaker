@@ -489,7 +489,6 @@ export default {
           this.buildTaskPmql();
           break;
         case 'projects':
-          console.log('buildProjectPmql');
           this.buildProjectPmql();
           break;
       }
@@ -531,7 +530,6 @@ export default {
         this.pmql += ')';
         if (key < clauses.length - 1) this.pmql += ' AND ';
       });
-      console.log("PMQL", this.pmql);
     },
     buildRequestPmql() {
       let clauses = [];
@@ -691,7 +689,6 @@ export default {
       ProcessMaker.apiClient
           .get("/projects/search?type=project_all")
           .then(response => {
-            console.log("GET ALL PROJECTS", response);
             this.projectOptions = response.data.projects;
             const membersData = response.data.members[0];
             // Filter users and map 'fullname' property to 'name'
