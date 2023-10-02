@@ -434,6 +434,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
         if ($this->bpmn) {
             $this->bpmnDefinitions->loadXML($this->bpmn);
+
             // Load the collaborations if exists
             return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
         }

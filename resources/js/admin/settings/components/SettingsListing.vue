@@ -68,14 +68,16 @@
                   <i class="fa-lg fas fa-edit"></i>
                 </b-button>
             </span>
-            <b-button 
-              :aria-label="$t('Copy to Clipboard')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              @click="onCopy(row)"
-              variant="link"
-              v-b-tooltip.hover
-              :title="$t('Copy to Clipboard')">
-                <i class="fa-lg fas fa-copy"></i>
+            <template v-if="row.item.key !== 'sso.default.login'">
+              <b-button
+                v-uni-aria-describedby="row.item.id.toString()"
+                v-b-tooltip.hover
+                variant="link"
+                :aria-label="$t('Copy to Clipboard')"
+                :title="$t('Copy to Clipboard')"
+                @click="onCopy(row)"
+              >
+                <i class="fa-lg fas fa-copy" />
               </b-button>
               
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
@@ -96,7 +98,7 @@
               :disabled="disableClear(row.item)" 
               @click="onClear(row)" 
               variant="link" 
-             >
+              >
                 <i class="fa-lg fas fa-trash-alt"></i>
               </b-button>
             </span>
@@ -109,6 +111,7 @@
               </b-button>
             </span>
           </template>
+        </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
