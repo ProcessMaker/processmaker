@@ -110,6 +110,7 @@ class BuildScriptExecutors extends Command
             $success = $this->associateWithExistingImage($scriptExecutor);
             if ($success) {
                 $this->info('Docker Image Associated');
+
                 // we associated with an existing image, no need to build
                 return;
             } else {

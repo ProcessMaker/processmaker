@@ -24,21 +24,25 @@
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
                            role="tab"
-                           aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
+                           aria-controls="nav-config" aria-selected="true" @click="activateTab">{{__('Configuration')}}</a>
                         @can('view-process-translations')
                             <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
                                 role="tab"
                                 data-test="translation-tab"
-                                aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
+                                aria-controls="nav-translations" aria-selected="true" @click="activateTab">{{__('Translations')}}</a>
                         @endcan
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
                            role="tab"
-                           aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
+                           aria-controls="nav-notifications" aria-selected="true" @click="activateTab">{{__('Notifications')}}</a>
                         @isset($addons)
                             @foreach ($addons as $addon)
                                 <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab"
                                    href="{{'#' . $addon['id']}}" role="tab"
-                                   aria-controls="nav-notifications" aria-selected="true">{{ __($addon['title']) }}</a>
+                                   aria-controls="nav-notifications" aria-selected="true"
+                                   @click="activateTab"
+                                >
+                                    {{ __($addon['title']) }}
+                                </a>
                             @endforeach
                         @endisset
                     </div>
@@ -265,6 +269,7 @@
                                         <th class="action">{{__('Request Canceled')}}</th>
                                         <th class="action">{{__('Request Completed')}}</th>
                                         <th class="action">{{__('Request Error')}}</th>
+                                        <th class="action">{{__('Request Commented')}}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -306,6 +311,15 @@
                                                            for="notify-manager-error"></label>
                                                 </div>
                                             </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-manager-comment" type="checkbox"
+                                                           v-model="formData.notifications.manager.comment"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-manager-comment"></label>
+                                                </div>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td class="notify">{{__('Notify Requester')}}</td>
@@ -327,13 +341,23 @@
                                                            for="notify-requester-canceled"></label>
                                                 </div>
                                             </td>
-                                            <td class="action" colspan="2">
+                                            <td class="action">
                                                 <div class="custom-control custom-switch">
                                                     <input id="notify-requester-completed" type="checkbox"
                                                            v-model="formData.notifications.requester.completed"
                                                            class="custom-control-input">
                                                     <label class="custom-control-label"
                                                            for="notify-requester-completed"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action"></td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-requester-comment" type="checkbox"
+                                                           v-model="formData.notifications.requester.comment"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-requester-comment"></label>
                                                 </div>
                                             </td>
                                         </tr>
@@ -353,13 +377,23 @@
                                                            for="notify-participants-canceled"></label>
                                                 </div>
                                             </td>
-                                            <td class="action" colspan="2">
+                                            <td class="action">
                                                 <div class="custom-control custom-switch">
                                                     <input id="notify-participants-completed" type="checkbox"
                                                            v-model="formData.notifications.participants.completed"
                                                            class="custom-control-input">
                                                     <label class="custom-control-label"
                                                            for="notify-participants-completed"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action"></td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-participants-comment" type="checkbox"
+                                                           v-model="formData.notifications.participants.comment"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-participants-comment"></label>
                                                 </div>
                                             </td>
                                         </tr>
@@ -444,6 +478,9 @@
             }
         },
         methods: {
+          activateTab(event) {
+            window.location.href = event.target.href;
+          },
           loadScreens(filter) {
             ProcessMaker.apiClient
               .get("screens?order_direction=asc&status=active&type=DISPLAY" + (typeof filter === 'string' ? '&filter=' + filter : ''))
@@ -566,10 +603,16 @@
             border-top: 0;
         }
 
-        #table-notifications td.notify {
+        #table-notifications thead {
+            text-align: center;
         }
 
         #table-notifications td.action {
+            text-align: center;
+        }
+        
+        #table-notifications td.notify {
+            width: 215px;
         }
 
         .inline-input {

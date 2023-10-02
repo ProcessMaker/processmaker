@@ -9,7 +9,7 @@ Vue.component("AvatarImage", AvatarImage);
 new Vue({
   el: "#requests-listing",
   components: {
-    CounterCard, CounterCardGroup, RequestsListing,
+    CounterCard, CounterCardGroup, RequestsListing
   },
   data: {
     filter: "",

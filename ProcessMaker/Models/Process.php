@@ -5,9 +5,11 @@ namespace ProcessMaker\Models;
 use DOMElement;
 use Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
@@ -201,6 +203,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'canceled',
         'completed',
         'error',
+        'comment',
     ];
 
     public $taskNotifiableTypes = [
@@ -244,12 +247,17 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
-            'project_assets',
-            'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+        $projectModelClass = 'ProcessMaker\Package\Projects\Models\Project';
+
+        if (!class_exists($projectModelClass)) {
+            return [];
+        }
+
+        return $this->morphToMany(
+            $projectModelClass,
+            'asset',
+            'project_assets'
+        );
     }
 
     /**
@@ -426,6 +434,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
         if ($this->bpmn) {
             $this->bpmnDefinitions->loadXML($this->bpmn);
+
             // Load the collaborations if exists
             return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
         }
@@ -661,8 +670,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
+        $assignedUsers = $usersVariable ? Arr::get($instanceData, $usersVariable) : [];
+        $assignedGroups = $groupsVariable ? Arr::get($instanceData, $groupsVariable) : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];
