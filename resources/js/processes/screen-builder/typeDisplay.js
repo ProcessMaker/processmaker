@@ -14,7 +14,6 @@ const FormImage = FormBuilderControls.find((control) => control.rendererBinding 
 const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
 const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
 const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
-const FormMyCustomChart = FormBuilderControls.find((control) => control.rendererBinding === "FormMyCustomChart");
 const FormListTable = FormBuilderControls.find((control) => control.rendererBinding === "FormListTable");
 const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendererBinding === "FormAnalyticsChart");
 // Remove editable inspector props
@@ -28,7 +27,6 @@ const controlsDisplay = [
   FormLoop,
   FormNestedScreen,
   FileDownloadControl,
-  FormMyCustomChart,
   FormListTable,
   FormAnalyticsChart,
 ];
