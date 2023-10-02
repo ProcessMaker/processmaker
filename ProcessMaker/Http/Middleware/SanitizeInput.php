@@ -58,6 +58,7 @@ class SanitizeInput extends TransformsRequest
             // Do not sanitize any values (should be handled elsewhere in the controller)
             return $value;
         }
+
         // If this is a string and is not in the exceptions
         // array, return it after sanitization.
         return SanitizeHelper::sanitize($value, !in_array($key, $this->except, true));

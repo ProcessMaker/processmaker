@@ -259,10 +259,6 @@
             @endisset
           </div>
         </div>
-        @can('view-comments')
-          <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-            :adding="true" :readonly="request.status === 'COMPLETED'" />
-        @endcan
       </div>
       @if (shouldShow('requestStatusContainer'))
         <div class="ml-md-3 mt-md-0 mt-3">
@@ -359,6 +355,14 @@
           </template>
         </div>
       @endif
+      <div v-if="panCommentInVueOptionsComponents">
+          <pan-comment group_id="{{ $request->getKey() }}"
+                       group_name="{{ get_class($request) }}"
+                       commentable_id="{{ $request->getKey() }}"
+                       commentable_type="{{ get_class($request) }}"
+                       :readonly="request.status === 'COMPLETED'"
+                       />
+      </div>
     </div>
   </div>
 
@@ -528,6 +532,9 @@
         },
         requestBy() {
           return [this.request.user];
+        },
+        panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
         },
       },
       methods: {

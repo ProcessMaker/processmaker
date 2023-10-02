@@ -49,7 +49,7 @@ class Comment extends ProcessMakerModel
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
+        'user_id', 'parent_id', 'group_id', 'group_name', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
     ];
 
     protected $casts = [
@@ -117,6 +117,15 @@ class Comment extends ProcessMakerModel
         return $this->hasMany(self::class, 'commentable_id', 'id')
             ->where('commentable_type', self::class)
             ->with('user');
+    }
+
+    /**
+     * Replied message.
+     */
+    public function repliedMessage()
+    {
+        return $this->hasOne(self::class, 'id', 'parent_id')
+                ->with('user');
     }
 
     /**

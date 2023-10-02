@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -49,6 +50,12 @@ class RequestController extends Controller
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('requests.mobile', compact(
+                ['type', 'title', 'currentUser']
+            ));
+        }
+
         return view('requests.index', compact(
             ['type', 'title', 'currentUser']
         ));
@@ -71,7 +78,7 @@ class RequestController extends Controller
                 if (isset($definition['allowInterstitial'])) {
                     $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                 }
-                if ($allowInterstitial && $request->user_id == Auth::id()) {
+                if ($allowInterstitial && $request->user_id == Auth::id() && request()->has('fromRedirect')) {
                     $active = $request->tokens()
                         ->where('user_id', Auth::id())
                         ->where('element_type', 'task')
@@ -139,6 +146,24 @@ class RequestController extends Controller
         $errorTask = RollbackProcessRequest::getErrorTask($request);
         if ($errorTask) {
             $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
+        }
+
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('requests.showMobile', compact(
+                'request',
+                'files',
+                'canCancel',
+                'canViewComments',
+                'canManuallyComplete',
+                'canRetry',
+                'manager',
+                'canPrintScreens',
+                'screenRequested',
+                'addons',
+                'isProcessManager',
+                'eligibleRollbackTask',
+                'errorTask',
+            ));
         }
 
         return view('requests.show', compact(

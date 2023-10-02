@@ -44,6 +44,8 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
 window.SharedComponents = require("./components/shared");
 
 window.ProcessesComponents = require("./processes/components");
+window.ScreensComponents = require("./processes/screens/components");
+window.ScriptsComponents = require("./processes/scripts/components");
 
 /**
  * Exporting Modeler inspector components
@@ -325,6 +327,9 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
+        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
+            window.ProcessMaker.CommentsCallback();
+        }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
@@ -337,7 +342,9 @@ if (userID) {
             enabled: window.ProcessMaker.AccountTimeoutEnabled,
           },
         });
-        window.ProcessMaker.closeSessionModal();
+        if (window.ProcessMaker.closeSessionModal) {
+          window.ProcessMaker.closeSessionModal();
+        }
       }
     })
     .listen(".Logout", (e) => {

@@ -259,7 +259,9 @@ class ProcessTemplate implements TemplateInterface
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
-        return response()->json(['processId' => $processId]);
+        $processName = Process::findOrFail($processId)->name;
+
+        return response()->json(['processId' => $processId, 'processName' => $processName]);
     }
 
     /**

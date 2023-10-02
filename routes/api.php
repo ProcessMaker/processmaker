@@ -196,6 +196,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Comments
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:view-comments');
+    Route::get('comments_modern', [CommentController::class, 'modern'])->name('comments.index2')->middleware('can:view-comments');
     Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show')->middleware('can:view-comments');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:create-comments');
     Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update')->middleware('can:edit-comments');
