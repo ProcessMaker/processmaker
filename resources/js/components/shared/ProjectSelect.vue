@@ -110,7 +110,7 @@
         },
         load(filter) {
           ProcessMaker.apiClient
-            .get(this.apiList + "?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+            .get(this.apiList + "?order_direction=asc&status=active&per_page=1000" + (typeof filter === 'string' ? '&filter=' + filter : ''))
             .then(response => {
               this.loading = false;
               this.options = response.data.data;
