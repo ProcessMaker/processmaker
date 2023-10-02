@@ -177,7 +177,11 @@ export default {
             }
         },
         validateData() {
-            return _.isEmpty(this.formData) || _.some(this.formData, _.isEmpty);
+            // Check if client_id and client_secret are empty
+            const clientIdEmpty = _.isEmpty(this.formData.client_id);
+            const clientSecretEmpty = _.isEmpty(this.formData.client_secret);
+
+            return _.isEmpty(this.formData) || clientIdEmpty || clientSecretEmpty;
         },
         onCancel() {
             this.showModal = false;
