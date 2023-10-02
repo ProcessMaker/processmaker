@@ -12,7 +12,7 @@
     <modal
       id="createScript"
       :ok-disabled="disabled"
-      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Script')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -193,7 +193,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset', 'assetName'],
     data: function() {
       return {
         title: '',
@@ -214,6 +214,16 @@
         script: null,
         projects: [],
       }
+    },
+    computed: {
+      modalSetUp() {
+        if (this.copyAssetMode) {
+          this.title = this.assetName + ' ' + this.$t('Copy');
+          return this.$t('Copy of Asset');
+        }
+        this.title = "";
+        return this.$t('Create Script');
+      },
     },
     destroyed() {
       channel.close();

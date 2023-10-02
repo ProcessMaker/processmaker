@@ -12,7 +12,7 @@
     <modal
       id="createScreen"
       :ok-disabled="disabled"
-      :title="copyAssetMode ? $t('Copy of Asset') : $t('Create Screen')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -111,7 +111,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset", "assetName"],
   data() {
     return {
       formData: {},
@@ -123,6 +123,16 @@ export default {
       },
       disabled: false,
     };
+  },
+  computed: {
+    modalSetUp() {
+      if (this.copyAssetMode) {
+        this.formData.title = this.assetName + ' ' + this.$t('Copy');
+        return this.$t('Copy of Asset');
+      }
+      this.formData.title = "";
+      return this.$t('Create Screen');
+    },
   },
   mounted() {
     this.resetFormData();
