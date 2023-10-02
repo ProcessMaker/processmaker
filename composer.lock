@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7dacf536b73f73f10960c0839f148eb6",
+    "content-hash": "06819cd3d12e1c5a14104b1605662b52",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6968,16 +6968,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.9.4",
+            "version": "1.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "e83d67072632fd178018905eba311e7a85e70622"
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/e83d67072632fd178018905eba311e7a85e70622",
-                "reference": "e83d67072632fd178018905eba311e7a85e70622",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c61f0f4ccff5953a0f50352dbb612269a6b62567",
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567",
                 "shasum": ""
             },
             "require-dev": {
@@ -6996,26 +6996,26 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.4"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.8"
             },
-            "time": "2022-09-03T00:32:24+00:00"
+            "time": "2023-09-26T01:46:28+00:00"
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-feature/FOUR-9714",
+            "version": "1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "f9dfcc7d672e14547457f6851d451445a87f612d"
+                "reference": "aa5138de52541f3d103f79873e1040449b3339eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f9dfcc7d672e14547457f6851d451445a87f612d",
-                "reference": "f9dfcc7d672e14547457f6851d451445a87f612d",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/aa5138de52541f3d103f79873e1040449b3339eb",
+                "reference": "aa5138de52541f3d103f79873e1040449b3339eb",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^10"
+                "laravel/framework": "^5.7|^6|^7|^8|^9|^10"
             },
             "require-dev": {
                 "orchestra/testbench": "^4.8.0",
@@ -7042,9 +7042,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/feature/FOUR-9714"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.10.0"
             },
-            "time": "2023-08-17T03:04:54+00:00"
+            "time": "2023-08-30T01:59:09+00:00"
         },
         {
             "name": "psr/cache",
@@ -7458,16 +7458,16 @@
         },
         {
             "name": "psr/simple-cache",
-            "version": "3.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/simple-cache.git",
-                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865"
+                "reference": "8707bf3cea6f710bf6ef05491234e3ab06f6432a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/764e0b3939f5ca87cb904f570ef9be2d78a07865",
-                "reference": "764e0b3939f5ca87cb904f570ef9be2d78a07865",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/8707bf3cea6f710bf6ef05491234e3ab06f6432a",
+                "reference": "8707bf3cea6f710bf6ef05491234e3ab06f6432a",
                 "shasum": ""
             },
             "require": {
@@ -7476,7 +7476,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -7503,9 +7503,9 @@
                 "simple-cache"
             ],
             "support": {
-                "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
+                "source": "https://github.com/php-fig/simple-cache/tree/2.0.0"
             },
-            "time": "2021-10-29T13:26:27+00:00"
+            "time": "2021-10-29T13:22:09+00:00"
         },
         {
             "name": "psy/psysh",
@@ -14762,8 +14762,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20,
-        "processmaker/pmql": 20
+        "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
@@ -14771,5 +14770,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

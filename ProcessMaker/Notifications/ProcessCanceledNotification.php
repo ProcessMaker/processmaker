@@ -73,8 +73,9 @@ class ProcessCanceledNotification extends Notification
 
         return [
             'type' => 'PROCESS_CANCELED',
-            'name' => sprintf('Request canceled: %s', $this->processName),
+            'message' => sprintf('Request canceled: %s', $this->processName),
             'dateTime' => $instance->updated_at->toIso8601String(),
+            'name' => $this->processName,
             'processName' => $this->processName,
             'request_id' => $instance->getKey(),
             'userName' => $instance->user->getFullName(),

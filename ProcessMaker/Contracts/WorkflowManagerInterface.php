@@ -59,10 +59,12 @@ interface WorkflowManagerInterface
      *
      * @param Definitions $definitions
      * @param StartEventInterface $event
+     * @param array $data
+     * @param callable $beforeStart
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data);
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null);
 
     /**
      * Start a process instance.
@@ -176,11 +178,19 @@ interface WorkflowManagerInterface
     /**
      * Run the service task implementation
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
      *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '');
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation);
 }

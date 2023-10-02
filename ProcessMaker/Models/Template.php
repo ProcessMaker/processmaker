@@ -35,6 +35,7 @@ class Template extends ProcessMakerModel
 
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+        'update-assets' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
     ];
 
     public function index(String $type, Request $request)

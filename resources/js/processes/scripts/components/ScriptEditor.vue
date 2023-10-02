@@ -1,8 +1,7 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100" >
-      <top-menu v-if="!previewChanges" ref="menuScript" :options="optionsMenu" />
-
+      <top-menu v-show="!previewChanges" ref="menuScript" :options="optionsMenu" />
       <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
           <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
@@ -12,21 +11,21 @@
                   <div class="d-flex">
                     <div class="left-header-width pb-3 pl-3">
                       <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
-                        <b>{{ $t('Current Script') }}</b>
+                        <span>{{ $t('Current Script') }}</span>
                       </div>
                     </div>
                     <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
-                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse">
-                        <b>{{ $t('AI Generated Response') }}</b>
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse header-x-padding">
+                        <span>{{ $t('AI Generated Response') }}</span>
                         <div>
                           <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
-                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply') }}</button>
+                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply changes  ') }}</button>
                         </div>
                       </div>
                     </div>
                     <div v-else-if="showExplainEditor" class="right-header-width pb-3 pl-3">
-                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border">
-                        <b>{{ $t('AI Explanation') }}</b>
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border header-x-padding">
+                        <span>{{ $t('AI Explanation') }}</span>
                         <div>
                           <button class="btn" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
                             <i class="fa fa-times"></i>
@@ -112,6 +111,7 @@
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
+                    :process-id="processId"
                     :default-prompt="prompt"
                     :lineContext="lineContext"
                     @get-selection="onGetSelection"
@@ -183,6 +183,16 @@
                       <b-col>
                         <i class="far fa-caret-square-right" />
                         {{ $t('Output') }}
+                      </b-col>
+                      <b-col class="text-right">
+                        <button
+                          type="button"
+                          v-b-modal.data-preview
+                          class="btn-sm float-right"
+                          @click.stop
+                        >
+                          <i class="fas ml-auto fas fa-expand" />
+                        </button>
                       </b-col>
                       <b-col
                         align-self="end"
@@ -273,6 +283,33 @@
         </span>
       </b-card-footer>
     </b-card>
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="stringifyJson"
+            :options="monacoOptionsOutput"
+            data-cy="editorViewFrame"
+            class="editor-modal"
+            language="json"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="stringifyJson"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
   </b-container>
 </template>
 
@@ -320,6 +357,9 @@ export default {
     packageAi: {
       default: 0,
     },
+    processId: {
+      default: 0,
+    },
     user: {
     },
   },
@@ -334,13 +374,15 @@ export default {
         icon: "fas fa-save",
         loaderAction: "",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-script");
+          ProcessMaker.EventBus.$emit("save-script", this.processId);
         },
       },
     ];
 
     return {
       executionKey: null,
+      iframeHeight: "600px",
+      stringifyJson: "",
       resizing: false,
       monacoOptions: {
         automaticLayout: true,
@@ -351,6 +393,16 @@ export default {
         readOnly: true,
         enableSplitViewResizing: false,
         renderSideBySide: true,
+        renderOverviewRuler: false,
+      },
+      monacoOptionsOutput: {
+        language: "json",
+        lineNumbers: "off",
+        readOnly: true,
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
       },
       code: this.script.code,
       newCode: "",
@@ -449,8 +501,8 @@ export default {
     this.subscribeToProgress();
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
-      this.save(onSuccess, onError);
+    ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
+      this.save(onSuccess, onError, processId);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -474,6 +526,10 @@ export default {
 
     // Display ellipsis menu.
     this.setEllipsisMenu();
+
+    if (this.processId !== 0) {
+      this.prompt = `${this.script.title}\n${this.script.description}`;
+    }
   },
 
   beforeDestroy() {
@@ -599,6 +655,7 @@ export default {
         },
       );
     },
+
     diffEditorMounted() {
     },
     resizeEditor() {
@@ -618,6 +675,7 @@ export default {
       if (output && !this.outputOpen) {
         this.outputOpen = true;
       }
+      this.stringifyJson = JSON.stringify(output, null, 2);
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
@@ -664,7 +722,7 @@ export default {
         this.executionKey = response.data.key;
       });
     },
-    save(onSuccess, onError) {
+    save(onSuccess, onError, processId) {
       ProcessMaker.apiClient
         .put(`scripts/${this.script.id}`, {
           code: this.code,
@@ -675,11 +733,15 @@ export default {
           timeout: this.script.timeout,
         })
         .then((response) => {
+          window.ProcessMaker.EventBus.$emit("save-changes");
           ProcessMaker.alert(this.$t("The script was saved."), "success");
           // Set published status.
           this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
+          }
+          if (processId !== 0 && processId !== undefined) {
+            window.location = `/modeler/${this.processId}`;
           }
         }).catch((err) => {
           if (typeof onError === "function") {
@@ -821,10 +883,15 @@ export default {
 }
 
 .editor-header-border {
-  border: 0;
-  border-radius: 5px;
+  border: 1px solid;
+  border-radius: 0.125rem;
+  padding: 0.52rem;
+  border-color: #e3e3e3;
 }
 
+.editor-header-border.bg-primary-light {
+  border-color: #8AB8FF;
+}
 .progress {
   height: 0.7rem;
   border-radius: 1em;
@@ -854,7 +921,10 @@ export default {
 .pulse {
   animation: pulse-animation 2s infinite;
 }
-
+.header-x-padding {
+  padding-left: .8rem;
+  padding-right: .8rem;
+}
 @keyframes pulse-animation {
   0% {
     box-shadow: 0 0 0 0px rgb(28 114 194 / 50%);;
@@ -881,8 +951,6 @@ export default {
 .explanation-header {
   font-size: 130%;
 }
-.explanation-content {
-}
 
 .blink {
   animation: blink-animation .8s infinite;
@@ -890,5 +958,33 @@ export default {
 @keyframes blink-animation {
   0% { opacity: 0 }
   100% { opacity: 1 }
+}
+
+//JSON Browser
+.tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+}
+.editor-modal {
+  height: 600px;
+}
+
+// Monaco editor diff styles
+.monaco-diff-editor .line-insert, .monaco-diff-editor .char-insert, .monaco-editor .margin-view-overlays .cldr {
+  background: #e6ffec !important;
+}
+.monaco-editor .gutter-insert, .monaco-diff-editor .gutter-insert {
+  background-color: #c7f8d3 !important;
+}
+.cldr.insert-sign.codicon.codicon-diff-insert {
+    background: #c7f8d3 !important;
+}
+.monaco-diff-editor .line-delete, .monaco-diff-editor .char-delete, .monaco-editor .margin-view-overlays .cldr {
+  background: #ffebe9 !important;
+}
+.monaco-editor .gutter-delete, .monaco-diff-editor .gutter-delete {
+  background-color: rgba(255, 0, 0, 0.2) !important;
+}
+.cldr.delete-sign.codicon.codicon-diff-remove {
+    background: #fbc7c7 !important;
 }
 </style>

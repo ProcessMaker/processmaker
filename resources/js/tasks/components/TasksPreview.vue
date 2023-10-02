@@ -13,6 +13,7 @@
       <pane
         id="pane-task-preview"
         :min-size="paneMinSize"
+        size="50"
         max-size="99"
         style="background-color: white;"
       >
@@ -65,10 +66,7 @@
                 </b-button>
               </div>
             </div>
-            <div
-              v-if="!stopFrame"
-              class="frame-container"
-            >
+            <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
                 id="tasksFrame1"
@@ -85,9 +83,10 @@
                 :src="linkTasks2"
                 @load="frameLoaded()"
               />
-            </div>
-            <div v-else>
-              <task-loading />
+              <task-loading
+                v-show="stopFrame"
+                class="load-frame"
+              />
             </div>
           </div>
         </div>
@@ -159,6 +158,25 @@ export default {
     },
     onClose() {
       this.showPreview = false;
+      this.resetToDefault();
+    },
+    resetToDefault() {
+      this.linkTasks1 = "";
+      this.linkTasks2 = "";
+      this.task = {};
+      this.data = [];
+      this.taskTitle = "";
+      this.prevTask = {};
+      this.nextTask = {};
+      this.existPrev = false;
+      this.existNext = false;
+      this.loading = true;
+      this.paneMinSize = 0;
+      this.showFrame = 1;
+      this.showFrame1 = false;
+      this.showFrame2 = false;
+      this.isLoading = "";
+      this.stopFrame = false;
     },
     setPaneMinSize(splitpanesWidth, minPixelWidth) {
       this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
@@ -201,7 +219,7 @@ export default {
       this.isLoading = setTimeout(() => {
         this.stopFrame = true;
         this.taskTitle = this.$t("Task Lorem");
-      }, 5000);
+      }, 4900);
 
       this.stopFrame = false;
       this.linkTasks = "";
@@ -219,6 +237,7 @@ export default {
     frameLoaded() {
       this.loading = false;
       clearTimeout(this.isLoading);
+      this.stopFrame = false;
       if (this.showFrame === 1) {
         this.showFrame1 = true;
         this.showFrame2 = false;
@@ -256,7 +275,8 @@ export default {
   display: grid;
   height: 70vh;
 }
-.embed-responsive {
+.embed-responsive,
+.load-frame {
   position: relative;
   display: block;
   width: 100%;

@@ -6,29 +6,14 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use ProcessMaker\Enums\ExporterMap;
 use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ExporterBase;
-use ProcessMaker\ImportExport\Exporters\ProcessExporter;
-use ProcessMaker\ImportExport\Exporters\ScreenExporter;
-use ProcessMaker\ImportExport\Exporters\ScriptExporter;
-use ProcessMaker\ImportExport\Exporters\TemplateExporter;
 use ProcessMaker\ImportExport\Options;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\Script;
 
 class ExportController extends Controller
 {
-    protected array $types = [
-        'screen' => [Screen::class, ScreenExporter::class],
-        'process' => [Process::class, ProcessExporter::class],
-        'script' => [Script::class, ScriptExporter::class],
-        'process_templates' => [ProcessTemplates::class, TemplateExporter::class],
-    ];
-
     /**
      * Return only the manifest
      */
@@ -37,7 +22,7 @@ class ExportController extends Controller
         $model = $this->getModel($type)->findOrFail($id);
         try {
             $exporter = new Exporter(true);
-            $exporter->export($model, $this->types[$type][1]);
+            $exporter->export($model, ExporterMap::getExporterClass($type));
 
             return response()->json($exporter->payload(true), 200);
         } catch (ExportModelNotFoundException $error) {
@@ -56,7 +41,7 @@ class ExportController extends Controller
         $password = (isset($post['password']) ? $post['password'] : null);
 
         $exporter = new Exporter();
-        $exporter->export($model, $this->types[$type][1], $options);
+        $exporter->export($model, ExporterMap::getExporterClass($type), $options);
 
         $payload = $exporter->payload();
 
@@ -93,9 +78,8 @@ class ExportController extends Controller
 
     public function getModel(string $type): Model
     {
-        if (isset($this->types[$type])) {
-            $modelClass = current($this->types[$type]);
-
+        $modelClass = ExporterMap::getModelClass($type);
+        if ($modelClass) {
             return new $modelClass;
         }
         throw new Exception("Type {$type} not found", 404);

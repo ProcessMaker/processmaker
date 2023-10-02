@@ -76,6 +76,28 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     }
 
     /**
+     * Fail a task.
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface|ProcessRequestToken $token
+     * @param string $error
+     *
+     * @return void
+     */
+    public function taskFailed(ExecutionInstanceInterface $instance, TokenInterface $token, string $message)
+    {
+        $element = $token->getOwnerElement();
+        $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+
+        $error = $element->getRepository()->createError();
+        $error->setName($message);
+
+        $token->setProperty('error', $error);
+
+        Log::error('Script failed: ' . $element->getId() . ' - ' . $message);
+    }
+
+    /**
      * Complete a catch event
      *
      * @param Definitions $definitions
@@ -121,13 +143,16 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
      *
      * @param Definitions $definitions
      * @param StartEventInterface $event
+     * @param array $data
+     * @param callable $beforeStart
      *
      * @return \ProcessMaker\Models\ProcessRequest
      */
-    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
+    public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data, callable $beforeStart = null)
     {
         //Validate data
         $this->validateData($data, $definitions, $event);
+
         //Schedule BPMN Action
         return (new StartEvent($definitions, $event, $data))->handle();
     }
@@ -145,6 +170,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     {
         //Validate data
         $this->validateData($data, $definitions, $process);
+
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
@@ -386,11 +412,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
     /**
      * Run the service task implementation
+     *
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
-     *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
@@ -399,5 +425,17 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         $service = new $class();
 
         return $service->run($data, $config, $tokenId, $timeout);
+    }
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation)
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+        return $class;
     }
 }

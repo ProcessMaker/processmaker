@@ -337,6 +337,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
             $screen = Screen::firstWhere('key', $defaultScreen);
+
+            if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
+                $defaultScreen = 'default-ai-form-screen';
+                $screen = Screen::firstWhere('key', $defaultScreen);
+            }
         }
 
         return $screen;
@@ -530,7 +535,16 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     ->orWhere('id', 'like', $filter)
                     ->orWhere('created_at', 'like', $filter)
                     ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter);
+                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhereHas('processRequest', function ($query) use ($filter) {
+                        $query->where(DB::raw('LOWER(name)'), 'like', $filter);
+                    })
+                    ->orWhereHas('processRequest', function ($query) use ($filter) {
+                        $query->where(DB::raw('LOWER(data)'), 'like', $filter);
+                    })
+                    ->orWhereHas('process', function ($query) use ($filter) {
+                        $query->where(DB::raw('LOWER(name)'), 'like', $filter);
+                    });
             });
         }
 

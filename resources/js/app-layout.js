@@ -2,8 +2,11 @@ import { BNavbar } from "bootstrap-vue";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import newRequestModal from "./components/requests/requestModal";
 import requestModal from "./components/requests/modal";
-import notifications from "./components/requests/notifications";
+import requestModalMobile from "./components/requests/modalMobile";
+import notifications from "./notifications/components/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -18,10 +21,9 @@ import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-
+import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -30,6 +32,9 @@ import __ from "./modules/lang";
 require("bootstrap");
 
 const { Vue } = window;
+
+Vue.use(VueHtml2Canvas);
+
 if (window.ProcessMaker && window.ProcessMaker.user) {
   moment.tz.setDefault(window.ProcessMaker.user.timezone);
   moment.defaultFormat = window.ProcessMaker.user.datetime_format;
@@ -64,6 +69,14 @@ Vue.component("Required", Required);
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
 
+// Verify if is mobile
+const browser = navigator.userAgent;
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+window.ProcessMaker.mobileApp = false;
+if (isMobileDevice) {
+  window.ProcessMaker.mobileApp = true;
+}
+
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
   return this.find((node) => node.id === id);
@@ -80,6 +93,7 @@ window.ProcessMaker.navbar = new Vue({
     ConfirmationModal,
     MessageModal,
     NavbarProfile,
+    newRequestModal,
   },
   data() {
     return {
@@ -103,6 +117,7 @@ window.ProcessMaker.navbar = new Vue({
       sessionWarnSeconds: "",
       taskTitle: "",
       isMobile: false,
+      isMobileDevice: window.ProcessMaker.mobileApp,
     };
   },
   watch: {
@@ -151,6 +166,10 @@ window.ProcessMaker.navbar = new Vue({
       const nextScreenAlerts = array.filter((alert) => alert.stayNextScreen);
       window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
     },
+    switchToMobile() {
+      this.$cookies.set("isMobile", true);
+      window.location.reload();
+    },
     getRoutes() {
       if (this.$refs.breadcrumbs) {
         return this.$refs.breadcrumbs.list;
@@ -168,6 +187,29 @@ window.ProcessMaker.navbar = new Vue({
     },
   },
 });
+
+// Assign our navbar component to our global ProcessMaker object
+if (isMobileDevice) {
+  window.ProcessMaker.navbarMobile = new Vue({
+    el: "#navbarMobile",
+    components: {
+      requestModalMobile,
+    },
+    data() {
+      return {
+      };
+    },
+    methods: {
+      switchToDesktop() {
+        this.$cookies.set("isMobile", false);
+        window.location.reload();
+      },
+      onResize() {
+        this.isMobile = window.innerWidth < 992;
+      },
+    },
+  });
+}
 
 // Breadcrumbs are now part of the navbar component. Alias it here.
 window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
@@ -251,6 +293,9 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   }
   return response;
 }, (error) => {
+  if (error.code && error.code === "ERR_CANCELED") {
+    return Promise.reject(error);
+  }
   window.ProcessMaker.EventBus.$emit("api-client-error", error);
   if (error.response && error.response.status && error.response.status === 401) {
     // stop 401 error consuming endpoints with data-sources
