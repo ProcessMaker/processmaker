@@ -193,7 +193,7 @@ trait SearchAutocompleteTrait
         if (empty($query)) {
             $results = $project->get();
         } else {
-            $results = $project->pmql('name = "' . $query . '"', function ($expression) {
+            $results = $project->pmql('title = "' . $query . '"', function ($expression) {
                 return function ($query) use ($expression) {
                     $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
                 };
