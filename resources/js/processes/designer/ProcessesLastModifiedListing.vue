@@ -20,7 +20,7 @@
   <div v-else class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/\/processes\?page/"
+      :for="/projects\?page/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -42,7 +42,11 @@
         :no-data-template="$t('No Data Available')"
       >
         <template slot="title" slot-scope="props">
-          <a v-bind:href="`/designer/projects/${props.rowData.id}`" v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}
+          <a
+            v-uni-id="props.rowData.id.toString()"
+            :href="`/designer/projects/${props.rowData.id}`"
+          >
+            {{ props.rowData.title }}
           </a>
         </template>
 

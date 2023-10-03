@@ -13,24 +13,6 @@
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
-    <div v-if="false" class="container">
-      <div class="content">
-        <img
-          class="image"
-          src="/img/recent_projects.svg"
-          alt="recent projects"
-        >
-        <div class="content-text">
-          <span class="title">
-            {{ $t("Recent Projects") }}
-          </span>
-          <p>{{ $t("You are not part of a project yet") }}</p>
-          <b-link href="#">
-            {{ $t("Create a Project") }}
-          </b-link>
-        </div>
-      </div>
-    </div>
     <processes-last-modified-listing
       :status="status"
       :permission="permission"
