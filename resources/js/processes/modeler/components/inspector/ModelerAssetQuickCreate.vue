@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import { kebabCase } from "lodash";
+import { capitalize, kebabCase } from "lodash";
 import { AssetTypes } from "../../../../models/AssetTypes";
 import { ScreenTypes } from "../../../../models/screens";
 
@@ -29,11 +29,12 @@ export default {
     },
     screenType: {
       type: String,
-      default: ScreenTypes.Display,
+      default: ScreenTypes.DISPLAY,
       validator(value) {
-        return Object.values(ScreenTypes).includes(value);
-      }
-    }
+        // Value is coming uppercase, capitalizing it for comparison.
+        return Object.values(ScreenTypes).includes(capitalize(value));
+      },
+    },
   },
   mounted() {
     channel.addEventListener("message", ({ data }) => {
@@ -46,7 +47,8 @@ export default {
   methods: {
     goToAsset() {
       let url = `/designer/${kebabCase(this.label)}s?create=true`;
-      if (this.screenType) {
+      // Cleaning the URL query if the asset is not of type Screen
+      if (this.screenType && this.label === AssetTypes.SCREEN) {
         url += `&screenType=${this.screenType}`;
       }
       return window.open(url, "_blank");
