@@ -42,7 +42,7 @@
         :no-data-template="$t('No Data Available')"
       >
         <template slot="title" slot-scope="props">
-          <a :href="'/designer/projects/' + props.rowData.id" v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}
+          <a :href="`/designer/projects/${props.rowData.id}`" v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}
           </a>
         </template>
 
