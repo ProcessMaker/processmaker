@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!existData" class="container">
+  <div v-if="!data" class="container">
     <div class="content">
       <img
         class="image"
@@ -111,7 +111,6 @@ export default {
         { value: "export-item", content: "Export", link: true, href: "/designer/projects/{{id}}/export", icon: "fas fa-file-export"},
       ],
       configs: "",
-      existData: false,
     };
   },
   created() {
@@ -146,9 +145,6 @@ export default {
           this.configs = response.data.data;
           this.apiDataLoading = false;
           this.loading = false;
-          if (this.data.data.length) {
-            this.existData = true;
-          }
         })
         .catch((error) => {
           if (error.code === "ERR_CANCELED") {
