@@ -92,22 +92,28 @@
               <template v-slot:select-template-slot>
                 <div v-if="asset.flag === 4">
                   <div>
-                    <b-button
+                    <!-- <b-button
                       class="mb-3 mb-md-0 ml-md-0"
                       :style="customButtonStyle"
                     >
                       <i class="fas fa-plus" /> Decision Tables
-                    </b-button>
+                    </b-button> -->
+                    <asset-quick-access
+                      label="decision table"
+                    />
                   </div>
                 </div>
                 <div v-if="asset.flag === 5">
                   <div>
-                    <b-button
+                    <!-- <b-button
                       class="mb-3 mb-md-0 ml-md-0"
                       :style="customButtonStyle"
                     >
                       <i class="fas fa-plus" /> Collections
-                    </b-button>
+                    </b-button> -->
+                    <asset-quick-access
+                      label="collection"
+                    />
                   </div>
                 </div>
                 <div v-if="asset.flag === 6">
@@ -137,6 +143,7 @@ import ProcessesListing from "../components/ProcessesListing.vue";
 import CategorySelect from "../categories/components/CategorySelect.vue";
 import CreateScriptModal from "../../../js/processes/scripts/components/CreateScriptModal.vue";
 import CreateScreenModal from "../screens/components/CreateScreenModal.vue";
+import AssetQuickAccess from "./AssetQuickAccess.vue";
 
 export default {
   components: {
@@ -148,6 +155,7 @@ export default {
     CategorySelect,
     CreateScriptModal,
     CreateScreenModal,
+    AssetQuickAccess,
   },
   data() {
     return {
