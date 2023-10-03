@@ -38,7 +38,7 @@
     >
       <b-collapse id="assistant" :visible="showPromptArea">
         <div v-if="!showPromptArea">
-          <div class="card-header m-0 d-flex border-0 pb-1">
+          <div class="card-header m-0 d-flex border-0 pb-1 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
@@ -75,7 +75,7 @@
             </div>
           </div>
 
-          <div class="card-header m-0 d-flex border-0 pt-0">
+          <div class="card-header m-0 d-flex border-0 pt-0 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
@@ -119,6 +119,10 @@
           :default-prompt="defaultPrompt"
           @generate-script="onGenerateScript"
         />
+
+        <div v-if="error" class="pb-3 px-3 bg-assistant-buttons">
+          <div class="alert alert-error m-0 text-center px-2  ">{{ error }}</div>
+        </div>
       </b-collapse>
     </b-list-group-item>
   </div>
@@ -157,6 +161,7 @@ export default {
       loading: false,
       promptSessionId: "",
       prompt: "",
+      error: "",
       progress: {
         progress: 0,
       },
@@ -314,7 +319,7 @@ export default {
 
     async cleanScript() {
       if (!this.sourceCode || this.sourceCode === "") {
-        window.ProcessMaker.alert(this.$t("The text editor does not have any code to clean."), "danger");
+        this.error = this.$t("Please add and select some code to clean.");
         return;
       }
       this.getSelection();
@@ -353,7 +358,7 @@ export default {
 
     async documentScript() {
       if (!this.sourceCode || this.sourceCode === "") {
-        window.ProcessMaker.alert(this.$t("The text editor does not have any code to document."), "danger");
+        this.error = this.$t("Please add and select some code to document.");
         return;
       }
       this.getSelection();
@@ -395,7 +400,7 @@ export default {
     },
     async explainScript() {
       if (!this.sourceCode || this.sourceCode === "") {
-        window.ProcessMaker.alert(this.$t("The text editor does not have any code to explain."), "danger");
+        this.error = this.$t("Please add and select some code to explain.");
         return;
       }
       this.getSelection();
@@ -426,7 +431,7 @@ export default {
             this.$emit(
               "request-started",
               this.progress,
-              this.$t("Generating explanation")
+              this.$t("Generating explanation"),
             );
           }
         })
@@ -492,5 +497,14 @@ export default {
 
 .ai-icon {
   margin-left: -1px;
+}
+.bg-assistant-buttons {
+  background: #f8f8f8;
+}
+.alert-error {
+  background-color: #D3E1FC;
+  border: 0;
+  border-radius: 8px;
+  color: #1C4193;
 }
 </style>
