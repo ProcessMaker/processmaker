@@ -5,9 +5,7 @@ import { ScreenTypes } from "../models/screens";
  */
 export function filterScreenType() {
   const screen = new URLSearchParams(window.location.search).get("screenType");
-  return Object.entries(ScreenTypes).filter(([key, value]) => {
-    return key === screen;
-  }).reduce((acc, [key, value]) => {
+  return Object.entries(ScreenTypes).filter(([key, value]) => key === screen).reduce((acc, [key, value]) => {
     acc[key] = value;
     return acc;
   }, {});

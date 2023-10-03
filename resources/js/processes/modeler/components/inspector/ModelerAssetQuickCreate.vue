@@ -31,8 +31,9 @@ export default {
       type: String,
       default: ScreenTypes.DISPLAY,
       validator(value) {
+        const propValue = value;
         // Value is coming uppercase, capitalizing it for comparison.
-        return Object.values(ScreenTypes).includes(capitalize(value));
+        return Object.values(ScreenTypes).includes(capitalize(propValue));
       },
     },
   },
