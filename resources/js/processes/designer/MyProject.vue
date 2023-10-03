@@ -13,7 +13,7 @@
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
-    <div class="container">
+    <div v-if="false" class="container">
       <div class="content">
         <img
           class="image"
@@ -31,11 +31,22 @@
         </div>
       </div>
     </div>
+    <processes-last-modified-listing
+      :status="status"
+      :permission="permission"
+      :current-user-id="currentUserId"
+      :is-documenter-installed="isDocumenterInstalled"
+    />
   </div>
 </template>
 
 <script>
+import ProcessesLastModifiedListing from './ProcessesLastModifiedListing';
+
+Vue.component("ProcessesLastModifiedListing", ProcessesLastModifiedListing);
+
 export default {
+  props: ["status", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return { };
   },
@@ -45,6 +56,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  height: 500px;
 }
 .card {
   border-radius: 8px;
@@ -60,7 +72,6 @@ export default {
   flex: 1 0 0;
   align-self: stretch;
   width: 100%;
-  height: 450px;
 }
 .content {
   display: flex;

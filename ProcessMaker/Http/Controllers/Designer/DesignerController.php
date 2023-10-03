@@ -24,7 +24,12 @@ class DesignerController extends Controller
             return redirect()->route($redirect);
         }
 
-        return view('designer.index');
+
+        $listConfig = (object) [
+            'status' => $request->input('status'),
+        ];
+
+        return view('designer.index', compact('listConfig'));
     }
 
     private function checkAuth()
