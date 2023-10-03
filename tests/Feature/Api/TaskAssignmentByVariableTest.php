@@ -234,7 +234,6 @@ class TaskAssignmentByVariableTest extends TestCase
         $task = ProcessRequestToken::where(['process_request_id' => $requestId, 'status' => 'ACTIVE'])->firstOrFail();
         $this->assertEquals($user->id, $task->user_id);
 
-
         // test with variables with array of ids
         // Create users of a group and a user without group
         $users = User::factory(2)->create(['status'=>'ACTIVE']);

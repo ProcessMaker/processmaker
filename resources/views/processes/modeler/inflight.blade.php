@@ -28,6 +28,7 @@
 @section('js')
   <script>
     const breadcrumbData = [];
+    window.ProcessMaker.PMBlockList = @json($pmBlockList);
     window.ProcessMaker.modeler = {
       xml: @json($bpmn),
       configurables: [],

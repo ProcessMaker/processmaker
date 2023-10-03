@@ -880,7 +880,6 @@ class ImportProcess implements ShouldQueue
         if (property_exists($this->file, 'process') && property_exists($this->file->process, 'bpmn')) {
             $this->file->process->bpmn = str_replace('bpmn2', 'bpmn', $this->file->process->bpmn);
         }
-        
     }
 
     /**
