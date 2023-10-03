@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Database\Seeders\PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\Models\Setting;
@@ -39,6 +40,38 @@ class UsersTest extends TestCase
         'updated_at',
         'created_at',
     ];
+
+    public function getUpdatedData()
+    {
+        $faker = Faker::create();
+
+        return [
+            'username' => 'newusername',
+            'email' => $faker->email(),
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+            'phone' => $faker->phoneNumber(),
+            'cell' => $faker->phoneNumber(),
+            'fax' => $faker->phoneNumber(),
+            'address' => $faker->streetAddress(),
+            'city' => $faker->city(),
+            'state' => $faker->stateAbbr(),
+            'postal' => $faker->postcode(),
+            'country' => $faker->country(),
+            'timezone' => $faker->timezone(),
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
+            'password' => $faker->sentence(10),
+        ];
+    }
+
+    protected function withUserSetup()
+    {
+        $this->user->is_administrator = true;
+        $this->user->save();
+
+        (new PermissionSeeder)->run($this->user);
+    }
 
     /**
      * Test verify the parameter required for create form
@@ -343,25 +376,7 @@ class UsersTest extends TestCase
         $verify = $this->apiCall('GET', $url);
 
         // Post saved success
-        $response = $this->apiCall('PUT', $url, [
-            'username' => 'updatemytestusername',
-            'email' => $faker->email(),
-            'firstname' => $faker->firstName(),
-            'lastname' => $faker->lastName(),
-            'phone' => $faker->phoneNumber(),
-            'cell' => $faker->phoneNumber(),
-            'fax' => $faker->phoneNumber(),
-            'address' => $faker->streetAddress(),
-            'city' => $faker->city(),
-            'state' => $faker->stateAbbr(),
-            'postal' => $faker->postcode(),
-            'country' => $faker->country(),
-            'timezone' => $faker->timezone(),
-            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
-            'password' => $faker->password(8) . 'A' . '1',
-            'force_change_password' => $faker->boolean(),
-        ]);
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
 
         // Validate the header status code
         $response->assertStatus(204);
@@ -693,5 +708,71 @@ class UsersTest extends TestCase
             // Validate the header status code
             $response->assertStatus(422);
         }
+    }
+
+    /**
+     * Update username and password
+     * If is an admin user can edit username and password himself
+     */
+    public function testUpdateUserAdmin()
+    {
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        // Load the starting user data
+        $verify = $this->apiCall('GET', $url);
+
+        // Post saved success
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+
+        // Validate the header status code
+        $response->assertStatus(204);
+
+        // Load the updated user data
+        $verifyNew = $this->apiCall('GET', $url);
+
+        // Check that it has changed
+        $this->assertNotEquals($verify, $verifyNew);
+    }
+
+    /**
+     * Update username and password
+     * If is a user without permission can not edit and a user with permission can edit himself
+     */
+    public function testUpdateUserNotAdmin()
+    {
+        // Without permission
+        $this->user = User::factory()->create(['status' => 'ACTIVE']);
+        $this->user->is_administrator = false;
+        $this->user->save();
+        $this->user->refresh();
+        $this->flushSession();
+
+        $url = self::API_TEST_URL . '/' . $this->user->id;
+
+        // Load the starting user data
+        $verify = $this->apiCall('GET', $url);
+
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+
+        // Validate the header status code
+        $response->assertStatus(403);
+
+        //  With permission
+        $this->user->giveDirectPermission('edit-user-and-password');
+        $this->user->save();
+        $this->user->refresh();
+        $this->flushSession();
+
+        // Post saved success
+        $response = $this->apiCall('PUT', $url, $this->getUpdatedData());
+
+        // Validate the header status code
+        $response->assertStatus(204);
+
+        // Load the updated user data
+        $verifyNew = $this->apiCall('GET', $url);
+
+        // Check that it has changed
+        $this->assertNotEquals($verify, $verifyNew);
     }
 }

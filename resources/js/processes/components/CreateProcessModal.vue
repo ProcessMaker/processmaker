@@ -103,7 +103,7 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", 'categoryType'],
+    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", "categoryType", "callFromAiModeler"],
     data: function() {
       return {
         showModal: false,
@@ -121,8 +121,8 @@
         bpmn: "",
         disabled: false,
         customModalButtons: [
-            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+            {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
+            {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
         ],
         manager: "",
       }
@@ -177,10 +177,10 @@
         this.projects = [];
         this.status = "";
         this.addError = {};
-        this.selectedFile = '';
+        this.selectedFile = "";
         this.file = null;
         this.manager = "";
-        this.$emit('resetModal');
+        this.$emit("resetModal");
       },
       onSubmit () {
         this.errors = Object.assign({}, {
@@ -226,8 +226,23 @@
           }
         })
         .then(response => {
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
-          window.location = "/modeler/" + response.data.processId;
+          if (response.data.existingAssets) {
+            const assets = JSON.stringify(response.data.existingAssets);
+            const responseId = response.data.id;
+            const request = JSON.stringify(response.data.request);
+            window.history.pushState({
+              assets: assets,
+              name: this.templateData.name,
+              responseId: responseId,
+              request: request},
+              "",
+              '/template/assets'
+            );
+            window.location = '/template/assets';
+          } else {
+            ProcessMaker.alert(this.$t("The process was created."), "success");
+            window.location = "/modeler/" + response.data.processId;
+          }
         })
         .catch(error => {
           this.disabled = false;
@@ -238,15 +253,23 @@
         ProcessMaker.apiClient.post("/processes", formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
-          window.location = "/modeler/" + response.data.id;
+
+          ProcessMaker.alert(this.$t("The process was created."), "success");
+
+          if (this.callFromAiModeler) {
+            const url = `http://processmaker.test/package-ai/processes/create/${response.data.id}`;
+            this.$emit("clear-ai-history");
+            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
+          } else {
+            window.location = `/modeler/${response.data.id}`;
+          }
         })
         .catch(error => {
           this.disabled = false;

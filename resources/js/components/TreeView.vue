@@ -3,6 +3,8 @@
     <iframe
       id="jsoncrackEmbed"
       ref="jsonCrackEmbed"
+      title="jsonBrowser"
+      data-cy="treeViewFrame"
       src="/json-browser/widget.html"
       :style="{ height: iframeHeight }"
     />

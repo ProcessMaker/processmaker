@@ -24,21 +24,25 @@
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
                            role="tab"
-                           aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
+                           aria-controls="nav-config" aria-selected="true" @click="activateTab">{{__('Configuration')}}</a>
                         @can('view-process-translations')
                             <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-translations"
                                 role="tab"
                                 data-test="translation-tab"
-                                aria-controls="nav-translations" aria-selected="true">{{__('Translations')}}</a>
+                                aria-controls="nav-translations" aria-selected="true" @click="activateTab">{{__('Translations')}}</a>
                         @endcan
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
                            role="tab"
-                           aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
+                           aria-controls="nav-notifications" aria-selected="true" @click="activateTab">{{__('Notifications')}}</a>
                         @isset($addons)
                             @foreach ($addons as $addon)
                                 <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab"
                                    href="{{'#' . $addon['id']}}" role="tab"
-                                   aria-controls="nav-notifications" aria-selected="true">{{ __($addon['title']) }}</a>
+                                   aria-controls="nav-notifications" aria-selected="true"
+                                   @click="activateTab"
+                                >
+                                    {{ __($addon['title']) }}
+                                </a>
                             @endforeach
                         @endisset
                     </div>
@@ -444,6 +448,9 @@
             }
         },
         methods: {
+          activateTab(event) {
+            window.location.href = event.target.href;
+          },
           loadScreens(filter) {
             ProcessMaker.apiClient
               .get("screens?order_direction=asc&status=active&type=DISPLAY" + (typeof filter === 'string' ? '&filter=' + filter : ''))

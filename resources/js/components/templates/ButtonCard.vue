@@ -3,11 +3,11 @@
     <b-card no-body class="button-card" :class="{'col-6 p-0': button.helperEnabled}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
       <div class="card-body text-center d-flex justify-content-center flex-column">
         <i v-if="button.icon" class="icon mb-2 text-primary" :class="button.icon" :style="button.iconStyle"></i>
-        <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle">
+        <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle" :alt="button.title">
         <h5 class="m-0">{{ button.title }}</h5>
       </div>
       <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
-        <div class="ai-slogan"><img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}</div>
+        <div class="ai-slogan"><img src="/img/favicon.svg" :alt="$t('ProcessMaker')"> {{ $t("Powered by ProcessMaker AI") }}</div>
       </div>
     </b-card>
 

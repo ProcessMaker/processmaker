@@ -1,35 +1,52 @@
 <template>
   <div class="pb-2 template-select-card-container">
-    <b-card no-body class="template-select-card" @click="showDetails()" @mouseenter="addHoverClass" @mouseleave="removeHoverClass">
-      <b-card-body :title="template.name | str_limit(30)" class="card-body">
+    <b-card
+      no-body
+      class="template-select-card"
+      @click="showDetails()"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    >
+      <b-card-body
+        :title="template.name | str_limit(30)"
+        class="card-body"
+      >
         <b-card-text class="mb-2">
           {{ template.description | str_limit(150) }}
         </b-card-text>
-        <b-badge v-for="category in categories" :key="category.id" pill class="category-badge mb-3 mr-1"> 
+        <b-badge
+          v-for="category in categories"
+          :key="category.id"
+          pill
+          class="category-badge mb-3 mr-1"
+        >
           {{ category.name }}
         </b-badge>
-        <small v-if="template.categories.length > 3" class="text-muted">+{{ catCount }}</small>
+        <small
+          v-if="template.categories.length > 3"
+          class="text-muted"
+        >+{{ catCount }}</small>
       </b-card-body>
     </b-card>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from "vue";
 
-Vue.filter('str_limit', function (value, size) {
-  if (!value) return '';
+Vue.filter("str_limit", (value, size) => {
+  if (!value) return "";
   value = value.toString();
 
   if (value.length <= size) {
     return value;
   }
-  return value.substr(0, size) + '...';
+  return `${value.substr(0, size)}...`;
 });
 
 export default {
   components: {},
-  props: ['template'],
+  props: ["template"],
   data() {
     return {
       thumbnail: null,
@@ -38,28 +55,28 @@ export default {
   },
   computed: {
     categories() {
-      return this.catLimit ? this.template.categories.slice(0,this.catLimit) : this.template.categories;
+      return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
     },
     catCount() {
-      const length = this.template.categories.length;
-      return  length  - this.catLimit;
-    }
+      const { length } = this.template.categories;
+      return length - this.catLimit;
+    },
   },
   watch: {},
   beforeMount() {},
+  mounted() {
+  },
   methods: {
-    showDetails() {      
-      this.$emit('show-details', {"template": this.template});
+    showDetails() {
+      this.$emit("show-details", { template: this.template });
     },
     addHoverClass(event) {
-      event.target.classList.add('hover')
+      event.target.classList.add("hover");
     },
     removeHoverClass(event) {
-      event.target.classList.remove('hover')
-    }
+      event.target.classList.remove("hover");
+    },
   },
-  mounted() {
-  }
 };
 </script>
 
