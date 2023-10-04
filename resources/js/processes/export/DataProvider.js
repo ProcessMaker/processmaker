@@ -148,7 +148,6 @@ export default {
         assetLink: this.getAssetLink(asset),
       };
 
-      console.log('DataProvider', uuid + " " + rootUuid);
       if (uuid === rootUuid) {
         info.hidden = false;
         root = info;
