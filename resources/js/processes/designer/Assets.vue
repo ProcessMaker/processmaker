@@ -30,6 +30,7 @@
             <asset-buttons
               :asset_name="asset.asset_name"
               :asset_name_all="asset.asset_name_all"
+              :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
               :url-asset="asset.urlAsset"
             />
@@ -58,6 +59,7 @@
             <asset-buttons
               :asset_name="asset.asset_name"
               :asset_name_all="asset.asset_name_all"
+              :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
               :url-asset="asset.urlAsset"
             />
@@ -93,6 +95,7 @@ export default {
           icon: "fas fa-play-circle",
           asset_name: "Processes",
           asset_name_all: "See All Processes",
+          asset_name_new: "New Process",
           urlPath: "/processes",
           urlAsset: "/processes?create=true",
         },
@@ -101,6 +104,7 @@ export default {
           icon: "fas fa-file-alt",
           asset_name: "Screens",
           asset_name_all: "See All Screens",
+          asset_name_new: "New Screen",
           urlPath: "/designer/screens",
           urlAsset: "/designer/screens?create=true",
         },
@@ -109,6 +113,7 @@ export default {
           icon: "fas fa-code",
           asset_name: "Scripts",
           asset_name_all: "See All Scripts",
+          asset_name_new: "New Script",
           urlPath: "/designer/scripts",
           urlAsset: "/designer/scripts?create=true",
         },
@@ -116,7 +121,8 @@ export default {
           color: "#712F4A",
           icon: "fas fa-table",
           asset_name: "Decision Tables",
-          asset_name_all: "See Decision Tables",
+          asset_name_all: "See All Decision Tables",
+          asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
           urlAsset: "/designer/decision-tables?create=true",
         },
@@ -125,6 +131,7 @@ export default {
           icon: "fas fa-database",
           asset_name: "Collections",
           asset_name_all: "See All Collections",
+          asset_name_new: "New Collection",
           urlPath: "/collections",
           urlAsset: "/collections?create=true",
         },
@@ -132,7 +139,8 @@ export default {
           color: "#B5D3E7",
           icon: "fas fa-share-alt",
           asset_name: "Data Connectors",
-          asset_name_all: "See All Data Conn",
+          asset_name_all: "See All Data Connectors",
+          asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
           urlAsset: "/designer/data-sources?create=true",
         },

@@ -8,7 +8,7 @@
         block
         @click="openAsset(urlAsset)"
       >
-        {{ asset_name }}
+        {{ $t(asset_name_new) }}
         <i class="fas fa-arrow-right ml-2 align-middle" />
       </b-button>
     </div>
@@ -20,7 +20,7 @@
         block
         @click="callURL()"
       >
-        {{ asset_name_all }}
+        {{ $t(asset_name_all) }}
         <i class="fas fa-arrow-right ml-2 align-middle" />
       </b-button>
     </div>
@@ -34,6 +34,7 @@ export default {
     urlPath: String,
     urlAsset: String,
     asset_name: String,
+    asset_name_new: String,
   },
   data() {
     return {
@@ -78,7 +79,7 @@ export default {
 .custom-text {
   color: #5e6469;
   font-family: "Open Sans", sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
