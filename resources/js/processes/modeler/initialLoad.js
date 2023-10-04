@@ -137,6 +137,7 @@ ProcessMaker.EventBus.$on(
         label: "Display Next Assigned Task to Task Assignee",
         helper: "Directs Task assignee to the next assigned Task",
         name: "interstitial",
+        enabledByDefault: true,
       },
     });
 

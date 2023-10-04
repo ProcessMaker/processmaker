@@ -9,6 +9,7 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
@@ -129,11 +130,32 @@ class TemplateController extends Controller
      */
     public function create(string $type, Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $response = $this->template->create($type, $request);
-        if (isset($response->getData()->processId) && $type === 'process') {
+        if ($type === 'process') {
+            $request->validate(Template::rules($request->id, $this->types[$type][4]));
+            $postOptions = $this->checkIfAssetsExist($request);
+            if (!empty($postOptions)) {
+                $response = [
+                    'id' => $request->id,
+                    'request' => $request->toArray(),
+                    'existingAssets' => $postOptions,
+                ];
+            } else {
+                $response = $this->template->create($type, $request);
+            }
+        } elseif ($type === 'update-assets') {
+            $request['request'] = json_decode($request['request'], true);
+            $request['existingAssets'] = json_decode($request['existingAssets'], true);
+            $request->validate([
+                'id' => 'required|numeric',
+                'request' => 'required|array',
+                'existingAssets' => 'required|array',
+            ]);
+            $response = $this->template->create($type, $request);
+        }
+
+        // Register the Event
+        if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
-            // Register the Event
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
 
@@ -181,5 +203,33 @@ class TemplateController extends Controller
         if ($validType) {
             return (new ImportController())->preview($request, $decoded->version);
         }
+    }
+
+    private function checkIfAssetsExist($request)
+    {
+        $templateId = (int) $request->id;
+        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $payload = json_decode($template->manifest, true);
+
+        // Get assets form the template
+        $existingOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            $item = [
+                'type' => $asset['type'],
+                'uuid' => $key,
+                'model' => $asset['model'],
+                'name' => $asset['name'],
+                'mode' => 'copy',
+            ];
+
+            if (!$asset['model']::where('uuid', $key)->exists() || $asset['type'] === 'Process') {
+                continue;
+            }
+
+            $existingOptions[] = $item;
+        }
+
+        return $existingOptions;
     }
 }

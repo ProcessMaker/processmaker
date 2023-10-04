@@ -10,6 +10,7 @@
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
     :hide-footer="hideFooter"
+    :hide-header="hideHeader"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -66,8 +67,12 @@
 
     <template #modal-title v-else>
       <div>
-        <i v-if="titleIcon" class="pr-1 fa-fw" :class="titleIcon"/>
-        {{title}}
+        <i
+          v-if="titleIcon"
+          class="pr-1 fa-fw"
+          :class="titleIcon"
+        />
+        {{ title }}
       </div>
       <small v-if="subtitle" class="text-muted subtitle mt-1">{{subtitle}}</small>
     </template>
@@ -90,6 +95,7 @@
             :variant="button.variant" 
             :disabled="button.disabled"
             :hidden="button.hidden"
+            :size="button.size"
             :data-test="button.dataTest"
             class="ml-2"
           >
@@ -113,7 +119,8 @@
       "customButtons", 
       "subtitle", 
       "size", 
-      "hideFooter", 
+      "hideFooter",
+      "hideHeader",
       "hasHeaderButtons", 
       "headerButtons", 
       "hasTitleButtons", 

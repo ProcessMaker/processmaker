@@ -44,7 +44,7 @@ class UsersTest extends TestCase
     public function getUpdatedData()
     {
         $faker = Faker::create();
-        
+
         return [
             'username' => 'newusername',
             'email' => $faker->email(),
@@ -63,7 +63,7 @@ class UsersTest extends TestCase
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
             'password' => $faker->sentence(10),
         ];
-    } 
+    }
 
     protected function withUserSetup()
     {
@@ -72,7 +72,6 @@ class UsersTest extends TestCase
 
         (new PermissionSeeder)->run($this->user);
     }
-
 
     /**
      * Test verify the parameter required for create form
@@ -712,7 +711,7 @@ class UsersTest extends TestCase
     }
 
     /**
-     * Update username and password 
+     * Update username and password
      * If is an admin user can edit username and password himself
      */
     public function testUpdateUserAdmin()
@@ -776,5 +775,4 @@ class UsersTest extends TestCase
         // Check that it has changed
         $this->assertNotEquals($verify, $verifyNew);
     }
-
 }

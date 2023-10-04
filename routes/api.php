@@ -130,6 +130,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
+    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can:edit-processes');
     Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
@@ -230,6 +231,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('can:view-settings');
     Route::get('settings/groups', [SettingController::class, 'groups'])->name('settings.groups')->middleware('can:view-settings');
     Route::post('settings/import', [SettingController::class, 'import'])->name('settings.import')->middleware('can:update-settings');
+    Route::delete('settings/{setting}', [SettingController::class, 'destroy'])->name('settings.destroy')->middleware('can:update-settings');
     Route::put('settings/{setting}', [SettingController::class, 'update'])->name('settings.update')->middleware('can:update-settings');
     Route::get('settings/group/{group}/buttons', [SettingController::class, 'buttons'])->name('settings.buttons')->middleware('can:view-settings')->where('group', '[A-Za-z0-9 -_]+');
     Route::post('settings/upload-file', [SettingController::class, 'upload'])->name('settings.upload-file')->middleware('can:update-settings');

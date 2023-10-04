@@ -91,13 +91,14 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
+import ListMixin from "./ListMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},
     columns: {},
@@ -237,8 +238,8 @@ export default {
       return `/requests/${data.id}`;
     },
     formatStatus(status) {
-      let color = "success";
-      let label = "In Progress";
+      let color = "success",
+        label = "In Progress";
       switch (status) {
         case "DRAFT":
           color = "danger";
@@ -258,11 +259,11 @@ export default {
           break;
       }
       return (
-        `<i class="fas fa-circle text-${
-          color
-        }"></i> <span>${
-          this.$t(label)
-        }</span>`
+        '<i class="fas fa-circle text-' +
+        color +
+        '"></i> <span>' +
+        this.$t(label) +
+        "</span>"
       );
     },
     transform(data) {
@@ -271,26 +272,33 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (const record of data.data) {
-        // format Status
-        record.status = this.formatStatus(record.status);
+      for (let record of data.data) {
+        //format Status
+        record["status"] = this.formatStatus(record["status"]);
       }
       return data;
     },
     fetch() {
       Vue.nextTick(() => {
-        let pmql = "";
+        if (this.cancelToken) {
+          this.cancelToken();
+          this.cancelToken = null;
+        }
+
+        const CancelToken = ProcessMaker.apiClient.CancelToken;
+
+        let pmql = '';
 
         if (this.pmql !== undefined) {
           pmql = this.pmql;
         }
 
-        let { filter } = this;
+        let filter = this.filter;
 
         if (filter && filter.length) {
           if (filter.isPMQL()) {
             pmql = `(${pmql}) and (${filter})`;
-            filter = "";
+            filter = '';
           }
         }
 
@@ -309,28 +317,36 @@ export default {
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            `${this.endpoint}?page=${
-              this.page
-            }&per_page=${
-              this.perPage
-            }&include=process,participants,data`
-                  + `&pmql=${
-                    encodeURIComponent(pmql)
-                  }&filter=${
-                    filter
-                  }&order_by=${
-                    this.orderBy === "__slot:ids" ? "id" : this.orderBy
-                  }&order_direction=${
-                    this.orderDirection
-                  }${this.additionalParams}`,
+            `${this.endpoint}?page=` +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&include=process,participants,data" +
+            "&pmql=" +
+            encodeURIComponent(pmql) +
+            "&filter=" +
+            filter +
+            "&order_by=" +
+            (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
+            "&order_direction=" +
+            this.orderDirection +
+            this.additionalParams,
+            {
+              cancelToken: new CancelToken((c) => {
+                this.cancelToken = c;
+              }),
+            },
           )
           .then((response) => {
             this.data = this.transform(response.data);
           }).catch((error) => {
-            if (_.has(error, "response.data.message")) {
-              ProcessMaker.alert(error.response.data.message, "danger");
-            } else if (_.has(error, "response.data.error")) {
-
+            if (error.code === "ERR_CANCELED") {
+              return;
+            }
+            if (_.has(error, 'response.data.message')) {
+              ProcessMaker.alert(error.response.data.message, 'danger');
+            } else if (_.has(error, 'response.data.error')) {
+              return;
             } else {
               throw error;
             }

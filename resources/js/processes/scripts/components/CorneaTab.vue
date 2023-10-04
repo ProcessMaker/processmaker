@@ -11,8 +11,8 @@
     <b-list-group-item class="script-toggle border-0 mb-0">
       <b-row v-b-toggle.assistant data-test="cornea-tab-toggle">
         <b-col v-if="!showPromptArea">
-          <img class="mb-1" :src="corneaIcon" />
-          {{ $t("Cornea AI Assistant") }}
+          <img class="mb-1 ai-icon" :src="proceC2Icon" width="18" :alt="$t('AI Assistant Icon')"/>
+          {{ $t("AI Assistant") }}
         </b-col>
         <b-col
           v-else
@@ -38,7 +38,7 @@
     >
       <b-collapse id="assistant" :visible="showPromptArea">
         <div v-if="!showPromptArea">
-          <div class="card-header m-0 d-flex border-0 pb-1">
+          <div class="card-header m-0 d-flex border-0 pb-1 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
@@ -75,7 +75,7 @@
             </div>
           </div>
 
-          <div class="card-header m-0 d-flex border-0 pt-0">
+          <div class="card-header m-0 d-flex border-0 pt-0 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
               <div
                 role="button"
@@ -115,8 +115,14 @@
         <generate-script-text-prompt
           v-if="showPromptArea || defaultSelected === 'generate'"
           :prompt-session-id="promptSessionId"
+          :autofocus="true"
+          :default-prompt="defaultPrompt"
           @generate-script="onGenerateScript"
         />
+
+        <div v-if="error" class="pb-3 px-3 bg-assistant-buttons">
+          <div class="alert alert-error m-0 text-center px-2  ">{{ error }}</div>
+        </div>
       </b-collapse>
     </b-list-group-item>
   </div>
@@ -138,11 +144,14 @@ export default {
     "defaultSelected",
     "defaultPrompt",
     "lineContext",
+    "processId",
+    "scriptTitle",
+    "scriptDescription",
   ],
   data() {
     return {
       showPromptArea: false,
-      corneaIcon: require("./../../../../img/cornea_icon.svg"),
+      proceC2Icon: require("./../../../../img/proceC2Black.svg"),
       penSparkleIcon: require("./../../../../img/pen_sparkle_icon.svg"),
       bookIcon: require("./../../../../img/book_icon.svg"),
       brushIcon: require("./../../../../img/brush_icon.svg"),
@@ -152,6 +161,7 @@ export default {
       loading: false,
       promptSessionId: "",
       prompt: "",
+      error: "",
       progress: {
         progress: 0,
       },
@@ -168,6 +178,10 @@ export default {
 
     if (this.defaultPrompt) {
       this.prompt = this.defaultPrompt;
+    }
+
+    if (this.processId !== 0) {
+      this.showPromptArea = true;
     }
   },
   methods: {
@@ -304,6 +318,10 @@ export default {
     },
 
     async cleanScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        this.error = this.$t("Please add and select some code to clean.");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
@@ -339,6 +357,10 @@ export default {
     },
 
     async documentScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        this.error = this.$t("Please add and select some code to document.");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", true);
@@ -377,6 +399,10 @@ export default {
         });
     },
     async explainScript() {
+      if (!this.sourceCode || this.sourceCode === "") {
+        this.error = this.$t("Please add and select some code to explain.");
+        return;
+      }
       this.getSelection();
       this.getNonce();
       this.$emit("set-diff", false);
@@ -405,7 +431,7 @@ export default {
             this.$emit(
               "request-started",
               this.progress,
-              this.$t("Generating explanation")
+              this.$t("Generating explanation"),
             );
           }
         })
@@ -467,5 +493,18 @@ export default {
 }
 .ai-button:hover {
   background: #f5f5f5 !important;
+}
+
+.ai-icon {
+  margin-left: -1px;
+}
+.bg-assistant-buttons {
+  background: #f8f8f8;
+}
+.alert-error {
+  background-color: #D3E1FC;
+  border: 0;
+  border-radius: 8px;
+  color: #1C4193;
 }
 </style>

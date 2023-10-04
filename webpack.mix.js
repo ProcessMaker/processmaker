@@ -87,9 +87,11 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/index.js", "public/js/processes")
   .js("resources/js/processes/edit.js", "public/js/processes")
   .js("resources/js/processes/archived.js", "public/js/processes")
+  .js("resources/js/processes/newDesigner.js", "public/js/processes")
   .js("resources/js/templates/index.js", "public/js/templates")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")
+  .js("resources/js/templates/assets.js", "public/js/templates")
   .js("resources/js/processes/categories/index.js", "public/js/processes/categories")
   .js("resources/js/processes/scripts/index.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
@@ -108,12 +110,14 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
   .js("resources/js/leave-warning.js", "public/js")
   .js("resources/js/requests/index.js", "public/js/requests")
+  .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
 
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
 
   .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
+  .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
@@ -125,7 +129,7 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = 'node_modules/monaco-editor/min/vs/';
 const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript'];
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript', 'sql'];
 const monacoFiles = [
   'loader.js',
   'editor/editor.main.js',
