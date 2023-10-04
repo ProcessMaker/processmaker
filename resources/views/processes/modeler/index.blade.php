@@ -84,10 +84,6 @@ div.main {
   }
   const warnings = @json($process->warnings);
 
-  @can('view-comments')
-    window.ProcessMaker.modeler.showComments = true;
-  @endcan
-
   window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);
     addWarnings(warnings || []);
