@@ -13,29 +13,19 @@
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
-    <div class="container">
-      <div class="content">
-        <img
-          class="image"
-          src="/img/recent_projects.svg"
-          alt="recent projects"
-        >
-        <div class="content-text">
-          <span class="title">
-            {{ $t("Recent Projects") }}
-          </span>
-          <p>{{ $t("You are not part of a project yet") }}</p>
-          <b-link href="#">
-            {{ $t("Create a Project") }}
-          </b-link>
-        </div>
-      </div>
-    </div>
+    <processes-last-modified-listing
+      :status="status"
+    />
   </div>
 </template>
 
 <script>
+import ProcessesLastModifiedListing from './ProcessesLastModifiedListing';
+
+Vue.component("ProcessesLastModifiedListing", ProcessesLastModifiedListing);
+
 export default {
+  props: ["status"],
   data() {
     return { };
   },
@@ -45,6 +35,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  height: 500px;
 }
 .card {
   border-radius: 8px;
@@ -60,7 +51,6 @@ export default {
   flex: 1 0 0;
   align-self: stretch;
   width: 100%;
-  height: 450px;
 }
 .content {
   display: flex;
