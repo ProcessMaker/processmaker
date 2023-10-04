@@ -32,7 +32,7 @@
             class="btn btn-primary w-100"
             @click="hideModal"
           >
-            {{ $t('Got it!') }}
+            {{ $t("Got it!") }}
           </button>
         </div>
       </div>
