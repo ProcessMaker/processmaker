@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import ScreenSelect from "./ScreenSelect";
+import ScreenSelect from "./ScreenSelect.vue";
 
 export default {
   components: { ScreenSelect },

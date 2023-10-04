@@ -7,8 +7,8 @@
 
 <script>
 
-import ExcelConnectionProperties from './ExcelConnectionProperties';
-import GithubConnectionProperties from './GithubConnectionProperties';
+import ExcelConnectionProperties from './ExcelConnectionProperties.vue';
+import GithubConnectionProperties from './GithubConnectionProperties.vue';
 export default {
     components: {ExcelConnectionProperties, GithubConnectionProperties},
     props: ['driverKey', 'formData'],   

@@ -182,7 +182,7 @@
 
 <script>
   import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
-  import SliderWithInput from "../../../components/shared/SliderWithInput";
+  import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 
   const channel = new BroadcastChannel("assetCreation");
 
