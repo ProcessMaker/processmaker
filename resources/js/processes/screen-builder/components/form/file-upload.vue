@@ -226,7 +226,7 @@ export default {
           file.ignored = false;
         }
         if (file.ignored) {
-          ProcessMaker.alert(this.$t("File not allowed."), "danger");
+          ProcessMaker.alert(this.$t("This file type is not accepted."), "danger");
           return false
         }
       }
