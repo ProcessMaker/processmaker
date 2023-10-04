@@ -183,7 +183,7 @@ class ProcessRequestFileController extends Controller
      * @param FileReceiver $receiver The Chunk FileReceiver
      * @return JsonResponse
      */
-    private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
+    protected function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
         // Perform a chunk upload
         if ($receiver->isUploaded() === false) {
