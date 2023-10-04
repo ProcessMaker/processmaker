@@ -223,8 +223,8 @@ if (window.Processmaker && window.Processmaker.apiTimeout !== undefined) {
 window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
-window.ProcessMaker.alert = function (text, variant) {
-  window.alert(`${variant}: ${text}`);
+window.ProcessMaker.alert = function (text = '', variant) {
+  window.alert(text);
 };
 
 const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
