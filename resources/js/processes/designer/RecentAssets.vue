@@ -19,9 +19,6 @@
         <b-nav-item>
           <i class="fas fa-search" />
         </b-nav-item>
-        <b-nav-item>
-          <i class="fas fa-external-link-alt" />
-        </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
     <div class="container">
