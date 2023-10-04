@@ -25,7 +25,8 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
-        <pan-comment :commentable_id="processId"
+        <pan-comment v-if="showComments"
+                     :commentable_id="processId"
                      commentable_type="ProcessMaker\Models\Process"
                      :readonly="false"
                      />
@@ -83,6 +84,7 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
+      showComments: window.ProcessMaker.modeler.showComments || false,
     };
   },
   computed: {

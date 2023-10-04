@@ -190,6 +190,7 @@
                 </div>
             </div>
             @endif
+            @can('view-comments')
             <div v-if="panCommentInVueOptionsComponents">
                 <pan-comment :commentable_id="task.id"
                              commentable_type="ProcessMaker\Models\ProcessRequestToken"
@@ -197,6 +198,7 @@
                              :name="task.element_name"
                              />
             </div>
+            @endcan
         </div>
     </div>
 @endsection
