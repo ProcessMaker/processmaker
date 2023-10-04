@@ -28,7 +28,7 @@ export default {
       },
     },
     screenType: {
-      type: String,
+      type: [String, Array],
       default: ScreenTypes.DISPLAY,
       validator(value) {
         const propValue = value;

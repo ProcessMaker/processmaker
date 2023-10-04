@@ -74,12 +74,12 @@
         />
         <project-select
           v-if="isProjectsInstalled"
+          v-model="formData.projects"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
-          v-model="formData.projects"
           :errors="errors.projects"
-        ></project-select>
+        />
       </template>
       <template v-else>
         <div>{{ $t("Categories are required to create a screen") }}</div>
@@ -133,8 +133,8 @@ export default {
     this.resetErrors();
     if (this.isQuickCreate === true) {
       this.screenTypes = filterScreenType();
-      // defaulting to the first and only screen type for the select list
-      this.formData.type = Object.keys(this.screenTypes)[0];
+      // in any case the screenType if the only one, default to the first value
+      if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
     }
   },
   destroyed() {
