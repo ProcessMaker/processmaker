@@ -43,7 +43,8 @@
 </template>
 
 <script>
-import { Modal } from "SharedComponents";
+// import { Modal } from "SharedComponents";
+import Modal from "../../../components/shared/Modal";
 
 export default {
   components: { Modal },

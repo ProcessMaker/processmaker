@@ -25,6 +25,8 @@ import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 import DownloadSvgButton from "./DownloadSvgButton.vue";
+import CustomExportView from "../../processes/export/components/CustomExportView.vue";
+import ExportStateMixin from "../../processes/export/state";
 
 export {
   AddToProjectModal,
@@ -54,4 +56,6 @@ export {
   SidebarNav,
   SliderWithInput,
   DownloadSvgButton,
+  CustomExportView,
+  ExportStateMixin,
 };

@@ -39,6 +39,24 @@ export default {
         }
     });
   },
+  doImportProjectAssets(file, options, projectId) {
+    console.log(file, options, projectId);
+    let formData = new FormData();
+    const optionsBlob = new Blob([JSON.stringify(options)], {
+      type: 'application/json'
+    });
+
+    formData.append('file', file);
+    formData.append('options', optionsBlob);
+    formData.append('id', projectId);
+    
+    return ProcessMaker.apiClient.post('/projects/assets/import', formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   importOlderVersion(file) {
     let formData = new FormData();
     formData.append('file', file);
@@ -130,6 +148,7 @@ export default {
         assetLink: this.getAssetLink(asset),
       };
 
+      console.log('DataProvider', uuid + " " + rootUuid);
       if (uuid === rootUuid) {
         info.hidden = false;
         root = info;
@@ -155,7 +174,7 @@ export default {
         discard: value.every(i => i.discard),
       };
     });
-
+    console.log(root);
     return {
       root,
       rootUuid,

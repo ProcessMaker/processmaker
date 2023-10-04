@@ -41,7 +41,9 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal } from "SharedComponents";
+  // import { FormErrorsMixin, Modal } from "SharedComponents";
+  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+  import Modal from "../../../components/shared/Modal";
 
   export default {
     components: { Modal },
