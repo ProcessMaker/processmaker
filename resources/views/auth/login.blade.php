@@ -88,6 +88,7 @@ Login
         document.cookie = "isMobile=false"
         if (isMobileDevice) {
             document.cookie = "isMobile=true"
+            document.cookie = "firstMounted=true"
         }
     </script>
 @endsection
