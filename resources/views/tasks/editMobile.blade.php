@@ -61,7 +61,7 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process->manager_id ? "true": "false" }};
   </script>
-  <script src="{{mix('js/tasks/show.js')}}"></script>
+  @vite('resources/js/tasks/show.js')
   <script>
       const store = new Vuex.Store();
       const main = new Vue({

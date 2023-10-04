@@ -52,7 +52,7 @@
 @endsection
 
 @section('js')
-	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
+	@vite('resources/js/admin/profile/edit.js')
 
 <script>
         let formVueInstance = new Vue({

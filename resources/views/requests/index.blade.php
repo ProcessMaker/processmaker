@@ -95,7 +95,7 @@
     window.Processmaker.user = @json($currentUser);
     window.Processmaker.status = '{{ $type }}';
 </script>
-<script src="{{mix('js/requests/index.js')}}"></script>
+@vite('resources/js/requests/index.js')
 @endsection
 
 @section('css')

@@ -42,5 +42,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/settings/ldaplogs.js')}}"></script>
+    @vite('resources/js/admin/settings/ldaplogs.js')
 @endsection

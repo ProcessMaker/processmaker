@@ -36,6 +36,6 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/processes/newDesigner.js')}}"></script>
+@vite('resources/js/processes/newDesigner.js')
 @endsection
 
