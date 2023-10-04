@@ -175,7 +175,12 @@ export default {
             this.$refs["set-password-modal"].show();
         },
         onCancel() {
-            window.location = "/processes";
+            const projectId = this.$route.params.id;
+            if (this.$route.name === "projectCustomAssetImport") {
+                window.location.href = `/designer/projects/${projectId}`;
+            } else {
+                window.location.href = '/processes';
+            }
         },
         onExport() {
             if (this.passwordProtect) {
@@ -189,14 +194,7 @@ export default {
             if (this.assetsExist) {
                 this.$refs['import-process-modal'].show();
             } else {
-                console.log(this.$route);
-                if (this.$route.name === "projectCustomAssetImport") {
-                    this.handleProjectAssetsImport(this.$route.params.id);
-                }else {
-                    this.handleImport();
-                }
-                // this.handleProjectAssetsImport();
-                // this.handleImport();
+                this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
             }
         },
         exportProcess(password = null) {
@@ -216,12 +214,13 @@ export default {
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');           
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
+
         },
         handleImport() {
             this.loading = true;
