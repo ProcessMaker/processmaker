@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data.length === 0" class="container">
+  <div v-if="data.data.length === 0" class="container">
     <div class="content">
       <img
         class="image"
@@ -187,8 +187,7 @@ export default {
                     this.$t("The project was deleted."),
                     "success"
                   );
-                  this.$emit("reload");
-                  this.$refs.pagination.loadPage(1);
+                  this.fetch();
                 }).catch(error => {
                   ProcessMaker.alert(
                     this.$t(error.response?.message),
