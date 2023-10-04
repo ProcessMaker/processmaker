@@ -8,7 +8,7 @@
         <b-nav-item>
           <i class="fas fa-search" />
         </b-nav-item>
-        <b-nav-item>
+        <b-nav-item href="/designer/projects">
           <i class="fas fa-external-link-alt" />
         </b-nav-item>
       </b-navbar-nav>
