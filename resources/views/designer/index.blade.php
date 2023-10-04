@@ -24,11 +24,7 @@
                     </div>
                     <div class="col-12">
                         <my-project 
-                            status="{{ $listConfig->status }}"
-                            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
-                            :current-user-id="{{ \Auth::user()->id }}"
-                            is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
-                        />
+                            status="{{ $listConfig->status }}"/>
                     </div>
                 </div>
             </div>
