@@ -15,9 +15,6 @@
     </b-navbar>
     <processes-last-modified-listing
       :status="status"
-      :permission="permission"
-      :current-user-id="currentUserId"
-      :is-documenter-installed="isDocumenterInstalled"
     />
   </div>
 </template>
@@ -28,7 +25,7 @@ import ProcessesLastModifiedListing from './ProcessesLastModifiedListing';
 Vue.component("ProcessesLastModifiedListing", ProcessesLastModifiedListing);
 
 export default {
-  props: ["status", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["status"],
   data() {
     return { };
   },
