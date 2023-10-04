@@ -10,19 +10,29 @@
       role="document"
     >
       <div class="modal-content">
-        <div class="modal-body">
-          <p>Modal body text goes here.</p>
-          <img
-            class="image"
-            src="/img/welcome_mobile.svg"
-            alt="recent projects"
-          >
+        <div class="modal-body justify-content-center">
+          <h3 class="mt-3 font-weight-bold text-center">
+            {{ $t("Welcome Participant!") }}
+          </h3>
+          <p class="text-center px-5">
+            {{ $t("Check out your tasks and requests on your phone.") }}
+          </p>
+          <p class="text-center">
+            <img
+              class="image"
+              src="/img/welcome_mobile.svg"
+              alt="recent projects"
+            >
+          </p>
+          <p class="text-center">
+            {{ $t("To switch back to the previous interface, use \"Switch to Desktop View\" in the user menu.") }}
+          </p>
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn btn-primary w-100"
             @click="hideModal"
           >
-            {{ $t('Got it') }}
+            {{ $t('Got it!') }}
           </button>
         </div>
       </div>

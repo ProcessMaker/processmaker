@@ -203,7 +203,9 @@ if (isMobileDevice) {
       };
     },
     mounted() {
-      $("#welcomeModal").modal("show");
+      if (this.$cookies.get("firstMounted") === "true") {
+        $("#welcomeModal").modal("show");
+      }
     },
     methods: {
       switchToDesktop() {
