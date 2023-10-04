@@ -27,7 +27,7 @@
 
 <script>
 
-import _ from "lodash";
+import { debounce } from "lodash";
 import MonacoEditor from "vue-monaco";
 import MenuScript from "../../../components/Menu";
 
@@ -76,7 +76,7 @@ export default {
   },
 
   methods: {
-    stopResizing: _.debounce(function() {
+    stopResizing: debounce(function() {
       this.resizing = false;
     }, 50),
     resizeHandler() {
