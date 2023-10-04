@@ -1,44 +1,38 @@
 <template>
   <b-card-text>
     <div class="button-container">
-      <slot
-        name="select-template-slot"
-        class="custom-slot"
-      ></slot>
+      <b-button
+        size="sm"
+        class="custom-button custom-text"
+        block
+        @click="openAsset(urlAsset)"
+      >
+        {{ $t(asset_name_new) }}
+        <i class="fas fa-arrow-right ml-2 align-middle" />
+      </b-button>
     </div>
     <div class="button-container">
       <b-button
-        variant="primary"
         size="sm"
         class="custom-button custom-text"
         block
         @click="callURL()"
       >
-        {{ asset_name_all }}
-        <i class="fas fa-arrow-right ml-2 align-middle"></i>
+        {{ $t(asset_name_all) }}
+        <i class="fas fa-arrow-right ml-2 align-middle" />
       </b-button>
     </div>
   </b-card-text>
 </template>
 
 <script>
-import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
-import CreateProcessModal from "../components/CreateProcessModal.vue";
-import ProcessesListing from "../components/ProcessesListing.vue";
-import CategorySelect from "../categories/components/CategorySelect.vue";
-import CreateScriptModal from "../../../js/processes/scripts/components/CreateScriptModal.vue";
-
 export default {
-  components: {
-    SelectTemplateModal,
-    CreateProcessModal,
-    ProcessesListing,
-    CategorySelect,
-    CreateScriptModal,
-  },
   props: {
     asset_name_all: String,
     urlPath: String,
+    urlAsset: String,
+    asset_name: String,
+    asset_name_new: String,
   },
   data() {
     return {
@@ -48,6 +42,9 @@ export default {
   methods: {
     callURL() {
       window.location.href = window.location.origin + this.urlPath;
+    },
+    openAsset(url) {
+      window.open(url, "_blank");
     },
   },
 };
@@ -65,5 +62,25 @@ export default {
 }
 .b-card .btn {
   width: 100%;
+}
+.custom-button {
+  display: flex;
+  padding: 8px 12px;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 1px solid #b7d8ff;
+  background: #d1e3fe;
+}
+.custom-text {
+  color: #5e6469;
+  font-family: "Open Sans", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.28px;
 }
 </style>

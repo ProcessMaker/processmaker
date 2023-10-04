@@ -135,6 +135,12 @@
         }
       },
     },
+    mounted() {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.size > 0 && searchParams.get("create") === "true") {
+          this.show();
+      };
+    },
     methods: {
       onShown() {
         if (this.generativeProcessData) {
