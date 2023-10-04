@@ -24,7 +24,8 @@
                     </div>
                     <div class="col-12">
                         <my-project 
-                            status="{{ $listConfig->status }}"/>
+                            status="{{ $listConfig->status }}"
+                        />
                     </div>
                 </div>
             </div>
