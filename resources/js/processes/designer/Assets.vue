@@ -28,7 +28,6 @@
             class="text-left"
           >
             <asset-buttons
-              :asset_name="asset.asset_name"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -57,7 +56,6 @@
 
           <div v-show="showButtons[index + 3]">
             <asset-buttons
-              :asset_name="asset.asset_name"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -80,14 +78,6 @@ export default {
   },
   data() {
     return {
-      blankTemplate: true,
-      selectedTemplate: false,
-      templateData: {},
-      isProjectsInstalled: false,
-      showSelectTemplateModal: true,
-      countCategories: 2,
-      variant: "Primary",
-      showModal: false,
       urlPath: "",
       assets: [
         {
@@ -149,9 +139,6 @@ export default {
     };
   },
   methods: {
-    openSelectTemplateModal() {
-      this.showSelectTemplateModal = true;
-    },
     toggleButtons(index) {
       this.$set(this.showButtons, index, !this.showButtons[index]);
     },
