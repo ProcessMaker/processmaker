@@ -96,6 +96,7 @@
         </b-navbar-nav >
       </div>
     @endif
+    <welcome-modal />
   </div>
 </div>
 
