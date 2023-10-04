@@ -2,7 +2,6 @@
   <b-card-text>
     <div class="button-container">
       <b-button
-        variant="primary"
         size="sm"
         class="custom-button custom-text"
         block
@@ -14,7 +13,6 @@
     </div>
     <div class="button-container">
       <b-button
-        variant="primary"
         size="sm"
         class="custom-button custom-text"
         block

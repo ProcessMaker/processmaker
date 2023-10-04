@@ -15,25 +15,22 @@
           class="text-center"
           @click="toggleButtons(index, 'core')"
         >
-          <div v-show="!showButtonsCore[index]">
+          <template v-if="!showButtonsCore[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
               :asset_name="asset.asset_name"
             />
-          </div>
+          </template>
 
-          <div
-            v-show="showButtonsCore[index]"
-            class="text-left"
-          >
+          <template v-if="showButtonsCore[index]">
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
               :url-asset="asset.urlAsset"
             />
-          </div>
+          </template>
         </b-card>
       </b-card-group>
     </div>
@@ -46,22 +43,22 @@
           class="text-center"
           @click="toggleButtons(index, 'package')"
         >
-          <div v-show="!showButtonsPackage[index]">
+          <template v-if="!showButtonsPackage[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
               :asset_name="asset.asset_name"
             />
-          </div>
+          </template>
 
-          <div v-show="showButtonsPackage[index]">
+          <template v-if="showButtonsPackage[index]">
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
               :url-asset="asset.urlAsset"
             />
-          </div>
+          </template>
         </b-card>
       </b-card-group>
     </div>
