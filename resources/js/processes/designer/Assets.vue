@@ -9,13 +9,13 @@
     <div class="mt-3">
       <b-card-group deck>
         <b-card
-          v-for="(asset, index) in assets.slice(0, 3)"
+          v-for="(asset, index) in assetsCore"
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index)"
+          @click="toggleButtons(index, 'core')"
         >
-          <div v-show="!showButtons[index]">
+          <div v-show="!showButtonsCore[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
@@ -24,7 +24,7 @@
           </div>
 
           <div
-            v-show="showButtons[index]"
+            v-show="showButtonsCore[index]"
             class="text-left"
           >
             <asset-buttons
@@ -40,13 +40,13 @@
     <div class="mt-3">
       <b-card-group deck>
         <b-card
-          v-for="(asset, index) in assets.slice(3)"
+          v-for="(asset, index) in assetsPackage"
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index + 3)"
+          @click="toggleButtons(index, 'package')"
         >
-          <div v-show="!showButtons[index + 3]">
+          <div v-show="!showButtonsPackage[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
@@ -54,7 +54,7 @@
             />
           </div>
 
-          <div v-show="showButtons[index + 3]">
+          <div v-show="showButtonsPackage[index]">
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
@@ -79,7 +79,7 @@ export default {
   data() {
     return {
       urlPath: "",
-      assets: [
+      assetsCore: [
         {
           color: "#4DA2EB",
           icon: "fas fa-play-circle",
@@ -107,6 +107,8 @@ export default {
           urlPath: "/designer/scripts",
           urlAsset: "/designer/scripts?create=true",
         },
+      ],
+      assetsPackage: [
         {
           color: "#712F4A",
           icon: "fas fa-table",
@@ -135,12 +137,18 @@ export default {
           urlAsset: "/designer/data-sources?create=true",
         },
       ],
-      showButtons: new Array(6).fill(false),
+      showButtonsCore: new Array(3).fill(false),
+      showButtonsPackage: new Array(3).fill(false),
     };
   },
   methods: {
-    toggleButtons(index) {
-      this.$set(this.showButtons, index, !this.showButtons[index]);
+    toggleButtons(index, section) {
+      if (section === "core") {
+        this.$set(this.showButtonsCore, index, !this.showButtonsCore[index]);
+      }
+      if (section === "package") {
+        this.$set(this.showButtonsPackage, index, !this.showButtonsPackage[index]);
+      }
     },
   },
 };
