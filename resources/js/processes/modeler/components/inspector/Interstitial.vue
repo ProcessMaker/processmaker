@@ -26,7 +26,20 @@ import ScreenSelect from "./ScreenSelect";
 
 export default {
   components: { ScreenSelect },
-  props: ["value", "label", "helper", "enabledByDefault"],
+  props: {
+    label: {
+      type: String,
+      default: '',
+    },
+    helper: {
+      type: String,
+      default: '',
+     },
+    enabledByDefault: {
+      type: Boolean,
+      default: false
+    },
+  },
   data() {
     return {
       screen: null,
@@ -45,7 +58,7 @@ export default {
       const { node } = this;
 
       // Get the value of allowInterstitial or set it to true if it hasn't been defined yet.
-      const value = _.get(node, "allowInterstitial", this.enabledByDefault || false);
+      const value = _.get(node, "allowInterstitial", this.enabledByDefault);
 
       this.screen = _.get(node, "interstitialScreenRef");
       return value;
@@ -70,5 +83,10 @@ export default {
       this.$set(this.node, "allowInterstitial", value);
     },
   },
+  mounted() {
+    if (!("allowInterstitial" in this.node)) {
+      this.$set(this.node, "allowInterstitial", this.enabledByDefault);
+    }
+  }
 };
 </script>
