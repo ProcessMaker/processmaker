@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!data" class="container">
+  <div v-if="data.length === 0" class="container">
     <div class="content">
       <img
         class="image"
@@ -77,7 +77,7 @@ export default {
     EllipsisMenu,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["status", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["status"],
   data() {
     return {
       orderBy: "updated_at",
@@ -106,9 +106,25 @@ export default {
         },
       ],
       actions: [
-        { value: "open-item", content: "Open", link: true, href: "/designer/projects/{{id}}", icon: "fas fa-sign-in-alt"},
-        { value: "remove-item", content: "Delete", icon: "fas fa-trash"},
-        { value: "export-item", content: "Export", link: true, href: "/designer/projects/{{id}}/export", icon: "fas fa-file-export"},
+        {
+          value: "open-item",
+          content: "Open",
+          link: true,
+          href: "/designer/projects/{{id}}",
+          icon: "fas fa-sign-in-alt",
+        },
+        {
+          value: "remove-item",
+          content: "Delete",
+          icon: "fas fa-trash",
+        },
+        {
+          value: "export-item",
+          content: "Export",
+          link: true,
+          href: "/designer/projects/{{id}}/export",
+          icon: "fas fa-file-export",
+        },
       ],
       configs: "",
     };
