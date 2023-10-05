@@ -28,7 +28,10 @@
             <i class="fas fa-times" />
           </button>
         </div>
-        <b-nav-item v-if="!showInput">
+        <b-nav-item
+          v-if="!showInput"
+          href="/designer/projects"
+        >
           <i class="fas fa-external-link-alt" />
         </b-nav-item>
       </b-navbar-nav>
