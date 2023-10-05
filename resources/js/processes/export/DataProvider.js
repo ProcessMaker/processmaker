@@ -173,7 +173,7 @@ export default {
         discard: value.every(i => i.discard),
       };
     });
-    console.log(root);
+    
     return {
       root,
       rootUuid,
