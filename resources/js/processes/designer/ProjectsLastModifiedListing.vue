@@ -80,6 +80,9 @@ export default {
   props: ["status"],
   data() {
     return {
+      data: {
+        data: [],
+      },
       orderBy: "updated_at",
       sortOrder: [
         {
@@ -135,7 +138,7 @@ export default {
     });
   },
   methods: {
-    fetch() {
+    fetch(pmql = "") {
       this.loading = true;
       this.apiDataLoading = true;
       this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
@@ -147,14 +150,12 @@ export default {
       ProcessMaker.apiClient
         .get(
           `${url}
-          status=
-          ${status}
+          status=${status}
           &page=1
-          &per_page=10
-          &order_by=
-          ${this.orderBy}
-          &order_direction=
-          ${this.orderDirection}`,
+          &per_page=10"
+          &pmql=${encodeURIComponent(pmql)}
+          &order_by=${this.orderBy}
+          &order_direction=${this.orderDirection}`,
         )
         .then((response) => {
           this.data = this.transform(response.data);
