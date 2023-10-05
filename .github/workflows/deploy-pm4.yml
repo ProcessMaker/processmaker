@@ -74,6 +74,7 @@ jobs:
           cd $run_number/pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
+          docker rmi -f {$IMAGE}
   job2: 
     name: deploy-stm    
     if: github.event.action != 'closed'
@@ -201,4 +202,10 @@ jobs:
           cd $run_number/pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run-delete-instance.php
-      
+  job8:
+    name: Cleanup
+    if: always()
+    runs-on: self-hosted
+    steps:
+      - name: delete run folder
+        run: rm -rf $run_number
