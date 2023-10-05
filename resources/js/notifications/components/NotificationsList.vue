@@ -78,6 +78,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
+import moment from 'moment';
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -125,6 +126,11 @@ export default {
     isComment() {
       return this.data.type === "COMMENT";
     },
+    timeFormat() {
+      let parts = window.ProcessMaker.user.datetime_format.split(" ");
+      parts.shift();
+      return parts.join(" ");
+    }
   },
   watch: {
     filterComments() {
@@ -210,9 +216,7 @@ export default {
         && dateObj.getMonth() === currentDate.getMonth()
         && dateObj.getFullYear() === currentDate.getFullYear()
       ) {
-        const hours = dateObj.getHours();
-        const minutes = dateObj.getMinutes();
-        return `${this.addLeadingZero(hours)}:${this.addLeadingZero(minutes)}`;
+        return moment(dateObj).format(this.timeFormat);
       }
       const month = dateObj.getMonth();
       const day = dateObj.getDate();
