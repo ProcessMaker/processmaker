@@ -50,12 +50,7 @@ export default {
   data() {
     return {
       searchCriteria: "",
-      selectedOptionStatus: "In Progress",
-      selectedIconStatus: "fas fa-circle text-warning",
-      selectedIconFilter: "fas fa-user",
-      apiData: [],
       showInput: false,
-      showDropdowns: true,
       pmql: "",
     };
   },
@@ -68,7 +63,6 @@ export default {
         this.performSearch();
       }
       this.showInput = !this.showInput;
-      this.showDropdowns = !this.showInput;
     },
     /**
      * This method sends users's input criteria to filter specific tasks or requests
