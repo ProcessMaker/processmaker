@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-button
-      v-if="!hideAddBtn || !callFromAiModeler"
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"

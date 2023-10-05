@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-button
-      v-if="!hideAddBtn || !callFromAiModeler"
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
