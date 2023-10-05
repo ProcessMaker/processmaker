@@ -49,7 +49,7 @@
         >
           <a
             style="cursor: pointer;"
-            @click="redirectToURL(props.rowData.url)"
+            @click="redirectToURL(props.rowData.data?.url)"
           >
             <span v-if="props.rowData.type === 'FILE_READY'" />
             <span v-else>
@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     redirectToURL(url) {
-      if (url) {
+      if (url && url !== "/") {
         window.location.href = url;
       }
     },

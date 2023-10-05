@@ -141,6 +141,8 @@ class Comment extends ProcessMakerModel
             return $this->commentable->manager_name;
         } elseif ($this->commentable instanceof self) {
             return $this->commentable->element_name;
+        } elseif ($this->commentable instanceof Process) {
+            return $this->commentable->name;
         } else {
             return get_class($this->commentable);
         }
@@ -187,6 +189,8 @@ class Comment extends ProcessMakerModel
             return sprintf('/requests/%s#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof ProcessRequestToken) {
             return sprintf('/tasks/%s/edit#comment-%s', $this->commentable->id, $id);
+        } elseif ($this->commentable instanceof Process) {
+            return sprintf('/modeler/%s#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof Media) {
             return $this->commentable->manager_url;
         } elseif ($this->commentable instanceof self) {
