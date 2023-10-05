@@ -60,13 +60,14 @@ export default {
   components: {
     ModelerAssetQuickCreate,
   },
-  props: ["value", "label", "helper", "params", "required", "placeholder"],
+  props: ["value", "label", "helper", "params", "required", "placeholder", "defaultKey"],
   data() {
     return {
       content: "",
       loading: false,
       screens: [],
       error: null,
+      localValue: this.value,
     };
   },
   watch: {
@@ -99,6 +100,7 @@ export default {
     if (this.value) {
       this.loadScreen(this.value);
     }
+    this.setDefault();
   },
   methods: {
     type() {
@@ -153,6 +155,19 @@ export default {
         console.error("There was a problem getting the screens", err);
         this.loading = false;
       }
+    },
+    setDefault() {
+      if (!this.defaultKey || this.value) {
+        // No need to set a default
+        return;
+      }
+
+      ProcessMaker.apiClient
+        .get("screens", { params: { key: this.defaultKey }})
+        .then(({ data }) => {
+          this.content = data.data[0];
+        });
+
     },
     /**
      * @param {Object} data - The response we get from the emitter

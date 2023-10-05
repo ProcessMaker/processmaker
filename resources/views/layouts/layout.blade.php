@@ -137,6 +137,13 @@
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
+@isset($addons)
+@foreach ($addons as $addon)
+  @if (!empty($addon['script_mix']))
+    <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+  @endif
+@endforeach
+@endisset
     <!--javascript!-->
     @yield('js')
 </body>

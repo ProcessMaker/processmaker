@@ -58,6 +58,7 @@ class UserProvider extends EloquentUserProvider
         } elseif (isset($credentials['username'])) {
             return User::where('username', $credentials['username'])->first();
         }
+
         // No valid credential to find, let's return nothing
         return null;
     }
