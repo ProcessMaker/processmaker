@@ -74,7 +74,7 @@ jobs:
           cd $run_number/pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
-          docker rmi -f {$IMAGE}
+          docker rmi -f ${IMAGE}
   job2: 
     name: deploy-stm    
     if: github.event.action != 'closed'
