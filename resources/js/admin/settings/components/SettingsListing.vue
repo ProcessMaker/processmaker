@@ -74,6 +74,7 @@
                 v-b-tooltip.hover
                 variant="link"
                 :aria-label="$t('Copy to Clipboard')"
+                :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
               >
