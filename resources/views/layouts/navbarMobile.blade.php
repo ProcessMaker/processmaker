@@ -27,16 +27,6 @@
                 @endif
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link">
-                <button
-                  type="buttom"
-                  class="btn btn-outline-light"
-                >
-                  <i class="fa fa-bell"></i>
-                </button>
-              </a>
-            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                 <button
@@ -96,6 +86,7 @@
         </b-navbar-nav >
       </div>
     @endif
+    <welcome-modal />
   </div>
 </div>
 
