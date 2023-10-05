@@ -5,124 +5,60 @@
         {{ $t("Assets") }}
       </b-navbar-brand>
     </b-navbar>
-    
-    <!-- TODO: The section below must be refactored to avoid hard code in v-for -->
+
     <div class="mt-3">
       <b-card-group deck>
         <b-card
-          v-for="(asset, index) in assets.slice(0, 3)"
+          v-for="(asset, index) in assetsCore"
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index)"
+          @click="toggleButtons(index, 'core')"
         >
-          <div v-show="!showButtons[index]">
+          <template v-if="!showButtonsCore[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
               :asset_name="asset.asset_name"
             />
-          </div>
+          </template>
 
-          <div
-            v-show="showButtons[index]"
-            class="text-left"
-          >
+          <template v-if="showButtonsCore[index]">
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
-              :variant="variant"
-              :urlPath="asset.urlPath"
-            >
-              <template v-slot:select-template-slot>
-                <div v-if="asset.flag === 1">
-                  <select-template-modal
-                    :type="$t('Process')"
-                    ref="selectTemplateModal"
-                    :countCategories="countCategories"
-                  >
-                  </select-template-modal>
-                </div>
-                <div v-if="asset.flag === 2">
-                  <create-screen-modal
-                    :type="$t('Screens')"
-                    ref="create-screen-modal"
-                    :count-categories="2"
-                    :script-executors="false"
-                    is-projects-installed="false"
-                  />
-                </div>
-                <div v-if="asset.flag === 3">
-                  <create-script-modal
-                    :type="$t('Screen')"
-                    ref="create-script-modal"
-                    :count-categories="2"
-                    :script-executors="false"
-                    is-projects-installed="false"
-                  />
-                </div>
-              </template>
-            </asset-buttons>
-          </div>
+              :asset_name_new="asset.asset_name_new"
+              :url-path="asset.urlPath"
+              :url-asset="asset.urlAsset"
+            />
+          </template>
         </b-card>
       </b-card-group>
     </div>
     <div class="mt-3">
       <b-card-group deck>
         <b-card
-          v-for="(asset, index) in assets.slice(3)"
+          v-for="(asset, index) in assetsPackage"
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index + 3)"
+          @click="toggleButtons(index, 'package')"
         >
-          <div v-show="!showButtons[index + 3]">
+          <template v-if="!showButtonsPackage[index]">
             <asset
               :color="asset.color"
               :icon="asset.icon"
               :asset_name="asset.asset_name"
             />
-          </div>
+          </template>
 
-          <div v-show="showButtons[index + 3]">
+          <template v-if="showButtonsPackage[index]">
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
-              :variant="variant"
-              :urlPath="asset.urlPath"
-            >
-              <template v-slot:select-template-slot>
-                <div v-if="asset.flag === 4">
-                  <div>
-                    <b-button
-                      class="mb-3 mb-md-0 ml-md-0"
-                      :style="customButtonStyle"
-                    >
-                      <i class="fas fa-plus" /> Decision Tables
-                    </b-button>
-                  </div>
-                </div>
-                <div v-if="asset.flag === 5">
-                  <div>
-                    <b-button
-                      class="mb-3 mb-md-0 ml-md-0"
-                      :style="customButtonStyle"
-                    >
-                      <i class="fas fa-plus" /> Collections
-                    </b-button>
-                  </div>
-                </div>
-                <div v-if="asset.flag === 6">
-                  <div>
-                    <b-button
-                      class="mb-3 mb-md-0 ml-md-0"
-                      :style="customButtonStyle"
-                    >
-                      <i class="fas fa-plus" /> Data Connectors
-                    </b-button>
-                  </div>
-                </div>
-              </template>
-            </asset-buttons>
-          </div>
+              :asset_name_new="asset.asset_name_new"
+              :url-path="asset.urlPath"
+              :url-asset="asset.urlAsset"
+            />
+          </template>
         </b-card>
       </b-card-group>
     </div>
@@ -131,99 +67,85 @@
 <script>
 import Asset from "./Asset.vue";
 import AssetButtons from "./AssetButtons.vue";
-import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
-import CreateProcessModal from "../components/CreateProcessModal.vue";
-import ProcessesListing from "../components/ProcessesListing.vue";
-import CategorySelect from "../categories/components/CategorySelect.vue";
-import CreateScriptModal from "../../../js/processes/scripts/components/CreateScriptModal.vue";
-import CreateScreenModal from "../screens/components/CreateScreenModal.vue";
 
 export default {
   components: {
     Asset,
     AssetButtons,
-    SelectTemplateModal,
-    CreateProcessModal,
-    ProcessesListing,
-    CategorySelect,
-    CreateScriptModal,
-    CreateScreenModal,
   },
   data() {
     return {
-      blankTemplate: true,
-      selectedTemplate: false,
-      templateData: {},
-      isProjectsInstalled: false,
-      showSelectTemplateModal: true,
-      countCategories: 2,
-      variant: "Primary",
-      showModal: false,
       urlPath: "",
-      assets: [
+      assetsCore: [
         {
           color: "#4DA2EB",
           icon: "fas fa-play-circle",
           asset_name: "Processes",
           asset_name_all: "See All Processes",
+          asset_name_new: "New Process",
           urlPath: "/processes",
-          flag: 1,
+          urlAsset: "/processes?create=true",
         },
         {
           color: "#8EB86F",
           icon: "fas fa-file-alt",
           asset_name: "Screens",
           asset_name_all: "See All Screens",
+          asset_name_new: "New Screen",
           urlPath: "/designer/screens",
-          flag: 2,
+          urlAsset: "/designer/screens?create=true",
         },
         {
           color: "#F7CF5D",
           icon: "fas fa-code",
           asset_name: "Scripts",
           asset_name_all: "See All Scripts",
+          asset_name_new: "New Script",
           urlPath: "/designer/scripts",
-          flag: 3,
+          urlAsset: "/designer/scripts?create=true",
         },
+      ],
+      assetsPackage: [
         {
           color: "#712F4A",
           icon: "fas fa-table",
           asset_name: "Decision Tables",
-          asset_name_all: "See Decision Tables",
+          asset_name_all: "See All Decision Tables",
+          asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
-          flag: 4,
+          urlAsset: "/designer/decision-tables?create=true",
         },
         {
           color: "#D66A5F",
           icon: "fas fa-database",
           asset_name: "Collections",
           asset_name_all: "See All Collections",
+          asset_name_new: "New Collection",
           urlPath: "/collections",
-          flag: 5,
+          urlAsset: "/collections?create=true",
         },
         {
           color: "#B5D3E7",
           icon: "fas fa-share-alt",
           asset_name: "Data Connectors",
-          asset_name_all: "See All Data Conn",
+          asset_name_all: "See All Data Connectors",
+          asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
-          flag: 6,
+          urlAsset: "/designer/data-sources?create=true",
         },
       ],
-      showButtons: new Array(6).fill(false),
-      customButtonClass: "mb-3 mb-md-0",
-      customButtonStyle: {
-        width: "100%",
-        fontSize: "14px",
-      },
+      showButtonsCore: new Array(3).fill(false),
+      showButtonsPackage: new Array(3).fill(false),
     };
   },
   methods: {
-    openSelectTemplateModal() {
-      this.showSelectTemplateModal = true;
-    },
-    toggleButtons(index) {
-      this.$set(this.showButtons, index, !this.showButtons[index]);
+    toggleButtons(index, section) {
+      if (section === "core") {
+        this.$set(this.showButtonsCore, index, !this.showButtonsCore[index]);
+      }
+      if (section === "package") {
+        this.$set(this.showButtonsPackage, index, !this.showButtonsPackage[index]);
+      }
     },
   },
 };

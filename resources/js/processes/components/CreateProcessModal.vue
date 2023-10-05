@@ -135,6 +135,12 @@
         }
       },
     },
+    mounted() {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.size > 0 && searchParams.get("create") === "true") {
+          this.show();
+      };
+    },
     methods: {
       onShown() {
         if (this.generativeProcessData) {
@@ -252,8 +258,7 @@
           ProcessMaker.alert(this.$t("The process was created."), "success");
 
           if (this.callFromAiModeler) {
-            const url = `http://processmaker.test/package-ai/processes/create/${response.data.id}`;
-            this.$emit("clear-ai-history");
+            const url = `/package-ai/processes/create/${response.data.id}`;
             this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
           } else {
             window.location = `/modeler/${response.data.id}`;
