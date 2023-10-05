@@ -241,7 +241,7 @@ export default {
         },
         handleProjectAssetsImport(projectId) {
             this.loading = true;
-            DataProvider.doImportProjectAssets(this.$root.file, this.$root.exportOptions(), projectId)
+            DataProvider.doImportProjectAssets(this.$root.file, this.$root.exportOptions(), projectId, this.$root.password)
             .then((response) => {
                 if (response?.data) {
                     const projectId = response.data.projectId;

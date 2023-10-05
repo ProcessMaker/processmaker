@@ -39,8 +39,7 @@ export default {
         }
     });
   },
-  doImportProjectAssets(file, options, projectId) {
-    console.log(file, options, projectId);
+  doImportProjectAssets(file, options, projectId, password) {
     let formData = new FormData();
     const optionsBlob = new Blob([JSON.stringify(options)], {
       type: 'application/json'
@@ -49,6 +48,7 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     formData.append('id', projectId);
+    formData.append('password', password);
     
     return ProcessMaker.apiClient.post('/projects/assets/import', formData,
     {

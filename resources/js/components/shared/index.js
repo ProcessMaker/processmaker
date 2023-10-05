@@ -11,6 +11,7 @@ import DataLoadingBasic from "./DataLoadingBasic";
 import DataMaskSelector from "./DataMaskSelector";
 import DraggableFileUpload from "./DraggableFileUpload";
 import EllipsisMenu from "./EllipsisMenu";
+import EnterPasswordModal from "../../processes/import/components/EnterPasswordModal.vue";
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
@@ -42,6 +43,7 @@ export {
   DataMaskSelector,
   DraggableFileUpload,
   EllipsisMenu,
+  EnterPasswordModal,
   FileUploadButton,
   FormErrorsMixin,
   IconSelector,
