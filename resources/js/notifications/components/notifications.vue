@@ -99,14 +99,14 @@
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
-          <template v-else>
+          <div class="items" v-else>
             <notification-item
               v-for="(item, index) in filteredMessages"
               :key="index"
               :notification="item"
               :show-time="true"
             />
-          </template>
+          </div>
         </div>
       </b-popover>
     </div>
@@ -319,8 +319,10 @@ export default {
 
 .popover {
   max-width: 450px;
-  height: 600px;
   top: -8px;
+}
+.items {
+  height: 600px;
   overflow-y: scroll;
   overflow-x: hidden;
 }

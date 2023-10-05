@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -250,7 +251,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $projectModelClass = 'ProcessMaker\Package\Projects\Models\Project';
 
         if (!class_exists($projectModelClass)) {
-            return [];
+            // return an empty collection
+            return new HasMany($this->newQuery(), $this, '', '');
         }
 
         return $this->morphToMany(

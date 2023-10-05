@@ -190,14 +190,15 @@
                 </div>
             </div>
             @endif
+            @can('view-comments')
             <div v-if="panCommentInVueOptionsComponents">
-                <pan-comment :group_id="task.id"
-                             group_name="ProcessMaker\Models\ProcessRequestToken"
-                             :commentable_id="task.id"
+                <pan-comment :commentable_id="task.id"
                              commentable_type="ProcessMaker\Models\ProcessRequestToken"
                              :readonly="task.status === 'CLOSED'"
+                             :name="task.element_name"
                              />
             </div>
+            @endcan
         </div>
     </div>
 @endsection
