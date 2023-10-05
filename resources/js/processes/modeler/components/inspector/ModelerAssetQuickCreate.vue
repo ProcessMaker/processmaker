@@ -36,6 +36,10 @@ export default {
         return Object.values(ScreenTypes).includes(capitalize(propValue));
       },
     },
+    screenSelectId: {
+      type: String,
+      required: false,
+    },
   },
   mounted() {
     channel.addEventListener("message", ({ data }) => {
@@ -47,7 +51,7 @@ export default {
   },
   methods: {
     goToAsset() {
-      let url = `/designer/${kebabCase(this.label)}s?create=true`;
+      let url = `/designer/${kebabCase(this.label)}s?create=true&screenSelectId=${this.screenSelectId}`;
       // Cleaning the URL query if the asset is not of type Screen
       if (this.screenType && this.label === AssetTypes.SCREEN) {
         url += `&screenType=${this.screenType}`;

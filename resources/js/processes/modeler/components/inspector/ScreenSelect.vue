@@ -40,6 +40,7 @@
     <modeler-asset-quick-create
       label="screen"
       :screen-type="params.type"
+      :screen-select-id="uniqId"
       @asset="processAssetCreation"
     />
     <a
@@ -54,8 +55,8 @@
 </template>
 
 <script>
+import { find, uniqueId } from "lodash";
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
-import { find } from "lodash";
 
 export default {
   components: {
@@ -69,6 +70,7 @@ export default {
       screens: [],
       error: null,
       localValue: this.value,
+      uniqId: uniqueId("screen-select-"),
     };
   },
   watch: {
@@ -164,19 +166,19 @@ export default {
       }
 
       ProcessMaker.apiClient
-        .get("screens", { params: { key: this.defaultKey }})
+        .get("screens", { params: { key: this.defaultKey } })
         .then(({ data }) => {
           this.content = data.data[0];
         });
-
     },
     /**
      * @param {Object} data - The response we get from the emitter
      * @param {string} data.id - the screen id
      * @param {string} data.assetType - The Asset type, ex: screen
+     * @param {string} data.screenSelectId - Identifier for the screen select component that started the call
      */
-    async processAssetCreation({ id, assetType }) {
-      if (assetType === "screen") {
+    async processAssetCreation({ id, assetType, screenSelectId }) {
+      if (assetType === "screen" && this.uniqId === screenSelectId) {
         await this.load();
         this.content = find(this.screens, (screen) => screen.id === id);
       }

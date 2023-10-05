@@ -101,7 +101,7 @@ import {
   ProjectSelect,
   Required,
 } from "SharedComponents";
-import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
+import { isQuickCreate as isQuickCreateFunc, screenSelectId } from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
 
 const channel = new BroadcastChannel("assetCreation");
@@ -126,6 +126,7 @@ export default {
       screenTypes: this.types,
       disabled: false,
       isQuickCreate: isQuickCreateFunc(),
+      screenSelectId: screenSelectId(),
     };
   },
   mounted() {
@@ -183,6 +184,7 @@ export default {
               channel.postMessage({
                 assetType: "screen",
                 id: data.id,
+                screenSelectId: this.screenSelectId,
               });
             }
             window.location = url;
