@@ -17,46 +17,49 @@ import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
-import Pagination from "./components/common/Pagination";
+import _ from "lodash";
+import axios from "axios";
+import Pagination from "./components/common/Pagination.vue";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
-import translator from "./modules/lang.js";
+import translator from "./modules/lang";
 import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
-import Modal from "./components/shared/Modal";
+import Modal from "./components/shared/Modal.vue";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 
-window.__ = translator;
-import _ from "lodash";
-window._ = _;
-window.Popper = require("popper.js").default;
-
 /**
  * Give node plugins access to our custom screen builder components
  */
-import ProcessmakerComponents from "./processes/screen-builder/components";
-window.ProcessmakerComponents = ProcessmakerComponents;
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
 
 /**
  * Give node plugins access to additional components
  */
-import SharedComponents from "./components/shared";
-window.SharedComponents = SharedComponents;
+import * as SharedComponents from "./components/shared";
 
-import ProcessesComponents from "./processes/components";
-window.ProcessesComponents = ProcessesComponents;
-import ScreensComponents from "./processes/screens/components";
-window.ScreensComponents = ScreensComponents;
-import ScriptsComponents from "./processes/scripts/components";
-window.ScriptsComponents = ScriptsComponents;
+import * as ProcessesComponents from "./processes/components";
+import * as ScreensComponents from "./processes/screens/components";
+import * as ScriptsComponents from "./processes/scripts/components";
 
 /**
  * Exporting Modeler inspector components
  */
-import ModelerInspector from "./processes/modeler/components/inspector";
+import * as ModelerInspector from "./processes/modeler/components/inspector";
+
+window.SharedComponents = SharedComponents;
+
+window.__ = translator;
+window._ = _;
+window.Popper = require("popper.js").default;
+
+window.ProcessmakerComponents = ProcessmakerComponents;
+window.ProcessesComponents = ProcessesComponents;
+window.ScreensComponents = ScreensComponents;
+window.ScriptsComponents = ScriptsComponents;
 window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -78,12 +81,11 @@ window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
-if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
+if (!document.head.querySelector('meta[name="is-horizon"]')) {
   window.Vue.use(Router);
 }
-import VueMonaco from "vue-monaco";
-window.VueMonaco = VueMonaco;
-import ScreenBuilder from "@processmaker/screen-builder";
+
+window.VueMonaco = MonacoEditor;
 window.ScreenBuilder = ScreenBuilder;
 
 window.VueRouter = Router;
@@ -99,9 +101,7 @@ window.Vue.component("global-search", GlobalSearch);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
 let translationsLoaded = false;
-const mdates = JSON.parse(
-  document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
-);
+const mdates = JSON.parse(document.head.querySelector('meta[name="i18n-mdate"]').content);
 
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) });
@@ -111,26 +111,26 @@ window.ProcessMaker = {
   i18n: i18next,
 
   /**
-     * A general use global event bus that can be used
-     */
+   * A general use global event bus that can be used
+   */
   EventBus: new Vue(),
   /**
-     * A general use global router that can be used
-     */
+   * A general use global router that can be used
+   */
   Router: new Router({
     mode: "history",
   }),
   /**
-     * ProcessMaker Notifications
-     */
+   * ProcessMaker Notifications
+   */
   notifications: [],
   /**
-     * Push a notification.
-     *
-     * @param {object} notification
-     *
-     * @returns {void}
-     */
+   * Push a notification.
+   *
+   * @param {object} notification
+   *
+   * @returns {void}
+   */
   pushNotification(notification) {
     if (this.notifications.filter((x) => x.id === notification).length === 0) {
       this.notifications.push(notification);
@@ -138,17 +138,20 @@ window.ProcessMaker = {
   },
 
   /**
-     * Removes notifications by message ids or urls
-     *
-     * @returns {void}
-     * @param messageIds
-     *
-     * @param urls
-     */
+   * Removes notifications by message ids or urls
+   *
+   * @returns {void}
+   * @param messageIds
+   *
+   * @param urls
+   */
   removeNotifications(messageIds = [], urls = []) {
     return window.ProcessMaker.apiClient.put("/read_notifications", { message_ids: messageIds, routes: urls }).then(() => {
       messageIds.forEach((messageId) => {
-        ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex((x) => x.id === messageId), 1);
+        ProcessMaker.notifications.splice(
+          ProcessMaker.notifications.findIndex((x) => x.id === messageId),
+          1,
+        );
       });
 
       urls.forEach((url) => {
@@ -160,20 +163,22 @@ window.ProcessMaker = {
     });
   },
   /**
-     * Mark as unread a list of notifications
-     *
-     * @returns {void}
-     * @param messageIds
-     *
-     * @param urls
-     */
+   * Mark as unread a list of notifications
+   *
+   * @returns {void}
+   * @param messageIds
+   *
+   * @param urls
+   */
   unreadNotifications(messageIds = [], urls = []) {
     return window.ProcessMaker.apiClient.put("/unread_notifications", { message_ids: messageIds, routes: urls });
   },
 
   missingTranslations: new Set(),
   missingTranslation(value) {
-    if (this.missingTranslations.has(value)) { return; }
+    if (this.missingTranslations.has(value)) {
+      return;
+    }
     this.missingTranslations.add(value);
     console.warn("Missing Translation:", value);
   },
@@ -190,7 +195,9 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {
-    if (!translationsLoaded) { return value; }
+    if (!translationsLoaded) {
+      return value;
+    }
     // Report that a translation is missing
     window.ProcessMaker.missingTranslation(value);
     // Fallback to showing the english version
@@ -201,22 +208,21 @@ window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
       LocalStorageBackend, // Try cache first
       XHR,
     ],
-    backendOptions: [
-      { versions: mdates },
-      { loadPath: "/i18next/fetch/{{lng}}/_default" },
-    ],
+    backendOptions: [{ versions: mdates }, { loadPath: "/i18next/fetch/{{lng}}/_default" }],
   },
 });
 
-window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
+window.ProcessMaker.i18nPromise.then(() => {
+  translationsLoaded = true;
+});
 
 /**
  * Create a axios instance which any vue component can bring in to call
  * REST api endpoints through oauth authentication
  *
  */
-import ProcessMaker.apiClient from "axios";
-window.ProcessMaker.apiClient = ProcessMaker.apiClient;
+
+window.ProcessMaker.apiClient = axios;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
@@ -226,7 +232,7 @@ window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XML
  * a simple convenience so we don't have to attach every token manually.
  */
 
-const token = document.head.querySelector("meta[name=\"csrf-token\"]");
+const token = document.head.querySelector('meta[name="csrf-token"]');
 
 if (token) {
   window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
@@ -248,7 +254,7 @@ window.ProcessMaker.alert = function (text, variant) {
   window.alert(`${variant}: ${text}`);
 };
 
-const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
+const openAiEnabled = document.head.querySelector('meta[name="open-ai-nlq-to-pmql"]');
 
 if (openAiEnabled) {
   window.ProcessMaker.openAi = {
@@ -260,10 +266,10 @@ if (openAiEnabled) {
   };
 }
 
-const userID = document.head.querySelector("meta[name=\"user-id\"]");
-const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
-const timezone = document.head.querySelector("meta[name=\"timezone\"]");
-const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
+const userID = document.head.querySelector('meta[name="user-id"]');
+const formatDate = document.head.querySelector('meta[name="datetime-format"]');
+const timezone = document.head.querySelector('meta[name="timezone"]');
+const appUrl = document.head.querySelector('meta[name="app-url"]');
 
 if (appUrl) {
   window.ProcessMaker.app = {
@@ -299,10 +305,12 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
-  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
-  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
-  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
-  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
+  const timeoutScript = document.head.querySelector('meta[name="timeout-worker"]').content;
+  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector('meta[name="timeout-length"]').content));
+  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector('meta[name="timeout-warn-seconds"]').content);
+  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector('meta[name="timeout-enabled"]')
+    ? parseInt(document.head.querySelector('meta[name="timeout-enabled"]').content)
+    : 1;
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
   window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
     if (e.data.method === "countdown") {
@@ -379,8 +387,8 @@ if (userID) {
 
 // Configuration Global object used by ScreenBuilder
 // @link https://processmaker.atlassian.net/browse/FOUR-6833 Cache configuration
-const screenCacheEnabled = document.head.querySelector("meta[name=\"screen-cache-enabled\"]")?.content ?? "false";
-const screenCacheTimeout = document.head.querySelector("meta[name=\"screen-cache-timeout\"]")?.content ?? "5000";
+const screenCacheEnabled = document.head.querySelector('meta[name="screen-cache-enabled"]')?.content ?? "false";
+const screenCacheTimeout = document.head.querySelector('meta[name="screen-cache-timeout"]')?.content ?? "5000";
 window.ProcessMaker.screen = {
   cacheEnabled: screenCacheEnabled === "true",
   cacheTimeout: Number(screenCacheTimeout),

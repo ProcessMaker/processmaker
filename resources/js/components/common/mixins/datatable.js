@@ -3,8 +3,8 @@
  * pagination transformers, etc.
  *
  */
-import Vuetable from "vuetable-2/src/components/Vuetable";
-import Pagination from "../../../components/common/Pagination";
+import Vuetable from "vuetable-2";
+import Pagination from "../Pagination.vue";
 
 export default {
   components: {
@@ -27,8 +27,7 @@ export default {
     formatDate(value, format) {
       format = format || "";
       if (value) {
-        return window.moment(value)
-          .format(format);
+        return window.moment(value).format(format);
       }
       return "n/a";
     },
@@ -47,8 +46,7 @@ export default {
 
       if (value) {
         if (moment(value).isValid()) {
-          return window.moment(value)
-            .format(config);
+          return window.moment(value).format(config);
         }
 
         return value;
@@ -85,7 +83,7 @@ export default {
     },
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
     jsonRows(rows) {
-      if (rows.length === 0 || !(_.has(_.head(rows), "_json"))) {
+      if (rows.length === 0 || !_.has(_.head(rows), "_json")) {
         return rows;
       }
       return rows.map((row) => JSON.parse(row._json));
@@ -111,7 +109,6 @@ export default {
       }
       this.fetch();
     },
-
   },
   // props: {
   //     noDataTemplate: {
@@ -151,7 +148,9 @@ export default {
           return `<i class="${classes.join(" ")}"></i>`;
         },
       },
-      noDataTemplate() { return "asdfas#####1111"; },
+      noDataTemplate() {
+        return "asdfas#####1111";
+      },
     };
   },
 };

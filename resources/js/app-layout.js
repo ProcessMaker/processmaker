@@ -1,29 +1,28 @@
 import { BNavbar } from "bootstrap-vue";
-import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
-import moment from "moment";
-import moment_timezone from "moment-timezone";
+import Multiselect from "@processmaker/vue-multiselect";
+import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import newRequestModal from "./components/requests/requestModal";
-import requestModal from "./components/requests/modal";
-import requestModalMobile from "./components/requests/modalMobile";
-import notifications from "./notifications/components/notifications";
-import sessionModal from "./components/Session";
-import Sidebaricon from "./components/Sidebaricon";
-import ConfirmationModal from "./components/Confirm";
-import MessageModal from "./components/Message";
-import NavbarProfile from "./components/NavbarProfile";
-import SelectStatus from "./components/SelectStatus";
-import SelectUser from "./components/SelectUser";
-import SelectUserGroup from "./components/SelectUserGroup";
-import CategorySelect from "./processes/categories/components/CategorySelect";
-import ProjectSelect from "./components/shared/ProjectSelect";
-import SelectFromApi from "./components/SelectFromApi";
-import Breadcrumbs from "./components/Breadcrumbs";
-import TimelineItem from "./components/TimelineItem";
-import Required from "./components/shared/Required";
+import VueHtml2Canvas from "vue-html2canvas";
+import newRequestModal from "./components/requests/requestModal.vue";
+import requestModal from "./components/requests/modal.vue";
+import requestModalMobile from "./components/requests/modalMobile.vue";
+import notifications from "./notifications/components/notifications.vue";
+import sessionModal from "./components/Session.vue";
+import Sidebaricon from "./components/Sidebaricon.vue";
+import ConfirmationModal from "./components/Confirm.vue";
+import MessageModal from "./components/Message.vue";
+import NavbarProfile from "./components/NavbarProfile.vue";
+import SelectStatus from "./components/SelectStatus.vue";
+import SelectUser from "./components/SelectUser.vue";
+import SelectUserGroup from "./components/SelectUserGroup.vue";
+import CategorySelect from "./processes/categories/components/CategorySelect.vue";
+import ProjectSelect from "./components/shared/ProjectSelect.vue";
+import SelectFromApi from "./components/SelectFromApi.vue";
+import Breadcrumbs from "./components/Breadcrumbs.vue";
+import TimelineItem from "./components/TimelineItem.vue";
+import Required from "./components/shared/Required.vue";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
-import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-import VueHtml2Canvas from 'vue-html2canvas';
+import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox.vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -150,14 +149,14 @@ window.ProcessMaker.navbar = new Vue({
       let copy = _.cloneDeep(this.alerts);
       index > -1 ? copy.splice(index, 1) : null;
       // remove old alerts
-      copy = copy.filter((item) => ((Date.now() - item.timestamp) / 1000) < item.alertShow);
+      copy = copy.filter((item) => (Date.now() - item.timestamp) / 1000 < item.alertShow);
       this.saveLocalAlerts(copy);
     },
     loadLocalAlerts() {
       try {
-        return window.localStorage.processmakerAlerts
-                    && window.localStorage.processmakerAlerts.substr(0, 1) === "["
-          ? JSON.parse(window.localStorage.processmakerAlerts) : [];
+        return window.localStorage.processmakerAlerts && window.localStorage.processmakerAlerts.substr(0, 1) === "["
+          ? JSON.parse(window.localStorage.processmakerAlerts)
+          : [];
       } catch (e) {
         return [];
       }
@@ -196,8 +195,7 @@ if (isMobileDevice) {
       requestModalMobile,
     },
     data() {
-      return {
-      };
+      return {};
     },
     methods: {
       switchToDesktop() {
@@ -230,7 +228,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
-    showLoader: showLoader,
+    showLoader,
     stayNextScreen,
     timestamp: Date.now(),
   });
@@ -282,44 +280,47 @@ window.ProcessMaker.apiClient.interceptors.request.use((request) => {
   return request;
 });
 
-window.ProcessMaker.apiClient.interceptors.response.use((response) => {
-  // TODO: this could be used to show a default "created/upated/deleted resource" alert
-  // response.config.method (PUT, POST, DELETE)
-  // response.config.url (extract resource name)
-  window.ProcessMaker.EventBus.$emit("api-client-done", response);
-  // flags print forms
-  if (window.ProcessMaker.apiClient.requestCountFlag && window.ProcessMaker.apiClient.requestCount > 0) {
-    window.ProcessMaker.apiClient.requestCount--;
-  }
-  return response;
-}, (error) => {
-  if (error.code && error.code === "ERR_CANCELED") {
-    return Promise.reject(error);
-  }
-  window.ProcessMaker.EventBus.$emit("api-client-error", error);
-  if (error.response && error.response.status && error.response.status === 401) {
-    // stop 401 error consuming endpoints with data-sources
-    const { url } = error.config;
-    if (url.includes("/data_sources/")) {
-      if (url.includes("requests/") || url.includes("/test")) {
-        throw error;
+window.ProcessMaker.apiClient.interceptors.response.use(
+  (response) => {
+    // TODO: this could be used to show a default "created/upated/deleted resource" alert
+    // response.config.method (PUT, POST, DELETE)
+    // response.config.url (extract resource name)
+    window.ProcessMaker.EventBus.$emit("api-client-done", response);
+    // flags print forms
+    if (window.ProcessMaker.apiClient.requestCountFlag && window.ProcessMaker.apiClient.requestCount > 0) {
+      window.ProcessMaker.apiClient.requestCount--;
+    }
+    return response;
+  },
+  (error) => {
+    if (error.code && error.code === "ERR_CANCELED") {
+      return Promise.reject(error);
+    }
+    window.ProcessMaker.EventBus.$emit("api-client-error", error);
+    if (error.response && error.response.status && error.response.status === 401) {
+      // stop 401 error consuming endpoints with data-sources
+      const { url } = error.config;
+      if (url.includes("/data_sources/")) {
+        if (url.includes("requests/") || url.includes("/test")) {
+          throw error;
+        }
       }
+      window.location = "/login";
+    } else {
+      if (_.has(error, "config.url") && !error.config.url.match("/debug")) {
+        window.ProcessMaker.apiClient.post("/debug", {
+          name: "Javascript ProcessMaker.apiClient Error",
+          message: JSON.stringify({
+            message: error.message,
+            code: error.code,
+            config: error.config,
+          }),
+        });
+      }
+      return Promise.reject(error);
     }
-    window.location = "/login";
-  } else {
-    if (_.has(error, "config.url") && !error.config.url.match("/debug")) {
-      window.ProcessMaker.apiClient.post("/debug", {
-        name: "Javascript ProcessMaker.apiClient Error",
-        message: JSON.stringify({
-          message: error.message,
-          code: error.code,
-          config: error.config,
-        }),
-      });
-    }
-    return Promise.reject(error);
-  }
-});
+  },
+);
 
 // Display any uncaught promise rejections from axios in the Process Maker alert box
 window.addEventListener("unhandledrejection", (event) => {

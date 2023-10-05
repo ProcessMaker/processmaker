@@ -1,4 +1,4 @@
-import icons from "js-yaml-loader!@fortawesome/fontawesome-free/metadata/icons.yml";
+import icons from "@fortawesome/fontawesome-free/metadata/icons.yml";
 
 const common = [
   "search",
@@ -133,11 +133,7 @@ export default class {
     const object = {
       value,
       label: icon.label,
-      search: `${icon.search.terms.join()
-      },${
-        value
-      },${
-        icon.label.toLowerCase()}`,
+      search: `${icon.search.terms.join()},${value},${icon.label.toLowerCase()}`,
     };
 
     if (object.label.startsLowerCase()) {
