@@ -8,10 +8,10 @@
       >
       <div class="content-text">
         <span class="title">
-          {{ $t("Recent Projects") }}
+          <b>{{ $t("Recent Projects") }}</b>
         </span>
         <p>{{ $t("You are not part of a project yet") }}</p>
-        <b-link href="#">
+        <b-link href="/designer/projects?create=true">
           {{ $t("Create a Project") }}
         </b-link>
       </div>
