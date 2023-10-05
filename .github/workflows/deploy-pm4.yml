@@ -208,4 +208,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: delete run folder
-        run: rm -rf $run_number
+        run: |
+          cd $run_number
+          docker-compose down -v
+          cd ..
+          rm -rf $run_number
