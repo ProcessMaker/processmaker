@@ -150,7 +150,7 @@ ProcessMaker.EventBus.$on(
         name: "screenRef",
         required: true,
         params: {
-          type: "FORM",
+          type: "FORM,CONVERSATIONAL",
           interactive: true,
         },
       },
@@ -222,7 +222,7 @@ ProcessMaker.EventBus.$on(
         required: true,
       },
     });
- 
+
     registerInspectorExtension(scriptTask, {
       component: "FormAccordion",
       container: true,
@@ -234,32 +234,31 @@ ProcessMaker.EventBus.$on(
       },
       items: [
         {
-          component: 'ErrorHandlingTimeout',
+          component: "ErrorHandlingTimeout",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryAttempts',
+          component: "ErrorHandlingRetryAttempts",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryWaitTime',
+          component: "ErrorHandlingRetryWaitTime",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'NotifyProcessManager',
+          component: "NotifyProcessManager",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
       ],
     });
-    
 
     registerInspectorExtension(scriptTask, {
       component: "ConfigEditor",
