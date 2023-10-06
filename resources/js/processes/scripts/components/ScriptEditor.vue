@@ -643,8 +643,7 @@ export default {
               this.progress.progress = 0;
               window.ProcessMaker.alert(response.data.message, "danger");
             } else {
-              this.newCode = response.data.diff;
-              // this.getScriptVersion(response.data.scriptVersionId);
+              this.getScriptVersion(response.data.scriptVersionId);
               this.progress.progress = 100;
               setTimeout(() => {
                 this.loading = false;
