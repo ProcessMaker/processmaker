@@ -11,11 +11,11 @@ use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\ProcessMapTrait;
@@ -138,7 +138,7 @@ class ModelerController extends Controller
             $controller = new PmBlockController();
             $newRequest = new Request(['per_page' => 10000]);
             $response = $controller->index($newRequest);
-            if ($response->response()->status() === 200) {
+            if ($response->response($newRequest)->status() === 200) {
                 $pmBlockList = json_decode($response->response()->content())->data;
             }
         }

@@ -66,6 +66,9 @@ return [
 
     // tcp/other protocol uri to the docker host
     'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
+    
+    // Default parameters for docker run command
+    'processmaker_scripts_docker_params' => env('PROCESSMAKER_SCRIPTS_DOCKER_PARAMS', ''),
 
     // Default timeout for scripts
     'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
@@ -117,6 +120,9 @@ return [
 
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
+
+    // Enable default SSO
+    'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
 
     // Message broker driver to use in Workflow Manager
     'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),

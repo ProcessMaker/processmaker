@@ -192,6 +192,83 @@
               </template>
             </multiselect>
         </div>
+        <div v-if="type == 'projects'" class="card-body">
+          <label for="project_title_filter">{{$t('Title')}}</label>
+          <multiselect id="project_title_filter"
+            v-model="projects"
+            @search-change="getProjects"
+            @input="buildPmql"
+            class="mb-3"
+            :show-labels="true"
+            :loading="isLoading.projects"
+            open-direction="bottom"
+            label="title"
+            :options="projectOptions"
+            :track-by="'id'"
+            :multiple="true"
+            :aria-label="$t('Project')"
+            :placeholder="$t('Project')">
+              <template slot="noResult">
+                  {{ $t('No Results') }}
+              </template>
+              <template slot="noOptions">
+                  {{ $t('No Data Available') }}
+              </template>
+              <template slot="selection" slot-scope="{ values, search, isOpen }">
+                  <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('projects') }}</span>
+              </template>
+            </multiselect>
+          
+          <label for="project_member_filter">{{$t('Members')}}</label>
+            <multiselect id="project_member_filter"
+                v-model="members"
+                @input="buildPmql"
+                class="mb-3"
+                :show-labels="true"
+                :loading="isLoading.projects"
+                open-direction="bottom"
+                label="name"
+                :options="memberOptions"
+                :track-by="'id'"
+                :multiple="true"
+                :aria-label="$t('Member')"
+                :placeholder="$t('Member')">
+                  <template slot="noResult">
+                      {{ $t('No Results') }}
+                  </template>
+                  <template slot="noOptions">
+                      {{ $t('No Data Available') }}
+                  </template>
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('members') }}</span>
+                  </template>
+              </multiselect>
+
+            <label for="project_category_filter">{{$t('Category')}}</label>
+            <multiselect id="project_category_filter"
+                v-model="categories"
+                @input="buildPmql"
+                class="mb-3"
+                :show-labels="true"
+                :loading="isLoading.projects"
+                open-direction="bottom"
+                label="name"
+                :options="categoriesOptions"
+                :track-by="'id'"
+                :multiple="true"
+                :aria-label="$t('Category')"
+                :placeholder="$t('Category')">
+                  <template slot="noResult">
+                      {{ $t('No Results') }}
+                  </template>
+                  <template slot="noOptions">
+                      {{ $t('No Data Available') }}
+                  </template>
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                      <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('categories') }}</span>
+                  </template>
+            </multiselect>
+        </div>
         <div class="card-footer bg-white text-right">
           <button class="btn btn-secondary-outline btn-sm" @click="resetFilters">Reset</button>
           <button class="btn btn-primary btn-sm" @click="applyFilters">Apply</button>
@@ -202,7 +279,6 @@
 </template>
 
 <script>
-
 let myEvent;
 export default {
   directives: {
@@ -228,6 +304,9 @@ export default {
     "paramParticipants",
     "paramRequest",
     "paramName",
+    "paramProjects",
+    'paramProjectMembers',
+    'paramProjectCategories',
     "permission",
   ],
   data() {
@@ -240,13 +319,19 @@ export default {
       request: [],
       name: [],
       participants: [],
+      members: [],
+      categories: [],
+      categoriesOptions: [],
+      memberOptions: [],
       processOptions: [],
       statusOptions: [],
       requesterOptions: [],
       participantsOptions: [],
       requestOptions: [],
       nameOptions: [],
+      projectOptions: [],
       selectedFilters: [],
+      projects: [],
       isLoading: {
         process: false,
         requester: false,
@@ -254,6 +339,7 @@ export default {
         participants: false,
         request: false,
         name: false,
+        projects: false,
       },
     };
   },
@@ -279,6 +365,19 @@ export default {
       this.participants = this.paramParticipants;
     }
 
+    // TODO: How does this work?
+    if (this.paramProjects && Array.isArray(this.paramProjects)) {
+      this.projects = this.paramProjects;
+    }
+
+    if (this.paramProjectCategories && Array.isArray(this.paramProjectCategories)) {
+      this.projectCategories = this.paramProjectCategories;
+    }
+
+    if (this.paramProjectMembers && Array.isArray(this.paramProjectMembers)) {
+      this.projectMembers = this.paramProjectMembers;
+    }
+    
     this.buildPmql();
     this.getAll();
   },
@@ -389,7 +488,48 @@ export default {
         case 'tasks':
           this.buildTaskPmql();
           break;
+        case 'projects':
+          this.buildProjectPmql();
+          break;
       }
+    },
+    buildProjectPmql() {
+      let clauses = [];
+      //Parse projects
+      if (this.projects.length) {
+        let string = '';
+        this.projects.forEach((project, key) => {
+          string += 'title = "' + project.title + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
+      }
+
+      if (this.members.length) {
+        let string = '';
+        this.members.forEach((member, key) => {
+          string += 'participant = "' + member.name + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
+      }
+
+      if (this.categories.length) {
+        let string = '';
+        this.categories.forEach((category, key) => {
+          string += 'category = "' + category.name + '"';
+          if (key < this.projects.length - 1) string += ' OR ';
+        });
+        clauses.push(string);
+      }
+
+      this.pmql = '';
+      clauses.forEach((string, key) => {
+        this.pmql += '(';
+        this.pmql += string;
+        this.pmql += ')';
+        if (key < clauses.length - 1) this.pmql += ' AND ';
+      });
     },
     buildRequestPmql() {
       let clauses = [];
@@ -505,6 +645,7 @@ export default {
       this.isLoading.status = value;
       this.isLoading.requester = value;
       this.isLoading.participants = value;
+      this.isLoading.projects = value;
     },
     getAll() {
       switch (this.type) {
@@ -513,6 +654,9 @@ export default {
               break;
           case 'tasks':
               this.getAllTasks();
+              break;
+          case 'projects':
+              this.getAllProjects();
               break;
       }
     },
@@ -540,6 +684,33 @@ export default {
           setTimeout(3000)
         });
     },
+    getAllProjects() {
+      this.allLoading(true);
+      ProcessMaker.apiClient
+          .get("/projects/search?type=project_all")
+          .then(response => {
+            this.projectOptions = response.data.projects;
+            
+            // Flatten and combine all users and groups
+            const combinedUsersAndGroups = response.data.members.reduce((accumulator, memberData) => {
+                const usersWithMappedNames = memberData.users
+                    .filter(user => !!user)
+                    .map(user => ({ ...user, name: user.fullname }));
+
+                const filteredGroups = memberData.groups.filter(group => !!group);
+
+                return [...accumulator, ...usersWithMappedNames, ...filteredGroups];
+            }, []);
+
+            // Extract categories
+            this.categoriesOptions = response.data.categories;
+
+            // Assign the combined users and groups to this.memberOptions
+            this.memberOptions = combinedUsersAndGroups;
+
+            this.allLoading(false);
+          });
+    },
     getStatus() {
       this.isLoading.status = true;
       ProcessMaker.apiClient
@@ -559,6 +730,16 @@ export default {
                 this.isLoading.process = false
                 setTimeout(3000)
             });
+    },
+    getProjects(query) {
+      this.isLoading.projects = true;     
+      ProcessMaker.apiClient
+        .get("/projects/search?type=projects&filter=" + query)
+        .then(response => {
+            this.projectOptions = response.data;
+            this.isLoading.projects = false
+            setTimeout(3000)
+        });
     },
     getRequesters(query) {
         this.isLoading.requester = true
@@ -580,6 +761,7 @@ export default {
                 setTimeout(3000)
             });
     },
+
     getTaskStatus() {
       this.isLoading.status = true;
       ProcessMaker.apiClient

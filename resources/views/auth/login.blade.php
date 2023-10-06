@@ -86,8 +86,10 @@ Login
         const browser = navigator.userAgent;
         const isMobileDevice  = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
         document.cookie = "isMobile=false"
+        document.cookie = "firstMounted=false"
         if (isMobileDevice) {
-            document.cookie = "isMobile=true"
+          document.cookie = "isMobile=true"
+          document.cookie = "firstMounted=true"
         }
     </script>
 @endsection
