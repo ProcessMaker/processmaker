@@ -20,11 +20,15 @@ import PTab from "./PTab";
 import PTabs from "./PTabs";
 import ProjectSelect from "./ProjectSelect";
 import Required from "./Required";
+import SelectTemplateModal from "../templates/SelectTemplateModal.vue";
 import SelectUserGroup from "./SelectUserGroup";
 import SidebarButton from "./SidebarButton";
 import SidebarNav from "./SidebarNav";
 import SliderWithInput from "./SliderWithInput";
 import DownloadSvgButton from "./DownloadSvgButton.vue";
+import CreateScreenModal from "../../processes/screens/components/CreateScreenModal.vue";
+import CreateScriptModal from "../../processes/scripts/components/CreateScriptModal.vue";
+import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
 export {
   AddToProjectModal,
@@ -35,6 +39,9 @@ export {
   Column,
   ColumnChooser,
   ColumnConfig,
+  CreateProcessModal,
+  CreateScreenModal,
+  CreateScriptModal,
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
@@ -49,6 +56,7 @@ export {
   PTab,
   PTabs,
   Required,
+  SelectTemplateModal,
   SelectUserGroup,
   SidebarButton,
   SidebarNav,
