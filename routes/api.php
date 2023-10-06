@@ -194,6 +194,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('task_assignments/{task_assignment}', [TaskAssignmentController::class, 'update'])->name('task_assignments.update')->middleware('can:edit-task_assignments');
     Route::delete('task_assignments/{task_assignment}', [TaskAssignmentController::class, 'destroy'])->name('task_assignments.destroy')->middleware('can:delete-task_assignments');
 
+    // Comments
+    Route::get('comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:view-comments');
+    Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show')->middleware('can:view-comments');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:create-comments');
+    Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update')->middleware('can:edit-comments');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy')->middleware('can:delete-comments');
+
     // Global signals
     Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
     Route::get('signals/{signalId}', [SignalController::class, 'show'])->name('signals.show')->middleware('can:view-signals');
