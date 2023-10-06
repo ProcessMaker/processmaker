@@ -212,11 +212,12 @@ jobs:
           echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-      - name: delete run folder
+      - name: Clone Repo STM
         run: |
-          if [ -d "pm4-stm-docker" ]; then
-            cd pm4-stm-docker
-            docker-compose down -v || true
-            cd ..
-          fi
+          
+      - name: Cleanup
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker
+          docker-compose down -v || true
           docker rmi -f ${IMAGE} || true
