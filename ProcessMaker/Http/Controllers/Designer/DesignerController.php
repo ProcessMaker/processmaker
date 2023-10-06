@@ -24,7 +24,6 @@ class DesignerController extends Controller
             return redirect()->route($redirect);
         }
 
-
         $listConfig = (object) [
             'status' => $request->input('status'),
         ];

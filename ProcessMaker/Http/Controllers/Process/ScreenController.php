@@ -30,11 +30,11 @@ class ScreenController extends Controller
             $types[$type] = __(ucwords(strtolower($type)));
         }
         asort($types);
-        $catConfig = (object)[
-            'labels' => (object)[
+        $catConfig = (object) [
+            'labels' => (object) [
                 'countColumn' => __('# Screens'),
             ],
-            'routes' => (object)[
+            'routes' => (object) [
                 'itemsIndexWeb' => 'screens.index',
                 'editCategoryWeb' => 'screen-categories.edit',
                 'categoryListApi' => 'api.screen_categories.index',
@@ -49,7 +49,7 @@ class ScreenController extends Controller
             ],
         ];
 
-        $listConfig = (object)[
+        $listConfig = (object) [
             'types' => $types,
             'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
@@ -123,6 +123,7 @@ class ScreenController extends Controller
     {
         $data = json_decode($request->query('node'), true) ?? [];
         $screen = Screen::find($data['screenRef']);
+
         return view('processes.screens.preview', compact('screen'));
     }
 }
