@@ -355,7 +355,6 @@
           </template>
         </div>
       @endif
-      @can('view-comments')
       <div v-if="panCommentInVueOptionsComponents">
           <pan-comment commentable_id="{{ $request->getKey() }}"
                        commentable_type="{{ get_class($request) }}"
@@ -363,7 +362,6 @@
                        name="{{ $request->name }}"
                        />
       </div>
-      @endcan
     </div>
   </div>
 
