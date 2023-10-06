@@ -28,7 +28,6 @@ env:
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
-  run_number: ${{ github.run_number }}
   BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -50,7 +49,6 @@ jobs:
           echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
       - name: Clone Repo STM
         run: |
-          rm -rf $run_number && mkdir $run_number && cd $run_number
           git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -64,17 +62,16 @@ jobs:
       - name: Build and Push the base images
         if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
         run: |
-          cd $run_number/pm4-stm-docker
+          cd pm4-stm-docker
           docker-compose build --no-cache base-php82
           docker-compose build --no-cache cache
           docker push ${REPOSITORY}:ci-base-php82
           docker push ${REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
-          cd $run_number/pm4-stm-docker
+          cd pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
-          docker rmi -f ${IMAGE}
   job2: 
     name: deploy-stm    
     if: github.event.action != 'closed'
@@ -92,10 +89,10 @@ jobs:
           echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-      # - name: Clone Repo STM
-      #   run: |
-      #     git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-      #     cd pm4-stm-docker          
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -109,7 +106,7 @@ jobs:
         id: stm
         run: |
           mkdir -p /tmp/workspace
-          cd $run_number/pm4-stm-docker/deploy-stm
+          cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run.php
           if [ -f "url.txt" ]; then
@@ -120,7 +117,7 @@ jobs:
       - name: Publish the URL to the Github PR 
         if: success() || steps.stm.conclusion == 'success'
         run: |
-          cd $run_number/pm4-stm-docker
+          cd pm4-stm-docker
           echo "Instance URL: '${INSTANCE_URL}'"
           bash ./github_comment.sh "$PROJECT" "$pull_req_id"
   job3: 
@@ -134,10 +131,10 @@ jobs:
          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
-     # - name: Clone Repo STM
-     #   run: |
-     #     git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-     #     cd pm4-stm-docker          
+     - name: Clone Repo STM
+       run: |
+         git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+         cd pm4-stm-docker          
      - name: Configure AWS Credentials
        uses: aws-actions/configure-aws-credentials@v1
        with:
@@ -149,7 +146,7 @@ jobs:
        uses: aws-actions/amazon-ecr-login@v1
      - name: PHPUnits
        run: |          
-         cd $run_number/pm4-stm-docker
+         cd pm4-stm-docker
          docker-compose down -v
          docker-compose build phpunit
          docker-compose run phpunit
@@ -192,24 +189,36 @@ jobs:
           echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
           echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-      # - name: Clone Repo STM
-      #   run: |
-      #     git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-      #     cd pm4-stm-docker     
+      - name: Clone Repo STM
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker     
       - name: Delete Instance STM
         run: |
           mkdir -p /tmp/workspace
-          cd $run_number/pm4-stm-docker/deploy-stm
+          cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run-delete-instance.php
   job8:
     name: Cleanup
     if: always()
     runs-on: self-hosted
+    needs: [job1, job2, job3, job7]
     steps:
-      - name: delete run folder
+      - name: Export Params                
         run: |
-          cd $run_number/pm4-stm-docker
-          docker-compose down -v
-          cd ..
-          rm -rf $run_number
+          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
+          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
+          echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
+      - name: Clone Repo STM
+        run: |
+          
+      - name: Cleanup
+        run: |
+          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+          cd pm4-stm-docker
+          docker-compose down -v || true
+          docker rmi -f ${IMAGE} || true
+          docker container prune -f
