@@ -72,10 +72,12 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
         Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
         Route::get('screen-builder/{screen}/edit/{processId?}', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens/preview', [ScreenController::class, 'preview'])->name('screens.preview')->middleware('can:view-screens');
 
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder/{processId?}', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-screens');
 
         Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
         Route::get('signals/{signalId}/edit', [SignalController::class, 'edit'])->name('signals.edit')->middleware('can:edit-signals');
