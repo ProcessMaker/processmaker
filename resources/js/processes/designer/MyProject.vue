@@ -5,29 +5,79 @@
         {{ $t("My Projects") }}
       </b-navbar-brand>
       <b-navbar-nav align="end">
-        <b-nav-item>
-          <i class="fas fa-search" />
-        </b-nav-item>
-        <b-nav-item href="/designer/projects">
+        <div class="d-flex justify-content-end">
+          <button
+            class="btn btn-outline-primary border-0 mr-1"
+            @click="toggleInput"
+          >
+            <i class="fas fa-search" />
+          </button>
+          <input
+            v-if="showInput"
+            ref="input"
+            v-model="searchCriteria"
+            type="text"
+            class="form-control narrow-input"
+            @keyup.enter="performSearch"
+          >
+          <button
+            v-if="showInput"
+            class="btn btn-clear"
+            @click="clearSearch"
+          >
+            <i class="fas fa-times" />
+          </button>
+        </div>
+        <b-nav-item
+          v-if="!showInput"
+          href="/designer/projects"
+        >
           <i class="fas fa-external-link-alt" />
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
-    <processes-last-modified-listing
+    <projects-last-modified-listing
+      ref="projectsLastModifiedListing"
       :status="status"
     />
   </div>
 </template>
 
 <script>
-import ProcessesLastModifiedListing from './ProcessesLastModifiedListing';
+import ProjectsLastModifiedListing from './ProjectsLastModifiedListing';
 
-Vue.component("ProcessesLastModifiedListing", ProcessesLastModifiedListing);
+Vue.component("ProjectsLastModifiedListing", ProjectsLastModifiedListing);
 
 export default {
   props: ["status"],
   data() {
-    return { };
+    return {
+      searchCriteria: "",
+      showInput: false,
+      pmql: "",
+    };
+  },
+  methods: {
+    /**
+     * This boolean method shows or hide elements
+     */
+    toggleInput() {
+      if (this.showInput) {
+        this.performSearch();
+      }
+      this.showInput = !this.showInput;
+    },
+    /**
+     * This method sends users's input criteria to filter specific tasks or requests
+     */
+    performSearch() {
+      this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
+      this.$refs.projectsLastModifiedListing.fetch(this.pmql);
+    },
+    clearSearch() {
+      this.searchCriteria = "";
+      this.toggleInput();
+    },
   },
 };
 </script>
