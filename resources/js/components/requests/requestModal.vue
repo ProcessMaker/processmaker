@@ -23,11 +23,13 @@
       >
         <b-input-group class="search">
           <b-form-input
+            data-test="new-request-modal-search-input"
             v-model="filter"
             :placeholder="$t('Search') + '...'"
           />
           <b-input-group-append>
             <button
+              data-test="new-request-modal-search-button"
               type="button"
               class="btn btn-primary"
               :aria-label="$t('Search')"
@@ -49,8 +51,14 @@
         class="mt-3"
       >
         <h5 class="mb-n2">
-          {{ index }}
-          <span class="badge badge-pill badge-secondary">
+          <span data-test="new-request-modal-category-name" :data-test-by-key="`new-request-modal-category-name-${index}`">
+            {{ index }}
+          </span>
+          <span
+            class="badge badge-pill badge-secondary"
+            data-test="new-request-modal-category-count"
+            :data-test-by-key="`new-request-modal-category-count-${index}`"
+          >
             {{ category.length }}
           </span>
         </h5>
@@ -125,6 +133,7 @@
       :per-page-select-enabled="true"
       @changePerPage="changePerPage"
       @vuetable-pagination:change-page="onPageChange"
+      data-test="new-request-modal-pagination"
     />
   </b-modal>
 </template>

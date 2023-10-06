@@ -643,7 +643,7 @@ export default {
               this.progress.progress = 0;
               window.ProcessMaker.alert(response.data.message, "danger");
             } else {
-              this.newCode = response.data.diff;
+              this.getScriptVersion(response.data.scriptVersionId);
               this.progress.progress = 100;
               setTimeout(() => {
                 this.loading = false;
@@ -655,7 +655,27 @@ export default {
         },
       );
     },
+    getScriptVersion(scriptVersionId) {
+      const url = "/package-ai/getScriptVersion";
 
+      const params = {
+        server: window.location.host,
+        scriptVersionId,
+      };
+
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then((response) => {
+          this.newCode = response.data.version.diff;
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          if (error.response.status !== 404) {
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
+        });
+    },
     diffEditorMounted() {
     },
     resizeEditor() {
