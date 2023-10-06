@@ -164,7 +164,7 @@ trait ProcessTrait
 
     /**
      * Get the tasks that can be completed by human users
-     * 
+     *
      * @return array
      */
     public function getHumanTasks()
