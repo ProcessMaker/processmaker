@@ -35,9 +35,7 @@ export default {
     asset_name_new: String,
   },
   data() {
-    return {
-      countCategories: 2,
-    };
+    return {};
   },
   methods: {
     callURL() {
