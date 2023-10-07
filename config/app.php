@@ -66,7 +66,7 @@ return [
 
     // tcp/other protocol uri to the docker host
     'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
-    
+
     // Default parameters for docker run command
     'processmaker_scripts_docker_params' => env('PROCESSMAKER_SCRIPTS_DOCKER_PARAMS', ''),
 

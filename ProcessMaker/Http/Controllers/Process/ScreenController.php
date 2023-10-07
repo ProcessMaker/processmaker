@@ -42,9 +42,9 @@ class ScreenController extends Controller
             'countField' => 'screens_count',
             'apiListInclude' => 'screensCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-screen-categories'),
+                'view' => $request->user()->can('view-screen-categories'),
                 'create' => $request->user()->can('create-screen-categories'),
-                'edit'   => $request->user()->can('edit-screen-categories'),
+                'edit' => $request->user()->can('edit-screen-categories'),
                 'delete' => $request->user()->can('delete-screen-categories'),
             ],
         ];
@@ -117,5 +117,13 @@ class ScreenController extends Controller
                 'Content-type' => 'application/json',
             ]);
         }
+    }
+
+    public function preview(Request $request)
+    {
+        $data = json_decode($request->query('node'), true) ?? [];
+        $screen = Screen::find($data['screenRef']);
+
+        return view('processes.screens.preview', compact('screen'));
     }
 }

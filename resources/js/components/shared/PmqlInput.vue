@@ -117,6 +117,7 @@ export default {
     "collectionId",
     "inputLabel",
     "showFilters",
+    "hidePmqlSection",
 
     "paramProcess",
     "paramStatus",
@@ -152,7 +153,7 @@ export default {
 
   computed: {
     showPmqlSection() {
-      return this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
+      return !this.hidePmqlSection && this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
     },
     usageText() {
       const promptTokens = `Prompt tokens: ${this.usage.promptTokens}`;
