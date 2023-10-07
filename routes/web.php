@@ -131,7 +131,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')->middleware('can:view-notifications,notification');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     Route::get('template/{type}/import', [TemplateController::class, 'import'])->name('templates.import')->middleware('template-authorization');
     Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');

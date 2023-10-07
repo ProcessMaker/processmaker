@@ -240,6 +240,7 @@ export default {
 
 .no-notifications {
   text-align: center;
+  height: 600px;
 
   img {
     width: 190px;

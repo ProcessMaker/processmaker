@@ -46,7 +46,7 @@ class ClearRequestsTest extends TestCase
         'updated_at',
     ];
 
-    const API_TEST_URL = '/comments';
+    const API_TEST_URL = '/comments/comments';
 
     /**
      * Create a single task process assigned to $this->user

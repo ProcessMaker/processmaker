@@ -128,10 +128,8 @@
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             @endif
 
-            @can('view-notifications')
-                <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
-                </notifications>
-            @endcan
+            <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+            </notifications>
             <li class="separator d-none d-lg-block"></li>
             <li class="d-none d-lg-block">
                 @php
