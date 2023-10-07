@@ -5,3 +5,6 @@
  */
 
 import "./bootstrap";
+import "../sass/admin/queues.scss";
+import "../sass/app.scss";
+import "../sass/sidebar/sidebar.scss";

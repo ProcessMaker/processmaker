@@ -53,8 +53,9 @@
 </template>
 
 <script>
-import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
 import { find } from "lodash";
+import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
   components: {
@@ -163,11 +164,10 @@ export default {
       }
 
       ProcessMaker.apiClient
-        .get("screens", { params: { key: this.defaultKey }})
+        .get("screens", { params: { key: this.defaultKey } })
         .then(({ data }) => {
           this.content = data.data[0];
         });
-
     },
     /**
      * @param {Object} data - The response we get from the emitter
@@ -190,7 +190,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-</style>

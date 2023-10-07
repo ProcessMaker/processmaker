@@ -8,7 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
-    @vite('resources/css/app.css')
+    @vite('public/css/app.css')
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
 @yield('css')
 </head>

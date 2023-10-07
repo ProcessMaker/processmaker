@@ -3,14 +3,16 @@ import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue2";
 import { fileURLToPath, URL } from "node:url";
 import ViteYaml from "@modyfi/vite-plugin-yaml";
+import { homedir } from "os";
+import { resolve } from "path";
+import fs from "fs";
+
+const host = "processmaker.test";
 
 export default defineConfig({
   plugins: [
     laravel({
       input: [
-        "resources/sass/admin/queues.scss",
-        "resources/sass/app.scss",
-        "resources/sass/sidebar/sidebar.scss",
         "resources/js/admin/auth-clients/index.js",
         "resources/js/admin/auth/passwords/change.js",
         "resources/js/admin/cssOverride/edit.js",
@@ -63,6 +65,8 @@ export default defineConfig({
         "resources/js/templates/index.js",
       ],
       refresh: true,
+      publicDirectory: "public",
+      valetTls: host
     }),
     vue({
       template: {
@@ -77,7 +81,35 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./resources/js/", import.meta.url)),
-      SharedComponents: fileURLToPath(new URL("./resources/js/components/shared", import.meta.url)),
+      SharedComponents: fileURLToPath(
+        new URL("./resources/js/components/shared", import.meta.url),
+      ),
     },
   },
+  server: detectServerConfig(host),
 });
+
+function detectServerConfig(host) {
+  const keyPath = resolve(homedir(), `.config/valet/Certificates/${host}.key`);
+  const certificatePath = resolve(
+    homedir(),
+    `.config/valet/Certificates/${host}.crt`,
+  );
+
+  if (!fs.existsSync(keyPath)) {
+    return {};
+  }
+
+  if (!fs.existsSync(certificatePath)) {
+    return {};
+  }
+
+  return {
+    hmr: { host },
+    host,
+    https: {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certificatePath),
+    },
+  };
+}

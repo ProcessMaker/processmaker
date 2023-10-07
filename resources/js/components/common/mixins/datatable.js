@@ -4,6 +4,8 @@
  *
  */
 import Vuetable from "vuetable-2";
+import _ from "lodash";
+import moment from "moment";
 import Pagination from "../Pagination.vue";
 
 export default {

@@ -1,31 +1,42 @@
 <template>
   <div>
-    <div v-if="aiEnabledLocal" class="">
+    <div
+      v-if="aiEnabledLocal"
+      class=""
+    >
       <div class="d-flex align-items-start position-relative">
-        <div class="search-bar flex-grow"
-             v-click-outside="hidePopUp"
-             :class="{'expanded': expanded}">
+        <div
+          v-click-outside="hidePopUp"
+          class="search-bar flex-grow"
+          :class="{'expanded': expanded}"
+        >
           <div class="row m-0">
             <div class="search-bar-container col-12 d-flex align-items-center p-0">
-              <i @click="showPopUp()"
-                class="fa fa-search ml-3 pmql-icons" />
+              <i
+                class="fa fa-search ml-3 pmql-icons"
+                @click="showPopUp()"
+              />
 
-              <input ref="search_input" 
-                     type="text" 
-                     class="pmql-input"
-                     :aria-label="inputAriaLabel"
-                     :placeholder="placeholder"
-                     :id="inputId"
-                     v-model="query"
-                     rows="1"
-                     @click="showPopUp()"
-                     @input="onInput()"
-                     @keydown.enter.prevent
-                     @keyup.enter="search()">
+              <input
+                :id="inputId"
+                ref="search_input"
+                v-model="query"
+                type="text"
+                class="pmql-input"
+                :aria-label="inputAriaLabel"
+                :placeholder="placeholder"
+                rows="1"
+                @click="showPopUp()"
+                @input="onInput()"
+                @keydown.enter.prevent
+                @keyup.enter="search()"
+              >
 
-              <i class="fa fa-times pl-1 pr-3 pmql-icons" 
+              <i
+                class="fa fa-times pl-1 pr-3 pmql-icons"
                 role="button"
-                @click="clearQuery" />
+                @click="clearQuery"
+              />
             </div>
           </div>
           <div class="col-12 search-popup border-top">
@@ -33,28 +44,41 @@
               <div class="section-title p-2 w-100">
                 {{ $t("Search result") }}
               </div>
-              <div v-if="endpointErrors" class="alert alert-danger mx-2 small px-3">
-                <i class="fa fa-ban mr-1"></i>{{ endpointErrors }}
+              <div
+                v-if="endpointErrors"
+                class="alert alert-danger mx-2 small px-3"
+              >
+                <i class="fa fa-ban mr-1" />{{ endpointErrors }}
               </div>
-              <div v-if="!aiLoading && pmql === '' && !lastSearch && !endpointErrors"
-                    class="p-2 w-100 text-muted pt-1 pb-3 no-results">
-                    {{ $t("Nothing searched yet") }}
+              <div
+                v-if="!aiLoading && pmql === '' && !lastSearch && !endpointErrors"
+                class="p-2 w-100 text-muted pt-1 pb-3 no-results"
+              >
+                {{ $t("Nothing searched yet") }}
               </div>
 
-              <div v-if="aiLoading" class="d-flex justify-content-center align-items-center pb-2">
+              <div
+                v-if="aiLoading"
+                class="d-flex justify-content-center align-items-center pb-2"
+              >
                 <span class="power-loader" />
                 <span class="ml-2 text-muted small">
                   {{ $t("Please wait ...") }}
                 </span>
               </div>
 
-              <div v-if="!aiLoading && pmql !== '' && lastSearch" 
-                   class="section-item w-100 p-2"
-                  @click="redirect(lastSearch)">
+              <div
+                v-if="!aiLoading && pmql !== '' && lastSearch"
+                class="section-item w-100 p-2"
+                @click="redirect(lastSearch)"
+              >
                 <span class="text-primary">
                   {{ lastSearch.search }}
                 </span>
-                <div v-if="lastSearch.response.collectionError" class="alert alert-warning small mb-1">
+                <div
+                  v-if="lastSearch.response.collectionError"
+                  class="alert alert-warning small mb-1"
+                >
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
                   {{ lastSearch.response.collectionError }}
                   <code class="text-info">{{ lastSearch.response.pmql }}</code>
@@ -66,23 +90,33 @@
 
               <div class="section-title p-2 mt-2 border-top w-100 d-flex justify-content-between align-items-center">
                 <span>{{ $t("Recently searched") }}</span>
-                <span role="button" @click="clearHistory">
+                <span
+                  role="button"
+                  @click="clearHistory"
+                >
                   <span>{{ $t("Clear") }}</span>
                 </span>
               </div>
 
-              <div v-if="!recentSearches || recentSearches.length === 0"
-                      class="p-2 w-100 text-muted pt-1 pb-3 no-results">
-                      {{ $t("The history is empty") }}
-                </div>
-              <div v-for="(recentSearch, index) in recentSearches"
+              <div
+                v-if="!recentSearches || recentSearches.length === 0"
+                class="p-2 w-100 text-muted pt-1 pb-3 no-results"
+              >
+                {{ $t("The history is empty") }}
+              </div>
+              <div
+                v-for="(recentSearch, index) in recentSearches"
                 :key="index"
                 class="section-item w-100 p-2"
-                @click="redirect(recentSearch)">
+                @click="redirect(recentSearch)"
+              >
                 <span class="text-primary">
                   {{ recentSearch.search }}
                 </span>
-                <div v-if="recentSearch.response.collectionError" class="alert alert-warning small mb-1">
+                <div
+                  v-if="recentSearch.response.collectionError"
+                  class="alert alert-warning small mb-1"
+                >
                   <i class="fa fa-exclamation-triangle text-warning mr-1" />
                   {{ recentSearch.response.collectionError }}
                   <code class="text-info">{{ recentSearch.response.pmql }}</code>
@@ -101,9 +135,11 @@
                   <div><img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}</div>
                 </div>
                 <div class="">
-                  <button class="btn d-lg-none ml-2 close-button" 
-                    @click="hidePopUp">
-                    <i class="fa fa-times"></i>
+                  <button
+                    class="btn d-lg-none ml-2 close-button"
+                    @click="hidePopUp"
+                  >
+                    <i class="fa fa-times" />
                   </button>
                 </div>
               </div>
@@ -115,8 +151,6 @@
   </div>
 </template>
 <script>
-
-import isPMQL from "../../modules/isPMQL";
 
 let myEvent;
 export default {
@@ -202,7 +236,7 @@ export default {
     },
     redirect(search) {
       const url = this.getUrl(search);
-      let { pmql } = search.response;
+      const { pmql } = search.response;
 
       window.location.href = `${url}?pmql=${encodeURIComponent(pmql)}`;
     },
@@ -240,7 +274,7 @@ export default {
       localStorage.globalSearchValue = "";
     },
     getRecentSearches() {
-      ProcessMaker.apiClient.get('/openai/recent-searches?quantity=5')
+      ProcessMaker.apiClient.get("/openai/recent-searches?quantity=5")
         .then((response) => {
           if (response.data && response.data.recentSearches) {
             this.recentSearches = response.data.recentSearches;
@@ -283,7 +317,7 @@ export default {
           this.$emit("submit", this.pmql);
           this.aiLoading = false;
         })
-        .catch(error => {
+        .catch((error) => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;

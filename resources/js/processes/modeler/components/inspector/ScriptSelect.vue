@@ -25,11 +25,21 @@
         {{ $t("No Data Available") }}
       </template>
     </multiselect>
-    <div v-if="error" class="invalid-feedback" role="alert">
+    <div
+      v-if="error"
+      class="invalid-feedback"
+      role="alert"
+    >
       <div>{{ error }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
-    <modeler-asset-quick-create label="script" @asset="processAssetCreation" />
+    <small
+      v-if="helper"
+      class="form-text text-muted"
+    >{{ $t(helper) }}</small>
+    <modeler-asset-quick-create
+      label="script"
+      @asset="processAssetCreation"
+    />
     <a
       v-if="content.id"
       :href="`/designer/scripts/${content.id}/builder`"
@@ -42,8 +52,9 @@
 </template>
 
 <script>
-import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
 import { find } from "lodash";
+import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
   components: {
@@ -166,7 +177,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-</style>

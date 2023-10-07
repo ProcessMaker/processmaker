@@ -1,24 +1,33 @@
 <template>
-  <div class="item border-top py-3" @click="click" :title="url" :class="{ 'clickable': url }">
+  <div
+    class="item border-top py-3"
+    :title="url"
+    :class="{ 'clickable': url }"
+    @click="click"
+  >
     <b-container>
       <b-row>
-        <notification-user :notification="notification"></notification-user>
-        <notification-message :notification="notification" :show-time="showTime"></notification-message>
-        </b-row>
+        <notification-user :notification="notification" />
+        <notification-message
+          :notification="notification"
+          :show-time="showTime"
+        />
+      </b-row>
     </b-container>
   </div>
 </template>
 
 <script>
-import notificationsMixin from '../notifications-mixin';
-import NotificationUser from './notification-user';
-import NotificationMessage from './notification-message';
+import notificationsMixin from "../notifications-mixin";
+import NotificationUser from "./notification-user.vue";
+import NotificationMessage from "./notification-message.vue";
+
 export default {
-  mixins: [notificationsMixin],
   components: {
     NotificationUser,
     NotificationMessage,
   },
+  mixins: [notificationsMixin],
   props: {
     notification: {
       type: Object,
@@ -27,11 +36,11 @@ export default {
     showTime: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   data() {
     return {
-    }
+    };
   },
   computed: {
     url() {
@@ -39,16 +48,16 @@ export default {
     },
     isComment() {
       return this.data.type === "COMMENT";
-    }
+    },
   },
   methods: {
     click() {
       if (this.url) {
         window.location.href = this.url;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

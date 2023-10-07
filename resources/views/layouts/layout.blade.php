@@ -34,8 +34,8 @@
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    @vite('resources/css/app.css')
-    @vite('resources/css/sidebar.css')
+    @vite('public/css/app.css')
+    @vite('public/css/sidebar.css')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
@@ -124,8 +124,8 @@
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-@vite('resources/js/manifest.js')
-@vite('resources/js/vendor.js')
+@vite('public/js/manifest.js')
+@vite('public/js/vendor.js')
 @vite('resources/js/app.js')
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());

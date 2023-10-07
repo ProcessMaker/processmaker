@@ -315,7 +315,7 @@ import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
