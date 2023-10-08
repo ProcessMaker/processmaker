@@ -140,7 +140,7 @@ export default {
         existingAssets() {
             if (this.$root.manifest) {
                 return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
-                    const asset = this.$root.manifest[uuid];           
+                    const asset = this.$root.manifest[uuid];        
                     return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
                 }).map(([uuid, _]) => {
                     const asset = this.$root.manifest[uuid];  
@@ -175,7 +175,12 @@ export default {
             this.$refs["set-password-modal"].show();
         },
         onCancel() {
-            window.location = "/processes";
+            const projectId = this.$route.params.id;
+            if (this.$route.name === "projectCustomAssetImport") {
+                window.location.href = `/designer/projects/${projectId}`;
+            } else {
+                window.location.href = '/processes';
+            }
         },
         onExport() {
             if (this.passwordProtect) {
@@ -189,7 +194,7 @@ export default {
             if (this.assetsExist) {
                 this.$refs['import-process-modal'].show();
             } else {
-                this.handleImport();
+                this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
             }
         },
         exportProcess(password = null) {
@@ -209,12 +214,13 @@ export default {
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');           
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
+
         },
         handleImport() {
             this.loading = true;
@@ -232,7 +238,33 @@ export default {
                 ProcessMaker.alert(message, 'danger');
                 this.loading = false;
             });
-        }
+        },
+        handleProjectAssetsImport(projectId) {
+            this.loading = true;
+            DataProvider.doImportProjectAssets(this.$root.file, this.$root.exportOptions(), projectId, this.$root.password)
+            .then((response) => {
+                if (response?.data) {
+                    const projectId = response.data.projectId;
+                    const successMessage = this.$t('Asset was successfully imported');
+
+                    ProcessMaker.alert(successMessage, 'success');
+                    window.location.href = projectId ? `/designer/projects/${projectId}` : '/designer/projects/';
+                    this.submitted = false; // the form was successfully submitted
+                } else {
+                    // the request was successful but did not return expected data
+                    throw new Error(this.$t('Unknown error while importing the Asset.'));
+                }
+            })
+            .catch((error) => {
+                this.handleError(error); // a shared method that displays the error message and resets loading/submitted
+            });  
+        },
+        handleError(error) {
+            const message = error.response?.data?.message || this.$t('Unable to import the Asset.');
+            ProcessMaker.alert(`${message}.`, 'danger');
+            this.submitted = false;
+            this.loading = false;
+        },
     },
     mounted() {
     },
