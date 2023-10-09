@@ -89,19 +89,19 @@ export default {
         return this.formatDate(item.created_at);
       }
       switch (this.item.status) {
-        case `<i class="fas fa-circle text-danger"></i> <span>Draft</span>`:
+        case "DRAFT":
           this.colorStatus = "background-color: #ffdbdb";
           this.requestBadge = "Draft";
           break;
-        case `<i class="fas fa-circle text-danger"></i> <span>Canceled</span>`:
+        case "CANCELED":
           this.colorStatus = "background-color: #ffdbdb";
           this.requestBadge = "Canceled";
           break;
-        case `<i class="fas fa-circle text-primary"></i> <span>Completed</span>`:
+        case "COMPLETED":
           this.colorStatus = "background-color: #B8F2DF";
           this.requestBadge = "Completed";
           break;
-        case `<i class="fas fa-circle text-danger"></i> <span>Error</span>`:
+        case "ERROR":
           this.colorStatus = "background-color: #ffdbdb";
           this.requestBadge = "Error";
           break;

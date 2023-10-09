@@ -1,6 +1,9 @@
 const ListMixin = {
   methods: {
     formatStatus(status) {
+      if (this.$cookies.get("isMobile") === "true") {
+        return status;
+      }
       let color = "success";
       let label = "In Progress";
       switch (status) {
