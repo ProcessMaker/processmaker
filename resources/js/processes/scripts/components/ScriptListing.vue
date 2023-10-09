@@ -35,7 +35,7 @@
             :permission="permission"
             :data="props.rowData"
             :divider="true"
-            @navigate="onAction"
+            @navigate="onNavigate"
           />
         </template>
       </vuetable>
@@ -90,13 +90,14 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
+import scriptNavigationMixin from "../../../components/shared/scriptNavigation";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, AddToProjectModal },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, scriptNavigationMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
@@ -187,36 +188,36 @@ export default {
           }
         });
     },
-    onAction(action, data) {
-      switch (action.value) {
-        case "duplicate-item":
-          this.dupScript.title = data.title + " Copy";
-          this.dupScript.language = data.language;
-          this.dupScript.code = data.code;
-          this.dupScript.description = data.description;
-          this.dupScript.category = data.category;
-          this.dupScript.script_category_id = data.script_category_id;
-          this.dupScript.id = data.id;
-          this.dupScript.run_as_user_id = data.run_as_user_id;
-          this.showModal();
-          break;
-        case "remove-item":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-              item: data.title
-            }),
-            "",
-            () => {
-              this.$emit("delete", data);
-            }
-          );
-          break;
-        case 'add-to-project':
-          this.showAddToProjectModal(data.title, data.id);
-          break;
-      }
-    },
+    // onAction(action, data) {
+    //   switch (action.value) {
+    //     case "duplicate-item":
+    //       this.dupScript.title = data.title + " Copy";
+    //       this.dupScript.language = data.language;
+    //       this.dupScript.code = data.code;
+    //       this.dupScript.description = data.description;
+    //       this.dupScript.category = data.category;
+    //       this.dupScript.script_category_id = data.script_category_id;
+    //       this.dupScript.id = data.id;
+    //       this.dupScript.run_as_user_id = data.run_as_user_id;
+    //       this.showModal();
+    //       break;
+    //     case "remove-item":
+    //       ProcessMaker.confirmModal(
+    //         this.$t("Caution!"),
+    //         this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
+    //           item: data.title
+    //         }),
+    //         "",
+    //         () => {
+    //           this.$emit("delete", data);
+    //         }
+    //       );
+    //       break;
+    //     case 'add-to-project':
+    //       this.showAddToProjectModal(data.title, data.id);
+    //       break;
+    //   }
+    // },
     formatLanguage(language) {
       return language;
     },

@@ -34,6 +34,8 @@ import CreateScriptModal from "../../processes/scripts/components/CreateScriptMo
 import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 import EllipsisMenuMixin from "./ellipsisMenuActions";
 import ProcessNavigationMixin from "./processNavigation";
+import ScreenNavigationMixin from "./screenNavigation";
+import ScriptNavigationMixin from "./scriptNavigation";
 import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 
@@ -75,5 +77,7 @@ export {
   EllipsisMenuMixin,
   ProcessNavigationMixin,
   CreateTemplateModal,
-  CreatePmBlockModal
+  CreatePmBlockModal,
+  ScreenNavigationMixin,
+  ScriptNavigationMixin
 };
