@@ -20,7 +20,9 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal } from "SharedComponents";
+  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+  import Modal from "../../../components/shared/Modal";
+
   import VuePassword from "vue-password";
 
   export default {

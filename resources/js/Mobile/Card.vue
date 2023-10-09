@@ -124,10 +124,10 @@ export default {
     },
     openCard() {
       if (this.type === "tasks") {
-        this.openURL = `tasks/${this.item.id}/edit`;
+        this.openURL = `/tasks/${this.item.id}/edit`;
       }
       if (this.type === "requests") {
-        this.openURL = `requests/${this.item.id}`;
+        this.openURL = `/requests/${this.item.id}`;
       }
     },
   },

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <filter-mobile type="requests" />
     <template v-for="(item, index) in data.data">
       <card
         :key="index"
@@ -22,16 +21,16 @@
 
 <script>
 import Card from "../../Mobile/Card.vue";
-import FilterMobile from "../../Mobile/FilterMobile.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import ListMixin from "./ListMixin";
 
 export default {
-  components: { Card, FilterMobile },
+  components: { Card },
   mixins: [datatableMixin, ListMixin],
   data() {
     return {
       data: "",
+      pmql: "",
       filter: "",
       orderBy: "id",
       orderDirection: "DESC",
@@ -49,7 +48,17 @@ export default {
       endpoint: "requests",
     };
   },
+  mounted() {
+    this.pmql = `(status = "In Progress") AND (requester = "${Processmaker.user.username}")`;
+  },
   methods: {
+    updatePmql(value, status) {
+      if (!status) {
+        this.pmql = `(status = "In Progress") ${value}`;
+        return;
+      }
+      this.pmql = value.substr(3);
+    },
   },
 };
 </script>

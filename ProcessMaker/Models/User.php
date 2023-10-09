@@ -470,4 +470,9 @@ class User extends Authenticatable implements HasMedia
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    public static function whereFullname($value)
+    {
+        return self::whereRaw("CONCAT(firstname, ' ', lastname) LIKE ?", ["%$value%"]);
+    }
 }

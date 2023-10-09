@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-button
-      v-if="!callFromAiModeler"
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
@@ -12,7 +12,7 @@
     <modal
       id="createScript"
       :ok-disabled="disabled"
-      :title="$t('Create Script')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -56,6 +56,7 @@
           />
         </b-form-group>
         <category-select
+          v-show="!projectAsset"
           v-model="script_category_id"
           :errors="addError.script_category_id"
           :label="$t('Category')"
@@ -181,7 +182,10 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+  import Modal from "../../../components/shared/Modal.vue";
+  import Required from "../../../components/shared/Required.vue";
+  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
   import SliderWithInput from "../../../components/shared/SliderWithInput";
 
   const channel = new BroadcastChannel("assetCreation");
@@ -189,7 +193,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'callFromAiModeler'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset', 'assetName', 'callFromAiModeler'],
     data: function() {
       return {
         title: '',
@@ -197,6 +201,7 @@
         script_executor_id: null,
         description: '',
         script_category_id: '',
+        category_type_id: '',
         code: '',
         addError: {},
         selectedUser: '',
@@ -209,6 +214,16 @@
         script: null,
         projects: [],
       }
+    },
+    computed: {
+      modalSetUp() {
+        if (this.copyAssetMode) {
+          this.title = this.assetName + ' ' + this.$t('Copy');
+          return this.$t('Copy of Asset');
+        }
+        this.title = "";
+        return this.$t('Create Script');
+      },
     },
     destroyed() {
       channel.close();
@@ -231,6 +246,7 @@
         this.script_executor_id = null;
         this.description = '';
         this.script_category_id = '';
+        this.category_type_id = "";
         this.code = '';
         this.timeout = 60;
         this.retry_attempts = 0;
@@ -291,6 +307,9 @@
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScript');
+    }
   },
 };
 </script>

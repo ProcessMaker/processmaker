@@ -1,7 +1,16 @@
 import Vue from "vue";
-import MobileTasks from "../tasks/components/MobileTasks";
+import MobileTasks from "./components/MobileTasks.vue";
+import FilterMobile from "../Mobile/FilterMobile.vue";
+import FilterMixin from "../Mobile/FilterMixin";
 
 new Vue({
   el: "#tasks-mobile",
-  components: { MobileTasks },
+  mixins: [FilterMixin],
+  components: { MobileTasks, FilterMobile },
+  data: {
+    filter: "",
+    pmql: "",
+    status: [],
+    fullPmql: "",
+  },
 });

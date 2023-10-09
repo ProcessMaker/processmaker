@@ -78,14 +78,14 @@ class RequestController extends Controller
                 if (isset($definition['allowInterstitial'])) {
                     $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                 }
-                if ($allowInterstitial && $request->user_id == Auth::id() && request()->has('fromRedirect')) {
+                if ($allowInterstitial && $request->user_id == Auth::id() && request()->cookie('fromTriggerStartEvent')) {
                     $active = $request->tokens()
                         ->where('user_id', Auth::id())
                         ->where('element_type', 'task')
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
 
-                    return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
+                    return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]))->withoutCookie('fromTriggerStartEvent');
                 }
             }
         }
