@@ -90,7 +90,7 @@ class ModelerController extends Controller
 
     /**
      * Invokes the Modeler for In-flight Process Map.
-     * 
+     *
      * This method is required by package-testing to overwrite the 3rd parameter ProcessRequest $request parameter.
      */
     public function renderInflight(ModelerManager $manager, Process $process, $processRequest, $processRequestId)
@@ -110,8 +110,12 @@ class ModelerController extends Controller
                 ->firstOrFail()
                 ->bpmn;
 
-            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])->pluck('element_id');
-            $requestInProgressNodes = $processRequest->tokens()->whereIn('status', ['ACTIVE', 'INCOMING'])->pluck('element_id');
+            $requestCompletedNodes = $processRequest->tokens()
+                ->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])
+                ->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()
+                ->whereIn('status', ['ACTIVE', 'INCOMING'])
+                ->pluck('element_id');
             // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
