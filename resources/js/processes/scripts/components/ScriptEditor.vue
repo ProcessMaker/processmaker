@@ -662,7 +662,7 @@ export default {
         server: window.location.host,
         scriptVersionId,
       };
-
+ 
       ProcessMaker.apiClient
         .post(url, params)
         .then((response) => {
