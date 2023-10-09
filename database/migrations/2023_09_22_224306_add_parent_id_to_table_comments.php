@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::table('comments', function (Blueprint $table) {
             $table->unsignedBigInteger('parent_id')->after('id')->default(0);
-            $table->unsignedBigInteger('group_id')->after('parent_id')->nullable();
-            $table->string('group_name')->after('group_id')->nullable();
         });
     }
 
@@ -25,8 +23,6 @@ return new class extends Migration
     {
         Schema::table('comments', function (Blueprint $table) {
             $table->dropColumn('parent_id');
-            $table->dropColumn('group_id');
-            $table->dropColumn('group_name');
         });
     }
 };

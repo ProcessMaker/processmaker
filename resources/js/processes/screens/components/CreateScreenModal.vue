@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-button
-      v-if="!callFromAiModeler"
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
@@ -12,7 +12,7 @@
     <modal
       id="createScreen"
       :ok-disabled="disabled"
-      :title="$t('Create Screen')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -66,12 +66,14 @@
           />
         </b-form-group>
         <category-select
+          v-show="!projectAsset"
           v-model="formData.screen_category_id"
           :errors="errors.screen_category_id"
           :label="$t('Category')"
           api-get="screen_categories"
           api-list="screen_categories"
-        />
+          name="category"
+        ></category-select>
         <project-select
           v-if="isProjectsInstalled"
           :label="$t('Project')"
@@ -95,7 +97,10 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Modal from "../../../components/shared/Modal.vue";
+import Required from "../../../components/shared/Required.vue";
+import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -106,7 +111,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled", "callFromAiModeler"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset", "assetName", "callFromAiModeler"],
   data() {
     return {
       formData: {},
@@ -118,6 +123,16 @@ export default {
       },
       disabled: false,
     };
+  },
+  computed: {
+    modalSetUp() {
+      if (this.copyAssetMode) {
+        this.formData.title = this.assetName + ' ' + this.$t('Copy');
+        return this.$t('Copy of Asset');
+      }
+      this.formData.title = "";
+      return this.$t('Create Screen');
+    },
   },
   mounted() {
     this.resetFormData();
@@ -189,6 +204,9 @@ export default {
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScreen');
+    }
   },
 };
 </script>

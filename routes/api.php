@@ -130,6 +130,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
+    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can:edit-processes');
     Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
@@ -196,7 +197,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Comments
     Route::get('comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:view-comments');
-    Route::get('comments_modern', [CommentController::class, 'modern'])->name('comments.index2')->middleware('can:view-comments');
     Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show')->middleware('can:view-comments');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:create-comments');
     Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update')->middleware('can:edit-comments');

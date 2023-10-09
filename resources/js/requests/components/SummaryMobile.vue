@@ -153,7 +153,9 @@ export default {
     },
   },
   mounted() {
-    this.getConfigurationComments();
+
+    // Comments configuration no longer exists
+    // this.getConfigurationComments();
   },
   methods: {
     getConfigurationComments() {

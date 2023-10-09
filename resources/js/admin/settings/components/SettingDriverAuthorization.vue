@@ -9,7 +9,7 @@
         <div v-else>
             Empty
         </div>
-        <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
+        <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" centered>
             <template v-slot:modal-header class="d-block">
                 <div>
                 <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
@@ -85,15 +85,23 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
-                
+
+                <additional-driver-connection-properties :driverKey="setting?.key" :formData="formData" @updateFormData="updateFormData"></additional-driver-connection-properties>  
             </div>
             <div slot="modal-footer" class="w-100 m-0 d-flex">
                 <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
                     {{ $t('Cancel') }}
                 </button>
-                <button type="button" class="btn btn-secondary ml-3" @click="authorizeConnection" :disabled=" isInvalid || !changed ">
+                <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled=" isInvalid || !changed ">
                     {{ $t('Authorize')}}
                 </button>
+            </div>
+        </b-modal>
+
+        <b-modal class="setting-object-modal" v-model="showAuthorizingModal" size="lg" hide-footer hide-header centered no-fade>
+            <div class="text-center">
+                <h3>{{ $t('Connecting Driver') }}</h3>
+                <i class="fas fa-circle-notch fa-spin"></i>
             </div>
         </b-modal>
     </div>
@@ -102,11 +110,12 @@
 <script>
 import settingMixin from "../mixins/setting";
 import { FormErrorsMixin,Required } from "SharedComponents";
+import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
 
 export default {
     mixins: [settingMixin, FormErrorsMixin, Required],
     props: ['setting', 'value'],
-    components: {},
+    components: {AdditionalDriverConnectionProperties},
     data() {
         return {
             input: '',
@@ -117,10 +126,12 @@ export default {
             },
             selected: null,
             showModal: false,
+            showAuthorizingModal: false,
             transformed: null,
             errors: {},
             isInvalid: true,
             type: 'password',
+            resetData: true,
         }
     },
     computed: {
@@ -150,9 +161,6 @@ export default {
             deep: true,
         }
     },
-    created() {
-        console.log("GET SETTING CONNECTION PROPERTIES", this.setting);
-    },
     methods: {
         onCopy() {
             navigator.clipboard.writeText(this.formData.callback_url).then(() => {
@@ -169,41 +177,77 @@ export default {
             }
         },
         validateData() {
-            return _.isEmpty(this.formData) || _.some(this.formData, _.isEmpty);
+            // Check if client_id and client_secret are empty
+            const clientIdEmpty = _.isEmpty(this.formData.client_id);
+            const clientSecretEmpty = _.isEmpty(this.formData.client_secret);
+
+            return _.isEmpty(this.formData) || clientIdEmpty || clientSecretEmpty;
         },
         onCancel() {
             this.showModal = false;
         },
         onEdit(row) {
-            this.generateCallbackUrl(row.item);
-            this.showModal = true;
             if (this.value !== null) {
                 this.formData = this.value;
             }
+            this.generateCallbackUrl(row.item);
+            this.$nextTick(() => {
+                this.showModal = true;
+                
+            });
         },
         onModalHidden() {
             this.resetFormData();
         },
         authorizeConnection() {
-            console.log("AUTHORIZE CONNECTION");
-            this.onSave();
+            this.showAuthorizingModal = true;
+            this.showModal = false;
+            this.resetData = false;
+            ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`)
+            .then(response => {
+                ProcessMaker.alert('successfully authorized', 'success');
+                this.setting.ui.authorizedBadge = true;
+                this.emitSaved(this.setting);
+                this.showAuthorizingModal = false;
+            })
+            .catch(error => {
+                ProcessMaker.alert(error.message, 'danger');
+                this.showModal = true;
+                this.showAuthorizingModal = false;
+            });
         },
         onSave() {
-            this.showModal = false;
+            const driver = this.setting.key.split('cdata.')[1];
+            const dsn = `CData ${this.setting.name} Source`;
+
+            this.formData.driver = driver;
+            this.formData.dsn = dsn;
+
             this.emitSaved(this.formData);
-            this.transformed = this.copy(this.formData);
+            
+            this.transformed = { ...this.formData };
+
+            this.$nextTick(() => {
+                this.authorizeConnection();
+            });
         },
         generateCallbackUrl(data) {
             const name = data.key.split('cdata.')[1];
             const app_url = document.head.querySelector('meta[name="app-url"]').content;
+            
             this.formData.callback_url = `${app_url}/external-integrations/${name}`;
         },
         resetFormData() {
-            this.formData = {
-                client_id: "",
-                client_secret: "",
-                callback_url: "",
-            };
+            if (this.resetData) {
+                this.formData = {
+                    client_id: "",
+                    client_secret: "",
+                    callback_url: "",
+                };
+            }
+        },
+        updateFormData(val) {
+            this.formData = {...this.formData, ...val};
         }
     },
     mounted() {

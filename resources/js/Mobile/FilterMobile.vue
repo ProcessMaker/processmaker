@@ -24,7 +24,6 @@
           >
             <a
               class="dropdown-item"
-              href="#"
               @click="selectOption('In Progress', 'status', 'fas fa-circle text-warning')"
             >
               <i class="fas fa-circle text-warning" />
@@ -32,7 +31,6 @@
             </a>
             <a
               class="dropdown-item"
-              href="#"
               @click="selectOption('Completed', 'status', 'fas fa-circle text-primary')"
             >
               <i class="fas fa-circle text-primary" />
@@ -66,8 +64,7 @@
           >
             <a
               class="dropdown-item"
-              href="#"
-              @click="selectOption(`(requester = 'admin')`, 'filter', 'fas fa-user')"
+              @click="selectOption(`requester`, 'filter', 'fas fa-user')"
             >
               <i class="fas fa-user" />
               {{ $t('Requested by Me') }}
@@ -78,8 +75,7 @@
             </a>
             <a
               class="dropdown-item"
-              href="#"
-              @click="selectOption(`(participant = 'admin')`, 'filter', 'fas fa-users')"
+              @click="selectOption(`participant`, 'filter', 'fas fa-users')"
             >
               <i class="fas fa-users" />
               {{ $t('With me as Participant') }}
@@ -111,15 +107,13 @@
           >
             <a
               class="dropdown-item"
-              href="#"
-              @click="selectOption('By Due Date', 'orderBy')"
+              @click="selectOption('due_at', 'orderBy')"
             >
               {{ $t('By Due Date') }}
             </a>
             <a
               class="dropdown-item"
-              href="#"
-              @click="selectOption('By Creation Date', 'orderBy')"
+              @click="selectOption('created_at', 'orderBy')"
             >
               {{ $t('By Creation Date') }}
             </a>
@@ -167,6 +161,11 @@ export default {
       apiData: [],
       showInput: false,
       showDropdowns: true,
+      pmql: "",
+      status: "",
+      statusChange: false,
+      searchText: "",
+      filter: "",
     };
   },
   methods: {
@@ -183,42 +182,62 @@ export default {
     selectOption(option, controlName, icon) {
       this.callApiFilter(this.buildApiPath(option, controlName, icon));
     },
+    buildPmql() {
+      this.pmql = "";
+      this.pmql += this.status;
+      if (this.searchText !== "") {
+        this.pmql += this.searchText;
+      }
+      if (this.filter !== "") {
+        this.pmql += this.filter;
+      }
+      return `pmql=${this.pmql}`;
+    },
     /**
      * This method builds a specific url api string depending of filter used by user
      */
     buildApiPath(option, controlName, icon) {
-      const basePath = `${this.type}?page=1&per_page=10&include=process,participants,data&`;
       if (controlName === "status") {
         this.selectedOptionStatus = option;
         this.selectedIconStatus = icon;
-        return `${basePath}pmql=(status = "${option}")`;
+        this.status = `AND (status = "${option}")`;
+        this.statusChange = true;
+        return this.buildPmql();
       }
       if (controlName === "filter") {
         this.selectedIconFilter = icon;
-        return `${basePath}filter = "${option}"`;
+        this.filter = `AND (${option} = "${Processmaker.user.username}")`;
+        return this.buildPmql();
       }
       if (controlName === "orderBy") {
-        return `${basePath}order_by = "${option}"`;
+        return `order_by=${option}`;
       }
       if (controlName === "search") {
-        return `${basePath}pmql=(fulltext LIKE "%${option}%")`;
+        this.searchText = `AND (fulltext LIKE "%${option}%")`;
+        return this.buildPmql();
       }
-      return basePath;
+      return "";
     },
     /**
      * This is a generic method to call API with previous builded apiPath
      * related to Filters selected by user
      */
-    callApiFilter(apiPath) {
-      debugger;
-      ProcessMaker.apiClient
-        .get(apiPath)
-        .then((response) => {
-          this.apiData = response.data;
-        })
-        .catch((error) => {
-          console.error("Error calling API:", error);
-        });
+    callApiFilter(payload) {
+      if (this.type === "tasks") {
+        if (payload.startsWith("pmql")) {
+          this.$parent.$refs.taskMobileList.updatePmql(payload.substr(5));
+        }
+        if (payload.startsWith("order_by")) {
+          this.$parent.$refs.taskMobileList.updateOrder(payload.substr(9));
+        }
+        this.$parent.$refs.taskMobileList.fetch(true);
+      }
+      if (this.type === "requests") {
+        if (payload.startsWith("pmql")) {
+          this.$parent.$refs.requestsMobileList.updatePmql(payload.substr(5), this.statusChange);
+        }
+        this.$parent.$refs.requestsMobileList.fetch(true);
+      }
     },
     /**
      * This method sends users's input criteria to filter specific tasks or requests
@@ -271,7 +290,7 @@ export default {
     margin-left: 5px;
     color: #888;
     }
-@media (max-width: 767px) {
+
   .dropdown-toggle {
     font-size: 12px;
     padding: 5px 10px;
@@ -288,5 +307,5 @@ export default {
     background-color: white !important;
     color: black !important;
   }
-}
+
 </style>

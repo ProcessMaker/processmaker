@@ -25,9 +25,7 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
-        <pan-comment :group_id="processId"
-                     group_name="ProcessMaker\Models\Process"
-                     :commentable_id="processId"
+        <pan-comment :commentable_id="processId"
                      commentable_type="ProcessMaker\Models\Process"
                      :readonly="false"
                      />
@@ -149,8 +147,8 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, onSuccess, onError) => {
-      this.saveProcess(onSuccess, onError, redirectUrl);
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError) => {
+      this.saveProcess(onSuccess, onError, redirectUrl, nodeId);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       window.ProcessMaker.EventBus.$emit("new-changes");
@@ -209,15 +207,15 @@ export default {
       });
       return notifications;
     },
-    emitSaveEvent({ xml, svg, redirectUrl = null }) {
+    emitSaveEvent({ xml, svg, redirectUrl = null, nodeId = null }) {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
       if (this.externalEmit.includes("open-modal-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl);
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
-      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl);
+      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId);
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
@@ -233,7 +231,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -252,7 +250,7 @@ export default {
         ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         // Set published status.
         this.setVersionIndicator(false);
-        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl);
+        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId);
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
           window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");

@@ -1,12 +1,16 @@
 @extends('layouts.mobile')
 
+@section('meta')
+    <meta name="request-id" content="{{ $task->processRequest->id }}">
+@endsection
+
 @section('title')
   {{ __('Edit Task') }}
 @endsection
 
 @section('content_mobile')
 <div v-cloak id="taskMobile">
-  <navbar-task-mobile :task="task"></navbar-task-mobile>
+  <navbar-task-mobile :task="task" :userIsAdmin="userIsAdmin" :userIsProcessManager="userIsProcessManager"></navbar-task-mobile>
   
   <div class="d-flex flex-column">
     <div class="flex-fill">
@@ -268,6 +272,7 @@
               .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
               .then(() => {
                 window.ProcessMaker.alert(message, 'success', 5, true);
+                window.location = "/tasks";
               })
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page

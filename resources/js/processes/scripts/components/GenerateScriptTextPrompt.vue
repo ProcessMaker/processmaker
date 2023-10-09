@@ -138,11 +138,13 @@ export default {
           this.suggestionsPages = response.data.suggestions;
           this.loadingSuggestions = false;
         }).catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
+          if (error.response.status !== 404) {
+            const errorMsg = error.response?.data?.message || error.message;
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
           this.loadingSuggestions = false;
         });
     },
   },
 };
-  </script>
+</script>
