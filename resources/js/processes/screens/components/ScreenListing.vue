@@ -30,7 +30,7 @@
 
         <template slot="actions" slot-scope="props">
           <ellipsis-menu
-            :actions="actions"
+            :actions="screenActions"
             :permission="permission"
             :data="props.rowData"
             :divider="true"
@@ -93,6 +93,7 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
@@ -100,53 +101,10 @@ const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, AddToProjectModal },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin,],
   props: ["filter", "id", "permission"],
   data() {
     return {
-      actions: [
-        {
-          value: "edit-screen",
-          content: "Edit Screen",
-          link: true,
-          href: "/designer/screen-builder/{{id}}/edit",
-          permission: "edit-screens",
-          icon: "fas fa-pen-square",
-        },
-        {
-          value: "edit-item",
-          content: "Configure",
-          link: true,
-          href: "/designer/screens/{{id}}/edit",
-          permission: "edit-screens",
-          icon: "fas fa-cog",
-        },
-        { 
-          value: "add-to-project", 
-          content: "Add to Project",
-          icon: "fas fa-folder-plus"
-        },
-        {
-          value: "duplicate-item",
-          content: "Copy",
-          permission: "create-screens",
-          icon: "fas fa-copy",
-        },
-        {
-          value: "export-item",
-          content: "Export",
-          link: true,
-          href: "/designer/screens/{{id}}/export",
-          permission: "export-screens",
-          icon: "fas fa-file-export",
-        },
-        {
-          value: "remove-item",
-          content: "Delete",
-          permission: "delete-screens",
-          icon: "fas fa-trash-alt",
-        },
-      ],
       orderBy: "title",
       screenId: null,
       assetName: " ",

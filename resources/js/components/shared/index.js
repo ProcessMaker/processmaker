@@ -32,6 +32,10 @@ import ExportStateMixin from "../../processes/export/state";
 import CreateScreenModal from "../../processes/screens/components/CreateScreenModal.vue";
 import CreateScriptModal from "../../processes/scripts/components/CreateScriptModal.vue";
 import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
+import EllipsisMenuMixin from "./ellipsisMenuActions";
+import ProcessNavigationMixin from "./processNavigation";
+import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 
 export {
   AddToProjectModal,
@@ -68,4 +72,8 @@ export {
   DownloadSvgButton,
   CustomExportView,
   ExportStateMixin,
+  EllipsisMenuMixin,
+  ProcessNavigationMixin,
+  CreateTemplateModal,
+  CreatePmBlockModal
 };
