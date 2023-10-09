@@ -1,9 +1,6 @@
 const ListMixin = {
   methods: {
     formatStatus(status) {
-      if (this.$cookies.get("isMobile") === "true") {
-        return status;
-      }
       let color = "success";
       let label = "In Progress";
       switch (status) {
@@ -38,9 +35,11 @@ const ListMixin = {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (const record of data.data) {
-        // format Status
-        record.status = this.formatStatus(record.status);
+      if (this.$cookies.get("isMobile") !== "true") {
+        for (const record of data.data) {
+          // format Status
+          record.status = this.formatStatus(record.status);
+        }
       }
       return data;
     },
