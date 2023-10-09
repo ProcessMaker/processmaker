@@ -34,6 +34,7 @@
         placement="bottomleft"
         offset="1"
         triggers="click blur"
+        data-cy="notification-popover"
         @shown="onShown"
         @hidden="onHidden"
       >
@@ -46,7 +47,10 @@
               <b-col>
                 <b-tabs>
                   <b-tab @click="_ => filterComments = null">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-inbox"
+                    >
                       <b-badge
                         v-if="allCount"
                         pill
@@ -58,7 +62,10 @@
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = false">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-notifications"
+                    >
                       <b-badge
                         v-if="notificationsCount"
                         pill
@@ -70,7 +77,10 @@
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = true">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-comments"
+                    >
                       <b-badge
                         v-if="commentsCount"
                         pill
@@ -87,13 +97,19 @@
                 align-self="center"
                 lg="auto"
               >
-                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link" /></a>
+                <a
+                  href="/notifications"
+                  data-cy="notification-popover-link"
+                >
+                  <i class="fas fa-external-link-alt fa-lg pr-3 external-link" />
+                </a>
               </b-col>
             </b-row>
           </b-container>
           <div
             v-if="messages.length == 0"
             class="no-notifications"
+            data-cy="notification-popover-no-notifications"
           >
             <img src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
