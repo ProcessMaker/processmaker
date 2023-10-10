@@ -38,7 +38,8 @@
 </template>
 
 <script>
-import { PTabs, PTab } from "SharedComponents";
+import PTab from "../../../components/shared/PTab.vue";
+import PTabs from "../../../components/shared/PTabs.vue";
 import MainAssetView from "./MainAssetView.vue";
 import DependentAssetView from "./DependentAssetView.vue";
 import DataProvider from "../DataProvider";
@@ -71,7 +72,7 @@ export default {
           icon: group.icon,
         });
       });
-
+    
       return items;
     },
     // TODO: Complete Changelog
