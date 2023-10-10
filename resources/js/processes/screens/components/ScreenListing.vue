@@ -22,7 +22,7 @@
       >
         <template slot="title" slot-scope="props">
           <b-link
-            :href="onNavigate('edit-screen', props.rowData, props.rowIndex)"
+            :href="onScreenNavigate('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
           ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
