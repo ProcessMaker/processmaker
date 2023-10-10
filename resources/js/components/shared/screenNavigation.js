@@ -60,7 +60,6 @@ export default {
               case "edit-screen":
                 let link = "/designer/screen-builder/" + data.id + "/edit";
                 return link;
-                break;
               }
           }
         },
