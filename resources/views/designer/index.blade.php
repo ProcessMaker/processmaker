@@ -23,7 +23,9 @@
                         <assets />
                     </div>
                     <div class="col-12">
-                        <my-project />
+                        <my-project 
+                            status="{{ $listConfig->status }}"
+                        />
                     </div>
                 </div>
             </div>

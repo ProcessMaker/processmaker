@@ -333,4 +333,47 @@ class Script extends ProcessMakerModel implements ScriptInterface
             $this->language = $this->scriptExecutor->language;
         }
     }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter, $filterStr) {
+            $query->where('scripts.title', 'like', $filter)
+                 ->orWhere('scripts.description', 'like', $filter)
+                 ->orWhere('scripts.status', '=', $filterStr)
+                 ->orWhereIn('scripts.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('script_categories', function ($join) {
+                             $join->on('script_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ScriptCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('script_categories.name', 'like', $filter);
+                 });
+        });
+
+        return $query;
+    }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-button :aria-label="createProcess" v-b-modal.selectTemplate class="mb-3 mb-md-0 ml-md-2">
+    <b-button v-if="!hideAddBtn" :aria-label="createProcess" v-b-modal.selectTemplate class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"/> {{ process }}
     </b-button>
     <modal
@@ -36,13 +36,13 @@
 </template>
 
 <script>
-  import { Modal } from "SharedComponents";
+  import Modal from "../shared/Modal.vue";
   import TemplateSearch from "./TemplateSearch.vue";
   import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn'],
     data: function() {
       return {
         title: '',
@@ -111,6 +111,9 @@
       resetModal() {
         this.selectedTemplate = false;
         this.templateData = {};
+      },
+      show() {
+        this.$bvModal.show('selectTemplate');
       }
     },
     mounted() {
