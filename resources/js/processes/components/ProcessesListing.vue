@@ -46,7 +46,7 @@
         </template>
         <template slot="actions" slot-scope="props">
           <ellipsis-menu 
-            @navigate="onNavigate"
+            @navigate="onProcessNavigate"
             :actions="processActions"
             :permission="permission"
             :data="props.rowData"

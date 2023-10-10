@@ -18,7 +18,7 @@ export default {
       }
     },
     methods: {
-        onNavigate(action, data) {
+        onScriptNavigate(action, data) {
             switch (action.value) {
               case "duplicate-item":
                 this.dupScript.title = data.title + " Copy";

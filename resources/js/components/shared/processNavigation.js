@@ -10,7 +10,7 @@ export default {
     }
   },
   methods: {
-    onNavigate(action, data) {
+    onProcessNavigate(action, data) {
         let putData = {
           name: data.name,
           description: data.description,
@@ -57,7 +57,7 @@ export default {
                   this.$emit("reload");
                 });
             break;
-          case "remove-item":
+          case "archive-item":
             ProcessMaker.confirmModal(
                 this.$t("Caution!"),
                 this.$t("Are you sure you want to archive the process") +

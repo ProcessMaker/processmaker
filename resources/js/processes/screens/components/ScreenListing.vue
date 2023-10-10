@@ -34,7 +34,7 @@
             :permission="permission"
             :data="props.rowData"
             :divider="true"
-            @navigate="onNavigate"
+            @navigate="onScreenNavigate"
           />
         </template>
       </vuetable>

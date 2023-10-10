@@ -18,7 +18,7 @@ export default {
       }
     },
     methods: {
-        onNavigate(actionType, data, index) {
+        onScreenNavigate(actionType, data, index) {
             if (actionType.value) {
               switch (actionType.value) {
               case "duplicate-item":

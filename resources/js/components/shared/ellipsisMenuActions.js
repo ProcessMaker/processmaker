@@ -15,7 +15,7 @@ export default {
         { value: "add-to-project", content: "Add to Project", icon: "fas fa-folder-plus" },
         { value: "edit-item", content: "Configure", link: true, href:"/processes/{{id}}/edit", permission: ["edit-processes", "create-projects", "view-projects"], icon: "fas fa-cog", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         { value: "view-documentation", content: "View Documentation", link: true, href:"/modeler/{{id}}/print", permission: ["view-processes", "create-projects", "view-projects"], icon: "fas fa-sign", conditional: "isDocumenterInstalled"},
-        { value: "remove-item", content: "Archive", permission: ["archive-processes", "create-projects", "view-projects"], icon: "fas fa-archive", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
+        { value: "archive-item", content: "Archive", permission: ["archive-processes", "create-projects", "view-projects"], icon: "fas fa-archive", conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)" },
         { value: "divider" },
         { value: "export-item", content: "Export", link: true, href:"/processes/{{id}}/export", permission: ["export-processes", "create-projects", "view-projects"], icon: "fas fa-file-export"},
         { value: "restore-item", content: "Restore", permission: ["archive-processes", "create-projects", "view-projects"], icon: "fas fa-upload", conditional: "if(status == 'ARCHIVED', true, false)" },
