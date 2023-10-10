@@ -2,6 +2,7 @@
   <b-col>
     <div
       class="message"
+      :class="{ 'message-sm': isMobile }"
       v-html="message"
     />
     <notification-time
@@ -11,6 +12,7 @@
     <div
       v-if="displayBubble"
       class="bubble"
+      :class="{ 'bubble-sm': isMobile }"
     >
       {{ displayBubble }}
     </div>
@@ -48,6 +50,11 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      isMobile: false,
+    };
+  },
   computed: {
     message() {
       const message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
@@ -72,6 +79,7 @@ export default {
     },
   },
   mounted() {
+    this.isMobile = window.innerWidth < 768;
   },
   methods: {
   },
@@ -84,10 +92,22 @@ export default {
 .message {
   font-size: 1.2em;
 }
+.message-sm {
+  font-size: 0.8em;
+  margin-bottom: 1em;
+}
 .bubble {
   background-color: lighten($primary, 55%);
   border-radius: 1em;
   padding: 1em;
   margin-top: 1em;
+}
+.bubble-sm {
+  font-size: 0.8em;
+  background-color: lighten($primary, 55%);
+  border-radius: 1em;
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 </style>
