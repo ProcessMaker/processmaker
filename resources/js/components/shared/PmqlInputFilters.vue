@@ -436,6 +436,9 @@ export default {
       this.participants = [];
       this.request = [];
       this.name = [];
+      this.projects = [];
+      this.members = [];
+      this.categories = [];
       this.pmql = "";
 
       if (this.type === "tasks") {
