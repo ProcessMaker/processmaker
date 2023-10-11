@@ -28,12 +28,12 @@ export default {
       },
     },
     screenType: {
-      type: [String, Array],
+      type: String,
       default: ScreenTypes.DISPLAY,
       validator(value) {
-        const propValue = value;
+        const propValue = value.split(",");
         // Value is coming uppercase, capitalizing it for comparison.
-        return Object.values(ScreenTypes).includes(capitalize(propValue));
+        return Object.values(ScreenTypes).includes(capitalize(...propValue));
       },
     },
     screenSelectId: {

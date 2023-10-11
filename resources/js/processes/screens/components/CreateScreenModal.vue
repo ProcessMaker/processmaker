@@ -73,7 +73,7 @@
           api-get="screen_categories"
           api-list="screen_categories"
           name="category"
-        ></category-select>
+        />
         <project-select
           v-if="isProjectsInstalled"
           v-model="formData.projects"
@@ -132,11 +132,11 @@ export default {
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
-        this.formData.title = this.assetName + ' ' + this.$t('Copy');
-        return this.$t('Copy of Asset');
+        this.formData.title = `${this.assetName} ${this.$t("Copy")}`;
+        return this.$t("Copy of Asset");
       }
       this.formData.title = "";
-      return this.$t('Create Screen');
+      return this.$t("Create Screen");
     },
   },
   mounted() {
@@ -147,9 +147,6 @@ export default {
       // in any case the screenType if the only one, default to the first value
       if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
     }
-  },
-  destroyed() {
-    channel.close();
   },
   methods: {
     show() {
@@ -207,9 +204,6 @@ export default {
           }
         });
     },
-    show() {
-      this.$bvModal.show('createScreen');
-    }
   },
 };
 </script>
