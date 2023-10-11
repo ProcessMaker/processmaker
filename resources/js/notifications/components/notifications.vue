@@ -30,13 +30,95 @@
         >{{ displayTotalCount }}</span>
       </b-button>
       <b-popover
+        v-if="shouldShowMobilePopover"
+        target="notification-menu-button"
+        offset="1"
+        triggers="click blur"
+        custom-class="notification-popover-wrapper custom-popover"
+        @shown="onShown"
+        @hidden="onHidden"
+      >
+        <div class="notification-popover">
+          <b-container
+            fluid
+            class=""
+          >
+            <b-row align-h="between">
+              <b-col>
+                <b-tabs>
+                  <b-tab @click="_ => filterComments = null">
+                    <template #title>
+                      <b-badge
+                        v-if="allCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ allCount }}
+                      </b-badge>
+                      {{ $t('Inbox') }}
+                    </template>
+                  </b-tab>
+                  <b-tab @click="_ => filterComments = false">
+                    <template #title>
+                      <b-badge
+                        v-if="notificationsCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ notificationsCount }}
+                      </b-badge>
+                      {{ $t('Notifications') }}
+                    </template>
+                  </b-tab>
+                  <b-tab @click="_ => filterComments = true">
+                    <template #title>
+                      <b-badge
+                        v-if="commentsCount"
+                        pill
+                        variant="warning lighten"
+                      >
+                        {{ commentsCount }}
+                      </b-badge>
+                      {{ $t('Comments') }}
+                    </template>
+                  </b-tab>
+                </b-tabs>
+              </b-col>
+              <b-col
+                align-self="center"
+                cols="auto"
+              >
+                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link" /></a>
+              </b-col>
+            </b-row>
+          </b-container>
+          <div
+            v-if="messages.length == 0"
+            class="no-notifications-mobile"
+          >
+            <img src="/img/all-cleared.svg">
+            <h2>{{ $t('All Cleared!') }}</h2>
+            <h5>{{ $t('No new notifications at the moment.') }}</h5>
+          </div>
+          <template v-else>
+            <notification-card
+              v-for="(item, index) in filteredMessages"
+              :key="index"
+              :notification="item"
+              :show-time="true"
+            />
+          </template>
+        </div>
+      </b-popover>
+      <b-popover
+        v-if="shouldShowPopover"
         target="notification-menu-button"
         placement="bottomleft"
         offset="1"
         triggers="click blur"
+        custom-class="notification-popover-wrapper"
         @shown="onShown"
         @hidden="onHidden"
-        custom-class="notification-popover-wrapper"
       >
         <div class="notification-popover">
           <b-container
@@ -116,12 +198,13 @@
 
 <script>
 import { PopoverPlugin } from "bootstrap-vue";
+import NotificationCard from "./notification-card.vue";
 import NotificationItem from "./notification-item.vue";
 import notificationsMixin from "../notifications-mixin";
 
 Vue.use(PopoverPlugin);
 export default {
-  components: { NotificationItem },
+  components: { NotificationItem, NotificationCard },
   mixins: [notificationsMixin],
   props: {
     messages: Array,
@@ -177,6 +260,9 @@ export default {
     },
   },
   mounted() {
+    this.checkScreenWidth();
+    window.addEventListener("resize", this.checkScreenWidth);
+
     if ($("#navbar-request-button").length > 0) {
       this.arrowStyle.top = `${$("#navbar-request-button").offset().top + 45}px`;
       this.arrowStyle.left = `${$("#navbar-request-button").offset().left + 53}px`;
@@ -189,6 +275,11 @@ export default {
     this.updateTotalMessages();
   },
   methods: {
+    checkScreenWidth() {
+      const mobileScreenWidth = 768;
+      this.shouldShowPopover = window.innerWidth > mobileScreenWidth;
+      this.shouldShowMobilePopover = window.innerWidth < mobileScreenWidth;
+    },
     onShown() {
       this.isOpen = true;
       this.markAsRead();
@@ -247,6 +338,30 @@ export default {
     margin-top: 100px;
     margin-bottom: 20px;
   }
+}
+
+.no-notifications-mobile {
+  text-align: center;
+
+  img {
+    width: 120px;
+    margin-top: 48px;
+    margin-bottom: 24px;
+  }
+
+  h5 {
+    margin-bottom: 24px;
+  }
+}
+
+.custom-popover {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .lighten {
@@ -365,6 +480,7 @@ export default {
   .notification-popover-wrapper.popover {
     transform: translate3d(0px, 0px, 0px) !important;
     right: 0;
+    height: auto;
     max-width: 100%;
   }
 
