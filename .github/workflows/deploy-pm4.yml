@@ -43,7 +43,7 @@ jobs:
   job1:
     name: build-stm-image 
     if: github.event.action != 'closed'
-    runs-on: ubuntu-22.04    
+    runs-on: ${{ vars.RUNNER }}    
     steps:     
       - name: Export Params                
         run: |
@@ -82,7 +82,7 @@ jobs:
     name: deploy-stm    
     if: github.event.action != 'closed'
     needs: job1
-    runs-on: ubuntu-22.04
+    runs-on: ${{ vars.RUNNER }}
     container:
       image:  cimg/php:7.4
       options: --user root
@@ -130,7 +130,7 @@ jobs:
    name: run-phpunit
    if: github.event.action != 'closed'
    needs: job1
-   runs-on: ubuntu-22.04
+   runs-on: ${{ vars.RUNNER }}
    steps:
      - name: Export Params                
        run: |
@@ -160,7 +160,7 @@ jobs:
   #job4: 
   #  name: run-benchmarks
   #  needs: job2
-  #  runs-on: ubuntu-22.04
+  #  runs-on: ${{ vars.RUNNER }}
   #  steps:
   #    - name: my-step
   #      run: |
@@ -168,7 +168,7 @@ jobs:
   #job5: 
   #  name: run-cypress
   #  needs: job2
-  #  runs-on: ubuntu-22.04
+  #  runs-on: ${{ vars.RUNNER }}
   #  steps:
   #    - name: my-step
   #      run: |
@@ -176,7 +176,7 @@ jobs:
   #job6: 
   #  name: run-cypress-qa
   #  needs: job2
-  #  runs-on: ubuntu-22.04
+  #  runs-on: ${{ vars.RUNNER }}
   #  steps:
   #    - name: my-step
   #      run: |
@@ -184,7 +184,7 @@ jobs:
   job7: 
     name: Delete Instance
     if: github.event.action == 'closed'
-    runs-on: ubuntu-22.04
+    runs-on: ${{ vars.RUNNER }}
     container:
       image:  cimg/php:7.4
       options: --user root
