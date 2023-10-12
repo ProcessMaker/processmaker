@@ -111,7 +111,7 @@
             class="no-notifications"
             data-cy="notification-popover-no-notifications"
           >
-            <img src="/img/all-cleared.svg">
+            <img alt="{{ $t('All Clear') }}" src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
@@ -159,7 +159,7 @@ export default {
       const count = this.totalMessages;
       if (count === 0) {
         return this.$t("Notifications, No New Messages", { count });
-      } if (count === 1) {
+      } else if (count === 1) {
         return this.$t("Notifications, {{count}} New Messages", { count });
       }
       return this.$t("Notifications, {{count}} New Messages", { count });
