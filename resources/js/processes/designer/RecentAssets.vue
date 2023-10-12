@@ -50,25 +50,18 @@
         </button>
       </div>
     </b-navbar>
-    <div class="container">
-      <div class="content">
-        <img
-          class="image"
-          src="/img/recent_assets.svg"
-          alt="resent assets"
-        >
-        <div class="content-text">
-          <span class="title">
-            {{ $t("Recent Assets") }}
-          </span>
-          <p>{{ $t("No assets to display here yet") }}</p>
-        </div>
-      </div>
-    </div>
+    <recent-assets-list
+      ref="recentAssetsList"
+      :types="selectedTypes"
+    />
   </div>
 </template>
 
 <script>
+import RecentAssetsList from './RecentAssetsList.vue';
+
+Vue.component("RecentAssetsList", RecentAssetsList);
+
 export default {
   data() {
     return {
@@ -78,6 +71,9 @@ export default {
   },
   mounted() {
     this.getOptionsType();
+  },
+  updated() {
+    this.$refs.recentAssetsList.fetch();
   },
   methods: {
     getOptionsType() {
