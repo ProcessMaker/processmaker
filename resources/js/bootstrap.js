@@ -44,6 +44,8 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
 window.SharedComponents = require("./components/shared");
 
 window.ProcessesComponents = require("./processes/components");
+window.ScreensComponents = require("./processes/screens/components");
+window.ScriptsComponents = require("./processes/scripts/components");
 
 /**
  * Exporting Modeler inspector components
@@ -233,7 +235,9 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  window.alert(`${variant}: ${text}`);
+  if ('string' === typeof text) {
+    window.alert(text);
+  }
 };
 
 const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
@@ -337,7 +341,9 @@ if (userID) {
             enabled: window.ProcessMaker.AccountTimeoutEnabled,
           },
         });
-        window.ProcessMaker.closeSessionModal();
+        if (window.ProcessMaker.closeSessionModal) {
+          window.ProcessMaker.closeSessionModal();
+        }
       }
     })
     .listen(".Logout", (e) => {

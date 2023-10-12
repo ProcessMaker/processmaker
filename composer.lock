@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e78776135b2c22bada0c3b3ce42a7e79",
+    "content-hash": "dda7d6ed5cb1e3021acabc6e4b72f107",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6968,16 +6968,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.9.6",
+            "version": "1.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "d15df98702b7a492b7f5ce9b4b9f9d6237f65059"
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/d15df98702b7a492b7f5ce9b4b9f9d6237f65059",
-                "reference": "d15df98702b7a492b7f5ce9b4b9f9d6237f65059",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c61f0f4ccff5953a0f50352dbb612269a6b62567",
+                "reference": "c61f0f4ccff5953a0f50352dbb612269a6b62567",
                 "shasum": ""
             },
             "require-dev": {
@@ -6996,9 +6996,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.6"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.9.8"
             },
-            "time": "2023-09-09T02:55:56+00:00"
+            "time": "2023-09-26T01:46:28+00:00"
         },
         {
             "name": "processmaker/pmql",

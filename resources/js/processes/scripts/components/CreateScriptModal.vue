@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScriptModalButton"
       v-b-modal.createScript
       :aria-label="$t('Create Script')"
@@ -11,7 +12,7 @@
     <modal
       id="createScript"
       :ok-disabled="disabled"
-      :title="$t('Create Script')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -55,6 +56,7 @@
           />
         </b-form-group>
         <category-select
+          v-show="!projectAsset"
           v-model="script_category_id"
           :errors="addError.script_category_id"
           :label="$t('Category')"
@@ -180,7 +182,10 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+  import Modal from "../../../components/shared/Modal.vue";
+  import Required from "../../../components/shared/Required.vue";
+  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
   import SliderWithInput from "../../../components/shared/SliderWithInput";
 
   const channel = new BroadcastChannel("assetCreation");
@@ -188,7 +193,7 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled'],
+    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset', 'assetName', 'callFromAiModeler'],
     data: function() {
       return {
         title: '',
@@ -196,6 +201,7 @@
         script_executor_id: null,
         description: '',
         script_category_id: '',
+        category_type_id: '',
         code: '',
         addError: {},
         selectedUser: '',
@@ -209,16 +215,38 @@
         projects: [],
       }
     },
+    computed: {
+      modalSetUp() {
+        if (this.copyAssetMode) {
+          this.title = this.assetName + ' ' + this.$t('Copy');
+          return this.$t('Copy of Asset');
+        }
+        this.title = "";
+        return this.$t('Create Script');
+      },
+    },
     destroyed() {
       channel.close();
     },
     methods: {
+      show() {
+        this.$bvModal.show("createScript");
+      },
+      /**
+       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+       * @returns {boolean}
+       */
+      isQuickCreate() {
+        const searchParams = new URLSearchParams(window.location.search);
+        return searchParams?.get("create") === "true";
+      },
       onClose() {
         this.title = '';
         this.language = '';
         this.script_executor_id = null;
         this.description = '';
         this.script_category_id = '';
+        this.category_type_id = "";
         this.code = '';
         this.timeout = 60;
         this.retry_attempts = 0;
@@ -255,11 +283,20 @@
           (this.$refs.createScriptHooks || []).forEach((hook) => {
             hook.onsave(data);
           });
-          channel.postMessage({
-            assetType: "script",
-            id: data.id,
-          });
-          window.location = `/designer/scripts/${data.id}/builder`;
+
+          const url = `/designer/scripts/${data.id}/builder`;
+
+          if (this.callFromAiModeler) {
+            this.$emit("script-created-from-modeler", url, data.id, data.title);
+          } else {
+            if (this.isQuickCreate()) {
+              channel.postMessage({
+                assetType: "script",
+                id: data.id,
+              });
+            }
+            window.location = url;
+          }
         })
         .catch((error) => {
           this.disabled = false;
@@ -270,6 +307,9 @@
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScript');
+    }
   },
 };
 </script>

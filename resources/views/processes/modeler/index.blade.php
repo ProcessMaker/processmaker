@@ -55,6 +55,7 @@ div.main {
       'url':''
     },
   ]
+  window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.modeler = {
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
@@ -74,6 +75,12 @@ div.main {
       { value: "rule_expression", label: "Rule Expression" },
       { value: "process_manager", label: "Process Manager" },
     ],
+    countProcessCategories: @json($countProcessCategories),
+    countScreenCategories: @json($countScreenCategories),
+    countScriptCategories: @json($countScriptCategories),
+    screenTypes: @json($screenTypes),
+    scriptExecutors: @json($scriptExecutors),
+    isProjectsInstalled: @json($isProjectsInstalled),
   }
   const warnings = @json($process->warnings);
 

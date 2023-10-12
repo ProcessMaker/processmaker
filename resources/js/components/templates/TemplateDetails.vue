@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import { Modal } from "SharedComponents";
+
+import Modal from "../../components/shared/Modal.vue";
 import AvatarImage from '../AvatarImage.vue';
 import svgPanZoom from 'svg-pan-zoom';
 

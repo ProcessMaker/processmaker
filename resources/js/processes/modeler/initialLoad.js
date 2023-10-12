@@ -137,6 +137,7 @@ ProcessMaker.EventBus.$on(
         label: "Display Next Assigned Task to Task Assignee",
         helper: "Directs Task assignee to the next assigned Task",
         name: "interstitial",
+        enabledByDefault: true,
       },
     });
 
@@ -464,5 +465,26 @@ ProcessMaker.EventBus.$on(
     });
   },
 );
+
+ProcessMaker.EventBus.$on(
+  "modeler-init",
+  (event) => {
+    event.registerPreview({
+      url:'/designer/screens/preview',
+      receivingParams: ['screenRef'],
+      matcher: (nodeData) => {
+        return nodeData?.$type === 'bpmn:Task'
+          && nodeData.screenRef;
+      }
+    });
+    event.registerPreview({
+      url:'/designer/scripts/preview',
+      receivingParams: ['scriptRef'],
+      matcher: (nodeData) => {
+        return nodeData.$type === 'bpmn:ScriptTask'
+          && nodeData.scriptRef;
+      }
+    });
+  });
 
 validateScreenRef();

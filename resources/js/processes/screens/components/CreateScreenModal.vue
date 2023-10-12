@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button
+      v-if="!hideAddBtn && !callFromAiModeler"
       ref="createScreenModalBtn"
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
@@ -11,7 +12,7 @@
     <modal
       id="createScreen"
       :ok-disabled="disabled"
-      :title="$t('Create Screen')"
+      :title="modalSetUp"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
@@ -65,12 +66,14 @@
           />
         </b-form-group>
         <category-select
+          v-show="!projectAsset"
           v-model="formData.screen_category_id"
           :errors="errors.screen_category_id"
           :label="$t('Category')"
           api-get="screen_categories"
           api-list="screen_categories"
-        />
+          name="category"
+        ></category-select>
         <project-select
           v-if="isProjectsInstalled"
           :label="$t('Project')"
@@ -94,7 +97,10 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required, ProjectSelect } from "SharedComponents";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Modal from "../../../components/shared/Modal.vue";
+import Required from "../../../components/shared/Required.vue";
+import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -105,7 +111,7 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled"],
+  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset", "assetName", "callFromAiModeler"],
   data() {
     return {
       formData: {},
@@ -118,6 +124,16 @@ export default {
       disabled: false,
     };
   },
+  computed: {
+    modalSetUp() {
+      if (this.copyAssetMode) {
+        this.formData.title = this.assetName + ' ' + this.$t('Copy');
+        return this.$t('Copy of Asset');
+      }
+      this.formData.title = "";
+      return this.$t('Create Screen');
+    },
+  },
   mounted() {
     this.resetFormData();
     this.resetErrors();
@@ -126,6 +142,9 @@ export default {
     channel.close();
   },
   methods: {
+    show() {
+      this.$bvModal.show("createScreen");
+    },
     resetFormData() {
       this.formData = {
         title: null,
@@ -144,6 +163,14 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
+    /**
+     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+     * @returns {boolean}
+     */
+    isQuickCreate() {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams?.get("create") === "true";
+    },
     onSubmit() {
       this.resetErrors();
       // single click
@@ -155,19 +182,31 @@ export default {
         .post("screens", this.formData)
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
-          channel.postMessage({
-            assetType: "screen",
-            id: data.id,
-          });
-          window.location = `/designer/screen-builder/${data.id}/edit`;
+
+          const url = `/designer/screen-builder/${data.id}/edit`;
+
+          if (this.callFromAiModeler) {
+            this.$emit("screen-created-from-modeler", url, data.id, data.title);
+          } else {
+            if (this.isQuickCreate()) {
+              channel.postMessage({
+                assetType: "screen",
+                id: data.id,
+              });
+            }
+            window.location = url;
+          }
         })
         .catch((error) => {
           this.disabled = false;
-          if (error.response.status && error.response.status === 422) {
+          if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
         });
     },
+    show() {
+      this.$bvModal.show('createScreen');
+    }
   },
 };
 </script>
