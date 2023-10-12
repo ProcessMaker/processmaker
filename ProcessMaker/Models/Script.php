@@ -71,8 +71,6 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
     const categoryClass = ScriptCategory::class;
 
-    protected $connection = 'processmaker';
-
     protected $guarded = [
         'id',
         'created_at',

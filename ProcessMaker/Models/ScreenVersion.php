@@ -12,8 +12,6 @@ class ScreenVersion extends ProcessMakerModel implements ScreenInterface
 
     const categoryClass = ScreenCategory::class;
 
-    protected $connection = 'processmaker';
-
     /**
      * Attributes that are not mass assignable.
      *

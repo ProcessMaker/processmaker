@@ -75,8 +75,6 @@ class Screen extends ProcessMakerModel implements ScreenInterface
 
     const categoryClass = ScreenCategory::class;
 
-    protected $connection = 'processmaker';
-
     /**
      * The table name attribute
      * @var string

@@ -86,8 +86,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     use SerializeToIso8601;
     use TokenTrait;
 
-    protected $connection = 'processmaker';
-
     /**
      * Attributes that are not mass assignable.
      *

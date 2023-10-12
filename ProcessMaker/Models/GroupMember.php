@@ -77,8 +77,6 @@ namespace ProcessMaker\Models;
  */
 class GroupMember extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'group_id', 'member_id', 'member_type',
     ];

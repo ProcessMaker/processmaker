@@ -40,8 +40,6 @@ class ScreenCategory extends ProcessMakerModel
     use HideSystemResources;
     use Exportable;
 
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'name',
         'status',
