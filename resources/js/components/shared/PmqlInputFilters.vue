@@ -224,13 +224,17 @@
                 v-model="members"
                 @input="buildPmql"
                 class="mb-3"
-                :show-labels="true"
                 :loading="isLoading.projects"
                 open-direction="bottom"
+                group-values="items"
+                group-label="type"
                 label="name"
                 :options="memberOptions"
-                :track-by="'id'"
+                track-by="id"
                 :multiple="true"
+                :show-labels="false"
+                :internal-search="true"
+                >
                 :aria-label="$t('Member')"
                 :placeholder="$t('Member')">
                   <template slot="noResult">
@@ -365,7 +369,6 @@ export default {
       this.participants = this.paramParticipants;
     }
 
-    // TODO: How does this work?
     if (this.paramProjects && Array.isArray(this.paramProjects)) {
       this.projects = this.paramProjects;
     }
@@ -509,7 +512,7 @@ export default {
         let string = '';
         this.members.forEach((member, key) => {
           string += 'participant = "' + member.name + '"';
-          if (key < this.projects.length - 1) string += ' OR ';
+          if (key < this.members.length - 1) string += ' OR ';
         });
         clauses.push(string);
       }
@@ -518,7 +521,7 @@ export default {
         let string = '';
         this.categories.forEach((category, key) => {
           string += 'category = "' + category.name + '"';
-          if (key < this.projects.length - 1) string += ' OR ';
+          if (key < this.categories.length - 1) string += ' OR ';
         });
         clauses.push(string);
       }
@@ -684,32 +687,46 @@ export default {
           setTimeout(3000)
         });
     },
-    getAllProjects() {
-      this.allLoading(true);
-      ProcessMaker.apiClient
-          .get("/projects/search?type=project_all")
-          .then(response => {
-            this.projectOptions = response.data.projects;
-            
-            // Flatten and combine all users and groups
-            const combinedUsersAndGroups = response.data.members.reduce((accumulator, memberData) => {
-                const usersWithMappedNames = memberData.users
-                    .filter(user => !!user)
-                    .map(user => ({ ...user, name: user.fullname }));
+    async getAllProjects() {
+      try {
+        this.allLoading(true);
 
-                const filteredGroups = memberData.groups.filter(group => !!group);
+        const { data } = await ProcessMaker.apiClient.get("/projects/search?type=project_all");
 
-                return [...accumulator, ...usersWithMappedNames, ...filteredGroups];
-            }, []);
-
-            // Extract categories
-            this.categoriesOptions = response.data.categories;
-
-            // Assign the combined users and groups to this.memberOptions
-            this.memberOptions = combinedUsersAndGroups;
-
-            this.allLoading(false);
+        if (data.members?.users) {
+          const usersWithMappedNames = data.members.users
+            .filter(user => !!user)
+            .map(({fullname, ...user}) => ({...user, name: fullname }));
+          
+          this.memberOptions.push({
+            type: this.$t('Users'),
+            items: usersWithMappedNames
           });
+        }
+
+        if (data.members?.groups) {
+          const groups = data.members.groups.map(({name, ...group}) => ({...group, name: name }));
+          this.memberOptions.push({
+            type: this.$t('Groups'),
+            items: groups,
+          });
+        }
+
+        // Extract categories
+        this.categoriesOptions = data.categories;
+
+        this.allLoading(false);
+      } catch (error) {
+        console.error("Error:", error);
+        this.allLoading(false);
+      }
+    },
+    addUsernameToFullName(user) {
+      if (!user.fullname || ! user.username)
+      {
+        return user;
+      }
+      return {...user, fullname: `${user.fullname}`};
     },
     getStatus() {
       this.isLoading.status = true;
