@@ -1,6 +1,33 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <div class="card-deck d-block d-sm-none">
+      <div
+        v-for="notification in data.data"
+        :key="notification.id"
+        class="card"
+      >
+        <div class="card-body shadow">
+          <div class="d-flex align-items-center mb-3">
+            <notification-user :notification="notification" />
+          </div>
+          <h5 class="card-title">
+            <notification-message
+              :notification="notification"
+              :show-time="showTime"
+            />
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">
+            {{ notification.read_at || 'N/A' }}
+          </h6>
+          <a
+            v-if="notification.data.url"
+            href="#"
+            @click="redirectToURL(notification.data.url)"
+          >More</a>
+        </div>
+      </div>
+    </div>
+    <div class="card card-body table-card d-none d-sm-block">
       <vuetable
         :data-manager="dataManager"
         :sort-order="sortOrder"
@@ -49,7 +76,7 @@
         >
           <a
             style="cursor: pointer;"
-            @click="redirectToURL(props.rowData.url)"
+            @click="redirectToURL(props.rowData.data?.url)"
           >
             <span v-if="props.rowData.type === 'FILE_READY'" />
             <span v-else>
@@ -78,6 +105,7 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
+import moment from 'moment';
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -85,6 +113,7 @@ export default {
   components: {
     NotificationMessage,
     NotificationUser,
+    AvatarImage,
   },
   mixins: [datatableMixin],
   props: ["filter", "filterComments", "type"],
@@ -125,6 +154,11 @@ export default {
     isComment() {
       return this.data.type === "COMMENT";
     },
+    timeFormat() {
+      let parts = window.ProcessMaker.user.datetime_format.split(" ");
+      parts.shift();
+      return parts.join(" ");
+    }
   },
   watch: {
     filterComments() {
@@ -143,7 +177,7 @@ export default {
   },
   methods: {
     redirectToURL(url) {
-      if (url) {
+      if (url && url !== "/") {
         window.location.href = url;
       }
     },
@@ -212,9 +246,7 @@ export default {
         && dateObj.getMonth() === currentDate.getMonth()
         && dateObj.getFullYear() === currentDate.getFullYear()
       ) {
-        const hours = dateObj.getHours();
-        const minutes = dateObj.getMinutes();
-        return `${this.addLeadingZero(hours)}:${this.addLeadingZero(minutes)}`;
+        return moment(dateObj).format(this.timeFormat);
       }
       const month = dateObj.getMonth();
       const day = dateObj.getDate();

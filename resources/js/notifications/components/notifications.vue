@@ -35,6 +35,7 @@
         offset="1"
         triggers="click blur"
         custom-class="notification-popover-wrapper custom-popover"
+        data-cy="notification-popover"
         @shown="onShown"
         @hidden="onHidden"
       >
@@ -47,7 +48,10 @@
               <b-col>
                 <b-tabs>
                   <b-tab @click="_ => filterComments = null">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-inbox"
+                    >
                       <b-badge
                         v-if="allCount"
                         pill
@@ -59,7 +63,10 @@
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = false">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-notifications"
+                    >
                       <b-badge
                         v-if="notificationsCount"
                         pill
@@ -71,7 +78,10 @@
                     </template>
                   </b-tab>
                   <b-tab @click="_ => filterComments = true">
-                    <template #title>
+                    <template
+                      #title
+                      data-cy="notification-popover-comments"
+                    >
                       <b-badge
                         v-if="commentsCount"
                         pill
@@ -170,26 +180,32 @@
                 align-self="center"
                 cols="auto"
               >
-                <a href="/notifications"><i class="fas fa-external-link-alt fa-lg pr-3 external-link" /></a>
+                <a
+                  href="/notifications"
+                  data-cy="notification-popover-link"
+                >
+                  <i class="fas fa-external-link-alt fa-lg pr-3 external-link" />
+                </a>
               </b-col>
             </b-row>
           </b-container>
           <div
             v-if="messages.length == 0"
             class="no-notifications"
+            data-cy="notification-popover-no-notifications"
           >
-            <img src="/img/all-cleared.svg">
-            <h2>{{ $t('All Cleared!') }}</h2>
+            <img alt="{{ $t('All Clear') }}" src="/img/all-cleared.svg">
+            <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
-          <template v-else>
+          <div class="items" v-else>
             <notification-item
               v-for="(item, index) in filteredMessages"
               :key="index"
               :notification="item"
               :show-time="true"
             />
-          </template>
+          </div>
         </div>
       </b-popover>
     </div>
@@ -227,7 +243,7 @@ export default {
       const count = this.totalMessages;
       if (count === 0) {
         return this.$t("Notifications, No New Messages", { count });
-      } if (count === 1) {
+      } else if (count === 1) {
         return this.$t("Notifications, {{count}} New Messages", { count });
       }
       return this.$t("Notifications, {{count}} New Messages", { count });
@@ -332,6 +348,7 @@ export default {
 
 .no-notifications {
   text-align: center;
+  height: 600px;
 
   img {
     width: 190px;
@@ -436,8 +453,10 @@ export default {
 
 .popover {
   max-width: 450px;
-  height: 600px;
   top: -8px;
+}
+.items {
+  height: 600px;
   overflow-y: scroll;
   overflow-x: hidden;
 }

@@ -95,7 +95,7 @@ class ProcessManualTaskTest extends TestCase
         $this->assertNotNull($task['process_request']['completed_at']);
 
         // Check that a log comment was created
-        $response = $this->apiCall('GET', '/comments', [
+        $response = $this->apiCall('GET', '/comments/comments', [
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $tasks[0]['process_request_id'],
         ]);

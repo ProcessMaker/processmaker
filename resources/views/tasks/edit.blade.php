@@ -66,15 +66,6 @@
                               @redirect="redirectToTask"
                           ></task>
                           @endcan
-                            @can('view-comments')
-                              <div v-if="taskHasComments">
-                                <timeline :commentable_id="task.id"
-                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                                          :adding="userHasAccessToTask"
-                                          :readonly="task.status === 'CLOSED'"
-                                          />
-                              </div>
-                            @endcan
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -199,6 +190,13 @@
                 </div>
             </div>
             @endif
+            <div v-if="panCommentInVueOptionsComponents">
+                <pan-comment :commentable_id="task.id"
+                             commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                             :readonly="task.status === 'CLOSED'"
+                             :name="task.element_name"
+                             />
+            </div>
         </div>
     </div>
 @endsection
@@ -314,7 +312,10 @@
           styleDataMonaco () {
             let height = window.innerHeight * 0.55;
             return "height: " + height + "px; border:1px solid gray;";
-          }
+          },
+          panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
+          },
         },
         methods: {
           completed(processRequestId) {

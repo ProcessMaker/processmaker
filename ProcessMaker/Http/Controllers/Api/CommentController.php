@@ -37,7 +37,7 @@ class CommentController extends Controller
     {
         $query = Comment::query()
             ->with('user')
-            ->with('children');
+            ->with('repliedMessage');
 
         $flag = 'visible';
         if (\Auth::user()->is_administrator) {
@@ -54,10 +54,10 @@ class CommentController extends Controller
             $tokenIds = $requestTokens->pluck('id');
             $query->where(function ($query) use ($commentable_id) {
                 $query->where('commentable_type', ProcessRequest::class)
-                        ->where('commentable_id', $commentable_id);
+                    ->where('commentable_id', $commentable_id);
             })->orWhere(function ($query) use ($tokenIds) {
                 $query->where('commentable_type', ProcessRequestToken::class)
-                        ->whereIn('commentable_id', $tokenIds);
+                    ->whereIn('commentable_id', $tokenIds);
             });
         } else {
             if ($commentable_type) {

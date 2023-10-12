@@ -25,6 +25,10 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
+        <pan-comment :commentable_id="processId"
+                     commentable_type="ProcessMaker\Models\Process"
+                     :readonly="false"
+                     />
       </b-card-body>
       <component
         :is="component.panel"
