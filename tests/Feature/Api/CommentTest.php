@@ -19,7 +19,7 @@ class CommentTest extends TestCase
 {
     use RequestHelper;
 
-    const API_TEST_URL = '/comments/comments';
+    const API_TEST_URL = '/comments';
 
     const STRUCTURE = [
         'id',
