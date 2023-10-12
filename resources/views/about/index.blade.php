@@ -20,7 +20,7 @@
         <div class="card card-body">
         <img class="about-logo" src="/img/processmaker-login.svg" alt="ProcessMaker">
         <hr>
-        <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }}</div>
+        <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }} - DEMO</div>
         <hr>
         <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
