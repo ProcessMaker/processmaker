@@ -509,7 +509,7 @@ export default {
         let string = '';
         this.members.forEach((member, key) => {
           string += 'participant = "' + member.name + '"';
-          if (key < this.projects.length - 1) string += ' OR ';
+          if (key < this.members.length - 1) string += ' OR ';
         });
         clauses.push(string);
       }
@@ -518,7 +518,7 @@ export default {
         let string = '';
         this.categories.forEach((category, key) => {
           string += 'category = "' + category.name + '"';
-          if (key < this.projects.length - 1) string += ' OR ';
+          if (key < this.categories.length - 1) string += ' OR ';
         });
         clauses.push(string);
       }
