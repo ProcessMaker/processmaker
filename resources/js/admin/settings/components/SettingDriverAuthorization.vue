@@ -205,10 +205,12 @@ export default {
             this.resetData = false;
             ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`)
             .then(response => {
-                ProcessMaker.alert('successfully authorized', 'success');
-                this.setting.ui.authorizedBadge = true;
-                this.emitSaved(this.setting);
-                this.showAuthorizingModal = false;
+                console.log("response", response);
+                window.location = response.data?.url;
+                // ProcessMaker.alert('successfully authorized', 'success');
+                // this.setting.ui.authorizedBadge = true;
+                // this.emitSaved(this.setting);
+                // this.showAuthorizingModal = false;
             })
             .catch(error => {
                 ProcessMaker.alert(error.message, 'danger');
@@ -218,10 +220,10 @@ export default {
         },
         onSave() {
             const driver = this.setting.key.split('cdata.')[1];
-            const dsn = `CData ${this.setting.name} Source`;
+            // const dsn = `CData ${this.setting.name} Source`;
 
             this.formData.driver = driver;
-            this.formData.dsn = dsn;
+            // this.formData.dsn = dsn;
 
             this.emitSaved(this.formData);
             
