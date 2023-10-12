@@ -4,22 +4,51 @@
       <b-navbar-brand class="text-uppercase">
         {{ $t("Recent Assets") }}
       </b-navbar-brand>
-      <b-navbar-nav align="end">
-        <b-nav-item-dropdown right>
-          <template #button-content>
+      <div class="d-flex" align="end">
+        <div class="dropdown">
+          <button
+            id="dropdownMenu"
+            type="button"
+            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
             {{ $t("Filter by Type") }}
-          </template>
-          <b-dropdown-item href="#">
-            Option 1
-          </b-dropdown-item>
-          <b-dropdown-item href="#">
-            Option 2
-          </b-dropdown-item>
-        </b-nav-item-dropdown>
-        <b-nav-item>
+          </button>
+          <div
+            class="dropdown-menu dropdown-menu-right px-3"
+            aria-labelledby="dropdownMenu"
+          >
+            <form>
+              <div
+                v-for="option in optionsType"
+                :id="`type-${option.asset_label}`"
+                :key="option.asset_label"
+                class="dropdown-item form-check"
+              >
+                <input
+                  v-model="selectedTypes"
+                  class="form-check-input"
+                  type="checkbox"
+                  :value="option.asset_type"
+                >
+                <label class="form-check-label">
+                  <i
+                    class="fas fa-circle small"
+                    :style="`color: ${option.asset_color}`"
+                  />
+                  {{ option.asset_label }}
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <button class="btn btn-outline-primary border-0 mr-1">
           <i class="fas fa-search" />
-        </b-nav-item>
-      </b-navbar-nav>
+        </button>
+      </div>
     </b-navbar>
     <div class="container">
       <div class="content">
@@ -42,7 +71,25 @@
 <script>
 export default {
   data() {
-    return { };
+    return {
+      optionsType: [],
+      selectedTypes: [],
+    };
+  },
+  mounted() {
+    this.getOptionsType();
+  },
+  methods: {
+    getOptionsType() {
+      window.ProcessMaker.apiClient
+        .get("projects/assets/type")
+        .then((response) => {
+          this.optionsType = response.data.data;
+          Object.keys(this.optionsType).forEach((type) => {
+            this.selectedTypes.push(this.optionsType[type].asset_type);
+          });
+        });
+    },
   },
 };
 </script>
