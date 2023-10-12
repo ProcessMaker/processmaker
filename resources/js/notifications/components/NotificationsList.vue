@@ -55,7 +55,7 @@
           <span
             v-if="props.rowData.read_at !== null"
             style="cursor:pointer"
-            @click="unread(props.rowData.id)"
+            @click="unread(props.rowData)"
           >
             <i class="far fa-envelope-open fa-lg gray-envelope" />
           </span>
@@ -190,12 +190,14 @@ export default {
     read(id) {
       ProcessMaker.removeNotifications([id]).then(() => {
         this.fetch();
+        ProcessMaker.removeNotifications([id]);
       });
     },
 
-    unread(id) {
-      ProcessMaker.unreadNotifications([id]).then(() => {
+    unread(notification) {
+      ProcessMaker.unreadNotifications([notification.id]).then(() => {
         this.fetch();
+        ProcessMaker.pushNotification(notification);
       });
     },
 
