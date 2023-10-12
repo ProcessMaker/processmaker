@@ -116,7 +116,7 @@ export default {
     AvatarImage,
   },
   mixins: [datatableMixin],
-  props: ["filter", "filterComments", "type"],
+  props: ["filter", "filterComments", "type", "showTime"],
   data() {
     return {
       response: null,

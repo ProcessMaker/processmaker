@@ -106,7 +106,7 @@
             v-if="messages.length == 0"
             class="no-notifications-mobile"
           >
-            <img alt="{{ $t('All Clear') }}" src="/img/all-cleared.svg">
+            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
@@ -194,7 +194,7 @@
             class="no-notifications"
             data-cy="notification-popover-no-notifications"
           >
-            <img alt="{{ $t('All Clear') }}" src="/img/all-cleared.svg">
+            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
           </div>
