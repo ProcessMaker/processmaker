@@ -67,8 +67,9 @@ class ScreenController extends Controller
     public function edit(Screen $screen)
     {
         $addons = $this->getPluginAddons('edit', compact(['screen']));
+        $assignedProjects = $screen->projects;
 
-        return view('processes.screens.edit', compact('screen', 'addons'));
+        return view('processes.screens.edit', compact('screen', 'addons', 'assignedProjects'));
     }
 
     /**
