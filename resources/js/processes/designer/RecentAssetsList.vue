@@ -50,7 +50,7 @@
 
           <template slot="actions" slot-scope="props">
             <ellipsis-menu
-              :actions="actions"
+              :actions="getActions(props.rowData)"
               :data="props.rowData"
               :divider="true"
               @navigate="onNavigate"
@@ -64,6 +64,13 @@
             <a :href="generateAssetLink(props.rowData)">{{ props.rowData.name }}</a>
           </template>
         </vuetable>
+        <add-to-project-modal
+          id="add-to-project-modal"
+          ref="add-to-project-modal"
+          :assetType="assetType"
+          :assetId="assetId"
+          :assetName="assetName"
+        />
       </div>
     </div>
   </div>
@@ -74,14 +81,28 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
+import screenNavigationMixin from "../../components/shared/screenNavigation";
+import processNavigationMixin from "../../components/shared/processNavigation";
+import scriptNavigationMixin from "../../components/shared/scriptNavigation";
+import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: {
     EllipsisMenu,
+    AddToProjectModal,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [
+    datatableMixin,
+    dataLoadingMixin,
+    uniqIdsMixin,
+    ellipsisMenuMixin,
+    processNavigationMixin,
+    screenNavigationMixin,
+    scriptNavigationMixin,
+  ],
   props: ["types"],
   data() {
     return {
@@ -113,18 +134,7 @@ export default {
         name: "__slot:actions",
         title: "",
       }],
-      actions: [{
-        value: "duplicate-item",
-        content: "Duplicate",
-        icon: "fas fa-copy",
-        link: false,
-      },
-      {
-        value: "remove-item",
-        content: "Remove",
-        icon: "fas fa-unlink",
-        link: false,
-      }],
+      assetType: "",
       configs: "",
     };
   },
@@ -156,6 +166,39 @@ export default {
     reload() {
       this.$emit("reload");
     },
+    getActions(data) {
+      switch (data.asset_type) {
+        case "Process":
+          return this.processActions;
+        case "Screen":
+          return this.screenActions;
+        case "Script":
+          return this.scriptActions;
+        case "Data Source":
+          return [
+            {
+              value: "edit-item",
+              content: "Edit",
+              icon: "fas fa-cog",
+              permission: [
+                "edit-data-sources",
+                "view-data-sources",
+              ],
+            },
+            {
+              value: "add-to-project",
+              content: "Add to Project",
+              icon: "fas fa-folder-plus",
+              conditional: "isPackageInstalled",
+            },
+            { value: "remove-item", content: "Delete", icon: "fas fa-trash"},
+          ];
+        case "Decision Table":
+          return [];
+        default:
+          return []; // Handle unknown asset types as needed
+      }
+    },
     generateAssetLink(data) {
       switch (data.asset_type) {
         case "Process":
@@ -176,6 +219,59 @@ export default {
       return name.toLowerCase().replace(/\s+/g, "_");
     },
     onNavigate(action, data) {
+      switch (data.asset_type) {
+        case "Process":
+          this.assetType = "process";
+          this.onProcessNavigate(action, data);
+          break;
+        case "Screen":
+          this.assetType = "screen";
+          this.onScreenNavigate(action, data);
+          break;
+        case "Script":
+          this.assetType = "script";
+          this.onScriptNavigate(action, data);
+          break;
+        case "Data Source":
+          this.assetType = "data-source";
+          this.onDataSourceNavigate(action, data);
+          break;
+        case "Decision Table":
+          break;
+        default:
+          break; // Handle unknown asset types as needed
+      }
+    },
+    showAddToProjectModal(title, id) {        
+      this.assetId = id;
+      this.assetName = title;
+      this.$refs["add-to-project-modal"].show();
+    },
+    onDataSourceNavigate(action, data) {
+      switch (action.value) {
+        case "remove-item":
+          this.doDataSourceDelete(data);
+          break;
+        case 'add-to-project':
+          this.showAddToProjectModal(data.name, data.id);
+          break;
+        case "edit-item":
+          this.editDataSourse(data);
+          break;  
+      }
+    },
+    doDataSourceDelete(item) {
+      ProcessMaker.confirmModal(this.$t('Caution!'), this.$t('Are you sure you want to delete {{item}}?', {item: item.name}), "", () => {
+        ProcessMaker.apiClient
+          .delete("data_sources/" + item.id)
+          .then(() => {
+            ProcessMaker.alert(this.$t('The Data Connector was deleted.'), 'success');
+            this.fetch();
+          });
+      });
+    },
+    editDataSourse(row) {
+      window.location.href = "/designer/data-sources/" + row.id + "/edit";
     },
   },
 };
