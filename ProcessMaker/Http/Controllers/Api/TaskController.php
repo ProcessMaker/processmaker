@@ -201,7 +201,9 @@ class TaskController extends Controller
         if ($getTotal === true) {
             return $query->count();
         }
-
+        if (!empty($request->input('overdue'))) {
+            $query->where('due_at', '<', Carbon::now());
+        }
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (\Illuminate\Database\QueryException $e) {
