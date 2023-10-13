@@ -85,9 +85,6 @@ export default {
   props: ["types"],
   data() {
     return {
-      data: {
-        data: [],
-      },
       sortOrder: [{
         field: "updated_at",
         sortField: "updated_at",
@@ -127,9 +124,6 @@ export default {
       }],
       configs: "",
     };
-  },
-  mounted() {
-    this.fetch();
   },
   methods: {
     fetch() {
