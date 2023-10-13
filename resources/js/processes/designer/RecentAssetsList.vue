@@ -52,7 +52,9 @@
             <ellipsis-menu
               :actions="getActions(props.rowData)"
               :data="props.rowData"
-              :divider="true"
+              :permission="permission"
+              :is-documenter-installed="isDocumenterInstalled"
+              :divider="assetDivider"
               @navigate="onNavigate"
             />
           </template>
@@ -64,6 +66,21 @@
             <a :href="generateAssetLink(props.rowData)">{{ props.rowData.name }}</a>
           </template>
         </vuetable>
+        <create-template-modal
+          id="create-template-modal"
+          ref="create-template-modal"
+          assetType="process"
+          :currentUserId="currentUserId"
+          :assetName="processTemplateName"
+          :assetId="assetId"
+        />
+        <create-pm-block-modal
+          id="create-pm-block-modal"
+          ref="create-pm-block-modal"
+          :currentUserId="currentUserId"
+          :assetName="pmBlockName"
+          :assetId="assetId"
+        />
         <add-to-project-modal
           id="add-to-project-modal"
           ref="add-to-project-modal"
@@ -80,30 +97,39 @@
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+import dataSourceNavigationMixin from "../../components/shared/dataSourceNavigation";
+import decisionTableNavigationMixin from "../../components/shared/decisionTableNavigation";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
-import screenNavigationMixin from "../../components/shared/screenNavigation";
 import processNavigationMixin from "../../components/shared/processNavigation";
+import screenNavigationMixin from "../../components/shared/screenNavigation";
 import scriptNavigationMixin from "../../components/shared/scriptNavigation";
+
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
+import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: {
-    EllipsisMenu,
     AddToProjectModal,
+    CreateTemplateModal,
+    CreatePmBlockModal,
+    EllipsisMenu,
   },
   mixins: [
     datatableMixin,
     dataLoadingMixin,
-    uniqIdsMixin,
+    dataSourceNavigationMixin,
+    decisionTableNavigationMixin,
     ellipsisMenuMixin,
     processNavigationMixin,
     screenNavigationMixin,
     scriptNavigationMixin,
+    uniqIdsMixin,
   ],
-  props: ["types"],
+  props: ["types", "currentUserId", "permission", "isDocumenterInstalled"],
   data() {
     return {
       data: {
@@ -136,6 +162,11 @@ export default {
       }],
       assetType: "",
       configs: "",
+      assetName: "",
+      assetId: "",
+      processTemplateName: "",
+      pmBlockName: "",
+      assetDivider: true,
     };
   },
   mounted() {
@@ -155,7 +186,6 @@ export default {
         )
         .then((response) => {
           this.data = this.transform(response.data);
-          console.log(this.data);
           this.apiDataLoading = false;
           this.loading = false;
         }).catch((error) => {
@@ -169,32 +199,20 @@ export default {
     getActions(data) {
       switch (data.asset_type) {
         case "Process":
+          this.assetDivider = false;
           return this.processActions;
         case "Screen":
-          return this.screenActions;
+          this.assetDivider = true;
+          return this.screenActions.filter((object) => object.value !== "duplicate-item");
         case "Script":
+          this.assetDivider = true;
           return this.scriptActions;
         case "Data Source":
-          return [
-            {
-              value: "edit-item",
-              content: "Edit",
-              icon: "fas fa-cog",
-              permission: [
-                "edit-data-sources",
-                "view-data-sources",
-              ],
-            },
-            {
-              value: "add-to-project",
-              content: "Add to Project",
-              icon: "fas fa-folder-plus",
-              conditional: "isPackageInstalled",
-            },
-            { value: "remove-item", content: "Delete", icon: "fas fa-trash"},
-          ];
+          this.assetDivider = true;
+          return this.dataSourceActions;
         case "Decision Table":
-          return [];
+          this.assetDivider = true;
+          return this.decisionTableActions;
         default:
           return []; // Handle unknown asset types as needed
       }
@@ -237,41 +255,27 @@ export default {
           this.onDataSourceNavigate(action, data);
           break;
         case "Decision Table":
+          this.assetType = "decision-table";
+          this.onDecisionTableNavigate(action, data);
           break;
         default:
           break; // Handle unknown asset types as needed
       }
     },
-    showAddToProjectModal(title, id) {        
+    showAddToProjectModal(title, id) {
       this.assetId = id;
       this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
-    onDataSourceNavigate(action, data) {
-      switch (action.value) {
-        case "remove-item":
-          this.doDataSourceDelete(data);
-          break;
-        case 'add-to-project':
-          this.showAddToProjectModal(data.name, data.id);
-          break;
-        case "edit-item":
-          this.editDataSourse(data);
-          break;  
-      }
+    showCreateTemplateModal(name, id) {
+      this.processId = id;
+      this.processTemplateName = name;
+      this.$refs["create-template-modal"].show();
     },
-    doDataSourceDelete(item) {
-      ProcessMaker.confirmModal(this.$t('Caution!'), this.$t('Are you sure you want to delete {{item}}?', {item: item.name}), "", () => {
-        ProcessMaker.apiClient
-          .delete("data_sources/" + item.id)
-          .then(() => {
-            ProcessMaker.alert(this.$t('The Data Connector was deleted.'), 'success');
-            this.fetch();
-          });
-      });
-    },
-    editDataSourse(row) {
-      window.location.href = "/designer/data-sources/" + row.id + "/edit";
+    showPmBlockModal(name, id) {
+      this.processId = id;
+      this.pmBlockName = name;
+      this.$refs["create-pm-block-modal"].show();
     },
   },
 };
