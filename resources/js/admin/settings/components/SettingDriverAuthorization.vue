@@ -98,10 +98,10 @@
             </div>
         </b-modal>
 
-        <b-modal class="setting-object-modal" v-model="showAuthorizingModal" size="lg" hide-footer hide-header centered no-fade>
+        <b-modal class="setting-object-modal" v-model="showAuthorizingModal" size="md" hide-footer hide-header centered no-fade>
             <div class="text-center">
                 <h3>{{ $t('Connecting Driver') }}</h3>
-                <i class="fas fa-circle-notch fa-spin"></i>
+                <i class="fas fa-circle-notch fa-spin fa-3x p-0 text-primary"></i>
             </div>
         </b-modal>
     </div>
@@ -205,7 +205,7 @@ export default {
             this.resetData = false;
             ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`, this.formData)
             .then(response => {
-                window.location = response.data?.url;
+                // window.location = response.data?.url;
             })
             .catch(error => {
                 ProcessMaker.alert(error.message, 'danger');
