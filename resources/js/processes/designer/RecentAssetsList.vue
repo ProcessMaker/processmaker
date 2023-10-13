@@ -54,7 +54,7 @@
               :data="props.rowData"
               :permission="permission"
               :is-documenter-installed="isDocumenterInstalled"
-              :divider="assetDivider"
+              :divider="getAssetDivider(props.rowData)"
               @navigate="onNavigate"
             />
           </template>
@@ -166,11 +166,7 @@ export default {
       assetId: "",
       processTemplateName: "",
       pmBlockName: "",
-      assetDivider: true,
     };
-  },
-  mounted() {
-    this.fetch();
   },
   methods: {
     fetch() {
@@ -199,22 +195,25 @@ export default {
     getActions(data) {
       switch (data.asset_type) {
         case "Process":
-          this.assetDivider = false;
           return this.processActions;
         case "Screen":
-          this.assetDivider = true;
           return this.screenActions.filter((object) => object.value !== "duplicate-item");
         case "Script":
-          this.assetDivider = true;
           return this.scriptActions;
         case "Data Source":
-          this.assetDivider = true;
           return this.dataSourceActions;
         case "Decision Table":
-          this.assetDivider = true;
           return this.decisionTableActions;
         default:
           return []; // Handle unknown asset types as needed
+      }
+    },
+    getAssetDivider(data) {
+      switch (data.asset_type) {
+        case "Process":
+          return false;
+        default:
+          return true; // Handle unknown asset types as needed
       }
     },
     generateAssetLink(data) {
