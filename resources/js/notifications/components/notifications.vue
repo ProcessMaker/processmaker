@@ -236,6 +236,8 @@ export default {
       },
       filterComments: null,
       reloadOnClose: false,
+      shouldShowPopover: false,
+      shouldShowMobilePopover: false,
     };
   },
   computed: {

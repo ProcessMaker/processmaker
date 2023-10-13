@@ -62,6 +62,7 @@ class PerformanceApiTest extends TestCase
         ['api.files.index', []],
         ['api.notifications.index', []],
         ['api.task_assignments.index', []],
+        ['api.comments.index', []],
     ];
 
     // High values ​​improve measurement accuracy and reduce the effect of database caches
