@@ -35,6 +35,8 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorizeComment($request);
+
         $query = Comment::query()
             ->with('user')
             ->with('repliedMessage');
@@ -78,6 +80,14 @@ class CommentController extends Controller
         return new ApiCollection($response);
     }
 
+    private function authorizeComment(Request $request)
+    {
+        $commentable_id = $request->input('commentable_id');
+        $commentable_type = $request->input('commentable_type');
+        $commentable = $commentable_type::findOrFail($commentable_id);
+        $this->authorize('view', $commentable);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -89,6 +99,8 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeComment($request);
+
         $data['user_id'] = Auth::user()->id;
         $request->merge($data);
         $request->validate(Comment::rules());
@@ -109,6 +121,8 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
+        $this->authorize('view', $comment->commentable);
+
         return new CommentResource($comment);
     }
 
