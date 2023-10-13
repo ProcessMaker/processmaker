@@ -502,7 +502,9 @@ export default {
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
-      this.save(onSuccess, onError, processId);
+      if (processId) {
+        this.save(onSuccess, onError, processId);
+      }
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
