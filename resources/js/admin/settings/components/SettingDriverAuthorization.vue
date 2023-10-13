@@ -205,7 +205,7 @@ export default {
             this.resetData = false;
             ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`, this.formData)
             .then(response => {
-                // window.location = response.data?.url;
+                window.location = response.data?.url;
             })
             .catch(error => {
                 ProcessMaker.alert(error.message, 'danger');
