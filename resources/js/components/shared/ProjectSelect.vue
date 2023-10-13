@@ -45,17 +45,11 @@ export default {
         }
       }
     },
-    value: {
-      handler() {
-        console.log("value changed", this.value);
-        // this.setUpOptions();
-      },
-    },
     options: {
       handler(newValue, oldValue) {
         if (_.isEmpty(this.options)) {
           this.load();
-        } else if (!_.isEqual(newValue, oldValue)) {
+        } else if (!_.isEqual(newValue, oldValue) && !_.isEmpty(this.value)) {
           this.setUpOptions();
         }
       },
@@ -64,7 +58,6 @@ export default {
   methods: {
     setUpOptions() {
       if (this.value) {
-        console.log("setup options value", this.value);
         const content = [];
         const selected = String(this.value).split(',');
         this.loading = selected.length;
@@ -122,7 +115,6 @@ export default {
   },
   mounted() {
     this.load();
-    // this.setUpOptions();
   },
 };
 </script>
