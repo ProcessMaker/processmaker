@@ -16,12 +16,7 @@ trait ProjectAssetTrait
     public function syncProjectAsset($request, $assetModelClass)
     {
         $projectIds = $request->input('projects', '');
-
-        if (!empty($projectIds)) {
-            $projectIds = explode(',', $projectIds);
-        } else {
-            $projectIds = [];
-        }
+        $projectIds = array_filter(array_map('intval', explode(',', $projectIds)));
 
         try {
             // Sync the project assets with the prepared project IDs
@@ -38,8 +33,8 @@ trait ProjectAssetTrait
             ->where('asset_type', get_class($this))
             ->get();
 
-        return $projectAssets->map(function ($projectAsset) {
+        return json_encode($projectAssets->map(function ($projectAsset) {
             return $projectAsset->project;
-        })->toArray();
+        }));
     }
 }

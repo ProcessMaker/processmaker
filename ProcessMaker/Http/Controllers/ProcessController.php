@@ -100,7 +100,7 @@ class ProcessController extends Controller
         $list = $this->listUsersAndGroups();
 
         $process->append('notifications', 'task_notifications');
-        $assignedProjects = $process->projects;
+        $assignedProjects = json_decode($process->projects, true);
 
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);

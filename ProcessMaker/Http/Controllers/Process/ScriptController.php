@@ -56,7 +56,7 @@ class ScriptController extends Controller
     public function edit(Script $script, User $users)
     {
         $selectedUser = $script->runAsUser;
-        $assignedProjects = $script->projects;
+        $assignedProjects = json_decode($script->projects, true);
         $scriptExecutors = ScriptExecutor::list($script->scriptExecutor->language);
         $addons = $this->getPluginAddons('edit', compact(['script']));
 
