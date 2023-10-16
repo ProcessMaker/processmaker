@@ -5,6 +5,9 @@ export default {
     return {};
   },
   methods: {
+    /**
+     * navigation for decision tables actions
+     */
     onDecisionTableNavigate(action, data) {
       switch (action.value) {
         case "edit-item":
@@ -24,12 +27,21 @@ export default {
           break;
       }
     },
+    /**
+     * go to edit decision table
+     */
     editDecisionTable(row) {
       window.location.href = `/designer/decision-tables/table-builder/${row.id}/edit`;
     },
+    /**
+     * go to config decision table
+     */
     configDecisionTable(row) {
       window.location.href = `/designer/decision-tables/${row.id}/edit`;
     },
+    /**
+     * do delete decision table
+     */
     doDeleteDecisionTable(item) {
       ProcessMaker.confirmModal(this.$t("Caution!"), this.$t("Are you sure you want to delete {{item}}?", { item: item.title }), "", () => {
         ProcessMaker.apiClient
@@ -43,6 +55,9 @@ export default {
           });
       });
     },
+    /**
+     * go to export data sources
+     */
     doExportDecisionTable(row) {
       window.location.href = `/designer/decision-tables/${row.id}/export`;
     },

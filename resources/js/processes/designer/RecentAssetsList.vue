@@ -169,6 +169,9 @@ export default {
     };
   },
   methods: {
+    /**
+     * get data for Recent Assets
+     */
     fetch() {
       this.loading = true;
       this.apiDataLoading = true;
@@ -189,9 +192,15 @@ export default {
           this.data = [];
         });
     },
+    /**
+     * reload page
+     */
     reload() {
       this.$emit("reload");
     },
+    /**
+     * get assets actions
+     */
     getActions(data) {
       switch (data.asset_type) {
         case "Process":
@@ -208,14 +217,15 @@ export default {
           return []; // Handle unknown asset types as needed
       }
     },
+    /**
+     * get asset menu divider
+     */
     getAssetDivider(data) {
-      switch (data.asset_type) {
-        case "Process":
-          return false;
-        default:
-          return true; // Handle unknown asset types as needed
-      }
+      return !(data.asset_type === "Process");
     },
+    /**
+     * get asset link
+     */
     generateAssetLink(data) {
       switch (data.asset_type) {
         case "Process":
@@ -232,9 +242,15 @@ export default {
           return ""; // Handle unknown asset types as needed
       }
     },
+    /**
+     * get class for asset
+     */
     formatClassName(name) {
       return name.toLowerCase().replace(/\s+/g, "_");
     },
+    /**
+     * go to navigate action
+     */
     onNavigate(action, data) {
       switch (data.asset_type) {
         case "Process":
@@ -261,16 +277,25 @@ export default {
           break; // Handle unknown asset types as needed
       }
     },
+    /**
+     * open modal add to project
+     */
     showAddToProjectModal(title, id) {
       this.assetId = id;
       this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
+    /**
+     * open modal to create template
+     */
     showCreateTemplateModal(name, id) {
       this.processId = id;
       this.processTemplateName = name;
       this.$refs["create-template-modal"].show();
     },
+    /**
+     * open modal to PM Block
+     */
     showPmBlockModal(name, id) {
       this.processId = id;
       this.pmBlockName = name;
