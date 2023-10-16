@@ -50,9 +50,11 @@
 
           <template slot="actions" slot-scope="props">
             <ellipsis-menu
-              :actions="actions"
+              :actions="getActions(props.rowData)"
               :data="props.rowData"
-              :divider="true"
+              :permission="permission"
+              :is-documenter-installed="isDocumenterInstalled"
+              :divider="getAssetDivider(props.rowData)"
               @navigate="onNavigate"
             />
           </template>
@@ -64,6 +66,28 @@
             <a :href="generateAssetLink(props.rowData)">{{ props.rowData.name }}</a>
           </template>
         </vuetable>
+        <create-template-modal
+          id="create-template-modal"
+          ref="create-template-modal"
+          assetType="process"
+          :currentUserId="currentUserId"
+          :assetName="processTemplateName"
+          :assetId="assetId"
+        />
+        <create-pm-block-modal
+          id="create-pm-block-modal"
+          ref="create-pm-block-modal"
+          :currentUserId="currentUserId"
+          :assetName="pmBlockName"
+          :assetId="assetId"
+        />
+        <add-to-project-modal
+          id="add-to-project-modal"
+          ref="add-to-project-modal"
+          :assetType="assetType"
+          :assetId="assetId"
+          :assetName="assetName"
+        />
       </div>
     </div>
   </div>
@@ -73,16 +97,39 @@
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import dataSourceNavigationMixin from "../../components/shared/dataSourceNavigation";
+import decisionTableNavigationMixin from "../../components/shared/decisionTableNavigation";
+import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
+import processNavigationMixin from "../../components/shared/processNavigation";
+import screenNavigationMixin from "../../components/shared/screenNavigation";
+import scriptNavigationMixin from "../../components/shared/scriptNavigation";
+
+import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
+import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: {
+    AddToProjectModal,
+    CreateTemplateModal,
+    CreatePmBlockModal,
     EllipsisMenu,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["types"],
+  mixins: [
+    datatableMixin,
+    dataLoadingMixin,
+    dataSourceNavigationMixin,
+    decisionTableNavigationMixin,
+    ellipsisMenuMixin,
+    processNavigationMixin,
+    screenNavigationMixin,
+    scriptNavigationMixin,
+    uniqIdsMixin,
+  ],
+  props: ["types", "currentUserId", "permission", "isDocumenterInstalled"],
   data() {
     return {
       sortOrder: [{
@@ -110,22 +157,18 @@ export default {
         name: "__slot:actions",
         title: "",
       }],
-      actions: [{
-        value: "duplicate-item",
-        content: "Duplicate",
-        icon: "fas fa-copy",
-        link: false,
-      },
-      {
-        value: "remove-item",
-        content: "Remove",
-        icon: "fas fa-unlink",
-        link: false,
-      }],
+      assetType: "",
       configs: "",
+      assetName: "",
+      assetId: "",
+      processTemplateName: "",
+      pmBlockName: "",
     };
   },
   methods: {
+    /**
+     * get data for Recent Assets
+     */
     fetch() {
       this.loading = true;
       this.apiDataLoading = true;
@@ -139,7 +182,6 @@ export default {
         )
         .then((response) => {
           this.data = this.transform(response.data);
-          console.log(this.data);
           this.apiDataLoading = false;
           this.loading = false;
         }).catch((error) => {
@@ -147,9 +189,40 @@ export default {
           this.data = [];
         });
     },
+    /**
+     * reload page
+     */
     reload() {
       this.$emit("reload");
     },
+    /**
+     * get assets actions
+     */
+    getActions(data) {
+      switch (data.asset_type) {
+        case "Process":
+          return this.processActions;
+        case "Screen":
+          return this.screenActions.filter((object) => object.value !== "duplicate-item");
+        case "Script":
+          return this.scriptActions;
+        case "Data Source":
+          return this.dataSourceActions;
+        case "Decision Table":
+          return this.decisionTableActions;
+        default:
+          return []; // Handle unknown asset types as needed
+      }
+    },
+    /**
+     * get asset menu divider
+     */
+    getAssetDivider(data) {
+      return data.asset_type !== "Process";
+    },
+    /**
+     * get asset link
+     */
     generateAssetLink(data) {
       switch (data.asset_type) {
         case "Process":
@@ -166,10 +239,64 @@ export default {
           return ""; // Handle unknown asset types as needed
       }
     },
+    /**
+     * get class for asset
+     */
     formatClassName(name) {
       return name.toLowerCase().replace(/\s+/g, "_");
     },
+    /**
+     * go to navigate action
+     */
     onNavigate(action, data) {
+      switch (data.asset_type) {
+        case "Process":
+          this.assetType = "process";
+          this.onProcessNavigate(action, data);
+          break;
+        case "Screen":
+          this.assetType = "screen";
+          this.onScreenNavigate(action, data);
+          break;
+        case "Script":
+          this.assetType = "script";
+          this.onScriptNavigate(action, data);
+          break;
+        case "Data Source":
+          this.assetType = "data-source";
+          this.onDataSourceNavigate(action, data);
+          break;
+        case "Decision Table":
+          this.assetType = "decision-table";
+          this.onDecisionTableNavigate(action, data);
+          break;
+        default:
+          break; // Handle unknown asset types as needed
+      }
+    },
+    /**
+     * open modal add to project
+     */
+    showAddToProjectModal(title, id) {
+      this.assetId = id;
+      this.assetName = title;
+      this.$refs["add-to-project-modal"].show();
+    },
+    /**
+     * open modal to create template
+     */
+    showCreateTemplateModal(name, id) {
+      this.processId = id;
+      this.processTemplateName = name;
+      this.$refs["create-template-modal"].show();
+    },
+    /**
+     * open modal to PM Block
+     */
+    showPmBlockModal(name, id) {
+      this.processId = id;
+      this.pmBlockName = name;
+      this.$refs["create-pm-block-modal"].show();
     },
   },
 };
