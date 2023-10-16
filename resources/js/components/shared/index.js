@@ -32,6 +32,7 @@ import ExportStateMixin from "../../processes/export/state";
 import CreateScreenModal from "../../processes/screens/components/CreateScreenModal.vue";
 import CreateScriptModal from "../../processes/scripts/components/CreateScriptModal.vue";
 import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
+import TasksPreview from "../../tasks/components/TasksPreview.vue";
 
 export {
   AddToProjectModal,
@@ -68,4 +69,5 @@ export {
   DownloadSvgButton,
   CustomExportView,
   ExportStateMixin,
+  TasksPreview,
 };
