@@ -172,7 +172,6 @@ export default {
     fetch(pmql = "") {
       this.loading = true;
       this.apiDataLoading = true;
-      console.log(pmql);
       // Load from our api client
       window.ProcessMaker.apiClient
         .get(
