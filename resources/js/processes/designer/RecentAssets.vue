@@ -73,6 +73,9 @@
     <recent-assets-list
       ref="recentAssetsList"
       :types="selectedTypes"
+      :current-user-id="currentUserId"
+      :permission="permission"
+      :is-documenter-installed="isDocumenterInstalled"
     />
   </div>
 </template>
@@ -83,6 +86,7 @@ import RecentAssetsList from './RecentAssetsList.vue';
 Vue.component("RecentAssetsList", RecentAssetsList);
 
 export default {
+  props: ["currentUserId", "permission", "isDocumenterInstalled"],
   data() {
     return {
       searchCriteria: "",
