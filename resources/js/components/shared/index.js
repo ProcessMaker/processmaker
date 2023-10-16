@@ -32,6 +32,14 @@ import ExportStateMixin from "../../processes/export/state";
 import CreateScreenModal from "../../processes/screens/components/CreateScreenModal.vue";
 import CreateScriptModal from "../../processes/scripts/components/CreateScriptModal.vue";
 import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
+import EllipsisMenuMixin from "./ellipsisMenuActions";
+import ProcessNavigationMixin from "./processNavigation";
+import ScreenNavigationMixin from "./screenNavigation";
+import ScriptNavigationMixin from "./scriptNavigation";
+import DataSourceNavigationMixin from "./dataSourceNavigation";
+import DecisionTableNavigationMixin from "./decisionTableNavigation";
+import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
+import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksPreview from "../../tasks/components/TasksPreview.vue";
 
 export {
@@ -49,6 +57,8 @@ export {
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
+  DataSourceNavigationMixin,
+  DecisionTableNavigationMixin,
   DraggableFileUpload,
   EllipsisMenu,
   EnterPasswordModal,
@@ -69,5 +79,11 @@ export {
   DownloadSvgButton,
   CustomExportView,
   ExportStateMixin,
+  EllipsisMenuMixin,
+  ProcessNavigationMixin,
+  CreateTemplateModal,
+  CreatePmBlockModal,
+  ScreenNavigationMixin,
+  ScriptNavigationMixin,
   TasksPreview,
 };
