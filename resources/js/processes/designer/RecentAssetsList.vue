@@ -221,7 +221,7 @@ export default {
      * get asset menu divider
      */
     getAssetDivider(data) {
-      return !(data.asset_type === "Process");
+      return data.asset_type !== "Process";
     },
     /**
      * get asset link
