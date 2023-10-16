@@ -7,6 +7,7 @@
       <div class="d-flex" align="end">
         <div class="dropdown">
           <button
+            v-if="!showInput"
             id="dropdownMenu"
             type="button"
             class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
@@ -44,10 +45,29 @@
             </form>
           </div>
         </div>
-
-        <button class="btn btn-outline-primary border-0 mr-1">
-          <i class="fas fa-search" />
-        </button>
+        <div class="d-flex justify-content-end">
+          <button
+            class="btn btn-outline-primary border-0 ml-1"
+            @click="toggleInput"
+          >
+            <i class="fas fa-search" />
+          </button>
+          <input
+            v-if="showInput"
+            ref="input"
+            v-model="searchCriteria"
+            type="text"
+            class="form-control narrow-input"
+            @keyup.enter="performSearch"
+          >
+          <button
+            v-if="showInput"
+            class="btn btn-clear"
+            @click="clearSearch"
+          >
+            <i class="fas fa-times" />
+          </button>
+        </div>
       </div>
     </b-navbar>
     <recent-assets-list
@@ -69,6 +89,8 @@ export default {
   props: ["currentUserId", "permission", "isDocumenterInstalled"],
   data() {
     return {
+      searchCriteria: "",
+      showInput: false,
       optionsType: [],
       selectedTypes: [],
     };
@@ -77,7 +99,8 @@ export default {
     this.getOptionsType();
   },
   updated() {
-    this.$refs.recentAssetsList.fetch();
+    this.performSearch();
+    this.$refs.recentAssetsList.fetch(this.pmql);
   },
   methods: {
     getOptionsType() {
@@ -89,6 +112,25 @@ export default {
             this.selectedTypes.push(this.optionsType[type].asset_type);
           });
         });
+    },
+    /**
+     * This boolean method shows or hide elements
+     */
+    toggleInput() {
+      if (this.showInput) {
+        this.performSearch();
+      }
+      this.showInput = !this.showInput;
+    },
+    /**
+     * This method sends users's input criteria to filter specific tasks or requests
+     */
+    performSearch() {
+      this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
+    },
+    clearSearch() {
+      this.searchCriteria = "";
+      this.toggleInput();
     },
   },
 };

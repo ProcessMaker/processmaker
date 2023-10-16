@@ -169,7 +169,7 @@ export default {
     /**
      * get data for Recent Assets
      */
-    fetch() {
+    fetch(pmql = "") {
       this.loading = true;
       this.apiDataLoading = true;
       // Load from our api client
@@ -178,6 +178,7 @@ export default {
           `projects/assets/recent?
           asset_types=
           ${this.types}
+          &pmql=${encodeURIComponent(pmql)}
           `,
         )
         .then((response) => {
