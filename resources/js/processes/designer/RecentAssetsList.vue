@@ -126,20 +126,21 @@ export default {
     };
   },
   methods: {
-    fetch() {
+    fetch(pmql = "") {
       this.loading = true;
       this.apiDataLoading = true;
+      console.log(pmql);
       // Load from our api client
       window.ProcessMaker.apiClient
         .get(
           `projects/assets/recent?
           asset_types=
           ${this.types}
+          &pmql=${encodeURIComponent(pmql)}
           `,
         )
         .then((response) => {
           this.data = this.transform(response.data);
-          console.log(this.data);
           this.apiDataLoading = false;
           this.loading = false;
         }).catch((error) => {
