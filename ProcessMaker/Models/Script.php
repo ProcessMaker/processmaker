@@ -10,6 +10,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
@@ -66,6 +67,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasVersioning;
     use Exportable;
     use ProjectAssetTrait;
+    use ExtendedPMQL;
 
     const categoryClass = ScriptCategory::class;
 

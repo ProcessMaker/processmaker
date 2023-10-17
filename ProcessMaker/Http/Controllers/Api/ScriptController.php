@@ -117,6 +117,15 @@ class ScriptController extends Controller
             }
         }
 
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+            }
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
