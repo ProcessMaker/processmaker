@@ -163,11 +163,11 @@ trait ProcessTrait
     }
 
     /**
-     * Get the tasks that can be completed by human users
+     * Get the tasks of the process
      * 
      * @return array
      */
-    public function getHumanTasks()
+    public function getTasks()
     {
         $response = [];
         if (empty($this->bpmn)) {
@@ -175,27 +175,25 @@ trait ProcessTrait
         }
         $definitions = new BpmnDocument($this);
         $definitions->loadXML($this->bpmn);
-        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task');
-        foreach ($tasks as $task) {
-            $response[] = [
-                'id' => $task->getAttribute('id'),
-                'name' => $task->getAttribute('name'),
-            ];
+        $types = [
+            'task',
+            'userTask',
+            'manualTask',
+            'scriptTask',
+            'serviceTask',
+            'callActivity',
+        ];
+        foreach($types as $type) {
+            $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, $type);
+            foreach ($tasks as $task) {
+                $response[] = [
+                    'id' => $task->getAttribute('id'),
+                    'name' => $task->getAttribute('name'),
+                    'type' => $task->localName,
+                ];
+            }
         }
-        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'userTask');
-        foreach ($tasks as $task) {
-            $response[] = [
-                'id' => $task->getAttribute('id'),
-                'name' => $task->getAttribute('name'),
-            ];
-        }
-        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'manualTask');
-        foreach ($tasks as $task) {
-            $response[] = [
-                'id' => $task->getAttribute('id'),
-                'name' => $task->getAttribute('name'),
-            ];
-        }
+
 
         return $response;
     }

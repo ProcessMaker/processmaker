@@ -12,7 +12,7 @@ on:
 jobs:
   translate_and_create_pr:
     name: Translate and create PR
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER }}
 
     steps:
       - name: Checkout repository

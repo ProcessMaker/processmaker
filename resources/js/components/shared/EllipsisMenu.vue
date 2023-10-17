@@ -112,32 +112,9 @@ export default {
   },
   computed: {
     filterActions() {
-      let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission')
-            || action.hasOwnProperty('permission') && this.permission[action.permission]
-            || Array.isArray(this.permission) && action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
-          return action;
-        }
-      });
-
-      btns = btns.filter(btn => {
-        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
-          if (this.isDocumenterInstalled) {
-            return btn;
-          }
-        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
-          if (this.isPackageInstalled) {
-            return btn;
-          }
-        } else if (btn.hasOwnProperty('conditional')  ) {
-          const result = Parser.evaluate(btn.conditional, this.data);
-          if (result) {
-            return btn;
-          }
-        } else {
-          return btn;
-        }
-      });
+      let btns = this.filterActionsByPermissions();
+      btns = this.filterActionsByConditionals(btns);
+      
       return btns;
     },
     filterAboveDivider() {
@@ -184,6 +161,50 @@ export default {
       }
 
       return Math.trunc(totalProgress);
+    },
+    filterActionsByPermissions() {
+      return this.actions.filter(action => {
+        // Check if the action has a 'permission' property and it's a non-empty string
+        if (
+          !action.hasOwnProperty('permission') ||
+          (typeof action.permission !== 'string') ||
+          action.permission.trim() === ''
+        ) {
+          return true; // No specific permission required or invalid format, so allow the action.
+        }
+
+        const requiredPermissions = action.permission.split(',');
+
+        // Check if this.permission is an array
+        if (Array.isArray(this.permission)) {
+          return requiredPermissions.some(permission => this.permission.includes(permission));
+        } else if (typeof this.permission === 'string') {
+          return requiredPermissions.some(permission => this.permission.includes(permission));
+        } else {
+          // Invalid permission format, exclude the action
+          return false;
+        }
+      });
+    },
+    filterActionsByConditionals(btns) {
+      return btns.filter(btn => {
+        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
+          if (this.isDocumenterInstalled) {
+            return true;
+          }
+        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
+          if (this.isPackageInstalled) {
+            return true;
+          }
+        } else if (btn.hasOwnProperty('conditional')) {
+          const result = Parser.evaluate(btn.conditional, this.data);
+          if (result) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      });
     },
   },
 };
