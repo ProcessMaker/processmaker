@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -96,6 +97,16 @@ class Group extends ProcessMakerModel
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function projectMembers()
+    {
+        if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
+            return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
+        } else {
+            // Handle the case where the ProjectMember class doesn't exist.
+            return $this->hasMany(EmptyModel::class);
+        }
     }
 
     public function getRecursiveUsersAttribute(self $parent = null)

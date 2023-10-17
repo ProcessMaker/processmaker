@@ -67,7 +67,7 @@
               @click="selectOption(`requester`, 'filter', 'fas fa-user')"
             >
               <i class="fas fa-user" />
-              {{ $t('Requested by Me') }}
+              {{ $t('As Requester') }}
               <i
                 v-if="selectedIconFilter=== 'fas fa-user'"
                 class="fas fa-check ml-auto text-success"
@@ -78,7 +78,7 @@
               @click="selectOption(`participant`, 'filter', 'fas fa-users')"
             >
               <i class="fas fa-users" />
-              {{ $t('With me as Participant') }}
+              {{ $t('As Participant') }}
               <i
                 v-if="selectedIconFilter === 'fas fa-users'"
                 class="fas fa-check ml-auto text-success"
