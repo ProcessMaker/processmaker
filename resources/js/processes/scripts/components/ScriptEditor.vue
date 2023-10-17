@@ -106,6 +106,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
+                    ref="aiTab"
                     :user="user"
                     :source-code="code"
                     :language="language"
@@ -240,6 +241,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <cornea-tab
+                    ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
                     :sourceCode="code"
@@ -542,11 +544,13 @@ export default {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
+      this.$refs.aiTab2.showMenu();
     },
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
+      this.$refs.aiTab2.showMenu();
     },
     cancelRequest() {
       if (this.currentNonce) {
@@ -555,6 +559,7 @@ export default {
         this.loading = false;
         this.progress.progress = 0;
         this.action = "";
+        this.$refs.aiTab2.showMenu();
       }
     },
     closeExplanation() {
