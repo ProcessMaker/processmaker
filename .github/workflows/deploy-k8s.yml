@@ -111,6 +111,10 @@ jobs:
       - name: Comment Instance
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
+          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          composer install --no-interaction
+          ./pm wait-for-instance-ready
           bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"    
   deleteEKS:
     name: Delete Instance
