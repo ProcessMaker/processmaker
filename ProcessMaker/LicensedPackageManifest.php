@@ -14,7 +14,7 @@ class LicensedPackageManifest extends PackageManifest
 {
     const EXPIRE_CACHE_KEY = 'license_expires_at';
 
-    const DISCOVER_PACKAGES_LOCK_FILE = 'bootstrap/cache/packages.lock';
+    const DISCOVER_PACKAGES_LOCK_KEY = 'discover_package_lock_key';
 
     const DISCOVER_PACKAGES = 'package:discover';
 
@@ -100,30 +100,19 @@ class LicensedPackageManifest extends PackageManifest
     /**
      * Discovers packages ensuring there's no overlapping or concurrent executions of package:discover.
      *
-     * @param int $lockDurationMinutes The duration in minutes to consider the lock file as valid.
+     * @param int $lockDurationSeconds The duration in minutes to consider the lock file as valid.
      * @return void
      */
-    public static function discoverPackagesWithoutOverlap(int $lockDurationMinutes = 10): void
+    public static function discoverPackagesOnce(int $lockDurationSeconds = 60): void
     {
-        $currentTime = Carbon::now();
-        $pathToLockFile = base_path(self::DISCOVER_PACKAGES_LOCK_FILE);
-
-        try {
-            $hasLockFile = file_exists($pathToLockFile);
-            $lastLockTime = !$hasLockFile ? 0 : Carbon::createFromTimestamp(filemtime($pathToLockFile));
-            $isLockTimeExceeded = $hasLockFile && $currentTime->diffInMinutes($lastLockTime) > $lockDurationMinutes;
-
-            if (!$hasLockFile || $isLockTimeExceeded) {
-                file_put_contents($pathToLockFile, (string) $currentTime->timestamp, LOCK_EX);
-
+        $lock = Cache::lock(self::DISCOVER_PACKAGES_LOCK_KEY, $lockDurationSeconds);
+        if ($lock->get()) {
+            try {
                 Artisan::call(self::DISCOVER_PACKAGES);
-
-                if (file_exists($pathToLockFile)) {
-                    unlink($pathToLockFile);
-                }
+            } catch (Throwable $e) {
+                Log::error('LicenseService - Error during package discovery: ' . $e->getMessage());
             }
-        } catch (Throwable $e) {
-            Log::error('LicenseService - Error during package discovery: ' . $e->getMessage());
+            $lock->release();
         }
     }
 }

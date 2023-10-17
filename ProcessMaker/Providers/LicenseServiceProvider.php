@@ -24,8 +24,8 @@ class LicenseServiceProvider extends ServiceProvider
         }
 
         if ($expires && $expires < Carbon::now()->timestamp) {
-            // Run package:discover preventing that parallel jobs or requests do it at the same time
-            LicensedPackageManifest::discoverPackagesWithoutOverlap();
+            // Run package:discover only once per instance
+            LicensedPackageManifest::discoverPackagesOnce();
         }
     }
 
