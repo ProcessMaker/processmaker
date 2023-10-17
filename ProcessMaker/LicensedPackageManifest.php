@@ -13,7 +13,9 @@ use Throwable;
 class LicensedPackageManifest extends PackageManifest
 {
     const EXPIRE_CACHE_KEY = 'license_expires_at';
+
     const DISCOVER_PACKAGES_LOCK_FILE = 'bootstrap/cache/packages.lock';
+
     const DISCOVER_PACKAGES = 'package:discover';
 
     protected function packagesToIgnore()
@@ -107,11 +109,11 @@ class LicensedPackageManifest extends PackageManifest
         $pathToLockFile = base_path(self::DISCOVER_PACKAGES_LOCK_FILE);
 
         try {
-            $isLockFileAbsent = !file_exists($pathToLockFile);
-            $lastLockTime = $isLockFileAbsent ? 0 : Carbon::createFromTimestamp(filemtime($pathToLockFile));
-            $isLockTimeExceeded = !$isLockFileAbsent && $currentTime->diffInMinutes($lastLockTime) > $lockDurationMinutes;
+            $hasLockFile = file_exists($pathToLockFile);
+            $lastLockTime = !$hasLockFile ? 0 : Carbon::createFromTimestamp(filemtime($pathToLockFile));
+            $isLockTimeExceeded = $hasLockFile && $currentTime->diffInMinutes($lastLockTime) > $lockDurationMinutes;
 
-            if ($isLockFileAbsent || $isLockTimeExceeded) {
+            if (!$hasLockFile || $isLockTimeExceeded) {
                 file_put_contents($pathToLockFile, (string) $currentTime->timestamp, LOCK_EX);
 
                 Artisan::call(self::DISCOVER_PACKAGES);

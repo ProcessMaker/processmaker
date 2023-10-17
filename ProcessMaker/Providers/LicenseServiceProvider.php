@@ -22,7 +22,7 @@ class LicenseServiceProvider extends ServiceProvider
         } catch (ConnectionException $e) {
             $expires = null;
         }
-        LicensedPackageManifest::discoverPackagesWithoutOverlap();
+
         if ($expires && $expires < Carbon::now()->timestamp) {
             // Run package:discover preventing that parallel jobs or requests do it at the same time
             LicensedPackageManifest::discoverPackagesWithoutOverlap();
