@@ -74,6 +74,18 @@ window.ProcessMaker.events = new Vue();
 // Verify if is mobile
 const browser = navigator.userAgent;
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+let isNabarMobile = "false";
+const decodedCookie = decodeURIComponent(document.cookie);
+const allCookies = decodedCookie.split(";");
+const cookieWanted = "isMobile=";
+allCookies.forEach((cookie) => {
+  while (cookie.charAt(0) === " ") {
+    cookie = cookie.substring(1);
+  }
+  if (cookie.indexOf(cookieWanted) === 0) {
+    isNabarMobile = cookie.substring(cookieWanted.length, cookie.length);
+  }
+});
 window.ProcessMaker.mobileApp = false;
 if (isMobileDevice) {
   window.ProcessMaker.mobileApp = true;
@@ -191,7 +203,7 @@ window.ProcessMaker.navbar = new Vue({
 });
 
 // Assign our navbar component to our global ProcessMaker object
-if (isMobileDevice) {
+if (isNabarMobile === "true") {
   window.ProcessMaker.navbarMobile = new Vue({
     el: "#navbarMobile",
     components: {
