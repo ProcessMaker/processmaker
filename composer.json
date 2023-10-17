@@ -98,7 +98,8 @@
         "processmaker": {
             "build": "1e010e39",
             "custom": {
-                "package-ellucian-ethos": "1.12.5"
+                "package-ellucian-ethos": "1.12.5",
+                "package-plaid": "1.0.3"
             },
             "enterprise": {
                 "connector-docusign": "1.4.1",
@@ -121,7 +122,6 @@
                 "package-files": "1.10.4",
                 "package-googleplaces": "1.7.2",
                 "package-photo-video": "1.0.4",
-                "package-plaid": "1.0.3",
                 "package-pm-blocks": "1.1.5",
                 "package-process-documenter": "1.6.1",
                 "package-process-optimization": "1.6.1",
