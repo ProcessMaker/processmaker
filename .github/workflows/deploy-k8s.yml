@@ -99,8 +99,8 @@ jobs:
             echo "Bouncing"
             rm -rf ci/job_bounce_develop.yaml
             cp template-bounce.yaml ci/job_bounce_develop.yaml
-            sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_bounce_develop.yaml
-            sed -i "s/{{current_datetime}}/$current_datetime/" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{instance}}/ci-$deploy/g" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{current_datetime}}/$current_datetime/g" ./ci/job_bounce_develop.yaml
             git status
             git add .
             git commit -m "BOUNCE CICD : ci-$deploy"
