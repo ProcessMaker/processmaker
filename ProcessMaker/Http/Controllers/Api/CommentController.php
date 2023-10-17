@@ -82,6 +82,10 @@ class CommentController extends Controller
 
     private function authorizeComment(Request $request)
     {
+        $request->validate([
+            'commentable_id' => 'required',
+            'commentable_type' => 'required',
+        ]);
         $commentable_id = $request->input('commentable_id');
         $commentable_type = $request->input('commentable_type');
         $commentable = $commentable_type::findOrFail($commentable_id);
