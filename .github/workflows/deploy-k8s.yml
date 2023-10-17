@@ -67,6 +67,21 @@ jobs:
           cd pm4-k8s-distribution
           docker tag local/enterprise:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
           docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+  phpunit:
+    name: phpunit
+    needs: imageEKS
+    runs-on: ubuntu-22.04
+    if: github.event.action != 'closed'
+    steps:
+     - name: Run PHPUnit
+       run: |          
+         cd pm4-tools
+         export IMAGE=public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+         docker pull $IMAGE          
+         docker-compose down -v          
+         docker-compose build phpunit          
+         docker-compose run phpunit
+
   deployEKS:
     name: build-deploy-EKS
     if: contains(github.event.pull_request.body, 'ci:build-k8s')
@@ -79,6 +94,13 @@ jobs:
           cd argocd
       - run: git config --global user.email $GH_EMAIL
       - run: git config --global user.name $GH_USER
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          composer install --no-interaction
+          ln -s pm /bin/pm
+          cd ..
       - name: Add instance EKS           
         run: |
           cd argocd 
@@ -107,14 +129,12 @@ jobs:
             git push origin main
             echo "Exist Deploy :: https://ci-$deploy$DOM_EKS"
           fi
-          echo "INSTANCE_URL=https://ci-$deploy$DOM_EKS" >> "$GITHUB_ENV"
+          export INSTANCE_URL=https://ci-$deploy$DOM_EKS
+          echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
+          pm wait-for-instance-ready
       - name: Comment Instance
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
-          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
-          cd pm4-tools
-          composer install --no-interaction
-          ./pm wait-for-instance-ready
           bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"    
   deleteEKS:
     name: Delete Instance
