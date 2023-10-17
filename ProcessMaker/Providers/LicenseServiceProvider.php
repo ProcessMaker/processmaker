@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
+use Predis\Connection\ConnectionException;
 use ProcessMaker\LicensedPackageManifest;
 
 /**
@@ -17,7 +18,11 @@ class LicenseServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        $expires = Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY);
+        try {
+            $expires = Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY);
+        } catch (ConnectionException $e) {
+            $expires = null;
+        }
 
         if ($expires && $expires < Carbon::now()->timestamp) {
             Artisan::call('package:discover');
