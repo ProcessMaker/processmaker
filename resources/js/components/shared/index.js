@@ -40,6 +40,7 @@ import DataSourceNavigationMixin from "./dataSourceNavigation";
 import DecisionTableNavigationMixin from "./decisionTableNavigation";
 import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
+import TasksPreview from "../../tasks/components/TasksPreview.vue";
 
 export {
   AddToProjectModal,
@@ -83,5 +84,6 @@ export {
   CreateTemplateModal,
   CreatePmBlockModal,
   ScreenNavigationMixin,
-  ScriptNavigationMixin
+  ScriptNavigationMixin,
+  TasksPreview,
 };
