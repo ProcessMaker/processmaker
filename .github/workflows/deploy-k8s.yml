@@ -14,6 +14,7 @@ env:
   aws-url: ${{ secrets.AWS_URL }}
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
   CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
@@ -82,6 +83,7 @@ jobs:
         run: |
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          current_datetime=$(echo -n ${{env.CURRENT_DATE}} | md5sum | head -c 10)
           if ! echo $(ls ci/) | grep $deploy; then
             echo "Creating Deploy :: $deploy"
             cp template-argocd.yaml ci/ci-$deploy.yaml
@@ -93,7 +95,16 @@ jobs:
             git add .
             git commit -m "Deploy CICD : ci-$deploy"
             git push origin main             
-          else 
+          else
+            echo "Bouncing"
+            rm -rf ci/job_bounce_develop.yaml
+            cp template-bounce.yaml ci/job_bounce_develop.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{current_datetime}}/$current_datetime/" ./ci/job_bounce_develop.yaml
+            git status
+            git add .
+            git commit -m "BOUNCE CICD : ci-$deploy"
+            git push origin main
             echo "Exist Deploy :: https://ci-$deploy$DOM_EKS"
           fi
           echo "INSTANCE_URL=https://ci-$deploy$DOM_EKS" >> "$GITHUB_ENV"
