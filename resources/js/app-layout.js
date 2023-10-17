@@ -74,6 +74,12 @@ window.ProcessMaker.events = new Vue();
 // Verify if is mobile
 const browser = navigator.userAgent;
 const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+window.ProcessMaker.mobileApp = false;
+if (isMobileDevice) {
+  window.ProcessMaker.mobileApp = true;
+}
+
+// Verify is in mobile mode
 let isMobileNavbar = "false";
 const decodedCookie = decodeURIComponent(document.cookie);
 const allCookies = decodedCookie.split(";");
@@ -86,10 +92,6 @@ allCookies.forEach((cookie) => {
     isMobileNavbar = cookie.substring(cookieWanted.length, cookie.length);
   }
 });
-window.ProcessMaker.mobileApp = false;
-if (isMobileDevice) {
-  window.ProcessMaker.mobileApp = true;
-}
 
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
