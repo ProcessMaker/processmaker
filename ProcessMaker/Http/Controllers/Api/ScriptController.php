@@ -17,6 +17,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Query\SyntaxError;
 
 class ScriptController extends Controller
 {
