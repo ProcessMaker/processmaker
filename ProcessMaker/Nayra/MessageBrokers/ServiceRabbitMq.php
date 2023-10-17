@@ -12,6 +12,7 @@ class ServiceRabbitMq
     const QUEUE_NAME_CONSUME = 'nayra-store';
 
     const QUEUE_NAME_PUBLISH = 'requests';
+    const PROCESSES_QUEUE = 'processes';
 
     private $connection;
 
@@ -137,8 +138,26 @@ class ServiceRabbitMq
     private function storeData(array $transactions): void
     {
         $handler = new PersistenceHandler();
+        if (isset($transactions['type'])) {
+            // Single transaction like about message
+            $transactions = [$transactions];
+        }
         foreach ($transactions as $transaction) {
             $handler->save($transaction);
         }
+    }
+
+    public function sendAboutMessage()
+    {
+        // Get about information from composer.json
+        $composer_json_path = base_path('composer.json');
+        $composer_json = json_decode(file_get_contents($composer_json_path), true);
+        $about = [
+            'name' => $composer_json['name'],
+            'version' => $composer_json['version'],
+            'description' => $composer_json['description'],
+        ];
+        // Send about message
+        $this->sendMessage(self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
     }
 }
