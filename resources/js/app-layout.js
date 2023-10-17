@@ -80,18 +80,7 @@ if (isMobileDevice) {
 }
 
 // Verify is in mobile mode
-let isMobileNavbar = "false";
-const decodedCookie = decodeURIComponent(document.cookie);
-const allCookies = decodedCookie.split(";");
-const cookieWanted = "isMobile=";
-allCookies.forEach((cookie) => {
-  while (cookie.charAt(0) === " ") {
-    cookie = cookie.substring(1);
-  }
-  if (cookie.indexOf(cookieWanted) === 0) {
-    isMobileNavbar = cookie.substring(cookieWanted.length, cookie.length);
-  }
-});
+const isMobileNavbar = window.ProcessMaker.events.$cookies.get("isMobile");
 
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
