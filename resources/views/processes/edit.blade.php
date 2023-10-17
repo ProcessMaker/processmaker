@@ -405,7 +405,6 @@
             formData: @json($process),
             assignedProjects: @json($assignedProjects),
             selectedProjects: '',
-            errors: {
             dataGroups: [],
             value: [],
             errors: {
