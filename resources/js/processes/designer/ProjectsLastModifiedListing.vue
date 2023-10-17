@@ -243,7 +243,6 @@ export default {
 }
 .title {
   color: var(--secondary-800, #44494E);
-  font-family: Open Sans;
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
