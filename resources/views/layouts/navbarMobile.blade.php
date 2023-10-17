@@ -10,7 +10,7 @@
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
         @php
-          $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+          $loginLogo = \ProcessMaker\Models\Setting::getLogo();
         @endphp
         <a href="#" class="navbar-brand pl-2"><img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}></a>
         <div class="content-nav">
