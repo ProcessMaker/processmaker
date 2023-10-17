@@ -5,7 +5,6 @@ namespace ProcessMaker\Providers;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use Predis\Connection\ConnectionException;
@@ -23,9 +22,10 @@ class LicenseServiceProvider extends ServiceProvider
         } catch (ConnectionException $e) {
             $expires = null;
         }
-
+        LicensedPackageManifest::discoverPackagesWithoutOverlap();
         if ($expires && $expires < Carbon::now()->timestamp) {
-            Artisan::call('package:discover');
+            // Run package:discover preventing that parallel jobs or requests do it at the same time
+            LicensedPackageManifest::discoverPackagesWithoutOverlap();
         }
     }
 
