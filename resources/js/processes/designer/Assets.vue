@@ -84,7 +84,7 @@ export default {
           asset_name_all: "View All Processes",
           asset_name_new: "Create New Process",
           urlPath: "/processes",
-          urlAsset: "/processes?create=true",
+          urlAsset: "/processes?new=true",
         },
         {
           color: "#8EB86F",
