@@ -13,7 +13,7 @@ trait PersistenceTokenTrait
 {
     protected TokenRepository $tokenRepository;
 
-    private static $ABOUT_CACHE_KEY = 'nayra.about';
+    private static $aboutCacheKey = 'nayra.about';
 
     /**
      * Persists instance and token data when a token arrives to an activity
@@ -271,6 +271,6 @@ trait PersistenceTokenTrait
         $name = $aboutInfo['name'];
         $version = $aboutInfo['version'];
         error_log("Microservice $name version $version is running.");
-        Cache::forever(self::$ABOUT_CACHE_KEY, $aboutInfo);
+        Cache::forever(self::$aboutCacheKey, $aboutInfo);
     }
 }

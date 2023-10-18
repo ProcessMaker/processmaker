@@ -152,12 +152,12 @@ class ServiceRabbitMq
     public function sendAboutMessage()
     {
         // Get about information from composer.json
-        $composer_json_path = base_path('composer.json');
-        $composer_json = json_decode(file_get_contents($composer_json_path), true);
+        $composerJsonPath = base_path('composer.json');
+        $composerJson = json_decode(file_get_contents($composerJsonPath), true);
         $about = [
-            'name' => $composer_json['name'],
-            'version' => $composer_json['version'],
-            'description' => $composer_json['description'],
+            'name' => $composerJson['name'],
+            'version' => $composerJson['version'],
+            'description' => $composerJson['description'],
         ];
         // Send about message
         try {
