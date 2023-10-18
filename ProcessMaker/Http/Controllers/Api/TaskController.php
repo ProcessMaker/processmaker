@@ -213,6 +213,9 @@ class TaskController extends Controller
             return $query->count();
         }
 
+        // Apply filter overdue
+        $query->overdue($request->input('overdue'));
+
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (QueryException $e) {
