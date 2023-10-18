@@ -12,12 +12,11 @@
       :invalid-feedback="errorMessage('connection_type', errors)"
       :state="errorState('connection_type', errors)"
     >
-      <b-form-input
+      <b-form-select
         v-model="config.connection_type"
-        autofocus
-        autocomplete="off"
-        :state="errorState('connection_type', errors)"
         name="connection_type"
+        :options="connectionOptions.oauth"
+        :state="errorState('connection_type', errors)"
       />
     </b-form-group>
 
@@ -42,7 +41,7 @@
     </b-form-group>
 
     <b-form-group
-      v-if="config.connection_type.toLowerCase() === 'dropbox'"
+      v-if="config.connection_type === 'Dropbox'"
       :label="$t('Access Token')"
       :description="
         formDescription(
@@ -82,6 +81,39 @@ export default {
         connection_type: "",
         uri: "",
         o_auth_access_token: "",
+      },
+      connectionOptions: {
+        oauth: [
+          { text: "Amazon S3", value: "Amazon S3" },
+          { text: "Azure Blob Storage", value: "Azure Blob Storage" },
+          { text: "Box", value: "Box" },
+          { text: "Dropbox", value: "Dropbox" },
+          { text: "Google Cloud Storage", value: "Google Cloud Storage" },
+          { text: "Google Drive", value: "Google Drive" },
+          { text: "OneDrive", value: "OneDrive" },
+          { text: "SharePoint REST", value: "SharePoint REST" },
+        ],
+        others: [
+          { text: "Auto", value: "Auto" },
+          { text: "Local", value: "Local" },
+          { text: "Azure Data Lake Storage Gen1", value: "Azure Data Lake Storage Gen1" },
+          { text: "Azure Data Lake Storage Gen2", value: "Azure Data Lake Storage Gen2" },
+          {
+            text: "Azure Data Lake Storage Gen2 SSL",
+            value: "Azure Data Lake Storage Gen2 SSL",
+          },
+          { text: "Azure Files", value: "Azure Files" },
+          { text: "FTP", value: "FTP" },
+          { text: "FTPS", value: "FTPS" },
+          { text: "HDFS", value: "HDFS" },
+          { text: "HDFS Secure", value: "HDFS Secure" },
+          { text: "HTTP", value: "HTTP" },
+          { text: "HTTPS", value: "HTTPS" },
+          { text: "IBM Object Storage Source", value: "IBM Object Storage Source" },
+          { text: "Oracle Cloud Storage", value: "Oracle Cloud Storage" },
+          { text: "SFTP", value: "SFTP" },
+          { text: "SharePoint SOAP", value: "SharePoint SOAP" },
+        ],
       },
       errors: {},
     };
