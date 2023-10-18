@@ -109,6 +109,7 @@
             <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
+            <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
           </div>
           <template v-else>
             <notification-card
@@ -179,6 +180,7 @@
               <b-col
                 align-self="center"
                 cols="auto"
+                class="notification-popover-col"
               >
                 <a
                   href="/notifications"
@@ -197,6 +199,7 @@
             <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
+            <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
           </div>
           <div class="items" v-else>
             <notification-item
@@ -402,6 +405,10 @@ export default {
   width: 450px;
 }
 
+.notification-popover-col {
+    height: auto !important;
+}
+
 .notification-popover::v-deep .tabs {
   .nav-tabs {
     border: 0;
@@ -480,6 +487,7 @@ export default {
 
   i {
     font-size: 19px;
+    padding-right: 1px;
     color: $secondary;
   }
   .dot {
