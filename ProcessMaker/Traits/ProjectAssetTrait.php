@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use ProcessMaker\Exception\ProjectAssetSyncException;
 
 trait ProjectAssetTrait
