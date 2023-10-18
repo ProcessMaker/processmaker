@@ -16,7 +16,13 @@ trait ProjectAssetTrait
     public function syncProjectAsset($requestOrInteger, $assetModelClass)
     {
         if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
-            $projectIds = is_int($requestOrInteger) ? $requestOrInteger : $requestOrInteger?->input('projects', '');
+            $projectIds = [];
+
+            if ($requestOrInteger instanceof Request && $requestOrInteger->has('projects')) {
+                $projectIds = $requestOrInteger->input('projects', '');
+            } elseif (is_int($requestOrInteger)) {
+                $projectIds = $requestOrInteger;
+            }
 
             if (!empty($projectIds)) {
                 // Check if the string is in the JSON array format
