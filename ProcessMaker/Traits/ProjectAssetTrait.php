@@ -13,9 +13,9 @@ trait ProjectAssetTrait
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
-    public function syncProjectAsset($request, $assetModelClass)
+    public function syncProjectAsset($requestOrInteger, $assetModelClass)
     {
-        $projectIds = $request->input('projects', '');
+        $projectIds = is_int($requestOrInteger) ? $requestOrInteger : $requestOrInteger?->input('projects', '');
 
         // Check if the string is in the JSON array format,
         // which happens during updates from the asset 'designer' (e.g., modeler, screen builder, etc.)
@@ -32,7 +32,6 @@ trait ProjectAssetTrait
         try {
             // Sync the project assets with the prepared project IDs
             $this->projectAssets()->syncWithPivotValues($projectIds, ['asset_type' => $assetModelClass]);
-            \Log::debug('Synced project assets', ['projectIds' => $projectIds]);
         } catch (Exception $e) {
             throw new ProjectAssetSyncException('Error syncing project assets: ' . $e->getMessage());
         }
