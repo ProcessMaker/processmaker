@@ -48,6 +48,9 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
     const ACTION_TASK_FAILED = 'TASK_FAILED';
 
+    protected $TOPIC_SCRIPTS = 'scripts';
+    protected $TOPIC_REQUESTS = 'requests';
+
     /**
      * Trigger a start event and return the process request instance.
      *
@@ -257,7 +260,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'user_id' => $userId,
             ],
             'collaboration_id' => $instance->collaboration_uuid,
-        ], 'scripts');
+        ], $this->TOPIC_SCRIPTS);
     }
 
     /**
@@ -641,8 +644,11 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * @param string $subject
      * @return void
      */
-    private function dispatchAction(array $action, $subject = 'requests'): void
+    private function dispatchAction(array $action, $subject = null): void
     {
+        if ($subject === null) {
+            $subject = $this->TOPIC_REQUESTS;
+        }
         // add environment variables to session
         $environmentVariables = $this->getEnvironmentVariables();
         $action['session']['env'] = $environmentVariables;

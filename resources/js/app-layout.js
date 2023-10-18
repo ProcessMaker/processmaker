@@ -23,6 +23,7 @@ import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
+import WelcomeModal from "./Mobile/WelcomeModal";
 import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
@@ -65,6 +66,7 @@ Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("TimelineItem", TimelineItem);
 Vue.component("Required", Required);
+Vue.component("Welcome", WelcomeModal);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -76,6 +78,9 @@ window.ProcessMaker.mobileApp = false;
 if (isMobileDevice) {
   window.ProcessMaker.mobileApp = true;
 }
+
+// Verify is in mobile mode
+const isMobileNavbar = window.ProcessMaker.events.$cookies.get("isMobile");
 
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
@@ -189,15 +194,21 @@ window.ProcessMaker.navbar = new Vue({
 });
 
 // Assign our navbar component to our global ProcessMaker object
-if (isMobileDevice) {
+if (isMobileNavbar === "true") {
   window.ProcessMaker.navbarMobile = new Vue({
     el: "#navbarMobile",
     components: {
       requestModalMobile,
+      WelcomeModal,
     },
     data() {
       return {
       };
+    },
+    mounted() {
+      if (this.$cookies.get("firstMounted") === "true") {
+        $("#welcomeModal").modal("show");
+      }
     },
     methods: {
       switchToDesktop() {

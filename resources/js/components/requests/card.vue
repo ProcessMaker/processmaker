@@ -78,9 +78,9 @@ export default {
         .post("/process_events/" + this.process.id + "?event=" + startEventId)
         .then(response => {
           this.spin = 0;
-          var instance = response.data;
+          let instance = response.data;
           this.$cookies.set('fromTriggerStartEvent', true, '1min');
-          if (this.$cookies.get("isMobile")) {
+          if (this.$cookies.get("isMobile") === "true") {
             window.location = "/requests/mobile/" + instance.id;
           } else {
             window.location = "/requests/" + instance.id;

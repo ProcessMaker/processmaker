@@ -39,6 +39,24 @@ export default {
         }
     });
   },
+  doImportProjectAssets(file, options, projectId, password) {
+    let formData = new FormData();
+    const optionsBlob = new Blob([JSON.stringify(options)], {
+      type: 'application/json'
+    });
+
+    formData.append('file', file);
+    formData.append('options', optionsBlob);
+    formData.append('id', projectId);
+    formData.append('password', password);
+    
+    return ProcessMaker.apiClient.post('/projects/assets/import', formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   importOlderVersion(file) {
     let formData = new FormData();
     formData.append('file', file);
@@ -155,7 +173,7 @@ export default {
         discard: value.every(i => i.discard),
       };
     });
-
+    
     return {
       root,
       rootUuid,

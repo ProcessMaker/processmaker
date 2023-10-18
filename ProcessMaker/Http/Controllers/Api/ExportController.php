@@ -84,4 +84,20 @@ class ExportController extends Controller
         }
         throw new Exception("Type {$type} not found", 404);
     }
+
+    /**
+     * Get asset manifest.
+     *
+     * @param string $type
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function getManifest(string $type, int $id) : array
+    {
+        $response = (new self)->manifest($type, $id);
+
+        return json_decode($response->getContent(), true);
+    }
 }

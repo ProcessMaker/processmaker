@@ -140,7 +140,10 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required, IconSelector } from "SharedComponents";
+import Required from "../shared/Required.vue";
+import Modal from "../shared/Modal.vue";
+import FormErrorsMixin from "../shared/FormErrorsMixin";
+import IconSelector from "../shared/IconSelector.vue";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {

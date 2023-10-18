@@ -207,27 +207,15 @@ trait SearchAutocompleteTrait
 
     private function searchProjectMembers($query)
     {
-        $projectMemberModalClass = 'ProcessMaker\Package\Projects\Models\ProjectMember';
-        $projectMember = new $projectMemberModalClass;
+        return (object) [
+            'users' => User::whereHas('projectMembers', function ($query) {
+                $query->where('member_type', User::class);
+            })->get(),
 
-        if (empty($query)) {
-            $results = $projectMember->with(['users', 'groups'])->get();
-        } else {
-            $results = $projectMember->pmql('name = "' . $query . '"', function ($expression) {
-                return function ($query) use ($expression) {
-                    $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
-                };
-            })->get();
-        }
-
-        return $results->map(function ($result) {
-            $userGroups = (object) [
-                'users' => $result->users,
-                'groups' => $result->groups,
-            ];
-
-            return $userGroups;
-        });
+            'groups' => Group::whereHas('projectMembers', function ($query) {
+                $query->where('member_type', Group::class);
+            })->get(),
+        ];
     }
 
     private function searchProjectCategories($query)

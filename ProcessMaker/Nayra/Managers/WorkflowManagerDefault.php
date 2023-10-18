@@ -436,6 +436,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     public function getServiceClassImplementation($implementation)
     {
         $class = $this->serviceTaskImplementations[$implementation];
+
         return $class;
     }
 }
