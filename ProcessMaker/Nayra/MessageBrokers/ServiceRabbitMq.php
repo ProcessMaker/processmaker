@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Nayra\MessageBrokers;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use ProcessMaker\Helpers\DBHelper;
@@ -158,6 +160,10 @@ class ServiceRabbitMq
             'description' => $composer_json['description'],
         ];
         // Send about message
-        $this->sendMessage(self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
+        try {
+            $this->sendMessage(self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
+        } catch (Exception $e) {
+            Log::error('Error sending about message', ['error' => $e->getMessage()]);
+        }
     }
 }

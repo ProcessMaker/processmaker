@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Nayra\MessageBrokers;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 use ProcessMaker\Helpers\DBHelper;
@@ -10,6 +12,7 @@ use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 class ServiceKafka
 {
     const QUEUE_NAME = 'nayra-store';
+
     const PROCESSES_QUEUE = 'processes';
 
     /**
@@ -111,6 +114,10 @@ class ServiceKafka
             'description' => $composer_json['description'],
         ];
         // Send about message
-        $this->sendMessage($prefix . self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
+        try {
+            $this->sendMessage($prefix . self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
+        } catch (Exception $e) {
+            Log::error('Error sending about message', ['error' => $e->getMessage()]);
+        }
     }
 }
