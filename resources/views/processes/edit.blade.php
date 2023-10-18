@@ -88,7 +88,7 @@
                                 :label="$t('Project')"
                                 api-get="projects"
                                 api-list="projects"
-                                v-model="formData.projects"
+                                v-model="selectedProjects"
                                 :errors="errors.projects">
                             </project-select>
                             <div class="form-group">
@@ -433,6 +433,8 @@
         data() {
           return {
             formData: @json($process),
+            assignedProjects: @json($assignedProjects),
+            selectedProjects: '',
             dataGroups: [],
             value: [],
             errors: {
@@ -461,6 +463,8 @@
             if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
                 this.canCancel.push(this.processManagerOption());
             }
+
+            this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
             
             let path = new URL(location.href).href;
             let target = path.split('#');
@@ -475,6 +479,13 @@
                 const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
                 usersAndGroups[0]['items'].unshift(this.processManagerOption());
                 return usersAndGroups;
+            }
+        },
+        watch: {
+            selectedProjects: {
+                handler() {
+                    this.formData.projects = this.selectedProjects;
+                }
             }
         },
         methods: {
@@ -579,7 +590,7 @@
           importTranslation() {
             window.location = `/processes/${this.formData.id}/import/translation`
           },
-        }
+        },
       });
     </script>
 @endsection

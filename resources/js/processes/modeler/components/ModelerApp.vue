@@ -101,6 +101,7 @@ export default {
           name: this.process.name,
           description: this.process.description,
           task_notifications: this.getTaskNotifications(),
+          projects: this.process.projects,
           bpmn: xml,
           svg: svgString,
         })
@@ -236,6 +237,7 @@ export default {
         name: this.process.name,
         description: this.process.description,
         task_notifications: this.getTaskNotifications(),
+        projects: this.process.projects,
         bpmn: this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
       };

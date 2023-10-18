@@ -222,6 +222,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
     protected $appends = [
         'has_timer_start_events',
+        'projects',
     ];
 
     protected $casts = [
@@ -247,19 +248,37 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Get the associated projects
      */
     public function projects()
-    {
-        $projectModelClass = 'ProcessMaker\Package\Projects\Models\Project';
-
-        if (!class_exists($projectModelClass)) {
+    {   
+        if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
             // return an empty collection
             return new HasMany($this->newQuery(), $this, '', '');
         }
 
-        return $this->morphToMany(
-            $projectModelClass,
-            'asset',
-            'project_assets'
-        );
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
+            'project_assets',
+            'asset_id',
+            'project_id',
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
+    }
+
+    public function projectAsset()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets',
+            'asset_id',
+            'project_id',
+        )->withTimeStamps();
     }
 
     /**
