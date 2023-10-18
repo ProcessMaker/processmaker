@@ -64,11 +64,11 @@ jobs:
           cd pm4-k8s-distribution
           docker tag local/processmaker:${{env.IMAGE_TAG}}-baseline public.ecr.aws/processmaker/processmaker:${{env.BASE}}
           docker push public.ecr.aws/processmaker/processmaker:${{env.BASE}}
-      - name: Push OpenSource Image to ECR
-        run: |
-          cd pm4-k8s-distribution
-          docker tag local/processmaker:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
-          docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+      # - name: Push OpenSource Image to ECR
+      #   run: |
+      #     cd pm4-k8s-distribution
+      #     docker tag local/processmaker:${{env.IMAGE_TAG}} public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+      #     docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
       - name: Push Enterprise Image to ECR
         run: |
           cd pm4-k8s-distribution
