@@ -91,7 +91,8 @@ trait HasVersioning
             $attributes['uuid'],
             $attributes['updated_at'],
             $attributes['created_at'],
-            $attributes['has_timer_start_events']);
+            $attributes['has_timer_start_events'],
+            $attributes['projects']);
 
         return $attributes;
     }
