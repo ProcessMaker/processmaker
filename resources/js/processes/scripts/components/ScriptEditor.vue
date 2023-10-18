@@ -470,6 +470,7 @@ export default {
             code: this.code,
             title: this.script.title,
             description: this.script.description,
+            projects: this.script.projects,
             script_executor_id: this.script.script_executor_id,
             run_as_user_id: this.script.run_as_user_id,
             timeout: this.script.timeout,
@@ -502,7 +503,9 @@ export default {
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
-      this.save(onSuccess, onError, processId);
+      if (processId) {
+        this.save(onSuccess, onError, processId);
+      }
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -748,6 +751,7 @@ export default {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
+          projects: this.script.projects,
           script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,

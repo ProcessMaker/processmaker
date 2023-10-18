@@ -90,6 +90,10 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         'translations' => 'array',
     ];
 
+    protected $appends = [
+        'projects',
+    ];
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -162,12 +166,22 @@ class Screen extends ProcessMakerModel implements ScreenInterface
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     public function scopeExclude($query, $value = [])

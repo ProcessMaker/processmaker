@@ -135,6 +135,8 @@
   "Array": "Array",
   "Assets": "Assets",
   "as": "as",
+  "As Participant": "As Participant",
+  "As Requester": "As Requester",
   "Assign all permissions to this group": "Assign all permissions to this group",
   "Assign all permissions to this user": "Assign all permissions to this user",
   "Assign by Expression Use a rule to assign this Task conditionally": "Assign by Expression: Use a rule to assign this Task conditionally",

@@ -79,6 +79,9 @@ if (isMobileDevice) {
   window.ProcessMaker.mobileApp = true;
 }
 
+// Verify is in mobile mode
+const isMobileNavbar = window.ProcessMaker.events.$cookies.get("isMobile");
+
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
   return this.find((node) => node.id === id);
@@ -191,7 +194,7 @@ window.ProcessMaker.navbar = new Vue({
 });
 
 // Assign our navbar component to our global ProcessMaker object
-if (isMobileDevice) {
+if (isMobileNavbar === "true") {
   window.ProcessMaker.navbarMobile = new Vue({
     el: "#navbarMobile",
     components: {

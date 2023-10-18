@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 class ScriptExecutorVersion extends ProcessMakerModel
 {
     protected $fillable = [
-        'title', 'description', 'language', 'config', 'draft',
+        'title', 'description', 'language', 'config', 'draft', 'is_system',
     ];
 
     /**
