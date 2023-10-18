@@ -26,6 +26,7 @@ env:
   DOM_EKS: ${{ secrets.DOM_EKS }}
   BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -57,6 +58,12 @@ jobs:
       - name: Login to ECR
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
+      - name: Push Base to ECR
+        if: env.BUILD_BASE == '1'  
+        run: |
+          cd pm4-k8s-distribution
+          docker tag local/processmaker:${{env.IMAGE_TAG}}-baseline public.ecr.aws/processmaker/processmaker:${{env.BASE}}
+          docker push public.ecr.aws/processmaker/processmaker:${{env.BASE}}
       - name: Push OpenSource Image to ECR
         run: |
           cd pm4-k8s-distribution
