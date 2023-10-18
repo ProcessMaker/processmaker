@@ -13,7 +13,8 @@
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index, 'core')"
+          @mouseover="toggleButtons(index, 'core', true)"
+          @mouseleave="toggleButtons(index, 'core', false)"
         >
           <template v-if="!showButtonsCore[index]">
             <asset
@@ -41,7 +42,8 @@
           :key="index"
           bg-variant="light"
           class="text-center"
-          @click="toggleButtons(index, 'package')"
+          @mouseover="toggleButtons(index, 'package', true)"
+          @mouseleave="toggleButtons(index, 'package', false)"
         >
           <template v-if="!showButtonsPackage[index]">
             <asset
@@ -139,12 +141,12 @@ export default {
     };
   },
   methods: {
-    toggleButtons(index, section) {
+    toggleButtons(index, section, status) {
       if (section === "core") {
-        this.$set(this.showButtonsCore, index, !this.showButtonsCore[index]);
+        this.$set(this.showButtonsCore, index, status);
       }
       if (section === "package") {
-        this.$set(this.showButtonsPackage, index, !this.showButtonsPackage[index]);
+        this.$set(this.showButtonsPackage, index, status);
       }
     },
   },
