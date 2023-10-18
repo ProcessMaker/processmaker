@@ -17,6 +17,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Query\SyntaxError;
 
 class ScriptController extends Controller
 {
@@ -114,6 +115,15 @@ class ScriptController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter);
                 });
+            }
+        }
+
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
 

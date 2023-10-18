@@ -10,13 +10,13 @@
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
         @php
-          $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+          $loginLogo = \ProcessMaker\Models\Setting::getLogo();
         @endphp
         <a href="#" class="navbar-brand pl-2"><img alt= "Login logo" class="navbar-logo" src={{$loginLogo}}></a>
         <div class="content-nav">
           <ul class="nav justify-content-end">
             <li class="nav-item">
-              <a class="nav-link">
+              <a class="nav-link px-0">
                 @if (shouldShow('requestButton'))
                   <component 
                     v-bind:is="'request-modal-mobile'" 
@@ -28,7 +28,7 @@
               </a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle py-2 px-3" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                 <button
                   type="buttom"
                   class="dropleft btn btn-outline-light"
