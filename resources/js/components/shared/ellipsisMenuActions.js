@@ -129,7 +129,7 @@ export default {
           icon: "fas fa-file-export",
         },
         {
-          value: "remove-item",
+          value: "remove-screen",
           content: "Delete",
           permission: ["delete-screens", "create-projects", "view-projects"],
           icon: "fas fa-trash-alt",

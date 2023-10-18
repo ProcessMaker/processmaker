@@ -60,4 +60,9 @@ return [
      | heartbeat interval in milliseconds
      */
     'heartbeat_interval_ms' => intval(env('KAFKA_HEARTBEAT_INTERVAL_MS') ?: 3000),
+
+    /*
+     | The prefix that will be used in the topic names
+     */
+    'prefix' => env('KAFKA_PREFIX', ''),
 ];

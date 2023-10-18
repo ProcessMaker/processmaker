@@ -1,7 +1,7 @@
 <template>
   <b-container class="bv-example-row">
-    <b-row align-h="between">
-      <b-col cols="8">
+    <div class="d-flex justify-content-between">
+      <div>
         <div
           v-if="showDropdowns"
           class="dropdown"
@@ -38,11 +38,8 @@
             </a>
           </div>
         </div>
-      </b-col>
-      <b-col
-        cols="1"
-        class="d-flex"
-      >
+      </div>
+      <div class="d-flex justify-content-between">
         <div
           v-if="showDropdowns && type === 'requests'"
           class="dropdown"
@@ -67,7 +64,7 @@
               @click="selectOption(`requester`, 'filter', 'fas fa-user')"
             >
               <i class="fas fa-user" />
-              {{ $t('Requested by Me') }}
+              {{ $t('As Requester') }}
               <i
                 v-if="selectedIconFilter=== 'fas fa-user'"
                 class="fas fa-check ml-auto text-success"
@@ -78,7 +75,7 @@
               @click="selectOption(`participant`, 'filter', 'fas fa-users')"
             >
               <i class="fas fa-users" />
-              {{ $t('With me as Participant') }}
+              {{ $t('As Participant') }}
               <i
                 v-if="selectedIconFilter === 'fas fa-users'"
                 class="fas fa-check ml-auto text-success"
@@ -119,32 +116,32 @@
             </a>
           </div>
         </div>
-      </b-col>
-      <div class="d-flex align-items-end">
-        <button
-          class="btn btn-primary ml-2"
-          @click="toggleInput"
-        >
-          <i class="fas fa-search" />
-        </button>
-        <input
-          v-if="showInput"
-          ref="input"
-          v-model="searchCriteria"
-          type="text"
-          class="form-control narrow-input"
-          placeholder="(fulltext LIKE '%someText%')"
-          @keyup.enter="performSearch"
-        >
-        <button
-          v-if="showInput"
-          class="btn btn-clear"
-          @click="clearSearch"
-        >
-          <i class="fas fa-times" />
-        </button>
+        <div class="d-flex align-items-end ml-1">
+          <button
+            class="btn btn-primary"
+            @click="toggleInput"
+          >
+            <i class="fas fa-search" />
+          </button>
+          <input
+            v-if="showInput"
+            ref="input"
+            v-model="searchCriteria"
+            type="text"
+            class="form-control narrow-input"
+            placeholder="(fulltext LIKE '%someText%')"
+            @keyup.enter="performSearch"
+          >
+          <button
+            v-if="showInput"
+            class="btn btn-clear"
+            @click="clearSearch"
+          >
+            <i class="fas fa-times" />
+          </button>
+        </div>
       </div>
-    </b-row>
+    </div>
   </b-container>
 </template>
 <script>

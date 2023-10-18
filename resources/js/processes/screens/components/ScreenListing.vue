@@ -39,7 +39,7 @@
         </template>
       </vuetable>
 
-      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName"/>
+      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
 
       <pagination
         single="Screen"
@@ -110,6 +110,7 @@ export default {
       orderBy: "title",
       screenId: null,
       assetName: " ",
+      assignedProjects: [],
       sortOrder: [
         {
           field: "title",
@@ -188,9 +189,10 @@ export default {
           }
         });
     },
-    showAddToProjectModal(title, id) {        
+    showAddToProjectModal(title, id, projects) {        
       this.screenId = id;
       this.assetName = title;
+      this.assignedProjects = projects;
       this.$refs["add-to-project-modal"].show();
     },
     fetch() {
