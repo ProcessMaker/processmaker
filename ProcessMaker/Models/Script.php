@@ -10,6 +10,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
@@ -66,6 +67,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasVersioning;
     use Exportable;
     use ProjectAssetTrait;
+    use ExtendedPMQL;
 
     const categoryClass = ScriptCategory::class;
 
@@ -81,6 +83,10 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
         'retry_wait_time' => 'integer',
+    ];
+
+    protected $appends = [
+        'projects',
     ];
 
     /**
@@ -266,12 +272,22 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     /**
@@ -332,5 +348,48 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (empty($this->language)) {
             $this->language = $this->scriptExecutor->language;
         }
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter, $filterStr) {
+            $query->where('scripts.title', 'like', $filter)
+                 ->orWhere('scripts.description', 'like', $filter)
+                 ->orWhere('scripts.status', '=', $filterStr)
+                 ->orWhereIn('scripts.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('script_categories', function ($join) {
+                             $join->on('script_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ScriptCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('script_categories.name', 'like', $filter);
+                 });
+        });
+
+        return $query;
     }
 }

@@ -470,6 +470,7 @@ export default {
             code: this.code,
             title: this.script.title,
             description: this.script.description,
+            projects: this.script.projects,
             script_executor_id: this.script.script_executor_id,
             run_as_user_id: this.script.run_as_user_id,
             timeout: this.script.timeout,
@@ -502,7 +503,9 @@ export default {
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
-      this.save(onSuccess, onError, processId);
+      if (processId) {
+        this.save(onSuccess, onError, processId);
+      }
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -643,7 +646,7 @@ export default {
               this.progress.progress = 0;
               window.ProcessMaker.alert(response.data.message, "danger");
             } else {
-              this.newCode = response.data.diff;
+              this.getScriptVersion(response.data.scriptVersionId);
               this.progress.progress = 100;
               setTimeout(() => {
                 this.loading = false;
@@ -655,7 +658,27 @@ export default {
         },
       );
     },
+    getScriptVersion(scriptVersionId) {
+      const url = "/package-ai/getScriptVersion";
 
+      const params = {
+        server: window.location.host,
+        scriptVersionId,
+      };
+
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then((response) => {
+          this.newCode = response.data.version.diff;
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          if (error.response.status !== 404) {
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
+        });
+    },
     diffEditorMounted() {
     },
     resizeEditor() {
@@ -728,6 +751,7 @@ export default {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
+          projects: this.script.projects,
           script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,

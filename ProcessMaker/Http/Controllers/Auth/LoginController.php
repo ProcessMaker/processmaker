@@ -56,33 +56,89 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
-        $default = Setting::where('key', 'sso.default.login')->first();
-        $arrayAddons = $addons->toArray();
-        // Redirectind to default login
-        if (!empty($default) && !empty($arrayAddons)) {
-            $position = $default->getAttribute('config'); // Type int
-            $data = head($arrayAddons)->data ?? [];
-            $drivers = array_key_exists('drivers', $data) ? $data['drivers'] : [];
-            if (isset($position) && !empty($drivers)) {
-                $elements = $default->getAttribute('ui')->elements;
-                if (count($elements) >= $position + 1) {
-                    $element = $elements[$position];
-                    if (array_key_exists(strtolower($element->name), $drivers)) {
-                        return redirect()->route('sso.redirect', ['driver' => strtolower($element->name)]);
-                    }
-                }
+        // Review if we need to redirect the default SSO
+        if (config('app.enable_default_sso')) {
+            $arrayAddons = $addons->toArray();
+            $driver = $this->getDefaultSSO($arrayAddons);
+            // If a default SSO was defined we will to redirect
+            if (!empty($driver)) {
+                return redirect()->route('sso.redirect', ['driver' => $driver]);
             }
         }
-
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
         // cookie required here because SSO redirect resets the session
-        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, null, null, true, true, false, 'none');
-        $response = response(view('auth.login', compact('addons', 'block')));
+        $cookie = cookie(
+            'processmaker_intended',
+            redirect()->intended()->getTargetUrl(),
+            10,
+            null,
+            null,
+            true,
+            true,
+            false,
+            'none'
+        );
+        $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
+        $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
 
         return $response;
+    }
+
+    protected function getDefaultSSO(array $addons): string
+    {
+        $addonsData = !empty($addons) ? head($addons)->data : [];
+        $defaultSSO = '';
+        if (class_exists(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::class)) {
+            $defaultSSO = Setting::byKey(
+                \ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::SSO_DEFAULT_LOGIN
+            );
+        }
+        if (!empty($defaultSSO) && !empty($addonsData)) {
+            // Get the config selected
+            $position = $this->getColumnAttribute($defaultSSO, 'config', 'config');
+            // Get the ui defined
+            $elements = $this->getColumnAttribute($defaultSSO, 'ui', 'elements');
+            $options = $this->getColumnAttribute($defaultSSO, 'ui', 'options');
+            // Get the sso drivers configured
+            $drivers = !empty($addonsData['drivers']) ? $addonsData['drivers'] : [];
+            if (
+                is_int($position)
+                && $options[$position] !== AuthDefaultSeeder::PM_LOGIN
+                && !empty($elements)
+                && !empty($drivers)
+            ) {
+                // Get the specific element defined with the default SSO
+                $element = !empty($elements[$position]->name) ? strtolower($elements[$position]->name) : '';
+                if (!empty($element) && array_key_exists($element, $drivers)) {
+                    return $element;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    protected function getColumnAttribute(object $setting, string $attribute, string $key = '')
+    {
+        $config = $setting->getAttribute($attribute);
+        switch ($key) {
+            case 'config':
+                $result = !is_null($config) ? (int) $config : null;
+                break;
+            case 'elements':
+                $result = !empty($config->elements) ? $config->elements : [];
+                break;
+            case 'options':
+                $result = !empty($config->options) ? $config->options : [];
+                break;
+            default:
+                $result = null;
+        }
+
+        return $result;
     }
 
     public function loginWithIntendedCheck(Request $request)

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
+use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
@@ -255,6 +256,16 @@ class User extends Authenticatable implements HasMedia
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
     }
 
+    public function projectMembers()
+    {
+        if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
+            return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
+        } else {
+            // Handle the case where the ProjectMember class doesn't exist.
+            return $this->hasMany(EmptyModel::class);
+        }
+    }
+
     public function permissions()
     {
         return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');
@@ -469,5 +480,10 @@ class User extends Authenticatable implements HasMedia
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public static function whereFullname($value)
+    {
+        return self::whereRaw("CONCAT(firstname, ' ', lastname) LIKE ?", ["%$value%"]);
     }
 }

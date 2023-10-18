@@ -265,7 +265,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -382,7 +382,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -397,6 +397,50 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    public function updateBpmn(Request $request, Process $process)
+    {
+        $request->validate(Process::rules($process));
+
+        // bpmn validation
+        if ($schemaErrors = $this->validateBpmn($request)) {
+            $warnings = [];
+            foreach ($schemaErrors as $error) {
+                if (is_string($error)) {
+                    $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                    $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                } else {
+                    $warnings[] = $error;
+                }
+            }
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
+        }
+
+        $process->bpmn = $request->input('bpmn');
+        $process->name = $request->input('name');
+        $process->description = $request->input('description');
+        $process->saveOrFail();
+
+        // If is a subprocess, we need to update the name in the BPMN too
+        if ($request->input('parentProcessId') && $request->input('nodeId')) {
+            $parentProcess = Process::findOrFail($request->input('parentProcessId'));
+            $definitions = $parentProcess->getDefinitions();
+            $elements = $definitions->getElementsByTagName('callActivity');
+            foreach ($elements as $element) {
+                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                    $element->setAttribute('name', $request->input('name'));
+                }
+            }
+            $parentProcess->bpmn = $definitions->saveXML();
+            $parentProcess->saveOrFail();
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 
     /**

@@ -100,13 +100,14 @@ class ProcessController extends Controller
         $list = $this->listUsersAndGroups();
 
         $process->append('notifications', 'task_notifications');
+        $assignedProjects = json_decode($process->projects, true);
 
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
         $canEditData = $this->listCan('EditData', $process);
         $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
+        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons', 'assignedProjects']));
     }
 
     /**
@@ -249,7 +250,7 @@ class ProcessController extends Controller
         $apiRequest = new ApiProcessController();
         $response = $apiRequest->triggerStartEvent($process, $request);
 
-        return redirect('/requests/' . $response->id . '?fromRedirect=true');
+        return redirect('/requests/' . $response->id)->cookie('fromTriggerStartEvent', true, 1);
     }
 
     private function checkAuth()

@@ -183,7 +183,7 @@ class ProcessRequestFileController extends Controller
      * @param FileReceiver $receiver The Chunk FileReceiver
      * @return JsonResponse
      */
-    private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
+    protected function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravelRequest)
     {
         // Perform a chunk upload
         if ($receiver->isUploaded() === false) {
@@ -194,7 +194,7 @@ class ProcessRequestFileController extends Controller
 
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
-            return $this->saveUploadedFile($save->getFIle(), $request, $laravel_request);
+            return $this->saveUploadedFile($save->getFIle(), $request, $laravelRequest);
         }
         // we are in chunk mode, lets send the current progress
         /** @var AbstractHandler $handler */

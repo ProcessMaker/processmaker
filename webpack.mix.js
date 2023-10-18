@@ -96,11 +96,13 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/scripts/index.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/editConfig.js", "public/js/processes/scripts")
+  .js("resources/js/processes/scripts/preview.js", "public/js/processes/scripts")
   .js("resources/js/processes/export/index.js", "public/js/processes/export")
   .js("resources/js/processes/environment-variables/index.js", "public/js/processes/environment-variables")
   .js("resources/js/processes/import/index.js", "public/js/processes/import")
   .js("resources/js/processes/screens/index.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/edit.js", "public/js/processes/screens")
+  .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
   .js("resources/js/processes/signals/index.js", "public/js/processes/signals")
   .js("resources/js/processes/signals/edit.js", "public/js/processes/signals")
   .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
@@ -127,7 +129,7 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = 'node_modules/monaco-editor/min/vs/';
 const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript'];
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript', 'sql'];
 const monacoFiles = [
   'loader.js',
   'editor/editor.main.js',
