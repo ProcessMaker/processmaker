@@ -1,7 +1,7 @@
 <template>
   <b-col>
     <div
-      class="message"
+      class="message-title"
       :class="{ 'message-sm': isMobile }"
       v-html="message"
     />
@@ -89,7 +89,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../../sass/variables";
 
-.message {
+.message-title {
   font-size: 1.2em;
 }
 .message-sm {

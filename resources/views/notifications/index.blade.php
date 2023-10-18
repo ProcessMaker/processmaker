@@ -17,9 +17,9 @@
 <div class="px-3 page-content" id="notifications">
     <div class="container-fluid">
       <b-tabs>
-        <b-tab title="{{ __('All') }}" @click="setFilterComments(null)">
+        <b-tab title="{{ __('Inbox') }}" @click="setFilterComments(null)">
         </b-tab>
-        <b-tab title="{{ __('Inbox') }}" @click="setFilterComments(false)">
+        <b-tab title="{{ __('Notifications') }}" @click="setFilterComments(false)">
         </b-tab>
         <b-tab title="{{ __('Comments') }}" @click="setFilterComments(true)">
         </b-tab>
