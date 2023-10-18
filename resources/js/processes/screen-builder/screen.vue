@@ -61,7 +61,10 @@
               @update="onUpdate"
               @css-errors="cssErrors = $event"
             />
-            <div v-else>
+            <div
+              v-else
+              :class="{ 'device-mobile': deviceScreen === 'mobile' }"
+            >
               <component
                 :is="renderComponent"
                 v-model="previewData"
@@ -623,6 +626,7 @@ export default {
             title: this.screen.title,
             description: this.screen.description,
             type: this.screen.type,
+            projects: this.screen.projects,
             config: this.config,
             computed: this.computed,
             custom_css: this.customCSS,
@@ -849,7 +853,9 @@ export default {
       this.deviceScreen = deviceScreen;
 
       this.$nextTick(() => {
-        this.$refs.renderer.checkIfIsMobile();
+        if (this.$refs.renderer) {
+          this.$refs.renderer.checkIfIsMobile();
+        }
       });
     },
     onUpdate(data) {
@@ -1043,6 +1049,7 @@ export default {
             description: this.screen.description,
             type: this.screen.type,
             config: this.config,
+            projects: this.screen.projects,
             computed: this.computed,
             custom_css: this.customCSS,
             watchers: this.watchers,
@@ -1157,5 +1164,10 @@ export default {
     }
     .tree-button {
       box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+    }
+    .device-mobile {
+      width: 480px;
+      border: 1px solid rgba(0,0,0,.125);
+      margin: 0px auto;
     }
 </style>

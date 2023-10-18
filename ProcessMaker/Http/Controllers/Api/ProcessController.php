@@ -265,7 +265,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -382,7 +382,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
