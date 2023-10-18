@@ -100,7 +100,6 @@ jobs:
           git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
           cd pm4-tools
           composer install --no-interaction
-          ln -s pm /bin/pm
           cd ..
       - name: Add instance EKS           
         run: |
@@ -132,7 +131,7 @@ jobs:
           fi
           export INSTANCE_URL=https://ci-$deploy$DOM_EKS
           echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
-          pm wait-for-instance-ready
+          ../pm4-tools/pm wait-for-instance-ready
       - name: Comment Instance
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
