@@ -164,7 +164,7 @@ trait ProcessTrait
 
     /**
      * Get the tasks of the process
-     * 
+     *
      * @return array
      */
     public function getTasks()
@@ -183,7 +183,7 @@ trait ProcessTrait
             'serviceTask',
             'callActivity',
         ];
-        foreach($types as $type) {
+        foreach ($types as $type) {
             $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, $type);
             foreach ($tasks as $task) {
                 $response[] = [
@@ -193,7 +193,6 @@ trait ProcessTrait
                 ];
             }
         }
-
 
         return $response;
     }

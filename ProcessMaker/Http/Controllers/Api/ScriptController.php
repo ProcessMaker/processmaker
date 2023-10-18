@@ -330,9 +330,8 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
-
         $script->saveOrFail();
-        $script->assignAssetsToProjects($request, Script::class);
+        $script->syncProjectAsset($request, Script::class);
 
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
@@ -383,7 +382,7 @@ class ScriptController extends Controller
         //Creating temporary Key to store multiple id categories
         $original['tmp_script_category_id'] = $script->script_category_id;
         $script->saveOrFail();
-        $script->assignAssetsToProjects($request, Script::class);
+        $script->syncProjectAsset($request, Script::class);
 
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories

@@ -83,6 +83,10 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'retry_wait_time' => 'integer',
     ];
 
+    protected $appends = [
+        'projects',
+    ];
+
     /**
      * Override the default boot method to allow access to lifecycle hooks
      *
@@ -266,12 +270,22 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     /**
