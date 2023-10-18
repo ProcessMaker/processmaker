@@ -15,7 +15,7 @@ trait ProjectAssetTrait
 
     public function syncProjectAsset($requestOrInteger, $assetModelClass)
     {
-        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && $requestOrInteger->has('projects')) {
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
             $projectIds = is_int($requestOrInteger) ? $requestOrInteger : $requestOrInteger?->input('projects', '');
 
             if (!empty($projectIds)) {
