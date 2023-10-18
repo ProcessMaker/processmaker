@@ -35,8 +35,8 @@ class DesignerController extends Controller
     {
         $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects';
         switch (Auth::user()->canAnyFirst($perm)) {
-            case 'view-processes':
-                return false; // already on index, continue with it
+            case 'view-projects':
+                return false;
             case 'view-process-categories':
                 return 'process-categories.index';
             case 'view-scripts':
@@ -45,8 +45,8 @@ class DesignerController extends Controller
                 return 'screens.index';
             case 'view-environment_variables':
                 return 'environment-variables.index';
-            case 'view-projects':
-                return 'projects.index';
+            case 'view-processes':
+                return false; // already on index, continue with it
             default:
                 throw new AuthorizationException();
         }
