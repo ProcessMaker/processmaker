@@ -165,25 +165,26 @@ export default {
     filterActionsByPermissions() {
       return this.actions.filter(action => {
         // Check if the action has a 'permission' property and it's a non-empty string
-        if (
-          !action.hasOwnProperty('permission') ||
-          (typeof action.permission !== 'string') ||
-          action.permission.trim() === ''
-        ) {
-          return true; // No specific permission required or invalid format, so allow the action.
+        if (!action.permission || typeof action.permission !== 'string' || action.permission.trim() === '') {
+            return true; // No specific permission required or invalid format, so allow the action.
         }
 
         const requiredPermissions = action.permission.split(',');
 
-        // Check if this.permission is an array
-        if (Array.isArray(this.permission)) {
-          return requiredPermissions.some(permission => this.permission.includes(permission));
-        } else if (typeof this.permission === 'string') {
-          return requiredPermissions.some(permission => this.permission.includes(permission));
-        } else {
-          // Invalid permission format, exclude the action
-          return false;
+        // Check if this.permission is of type object
+        if (typeof this.permission === 'object' && this.permission !== null) {
+            return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
         }
+
+        // Check if this.permission is a string or an array
+        if (typeof this.permission === 'string') {
+            return requiredPermissions.some(permission => this.permission.split(',').includes(permission));
+        } else if (Array.isArray(this.permission)) {
+            return requiredPermissions.some(permission => this.permission.includes(permission));
+        }
+
+        // Invalid permission format, exclude the action
+        return false;
       });
     },
     filterActionsByConditionals(btns) {
