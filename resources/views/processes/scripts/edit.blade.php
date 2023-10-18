@@ -55,7 +55,7 @@
                           :label="$t('Project')"
                           api-get="projects"
                           api-list="projects"
-                          v-model="formData.projects"
+                          v-model="selectedProjects"
                           :errors="errors.projects">
                         </project-select>
                         <div class="form-group">
@@ -148,6 +148,8 @@
           return {
             formData: @json($script),
             selectedUser: @json($selectedUser),
+            assignedProjects: @json($assignedProjects),
+            selectedProjects: '',
             errors: {
               'title': null,
               'language': null,
@@ -158,6 +160,13 @@
               'status': null
             },
             editScriptHooks: [],
+          }
+        },
+        watch: {
+          selectedProjects: {
+            handler() {
+              this.formData.projects = this.selectedProjects;
+            }
           }
         },
         methods: {
@@ -180,6 +189,7 @@
               script_category_id: this.formData.script_category_id,
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
+              projects: this.formData.projects,
               timeout: this.formData.timeout,
               retry_attempts: this.formData.retry_attempts,
               retry_wait_time: this.formData.retry_wait_time,
@@ -200,6 +210,9 @@
                 }
               });
           }
+        },
+        mounted() {
+          this.selectedProjects = this.assignedProjects.length > 0 ?this.assignedProjects.map(project => project.id) : null;
         }
       });
     </script>

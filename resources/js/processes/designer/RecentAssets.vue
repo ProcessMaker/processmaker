@@ -2,47 +2,136 @@
   <div class="project">
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
-        {{ $t("Recent Assets") }}
+        {{ $t("Recent Assets from my Projects") }}
       </b-navbar-brand>
-      <b-navbar-nav align="end">
-        <b-nav-item-dropdown right>
-          <template #button-content>
+      <div class="d-flex" align="end">
+        <div class="dropdown">
+          <button
+            v-if="!showInput"
+            id="dropdownMenu"
+            type="button"
+            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
             {{ $t("Filter by Type") }}
-          </template>
-          <b-dropdown-item href="#">
-            Option 1
-          </b-dropdown-item>
-          <b-dropdown-item href="#">
-            Option 2
-          </b-dropdown-item>
-        </b-nav-item-dropdown>
-        <b-nav-item>
-          <i class="fas fa-search" />
-        </b-nav-item>
-      </b-navbar-nav>
-    </b-navbar>
-    <div class="container">
-      <div class="content">
-        <img
-          class="image"
-          src="/img/recent_assets.svg"
-          alt="resent assets"
-        >
-        <div class="content-text">
-          <span class="title">
-            {{ $t("Recent Assets") }}
-          </span>
-          <p>{{ $t("No assets to display here yet") }}</p>
+          </button>
+          <div
+            class="dropdown-menu dropdown-menu-right px-3"
+            aria-labelledby="dropdownMenu"
+          >
+            <form>
+              <div
+                v-for="option in optionsType"
+                :id="`type-${option.asset_label}`"
+                :key="option.asset_label"
+                class="dropdown-item form-check"
+              >
+                <input
+                  v-model="selectedTypes"
+                  class="form-check-input"
+                  type="checkbox"
+                  :value="option.asset_type"
+                >
+                <label class="form-check-label">
+                  <i
+                    class="fas fa-circle small"
+                    :style="`color: ${option.asset_color}`"
+                  />
+                  {{ option.asset_label }}
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button
+            class="btn btn-outline-primary border-0 ml-1"
+            @click="toggleInput"
+          >
+            <i class="fas fa-search" />
+          </button>
+          <input
+            v-if="showInput"
+            ref="input"
+            v-model="searchCriteria"
+            type="text"
+            class="form-control narrow-input"
+            @keyup.enter="performSearch"
+          >
+          <button
+            v-if="showInput"
+            class="btn btn-clear"
+            @click="clearSearch"
+          >
+            <i class="fas fa-times" />
+          </button>
         </div>
       </div>
-    </div>
+    </b-navbar>
+    <recent-assets-list
+      ref="recentAssetsList"
+      :types="selectedTypes"
+      :current-user-id="currentUserId"
+      :permission="permission"
+      :is-documenter-installed="isDocumenterInstalled"
+    />
   </div>
 </template>
 
 <script>
+import RecentAssetsList from './RecentAssetsList.vue';
+
+Vue.component("RecentAssetsList", RecentAssetsList);
+
 export default {
+  props: ["currentUserId", "permission", "isDocumenterInstalled"],
   data() {
-    return { };
+    return {
+      searchCriteria: "",
+      showInput: false,
+      optionsType: [],
+      selectedTypes: [],
+    };
+  },
+  mounted() {
+    this.getOptionsType();
+  },
+  updated() {
+    this.performSearch();
+    this.$refs.recentAssetsList.fetch(this.pmql);
+  },
+  methods: {
+    getOptionsType() {
+      window.ProcessMaker.apiClient
+        .get("projects/assets/type")
+        .then((response) => {
+          this.optionsType = response.data.data;
+          Object.keys(this.optionsType).forEach((type) => {
+            this.selectedTypes.push(this.optionsType[type].asset_type);
+          });
+        });
+    },
+    /**
+     * This boolean method shows or hide elements
+     */
+    toggleInput() {
+      if (this.showInput) {
+        this.performSearch();
+      }
+      this.showInput = !this.showInput;
+    },
+    /**
+     * This method sends users's input criteria to filter specific tasks or requests
+     */
+    performSearch() {
+      this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
+    },
+    clearSearch() {
+      this.searchCriteria = "";
+      this.toggleInput();
+    },
   },
 };
 </script>
