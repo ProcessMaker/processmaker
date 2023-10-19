@@ -3,7 +3,7 @@ export default {
     },
     data() {
       return {
-        assetType: null,
+        assetType: 'script',
         showAddProjectModal: false,
         showTemplateModal: false,
         showCreatePmBlockModal: false,

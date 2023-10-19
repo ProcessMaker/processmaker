@@ -3,7 +3,7 @@ export default {
   },
   data() {
     return {
-      assetType: null,
+      assetType: 'process',
       showAddProjectModal: false,
       showTemplateModal: false,
       showCreatePmBlockModal: false,
@@ -105,7 +105,6 @@ export default {
             );
             break;
             case 'add-to-project':
-              this.assetType = data.asset_type;
               this.showAddToProjectModal(data.name, data.id);
             break;
         }
