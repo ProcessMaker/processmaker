@@ -5,7 +5,6 @@ namespace ProcessMaker\Providers;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use Predis\Connection\ConnectionException;
@@ -25,7 +24,8 @@ class LicenseServiceProvider extends ServiceProvider
         }
 
         if ($expires && $expires < Carbon::now()->timestamp) {
-            Artisan::call('package:discover');
+            // Run package:discover only once per instance
+            LicensedPackageManifest::discoverPackagesOnce();
         }
     }
 
