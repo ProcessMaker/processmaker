@@ -33,6 +33,7 @@ use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
+use ProcessMaker\Http\Middleware\PermissionMiddleware;
 
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
@@ -71,12 +72,12 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
         Route::get('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
         Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
-        Route::get('screen-builder/{screen}/edit/{processId?}', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        Route::get('screen-builder/{screen}/edit/{processId?}', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can_any:edit-screens,screen,create-projects');
         Route::get('screens/preview', [ScreenController::class, 'preview'])->name('screens.preview')->middleware('can:view-screens');
 
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
-        Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
-        Route::get('scripts/{script}/builder/{processId?}', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can_any:edit-scripts,script,create-projects');
+        Route::get('scripts/{script}/builder/{processId?}', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can_any:edit-scripts,scrip,create-projects');
         Route::get('scripts/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-screens');
 
         Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
@@ -109,7 +110,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
+    Route::get('modeler/{process}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can_any:edit,process,create-projects');
     Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');

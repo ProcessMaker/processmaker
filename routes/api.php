@@ -34,6 +34,7 @@ use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Http\Controllers\TestStatusController;
+use ProcessMaker\Http\Middleware\PermissionMiddleware;
 use ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
@@ -83,61 +84,61 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Screens
     Route::get('screens', [ScreenController::class, 'index'])->name('screens.index'); // Permissions handled in the controller
     Route::get('screens/{screen}', [ScreenController::class, 'show'])->name('screens.show'); // Permissions handled in the controller
-    Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
-    Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens');
-    Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can:edit-screens');
+    Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can_any:create-screens,create-projects');
+    Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can_any:edit-screens,create-projects');
+    Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can_any:edit-screens,create-projects');
     Route::post('screens/{screen}/close', [ScreenController::class, 'close'])->name('screens.close')->middleware('can:edit-screens');
-    Route::put('screens/{screen}/duplicate', [ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can:create-screens');
+    Route::put('screens/{screen}/duplicate', [ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can_any:create-screens,create-projects');
     Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens');
-    Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
-    Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
+    Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can_any:export-screens,export-projects');
+    Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can_any:import-screens,import-projects');
 
     // Screen Categories
-    Route::get('screen_categories', [ScreenCategoryController::class, 'index'])->name('screen_categories.index')->middleware('can:view-screen-categories');
+    Route::get('screen_categories', [ScreenCategoryController::class, 'index'])->name('screen_categories.index')->middleware('can_any:view-screen-categories,create-projects');
     Route::get('screen_categories/{screen_category}', [ScreenCategoryController::class, 'show'])->name('screen_categories.show')->middleware('can:view-screen-categories');
     Route::post('screen_categories', [ScreenCategoryController::class, 'store'])->name('screen_categories.store')->middleware('can:create-screen-categories');
     Route::put('screen_categories/{screen_category}', [ScreenCategoryController::class, 'update'])->name('screen_categories.update')->middleware('can:edit-screen-categories');
     Route::delete('screen_categories/{screen_category}', [ScreenCategoryController::class, 'destroy'])->name('screen_categories.destroy')->middleware('can:delete-screen-categories');
 
     // Scripts
-    Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
-    Route::get('scripts/{script}', [ScriptController::class, 'show'])->name('scripts.show')->middleware('can:view-scripts');
-    Route::post('scripts', [ScriptController::class, 'store'])->name('scripts.store')->middleware('can:create-scripts');
-    Route::put('scripts/{script}', [ScriptController::class, 'update'])->name('scripts.update')->middleware('can:edit-scripts');
-    Route::put('scripts/{script}/draft', [ScriptController::class, 'draft'])->name('scripts.draft')->middleware('can:edit-scripts');
-    Route::post('scripts/{script}/close', [ScriptController::class, 'close'])->name('scripts.close')->middleware('can:edit-scripts');
-    Route::put('scripts/{script}/duplicate', [ScriptController::class, 'duplicate'])->name('scripts.duplicate')->middleware('can:create-scripts');
+    Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can_any:view-scripts,create-projects');
+    Route::get('scripts/{script}', [ScriptController::class, 'show'])->name('scripts.show')->middleware('can_any:view-scripts,create-projects');
+    Route::post('scripts', [ScriptController::class, 'store'])->name('scripts.store')->middleware('can_any:create-scripts,create-projects');
+    Route::put('scripts/{script}', [ScriptController::class, 'update'])->name('scripts.update')->middleware('can_any:edit-scripts,create-projects');
+    Route::put('scripts/{script}/draft', [ScriptController::class, 'draft'])->name('scripts.draft')->middleware('can_any:edit-scripts,create-projects');
+    Route::post('scripts/{script}/close', [ScriptController::class, 'close'])->name('scripts.close')->middleware('can_any:edit-scripts,create-projects');
+    Route::put('scripts/{script}/duplicate', [ScriptController::class, 'duplicate'])->name('scripts.duplicate')->middleware('can_any:create-scripts,create-projects');
     Route::delete('scripts/{script}', [ScriptController::class, 'destroy'])->name('scripts.destroy')->middleware('can:delete-scripts');
-    Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-scripts');
+    Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can_any:view-scripts,create-projects');
     Route::post('scripts/execute/{script_id}/{script_key?}', [ScriptController::class, 'execute'])->name('scripts.execute');
     Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
 
     // Script Categories
-    Route::get('script_categories', [ScriptCategoryController::class, 'index'])->name('script_categories.index')->middleware('can:view-script-categories');
+    Route::get('script_categories', [ScriptCategoryController::class, 'index'])->name('script_categories.index')->middleware('can_any:view-script-categories,create-projects');
     Route::get('script_categories/{script_category}', [ScriptCategoryController::class, 'show'])->name('script_categories.show')->middleware('can:view-script-categories');
     Route::post('script_categories', [ScriptCategoryController::class, 'store'])->name('script_categories.store')->middleware('can:create-script-categories');
     Route::put('script_categories/{script_category}', [ScriptCategoryController::class, 'update'])->name('script_categories.update')->middleware('can:edit-script-categories');
     Route::delete('script_categories/{script_category}', [ScriptCategoryController::class, 'destroy'])->name('script_categories.destroy')->middleware('can:delete-script-categories');
 
     // Processes
-    Route::get('processes', [ProcessController::class, 'index'])->name('processes.index')->middleware('can:view-processes');
-    Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can:view-processes');
-    Route::post('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
+    Route::get('processes', [ProcessController::class, 'index'])->name('processes.index')->middleware('can_any:view-processes,view-projects');
+    Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can_any:view-processes, create-projects');
+    Route::post('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can_any:export-processes,export-projects');
     Route::get('processes/{process}/bpmn', [ProcessController::class, 'downloadBpmn'])->name('processes.export.bpmn')->middleware('can:view-processes');
-    Route::post('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
-    Route::post('processes/import/validation', [ProcessController::class, 'preimportValidation'])->name('processes.preimportValidation')->middleware('can:import-processes');
+    Route::post('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can_any:import-processes,import-projects');
+    Route::post('processes/import/validation', [ProcessController::class, 'preimportValidation'])->name('processes.preimportValidation')->middleware('can_any:import-processes,import-projects');
     Route::get('processes/import/{code}/is_ready', [ProcessController::class, 'import_ready'])->name('processes.import_is_ready')->middleware('can:import-processes');
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
-    Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
-    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes');
-    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can:edit-processes');
-    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens');
+    Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can_any:create-processes, create-projects');
+    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can_any:edit-processes, create-projects');
+    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can_any:edit-processes, create-projects');
+    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can_any:edit-screens,create-projects');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
-    Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes');
+    Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can_any:archive-processes, delete-projects');
     Route::put('processes/{processId}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes');
 
     // Process Categories
-    Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
+    Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can_any:view-process-categories,create-projects');
     Route::get('process_categories/{process_category}', [ProcessCategoryController::class, 'show'])->name('process_categories.show')->middleware('can:view-process-categories');
     Route::post('process_categories', [ProcessCategoryController::class, 'store'])->name('process_categories.store')->middleware('can:create-process-categories');
     Route::put('process_categories/{process_category}', [ProcessCategoryController::class, 'update'])->name('process_categories.update')->middleware('can:edit-process-categories');
@@ -237,10 +238,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('settings/upload-file', [SettingController::class, 'upload'])->name('settings.upload-file')->middleware('can:update-settings');
 
     // Import & Export
-    Route::get('export/manifest/{type}/{id}/', [ExportController::class, 'manifest'])->name('export.manifest')->middleware('can:export-processes');
+    Route::get('export/manifest/{type}/{id}/', [ExportController::class, 'manifest'])->name('export.manifest')->middleware('can_any:export-processes,export-projects');
     Route::post('export/{type}/download/{id}', [ExportController::class, 'download'])->name('export.download')->middleware('template-authorization');
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
-    Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:import-processes');
+    Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can_any:import-processes,import-projects');
 
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index')->middleware('template-authorization');
