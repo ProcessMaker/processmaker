@@ -170,10 +170,14 @@ export default {
         }
 
         const requiredPermissions = action.permission.split(',');
-
         // Check if this.permission is of type object
         if (typeof this.permission === 'object' && this.permission !== null) {
+          const keys = Object.keys(this.permission);
+          if (keys[0] === "0") {
+            return requiredPermissions.some(permission => Object.values(this.permission).includes(permission));
+          } else {
             return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
+          }
         }
 
         // Check if this.permission is a string or an array
