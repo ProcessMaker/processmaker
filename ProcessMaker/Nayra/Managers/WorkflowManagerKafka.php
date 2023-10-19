@@ -6,7 +6,6 @@ use ProcessMaker\Contracts\WorkflowManagerInterface;
 
 class WorkflowManagerKafka extends WorkflowManagerRabbitMq implements WorkflowManagerInterface
 {
-
     public function __construct()
     {
         // add prefix to the topic names

@@ -265,6 +265,7 @@ trait PersistenceTokenTrait
             !array_key_exists('version', $aboutInfo)
         ) {
             error_log('Invalid about message received. ' . json_encode($aboutInfo));
+
             return;
         }
 
