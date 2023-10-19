@@ -3,8 +3,8 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use ProcessMaker\Exception\PermissionDeniedException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PermissionMiddleware
@@ -18,7 +18,7 @@ class PermissionMiddleware
     {
         try {
             if (!$request->user()) {
-                throw new PermissionDeniedException('User not authenticated');
+                throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
 
             $userPermissions = array_map(function ($e) {
@@ -28,15 +28,13 @@ class PermissionMiddleware
             $userPermissionsIntersect = array_intersect($userPermissions, $permissions);
 
             if (empty($userPermissionsIntersect)) {
-                throw new PermissionDeniedException('Insufficient permissions');
+                throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
 
             return $next($request);
-        } catch (PermissionDeniedException $e) {
+        } catch (AuthorizationException $e) {
             \Log::error('Permission Error: ' . $e->getMessage());
 
-            // Handle the exception here as needed
-            // You might return a custom error response or rethrow the exception.
             return response()->json(['error' => $e->getMessage()], 403);
         }
     }
