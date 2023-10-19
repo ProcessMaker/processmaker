@@ -80,8 +80,7 @@ class LoginController extends Controller
             false,
             'none'
         );
-        $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
-        $response = response(view($loginView, compact('addons', 'block')));
+        $response = response(view('auth.login', compact('addons', 'block')));
         $response->withCookie($cookie);
 
         return $response;

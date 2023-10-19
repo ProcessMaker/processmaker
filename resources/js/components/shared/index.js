@@ -36,11 +36,8 @@ import EllipsisMenuMixin from "./ellipsisMenuActions";
 import ProcessNavigationMixin from "./processNavigation";
 import ScreenNavigationMixin from "./screenNavigation";
 import ScriptNavigationMixin from "./scriptNavigation";
-import DataSourceNavigationMixin from "./dataSourceNavigation";
-import DecisionTableNavigationMixin from "./decisionTableNavigation";
 import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
-import TasksPreview from "../../tasks/components/TasksPreview.vue";
 
 export {
   AddToProjectModal,
@@ -57,8 +54,6 @@ export {
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
-  DataSourceNavigationMixin,
-  DecisionTableNavigationMixin,
   DraggableFileUpload,
   EllipsisMenu,
   EnterPasswordModal,
@@ -84,6 +79,5 @@ export {
   CreateTemplateModal,
   CreatePmBlockModal,
   ScreenNavigationMixin,
-  ScriptNavigationMixin,
-  TasksPreview,
+  ScriptNavigationMixin
 };

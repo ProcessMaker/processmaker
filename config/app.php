@@ -147,9 +147,6 @@ return [
 
     ],
 
-    // Define the view of the Login
-    'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
-
     'providers' => ServiceProvider::defaultProviders()->merge([
         /**
          * Package Service Providers
