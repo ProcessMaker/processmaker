@@ -76,6 +76,7 @@ class Kernel extends HttpKernel
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
         'template-authorization' => \ProcessMaker\Http\Middleware\TemplateAuthorization::class,
         'edit_username_password' => \ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission::class,
+        'can_any'=> \ProcessMaker\Http\Middleware\PermissionMiddleware::class,
     ];
 
     /**
