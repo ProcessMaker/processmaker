@@ -51,6 +51,7 @@
         ></category-select>
         <project-select 
           v-if="isProjectsInstalled"
+          :required="isProjectSelectionRequired"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
@@ -103,7 +104,17 @@
   export default {
     components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData", "isProjectsInstalled", "categoryType", "callFromAiModeler"],
+    props: [
+      "countCategories", 
+      "blankTemplate", 
+      "selectedTemplate", 
+      "templateData", 
+      "generativeProcessData", 
+      "isProjectsInstalled", 
+      "categoryType", 
+      "callFromAiModeler",
+      "isProjectSelectionRequired"
+    ],
     data: function() {
       return {
         showModal: false,
