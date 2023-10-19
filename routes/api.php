@@ -89,7 +89,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can_any:edit-screens,create-projects');
     Route::post('screens/{screen}/close', [ScreenController::class, 'close'])->name('screens.close')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', [ScreenController::class, 'duplicate'])->name('screens.duplicate')->middleware('can_any:create-screens,create-projects');
-    Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can:delete-screens');
+    Route::delete('screens/{screen}', [ScreenController::class, 'destroy'])->name('screens.destroy')->middleware('can_any:delete-screens,create-projects');
     Route::post('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can_any:export-screens,export-projects');
     Route::post('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can_any:import-screens,import-projects');
 
@@ -108,7 +108,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('scripts/{script}/draft', [ScriptController::class, 'draft'])->name('scripts.draft')->middleware('can_any:edit-scripts,create-projects');
     Route::post('scripts/{script}/close', [ScriptController::class, 'close'])->name('scripts.close')->middleware('can_any:edit-scripts,create-projects');
     Route::put('scripts/{script}/duplicate', [ScriptController::class, 'duplicate'])->name('scripts.duplicate')->middleware('can_any:create-scripts,create-projects');
-    Route::delete('scripts/{script}', [ScriptController::class, 'destroy'])->name('scripts.destroy')->middleware('can:delete-scripts');
+    Route::delete('scripts/{script}', [ScriptController::class, 'destroy'])->name('scripts.destroy')->middleware('can_any:delete-scripts,create-projects');
     Route::post('scripts/{script}/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can_any:view-scripts,create-projects');
     Route::post('scripts/execute/{script_id}/{script_key?}', [ScriptController::class, 'execute'])->name('scripts.execute');
     Route::get('scripts/execution/{key}', [ScriptController::class, 'execution'])->name('scripts.execution');
@@ -134,8 +134,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can_any:edit-processes,create-projects');
     Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can_any:edit-screens,create-projects');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
-    Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can_any:archive-processes, delete-projects');
-    Route::put('processes/{processId}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes');
+    Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can_any:archive-processes,create-projects');
+    Route::put('processes/{processId}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can_any:archive-processes,create-projects');
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can_any:view-process-categories,create-projects');
