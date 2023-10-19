@@ -28,6 +28,7 @@
         <hr>
         @if ($packages)
         <h5>{{ __('Packages Installed') }}</h5>
+        DEBUG
         <ul class="list-group-flush p-0">
             @foreach ($packages as $package)
             <li class="list-group-item">
