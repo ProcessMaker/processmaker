@@ -122,16 +122,16 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Processes
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index')->middleware('can_any:view-processes,view-projects');
-    Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can_any:view-processes, create-projects');
+    Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can_any:view-processes,create-projects');
     Route::post('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can_any:export-processes,export-projects');
-    Route::get('processes/{process}/bpmn', [ProcessController::class, 'downloadBpmn'])->name('processes.export.bpmn')->middleware('can:view-processes');
+    Route::get('processes/{process}/bpmn', [ProcessController::class, 'downloadBpmn'])->name('processes.export.bpmn')->middleware('can_any:view-processes,create-projects');
     Route::post('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can_any:import-processes,import-projects');
     Route::post('processes/import/validation', [ProcessController::class, 'preimportValidation'])->name('processes.preimportValidation')->middleware('can_any:import-processes,import-projects');
     Route::get('processes/import/{code}/is_ready', [ProcessController::class, 'import_ready'])->name('processes.import_is_ready')->middleware('can:import-processes');
     Route::post('processes/{process}/import/assignments', [ProcessController::class, 'importAssignments'])->name('processes.import.assignments')->middleware('can:import-processes');
-    Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can_any:create-processes, create-projects');
-    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can_any:edit-processes, create-projects');
-    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can_any:edit-processes, create-projects');
+    Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can_any:create-processes,create-projects');
+    Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can_any:edit-processes,create-projects');
+    Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can_any:edit-processes,create-projects');
     Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can_any:edit-screens,create-projects');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can_any:archive-processes, delete-projects');
