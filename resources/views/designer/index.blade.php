@@ -30,11 +30,7 @@
                 </div>
             </div>
             <div class="col-6">
-                <recent-assets
-                    :current-user-id="{{ \Auth::user()->id }}"
-                    :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'data-sources', 'projects', 'screens', 'scripts', 'decision_tables') }}"
-                    is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
-                />
+                <recent-assets />
             </div>
         </div>
      </div>

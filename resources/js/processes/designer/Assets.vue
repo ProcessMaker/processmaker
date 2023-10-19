@@ -13,8 +13,7 @@
           :key="index"
           bg-variant="light"
           class="text-center"
-          @mouseover="toggleButtons(index, 'core', true)"
-          @mouseleave="toggleButtons(index, 'core', false)"
+          @click="toggleButtons(index, 'core')"
         >
           <template v-if="!showButtonsCore[index]">
             <asset
@@ -42,8 +41,7 @@
           :key="index"
           bg-variant="light"
           class="text-center"
-          @mouseover="toggleButtons(index, 'package', true)"
-          @mouseleave="toggleButtons(index, 'package', false)"
+          @click="toggleButtons(index, 'package')"
         >
           <template v-if="!showButtonsPackage[index]">
             <asset
@@ -83,17 +81,17 @@ export default {
           color: "#4DA2EB",
           icon: "fas fa-play-circle",
           asset_name: "Processes",
-          asset_name_all: "View All Processes",
-          asset_name_new: "Create New Process",
+          asset_name_all: "See All Processes",
+          asset_name_new: "New Process",
           urlPath: "/processes",
-          urlAsset: "/processes?new=true",
+          urlAsset: "/processes?create=true",
         },
         {
           color: "#8EB86F",
           icon: "fas fa-file-alt",
           asset_name: "Screens",
-          asset_name_all: "View All Screens",
-          asset_name_new: "Create New Screen",
+          asset_name_all: "See All Screens",
+          asset_name_new: "New Screen",
           urlPath: "/designer/screens",
           urlAsset: "/designer/screens?create=true",
         },
@@ -101,8 +99,8 @@ export default {
           color: "#F7CF5D",
           icon: "fas fa-code",
           asset_name: "Scripts",
-          asset_name_all: "View All Scripts",
-          asset_name_new: "Create New Script",
+          asset_name_all: "See All Scripts",
+          asset_name_new: "New Script",
           urlPath: "/designer/scripts",
           urlAsset: "/designer/scripts?create=true",
         },
@@ -112,8 +110,8 @@ export default {
           color: "#712F4A",
           icon: "fas fa-table",
           asset_name: "Decision Tables",
-          asset_name_all: "View All Decision Tables",
-          asset_name_new: "Create New Decision Table",
+          asset_name_all: "See All Decision Tables",
+          asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
           urlAsset: "/designer/decision-tables?create=true",
         },
@@ -121,8 +119,8 @@ export default {
           color: "#D66A5F",
           icon: "fas fa-database",
           asset_name: "Collections",
-          asset_name_all: "View All Collections",
-          asset_name_new: "Create New Collection",
+          asset_name_all: "See All Collections",
+          asset_name_new: "New Collection",
           urlPath: "/collections",
           urlAsset: "/collections?create=true",
         },
@@ -130,8 +128,8 @@ export default {
           color: "#B5D3E7",
           icon: "fas fa-share-alt",
           asset_name: "Data Connectors",
-          asset_name_all: "View All Data Connectors",
-          asset_name_new: "Create New Data Connector",
+          asset_name_all: "See All Data Connectors",
+          asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
           urlAsset: "/designer/data-sources?create=true",
         },
@@ -141,12 +139,12 @@ export default {
     };
   },
   methods: {
-    toggleButtons(index, section, status) {
+    toggleButtons(index, section) {
       if (section === "core") {
-        this.$set(this.showButtonsCore, index, status);
+        this.$set(this.showButtonsCore, index, !this.showButtonsCore[index]);
       }
       if (section === "package") {
-        this.$set(this.showButtonsPackage, index, status);
+        this.$set(this.showButtonsPackage, index, !this.showButtonsPackage[index]);
       }
     },
   },

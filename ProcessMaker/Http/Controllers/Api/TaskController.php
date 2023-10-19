@@ -102,7 +102,9 @@ class TaskController extends Controller
         }
 
         $query = ProcessRequestToken::with(['processRequest', 'user']);
+
         $query->select('process_request_tokens.*');
+
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         if (in_array('data', $include)) {
@@ -116,14 +118,7 @@ class TaskController extends Controller
             $query->filter($filter);
         }
 
-        $filterByFields = [
-            'process_id',
-            'process_request_tokens.user_id' => 'user_id',
-            'process_request_tokens.status' => 'status',
-            'element_id',
-            'element_name',
-            'process_request_id',
-        ];
+        $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $fieldFilter) {
             if (in_array($column, $filterByFields)) {
@@ -138,16 +133,10 @@ class TaskController extends Controller
                             $user = User::find($fieldFilter);
                             $query->where(function ($query) use ($user) {
                                 foreach ($user->groups as $group) {
-                                    $query->orWhereJsonContains(
-                                        'process_request_tokens.self_service_groups', strval($group->getKey())
-                                    ); // backwards compatibility
-                                    $query->orWhereJsonContains(
-                                        'process_request_tokens.self_service_groups->groups', strval($group->getKey())
-                                    );
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey())); // backwards compatibility
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups->groups', strval($group->getKey()));
                                 }
-                                $query->orWhereJsonContains(
-                                    'process_request_tokens.self_service_groups->users', strval($user->getKey())
-                                );
+                                $query->orWhereJsonContains('process_request_tokens.self_service_groups->users', strval($user->getKey()));
                             });
                         });
                     });
@@ -202,9 +191,9 @@ class TaskController extends Controller
             try {
                 $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
-                abort('Your PMQL search could not be completed.', 400);
+                return response(['message' => __('Your PMQL search could not be completed.')], 400);
             } catch (SyntaxError $e) {
-                abort('Your PMQL contains invalid syntax.', 400);
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
 
@@ -213,18 +202,13 @@ class TaskController extends Controller
             return $query->count();
         }
 
-        // Apply filter overdue
-        $query->overdue($request->input('overdue'));
-
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
-        } catch (QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $e) {
             $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
             preg_match($regex, $e->getMessage(), $m);
 
-            return response([
-                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
-            ], 422);
+            return response(['message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"'], 422);
         }
 
         // Only filter results if the user id was specified
@@ -238,7 +222,7 @@ class TaskController extends Controller
             })->values();
         }
 
-        // Map each item through its resource
+        //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
             return new Resource($processRequestToken);
         });
