@@ -271,8 +271,8 @@ if (userID) {
     datetime_format: formatDate.content,
     calendar_format: formatDate.content,
     timezone: timezone.content,
-    fullName: userFullName.content,
-    avatar: userAvatar.content,
+    fullName: userFullName?.content,
+    avatar: userAvatar?.content,
   };
   datetime_format.forEach((value) => {
     if (formatDate.content === value.format) {
