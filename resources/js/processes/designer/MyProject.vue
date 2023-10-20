@@ -39,6 +39,7 @@
     <projects-last-modified-listing
       ref="projectsLastModifiedListing"
       :status="status"
+      :project="project"
     />
   </div>
 </template>
@@ -49,7 +50,7 @@ import ProjectsLastModifiedListing from './ProjectsLastModifiedListing';
 Vue.component("ProjectsLastModifiedListing", ProjectsLastModifiedListing);
 
 export default {
-  props: ["status"],
+  props: ["status", "project"],
   data() {
     return {
       searchCriteria: "",

@@ -76,6 +76,7 @@
       :current-user-id="currentUserId"
       :permission="permission"
       :is-documenter-installed="isDocumenterInstalled"
+      :project="project"
     />
   </div>
 </template>
@@ -86,7 +87,7 @@ import RecentAssetsList from './RecentAssetsList.vue';
 Vue.component("RecentAssetsList", RecentAssetsList);
 
 export default {
-  props: ["currentUserId", "permission", "isDocumenterInstalled"],
+  props: ["currentUserId", "project", "permission", "isDocumenterInstalled"],
   data() {
     return {
       searchCriteria: "",

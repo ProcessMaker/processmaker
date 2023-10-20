@@ -77,7 +77,7 @@ export default {
     EllipsisMenu,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
-  props: ["status"],
+  props: ["status", "project"],
   data() {
     return {
       data: {
@@ -136,40 +136,43 @@ export default {
     ProcessMaker.EventBus.$on("api-data-process", (val) => {
       this.fetch();
     });
+    console.log(this.project);
   },
   methods: {
     fetch(pmql = "") {
-      this.loading = true;
-      this.apiDataLoading = true;
-      this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
+      if (this.project) {
+        this.loading = true;
+        this.apiDataLoading = true;
+        this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
 
-      const url = "projects?";
-      const status = this.status ? this.status : "all";
+        const url = "projects?";
+        const status = this.status ? this.status : "all";
 
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          `${url}
-          status=${status}
-          &page=1
-          &per_page=10"
-          &pmql=${encodeURIComponent(pmql)}
-          &order_by=${this.orderBy}
-          &order_direction=${this.orderDirection}`,
-        )
-        .then((response) => {
-          this.data = this.transform(response.data);
-          this.configs = response.data.data;
-          this.apiDataLoading = false;
-          this.loading = false;
-        })
-        .catch((error) => {
-          if (error.code === "ERR_CANCELED") {
-            return;
-          }
-          window.ProcessMaker.alert(error.response.data.message, "danger");
-          this.data = [];
-        });
+        // Load from our api client
+        ProcessMaker.apiClient
+          .get(
+            `${url}
+            status=${status}
+            &page=1
+            &per_page=10"
+            &pmql=${encodeURIComponent(pmql)}
+            &order_by=${this.orderBy}
+            &order_direction=${this.orderDirection}`,
+          )
+          .then((response) => {
+            this.data = this.transform(response.data);
+            this.configs = response.data.data;
+            this.apiDataLoading = false;
+            this.loading = false;
+          })
+          .catch((error) => {
+            if (error.code === "ERR_CANCELED") {
+              return;
+            }
+            window.ProcessMaker.alert(error.response.data.message, "danger");
+            this.data = [];
+          });
+      }
     },
     onNavigate(action, data) {
       switch (action.value) {

@@ -129,7 +129,7 @@ export default {
     scriptNavigationMixin,
     uniqIdsMixin,
   ],
-  props: ["types", "currentUserId", "permission", "isDocumenterInstalled"],
+  props: ["types", "currentUserId", "permission", "isDocumenterInstalled", "project"],
   data() {
     return {
       sortOrder: [{
@@ -170,25 +170,27 @@ export default {
      * get data for Recent Assets
      */
     fetch(pmql = "") {
-      this.loading = true;
-      this.apiDataLoading = true;
-      // Load from our api client
-      window.ProcessMaker.apiClient
-        .get(
-          `projects/assets/recent?
-          asset_types=
-          ${this.types}
-          &pmql=${encodeURIComponent(pmql)}
-          `,
-        )
-        .then((response) => {
-          this.data = this.transform(response.data);
-          this.apiDataLoading = false;
-          this.loading = false;
-        }).catch((error) => {
-          ProcessMaker.alert(error.response?.data?.message, "danger");
-          this.data = [];
-        });
+      if (this.project) {
+        this.loading = true;
+        this.apiDataLoading = true;
+        // Load from our api client
+        window.ProcessMaker.apiClient
+          .get(
+            `projects/assets/recent?
+            asset_types=
+            ${this.types}
+            &pmql=${encodeURIComponent(pmql)}
+            `,
+          )
+          .then((response) => {
+            this.data = this.transform(response.data);
+            this.apiDataLoading = false;
+            this.loading = false;
+          }).catch((error) => {
+            ProcessMaker.alert(error.response?.data?.message, "danger");
+            this.data = [];
+          });
+      }
     },
     /**
      * reload page
