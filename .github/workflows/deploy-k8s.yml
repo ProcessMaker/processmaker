@@ -1,0 +1,156 @@
+name: deploy-k8s
+run-name: ${{ github.actor }} send deploy EKS 🚀
+on: 
+  pull_request:
+    types: [opened, reopened, synchronize, edited, closed]
+  #push:
+  #  branches:
+  #    - FOUR-9465
+  workflow_dispatch:
+env:
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: ${{ secrets.AWS_REGION }}  
+  aws-url: ${{ secrets.AWS_URL }}
+  pull_req_id: ${{github.event.pull_request.number}}
+  DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  DEPLOY: ${{ secrets.DEPLOY }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_EMAIL: ${{ secrets.GH_EMAIL }}
+  GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
+  DOM_EKS: ${{ secrets.DOM_EKS }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  imageEKS: 
+    name: build-docker-image-EKS
+    if: contains(github.event.pull_request.body, 'ci:build-k8s')
+    runs-on: ubuntu-22.04
+    steps:
+      #- uses: actions/checkout@v3
+      - name: Clone repo K8S
+        run: |
+          git clone --depth 1 -b cicd2 "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git" pm4-k8s-distribution/images/pm4-tools
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution/images
+          export CICD=1
+          bash build.k8s.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}} $BASE
+      - name: List Images
+        run: |
+          docker images
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
+      - name: Push Base to ECR
+        if: env.BUILD_BASE == '1'  
+        run: |
+          docker push public.ecr.aws/processmaker/processmaker:ci-base-php82
+          docker push public.ecr.aws/processmaker/processmaker:ci-base
+      - name: Push Enterprise Image to ECR
+        run: |
+          docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+  phpunit:
+    name: phpunit
+    needs: imageEKS
+    runs-on: ubuntu-22.04
+    if: github.event.action != 'closed'
+    steps:
+     - name: Run PHPUnit
+       run: |          
+         git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+         cd pm4-tools
+         export IMAGE=public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+         docker pull $IMAGE          
+         docker-compose down -v          
+         docker-compose build phpunit          
+         docker-compose run phpunit
+
+  deployEKS:
+    name: build-deploy-EKS
+    if: contains(github.event.pull_request.body, 'ci:build-k8s')
+    needs: imageEKS
+    runs-on: ubuntu-22.04    
+    steps:      
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
+          cd argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          composer install --no-interaction
+          cd ..
+      - name: Add instance EKS           
+        run: |
+          cd argocd 
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          current_datetime=$(echo -n ${{env.CURRENT_DATE}} | md5sum | head -c 10)
+          if ! echo $(ls ci/) | grep $deploy; then
+            echo "Creating Deploy :: $deploy"
+            cp template-argocd.yaml ci/ci-$deploy.yaml
+            cp template-db.yaml ./ci/job_database.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
+            git status
+            git add .
+            git commit -m "Deploy CICD : ci-$deploy"
+            git push origin main             
+          else
+            echo "Bouncing"
+            rm -rf ci/job_bounce_develop.yaml
+            cp template-bounce.yaml ci/job_bounce_develop.yaml
+            sed -i "s/{{instance}}/ci-$deploy/g" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{current_datetime}}/$current_datetime/g" ./ci/job_bounce_develop.yaml
+            git status
+            git add .
+            git commit -m "BOUNCE CICD : ci-$deploy"
+            git push origin main
+            echo "Exist Deploy :: https://ci-$deploy$DOM_EKS"
+          fi
+          export INSTANCE_URL=https://ci-$deploy$DOM_EKS
+          echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
+          ../pm4-tools/pm wait-for-instance-ready
+      - name: Comment Instance
+        run: |
+          echo "Instance URL: '${INSTANCE_URL}'"
+          bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"    
+  deleteEKS:
+    name: Delete Instance
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Remove instance EKS            
+        run: |
+          cd argocd/ci/
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          rm -rf ci-$deploy.yaml
+          git status
+          git add .
+          git commit -m "Delete Instance : ci-$deploy"
+          git push origin main
