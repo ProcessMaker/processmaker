@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
@@ -38,6 +39,8 @@ class ScreenBuilderController extends Controller
             ]));
         }
 
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+
         return view('processes.screen-builder.screen', [
             'screen' => $screen,
             'manager' => $manager,
@@ -45,6 +48,7 @@ class ScreenBuilderController extends Controller
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
             'processId' => $processId,
+            'currentUser' => $currentUser,
         ]);
     }
 }

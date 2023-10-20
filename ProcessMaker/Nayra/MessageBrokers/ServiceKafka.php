@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Nayra\MessageBrokers;
 
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 use ProcessMaker\Helpers\DBHelper;
@@ -10,6 +12,8 @@ use ProcessMaker\Nayra\Repositories\PersistenceHandler;
 class ServiceKafka
 {
     const QUEUE_NAME = 'nayra-store';
+
+    const PROCESSES_QUEUE = 'processes';
 
     /**
      * Connect to the message broker service
@@ -63,7 +67,8 @@ class ServiceKafka
     {
         // Create Kafka consumer
         $heartbeat = config('kafka.heartbeat_interval_ms', 3000);
-        $consumer = Kafka::createConsumer([self::QUEUE_NAME])
+        $prefix = config('kafka.prefix', '');
+        $consumer = Kafka::createConsumer([$prefix . self::QUEUE_NAME])
             ->withOption('heartbeat.interval.ms', $heartbeat)
             ->withOption('session.timeout.ms', $heartbeat * 10)
             ->withHandler(function (KafkaConsumerMessage $message) {
@@ -88,8 +93,31 @@ class ServiceKafka
     {
         DBHelper::db_health_check();
         $handler = new PersistenceHandler();
+        if (isset($transactions['type'])) {
+            // Single transaction like about message
+            $transactions = [$transactions];
+        }
         foreach ($transactions as $transaction) {
             $handler->save($transaction);
+        }
+    }
+
+    public function sendAboutMessage()
+    {
+        $prefix = config('kafka.prefix', '');
+        // Get about information from composer.json
+        $composerJsonPath = base_path('composer.json');
+        $composerJson = json_decode(file_get_contents($composerJsonPath), true);
+        $about = [
+            'name' => $composerJson['name'],
+            'version' => $composerJson['version'],
+            'description' => $composerJson['description'],
+        ];
+        // Send about message
+        try {
+            $this->sendMessage($prefix . self::PROCESSES_QUEUE, '', ['type' => 'about', 'data' => $about]);
+        } catch (Exception $e) {
+            Log::error('Error sending about message', ['error' => $e->getMessage()]);
         }
     }
 }

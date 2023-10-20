@@ -10,6 +10,7 @@ use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
@@ -66,6 +67,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
     use HasVersioning;
     use Exportable;
     use ProjectAssetTrait;
+    use ExtendedPMQL;
 
     const categoryClass = ScriptCategory::class;
 
@@ -81,6 +83,10 @@ class Script extends ProcessMakerModel implements ScriptInterface
         'timeout' => 'integer',
         'retry_attempts' => 'integer',
         'retry_wait_time' => 'integer',
+    ];
+
+    protected $appends = [
+        'projects',
     ];
 
     /**
@@ -266,12 +272,22 @@ class Script extends ProcessMakerModel implements ScriptInterface
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     /**

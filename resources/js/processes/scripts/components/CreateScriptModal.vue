@@ -66,6 +66,7 @@
         ></category-select>
         <project-select
           v-if="isProjectsInstalled"
+          :required="isProjectSelectionRequired"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
@@ -193,7 +194,17 @@
   export default {
     components: { Modal, Required, SliderWithInput, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "scriptExecutors", 'isProjectsInstalled', 'hideAddBtn', 'copyAssetMode', 'projectAsset', 'assetName', 'callFromAiModeler'],
+    props: [
+      "countCategories", 
+      "scriptExecutors", 
+      'isProjectsInstalled', 
+      'hideAddBtn', 
+      'copyAssetMode', 
+      'projectAsset', 
+      'assetName', 
+      'callFromAiModeler',
+      'isProjectSelectionRequired'
+    ],
     data: function() {
       return {
         title: '',

@@ -59,7 +59,7 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
 
-        return new ApiCollection(ScriptExecutor::all());
+        return new ApiCollection(ScriptExecutor::nonSystem()->get());
     }
 
     /**

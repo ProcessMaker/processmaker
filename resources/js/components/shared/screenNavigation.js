@@ -30,7 +30,7 @@ export default {
                 this.dupScreen.id = data.id;
                 this.showModal();
                 break;
-              case "remove-item":
+              case "remove-screen":
                 let that = this;
                 ProcessMaker.confirmModal(
                   this.$t("Caution!"),

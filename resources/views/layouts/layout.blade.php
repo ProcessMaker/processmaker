@@ -14,6 +14,8 @@
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
+    <meta name="user-full-name" content="{{ Auth::user()->fullname }}">
+    <meta name="user-avatar" content="{{ Auth::user()->avatar }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')

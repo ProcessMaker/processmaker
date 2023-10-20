@@ -17,6 +17,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Query\SyntaxError;
 
 class ScriptController extends Controller
 {
@@ -114,6 +115,15 @@ class ScriptController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter);
                 });
+            }
+        }
+
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
 
@@ -330,9 +340,8 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
-
         $script->saveOrFail();
-        $script->assignAssetsToProjects($request, Script::class);
+        $script->syncProjectAsset($request, Script::class);
 
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
@@ -383,7 +392,7 @@ class ScriptController extends Controller
         //Creating temporary Key to store multiple id categories
         $original['tmp_script_category_id'] = $script->script_category_id;
         $script->saveOrFail();
-        $script->assignAssetsToProjects($request, Script::class);
+        $script->syncProjectAsset($request, Script::class);
 
         $changes = $script->getChanges();
         //Creating temporary Key to store multiple id categories
