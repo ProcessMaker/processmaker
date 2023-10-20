@@ -1,5 +1,5 @@
 <template>
-  <div class="project mt-3">
+  <div class="project">
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
         {{ $t("My Projects") }}
