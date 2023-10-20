@@ -143,35 +143,35 @@ class GenerateMenus
 
         Menu::make('sidebar_processes', function ($menu) {
             $submenu = $menu->add(__('Designer'));
-            if (\Auth::check() && \Auth::user()->can('view-processes')) {
+            if (\Auth::check() && \Auth::user()->can('view-processes') && \Auth::user()->hasPermission('view-processes')) {
                 $submenu->add(__('Processes'), [
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes',
                 ])->data('order', 0);
             }
-            if (\Auth::check() && \Auth::user()->can('view-scripts')) {
+            if (\Auth::check() && \Auth::user()->can('view-scripts') && \Auth::user()->hasPermission('view-processes')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',
                     'icon' => 'fa-code',
                     'id' => 'process-scripts',
                 ])->data('order', 2);
             }
-            if (\Auth::check() && \Auth::user()->can('view-screens')) {
+            if (\Auth::check() && \Auth::user()->can('view-screens') && \Auth::user()->hasPermission('view-processes')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
                 ])->data('order', 3);
             }
-            if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {
+            if (\Auth::check() && \Auth::user()->can('view-environment_variables') && \Auth::user()->hasPermission('view-processes')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
                 ])->data('order', 4);
             }
-            if (\Auth::check() && \Auth::user()->can('edit-processes')) {
+            if (\Auth::check() && \Auth::user()->can('edit-processes') && \Auth::user()->hasPermission('view-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
