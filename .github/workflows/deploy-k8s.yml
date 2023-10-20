@@ -15,7 +15,7 @@ env:
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
   CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
-  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'optional deploy tag here' || github.event.pull_request.body }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   DEPLOY: ${{ secrets.DEPLOY }}
   GH_USER: ${{ secrets.GH_USER }}
