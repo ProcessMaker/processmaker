@@ -33,7 +33,6 @@ use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
-use ProcessMaker\Http\Middleware\PermissionMiddleware;
 
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
