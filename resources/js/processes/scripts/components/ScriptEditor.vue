@@ -105,7 +105,7 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
-                  <cornea-tab
+                  <ai-tab
                     ref="aiTab"
                     :user="user"
                     :source-code="code"
@@ -240,7 +240,7 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
-                  <cornea-tab
+                  <ai-tab
                     ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
@@ -322,13 +322,13 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import CorneaTab from "./CorneaTab.vue";
+import AiTab from "./AiTab.vue";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
-    CorneaTab,
+    AiTab,
   },
   mixins: [...autosaveMixins],
   props: {
