@@ -3,10 +3,8 @@ run-name: ${{ github.actor }} send deploy EKS 🚀
 on: 
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
-  #push:
-  #  branches:
-  #    - FOUR-9465
-  workflow_dispatch:
+  schedule:
+    - cron: '30 2 * * *'  # every day at midnight
 env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
