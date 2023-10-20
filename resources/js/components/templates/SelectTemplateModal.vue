@@ -118,6 +118,10 @@
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.size > 0 && searchParams.get("new") === "true") {
+          this.show();
+      };
     }
   };
 </script>
