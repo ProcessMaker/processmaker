@@ -105,14 +105,16 @@ export default {
   },
   methods: {
     getOptionsType() {
-      window.ProcessMaker.apiClient
-        .get("projects/assets/type")
-        .then((response) => {
-          this.optionsType = response.data.data;
-          Object.keys(this.optionsType).forEach((type) => {
-            this.selectedTypes.push(this.optionsType[type].asset_type);
+      if (this.project) {
+        window.ProcessMaker.apiClient
+          .get("projects/assets/type")
+          .then((response) => {
+            this.optionsType = response.data.data;
+            Object.keys(this.optionsType).forEach((type) => {
+              this.selectedTypes.push(this.optionsType[type].asset_type);
+            });
           });
-        });
+      }
     },
     /**
      * This boolean method shows or hide elements
