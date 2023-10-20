@@ -88,6 +88,7 @@
           console.warn("Screen builder version does not have watchers");
         }
       });
+      window.Processmaker.user = @json($currentUser);
     </script>
     <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)

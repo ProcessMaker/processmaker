@@ -36,6 +36,10 @@ env:
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
   BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
+  CDATA_LICENSE_DOCUSIGN: ${{ secrets.CDATA_LICENSE_DOCUSIGN }}
+  CDATA_LICENSE_EXCEL: ${{ secrets.CDATA_LICENSE_EXCEL }}
+  CDATA_LICENSE_GITHUB: ${{ secrets.CDATA_LICENSE_GITHUB }}
+  CDATA_LICENSE_SLACK: ${{ secrets.CDATA_LICENSE_SLACK }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -206,4 +210,3 @@ jobs:
           cd pm4-stm-docker/deploy-stm
           composer install --no-dev
           php run-delete-instance.php
-      
