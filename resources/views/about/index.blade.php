@@ -45,22 +45,9 @@
         </ul>
         @endif
         @if ($microServices)
-          <h5>{{ __('Microservices') }}</h5>
-          <ul class="list-group-flush p-0">
-            @foreach ($microServices as $microService)
-              <li class="list-group-item">
-                  <h6><i class="fas fa-puzzle-piece mr-2"></i>{{ ucfirst(trans($microService['name'])) }}</h6>
-                  <small>
-                    @if (isset($microService['description']))
-                      <div>{{ $microService['description'] }}</div>
-                    @endif
-                    @if (isset($microService['version']))
-                      <div><strong>Version:</strong> {{ $microService['version'] }}</div>
-                    @endif
-                  </small>
-              </li>
-            @endforeach
-          </ul>
+        <div id="ms-section">
+          @include('about.microservices')
+        </div>
         @endif
         <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? __('Enabled') : __('Disabled') }}</div>
         <hr>
@@ -76,12 +63,27 @@
     </div>
   </div>
 </div>
+<script>
+async function refreshMs() {
+  const update = await (await fetch('?partial=ms')).text();
+  document.getElementById('ms-section').innerHTML = update;
+  const hasWaiting = update.indexOf('waiting') > -1;
+  if (hasWaiting) {
+    setTimeout(refreshMs, 1000);
+  }
+}
+setTimeout(refreshMs, 1000);
+</script>
 @endsection
 
 @section('css')
 <style>
 .about-logo {
   max-width: 300px;
+}
+.waiting {
+  width: 1rem;
+  height: 1rem;
 }
 </style>
 @endsection

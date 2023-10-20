@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use ProcessMaker\Exception\ProjectAssetSyncException;
 
 trait ProjectAssetTrait
@@ -13,39 +12,51 @@ trait ProjectAssetTrait
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
-    public function syncProjectAsset($request, $assetModelClass)
+    public function syncProjectAsset($requestOrInteger, $assetModelClass)
     {
-        $projectIds = $request->input('projects', '');
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
+            $projectIds = [];
 
-        // Check if the string is in the JSON array format,
-        // which happens during updates from the asset 'designer' (e.g., modeler, screen builder, etc.)
-        if (is_array($decodedProjects = json_decode($projectIds, true))) {
-            $ids = array_column($decodedProjects, 'id');
-            $projectIds = implode(',', $ids);
-        } else {
-            $projectIds = trim($projectIds, ',');
-        }
+            if ($requestOrInteger instanceof Request && $requestOrInteger->has('projects')) {
+                $projectIds = $requestOrInteger->input('projects', '');
+            } elseif (is_int($requestOrInteger)) {
+                $projectIds = $requestOrInteger;
+            }
 
-        // Explode the comma-separated string, filter, and convert to integers
-        $projectIds = array_filter(array_map('intval', explode(',', $projectIds)));
+            if (!empty($projectIds)) {
+                // Check if the string is in the JSON array format
+                $decodedProjects = json_decode($projectIds, true);
+                if (is_array($decodedProjects)) {
+                    $projectIds = implode(',', array_column($decodedProjects, 'id'));
+                } else {
+                    $projectIds = trim($projectIds, ',');
+                }
 
-        try {
-            // Sync the project assets with the prepared project IDs
-            $this->projectAssets()->syncWithPivotValues($projectIds, ['asset_type' => $assetModelClass]);
-            \Log::debug('Synced project assets', ['projectIds' => $projectIds]);
-        } catch (Exception $e) {
-            throw new ProjectAssetSyncException('Error syncing project assets: ' . $e->getMessage());
+                // Explode the comma-separated string, filter, and convert to integers
+                $projectIds = array_map('intval', array_filter(explode(',', $projectIds)));
+            }
+
+            try {
+                // Sync the project assets with the prepared project IDs
+                $this->projectAssets()->syncWithPivotValues($projectIds, ['asset_type' => $assetModelClass]);
+            } catch (Exception $e) {
+                throw new ProjectAssetSyncException('Error syncing project assets: ' . $e->getMessage());
+            }
         }
     }
 
     public function getProjectsAttribute()
     {
-        $projectAssets = self::PROJECT_ASSET_MODEL_CLASS::where('asset_id', $this->id)
-            ->where('asset_type', get_class($this))
-            ->get();
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
+            $projectAssets = self::PROJECT_ASSET_MODEL_CLASS::where('asset_id', $this->id)
+                ->where('asset_type', get_class($this))
+                ->get();
 
-        return json_encode($projectAssets->map(function ($projectAsset) {
-            return $projectAsset->project;
-        }));
+            return json_encode($projectAssets->map(function ($projectAsset) {
+                return $projectAsset->project;
+            }));
+        }
+
+        return json_encode([]);
     }
 }
