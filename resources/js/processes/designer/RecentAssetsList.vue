@@ -132,6 +132,9 @@ export default {
   props: ["types", "currentUserId", "permission", "isDocumenterInstalled", "project"],
   data() {
     return {
+      data: {
+        data: [],
+      },
       sortOrder: [{
         field: "updated_at",
         sortField: "updated_at",

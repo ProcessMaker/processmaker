@@ -136,7 +136,6 @@ export default {
     ProcessMaker.EventBus.$on("api-data-process", (val) => {
       this.fetch();
     });
-    console.log(this.project);
   },
   methods: {
     fetch(pmql = "") {
