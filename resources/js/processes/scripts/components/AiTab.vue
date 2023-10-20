@@ -131,7 +131,7 @@
 import GenerateScriptTextPrompt from "./GenerateScriptTextPrompt.vue";
 
 export default {
-  name: "CorneaTab",
+  name: "AiTab",
   components: {
     GenerateScriptTextPrompt,
   },
