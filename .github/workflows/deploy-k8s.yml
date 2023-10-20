@@ -61,10 +61,8 @@ jobs:
       - name: Push Base to ECR
         if: env.BUILD_BASE == '1'  
         run: |
-          docker push public.ecr.aws/processmaker/processmaker:${{env.BASE}}
-      # - name: Push OpenSource Image to ECR
-      #   run: |
-      #     docker push public.ecr.aws/processmaker/processmaker:${{env.IMAGE_TAG}}
+          docker push public.ecr.aws/processmaker/processmaker:ci-base-php82
+          docker push public.ecr.aws/processmaker/processmaker:ci-base
       - name: Push Enterprise Image to ECR
         run: |
           docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
