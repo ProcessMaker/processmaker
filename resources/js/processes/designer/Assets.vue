@@ -1,5 +1,8 @@
 <template>
-  <div class="assets p-3">
+  <div
+    v-if="hasPermission()"
+    class="assets p-3 mb-3"
+  >
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
         {{ $t("Assets") }}
@@ -75,6 +78,7 @@ export default {
     Asset,
     AssetButtons,
   },
+  props: ["permission"],
   data() {
     return {
       urlPath: "",
@@ -148,6 +152,18 @@ export default {
       if (section === "package") {
         this.$set(this.showButtonsPackage, index, status);
       }
+    },
+    hasPermission() {
+      return this.permission.includes("view-processes")
+      || this.permission.includes("view-screens")
+      || this.permission.includes("view-data-sources")
+      || this.permission.includes("view-decision_tables")
+      || this.permission.includes("view-scripts")
+      || this.permission.includes("create-data-sources")
+      || this.permission.includes("create-decision_tables")
+      || this.permission.includes("create-processes")
+      || this.permission.includes("create-screens")
+      || this.permission.includes("create-scripts");
     },
   },
 };

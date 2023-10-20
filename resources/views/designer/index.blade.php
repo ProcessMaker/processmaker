@@ -20,7 +20,8 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-12">
-                        <assets :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'scripts', 'screens', 'data-sources', 'decision_tables') }}" />                    </div>
+                        <assets :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'scripts', 'screens', 'data-sources', 'decision_tables') }}" />
+                    </div>
                     <div class="col-12">
                         <my-project 
                             status="{{ $listConfig->status }}"
