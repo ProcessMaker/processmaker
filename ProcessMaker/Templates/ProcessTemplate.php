@@ -17,6 +17,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Package\Projects\Models\ProjectAsset;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
 
@@ -242,6 +243,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+
                 // TODO:Check on ['manager_id'] when updating assets
                 if (!isset($existingAssets)) {
                     $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
@@ -259,9 +261,24 @@ class ProcessTemplate implements TemplateInterface
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
-        $processName = Process::findOrFail($processId)->name;
+        $process = Process::findOrFail($processId);
 
-        return response()->json(['processId' => $processId, 'processName' => $processName]);
+        if (!empty($requestData['projects'])) {
+            $manifest = $this->getManifest('process', $processId);
+
+            foreach (explode(',', $requestData['projects']) as $project) {
+                foreach ($manifest['export'] as $asset) {
+                    $model = $asset['model']::find($asset['attributes']['id']);
+                    ProjectAsset::create([
+                        'project_id' => $project,
+                        'asset_id' => $model->id,
+                        'asset_type' => get_class($model),
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['processId' => $processId, 'processName' => $process->name]);
     }
 
     /**
