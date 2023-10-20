@@ -143,35 +143,35 @@ class GenerateMenus
 
         Menu::make('sidebar_processes', function ($menu) {
             $submenu = $menu->add(__('Designer'));
-            if (\Auth::check() && \Auth::user()->can('view-processes') && \Auth::user()->hasPermission('view-processes')) {
+            if ($this->userHasPermission('view-processes')) {
                 $submenu->add(__('Processes'), [
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes',
                 ])->data('order', 0);
             }
-            if (\Auth::check() && \Auth::user()->can('view-scripts') && \Auth::user()->hasPermission('view-processes')) {
+            if ($this->userHasPermission('view-scripts')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',
                     'icon' => 'fa-code',
                     'id' => 'process-scripts',
                 ])->data('order', 2);
             }
-            if (\Auth::check() && \Auth::user()->can('view-screens') && \Auth::user()->hasPermission('view-processes')) {
+            if ($this->userHasPermission('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
                 ])->data('order', 3);
             }
-            if (\Auth::check() && \Auth::user()->can('view-environment_variables') && \Auth::user()->hasPermission('view-processes')) {
+            if ($this->userHasPermission('view-environment_variables')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
                 ])->data('order', 4);
             }
-            if (\Auth::check() && \Auth::user()->can('edit-processes') && \Auth::user()->hasPermission('view-processes')) {
+            if ($this->userHasPermission('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
@@ -261,5 +261,26 @@ class GenerateMenus
         });
 
         return $next($request);
+    }
+
+    private function userHasPermission($permission)
+    {
+        $user = \Auth::user();
+
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->is_administrator) {
+            return true;
+        }
+
+        // Fetch the user's permissions and check if the user has the specific permission
+        $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
+        if ($user->can($permission) && count($userPermissions) === 1 && $userPermissions[0] === 'Projects') {
+            return false; // Deny UI access if the user has only the 'Projects' permission
+        }
+
+        return $user->can($permission);
     }
 }
