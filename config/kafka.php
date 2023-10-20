@@ -65,4 +65,12 @@ return [
      | The prefix that will be used in the topic names
      */
     'prefix' => env('KAFKA_PREFIX', ''),
+
+    /*
+     | SASL configuration
+     */
+    'sasl_password' => env('KAFKA_SASL_PASSWORD'),
+    'sasl_username' => env('KAFKA_SASL_USERNAME'),
+    'sasl_mechanisms' => env('KAFKA_SASL_MECHANISMS', 'SCRAM-SHA-256'),
+    'security_protocol' => env('KAFKA_SECURITY_PROTOCOL', 'SASL_PLAINTEXT'),
 ];

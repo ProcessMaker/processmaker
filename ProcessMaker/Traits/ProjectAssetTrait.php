@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use ProcessMaker\Exception\ProjectAssetSyncException;
 
 trait ProjectAssetTrait
@@ -13,10 +12,16 @@ trait ProjectAssetTrait
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
-    public function syncProjectAsset($request, $assetModelClass)
+    public function syncProjectAsset($requestOrInteger, $assetModelClass)
     {
-        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && $request->has('projects')) {
-            $projectIds = $request->input('projects', '');
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS)) {
+            $projectIds = [];
+
+            if ($requestOrInteger instanceof Request && $requestOrInteger->has('projects')) {
+                $projectIds = $requestOrInteger->input('projects', '');
+            } elseif (is_int($requestOrInteger)) {
+                $projectIds = $requestOrInteger;
+            }
 
             if (!empty($projectIds)) {
                 // Check if the string is in the JSON array format
@@ -34,7 +39,6 @@ trait ProjectAssetTrait
             try {
                 // Sync the project assets with the prepared project IDs
                 $this->projectAssets()->syncWithPivotValues($projectIds, ['asset_type' => $assetModelClass]);
-                \Log::debug('Synced project assets', ['projectIds' => $projectIds]);
             } catch (Exception $e) {
                 throw new ProjectAssetSyncException('Error syncing project assets: ' . $e->getMessage());
             }

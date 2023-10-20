@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
+use Junges\Kafka\Config\Sasl;
 use Junges\Kafka\Contracts\KafkaConsumerMessage;
 use Junges\Kafka\Facades\Kafka;
 use ProcessMaker\Helpers\DBHelper;
@@ -39,6 +40,7 @@ class ServiceKafka
      * @param string $subject
      * @param string $collaborationId
      * @param mixed $body
+
      * @return void
      */
     public function sendMessage(string $subject, string $collaborationId, mixed $body)
@@ -46,6 +48,12 @@ class ServiceKafka
         $producer = Kafka::publishOn($subject)
             ->withHeaders(['collaborationId' => $collaborationId])
             ->withBodyKey('body', $body);
+
+        // SASL Configuration
+        if ($this->hasSaslConfig()) {
+            $producer = $producer->withSasl($this->getSaslConfig());
+        }
+
         $producer->send();
     }
 
@@ -70,8 +78,14 @@ class ServiceKafka
         $prefix = config('kafka.prefix', '');
         $consumer = Kafka::createConsumer([$prefix . self::QUEUE_NAME])
             ->withOption('heartbeat.interval.ms', $heartbeat)
-            ->withOption('session.timeout.ms', $heartbeat * 10)
-            ->withHandler(function (KafkaConsumerMessage $message) {
+            ->withOption('session.timeout.ms', $heartbeat * 10);
+
+        // SASL Configuration
+        if ($this->hasSaslConfig()) {
+            $consumer = $consumer->withSasl($this->getSaslConfig());
+        }
+
+        $consumer = $consumer->withHandler(function (KafkaConsumerMessage $message) {
                 // Get transactions
                 $transactions = $message->getBody();
 
@@ -82,6 +96,24 @@ class ServiceKafka
         // Consume incoming messages
         echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;
         $consumer->consume();
+    }
+
+    private function hasSaslConfig(): bool
+    {
+        return config("kafka.sasl_mechanisms") ? true : false;
+    }
+
+    private function getSaslConfig(): ?Sasl
+    {
+        if ($this->hasSaslConfig()) {
+            return new Sasl(
+                username: config('kafka.sasl_username'),
+                password: config('kafka.sasl_password'),
+                mechanisms: config('kafka.sasl_mechanisms'),
+                securityProtocol: config('kafka.security_protocol'),
+            );
+        }
+        return null;
     }
 
     /**
