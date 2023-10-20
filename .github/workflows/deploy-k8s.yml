@@ -31,7 +31,6 @@ concurrency:
 jobs:
   imageEKS: 
     name: build-docker-image-EKS
-    if: contains(github.event.pull_request.body, 'ci:build-k8s')
     runs-on: ubuntu-22.04
     steps:
       #- uses: actions/checkout@v3
@@ -82,7 +81,7 @@ jobs:
 
   deployEKS:
     name: build-deploy-EKS
-    if: contains(github.event.pull_request.body, 'ci:build-k8s')
+    if: contains(github.event.pull_request.body, 'ci:deploy')
     needs: imageEKS
     runs-on: ubuntu-22.04    
     steps:      
