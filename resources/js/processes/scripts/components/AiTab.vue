@@ -17,7 +17,7 @@
         <b-col
           v-else
           data-test="arrow-generate-back"
-          @click="showPromptArea = false"
+          @click="showMenu()"
         >
           <i class="mr-2 fa fa-arrow-left" />
           {{ $t("Generate Script From Text") }}
@@ -131,7 +131,7 @@
 import GenerateScriptTextPrompt from "./GenerateScriptTextPrompt.vue";
 
 export default {
-  name: "CorneaTab",
+  name: "AiTab",
   components: {
     GenerateScriptTextPrompt,
   },
@@ -185,6 +185,9 @@ export default {
     }
   },
   methods: {
+    showMenu() {
+      this.showPromptArea = false
+    },
     getSelection() {
       this.$emit("get-selection");
     },

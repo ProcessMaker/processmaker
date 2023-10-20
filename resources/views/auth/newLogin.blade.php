@@ -17,9 +17,17 @@
       <div class="flex-fill">
         <div class="row" align-v="center">
           <div class="col-md-6 col-lg-8">
+          @php
+            $isMobile = (
+              isset($_SERVER['HTTP_USER_AGENT'])
+              && \ProcessMaker\Helpers\MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
+            ) ? true : false;
+          @endphp
+          @if (!$isMobile)
             <div class="slogan">
               <img src="/img/slogan.svg" alt="Slogan ProcessMaker" />
             </div>
+          @endif
           </div>
           <div class="col-md-6 col-lg-3">
             <div class="card card-body p-3">
