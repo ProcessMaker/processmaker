@@ -33,15 +33,15 @@ jobs:
     name: build-docker-image-EKS
     runs-on: ubuntu-22.04
     steps:
-      - name: Login to ECR
-        run: |
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.aws-access-key-id }}
           aws-secret-access-key: ${{ env.aws-secret-access-key }}
           aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
       - name: Clone repo K8S
         run: |
           git clone --depth 1 -b cicd2 "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
