@@ -575,7 +575,6 @@ export default {
       this.isDiffEditor = isDiff;
       if (this.selection) {
         this.$refs.diffEditor.getMonaco().getOriginalEditor().setSelection(this.selection);
-        console.log('prompt changed', this.$refs.diffEditor.getMonaco().getSelection());
       }
     },
     onSetAction(action) {
