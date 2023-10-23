@@ -371,5 +371,37 @@ export default {
     display: block;
   }
 }
-
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
+  width: 100%;
+  height: 815px;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.image {
+  width: 244px;
+  height: 219px;
+}
+.content-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.title {
+  color: var(--secondary-800, #44494E);
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: -1.28px;
+}
 </style>
