@@ -17,7 +17,6 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
-use ProcessMaker\Package\Projects\Models\ProjectAsset;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
 
@@ -27,6 +26,8 @@ use SebastianBergmann\CodeUnit\Exception;
 class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
+
+    const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
     /**
      * List process templates
@@ -263,13 +264,14 @@ class ProcessTemplate implements TemplateInterface
 
         $process = Process::findOrFail($processId);
 
-        if (!empty($requestData['projects'])) {
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
             $manifest = $this->getManifest('process', $processId);
 
             foreach (explode(',', $requestData['projects']) as $project) {
                 foreach ($manifest['export'] as $asset) {
                     $model = $asset['model']::find($asset['attributes']['id']);
-                    ProjectAsset::create([
+                    $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
+                    $projectAsset->create([
                         'project_id' => $project,
                         'asset_id' => $model->id,
                         'asset_type' => get_class($model),
