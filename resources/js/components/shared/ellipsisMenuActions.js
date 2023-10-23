@@ -164,7 +164,7 @@ export default {
           icon: "fas fa-copy",
         },
         {
-          value: "remove-item",
+          value: "remove-script",
           content: "Delete",
           permission: ["delete-scripts", "create-projects", "view-projects"],
           icon: "fas fa-trash-alt",

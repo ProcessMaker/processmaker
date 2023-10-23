@@ -161,6 +161,7 @@ export default {
         title: null,
         type: "",
         description: null,
+        projects: [],
       };
     },
     resetErrors() {
