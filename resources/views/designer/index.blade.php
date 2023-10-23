@@ -14,7 +14,9 @@
     ]])
 @endsection
 @section('content')
+
 <div id="new-designer" class="px-3 page-content mb-0">
+    <welcome-designer></welcome-designer>
     <div class="card card-body">
         <div class="row">
             <div class="col-6">
@@ -44,6 +46,9 @@
 @endsection
 
 @section('js')
+<script>
+    window.Processmaker.user = @json($currentUser);
+</script>
 <script src="{{mix('js/processes/newDesigner.js')}}"></script>
 @endsection
 

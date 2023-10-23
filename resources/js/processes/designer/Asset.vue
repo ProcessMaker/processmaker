@@ -32,6 +32,7 @@ export default {
   gap: 4px;
   flex: 1 0 0;
   align-self: stretch;
+  margin-bottom: 10px;
 }
 i {
   font-size: 32px;
