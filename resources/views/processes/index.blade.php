@@ -18,7 +18,7 @@
 
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Designer') => route('processes.index'),
+        __('Designer') => route('designer.index'),
         __('Processes') => route('processes.index'),
         $title => null,
     ]])
