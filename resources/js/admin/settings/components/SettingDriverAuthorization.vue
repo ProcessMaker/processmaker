@@ -288,7 +288,8 @@ export default {
           window.location = response.data?.url;
         })
         .catch((error) => {
-          ProcessMaker.alert(error.message, "danger");
+          const errorMessage = error.response?.data?.message || error.message;
+          ProcessMaker.alert(errorMessage, "danger");
           this.showModal = true;
           this.showAuthorizingModal = false;
         });
