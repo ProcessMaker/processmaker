@@ -46,8 +46,8 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
       - name: Clone repo K8S
         run: |
-          git clone --depth 1 -b cicd2 "https://$DEPLOY@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git" pm4-k8s-distribution/images/pm4-tools
+          git clone --depth 1 -b cicd2 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git" pm4-k8s-distribution/images/pm4-tools
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
@@ -72,7 +72,7 @@ jobs:
     steps:
      - name: Run PHPUnit
        run: |          
-         git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+         git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
          cd pm4-tools
          export IMAGE=public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
          docker pull $IMAGE          
@@ -88,13 +88,13 @@ jobs:
     steps:      
       - name: Clone private repository
         run: |
-          git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
           cd argocd
       - run: git config --global user.email $GH_EMAIL
       - run: git config --global user.name $GH_USER
       - name: Install pm4-tools
         run: |
-          git clone --depth 1 "https://$DEPLOY@github.com/ProcessMaker/pm4-tools.git"
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
           cd pm4-tools
           composer install --no-interaction
           cd ..
@@ -140,7 +140,7 @@ jobs:
     steps:
       - name: Clone private repository
         run: |
-          git clone --depth 1 -b main "https://$DEPLOY@github.com/ProcessMaker/argocd.git" argocd
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
       - run: git config --global user.email $GH_EMAIL
       - run: git config --global user.name $GH_USER
       - name: Remove instance EKS            
