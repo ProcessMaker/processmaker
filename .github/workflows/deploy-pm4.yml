@@ -5,6 +5,8 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '30 2 * * *'  # every day at midnight
+  workflow_dispatch:
+  workflow_call:
 env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
