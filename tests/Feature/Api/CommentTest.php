@@ -47,11 +47,6 @@ class CommentTest extends TestCase
 
     public function testGetCommentListAdministrator()
     {
-        $response = $this->apiCall('GET', self::API_TEST_URL);
-        $response->assertStatus(200);
-
-        $faker = Faker::create();
-
         $model = ProcessRequestToken::factory()->create();
 
         Comment::factory()->count(10)->create([
@@ -66,17 +61,16 @@ class CommentTest extends TestCase
             'hidden' => true,
         ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL, [
+            'commentable_type' => get_class($model),
+            'commentable_id' => $model->getKey(),
+        ]);
         $json = $response->json('data');
         $this->assertCount(15, $json);
     }
 
     public function testGetCommentListNoAdministrator()
     {
-        $permission = 'view-comments';
-
-        $faker = Faker::create();
-
         $model = ProcessRequest::factory()->create();
 
         Comment::factory()->count(10)->create([
@@ -96,18 +90,29 @@ class CommentTest extends TestCase
             'is_administrator' => false,
         ]);
 
-        $this->user->permissions()->attach(Permission::byName($permission)->id);
+        // Make user a participant
+        ProcessRequestToken::factory()->create([
+            'user_id' => $this->user->id,
+            'process_request_id' => $model->id,
+        ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL, [
+            'commentable_type' => get_class($model),
+            'commentable_id' => $model->getKey(),
+        ]);
+
         $json = $response->json('data');
         $this->assertCount(10, $json);
     }
 
     public function testGetCommentByType()
     {
-        $permission = 'view-comments';
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
 
-        $model = ProcessRequestToken::factory()->create();
+        $model = ProcessRequestToken::factory()->create(['user_id' => $this->user->getKey()]);
 
         Comment::factory()->count(10)->create([
             'commentable_id' => $model->getKey(),
@@ -135,14 +140,11 @@ class CommentTest extends TestCase
             'hidden' => true,
         ]);
 
-        $this->user = User::factory()->create([
-            'password' => Hash::make('password'),
-            'is_administrator' => false,
+        $response = $this->apiCall('GET', self::API_TEST_URL, [
+            'commentable_type' => get_class($model),
+            'commentable_id' => $model->getKey(),
         ]);
 
-        $this->user->permissions()->attach(Permission::byName($permission)->id);
-
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?commentable_type=' . get_class($model2));
         $json = $response->json('data');
         $this->assertCount(10, $json);
     }

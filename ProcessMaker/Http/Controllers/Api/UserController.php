@@ -110,6 +110,10 @@ class UserController extends Controller
             $query->where('status', $request->input('status'));
         }
 
+        if ($request->has('mention_username')) {
+            $query->where('username', 'like', $request->input('mention_username') . '%');
+        }
+
         $order_by = 'username';
         $order_direction = 'ASC';
 

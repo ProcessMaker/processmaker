@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -203,6 +204,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'canceled',
         'completed',
         'error',
+        'comment',
     ];
 
     public $taskNotifiableTypes = [
@@ -246,7 +248,12 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Get the associated projects
      */
     public function projects()
-    {
+    {   
+        if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
+            // return an empty collection
+            return new HasMany($this->newQuery(), $this, '', '');
+        }
+
         return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
             'asset_id',

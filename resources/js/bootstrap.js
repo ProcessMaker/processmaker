@@ -333,6 +333,9 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
+        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
+            window.ProcessMaker.CommentsCallback();
+        }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));

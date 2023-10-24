@@ -259,12 +259,6 @@
             @endisset
           </div>
         </div>
-        @can('view-comments')
-          <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-            :reactions="configurationComments.reactions" :voting="configurationComments.voting"
-            :edit="configurationComments.edit" :remove="configurationComments.remove"
-            :adding="configurationComments.comments" :readonly="request.status === 'COMPLETED'" />
-        @endcan
       </div>
       @if (shouldShow('requestStatusContainer'))
         <div class="ml-md-3 mt-md-0 mt-3">
@@ -361,6 +355,13 @@
           </template>
         </div>
       @endif
+      <div v-if="panCommentInVueOptionsComponents">
+          <pan-comment commentable_id="{{ $request->getKey() }}"
+                       commentable_type="{{ get_class($request) }}"
+                       :readonly="request.status === 'COMPLETED'"
+                       name="{{ $request->name }}"
+                       />
+      </div>
     </div>
   </div>
 
@@ -415,13 +416,6 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          configurationComments: {
-            comments: false,
-            reactions: false,
-            edit: false,
-            voting: false,
-            remove: false,
-          },
           iframeLoading: false,
           showTree: false,
         };
@@ -537,6 +531,9 @@
         },
         requestBy() {
           return [this.request.user];
+        },
+        panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
         },
       },
       methods: {
@@ -725,28 +722,8 @@
             } 
           )
         },
-        getConfigurationComments() {
-          if (this.canViewComments) {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            if (commentsPackage) {
-              ProcessMaker.apiClient.get(`comments/configuration`, {
-                params: {
-                  id: this.processId,
-                  type: 'Process',
-                },
-              }).then(response => {
-                this.configurationComments.comments = !!response.data.comments;
-                this.configurationComments.reactions = !!response.data.reactions;
-                this.configurationComments.voting = !!response.data.voting;
-                this.configurationComments.edit = !!response.data.edit;
-                this.configurationComments.remove = !!response.data.remove;
-              });
-            }
-          }
-        },
       },
       mounted() {
-        this.getConfigurationComments();
         this.packages = window.ProcessMaker.requestShowPackages;
         this.listenRequestUpdates();
         this.cleanScreenButtons();

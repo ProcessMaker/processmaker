@@ -196,11 +196,11 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('task_assignments/{task_assignment}', [TaskAssignmentController::class, 'destroy'])->name('task_assignments.destroy')->middleware('can:delete-task_assignments');
 
     // Comments
-    Route::get('comments', [CommentController::class, 'index'])->name('comments.index')->middleware('can:view-comments');
-    Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show')->middleware('can:view-comments');
-    Route::post('comments', [CommentController::class, 'store'])->name('comments.store')->middleware('can:create-comments');
-    Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update')->middleware('can:edit-comments');
-    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy')->middleware('can:delete-comments');
+    Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+    Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
+    Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     // Global signals
     Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
