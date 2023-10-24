@@ -49,6 +49,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_TASK_FAILED = 'TASK_FAILED';
 
     protected $TOPIC_SCRIPTS = 'scripts';
+
     protected $TOPIC_REQUESTS = 'requests';
 
     /**

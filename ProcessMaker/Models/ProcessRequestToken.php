@@ -510,6 +510,18 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * Scope overdue
+     *
+     * @var Builder
+     */
+    public function scopeOverdue($query, $overdue = '')
+    {
+        if (!empty($overdue)) {
+            return $query->where('due_at', '<', Carbon::now());
+        }
+    }
+
+    /**
      * Filter tokens with a string
      *
      * @param $query

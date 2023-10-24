@@ -66,7 +66,6 @@
           />
         </b-form-group>
         <category-select
-          v-show="!projectAsset"
           v-model="formData.screen_category_id"
           :errors="errors.screen_category_id"
           :label="$t('Category')"
@@ -161,6 +160,7 @@ export default {
         title: null,
         type: "",
         description: null,
+        projects: [],
       };
     },
     resetErrors() {

@@ -3,7 +3,7 @@ export default {
     },
     data() {
       return {
-        assetType: null,
+        assetType: 'script',
         showAddProjectModal: false,
         showTemplateModal: false,
         showCreatePmBlockModal: false,
@@ -31,15 +31,24 @@ export default {
                 this.dupScript.run_as_user_id = data.run_as_user_id;
                 this.showModal();
                 break;
-              case "remove-item":
+              case "remove-script":
+                let that = this;
                 ProcessMaker.confirmModal(
                   this.$t("Caution!"),
-                  this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-                    item: data.title
-                  }),
-                  "",
-                  () => {
-                    this.$emit("delete", data);
+                   this.$t("Are you sure you want to delete the script {{item}}? Deleting this asset will break any active tasks that are assigned.", {
+                      item: data.title,
+                    }),
+                    "",
+                  function() {
+                    ProcessMaker.apiClient
+                      .delete("scripts/" + data.id)
+                      .then(response => {
+                        ProcessMaker.alert(
+                          this.$t("The script was deleted."),
+                          "success"
+                        );
+                        that.fetch();
+                      });
                   }
                 );
                 break;

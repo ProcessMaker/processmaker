@@ -20,17 +20,23 @@
             <div class="col-6">
                 <div class="row">
                     <div class="col-12">
-                        <assets />
+                        <assets :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'scripts', 'screens', 'data-sources', 'decision_tables') }}" />
                     </div>
                     <div class="col-12">
                         <my-project 
                             status="{{ $listConfig->status }}"
+                            project="{{ $listConfig->hasPackage }}"
                         />
                     </div>
                 </div>
             </div>
             <div class="col-6">
-                <recent-assets />
+                <recent-assets
+                    :current-user-id="{{ \Auth::user()->id }}"
+                    project="{{ $listConfig->hasPackage }}"
+                    :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'data-sources', 'projects', 'screens', 'scripts', 'decision_tables') }}"
+                    is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
+                />
             </div>
         </div>
      </div>

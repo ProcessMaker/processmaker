@@ -3,8 +3,10 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Models\Setting;
 
 class AboutController extends Controller
@@ -70,7 +72,14 @@ class AboutController extends Controller
             $microServices = [$aiMicroService];
         }
 
-        return view('about.index',
+        $nayraMicroService = $this->getNayraMicroServiceAbout();
+        if ($nayraMicroService) {
+            $microServices[] = $nayraMicroService;
+        }
+
+        $view = request()->get('partial') === 'ms' ? 'about.microservices' : 'about.index';
+
+        return view($view,
             compact(
                 'packages',
                 'indexedSearch',
@@ -86,9 +95,39 @@ class AboutController extends Controller
     {
         if (hasPackage('package-ai')) {
             $url = config('app.ai_microservice_host') . '/pm/getVersion';
-            $response = Http::post($url, []);
-
+            try {
+                $response = Http::post($url, []);
+            } catch (\Throwable $th) {
+                return [
+                    'name' => 'Pmai microservice',
+                    'waiting' => true,
+                ];
+            }
             return $response->json();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the Nayra microservice about information from cache or send about message to receive it.
+     *
+     * @return array|null
+     */
+    private function getNayraMicroServiceAbout(): ?array
+    {
+        if (config('app.message_broker_driver') !== 'default') {
+            $about = Cache::get('nayra.about', null);
+            if (!$about) {
+                // Send about message to receive about information from nayra service
+                MessageBrokerService::sendAboutMessage();
+                $about = [
+                    'name' => 'processmaker/nayra-service',
+                    'waiting' => true,
+                ];
+            }
+
+            return $about;
         }
 
         return null;

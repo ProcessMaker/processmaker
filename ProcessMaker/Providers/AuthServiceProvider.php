@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Passport\Passport;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
@@ -64,9 +65,25 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         try {
-            Permission::select('name')->get()->each(function ($permission) {
-                Gate::define($permission->name, function ($user) use ($permission) {
-                    return $user->hasPermission($permission->name);
+            $permissions = Permission::select('name')->get();
+
+            // Define the Gate permissions
+            $permissions->each(function ($permission) {
+                Gate::define($permission->name, function (User $user, ...$params) use ($permission) {
+                    // Check if the user has the permission
+                    if ($user->hasPermission($permission->name)) {
+                        return true;
+                    }
+
+                    // Check if the user has 'create-projects' permission and the request is from specific endpoints
+                    // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
+                    $isAllowedEndpoint = $this->checkAllowedEndpoints(request()->path());
+
+                    if ($user->hasPermission('create-projects') && $isAllowedEndpoint) {
+                        return $this->isProjectAsset($permission, $params);
+                    }
+
+                    return false;
                 });
             });
         } catch (\Exception $e) {
@@ -80,5 +97,58 @@ class AuthServiceProvider extends ServiceProvider
 
             return app(AnonymousUser::class);
         });
+    }
+
+    private function checkAllowedEndpoints($currentPath)
+    {
+        $allowedEndpoints = [
+            'api',
+            'designer/screen-builder',
+            'modeler/',
+            'script/',
+            'designer/decision-tables',
+            'designer/data-sources',
+        ];
+        foreach ($allowedEndpoints as $endpoint) {
+            if (Str::startsWith($currentPath, $endpoint)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isProjectAsset($permission, $params)
+    {
+        if ($params && $params[0]) {
+            return $this->handleUpdateDeleteOperations($permission, class_basename($params[0]));
+        }
+
+        return $this->checkForListCreateOperations($permission);
+    }
+
+    private function handleUpdateDeleteOperations($permission, $modelClass)
+    {
+        $asset = Str::snake(class_basename($modelClass));
+
+        return $this->checkPermissionForAsset($permission, $asset);
+    }
+
+    private function checkForListCreateOperations($permission)
+    {
+        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table'];
+
+        foreach ($projectAssetTypes as $asset) {
+            if (Str::contains($permission->name, $asset)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function checkPermissionForAsset($permission, $asset)
+    {
+        return Str::contains($permission->name, $asset);
     }
 }
