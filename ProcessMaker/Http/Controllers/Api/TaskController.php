@@ -122,7 +122,7 @@ class TaskController extends Controller
             'process_request_tokens.status' => 'status',
             'element_id',
             'element_name',
-            'process_request_id'
+            'process_request_id',
         ];
         $parameters = $request->all();
         foreach ($parameters as $column => $fieldFilter) {
@@ -223,7 +223,7 @@ class TaskController extends Controller
             preg_match($regex, $e->getMessage(), $m);
 
             return response([
-                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"'
+                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
             ], 422);
         }
 
@@ -233,6 +233,7 @@ class TaskController extends Controller
                 if ($request->input('status') === 'CLOSED') {
                     return $user->can('view', $processRequestToken->processRequest);
                 }
+
                 return $user->can('view', $processRequestToken);
             })->values();
         }

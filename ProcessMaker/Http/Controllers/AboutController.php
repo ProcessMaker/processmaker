@@ -84,6 +84,7 @@ class AboutController extends Controller
         });
 
         $view = request()->get('partial') === 'ms' ? 'about.microservices' : 'about.index';
+
         return view($view,
             compact(
                 'packages',
@@ -100,8 +101,14 @@ class AboutController extends Controller
     {
         if (hasPackage('package-ai')) {
             $url = config('app.ai_microservice_host') . '/pm/getVersion';
-            $response = Http::post($url, []);
-
+            try {
+                $response = Http::post($url, []);
+            } catch (\Throwable $th) {
+                return [
+                    'name' => 'Pmai microservice',
+                    'waiting' => true,
+                ];
+            }
             return $response->json();
         }
 
@@ -125,6 +132,7 @@ class AboutController extends Controller
                     'waiting' => true,
                 ];
             }
+
             return $about;
         }
 

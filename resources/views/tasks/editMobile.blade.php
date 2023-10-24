@@ -19,7 +19,7 @@
         {{__('This task is unassigned, click Claim Task to assign yourself.')}}
       </div>
       <div class="container-fluid h-100 d-flex flex-column">
-        <div class="m-3 flex-grow-1">
+        <div id="tabContent" class="tab-content m-3 flex-grow-1">
           <task
             ref="task"
             class="card border-0"
@@ -40,6 +40,11 @@
       </div>
     </div>
   </div>
+  @isset($assignedToAddons)
+    @foreach ($assignedToAddons as $addon)
+      {!! $addon['content'] ?? '' !!}
+    @endforeach
+  @endisset
 </div>
 @endsection
 
@@ -65,6 +70,9 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process->manager_id ? "true": "false" }};
   </script>
+  @foreach($manager->getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
   <script src="{{mix('js/tasks/show.js')}}"></script>
   <script>
       const store = new Vuex.Store();

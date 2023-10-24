@@ -66,7 +66,6 @@
           />
         </b-form-group>
         <category-select
-          v-show="!projectAsset"
           v-model="formData.screen_category_id"
           :errors="errors.screen_category_id"
           :label="$t('Category')"
@@ -76,6 +75,7 @@
         ></category-select>
         <project-select
           v-if="isProjectsInstalled"
+          :required="isProjectSelectionRequired"
           :label="$t('Project')"
           api-get="projects"
           api-list="projects"
@@ -111,7 +111,17 @@ export default {
     ProjectSelect,
   },
   mixins: [FormErrorsMixin],
-  props: ["countCategories", "types", "isProjectsInstalled", "hideAddBtn", "copyAssetMode", "projectAsset", "assetName", "callFromAiModeler"],
+  props: [
+    "countCategories", 
+    "types", 
+    "isProjectsInstalled", 
+    "hideAddBtn", 
+    "copyAssetMode", 
+    "projectAsset", 
+    "assetName", 
+    "callFromAiModeler",
+    'isProjectSelectionRequired'
+  ],
   data() {
     return {
       formData: {},
@@ -150,6 +160,7 @@ export default {
         title: null,
         type: "",
         description: null,
+        projects: [],
       };
     },
     resetErrors() {

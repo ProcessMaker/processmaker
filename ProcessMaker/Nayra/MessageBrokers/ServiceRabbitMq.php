@@ -14,6 +14,7 @@ class ServiceRabbitMq
     const QUEUE_NAME_CONSUME = 'nayra-store';
 
     const QUEUE_NAME_PUBLISH = 'requests';
+
     const PROCESSES_QUEUE = 'processes';
 
     private $connection;
