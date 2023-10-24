@@ -3,7 +3,7 @@ export default {
     },
     data() {
       return {
-        assetType: null,
+        assetType: 'screen',
         showAddProjectModal: false,
         showTemplateModal: false,
         showCreatePmBlockModal: false,

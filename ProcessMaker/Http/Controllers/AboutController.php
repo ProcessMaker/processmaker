@@ -78,6 +78,7 @@ class AboutController extends Controller
         }
 
         $view = request()->get('partial') === 'ms' ? 'about.microservices' : 'about.index';
+
         return view($view,
             compact(
                 'packages',
@@ -125,6 +126,7 @@ class AboutController extends Controller
                     'waiting' => true,
                 ];
             }
+
             return $about;
         }
 
