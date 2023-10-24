@@ -11,7 +11,7 @@ env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: ${{ secrets.AWS_REGION }}  
-  aws-url: ${{ secrets.AWS_URL }}
+  AWS_URL: ${{ secrets.AWS_URL }}
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
@@ -43,7 +43,7 @@ jobs:
           aws-region: ${{ env.aws-region }}
       - name: Login to ECR
         run: |
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/processmaker
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.AWS_URL}}
       - name: Clone repo K8S
         run: |
           git clone --depth 1 -b cicd2 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
@@ -59,26 +59,35 @@ jobs:
       - name: Push Base to ECR
         if: env.BUILD_BASE == '1'  
         run: |
-          docker push public.ecr.aws/processmaker/processmaker:ci-base-php82
-          docker push public.ecr.aws/processmaker/processmaker:ci-base
+          docker push ${{env.AWS_URL}}/processmaker:ci-base-php82
+          docker push ${{env.AWS_URL}}/processmaker:ci-base
       - name: Push Enterprise Image to ECR
         run: |
-          docker push public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
+          docker push ${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
   phpunit:
     name: phpunit
     needs: imageEKS
     runs-on: ubuntu-22.04
     if: github.event.action != 'closed'
     steps:
-     - name: Run PHPUnit
-       run: |          
-         git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
-         cd pm4-tools
-         export IMAGE=public.ecr.aws/processmaker/enterprise:${{env.IMAGE_TAG}}
-         docker pull $IMAGE          
-         docker-compose down -v          
-         docker-compose build phpunit          
-         docker-compose run phpunit
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.AWS_URL}}
+      - name: Run PHPUnit
+        run: |          
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          export IMAGE=${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
+          docker pull $IMAGE          
+          docker-compose down -v          
+          docker-compose build phpunit          
+          docker-compose run phpunit
 
   deployEKS:
     name: build-deploy-EKS
