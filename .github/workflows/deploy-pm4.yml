@@ -70,15 +70,24 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.event.action != 'closed'
     steps:
-     - name: Run PHPUnit
-       run: |          
-         git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
-         cd pm4-tools
-         export IMAGE=${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
-         docker pull $IMAGE          
-         docker-compose down -v          
-         docker-compose build phpunit          
-         docker-compose run phpunit
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env.aws-secret-access-key }}
+          aws-region: ${{ env.aws-region }}
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.AWS_URL}}
+      - name: Run PHPUnit
+        run: |          
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          export IMAGE=${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
+          docker pull $IMAGE          
+          docker-compose down -v          
+          docker-compose build phpunit          
+          docker-compose run phpunit
 
   deployEKS:
     name: build-deploy-EKS
