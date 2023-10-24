@@ -60,7 +60,6 @@
                     :diff-editor="true"
                     :value="newCode"
                     :original="code"
-                    @hook:mounted="diffEditorMounted"
                   />
                 </div>
               </b-col>
@@ -572,6 +571,9 @@ export default {
     },
     onSetDiff(isDiff) {
       this.isDiffEditor = isDiff;
+      if (this.selection) {
+        this.$refs.diffEditor.getMonaco().getOriginalEditor().setSelection(this.selection);
+      }
     },
     onSetAction(action) {
       this.action = action;
@@ -681,8 +683,6 @@ export default {
             window.ProcessMaker.alert(errorMsg, "danger");
           }
         });
-    },
-    diffEditorMounted() {
     },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
