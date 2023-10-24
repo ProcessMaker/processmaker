@@ -24,7 +24,7 @@ env:
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   DOM_EKS: ${{ secrets.DOM_EKS }}
-  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
 concurrency:
@@ -59,7 +59,7 @@ jobs:
       - name: Push Base to ECR
         if: env.BUILD_BASE == '1'  
         run: |
-          docker push ${{env.AWS_URL}}/processmaker:ci-base-php82
+          docker push ${{env.AWS_URL}}/processmaker:ci-base-php81
           docker push ${{env.AWS_URL}}/processmaker:ci-base
       - name: Push Enterprise Image to ECR
         run: |
