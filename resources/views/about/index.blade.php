@@ -22,6 +22,7 @@
         <hr>
         <div><strong>{{ __('ProcessMaker Platform') }}</strong> {{ $versionTitle }}</div>
         <hr>
+        testing package-testing
         <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
         <a href="https://docs.processmaker.com/" target="_blank">{{__('Documentation')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
