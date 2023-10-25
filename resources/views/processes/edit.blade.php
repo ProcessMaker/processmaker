@@ -397,7 +397,7 @@
 @section('js')
     <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
-      var test = new Vue({
+      test = new Vue({
         el: '#editProcess',
         mixins: addons,
         data() {
@@ -422,7 +422,7 @@
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false,
-            manager: @json($process["manager"]),
+            manager: @json($process->manager),
             translatedLanguages: [],
             editTranslation: null,
             activeTab: "",
