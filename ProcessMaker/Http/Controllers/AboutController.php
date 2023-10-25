@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Models\Setting;
+use Throwable;
 
 class AboutController extends Controller
 {
@@ -97,7 +98,7 @@ class AboutController extends Controller
             $url = config('app.ai_microservice_host') . '/pm/getVersion';
             try {
                 $response = Http::post($url, []);
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 return [
                     'name' => 'Pmai microservice',
                     'waiting' => true,
@@ -120,7 +121,15 @@ class AboutController extends Controller
             $about = Cache::get('nayra.about', null);
             if (!$about) {
                 // Send about message to receive about information from nayra service
-                MessageBrokerService::sendAboutMessage();
+                try {
+                    MessageBrokerService::sendAboutMessage();
+                } catch (Throwable $e) {
+                    return [
+                        'name' => 'processmaker/nayra-service',
+                        'description' => __('Nayra microservice is not available at this moment.'),
+                        'waiting' => true,
+                    ];
+                }
                 $about = [
                     'name' => 'processmaker/nayra-service',
                     'waiting' => true,
