@@ -3,7 +3,7 @@
     <div class="button-container">
       <b-button
         size="sm"
-        class="custom-button custom-text"
+        class="custom-button custom-text mb-2"
         block
         @click="openAsset(urlAsset)"
       >
@@ -52,7 +52,6 @@ export default {
 .button-container {
   display: block;
   width: 100%;
-  margin-bottom: 10px;
 }
 .b-card {
   border: none;

@@ -33,7 +33,7 @@
         </span>
       </b-button>
       <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">
-          <span v-if="value.name">{{value.name}}</span>
+          <span v-if="value.name">{{ limitCharacters(value.name)}}</span>
           <span v-else>ProcessMaker</span>
       </span>
     </template>
@@ -64,6 +64,10 @@ export default {
     popover: {
       type: Boolean,
       default: false,
+    },
+    characterLimit: {
+      type: Number,
+      default: null,
     }
   },
   data() {
@@ -224,6 +228,13 @@ export default {
     buttonClick(url) {
       if (url && url !== '#') {
         window.location.href = url;
+      }
+    },
+    limitCharacters(text) {
+      if (!this.characterLimit || text.length <= this.characterLimit) {
+        return text;
+      } else {
+        return text.substring(0, this.characterLimit) + '...';
       }
     }
   },

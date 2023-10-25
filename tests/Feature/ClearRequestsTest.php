@@ -150,7 +150,7 @@ class ClearRequestsTest extends TestCase
 
     private function addSomeComments()
     {
-        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params());
         $response->assertStatus(200);
 
         $process = Process::factory()->create([
@@ -224,18 +224,31 @@ class ClearRequestsTest extends TestCase
         $model->addMedia($fileUpload)->toMediaCollection('local');
 
         // Basic listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params());
 
         // Validate the header status code
         $response->assertStatus(200);
 
         // Filtered listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=123');
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params('123'));
         $response->assertStatus(200);
 
         // Filtered listing assertions when filter string is not found
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params('xyz9393'));
         $response->assertStatus(200);
+    }
+
+    private function params($filter = null)
+    {
+        $params = [
+            'commentable_id' => $this->user->getKey(),
+            'commentable_type' => get_class($this->user),
+        ];
+        if ($filter) {
+            $params['filter'] = $filter;
+        }
+
+        return $params;
     }
 
     private function addRequestMediaFiles()
@@ -251,17 +264,17 @@ class ClearRequestsTest extends TestCase
             ->toMediaCollection('local');
 
         // Basic listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params());
 
         // Validate the header status code
         $response->assertStatus(200);
 
         // Filtered listing assertions
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=456');
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params('456'));
         $response->assertStatus(200);
 
         // Filtered listing assertions when filter string is not found
-        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
+        $response = $this->apiCall('GET', self::API_TEST_URL, $this->params('xyz9393'));
         $response->assertStatus(200);
     }
 

@@ -54,6 +54,9 @@ class PersistenceHandler
         try {
             // Save data according to the type
             switch ($transaction['type']) {
+                case 'about':
+                    $this->persistAbout($transaction['data']);
+                    break;
                 case 'activity_activated':
                     $this->persistActivityActivated($transaction);
                     break;

@@ -59,7 +59,7 @@
                                 :label="$t('Project')"
                                 api-get="projects"
                                 api-list="projects"
-                                v-model="formData.projects"
+                                v-model="selectedProjects"
                                 :errors="errors.projects">
                             </project-select>
                             <br>
@@ -91,11 +91,20 @@
             data() {
                 return {
                     formData: @json($screen),
+                    assignedProjects: @json($assignedProjects),
+                    selectedProjects: '',
                     errors: {
                         'title': null,
                         'type': null,
                         'description': null,
                         'status': null
+                    }
+                }
+            },
+            watch: {
+                selectedProjects: {
+                    handler() {
+                        this.formData.projects = this.selectedProjects;
                     }
                 }
             },
@@ -124,6 +133,9 @@
                             }
                         });
                 }
+            },
+            mounted() {
+                this.selectedProjects = this.assignedProjects.length > 0 ?this.assignedProjects.map(project => project.id) : null;
             }
         });
     </script>

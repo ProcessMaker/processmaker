@@ -253,6 +253,8 @@ if (openAiEnabled) {
 }
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
+const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
 const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
@@ -269,6 +271,8 @@ if (userID) {
     datetime_format: formatDate.content,
     calendar_format: formatDate.content,
     timezone: timezone.content,
+    fullName: userFullName?.content,
+    avatar: userAvatar?.content,
   };
   datetime_format.forEach((value) => {
     if (formatDate.content === value.format) {
@@ -329,6 +333,9 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
+        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
+            window.ProcessMaker.CommentsCallback();
+        }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));

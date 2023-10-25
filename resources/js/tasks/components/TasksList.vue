@@ -97,7 +97,7 @@
         >
           <span>
             <i
-              class="fa fa-eye"
+              class="fa fa-eye py-2"
               @click="previewTasks(props.rowData)"
             />
           </span>

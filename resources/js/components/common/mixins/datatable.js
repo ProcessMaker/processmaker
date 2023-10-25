@@ -58,7 +58,7 @@ export default {
     },
     // Data manager takes new sorting and calls our fetch method
     dataManager(sortOrder, pagination) {
-      if (sortOrder[0].sortField != undefined) {
+      if (sortOrder[0].sortField !== undefined) {
         this.orderBy = sortOrder[0].sortField;
       } else {
         this.orderBy = sortOrder[0].field;
@@ -96,9 +96,9 @@ export default {
     },
     // Handler to change the page based on events fired from our pagination component
     onPageChange(page) {
-      if (page == "next") {
+      if (page === "next") {
         this.page += 1;
-      } else if (page == "prev") {
+      } else if (page === "prev") {
         this.page -= 1;
       } else {
         this.page = page;
@@ -113,14 +113,6 @@ export default {
     },
 
   },
-  // props: {
-  //     noDataTemplate: {
-  //         type: String,
-  //         default() {
-  //             return "asdfsdjfksdhjkfsdfhjksfdjkh"
-  //         }
-  //     },
-  // },
   data() {
     return {
       // The returned data that will be loaded into the vuetable

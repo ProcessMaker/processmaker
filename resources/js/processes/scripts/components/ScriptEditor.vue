@@ -60,7 +60,6 @@
                     :diff-editor="true"
                     :value="newCode"
                     :original="code"
-                    @hook:mounted="diffEditorMounted"
                   />
                 </div>
               </b-col>
@@ -105,7 +104,8 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
-                  <cornea-tab
+                  <ai-tab
+                    ref="aiTab"
                     :user="user"
                     :source-code="code"
                     :language="language"
@@ -239,7 +239,8 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
-                  <cornea-tab
+                  <ai-tab
+                    ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
                     :sourceCode="code"
@@ -320,13 +321,13 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import CorneaTab from "./CorneaTab.vue";
+import AiTab from "./AiTab.vue";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
-    CorneaTab,
+    AiTab,
   },
   mixins: [...autosaveMixins],
   props: {
@@ -374,7 +375,7 @@ export default {
         icon: "fas fa-save",
         loaderAction: "",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-script", this.processId);
+          ProcessMaker.EventBus.$emit("save-script", true);
         },
       },
     ];
@@ -470,6 +471,7 @@ export default {
             code: this.code,
             title: this.script.title,
             description: this.script.description,
+            projects: this.script.projects,
             script_executor_id: this.script.script_executor_id,
             run_as_user_id: this.script.run_as_user_id,
             timeout: this.script.timeout,
@@ -501,8 +503,8 @@ export default {
     this.subscribeToProgress();
 
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (processId, onSuccess, onError) => {
-      this.save(onSuccess, onError, processId);
+    ProcessMaker.EventBus.$on("save-script", (shouldRedirect, onSuccess, onError) => {
+      this.save(onSuccess, onError, shouldRedirect);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -542,11 +544,13 @@ export default {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
+      this.$refs.aiTab2.showMenu();
     },
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
+      this.$refs.aiTab2.showMenu();
     },
     cancelRequest() {
       if (this.currentNonce) {
@@ -555,6 +559,7 @@ export default {
         this.loading = false;
         this.progress.progress = 0;
         this.action = "";
+        this.$refs.aiTab2.showMenu();
       }
     },
     closeExplanation() {
@@ -566,6 +571,9 @@ export default {
     },
     onSetDiff(isDiff) {
       this.isDiffEditor = isDiff;
+      if (this.selection) {
+        this.$refs.diffEditor.getMonaco().getOriginalEditor().setSelection(this.selection);
+      }
     },
     onSetAction(action) {
       this.action = action;
@@ -676,8 +684,6 @@ export default {
           }
         });
     },
-    diffEditorMounted() {
-    },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
       const { clientHeight } = this.$refs.editorContainer;
@@ -742,12 +748,13 @@ export default {
         this.executionKey = response.data.key;
       });
     },
-    save(onSuccess, onError, processId) {
+    save(onSuccess, onError, shouldRedirect = false) {
       ProcessMaker.apiClient
         .put(`scripts/${this.script.id}`, {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
+          projects: this.script.projects,
           script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,
@@ -760,7 +767,8 @@ export default {
           if (typeof onSuccess === "function") {
             onSuccess(response);
           }
-          if (processId !== 0 && processId !== undefined) {
+
+          if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
             window.location = `/modeler/${this.processId}`;
           }
         }).catch((err) => {
@@ -802,7 +810,7 @@ export default {
         }
 
         // Save boilerplate template to avoid issues when script code is [].
-        ProcessMaker.EventBus.$emit("save-script");
+        ProcessMaker.EventBus.$emit("save-script", false);
       }
     },
     setVersionIndicator(isDraft = null) {

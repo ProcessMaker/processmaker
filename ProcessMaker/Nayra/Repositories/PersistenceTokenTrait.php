@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -11,6 +12,8 @@ use ProcessMaker\Repositories\TokenRepository;
 trait PersistenceTokenTrait
 {
     protected TokenRepository $tokenRepository;
+
+    private static $aboutCacheKey = 'nayra.about';
 
     /**
      * Persists instance and token data when a token arrives to an activity
@@ -247,5 +250,28 @@ trait PersistenceTokenTrait
         $subprocessInstance = $this->deserializer->unserializeInstance($transaction['subprocess']);
         $startId = $transaction['start_id'];
         $this->tokenRepository->persistCallActivityActivated($token, $subprocessInstance, $startId);
+    }
+
+    /**
+     * Store the about information into cache
+     *
+     * @param array $transaction
+     * @return void
+     */
+    public function persistAbout(array $aboutInfo)
+    {
+        if (!array_key_exists('name', $aboutInfo) ||
+            !array_key_exists('description', $aboutInfo) ||
+            !array_key_exists('version', $aboutInfo)
+        ) {
+            error_log('Invalid about message received. ' . json_encode($aboutInfo));
+
+            return;
+        }
+
+        $name = $aboutInfo['name'];
+        $version = $aboutInfo['version'];
+        error_log("Microservice $name version $version is running.");
+        Cache::forever(self::$aboutCacheKey, $aboutInfo);
     }
 }

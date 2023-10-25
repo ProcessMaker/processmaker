@@ -1,21 +1,50 @@
 <template>
-    <div>
-        <excel-connection-properties v-if="driverKey === 'cdata.excel'" :formData="formData" @updateFormData="updateFormData"></excel-connection-properties>
-        <github-connection-properties v-if="driverKey === 'cdata.github'" :formData="formData" @updateFormData="updateFormData"></github-connection-properties>
-    </div>
+  <div>
+    <component
+      :is="driverKeyToComponent(driverKey)"
+      :form-data="formData"
+      @updateFormData="updateFormData"
+    />
+  </div>
 </template>
 
 <script>
+import ExcelConnectionProperties from "./cdata/ExcelConnectionProperties.vue";
+import GithubConnectionProperties from "./cdata/GithubConnectionProperties.vue";
+import DocusignConnectionProperties from "./cdata/DocusignConnectionProperties.vue";
 
-import ExcelConnectionProperties from './ExcelConnectionProperties';
-import GithubConnectionProperties from './GithubConnectionProperties';
 export default {
-    components: {ExcelConnectionProperties, GithubConnectionProperties},
-    props: ['driverKey', 'formData'],   
-    methods: {
-        updateFormData(val) {
-            this.$emit('updateFormData', val);
-        }
-    }
-}
+  components: {
+    ExcelConnectionProperties,
+    GithubConnectionProperties,
+    DocusignConnectionProperties,
+  },
+  props: {
+    formData: {
+      type: Object,
+      default: () => ({}),
+    },
+    driverKey: {
+      type: String,
+      default: "",
+    },
+  },
+  data() {
+    return {
+      componentsMap: {
+        "cdata.excel": "excel-connection-properties",
+        "cdata.github": "github-connection-properties",
+        "cdata.docusign": "docusign-connection-properties",
+      },
+    };
+  },
+  methods: {
+    updateFormData(val) {
+      this.$emit("updateFormData", val);
+    },
+    driverKeyToComponent(driverKey) {
+      return this.componentsMap[driverKey] || null;
+    },
+  },
+};
 </script>

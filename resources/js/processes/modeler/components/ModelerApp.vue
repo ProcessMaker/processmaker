@@ -25,6 +25,10 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
+        <pan-comment :commentable_id="processId"
+                     commentable_type="ProcessMaker\Models\Process"
+                     :readonly="false"
+                     />
       </b-card-body>
       <component
         :is="component.panel"
@@ -97,6 +101,7 @@ export default {
           name: this.process.name,
           description: this.process.description,
           task_notifications: this.getTaskNotifications(),
+          projects: this.process.projects,
           bpmn: xml,
           svg: svgString,
         })
@@ -232,6 +237,7 @@ export default {
         name: this.process.name,
         description: this.process.description,
         task_notifications: this.getTaskNotifications(),
+        projects: this.process.projects,
         bpmn: this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
       };
