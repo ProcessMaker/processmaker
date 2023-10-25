@@ -215,6 +215,13 @@ class TemplateController extends Controller
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
+            // Exclude the import of comment configurations to account for the unavailability
+            // of the comment configuration table in the database.
+            if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
             $item = [
                 'type' => $asset['type'],
                 'uuid' => $key,
