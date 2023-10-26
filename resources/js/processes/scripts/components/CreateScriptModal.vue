@@ -63,17 +63,17 @@
           api-get="script_categories"
           api-list="script_categories"
           name="script_category_id"
-        ></category-select>
+        />
         <project-select
           v-if="isProjectsInstalled"
-          :required="isProjectSelectionRequired"
-          :label="$t('Project')"
-          api-get="projects"
-          api-list="projects"
           v-model="projects"
           :errors="addError.projects"
+          :label="$t('Project')"
+          :required="isProjectSelectionRequired"
+          api-get="projects"
+          api-list="projects"
           name="project"
-        ></project-select>
+        />
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
           :label="$t('Language')"
@@ -183,101 +183,107 @@
 </template>
 
 <script>
-  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-  import Modal from "../../../components/shared/Modal.vue";
-  import Required from "../../../components/shared/Required.vue";
-  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
-  import SliderWithInput from "../../../components/shared/SliderWithInput";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Modal from "../../../components/shared/Modal.vue";
+import Required from "../../../components/shared/Required.vue";
+import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
+import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 
-  const channel = new BroadcastChannel("assetCreation");
+const channel = new BroadcastChannel("assetCreation");
 
-  export default {
-    components: { Modal, Required, SliderWithInput, ProjectSelect },
-    mixins: [ FormErrorsMixin ],
-    props: [
-      "countCategories", 
-      "scriptExecutors", 
-      'isProjectsInstalled', 
-      'hideAddBtn', 
-      'copyAssetMode', 
-      'projectAsset', 
-      'assetName', 
-      'callFromAiModeler',
-      'isProjectSelectionRequired'
-    ],
-    data: function() {
-      return {
-        title: '',
-        language: '',
-        script_executor_id: null,
-        description: '',
-        script_category_id: '',
-        category_type_id: '',
-        code: '',
-        addError: {},
-        selectedUser: '',
-        users: [],
-        timeout: 60,
-        retry_attempts: 0,
-        retry_wait_time: 5,
-        disabled: false,
-        createScriptHooks: [],
-        script: null,
-        projects: [],
+export default {
+  components: {
+    Modal,
+    Required,
+    SliderWithInput,
+    ProjectSelect,
+  },
+  mixins: [FormErrorsMixin],
+  props: [
+    "countCategories",
+    "scriptExecutors",
+    "isProjectsInstalled",
+    "hideAddBtn",
+    "copyAssetMode",
+    "projectAsset",
+    "assetName",
+    "callFromAiModeler",
+    "isProjectSelectionRequired",
+  ],
+  data() {
+    return {
+      title: "",
+      language: "",
+      script_executor_id: null,
+      description: "",
+      script_category_id: "",
+      category_type_id: "",
+      code: "",
+      addError: {},
+      selectedUser: "",
+      users: [],
+      timeout: 60,
+      retry_attempts: 0,
+      retry_wait_time: 5,
+      disabled: false,
+      createScriptHooks: [],
+      script: null,
+      projects: [],
+    };
+  },
+  computed: {
+    modalSetUp() {
+      if (this.copyAssetMode) {
+        this.title = `${this.assetName} ${this.$t("Copy")}`;
+        return this.$t("Copy of Asset");
       }
+      this.title = "";
+      return this.$t("Create Script");
     },
-    computed: {
-      modalSetUp() {
-        if (this.copyAssetMode) {
-          this.title = this.assetName + ' ' + this.$t('Copy');
-          return this.$t('Copy of Asset');
-        }
-        this.title = "";
-        return this.$t('Create Script');
-      },
+  },
+  destroyed() {
+    channel.close();
+  },
+  methods: {
+    show() {
+      this.$bvModal.show("createScript");
     },
-    destroyed() {
-      channel.close();
+    /**
+     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+     * @returns {boolean}
+     */
+    isQuickCreate() {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams?.get("create") === "true";
     },
-    methods: {
-      show() {
-        this.$bvModal.show("createScript");
-      },
-      /**
-       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-       * @returns {boolean}
-       */
-      isQuickCreate() {
-        const searchParams = new URLSearchParams(window.location.search);
-        return searchParams?.get("create") === "true";
-      },
-      onClose() {
-        this.title = '';
-        this.language = '';
-        this.script_executor_id = null;
-        this.description = '';
-        this.script_category_id = '';
-        this.category_type_id = "";
-        this.code = '';
-        this.timeout = 60;
-        this.retry_attempts = 0;
-        this.retry_wait_time = 5;
-        this.addError = {};
-      },
-      onSubmit() {
-        this.errors = {
-          name: null,
-          description: null,
-          status: null,
-          script_category_id: null,
-        };
-        //single click
-        if (this.disabled) {
-          return
-        }
-        this.disabled = true;
+    onClose() {
+      this.title = "";
+      this.language = "";
+      this.script_executor_id = null;
+      this.description = "";
+      this.script_category_id = "";
+      this.category_type_id = "";
+      this.code = "";
+      this.timeout = 60;
+      this.retry_attempts = 0;
+      this.retry_wait_time = 5;
+      this.addError = {};
+    },
+    onSubmit() {
+      this.errors = {
+        name: null,
+        description: null,
+        status: null,
+        script_category_id: null,
+      };
+      // single click
+      if (this.disabled) {
+        return;
+      }
+      this.disabled = true;
 
-        ProcessMaker.apiClient.post("/scripts", {
+      ProcessMaker.apiClient
+        .post("/scripts", {
           title: this.title,
           script_executor_id: this.script_executor_id,
           description: this.description,
@@ -303,7 +309,7 @@
             if (this.isQuickCreate()) {
               channel.postMessage({
                 assetType: "script",
-                id: data.id,
+                asset: data,
               });
             }
             window.location = url;
@@ -318,9 +324,6 @@
           }
         });
     },
-    show() {
-      this.$bvModal.show('createScript');
-    }
   },
 };
 </script>

@@ -75,12 +75,12 @@
         />
         <project-select
           v-if="isProjectsInstalled"
-          :required="isProjectSelectionRequired"
           v-model="formData.projects"
+          :errors="errors.projects"
           :label="$t('Project')"
+          :required="isProjectSelectionRequired"
           api-get="projects"
           api-list="projects"
-          :errors="errors.projects"
         />
       </template>
       <template v-else>
@@ -101,7 +101,10 @@ import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
-import { isQuickCreate as isQuickCreateFunc, screenSelectId } from "../../../utils/isQuickCreate";
+import {
+  isQuickCreate as isQuickCreateFunc,
+  screenSelectId,
+} from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
 
 const channel = new BroadcastChannel("assetCreation");
@@ -122,7 +125,7 @@ export default {
     "projectAsset",
     "assetName",
     "callFromAiModeler",
-    'isProjectSelectionRequired'
+    "isProjectSelectionRequired",
   ],
   data() {
     return {
@@ -201,7 +204,7 @@ export default {
             if (this.isQuickCreate === true) {
               channel.postMessage({
                 assetType: "screen",
-                id: data.id,
+                asset: data,
                 screenSelectId: this.screenSelectId,
               });
             }

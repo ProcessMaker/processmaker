@@ -38,9 +38,9 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
-      label="screen"
-      :screen-type="params.type"
       :screen-select-id="uniqId"
+      :screen-type="params.type"
+      label="screen"
       @asset="processAssetCreation"
     />
     <a
@@ -55,14 +55,25 @@
 </template>
 
 <script>
-import { find, uniqueId } from "lodash";
+import { uniqueId } from "lodash";
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+
+const channel = new BroadcastChannel("assetCreation");
 
 export default {
   components: {
     ModelerAssetQuickCreate,
   },
-  props: ["value", "label", "helper", "params", "required", "placeholder", "defaultKey"],
+  props: [
+    "value",
+    "label",
+    "helper",
+    "params",
+    "required",
+    "placeholder",
+    "defaultKey",
+  ],
   data() {
     return {
       content: "",
@@ -104,6 +115,10 @@ export default {
       this.loadScreen(this.value);
     }
     this.setDefault();
+    channel.onmessage = ({ data }) => {
+      console.log("channel message", data);
+      this.processAssetCreation(data);
+    };
   },
   methods: {
     type() {
@@ -151,7 +166,10 @@ export default {
       };
       this.loading = true;
       try {
-        const { data } = await ProcessMaker.apiClient.get("screens?exclude=config", { params });
+        const { data } = await ProcessMaker.apiClient.get(
+          "screens?exclude=config",
+          { params },
+        );
         this.loading = false;
         this.screens = data.data;
       } catch (err) {
@@ -173,14 +191,13 @@ export default {
     },
     /**
      * @param {Object} data - The response we get from the emitter
-     * @param {string} data.id - the screen id
+     * @param {string} data.asset - the screen
      * @param {string} data.assetType - The Asset type, ex: screen
      * @param {string} data.screenSelectId - Identifier for the screen select component that started the call
      */
-    async processAssetCreation({ id, assetType, screenSelectId }) {
+    processAssetCreation({ asset, assetType, screenSelectId }) {
       if (assetType === "screen" && this.uniqId === screenSelectId) {
-        await this.load();
-        this.content = find(this.screens, (screen) => screen.id === id);
+        this.content = asset;
       }
     },
     validate() {
@@ -193,7 +210,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-</style>

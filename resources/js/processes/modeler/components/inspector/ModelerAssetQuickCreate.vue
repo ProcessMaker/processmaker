@@ -6,15 +6,15 @@
     <a
       class="asset-link"
       @click="goToAsset"
-    >{{ $t("Create a new") }} {{ label }} <i class="fa fa-plus" /></a>
+    >{{ $t("Create a new") }} {{ label }} <i
+      class="fa fa-plus"
+    /></a>
   </div>
 </template>
 <script>
 import { capitalize, kebabCase } from "lodash";
 import { AssetTypes } from "../../../../models/AssetTypes";
 import { ScreenTypes } from "../../../../models/screens";
-
-const channel = new BroadcastChannel("assetCreation");
 
 export default {
   name: "ModelerAssetQuickCreate",
@@ -23,8 +23,7 @@ export default {
       type: String,
       default: AssetTypes.SCREEN,
       validator(value) {
-        return Object.values(AssetTypes)
-          .includes(value);
+        return Object.values(AssetTypes).includes(value);
       },
     },
     screenType: {
@@ -41,17 +40,11 @@ export default {
       required: false,
     },
   },
-  mounted() {
-    channel.addEventListener("message", ({ data }) => {
-      this.$emit("asset", data);
-    });
-  },
-  beforeDestroyed() {
-    channel.close();
-  },
   methods: {
     goToAsset() {
-      let url = `/designer/${kebabCase(this.label)}s?create=true&screenSelectId=${this.screenSelectId}`;
+      let url = `/designer/${kebabCase(
+        this.label,
+      )}s?create=true&screenSelectId=${this.screenSelectId}`;
       // Cleaning the URL query if the asset is not of type Screen
       if (this.screenType && this.label === AssetTypes.SCREEN) {
         url += `&screenType=${this.screenType}`;
