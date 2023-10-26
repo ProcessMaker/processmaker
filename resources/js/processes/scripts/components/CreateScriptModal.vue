@@ -73,6 +73,7 @@
           v-model="projects"
           :errors="addError.projects"
           name="project"
+          :projectId="projectId"
         ></project-select>
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
@@ -203,7 +204,8 @@
       'projectAsset', 
       'assetName', 
       'callFromAiModeler',
-      'isProjectSelectionRequired'
+      'isProjectSelectionRequired',
+      'projectId'
     ],
     data: function() {
       return {

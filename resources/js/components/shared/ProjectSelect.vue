@@ -23,7 +23,7 @@
   
 <script>
 export default {
-  props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList"],
+  props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList", "projectId"],
   data() {
     return {
       content: [],
@@ -31,6 +31,8 @@ export default {
       options: [],
       error: '',
       lastSelectedId: null,
+      currentProject: null,
+      initialLoadExecuted: false,
     };
   },
   watch: {
@@ -68,6 +70,17 @@ export default {
         this.content.splice(0);
       }
     },
+    setCurrentProject() {
+      if (!this.projectId) {
+        return;
+      }
+
+      this.currentProject = this.options.find(project => project.id == this.projectId);
+
+      if (this.currentProject) {
+        this.content = [this.currentProject];
+      }
+    },
     completeSelectedLoading(content) {
       this.loading = false;
       this.content.splice(0);
@@ -102,6 +115,11 @@ export default {
         .then(response => {
           this.loading = false;
           this.options = response.data.data;
+
+          if (!this.initialLoadExecuted) {
+            this.setCurrentProject(this.options);
+            this.initialLoadExecuted = true;
+          }
         })
         .catch(err => {
           this.loading = false;
