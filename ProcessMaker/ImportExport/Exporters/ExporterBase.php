@@ -65,10 +65,8 @@ abstract class ExporterBase implements ExporterInterface
         $matchedBy = null;
         $baseQuery = $class::query();
 
-        $model = new $class;
-
         // If table does not exists for model, continue.
-        if (!Schema::hasTable($model->getTable())) {
+        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
             return [null, null];
         }
 
