@@ -65,6 +65,7 @@
             />
           </template>
         </b-card>
+        <b-card style="opacity: 0"/>
       </b-card-group>
     </div>
   </div>
@@ -120,15 +121,6 @@ export default {
           asset_name_new: "Create New Decision Table",
           urlPath: "/designer/decision-tables",
           urlAsset: "/designer/decision-tables?create=true",
-        },
-        {
-          color: "#D66A5F",
-          icon: "fas fa-database",
-          asset_name: "Collections",
-          asset_name_all: "View All Collections",
-          asset_name_new: "Create New Collection",
-          urlPath: "/collections",
-          urlAsset: "/collections?create=true",
         },
         {
           color: "#B5D3E7",

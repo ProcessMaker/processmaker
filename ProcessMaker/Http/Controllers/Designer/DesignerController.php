@@ -30,6 +30,8 @@ class DesignerController extends Controller
             'hasPackage' => $hasPackage
         ];
 
-        return view('designer.index', compact('listConfig'));
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+
+        return view('designer.index', compact('listConfig', 'currentUser'));
     }
 }
