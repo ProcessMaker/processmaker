@@ -17,6 +17,7 @@ class LicensedPackageManifest extends PackageManifest
     const DISCOVER_PACKAGES_LOCK_KEY = 'discover_package_lock_key';
 
     const DISCOVER_PACKAGES = 'package:discover';
+    const LAST_PACKAGE_DISCOVERY = 0;
 
     protected function packagesToIgnore()
     {
@@ -109,6 +110,7 @@ class LicensedPackageManifest extends PackageManifest
         if ($lock->get()) {
             try {
                 Artisan::call(self::DISCOVER_PACKAGES);
+                Cache::put(self::LAST_PACKAGE_DISCOVERY, Carbon::now()->timestamp);
             } catch (Throwable $e) {
                 Log::error('LicenseService - Error during package discovery: ' . $e->getMessage());
             }

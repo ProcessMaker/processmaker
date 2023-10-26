@@ -2,15 +2,35 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\LicensedPackageManifest;
 use Tests\TestCase;
 
+/**
+ * Test license commands
+ *
+ * @group license
+ */
 class LicenseCommandsTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
         Storage::fake('local');
+    }
+
+    protected function tearDown(): void
+    {
+        // remove the license.json file if it exists
+        if (Storage::disk('local')->exists('license.json')) {
+            Storage::disk('local')->delete('license.json');
+        }
+        Cache::forget(LicensedPackageManifest::EXPIRE_CACHE_KEY);
+        // run package:discover
+        $this->artisan('package:discover');
+
+        parent::tearDown();
     }
 
     public function testLicenseUpdateFromLocalPath()

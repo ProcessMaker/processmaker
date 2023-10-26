@@ -7,16 +7,45 @@ use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Mockery;
 use ProcessMaker\LicensedPackageManifest;
 use ProcessMaker\Providers\LicenseServiceProvider;
 use Tests\TestCase;
 
+/**
+ * Test license commands
+ *
+ * @group license
+ */
 class LicenseTest extends TestCase
 {
+    protected $skipPackageDiscover = false;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Storage::fake('local');
+    }
+
+    protected function tearDown(): void
+    {
+        // remove the license.json file if it exists
+        if (Storage::disk('local')->exists('license.json')) {
+            Storage::disk('local')->delete('license.json');
+        }
+        Cache::forget(LicensedPackageManifest::EXPIRE_CACHE_KEY);
+
+        if (!$this->skipPackageDiscover) {
+            Mockery::close(); // Clear the mock
+            $this->artisan('package:discover');
+        }
+
+        // Restore mock of artisan
+        parent::tearDown();
+    }
+
     public function testLicense()
     {
-        Storage::fake('local');
-
         $license = [
             'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
             'packages' => [
@@ -38,8 +67,6 @@ class LicenseTest extends TestCase
 
     public function testNoLicense()
     {
-        Storage::fake('local');
-
         $packageManifest = $this->app->make(PackageManifest::class);
         $packagesToIgnore = $packageManifest->loadPackagesToIgnore();
 
@@ -49,8 +76,6 @@ class LicenseTest extends TestCase
 
     public function testExpiredLicense()
     {
-        Storage::fake('local');
-
         $license = [
             'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
             'packages' => [
@@ -80,14 +105,15 @@ class LicenseTest extends TestCase
         Cache::forget(LicensedPackageManifest::EXPIRE_CACHE_KEY);
         Artisan::shouldReceive('call')->never();
         $provider->boot();
+
+        $this->skipPackageDiscover = true;
     }
 
     public function testProviderWithLicense()
     {
-        Storage::fake('local');
-
+        $date = Carbon::now()->addDays(30);
         $license = [
-            'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
+            'expires_at' => $date->toIso8601String(),
             'packages' => [
                 'package-projects',
             ],
@@ -96,7 +122,7 @@ class LicenseTest extends TestCase
 
         Artisan::call('package:discover');
 
-        $this->assertEquals(Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY), Carbon::now()->addDays(30)->timestamp);
+        $this->assertEquals(Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY), $date->timestamp);
 
         $provider = $this->app->make(LicenseServiceProvider::class, [
             'app' => $this->app,
@@ -108,10 +134,9 @@ class LicenseTest extends TestCase
 
     public function testProviderWithExpiredLicense()
     {
-        Storage::fake('local');
-
+        $date = Carbon::now()->addDays(30);
         $license = [
-            'expires_at' => Carbon::now()->addDays(30)->toIso8601String(),
+            'expires_at' => $date->toIso8601String(),
             'packages' => [
                 'package-projects',
             ],
@@ -120,7 +145,7 @@ class LicenseTest extends TestCase
 
         Artisan::call('package:discover');
 
-        $this->assertEquals(Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY), Carbon::now()->addDays(30)->timestamp);
+        $this->assertEquals(Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY), $date->timestamp);
 
         $provider = $this->app->make(LicenseServiceProvider::class, [
             'app' => $this->app,
@@ -128,7 +153,9 @@ class LicenseTest extends TestCase
 
         $this->travel(31)->days();
         $this->assertTrue(Cache::has(LicensedPackageManifest::EXPIRE_CACHE_KEY));
-        Artisan::shouldReceive('call')->once()->with('package:discover');
+
+        Cache::put(LicensedPackageManifest::LAST_PACKAGE_DISCOVERY, 0);
         $provider->boot();
+        $this->assertNotEmpty(Cache::get(LicensedPackageManifest::LAST_PACKAGE_DISCOVERY));
     }
 }
