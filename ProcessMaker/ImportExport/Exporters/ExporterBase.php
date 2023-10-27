@@ -503,7 +503,12 @@ abstract class ExporterBase implements ExporterInterface
             if ($this->getReference('uncategorized-category')) {
                 $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
             } else {
-                $categories->push($categoryClass::findOrFail($this->model->process_category_id));
+                $categorFind = $categoryClass::find($this->model->process_category_id);
+                if (!$categorFind) {
+                    $categorFind = $categoryClass::where('name', 'Uncategorized')->firstOrFail();
+                    \Log::debug($categoryClass . ' ID: ' . $this->model->process_category_id . ' not found. Changing category toUncategorize.');
+                }
+                $categories->push($categorFind);
             }
         } elseif ($categories->empty() && $this->getReference('uncategorized-category')) {
             $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
