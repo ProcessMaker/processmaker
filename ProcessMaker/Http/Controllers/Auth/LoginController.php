@@ -121,10 +121,9 @@ class LoginController extends Controller
     protected function getLoginDefaultSSO()
     {
         $defaultSSO = '';
-        if (class_exists(AuthDefaultSeeder::class)) {
-            $defaultSSO = Setting::byKey(
-                AuthDefaultSeeder::SSO_DEFAULT_LOGIN
-            );
+        // Check if the package-auth is installed and has a const SSO_DEFAULT_LOGIN was defined
+        if (class_exists(AuthDefaultSeeder::class) && defined('AuthDefaultSeeder::SSO_DEFAULT_LOGIN')) {
+            $defaultSSO = Setting::byKey(AuthDefaultSeeder::SSO_DEFAULT_LOGIN);
         }
 
         return $defaultSSO;
@@ -133,7 +132,8 @@ class LoginController extends Controller
     protected function getPmLogin()
     {
         $pmLogin = 'ProcessMaker';
-        if (class_exists(AuthDefaultSeeder::class)) {
+        // Check if the package-auth is installed and has a const PM_LOGIN was defined
+        if (class_exists(AuthDefaultSeeder::class) && defined('AuthDefaultSeeder::PM_LOGIN')) {
             $pmLogin = AuthDefaultSeeder::PM_LOGIN;
         }
 
