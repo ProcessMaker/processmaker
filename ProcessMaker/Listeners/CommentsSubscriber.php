@@ -29,15 +29,18 @@ class CommentsSubscriber
         if (!is_int($token->process_request_id)) {
             return;
         }
-
-        Comment::create([
-            'type' => 'LOG',
-            'user_id' => $user_id,
-            'commentable_type' => ProcessRequest::class,
-            'commentable_id' => $token->process_request_id,
-            'subject' => 'Task Complete',
-            'body' => __(':user has completed the task :task_name', ['user' => $user_name, 'task_name' => $token->element_name]),
-        ]);
+        
+        $notifiables = $token->getNotifiables('completed');
+        if (!$notifiables->isEmpty()) {
+            Comment::create([
+                'type' => 'LOG',
+                'user_id' => $user_id,
+                'commentable_type' => ProcessRequest::class,
+                'commentable_id' => $token->process_request_id,
+                'subject' => 'Task Complete',
+                'body' => __(':user has completed the task :task_name', ['user' => $user_name, 'task_name' => $token->element_name]),
+            ]);
+        }
     }
 
     /**
