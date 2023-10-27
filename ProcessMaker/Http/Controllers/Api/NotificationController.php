@@ -79,6 +79,9 @@ class NotificationController extends Controller
             ->where('notifiable_id', Auth::user()->id);
 
         $filter = $request->input('filter', '');
+        $comments = $request->input('comments');
+
+        //$filter conditional
         if ($filter === 'read') {
             $query->whereNotNull('read_at');
         } elseif ($filter === 'unread') {
@@ -91,6 +94,15 @@ class NotificationController extends Controller
                     ->orWhere('data->userName', 'like', $subsearch)
                     ->orWhere('data->processName', 'like', $subsearch);
             });
+        }
+
+        // Add the condition for $comments
+        if ($comments !== null) {
+            if ($comments === 'show') {
+                $query->where('data->type', 'COMMENT');
+            } else {
+                $query->whereNot('data->type', 'COMMENT');
+            }
         }
 
         //restrict all filters and results to the selected status
