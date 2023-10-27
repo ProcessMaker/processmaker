@@ -22,7 +22,7 @@ class HomeController extends Controller
                 return redirect($homePage);
             }
 
-            return redirect('/requests');
+            return redirect('/home');
         }
     }
 }

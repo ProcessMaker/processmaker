@@ -19,6 +19,12 @@ class GenerateMenus
     public function handle(Request $request, Closure $next)
     {
         Menu::make('topnav', function ($menu) {
+            $menu->group(['prefix' => 'home'], function ($request_items) {
+                $request_items->add(
+                    __('Home'),
+                    ['route' => 'home', 'id' => 'home']
+                )->active('home/*');
+            });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
                     __('Requests'),
