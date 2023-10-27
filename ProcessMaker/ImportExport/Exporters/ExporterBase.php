@@ -65,6 +65,11 @@ abstract class ExporterBase implements ExporterInterface
         $matchedBy = null;
         $baseQuery = $class::query();
 
+        // If table does not exists for model, continue.
+        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+            return [null, null];
+        }
+
         // Check if the model has soft deletes
         if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
             $baseQuery->withTrashed();
