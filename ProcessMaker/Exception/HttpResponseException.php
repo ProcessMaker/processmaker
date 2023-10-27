@@ -36,12 +36,12 @@ class HttpResponseException extends Exception implements HttpExceptionInterface
         ]), 0);
     }
 
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->status;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
