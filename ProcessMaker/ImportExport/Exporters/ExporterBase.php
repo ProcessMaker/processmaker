@@ -65,6 +65,11 @@ abstract class ExporterBase implements ExporterInterface
         $matchedBy = null;
         $baseQuery = $class::query();
 
+        // If table does not exists for model, continue.
+        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+            return [null, null];
+        }
+
         // Check if the model has soft deletes
         if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
             $baseQuery->withTrashed();
@@ -500,7 +505,16 @@ abstract class ExporterBase implements ExporterInterface
         // If a template is being used and an associated category is present, add that category to the collection.
         // Otherwise, if the collection is empty and there's an uncategorized reference, add the uncategorized category.
         if ($isTemplate && isset($this->model->process_category_id)) {
-            $categories->push($categoryClass::findOrFail($this->model->process_category_id));
+            if ($this->getReference('uncategorized-category')) {
+                $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
+            } else {
+                $categorFind = $categoryClass::find($this->model->process_category_id);
+                if (!$categorFind) {
+                    $categorFind = $categoryClass::where('name', 'Uncategorized')->firstOrFail();
+                    \Log::debug($categoryClass . ' ID: ' . $this->model->process_category_id . ' not found. Changing category toUncategorize.');
+                }
+                $categories->push($categorFind);
+            }
         } elseif ($categories->empty() && $this->getReference('uncategorized-category')) {
             $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
         }

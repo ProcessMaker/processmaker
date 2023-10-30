@@ -172,6 +172,7 @@
 </template>
 
 <script>
+// eslint-disable-next-line import/no-unresolved
 import { FormErrorsMixin, Required } from "SharedComponents";
 import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
@@ -181,8 +182,8 @@ export default {
   mixins: [settingMixin, FormErrorsMixin, Required],
   props: {
     setting: {
-      type: Object,
-      required: true,
+      type: [Object, null],
+      default: null,
     },
     value: {
       type: Object,

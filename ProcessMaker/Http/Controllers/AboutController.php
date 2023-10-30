@@ -3,11 +3,13 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
+use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Facades\MessageBrokerService;
 use ProcessMaker\Models\Setting;
+use Throwable;
 
 class AboutController extends Controller
 {
@@ -77,6 +79,11 @@ class AboutController extends Controller
             $microServices[] = $nayraMicroService;
         }
 
+        $installed = app(PackageManifest::class)->list();
+        $packages = array_filter($packages, function ($package) use ($installed) {
+            return in_array($package->name, $installed);
+        });
+
         $view = request()->get('partial') === 'ms' ? 'about.microservices' : 'about.index';
 
         return view($view,
@@ -97,7 +104,7 @@ class AboutController extends Controller
             $url = config('app.ai_microservice_host') . '/pm/getVersion';
             try {
                 $response = Http::post($url, []);
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 return [
                     'name' => 'Pmai microservice',
                     'waiting' => true,
@@ -120,7 +127,15 @@ class AboutController extends Controller
             $about = Cache::get('nayra.about', null);
             if (!$about) {
                 // Send about message to receive about information from nayra service
-                MessageBrokerService::sendAboutMessage();
+                try {
+                    MessageBrokerService::sendAboutMessage();
+                } catch (Throwable $e) {
+                    return [
+                        'name' => 'processmaker/nayra-service',
+                        'description' => __('Nayra microservice is not available at this moment.'),
+                        'waiting' => true,
+                    ];
+                }
                 $about = [
                     'name' => 'processmaker/nayra-service',
                     'waiting' => true,

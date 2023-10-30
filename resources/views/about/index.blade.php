@@ -66,10 +66,14 @@
 <script>
 async function refreshMs() {
   const update = await (await fetch('?partial=ms')).text();
-  document.getElementById('ms-section').innerHTML = update;
+  const msSection = document.getElementById('ms-section');
+  if (!msSection) {
+    return;
+  }
+  msSection.innerHTML = update;
   const hasWaiting = update.indexOf('waiting') > -1;
   if (hasWaiting) {
-    setTimeout(refreshMs, 1000);
+    setTimeout(refreshMs, 3000);
   }
 }
 setTimeout(refreshMs, 1000);

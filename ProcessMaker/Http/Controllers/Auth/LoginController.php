@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
@@ -90,12 +91,8 @@ class LoginController extends Controller
     protected function getDefaultSSO(array $addons): string
     {
         $addonsData = !empty($addons) ? head($addons)->data : [];
-        $defaultSSO = '';
-        if (class_exists(\ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::class)) {
-            $defaultSSO = Setting::byKey(
-                \ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder::SSO_DEFAULT_LOGIN
-            );
-        }
+        $defaultSSO = $this->getLoginDefaultSSO();
+        $pmLogin = $this->getPmLogin();
         if (!empty($defaultSSO) && !empty($addonsData)) {
             // Get the config selected
             $position = $this->getColumnAttribute($defaultSSO, 'config', 'config');
@@ -106,7 +103,7 @@ class LoginController extends Controller
             $drivers = !empty($addonsData['drivers']) ? $addonsData['drivers'] : [];
             if (
                 is_int($position)
-                && $options[$position] !== AuthDefaultSeeder::PM_LOGIN
+                && $options[$position] !== $pmLogin
                 && !empty($elements)
                 && !empty($drivers)
             ) {
@@ -119,6 +116,28 @@ class LoginController extends Controller
         }
 
         return '';
+    }
+
+    protected function getLoginDefaultSSO()
+    {
+        $defaultSSO = '';
+        // Check if the package-auth is installed and has a const SSO_DEFAULT_LOGIN was defined
+        if (class_exists(AuthDefaultSeeder::class) && defined('AuthDefaultSeeder::SSO_DEFAULT_LOGIN')) {
+            $defaultSSO = Setting::byKey(AuthDefaultSeeder::SSO_DEFAULT_LOGIN);
+        }
+
+        return $defaultSSO;
+    }
+
+    protected function getPmLogin()
+    {
+        $pmLogin = 'ProcessMaker';
+        // Check if the package-auth is installed and has a const PM_LOGIN was defined
+        if (class_exists(AuthDefaultSeeder::class) && defined('AuthDefaultSeeder::PM_LOGIN')) {
+            $pmLogin = AuthDefaultSeeder::PM_LOGIN;
+        }
+
+        return $pmLogin;
     }
 
     protected function getColumnAttribute(object $setting, string $attribute, string $key = '')

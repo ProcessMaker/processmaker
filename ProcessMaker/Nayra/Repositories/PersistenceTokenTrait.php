@@ -272,6 +272,6 @@ trait PersistenceTokenTrait
         $name = $aboutInfo['name'];
         $version = $aboutInfo['version'];
         error_log("Microservice $name version $version is running.");
-        Cache::forever(self::$aboutCacheKey, $aboutInfo);
+        Cache::put(self::$aboutCacheKey, $aboutInfo, 60);
     }
 }

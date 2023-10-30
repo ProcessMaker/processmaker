@@ -18,6 +18,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
@@ -1503,5 +1504,33 @@ class ProcessController extends Controller
         $process->deleteDraft();
 
         return new Resource($process);
+    }
+
+    public function duplicate(Process $process, Request $request)
+    {
+        $request->validate(Process::rules());
+        $newProcess = new Process();
+
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
+        foreach ($process->getAttributes() as $attribute => $value) {
+            if (!in_array($attribute, $exclude)) {
+                $newProcess->{$attribute} = $process->{$attribute};
+            }
+        }
+        if ($request->has('name')) {
+            $newProcess->name = $request->input('name');
+        }
+        if ($request->has('description')) {
+            $newProcess->description = $request->input('description');
+        }
+        if ($request->has('process_category_id')) {
+            $newProcess->process_category_id = $request->input('process_category_id');
+        }
+        $newProcess->saveOrFail();
+        if ($request->has('projects')) {
+            $newProcess->syncProjectAsset($request, Process::class);
+        }
+
+        return new ApiResource($newProcess);
     }
 }
