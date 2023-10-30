@@ -15,14 +15,19 @@ class HomeController extends Controller
             $isMobile = (
                 isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])
             ) ? true : false;
+            // If is mobile redirect to view mobile request
+            if ($isMobile) {
+                return redirect('/requests');
+            }
+            // Redirect to home dynamic only if the package was enable
             if (!$isMobile && class_exists(\ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::class)) {
                 $user = \Auth::user();
                 $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
 
                 return redirect($homePage);
             }
-
-            return redirect('/home');
+            // Redirect to the default view
+            return redirect('/requests');
         }
     }
 }
