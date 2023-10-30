@@ -472,16 +472,12 @@ ProcessMaker.EventBus.$on(
     event.registerPreview({
       url:'/designer/screens/preview',
       receivingParams: ['screenRef'],
-      matcher: (nodeData) => {
-        return nodeData?.$type === 'bpmn:Task';
-      }
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:Task',
     });
     event.registerPreview({
       url:'/designer/scripts/preview',
       receivingParams: ['scriptRef'],
-      matcher: (nodeData) => {
-        return nodeData?.$type === 'bpmn:ScriptTask';
-      }
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
     });
   });
 
