@@ -19,6 +19,8 @@ class GenerateMenus
     public function handle(Request $request, Closure $next)
     {
         Menu::make('topnav', function ($menu) {
+            // The home will display the dynamic ui view
+            // @todo home will replace the request and task
             $menu->group(['prefix' => 'home'], function ($request_items) {
                 $request_items->add(
                     __('Home'),
