@@ -90,23 +90,25 @@ export default {
       const groupedItems = [];
 
       this.assets.forEach(asset => {
-        const existingGroup = groupedItems.find(group => group.type === asset.type);
+        const { type } = asset;
+        const existingGroup = groupedItems.find(group => group.type === type);
 
         if (existingGroup) {
           existingGroup.items.push(asset);
           existingGroup.mode = 'copy';
         } else {
-          groupedItems.push({ type: asset.type, mode: 'copy', items: [asset] });
+          groupedItems.push({ type, mode: 'copy', items: [asset] });
         }
       });
 
+      // Remove items with 'category' type from the list
+      const filteredData = groupedItems.filter(obj => !obj.type.toLowerCase().includes('category'));
+
       const icons = ImportExportIcons.ICONS;
-      const groupedItemsWithIcons = groupedItems.map((item) => {
-        const newItem = { ...item };
-        const iconKey = icons[item.type];
-        newItem.icon = iconKey;
-        return newItem;
-      });
+      const groupedItemsWithIcons = filteredData.map(item => ({
+        ...item,
+        icon: icons[item.type]
+      }));
 
       return groupedItemsWithIcons;
     },
