@@ -223,6 +223,19 @@ class TemplateController extends Controller
                 continue;
             }
 
+            if (!$asset['model']::where('uuid', $key)->exists() || $payload['root'] === $asset['attributes']['uuid']) {
+                continue;
+            }
+
+            if (Str::contains($asset['name'], 'Screen Interstitial')) {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
+            if (Str::contains($asset['type'], 'Category')) {
+                continue;
+            }
+
             $item = [
                 'type' => $asset['type'],
                 'uuid' => $key,
@@ -230,14 +243,6 @@ class TemplateController extends Controller
                 'name' => $asset['name'],
                 'mode' => 'copy',
             ];
-
-            if (!$asset['model']::where('uuid', $key)->exists() || $payload['root'] === $asset['attributes']['uuid']) {
-                continue;
-            }
-
-            if (Str::contains($asset['type'], 'Category')) {
-                continue;
-            }
 
             $existingOptions[] = $item;
         }
