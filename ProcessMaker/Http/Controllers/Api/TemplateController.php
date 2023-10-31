@@ -235,7 +235,7 @@ class TemplateController extends Controller
                 continue;
             }
 
-            if (Str::contains($asset['name'], 'Screen Interstitial')) {
+            if (Str::contains($asset['type'], 'Category')) {
                 continue;
             }
 
