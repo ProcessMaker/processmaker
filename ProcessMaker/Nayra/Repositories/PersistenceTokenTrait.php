@@ -42,6 +42,10 @@ trait PersistenceTokenTrait
         $activity = $this->deserializer->unserializeEntity($transaction['activity']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistActivityException($activity, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $bpmnSubscriber->onActivityException($activity, $token);
     }
 
     /**
