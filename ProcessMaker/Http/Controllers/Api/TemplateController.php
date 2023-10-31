@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Events\TemplatePublished;
@@ -230,7 +231,11 @@ class TemplateController extends Controller
                 'mode' => 'copy',
             ];
 
-            if (!$asset['model']::where('uuid', $key)->exists() || $asset['type'] === 'Process') {
+            if (!$asset['model']::where('uuid', $key)->exists() || $payload['root'] === $asset['attributes']['uuid']) {
+                continue;
+            }
+
+            if (Str::contains($asset['name'], 'Screen Interstitial')) {
                 continue;
             }
 
