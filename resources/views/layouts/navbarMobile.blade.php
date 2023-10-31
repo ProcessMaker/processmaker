@@ -86,7 +86,7 @@
         </b-navbar-nav >
       </div>
     @endif
-    <welcome-modal />
+    <welcome-modal username="{{ \Auth::user()->fullname }}"/>
   </div>
 </div>
 

@@ -12,7 +12,7 @@
       <div class="modal-content">
         <div class="modal-body justify-content-center">
           <h3 class="mt-3 font-weight-bold text-center">
-            {{ $t("Welcome Participant!") }}
+            {{ $t("Welcome") }} {{ username }}
           </h3>
           <p class="text-center px-5">
             {{ $t("Check out your tasks and requests on your phone.") }}
@@ -43,6 +43,7 @@
 <script>
 
 export default {
+  props: ["username"],
   data() {
     return {};
   },
