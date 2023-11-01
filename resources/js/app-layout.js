@@ -173,7 +173,7 @@ window.ProcessMaker.navbar = new Vue({
     },
     switchToMobile() {
       this.$cookies.set("isMobile", true);
-      window.location.reload();
+      window.open("/requests", "_self");
     },
     getRoutes() {
       if (this.$refs.breadcrumbs) {
