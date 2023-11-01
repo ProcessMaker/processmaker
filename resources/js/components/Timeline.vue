@@ -100,7 +100,6 @@ export default {
       this.form.body = "";
     },
     load() {
-      console.log(this.timeline);
       this.comments = [];
       ProcessMaker.apiClient
         .get("comments", {
