@@ -43,7 +43,7 @@
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.9.8",
+        "processmaker/nayra": "1.10.0",
         "processmaker/pmql": "1.11.0",
         "psr/simple-cache": "^2.0",
         "pusher/pusher-php-server": "^7.0",
