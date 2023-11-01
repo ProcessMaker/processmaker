@@ -31,7 +31,7 @@
           </template>
           <template v-if="type === 'requests'">
             <span class="dateInfo">
-              {{ $t("Started") }}: {{ item.initiated_at }}
+              {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
             </span>
           </template>
         </div>
