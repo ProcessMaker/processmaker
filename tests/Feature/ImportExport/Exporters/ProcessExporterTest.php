@@ -166,6 +166,7 @@ class ProcessExporterTest extends TestCase
 
     public function testSubprocessNotOnTargetInstance()
     {
+        $this->markTestSkipped('We now import subprocesses on the target instance. (FOUR-10931)');
         $this->addGlobalSignalProcess();
 
         \DB::beginTransaction();
