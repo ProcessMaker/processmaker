@@ -31,7 +31,7 @@
           </template>
           <template v-if="type === 'requests'">
             <span class="dateInfo">
-              {{ $t("Started") }}: {{ item.initiated_at }}
+              {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
             </span>
           </template>
         </div>
@@ -75,6 +75,7 @@ export default {
       openURL: "",
       colorStatus: "",
       requestBadge: "",
+      taskStatus: "",
     };
   },
   methods: {
@@ -84,9 +85,13 @@ export default {
     showBadge(item) {
       if (this.type === "tasks") {
         if (item.due_notified === 1) {
-          return this.formatDate(item.due_at);
+          this.colorStatus = "background-color: #FFF5DB";
+          this.taskStatus = "Due: ";
+          return this.taskStatus + this.formatDate(item.due_at);
         }
-        return this.formatDate(item.created_at);
+        this.taskStatus = "Done: ";
+        this.colorStatus = "background-color: #B8F2DF";
+        return this.taskStatus + this.formatDate(item.created_at);
       }
       switch (this.item.status) {
         case "DRAFT":

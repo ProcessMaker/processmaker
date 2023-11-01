@@ -31,6 +31,7 @@
       :template-data="templateData" 
       :isProjectsInstalled="isProjectsInstalled"
       @resetModal="resetModal()"
+      :projectId="projectId"
       />
   </div>
 </template>
@@ -42,7 +43,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId'],
     data: function() {
       return {
         title: '',

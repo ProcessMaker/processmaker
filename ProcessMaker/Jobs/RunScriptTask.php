@@ -106,6 +106,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $finalAttempt = true;
             if ($errorHandling) {
                 [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
+            } else {
+                $message = $exception->getMessage();
             }
 
             if ($finalAttempt) {

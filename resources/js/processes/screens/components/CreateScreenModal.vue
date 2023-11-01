@@ -81,6 +81,7 @@
           api-list="projects"
           v-model="formData.projects"
           :errors="errors.projects"
+          :projectId="projectId"
         ></project-select>
       </template>
       <template v-else>
@@ -120,7 +121,8 @@ export default {
     "projectAsset", 
     "assetName", 
     "callFromAiModeler",
-    'isProjectSelectionRequired'
+    'isProjectSelectionRequired',
+    "projectId"
   ],
   data() {
     return {
