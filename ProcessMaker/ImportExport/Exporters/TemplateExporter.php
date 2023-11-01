@@ -18,7 +18,14 @@ class TemplateExporter extends ExporterBase
         $this->associateCategories(ProcessCategory::class, 'process_category_id');
         if (!$this->model->process_category_id) {
             // set category by defatult
-            $this->model->process_category_id = ProcessCategory::where(['name' => 'Default Templates'])->first()->getKey();
+            $this->model->process_category_id = ProcessCategory::firstOrCreate(
+                ['name' => 'Default Templates'],
+                [
+                    'name' => 'Default Templates',
+                    'status' => 'ACTIVE',
+                    'is_system' => 0,
+                ]
+            )->getKey();
         }
         $this->model->setProcessCategoryIdAttribute($this->model->process_category_id);
         $this->model->save();
