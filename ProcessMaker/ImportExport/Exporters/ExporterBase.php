@@ -397,8 +397,8 @@ abstract class ExporterBase implements ExporterInterface
             $value = $this->model->$attribute;
             $i = 0;
             while ($this->duplicateExists($attribute, $value)) {
-                if ($i > 100) {
-                    throw new \Exception('Can not fix duplicate attribute after 100 iterations');
+                if ($i > 1000) {
+                    throw new \Exception('Can not fix duplicate attribute after 1000 iterations');
                 }
                 $i++;
                 $value = $handler($value);
