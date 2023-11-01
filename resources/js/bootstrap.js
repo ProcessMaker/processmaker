@@ -373,6 +373,11 @@ if (userID) {
       } else {
         window.ProcessMaker.alert(e.message, "warning");
       }
+    })
+    .listen(".CommentsUpdated", (e) => {
+        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
+            window.ProcessMaker.CommentsCallback();
+        }
     });
 }
 
