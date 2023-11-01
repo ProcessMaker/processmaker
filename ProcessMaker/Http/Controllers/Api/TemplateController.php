@@ -208,31 +208,24 @@ class TemplateController extends Controller
 
     private function checkIfAssetsExist($request)
     {
-        $templateId = (int) $request->id;
-        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template = ProcessTemplates::findOrFail($request->id);
         $payload = json_decode($template->manifest, true);
 
         // Get assets form the template
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
-            // Exclude the import of comment configurations to account for the unavailability
-            // of the comment configuration table in the database.
-            if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+            if (Str::contains($asset['name'], 'Screen Interstitial')
+                || Str::contains($asset['model'], 'CommentConfiguration')
+            ) {
                 unset($payload['export'][$key]);
                 continue;
             }
 
-            if (!$asset['model']::where('uuid', $key)->exists() || $payload['root'] === $asset['attributes']['uuid']) {
-                continue;
-            }
-
-            if (Str::contains($asset['name'], 'Screen Interstitial')) {
-                unset($payload['export'][$key]);
-                continue;
-            }
-
-            if (Str::contains($asset['type'], 'Category')) {
+            if (!$asset['model']::where('uuid', $key)->exists()
+                || $payload['root'] === $asset['attributes']['uuid']
+                || Str::contains($asset['type'], 'Category')
+            ) {
                 continue;
             }
 
