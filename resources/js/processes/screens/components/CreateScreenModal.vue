@@ -66,6 +66,7 @@
           />
         </b-form-group>
         <category-select
+          v-show="!projectAsset"
           v-model="formData.screen_category_id"
           :errors="errors.screen_category_id"
           :label="$t('Category')"
@@ -201,6 +202,11 @@ export default {
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
           } else {
+            if (this.projectAsset) {
+              const projectId = this.projectId;
+              window.ProcessMaker.EventBus.$emit("screen-created-from-project", projectId);
+              console.log('EMITTED', projectId);
+            }
             if (this.isQuickCreate()) {
               channel.postMessage({
                 assetType: "screen",

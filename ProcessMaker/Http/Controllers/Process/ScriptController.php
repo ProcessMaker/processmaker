@@ -63,7 +63,7 @@ class ScriptController extends Controller
         return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors', 'addons', 'assignedProjects'));
     }
 
-    public function builder(ScriptBuilderManager $manager, Request $request, Script $script, $processId = null)
+    public function builder(ScriptBuilderManager $manager, Request $request, Script $script, $assetType = null, $assetId = null)
     {
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
@@ -92,7 +92,8 @@ class ScriptController extends Controller
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
             'user' => \Auth::user(),
-            'processId' => $processId,
+            'assetType' => $assetType,
+            'assetId' => $assetId,
         ]);
     }
 

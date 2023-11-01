@@ -662,6 +662,10 @@ export default {
     this.setVersionIndicator();
     // Display ellipsis menu.
     this.setEllipsisMenu();
+    // ProcessMaker.EventBus.$on("screen-created-from-project", (projectId) => {
+    //   this.projectId = projectId;
+    //   console.log('RECEIVED EMIT IN SCREEN.VUE', this.projectId);
+    // });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),

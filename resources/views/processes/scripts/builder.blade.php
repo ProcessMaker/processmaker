@@ -28,7 +28,8 @@
       :is-versions-installed="@json($isVersionsInstalled)" 
       :is-draft="@json($isDraft)"
       :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
-      :process-id="{{ (!$processId ? 0 : $processId) }}"
+      :asset-type="{{ (!$assetType ? null : $assetType) }}"
+      :asset-id="{{ (!$assetId ? 0 : $assetId) }}"
       :user="{{ $user }}"
       >
     </script-editor>

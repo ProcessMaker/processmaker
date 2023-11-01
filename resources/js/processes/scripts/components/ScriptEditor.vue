@@ -111,7 +111,7 @@
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
-                    :process-id="processId"
+                    :process-id="assetId"
                     :default-prompt="prompt"
                     :lineContext="lineContext"
                     @get-selection="onGetSelection"
@@ -358,7 +358,10 @@ export default {
     packageAi: {
       default: 0,
     },
-    processId: {
+    assetType: {
+      default: null,
+    },
+    assetId: {
       default: 0,
     },
     user: {
@@ -529,7 +532,7 @@ export default {
     // Display ellipsis menu.
     this.setEllipsisMenu();
 
-    if (this.processId !== 0) {
+    if (this.assetType === "process" && this.assetId !== 0) {
       this.prompt = `${this.script.title}\n${this.script.description}`;
     }
   },
@@ -768,8 +771,12 @@ export default {
             onSuccess(response);
           }
 
-          if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
-            window.location = `/modeler/${this.processId}`;
+          if (this.assetType === 'process' && this.assetId !== 0 && this.assetId !== undefined && shouldRedirect) {
+            window.location = `/modeler/${this.assetId}`;
+          }
+
+          if (this.assetType === 'project' && this.assetId !== 0) {
+            window.location = `/designer/projects/${this.assetId}`;
           }
         }).catch((err) => {
           if (typeof onError === "function") {
