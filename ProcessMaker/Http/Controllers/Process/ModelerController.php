@@ -28,7 +28,7 @@ class ModelerController extends Controller
     /**
      * Invokes the Process Modeler for rendering.
      */
-    public function show(ModelerManager $manager, Process $process, Request $request)
+    public function show(ModelerManager $manager, Process $process, Request $request, $assetType = null, $assetId = null)
     {
         $pmBlockList = $this->getPmBlockList();
 
@@ -60,6 +60,8 @@ class ModelerController extends Controller
             $process->fill($draft->only(['svg', 'bpmn']));
         }
 
+        dd($assetType);
+
         return view('processes.modeler.index', [
             'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager,
@@ -74,6 +76,8 @@ class ModelerController extends Controller
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
+            'assetType' => $assetType,
+            'assetId' => $assetId,
         ]);
     }
 

@@ -115,7 +115,8 @@
       "categoryType", 
       "callFromAiModeler",
       "isProjectSelectionRequired",
-      "projectId"
+      "projectId",
+      "projectAsset"
     ],
     data: function() {
       return {
@@ -253,14 +254,24 @@
               assets: assets,
               name: this.templateData.name,
               responseId: responseId,
-              request: request},
+              request: request,
+              projectId: this.projectId},
               "",
               '/template/assets'
             );
             window.location = '/template/assets';
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
-            window.location = "/modeler/" + response.data.processId;
+
+            const url = `/modeler/${response.data.processId}`;
+
+            if (this.projectAsset) {
+              const projectId = this.projectId;
+              this.$emit("process-created-from-project", url, projectId);
+              console.log('EMITTED', projectId);
+            }
+
+            window.location = url;
           }
         })
         .catch(error => {

@@ -28,7 +28,7 @@
       :is-versions-installed="@json($isVersionsInstalled)" 
       :is-draft="@json($isDraft)"
       :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
-      :asset-type="{{ (!$assetType ? null : $assetType) }}"
+      asset-type="{{ $assetType }}"
       :asset-id="{{ (!$assetId ? 0 : $assetId) }}"
       :user="{{ $user }}"
       >

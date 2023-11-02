@@ -32,6 +32,8 @@
       :isProjectsInstalled="isProjectsInstalled"
       @resetModal="resetModal()"
       :projectId="projectId"
+      :projectAsset="projectAsset"
+      @process-created-from-project="onProcessCreatedFromProject(url, projectId)"
       />
   </div>
 </template>
@@ -43,7 +45,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId', 'projectAsset'],
     data: function() {
       return {
         title: '',
@@ -115,7 +117,10 @@
       },
       show() {
         this.$bvModal.show('selectTemplate');
-      }
+      },
+      onProcessCreatedFromProject(url, projectId) {
+        this.$emit("process-created-from-project", url, projectId);
+      },
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);
