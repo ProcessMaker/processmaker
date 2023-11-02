@@ -20,7 +20,7 @@ class ScreenBuilderController extends Controller
      *
      * @return Factory|View
      */
-    public function edit(ScreenBuilderManager $manager, Screen $screen, $assetType = null, $assetId = null)
+    public function edit(ScreenBuilderManager $manager, Screen $screen, $assetRedirectionDestination = null, $destinationId = null)
     {
         /**
          * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
@@ -47,8 +47,8 @@ class ScreenBuilderController extends Controller
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
-            'assetType' => $assetType,
-            'assetId' => $assetId,
+            'assetRedirectionDestination' => $assetRedirectionDestination,
+            'destinationId' => $destinationId,
             'currentUser' => $currentUser,
         ]);
     }

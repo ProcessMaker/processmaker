@@ -24,8 +24,8 @@
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
                    :is-draft="@json($isDraft)"
-                   asset-type="{{ $assetType }}"
-                   :asset-id="{{ (!$assetId ? 0 : $assetId) }}">
+                   asset-redirection-destination="{{ $assetRedirectionDestination }}"
+                   :destination-id="{{ (!$destinationId ? 0 : $destinationId) }}">
         </component>
     </div>
 @endsection

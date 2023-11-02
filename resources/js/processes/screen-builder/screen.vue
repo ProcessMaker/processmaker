@@ -377,10 +377,10 @@ export default {
       type: Boolean,
       default: false,
     },
-    assetType: {
+    assetRedirectionDestination: {
       type: String,
     },
-    assetId: {
+    destinationId: {
       default: 0,
     },
   },
@@ -658,7 +658,6 @@ export default {
     },
   },
   mounted() {
-    console.log('this.assetType MOUNTED', this.assetType);
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
@@ -666,10 +665,6 @@ export default {
     this.setVersionIndicator();
     // Display ellipsis menu.
     this.setEllipsisMenu();
-    // ProcessMaker.EventBus.$on("screen-created-from-project", (projectId) => {
-    //   this.projectId = projectId;
-    //   console.log('RECEIVED EMIT IN SCREEN.VUE', this.projectId);
-    // });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
@@ -1074,24 +1069,22 @@ export default {
               onSuccess(response);
             }
 
-            console.log('assetType', this.assetType);
-            console.log('assetId', this.assetId);
-
-            if (this.assetType === 'process' && this.assetId !== 0 && this.assetId !== undefined && !exportScreen) {
-              window.location = `/modeler/${this.assetId}`;
-            }
-
-            if (this.assetType === 'project' && this.assetId !== 0) {
-              console.log('assetType in conditional', this.assetType);
-              console.log('assetId in conditional', this.assetId);
-              window.location = `/designer/projects/${this.assetId}`;
-            }
+            this.handleRedirect(exportScreen);
           })
           .catch((err) => {
             if (typeof onError === "function") {
               onError(err);
             }
           });
+      }
+    },
+    handleRedirect(exportScreen) {
+      if (this.assetRedirectionDestination === 'process' && this.destinationId !== 0 && this.destinationId !== undefined && !exportScreen) {
+        window.location = `/modeler/${this.destinationId}`;
+      }
+      
+      if (this.assetRedirectionDestination === 'project' && this.destinationId !== 0) {
+        window.location = `/designer/projects/${this.destinationId}`;
       }
     },
     setVersionIndicator(isDraft = null) {
