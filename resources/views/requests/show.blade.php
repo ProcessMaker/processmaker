@@ -259,6 +259,9 @@
             @endisset
           </div>
         </div>
+          <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
+            :adding="false" :readonly="request.status === 'COMPLETED'" 
+            :timeline="false" />
       </div>
       @if (shouldShow('requestStatusContainer'))
         <div class="ml-md-3 mt-md-0 mt-3">

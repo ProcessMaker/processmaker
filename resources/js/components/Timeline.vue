@@ -1,7 +1,7 @@
 <template>
   <div class="px-4 mb-2 timeline">
-    <template v-for="(item,index) in comments">
-      <component 
+    <template v-if="timeline" v-for="(item,index) in comments">
+      <component
         v-bind:is="component(item)"
         v-bind:key="`timeline-item-${index}`"
         v-bind:value="item"
@@ -14,6 +14,21 @@
         @refresh="load"
       />
     </template>
+    <template v-if="!timeline" v-for="(item,index) in comments">
+      <component
+        v-if="item.type==='LOG'"
+        v-bind:is="component(item)"
+        v-bind:key="`timeline-item-${index}`"
+        v-bind:value="item"
+        v-bind:icon="icon(item)"
+        :allow-reactions="reactions"
+        :allow-edit="edit"
+        :allow-remove="remove"
+        :allow-voting="voting"
+        :read-only="readonly"
+        @refresh="load"
+      />
+    </template>    
     <template v-if="isDefined('comment-editor') && adding">
     <comment-editor
       v-model="newComment"
@@ -42,11 +57,12 @@ export default {
             "edit", 
             "remove",
             "adding",
-            "readonly"
+            "readonly",
+            "timeline",
         ],
   data() {
     return {
-      newComment: '',
+      newComment: "",
       form: {
         subject: "",
         body: "",
@@ -62,12 +78,12 @@ export default {
       }
     };
   },
-  watch: {},
   computed: {
     disabled() {
       return this.form.subject.trim() === "" || this.form.body.trim() === "";
-    }
+    },
   },
+  watch: {},
   methods: {
     isDefined(component) {
       return component in Vue.options.components;

@@ -50,6 +50,10 @@ class CommentController extends Controller
         $commentable_id = $request->input('commentable_id', null);
         $commentable_type = $request->input('commentable_type', null);
 
+        if ($request->has('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
         // from a request return comments for the request and their taks
         if ($commentable_type === ProcessRequest::class && $commentable_id) {
             $requestTokens = ProcessRequestToken::where('process_request_id', $commentable_id)->get();

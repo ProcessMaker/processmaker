@@ -66,6 +66,14 @@
                               @redirect="redirectToTask"
                           ></task>
                           @endcan
+                          <div v-if="taskHasComments">
+                                <timeline :commentable_id="task.id"
+                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                                          :adding="false"
+                                          :readonly="task.status === 'CLOSED'"
+                                          :timeline="false"
+                                          />
+                          </div>
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
