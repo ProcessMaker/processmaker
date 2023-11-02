@@ -1,61 +1,40 @@
-name: BUILD-PM4
+name: deploy-k8s
+run-name: ${{ github.actor }} send deploy EKS 🚀
 on: 
-  #push:
-  #  branches:
-  #    - kr-github-actions
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
-    - cron: '30 2 * * *'  # every day at midnight     
-  #workflow_dispatch:
-  #pull_request:
-  #  branches:
-  #    - main
+    - cron: '30 2 * * *'  # every day at midnight
   workflow_dispatch:
   workflow_call:
 env:
-  SHA: ${{github.event.pull_request.head.sha}}
-  PROJECT: ${{github.event.pull_request.head.repo.name}}
-  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'ci:deploy' || github.event.pull_request.body }}
-  PACKAGE_URL: ${{github.event.pull_request.head.repo.ssh_url}}
-  PACKAGE_BRANCH: ${{github.event.pull_request.head.ref}}
-  #MY_GITHUB_TOKEN: ${{ secrets.GH_STATUS_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
-  #GIT_TOKEN: ${{ secrets.MY_GH_TOKEN }}
-  OWNER: ${{ github.event.pull_request.head.repo.owner.login }}  
-  #Other Parameters
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: ${{ secrets.AWS_REGION }}  
-  aws-url: ${{ secrets.AWS_URL }}
-  STM_TOKEN: ${{ secrets.STM_TOKEN }}
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'develop' }}
-  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }} 
-  CI_TEST: $CI_PROJECT
-  IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
-  GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
+  AWS_URL: ${{ secrets.AWS_URL }}
   pull_req_id: ${{github.event.pull_request.number}}
-  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
+  DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  DEPLOY: ${{ secrets.DEPLOY }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_EMAIL: ${{ secrets.GH_EMAIL }}
+  GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
+  DOM_EKS: ${{ secrets.DOM_EKS }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  job1:
-    name: build-stm-image 
-    if: github.event.action != 'closed'
-    runs-on: ${{ vars.RUNNER }}    
-    steps:     
-      - name: Export Params                
-        run: |
-          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
-          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          #Additional
-          echo "CACHEBUSTER="$(date +%s) >> $GITHUB_ENV
-      - name: Clone Repo STM
-        run: |
-          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
+  imageEKS: 
+    name: build-docker-image-EKS
+    runs-on: ubuntu-22.04
+    steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -63,147 +42,122 @@ jobs:
           aws-secret-access-key: ${{ env.aws-secret-access-key }}
           aws-region: ${{ env.aws-region }}
       - name: Login to ECR
-        run: |          
-          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.aws-url}}
-      - name: Build and Push the base images
-        if: contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule'
         run: |
-          cd pm4-stm-docker
-          docker-compose build --no-cache base
-          docker-compose build --no-cache cache
-          docker push ${REPOSITORY}:ci-base
-          docker push ${REPOSITORY}:ci-cache
-      - name: Build and Push the image to ECR
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.AWS_URL}}
+      - name: Clone repo K8S
         run: |
-          cd pm4-stm-docker
-          docker-compose build processmaker
-          docker push ${IMAGE}
-  job2: 
-    name: deploy-stm    
+          git clone --depth 1 -b cicd2 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git" pm4-k8s-distribution/images/pm4-tools
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution/images
+          export CICD=1
+          bash build.k8s.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}} $BASE
+      - name: List Images
+        run: |
+          docker images
+      - name: Push Base to ECR
+        if: env.BUILD_BASE == '1'  
+        run: |
+          docker push ${{env.AWS_URL}}/processmaker:ci-base-php81
+          docker push ${{env.AWS_URL}}/processmaker:ci-base
+      - name: Push Enterprise Image to ECR
+        run: |
+          docker push ${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
+  phpunit:
+    name: phpunit
+    needs: imageEKS
+    runs-on: ubuntu-22.04
     if: github.event.action != 'closed'
-    needs: job1
-    runs-on: ${{ vars.RUNNER }}
-    container:
-      image:  cimg/php:7.4
-      options: --user root
     steps:
-      - name: Export Params                
-        run: |
-          echo "Env Check: CI_PROJECT: $CI_PROJECT CI_PACKAGE_BRANCH: $CI_PACKAGE_BRANCH CI_PR_BODY: $CI_PR_BODY"
-          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-      - name: Clone Repo STM
-        run: |
-          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-          cd pm4-stm-docker          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ env.aws-access-key-id }}
           aws-secret-access-key: ${{ env.aws-secret-access-key }}
           aws-region: ${{ env.aws-region }}
-      - name: Login to Amazon ECR 
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Deploy STM
-        id: stm
+      - name: Login to ECR
         run: |
-          mkdir -p /tmp/workspace
-          cd pm4-stm-docker/deploy-stm
-          composer install --no-dev
-          php run.php
-          if [ -f "url.txt" ]; then
-            INSTANCE_URL=$(cat url.txt)
+          aws ecr get-login-password | docker login --username AWS --password-stdin ${{env.AWS_URL}}
+      - name: Run PHPUnit
+        run: |          
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          export IMAGE=${{env.AWS_URL}}/processmaker:${{env.IMAGE_TAG}}
+          docker pull $IMAGE          
+          docker-compose down -v          
+          docker-compose build phpunit          
+          docker-compose run phpunit
+
+  deployEKS:
+    name: build-deploy-EKS
+    if: contains(github.event.pull_request.body, 'ci:deploy')
+    needs: imageEKS
+    runs-on: ubuntu-22.04    
+    steps:      
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+          cd argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-tools.git"
+          cd pm4-tools
+          composer install --no-interaction
+          cd ..
+      - name: Add instance EKS           
+        run: |
+          cd argocd 
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          current_datetime=$(echo -n ${{env.CURRENT_DATE}} | md5sum | head -c 10)
+          if ! echo $(ls ci/) | grep $deploy; then
+            echo "Creating Deploy :: $deploy"
+            cp template-argocd.yaml ci/ci-$deploy.yaml
+            cp template-db.yaml ./ci/job_database.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
+            git status
+            git add .
+            git commit -m "Deploy CICD : ci-$deploy"
+            git push origin main             
+          else
+            echo "Bouncing"
+            rm -rf ci/job_bounce_develop.yaml
+            cp template-bounce.yaml ci/job_bounce_develop.yaml
+            sed -i "s/{{instance}}/ci-$deploy/g" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{current_datetime}}/$current_datetime/g" ./ci/job_bounce_develop.yaml
+            git status
+            git add .
+            git commit -m "BOUNCE CICD : ci-$deploy"
+            git push origin main
+            echo "Exist Deploy :: https://ci-$deploy$DOM_EKS"
           fi
-          echo "Instance URL: '${INSTANCE_URL}'"
+          export INSTANCE_URL=https://ci-$deploy$DOM_EKS
           echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
-      - name: Publish the URL to the Github PR 
-        if: success() || steps.stm.conclusion == 'success'
+          ../pm4-tools/pm wait-for-instance-ready
+      - name: Comment Instance
         run: |
-          cd pm4-stm-docker
           echo "Instance URL: '${INSTANCE_URL}'"
-          bash ./github_comment.sh "$PROJECT" "$pull_req_id"
-  job3: 
-   name: run-phpunit
-   if: github.event.action != 'closed'
-   needs: job1
-   runs-on: ${{ vars.RUNNER }}
-   steps:
-     - name: Export Params                
-       run: |
-         echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-         echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-         echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
-     - name: Clone Repo STM
-       run: |
-         git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-         cd pm4-stm-docker          
-     - name: Configure AWS Credentials
-       uses: aws-actions/configure-aws-credentials@v1
-       with:
-         aws-access-key-id: ${{ env.aws-access-key-id }}
-         aws-secret-access-key: ${{ env.aws-secret-access-key }}
-         aws-region: ${{ env.aws-region }}
-     - name: Login to Amazon ECR
-       id: login-ecr
-       uses: aws-actions/amazon-ecr-login@v1
-     - name: PHPUnits
-       run: |          
-         cd pm4-stm-docker          
-         docker pull $IMAGE          
-         docker-compose down -v          
-         docker-compose build phpunit          
-         docker-compose run phpunit
-  #job4: 
-  #  name: run-benchmarks
-  #  needs: job2
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "Fifth Step"
-  #job5: 
-  #  name: run-cypress
-  #  needs: job2
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "fourth Step"
-  #job6: 
-  #  name: run-cypress-qa
-  #  needs: job2
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: my-step
-  #      run: |
-  #        echo "Sixt Step"
-  job7: 
+          bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"    
+  deleteEKS:
     name: Delete Instance
     if: github.event.action == 'closed'
-    runs-on: ${{ vars.RUNNER }}
-    container:
-      image:  cimg/php:7.4
-      options: --user root
+    runs-on: ubuntu-22.04
     steps:
-      - name: Export Params                
+      - name: Clone private repository
         run: |
-          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "IMAGE=${{env.aws-url}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-          echo "STM_TOKEN=${{env.STM_TOKEN}}" >> $GITHUB_ENV 
-      - name: Clone Repo STM
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Remove instance EKS            
         run: |
-          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
-          cd pm4-stm-docker     
-      - name: Delete Instance STM
-        run: |
-          mkdir -p /tmp/workspace
-          cd pm4-stm-docker/deploy-stm
-          composer install --no-dev
-          php run-delete-instance.php
-      
+          cd argocd/ci/
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          rm -rf ci-$deploy.yaml
+          git status
+          git add .
+          git commit -m "Delete Instance : ci-$deploy"
+          git push origin main
