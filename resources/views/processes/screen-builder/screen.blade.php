@@ -24,7 +24,8 @@
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
                    :is-draft="@json($isDraft)"
-                   :process-id="{{ (!$processId ? 0 : $processId) }}">
+                   asset-type="{{ $assetType }}"
+                   :asset-id="{{ (!$assetId ? 0 : $assetId) }}">
         </component>
     </div>
 @endsection

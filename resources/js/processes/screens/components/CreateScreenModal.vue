@@ -201,12 +201,10 @@ export default {
 
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
+          } else if (this.projectAsset) {
+            const projectId = this.projectId;
+            this.$emit("screen-created-from-project", url, projectId);
           } else {
-            if (this.projectAsset) {
-              const projectId = this.projectId;
-              window.ProcessMaker.EventBus.$emit("screen-created-from-project", projectId);
-              console.log('EMITTED', projectId);
-            }
             if (this.isQuickCreate()) {
               channel.postMessage({
                 assetType: "screen",

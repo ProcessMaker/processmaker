@@ -28,7 +28,7 @@
           :screen-type="type"
           :screen="screen"
           :render-controls="displayBuilder"
-          :process-id="processId"
+          :process-id="assetId"
           @change="updateConfig"
         >
           <data-loading-basic
@@ -377,7 +377,10 @@ export default {
       type: Boolean,
       default: false,
     },
-    processId: {
+    assetType: {
+      type: String,
+    },
+    assetId: {
       default: 0,
     },
   },
@@ -655,6 +658,7 @@ export default {
     },
   },
   mounted() {
+    console.log('this.assetType MOUNTED', this.assetType);
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
@@ -1070,8 +1074,17 @@ export default {
               onSuccess(response);
             }
 
-            if (this.processId !== 0 && this.processId !== undefined && !exportScreen) {
-              window.location = `/modeler/${this.processId}`;
+            console.log('assetType', this.assetType);
+            console.log('assetId', this.assetId);
+
+            if (this.assetType === 'process' && this.assetId !== 0 && this.assetId !== undefined && !exportScreen) {
+              window.location = `/modeler/${this.assetId}`;
+            }
+
+            if (this.assetType === 'project' && this.assetId !== 0) {
+              console.log('assetType in conditional', this.assetType);
+              console.log('assetId in conditional', this.assetId);
+              window.location = `/designer/projects/${this.assetId}`;
             }
           })
           .catch((err) => {
