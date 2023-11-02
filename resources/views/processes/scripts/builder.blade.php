@@ -28,8 +28,8 @@
       :is-versions-installed="@json($isVersionsInstalled)" 
       :is-draft="@json($isDraft)"
       :package-ai="{{ hasPackage('package-ai') ? 1 : 0 }}"
-      asset-type="{{ $assetType }}"
-      :asset-id="{{ (!$assetId ? 0 : $assetId) }}"
+      asset-redirection-destination="{{ $assetRedirectionDestination }}"
+      :destination-id="{{ (!$destinationId ? 0 : $destinationId) }}"
       :user="{{ $user }}"
       >
     </script-editor>

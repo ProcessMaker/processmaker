@@ -358,10 +358,10 @@ export default {
     packageAi: {
       default: 0,
     },
-    assetType: {
-      default: null,
+    assetRedirectionDestination: {
+      type: String,
     },
-    assetId: {
+    destinationId: {
       default: 0,
     },
     user: {
@@ -532,7 +532,7 @@ export default {
     // Display ellipsis menu.
     this.setEllipsisMenu();
 
-    if (this.assetType === "process" && this.assetId !== 0) {
+    if (this.assetRedirectionDestination === "process" && this.destinationId !== 0) {
       this.prompt = `${this.script.title}\n${this.script.description}`;
     }
   },
@@ -771,18 +771,21 @@ export default {
             onSuccess(response);
           }
 
-          if (this.assetType === 'process' && this.assetId !== 0 && this.assetId !== undefined && shouldRedirect) {
-            window.location = `/modeler/${this.assetId}`;
-          }
-
-          if (this.assetType === 'project' && this.assetId !== 0) {
-            window.location = `/designer/projects/${this.assetId}`;
-          }
+          this.handleRedirect(shouldRedirect);
         }).catch((err) => {
           if (typeof onError === "function") {
             onError(err);
           }
         });
+    },
+    handleRedirect(shouldRedirect) {
+      if (this.assetRedirectionDestination === 'process' && this.destinationId !== 0 && this.destinationId !== undefined && shouldRedirect) {
+        window.location = `/modeler/${this.destinationId}`;
+      }
+
+      if (this.assetRedirectionDestination === 'project' && this.destinationId !== 0 && shouldRedirect) {
+        window.location = `/designer/projects/${this.destinationId}`;
+      }
     },
     discardDraft() {
       ProcessMaker.apiClient
