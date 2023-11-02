@@ -230,7 +230,7 @@ class TemplateController extends Controller
             }
 
             $item = [
-                'type' => $asset['type'],
+                'type' => ($asset['type'] === 'Process') ? 'SubProcess' : $asset['type'],
                 'uuid' => $key,
                 'model' => $asset['model'],
                 'name' => $asset['name'],
