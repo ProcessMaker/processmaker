@@ -83,6 +83,8 @@ export default {
       processName: window.ProcessMaker.modeler.process.name,
       processId: window.ProcessMaker.modeler.process.id,
       currentUserId: window.ProcessMaker.modeler.process.user_id,
+      assetRedirectionDestination: window.ProcessMaker.modeler.assetRedirectionDestination,
+      destinationId: window.ProcessMaker.modeler.destinationId,
     };
   },
   computed: {
@@ -215,6 +217,10 @@ export default {
       if (this.externalEmit.includes("open-modal-versions")) {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
+      }
+
+      if (redirectUrl === null && this.assetRedirectionDestination === 'project' && this.destinationId) {
+        redirectUrl = `/designer/projects/${this.destinationId}`;
       }
       window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId);
     },

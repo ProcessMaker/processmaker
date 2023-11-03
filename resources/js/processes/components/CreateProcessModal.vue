@@ -116,7 +116,8 @@
       "callFromAiModeler",
       "isProjectSelectionRequired",
       "projectId",
-      "projectAsset"
+      "projectAsset",
+      "createdFromProject"
     ],
     data: function() {
       return {
@@ -264,11 +265,11 @@
             ProcessMaker.alert(this.$t("The process was created."), "success");
 
             const url = `/modeler/${response.data.processId}`;
-
-            if (this.projectAsset) {
+            // TODO: Handle Redirect from template creation
+            console.log("handle create template", this.createdFromProject, this.projectAsset);
+            if (this.createdFromProject && this.projectAsset) {
               const projectId = this.projectId;
               this.$emit("process-created-from-project", url, projectId);
-              console.log('EMITTED', projectId);
             }
 
             window.location = url;
@@ -292,19 +293,26 @@
           }
 
           ProcessMaker.alert(this.$t("The process was created."), "success");
-
-          if (this.callFromAiModeler) {
-            const url = `/package-ai/processes/create/${response.data.id}`;
-            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
-          } else {
-            window.location = `/modeler/${response.data.id}`;
-          }
+          
+          this.handleRedirect(response.data.id, response.data.name);
         })
         .catch(error => {
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
       },
+      handleRedirect(id, name = null) {
+        if (this.callFromAiModeler) {
+          const url = `/package-ai/processes/create/${id}`;
+          this.$emit("process-created-from-modeler", url, id, name);
+        } else if (this.createdFromProject && this.projectAsset) {
+          const projectId = this.projectId;
+          const url = `/modeler/${id}`;
+          this.$emit("process-created-from-project", url, projectId);
+        } else {
+          window.location = `/modeler/${id}`;
+        }
+      }
     },
   };
 </script>

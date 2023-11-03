@@ -33,7 +33,8 @@
       @resetModal="resetModal()"
       :projectId="projectId"
       :projectAsset="projectAsset"
-      @process-created-from-project="onProcessCreatedFromProject(url, projectId)"
+      :created-from-project="createdFromProject"
+      @process-created-from-project="onProcessCreatedFromProject"
       />
   </div>
 </template>
@@ -45,7 +46,7 @@
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId', 'projectAsset'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId', 'projectAsset', 'createdFromProject'],
     data: function() {
       return {
         title: '',
