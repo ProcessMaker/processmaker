@@ -95,7 +95,7 @@ jobs:
       - name: Run PHPUnit
         run: |          
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-          cd images/pm4-tools
+          cd pm4-k8s-distribution/images/pm4-tools
           docker pull $IMAGE          
           docker-compose down -v          
           docker-compose build phpunit          
