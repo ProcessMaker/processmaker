@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -485,5 +486,14 @@ class User extends Authenticatable implements HasMedia
     public static function whereFullname($value)
     {
         return self::whereRaw("CONCAT(firstname, ' ', lastname) LIKE ?", ["%$value%"]);
+    }
+
+    public function removeOldRunScriptTokens()
+    {
+        // Remove old tokens more that one week old
+        return $this->tokens()
+            ->where('name', 'script-runner')
+            ->where('created_at', '<', now()->subWeek())
+            ->delete();
     }
 }

@@ -143,7 +143,6 @@ export default {
       fields: [{
         title: () => "Type",
         name: "__slot:asset_type",
-        sortField: "asset_type",
       },
       {
         title: () => "Name",
@@ -176,15 +175,20 @@ export default {
       if (this.project) {
         this.loading = true;
         this.apiDataLoading = true;
+        let url = "projects/assets/recent?";
         // Load from our api client
         window.ProcessMaker.apiClient
           .get(
-            `projects/assets/recent?
-            asset_types=
-            ${this.types}
-            &pmql=${encodeURIComponent(pmql)}
-            `,
-          )
+              url +
+              "asset_types=" +
+              this.types +
+              "&pmql=" +
+              encodeURIComponent(pmql) +
+              "&order_by=" +
+              this.orderBy +
+              "&order_direction=" +
+              this.orderDirection,
+            )
           .then((response) => {
             this.data = this.transform(response.data);
             this.apiDataLoading = false;

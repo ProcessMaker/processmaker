@@ -144,19 +144,23 @@ export default {
         this.apiDataLoading = true;
         this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
 
-        const url = "projects?";
-        const status = this.status ? this.status : "all";
+        let url = "projects?";
+        let status = this.status ? this.status : "all";
 
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            `${url}
-            status=${status}
-            &page=1
-            &per_page=10"
-            &pmql=${encodeURIComponent(pmql)}
-            &order_by=${this.orderBy}
-            &order_direction=${this.orderDirection}`,
+              url +
+              "status=all" +
+              this.status +
+              "&page=1" +
+              "&per_page=10" +
+              "&pmql=" +
+              encodeURIComponent(pmql) +
+              "&order_by=" +
+              this.orderBy +
+              "&order_direction=" +
+              this.orderDirection,
           )
           .then((response) => {
             this.data = this.transform(response.data);

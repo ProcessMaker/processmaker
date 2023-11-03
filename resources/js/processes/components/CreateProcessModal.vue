@@ -58,6 +58,7 @@
           v-model="projects"
           :errors="addError?.projects"
           name="project"
+          :projectId="projectId"
         ></project-select>
        <b-form-group
           :label="$t('Process Manager')"
@@ -113,7 +114,8 @@
       "isProjectsInstalled", 
       "categoryType", 
       "callFromAiModeler",
-      "isProjectSelectionRequired"
+      "isProjectSelectionRequired",
+      "projectId"
     ],
     data: function() {
       return {

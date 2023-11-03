@@ -7,6 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Bpmn\Collection;
+use ProcessMaker\Nayra\Bpmn\Models\Error;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
@@ -223,6 +224,14 @@ class Deserializer
 
         // Set process request token properties
         $properties = array_merge($token->getProperties(), $properties);
+
+        // Convert string error into Error
+        if (isset($properties['error']) && is_string($properties['error'])) {
+            $error = new Error();
+            $error->setName($properties['error']);
+            $properties['error'] = $error;
+        }
+
         $token->setProperties($properties);
 
         return $token;

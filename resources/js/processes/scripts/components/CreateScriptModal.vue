@@ -73,6 +73,7 @@
           api-get="projects"
           api-list="projects"
           name="project"
+          :projectId="projectId"
         />
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
@@ -209,6 +210,7 @@ export default {
     "assetName",
     "callFromAiModeler",
     "isProjectSelectionRequired",
+    "projectId",
   ],
   data() {
     return {

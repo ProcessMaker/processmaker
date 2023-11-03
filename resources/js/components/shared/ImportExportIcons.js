@@ -6,6 +6,7 @@ const ICONS = {
   Script: "fa-code",
   ScriptCategory: "fa-code",
   Process: "fa-play-circle",
+  SubProcess: "fa-play-circle",
   ProcessCategory: "fa-play-circle",
   Category: "",
   EnvironmentVariable: "fa-lock",

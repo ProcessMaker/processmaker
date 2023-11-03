@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\Managers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
 use ProcessMaker\Exception\ConfigurationException;
@@ -676,8 +677,13 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         $user = $this->getAdminUser();
         if ($user) {
-            $token = new GenerateAccessToken($user);
-            $environmentVariables['API_TOKEN'] = $token->getToken();
+            $expires = Carbon::now()->addWeek();
+            $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
+                $user->removeOldRunScriptTokens();
+                $token = new GenerateAccessToken($user);
+                return $token->getToken();
+            });
+            $environmentVariables['API_TOKEN'] = $accessToken;
             $environmentVariables['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
             $environmentVariables['APP_URL'] = config('app.docker_host_url');
             $environmentVariables['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');

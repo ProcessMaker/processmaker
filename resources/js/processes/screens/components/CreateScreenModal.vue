@@ -77,6 +77,7 @@
           v-if="isProjectsInstalled"
           v-model="formData.projects"
           :errors="errors.projects"
+          :projectId="projectId"
           :label="$t('Project')"
           :required="isProjectSelectionRequired"
           api-get="projects"
@@ -126,6 +127,7 @@ export default {
     "assetName",
     "callFromAiModeler",
     "isProjectSelectionRequired",
+    "projectId",
   ],
   data() {
     return {

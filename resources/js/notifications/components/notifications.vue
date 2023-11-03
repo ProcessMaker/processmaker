@@ -258,7 +258,7 @@ export default {
         return "primary";
       }
       if (this.hasMessages) {
-        return "warning";
+        return "notification-btn-warning";
       }
       return "link";
     },
@@ -347,7 +347,12 @@ export default {
   },
 };
 </script>
-
+<style>
+.btn-notification-btn-warning{
+    background-color: #FFEABF;
+    border-color: #FFEABF;
+}
+</style>
 <style lang="scss" scoped>
 @import "../../../sass/variables";
 

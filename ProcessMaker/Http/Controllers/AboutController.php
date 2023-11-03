@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Exception;
+use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -77,6 +78,11 @@ class AboutController extends Controller
         if ($nayraMicroService) {
             $microServices[] = $nayraMicroService;
         }
+
+        $installed = app(PackageManifest::class)->list();
+        $packages = array_filter($packages, function ($package) use ($installed) {
+            return in_array($package->name, $installed);
+        });
 
         $view = request()->get('partial') === 'ms' ? 'about.microservices' : 'about.index';
 
