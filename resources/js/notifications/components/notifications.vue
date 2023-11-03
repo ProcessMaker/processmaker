@@ -482,6 +482,7 @@ export default {
   color: $light;
 }
 
+.notification-menu-button.is-open,
 .notification-menu-button.is-open i {
   color: $light;
 }
