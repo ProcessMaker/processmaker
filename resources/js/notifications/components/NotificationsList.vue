@@ -101,11 +101,11 @@
 </template>
 
 <script>
+import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
-import moment from 'moment';
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -121,6 +121,7 @@ export default {
     return {
       response: null,
       orderBy: "",
+      showTime: true,
       sortOrder: [],
       fields: [
         {
@@ -155,14 +156,15 @@ export default {
       return this.data.type === "COMMENT";
     },
     timeFormat() {
-      let parts = window.ProcessMaker.user.datetime_format.split(" ");
+      const parts = window.ProcessMaker.user.datetime_format.split(" ");
       parts.shift();
       return parts.join(" ");
-    }
+    },
   },
   watch: {
     filterComments() {
-      this.transformResponse();
+      // this.transformResponse();
+      this.fetch();
     },
     response() {
       this.transformResponse();
@@ -221,15 +223,15 @@ export default {
     },
 
     transformResponse() {
-      if (this.filterComments === true) {
-        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === "COMMENT");
-        this.data = this.transform({ data: filteredData });
-      } else if (this.filterComments === false) {
-        const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== "COMMENT");
-        this.data = this.transform({ data: filteredData });
-      } else {
-        this.data = this.transform(this.response.data);
-      }
+      // if (this.filterComments === true) {
+      //   const filteredData = this.response.data.data.filter((item) => item.data && item.data.type === "COMMENT");
+      //   this.data = this.transform({ data: filteredData });
+      // } else if (this.filterComments === false) {
+      //   const filteredData = this.response.data.data.filter((item) => item.data && item.data.type !== "COMMENT");
+      //   this.data = this.transform({ data: filteredData });
+      // } else {
+      this.data = this.transform(this.response.data);
+      // }
     },
 
     formatDate(dateTime) {
@@ -266,16 +268,25 @@ export default {
       }
       const { CancelToken } = ProcessMaker.apiClient;
 
+      const params = {
+        page: this.page,
+        per_page: this.perPage,
+        filter: this.filter,
+        comments: this.filterComments,
+      };
+
       // Load from your API client (adjust the API endpoint and parameters as needed)
       ProcessMaker.apiClient
-        .get(
-          `notifications?page=${this.page}&per_page=${this.perPage}&filter=${this.filter}${this.getSortParam()}&include=user`,
-          {
-            cancelToken: new CancelToken((c) => {
-              this.cancelToken = c;
-            }),
+        .get("notifications", {
+          params: {
+            ...params,
+            ...this.getSortParam(),
+            include: "user",
           },
-        )
+          cancelToken: new CancelToken((c) => {
+            this.cancelToken = c;
+          }),
+        })
         .then((response) => {
           this.response = response;
           this.loading = false;
