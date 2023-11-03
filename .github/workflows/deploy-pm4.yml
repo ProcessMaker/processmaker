@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
   workflow_call:
 env:
+  K8S_BRANCH: SCO-19638
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: ${{ secrets.AWS_REGION }}  
@@ -42,7 +43,7 @@ jobs:
           echo "IMAGE"="${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
       - name: Clone repo K8S
         run: |
-          git clone --depth 1 -b SCO-19638 "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
