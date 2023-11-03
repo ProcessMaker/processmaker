@@ -476,7 +476,7 @@ export default {
 }
 
 .notification-menu-button {
-  color: $light;
+  color: $dark;
 }
 .notification-menu-button i {
   color: $light;
