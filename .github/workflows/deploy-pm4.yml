@@ -121,7 +121,7 @@ jobs:
       - name: Install pm4-tools
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-          cd images/pm4-tools
+          cd pm4-k8s-distribution/images/pm4-tools
           composer install --no-interaction
           cd ..
       - name: Add instance EKS           
