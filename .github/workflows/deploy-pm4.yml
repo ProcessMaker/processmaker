@@ -40,7 +40,13 @@ jobs:
         run: |
           export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
           echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
-          echo "IMAGE"="${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: Clone repo K8S
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
@@ -61,13 +67,6 @@ jobs:
           scanners: 'vuln,secret'
           severity: 'MEDIUM,HIGH,CRITICAL'
           timeout: '20m'
-      - name: Login to Harbor
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ secrets.REGISTRY_HOST }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
       - name: Push Base to ECR
         if: env.BUILD_BASE == '1'  
         run: |
