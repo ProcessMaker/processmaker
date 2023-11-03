@@ -33,20 +33,7 @@ use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
-
-class web
-{
-    public function handle($request, Closure $next)
-    {
-        if ($request->has('request')) {
-            // Route with 'inflight' parameter
-            return app(ModelerController::class)->inflight($request);
-        } else {
-            // Route without 'inflight' parameter
-            return app(ModelerController::class)->show($request);
-        }
-    }
-}
+use ProcessMaker\Http\Middleware\CheckRouteType;
 
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
