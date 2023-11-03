@@ -45,6 +45,10 @@ jobs:
           export REGISTRY=${{secrets.REGISTRY_HOST}}
           bash build.k8s.sh $CI_PACKAGE_BRANCH ${{env.IMAGE_TAG}} $BASE
 
+      - name: List docker images
+        run: |
+          docker images
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
