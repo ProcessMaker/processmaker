@@ -266,6 +266,11 @@
         this.retry_wait_time = 5;
         this.addError = {};
       },
+      close() {
+        this.$bvModal.hide('createScript');
+        this.disabled = false;
+        this.$emit('reload');
+      }, 
       onSubmit() {
         this.errors = {
           name: null,
@@ -301,6 +306,8 @@
 
           if (this.callFromAiModeler) {
             this.$emit("script-created-from-modeler", url, data.id, data.title);
+          } else if (this.copyAssetMode) {
+            this.close();
           } else {
             if (this.isQuickCreate()) {
               channel.postMessage({

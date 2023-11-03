@@ -176,6 +176,11 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
+    close() {
+      this.$bvModal.hide('createScreen');
+      this.disabled = false;
+      this.$emit('reload');
+    },  
     /**
      * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
      * @returns {boolean}
@@ -200,6 +205,8 @@ export default {
 
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
+          } else if (this.copyAssetMode) {
+            this.close();
           } else {
             if (this.isQuickCreate()) {
               channel.postMessage({
