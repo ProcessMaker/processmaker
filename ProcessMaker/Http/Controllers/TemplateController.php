@@ -59,8 +59,8 @@ class TemplateController extends Controller
         return view('processes.modeler.showTemplate')->with('id', $response['id']);
     }
 
-    public function chooseTemplateAssets()
+    public function chooseTemplateAssets(Request $request, $assetRedirectionDestination = null, $destinationId = null)
     {
-        return view('templates.assets');
+        return view('templates.assets', compact(['assetRedirectionDestination', 'destinationId']));
     }
 }

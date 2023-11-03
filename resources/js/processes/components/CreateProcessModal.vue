@@ -251,6 +251,15 @@
             const assets = JSON.stringify(response.data.existingAssets);
             const responseId = response.data.id;
             const request = JSON.stringify(response.data.request);
+            
+            let url;
+            if (this.createdFromProject && this.projectAsset) {
+              const projectId = this.projectId;
+              url = `/template/assets/project/${this.projectId}`;
+            } else {
+              url = '/template/assets';
+            }
+            
             window.history.pushState({
               assets: assets,
               name: this.templateData.name,
@@ -258,21 +267,19 @@
               request: request,
               projectId: this.projectId},
               "",
-              '/template/assets'
+              url
             );
-            window.location = '/template/assets';
+            window.location = url;
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
 
             const url = `/modeler/${response.data.processId}`;
-            // TODO: Handle Redirect from template creation
-            console.log("handle create template", this.createdFromProject, this.projectAsset);
             if (this.createdFromProject && this.projectAsset) {
               const projectId = this.projectId;
               this.$emit("process-created-from-project", url, projectId);
+            } else {
+              window.location = url;
             }
-
-            window.location = url;
           }
         })
         .catch(error => {

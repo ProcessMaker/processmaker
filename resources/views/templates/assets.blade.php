@@ -21,8 +21,10 @@
         :assets="assets"
         :name="name"
         :responseId="responseId"
-        :request="request
-        ">
+        :request="request"
+        asset-redirection-destination="{{ $assetRedirectionDestination }}"
+        :destination-id="{{ (!$destinationId ? 0 : $destinationId) }}"
+        >
     </template-assets-view>
 </div>
 @endsection

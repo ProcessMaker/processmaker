@@ -7,7 +7,7 @@
         :titleIcon="titleIcon"
         :setCustomButtons="true"
         :customButtons="customModalButtons"
-        @goToModeler="goToModeler"
+        @handleRedirect="handleRedirect"
         @hidden="close"
       >
         <div>
@@ -25,12 +25,12 @@
     
   export default {
     components: { Modal },
-    props: ["templateName", "submitResponse", "processName"],
+    props: ["templateName", "submitResponse", "processName", "assetRedirectionDestination", "destinationId"],
     data: function() {
       return {
         postComplete: false,
         customModalButtons: [
-          {"content": "OK", "action": "goToModeler", "variant": "primary", "size": "md"},
+          {"content": "OK", "action": "handleRedirect", "variant": "primary", "size": "md"},
         ],
         titleIcon: "fas fa-check-circle text-success",
         processId: null,
@@ -47,6 +47,13 @@
       },
       close() {
         this.$bvModal.hide("assetConfirmation");
+      },
+      handleRedirect() {
+        if (this.assetRedirectionDestination === 'project' && this.destinationId) {
+          window.location = `/designer/projects/${this.destinationId}`;
+        } else {
+          this.goToModeler();
+        }
       },
       goToModeler() {
         this.processId = this.submitResponse.processId;

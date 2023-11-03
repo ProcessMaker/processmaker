@@ -39,6 +39,8 @@
       :submitResponse="submitResponse"
       :postComplete="postComplete"
       :processName="processName"
+      :assetRedirectionDestination="assetRedirectionDestination"
+      :destinationId="destinationId"
     >
     </asset-confirmation-modal>
   </div>
@@ -55,7 +57,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: { TemplateAssetTable, AssetConfirmationModal, AssetLoadingModal },
   mixins: [uniqIdsMixin],
-  props: ['assets', 'name', 'responseId', 'request'],
+  props: ['assets', 'name', 'responseId', 'request', 'assetRedirectionDestination', 'destinationId'],
   data() {
     return {
       templateAssets: [],
