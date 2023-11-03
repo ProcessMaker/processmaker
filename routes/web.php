@@ -34,6 +34,20 @@ use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
+class web
+{
+    public function handle($request, Closure $next)
+    {
+        if ($request->has('request')) {
+            // Route with 'inflight' parameter
+            return app(ModelerController::class)->inflight($request);
+        } else {
+            // Route without 'inflight' parameter
+            return app(ModelerController::class)->show($request);
+        }
+    }
+}
+
 Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
@@ -109,8 +123,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
-    Route::get('modeler/{process}/{assetRedirectionDestination?}/{destinationId?}', [ModelerController::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
+    Route::get('modeler/{process}/{assetRedirectionDestination?}/{destinationId?}', [CheckRouteType::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
+    Route::get('modeler/{process}/inflight/{request?}', [CheckRouteType::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
