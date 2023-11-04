@@ -86,12 +86,12 @@ class ServiceKafka
         }
 
         $consumer = $consumer->withHandler(function (KafkaConsumerMessage $message) {
-                // Get transactions
-                $transactions = $message->getBody();
+            // Get transactions
+            $transactions = $message->getBody();
 
-                // Store transactions
-                $this->storeData($transactions);
-            })->build();
+            // Store transactions
+            $this->storeData($transactions);
+        })->build();
 
         // Consume incoming messages
         echo "\033[0;32m" . 'ProcessMaker consumer using kafka.' . "\033[0m" . PHP_EOL;
@@ -100,7 +100,7 @@ class ServiceKafka
 
     private function hasSaslConfig(): bool
     {
-        return config("kafka.sasl_mechanisms") ? true : false;
+        return config('kafka.sasl_mechanisms') ? true : false;
     }
 
     private function getSaslConfig(): ?Sasl
@@ -113,6 +113,7 @@ class ServiceKafka
                 securityProtocol: config('kafka.security_protocol'),
             );
         }
+
         return null;
     }
 

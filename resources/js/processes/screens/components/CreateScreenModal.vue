@@ -59,7 +59,7 @@
         >
           <b-form-select
             v-model="formData.type"
-            :options="types"
+            :options="screenTypes"
             :state="errorState('type', errors)"
             :disabled="copyAssetMode"
             name="type"
@@ -73,17 +73,17 @@
           api-get="screen_categories"
           api-list="screen_categories"
           name="category"
-        ></category-select>
+        />
         <project-select
           v-if="isProjectsInstalled"
-          :required="isProjectSelectionRequired"
-          :label="$t('Project')"
-          api-get="projects"
-          api-list="projects"
           v-model="formData.projects"
           :errors="errors.projects"
           :projectId="projectId"
-        ></project-select>
+          :label="$t('Project')"
+          :required="isProjectSelectionRequired"
+          api-get="projects"
+          api-list="projects"
+        />
       </template>
       <template v-else>
         <div>{{ $t("Categories are required to create a screen") }}</div>
@@ -103,6 +103,11 @@ import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
+import {
+  isQuickCreate as isQuickCreateFunc,
+  screenSelectId,
+} from "../../../utils/isQuickCreate";
+import { filterScreenType } from "../../../utils/filterScreenType";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -114,17 +119,17 @@ export default {
   },
   mixins: [FormErrorsMixin],
   props: [
-    "countCategories", 
-    "types", 
-    "isProjectsInstalled", 
-    "hideAddBtn", 
-    "copyAssetMode", 
-    "projectAsset", 
-    "assetName", 
+    "countCategories",
+    "types",
+    "isProjectsInstalled",
+    "hideAddBtn",
+    "copyAssetMode",
+    "projectAsset",
+    "assetName",
     "callFromAiModeler",
-    'isProjectSelectionRequired',
+    "isProjectSelectionRequired",
     "projectId",
-    "assetData"
+    "assetData",
   ],
   data() {
     return {
@@ -135,26 +140,31 @@ export default {
         description: null,
         category: null,
       },
+      screenTypes: this.types,
       disabled: false,
+      isQuickCreate: isQuickCreateFunc(),
+      screenSelectId: screenSelectId(),
     };
   },
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
         this.formData = this.assetData;
-        this.formData.title = this.assetName + ' ' + this.$t('Copy');
-        return this.$t('Copy of Asset');
+        this.formData.title = `${this.assetName} ${this.$t("Copy")}`;
+        return this.$t("Copy of Asset");
       }
       this.formData.title = "";
-      return this.$t('Create Screen');
+      return this.$t("Create Screen");
     },
   },
   mounted() {
     this.resetFormData();
     this.resetErrors();
-  },
-  destroyed() {
-    channel.close();
+    if (this.isQuickCreate === true) {
+      this.screenTypes = filterScreenType();
+      // in any case the screenType if the only one, default to the first value
+      if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
+    }
   },
   methods: {
     show() {
@@ -179,14 +189,6 @@ export default {
       this.resetFormData();
       this.resetErrors();
     },
-    /**
-     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-     * @returns {boolean}
-     */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
-    },
     onSubmit() {
       this.resetErrors();
       // single click
@@ -204,10 +206,11 @@ export default {
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
           } else {
-            if (this.isQuickCreate()) {
+            if (this.isQuickCreate === true) {
               channel.postMessage({
                 assetType: "screen",
-                id: data.id,
+                asset: data,
+                screenSelectId: this.screenSelectId,
               });
             }
             window.location = url;
@@ -220,9 +223,6 @@ export default {
           }
         });
     },
-    show() {
-      this.$bvModal.show('createScreen');
-    }
   },
 };
 </script>

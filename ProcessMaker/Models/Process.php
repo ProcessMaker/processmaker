@@ -248,7 +248,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Get the associated projects
      */
     public function projects()
-    {   
+    {
         if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
             // return an empty collection
             return new HasMany($this->newQuery(), $this, '', '');

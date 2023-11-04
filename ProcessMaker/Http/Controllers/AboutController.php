@@ -110,6 +110,7 @@ class AboutController extends Controller
                     'waiting' => true,
                 ];
             }
+
             return $response->json();
         }
 
