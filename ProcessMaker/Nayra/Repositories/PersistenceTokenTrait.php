@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\Repositories;
 
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Listeners\BpmnSubscriber;
+use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
@@ -63,6 +64,10 @@ trait PersistenceTokenTrait
         $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityCompletedEvent($activity, $token);
         $bpmnSubscriber->onActivityCompleted($event);
+
+        // Comments
+        $subscriber = new CommentsSubscriber();
+        $subscriber->onActivityCompleted($event);
     }
 
     /**
@@ -80,6 +85,16 @@ trait PersistenceTokenTrait
         $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityClosedEvent($activity, $token);
         $bpmnSubscriber->onActivityClosed($event);
+    }
+
+    public function persistActivitySkipped(array $transaction)
+    {
+        $activity = $this->deserializer->unserializeEntity($transaction['activity']);
+        $token = $this->deserializer->unserializeToken($transaction['token']);
+
+        // Comments
+        $subscriber = new CommentsSubscriber();
+        $subscriber->onActivitySkipped($activity, $token);
     }
 
     /**
@@ -150,8 +165,13 @@ trait PersistenceTokenTrait
     public function persistGatewayTokenPassed(array $transaction)
     {
         $gateway = $this->deserializer->unserializeEntity($transaction['gateway']);
-        $token = $this->deserializer->unserializeToken($transaction['token']);
-        $this->tokenRepository->persistGatewayTokenPassed($gateway, $token);
+        $transition = $this->deserializer->unserializeEntity($transaction['transition']);
+        $tokens = $this->deserializer->unserializeTokensCollection($transaction['tokens']);
+        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens[0]);
+
+        // Comments
+        $subscriber = new CommentsSubscriber();
+        $subscriber->onGatewayPassed($gateway, $transition, $tokens);
     }
 
     /**
