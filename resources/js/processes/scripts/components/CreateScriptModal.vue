@@ -73,7 +73,7 @@
           api-get="projects"
           api-list="projects"
           name="project"
-          :projectId="projectId"
+          :project-id="projectId"
         />
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
@@ -215,7 +215,7 @@ export default {
     "projectId",
     "assetData",
   ],
-  data: function () {
+  data() {
     return {
       title: "",
       language: "",
@@ -239,14 +239,14 @@ export default {
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
-        this.title = this.assetName + " " + this.$t("Copy");
+        this.title = `${this.assetName} ${this.$t("Copy")}`;
         this.script_executor_id = this.assetData.script_executor_id;
         this.description = this.assetData.description;
         this.script_category_id = this.assetData.script_category_id;
-        (this.run_as_user_id = this.assetData.selectedUser
+        this.run_as_user_id = this.assetData.selectedUser
           ? this.assetData.selectedUser.id
-          : null),
-          (this.projects = this.assetData.projects);
+          : null;
+        this.projects = this.assetData.projects;
         this.code = this.assetData.code;
         this.timeout = this.assetData.timeout;
         this.retry_attempts = this.assetData.retry_attempts;
@@ -292,7 +292,7 @@ export default {
         status: null,
         script_category_id: null,
       };
-      //single click
+      // single click
       if (this.disabled) {
         return;
       }
