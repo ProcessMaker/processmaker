@@ -51,7 +51,8 @@ class CommentController extends Controller
         $commentable_type = $request->input('commentable_type', null);
 
         if ($request->has('type')) {
-            $query->where('type', $request->input('type'));
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
         }
 
         // from a request return comments for the request and their taks

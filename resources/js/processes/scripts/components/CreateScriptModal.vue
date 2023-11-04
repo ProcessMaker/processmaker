@@ -79,12 +79,14 @@
           :invalid-feedback="errorMessage('script_executor_id', addError)"
           :label="$t('Language')"
           :state="errorState('script_executor_id', addError)"
+          :disabled="copyAssetMode"
           required
         >
           <b-form-select
             v-model="script_executor_id"
             :options="scriptExecutors"
             :state="errorState('script_executor_id', addError)"
+            :disabled="copyAssetMode"
             name="script_executor_id"
             required
           />
@@ -211,8 +213,9 @@ export default {
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
+    "assetData",
   ],
-  data() {
+  data: function () {
     return {
       title: "",
       language: "",
@@ -236,7 +239,18 @@ export default {
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
-        this.title = `${this.assetName} ${this.$t("Copy")}`;
+        this.title = this.assetName + " " + this.$t("Copy");
+        this.script_executor_id = this.assetData.script_executor_id;
+        this.description = this.assetData.description;
+        this.script_category_id = this.assetData.script_category_id;
+        (this.run_as_user_id = this.assetData.selectedUser
+          ? this.assetData.selectedUser.id
+          : null),
+          (this.projects = this.assetData.projects);
+        this.code = this.assetData.code;
+        this.timeout = this.assetData.timeout;
+        this.retry_attempts = this.assetData.retry_attempts;
+        this.retry_wait_time = this.assetData.retry_wait_time;
         return this.$t("Copy of Asset");
       }
       this.title = "";
@@ -278,7 +292,7 @@ export default {
         status: null,
         script_category_id: null,
       };
-      // single click
+      //single click
       if (this.disabled) {
         return;
       }

@@ -61,6 +61,7 @@
             v-model="formData.type"
             :options="screenTypes"
             :state="errorState('type', errors)"
+            :disabled="copyAssetMode"
             name="type"
             required
           />
@@ -128,6 +129,7 @@ export default {
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
+    "assetData",
   ],
   data() {
     return {
@@ -147,6 +149,7 @@ export default {
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
+        this.formData = this.assetData;
         this.formData.title = `${this.assetName} ${this.$t("Copy")}`;
         return this.$t("Copy of Asset");
       }
