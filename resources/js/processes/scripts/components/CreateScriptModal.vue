@@ -326,11 +326,11 @@ export default {
 
           if (this.callFromAiModeler) {
             this.$emit("script-created-from-modeler", url, data.id, data.title);
+          } else if (this.copyAssetMode) {
+            this.close();
           } else if (this.projectAsset) {
             const projectId = this.projectId;
             this.$emit("script-created-from-project", url, projectId);
-          } else if (this.copyAssetMode) {
-            this.close();
           } else {
             if (this.isQuickCreate()) {
               channel.postMessage({

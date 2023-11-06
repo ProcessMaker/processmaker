@@ -219,11 +219,11 @@ export default {
 
           if (this.callFromAiModeler) {
             this.$emit("screen-created-from-modeler", url, data.id, data.title);
+          } else if (this.copyAssetMode) {
+            this.close();
           } else if (this.projectAsset) {
             const projectId = this.projectId;
             this.$emit("screen-created-from-project", url, projectId);
-          } else if (this.copyAssetMode) {
-            this.close();
           } else {
             if (this.isQuickCreate === true) {
               channel.postMessage({
