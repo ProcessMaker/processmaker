@@ -16,6 +16,7 @@ use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
+use ProcessMaker\Http\Controllers\CheckRouteTypeController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
@@ -110,8 +111,8 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('can:edit-personal-profile');
     Route::get('profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
     // Ensure our modeler loads at a distinct url
-    Route::get('modeler/{process}/{assetRedirectionDestination?}/{destinationId?}', [CheckRouteType::class, 'show'])->name('modeler.show')->middleware('can:edit,process');
-    Route::get('modeler/{process}/inflight/{request?}', [CheckRouteType::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
+    Route::get('modeler/{process}/{assetRedirectionDestination?}/{destinationId?}', [ModelerController::class, 'show'])->name('modeler.show')->middleware([CheckRouteType::class, 'can:edit,process']);
+    Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware([CheckRouteType::class, 'can:view,request']);
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
