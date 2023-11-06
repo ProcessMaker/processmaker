@@ -26,6 +26,7 @@ class HomeController extends Controller
 
                 return redirect($homePage);
             }
+
             // Redirect to the default view
             return redirect('/requests');
         }

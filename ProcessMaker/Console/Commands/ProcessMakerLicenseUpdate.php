@@ -77,6 +77,7 @@ class ProcessMakerLicenseUpdate extends Command
             Carbon::parse($data['expires_at']);
         } catch (Exception $e) {
             $this->error('The "expires_at" property is not a valid date.');
+
             return false;
         }
 
