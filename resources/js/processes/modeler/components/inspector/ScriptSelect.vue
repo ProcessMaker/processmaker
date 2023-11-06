@@ -37,6 +37,7 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
+      v-if="!content.id"
       label="script"
       @asset="processAssetCreation"
     />
