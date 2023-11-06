@@ -38,6 +38,7 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
+      v-if="!content.id"
       :screen-select-id="uniqId"
       :screen-type="params.type"
       label="screen"
