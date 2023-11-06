@@ -261,42 +261,47 @@ export default {
     channel.close();
   },
   methods: {
-    show() {
-      this.$bvModal.show("createScript");
-    },
-    /**
-     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-     * @returns {boolean}
-     */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
-    },
-    onClose() {
-      this.title = "";
-      this.language = "";
-      this.script_executor_id = null;
-      this.description = "";
-      this.script_category_id = "";
-      this.category_type_id = "";
-      this.code = "";
-      this.timeout = 60;
-      this.retry_attempts = 0;
-      this.retry_wait_time = 5;
-      this.addError = {};
-    },
-    onSubmit() {
-      this.errors = {
-        name: null,
-        description: null,
-        status: null,
-        script_category_id: null,
-      };
-      // single click
-      if (this.disabled) {
-        return;
-      }
-      this.disabled = true;
+      show() {
+        this.$bvModal.show("createScript");
+      },
+      /**
+       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+       * @returns {boolean}
+       */
+      isQuickCreate() {
+        const searchParams = new URLSearchParams(window.location.search);
+        return searchParams?.get("create") === "true";
+      },
+      onClose() {
+        this.title = '';
+        this.language = '';
+        this.script_executor_id = null;
+        this.description = '';
+        this.script_category_id = '';
+        this.category_type_id = "";
+        this.code = '';
+        this.timeout = 60;
+        this.retry_attempts = 0;
+        this.retry_wait_time = 5;
+        this.addError = {};
+      },
+      close() {
+        this.$bvModal.hide('createScript');
+        this.disabled = false;
+        this.$emit('reload');
+      }, 
+      onSubmit() {
+        this.errors = {
+          name: null,
+          description: null,
+          status: null,
+          script_category_id: null,
+        };
+        //single click
+        if (this.disabled) {
+          return
+        }
+        this.disabled = true;
 
       ProcessMaker.apiClient
         .post("/scripts", {
@@ -321,6 +326,8 @@ export default {
 
           if (this.callFromAiModeler) {
             this.$emit("script-created-from-modeler", url, data.id, data.title);
+          } else if (this.copyAssetMode) {
+            this.close();
           } else {
             if (this.isQuickCreate()) {
               channel.postMessage({
