@@ -63,28 +63,30 @@
           api-get="script_categories"
           api-list="script_categories"
           name="script_category_id"
-        ></category-select>
+        />
         <project-select
           v-if="isProjectsInstalled"
-          :required="isProjectSelectionRequired"
-          :label="$t('Project')"
-          api-get="projects"
-          api-list="projects"
           v-model="projects"
           :errors="addError.projects"
+          :label="$t('Project')"
+          :required="isProjectSelectionRequired"
+          api-get="projects"
+          api-list="projects"
           name="project"
-          :projectId="projectId"
-        ></project-select>
+          :project-id="projectId"
+        />
         <b-form-group
           :invalid-feedback="errorMessage('script_executor_id', addError)"
           :label="$t('Language')"
           :state="errorState('script_executor_id', addError)"
+          :disabled="copyAssetMode"
           required
         >
           <b-form-select
             v-model="script_executor_id"
             :options="scriptExecutors"
             :state="errorState('script_executor_id', addError)"
+            :disabled="copyAssetMode"
             name="script_executor_id"
             required
           />
@@ -184,64 +186,81 @@
 </template>
 
 <script>
-  import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
-  import Modal from "../../../components/shared/Modal.vue";
-  import Required from "../../../components/shared/Required.vue";
-  import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
-  import SliderWithInput from "../../../components/shared/SliderWithInput";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import Modal from "../../../components/shared/Modal.vue";
+import Required from "../../../components/shared/Required.vue";
+import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
+import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 
-  const channel = new BroadcastChannel("assetCreation");
+const channel = new BroadcastChannel("assetCreation");
 
-  export default {
-    components: { Modal, Required, SliderWithInput, ProjectSelect },
-    mixins: [ FormErrorsMixin ],
-    props: [
-      "countCategories", 
-      "scriptExecutors", 
-      'isProjectsInstalled', 
-      'hideAddBtn', 
-      'copyAssetMode', 
-      'projectAsset', 
-      'assetName', 
-      'callFromAiModeler',
-      'isProjectSelectionRequired',
-      'projectId'
-    ],
-    data: function() {
-      return {
-        title: '',
-        language: '',
-        script_executor_id: null,
-        description: '',
-        script_category_id: '',
-        category_type_id: '',
-        code: '',
-        addError: {},
-        selectedUser: '',
-        users: [],
-        timeout: 60,
-        retry_attempts: 0,
-        retry_wait_time: 5,
-        disabled: false,
-        createScriptHooks: [],
-        script: null,
-        projects: [],
+export default {
+  components: {
+    Modal,
+    Required,
+    SliderWithInput,
+    ProjectSelect,
+  },
+  mixins: [FormErrorsMixin],
+  props: [
+    "countCategories",
+    "scriptExecutors",
+    "isProjectsInstalled",
+    "hideAddBtn",
+    "copyAssetMode",
+    "projectAsset",
+    "assetName",
+    "callFromAiModeler",
+    "isProjectSelectionRequired",
+    "projectId",
+    "assetData",
+  ],
+  data() {
+    return {
+      title: "",
+      language: "",
+      script_executor_id: null,
+      description: "",
+      script_category_id: "",
+      category_type_id: "",
+      code: "",
+      addError: {},
+      selectedUser: "",
+      users: [],
+      timeout: 60,
+      retry_attempts: 0,
+      retry_wait_time: 5,
+      disabled: false,
+      createScriptHooks: [],
+      script: null,
+      projects: [],
+    };
+  },
+  computed: {
+    modalSetUp() {
+      if (this.copyAssetMode) {
+        this.title = `${this.assetName} ${this.$t("Copy")}`;
+        this.script_executor_id = this.assetData.script_executor_id;
+        this.description = this.assetData.description;
+        this.script_category_id = this.assetData.script_category_id;
+        this.run_as_user_id = this.assetData.selectedUser
+          ? this.assetData.selectedUser.id
+          : null;
+        this.projects = this.assetData.projects;
+        this.code = this.assetData.code;
+        this.timeout = this.assetData.timeout;
+        this.retry_attempts = this.assetData.retry_attempts;
+        this.retry_wait_time = this.assetData.retry_wait_time;
+        return this.$t("Copy of Asset");
       }
+      this.title = "";
+      return this.$t("Create Script");
     },
-    computed: {
-      modalSetUp() {
-        if (this.copyAssetMode) {
-          this.title = this.assetName + ' ' + this.$t('Copy');
-          return this.$t('Copy of Asset');
-        }
-        this.title = "";
-        return this.$t('Create Script');
-      },
-    },
-    destroyed() {
-      channel.close();
-    },
-    methods: {
+  },
+  destroyed() {
+    channel.close();
+  },
+  methods: {
       show() {
         this.$bvModal.show("createScript");
       },
@@ -266,6 +285,11 @@
         this.retry_wait_time = 5;
         this.addError = {};
       },
+      close() {
+        this.$bvModal.hide('createScript');
+        this.disabled = false;
+        this.$emit('reload');
+      }, 
       onSubmit() {
         this.errors = {
           name: null,
@@ -279,7 +303,8 @@
         }
         this.disabled = true;
 
-        ProcessMaker.apiClient.post("/scripts", {
+      ProcessMaker.apiClient
+        .post("/scripts", {
           title: this.title,
           script_executor_id: this.script_executor_id,
           description: this.description,
@@ -302,14 +327,15 @@
           if (this.callFromAiModeler) {
             this.$emit("script-created-from-modeler", url, data.id, data.title);
           } else if (this.projectAsset) {
-              const projectId = this.projectId;
-              this.$emit("script-created-from-project", url, projectId);
-              console.log('EMITTED', projectId);
-            } else {
+            const projectId = this.projectId;
+            this.$emit("script-created-from-project", url, projectId);
+          } else if (this.copyAssetMode) {
+            this.close();
+          } else {
             if (this.isQuickCreate()) {
               channel.postMessage({
                 assetType: "script",
-                id: data.id,
+                asset: data,
               });
             }
             window.location = url;
@@ -324,9 +350,6 @@
           }
         });
     },
-    show() {
-      this.$bvModal.show('createScript');
-    }
   },
 };
 </script>

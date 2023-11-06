@@ -27,7 +27,7 @@ class DesignerController extends Controller
 
         $listConfig = (object) [
             'status' => $request->input('status'),
-            'hasPackage' => $hasPackage
+            'hasPackage' => $hasPackage,
         ];
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
