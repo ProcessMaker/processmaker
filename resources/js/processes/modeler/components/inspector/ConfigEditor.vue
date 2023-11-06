@@ -62,7 +62,7 @@
             <b-card no-body>
               <template #header>
                 <div class="sidebar-subtitle">
-                  <h6>{{ $t('Preview screen') }}</h6>
+                  <h6>{{ $t('Script Config Editor') }}</h6>
                 </div>
               </template>
               <b-card-body>

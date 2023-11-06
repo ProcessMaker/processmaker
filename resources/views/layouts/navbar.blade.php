@@ -83,6 +83,16 @@
         @endphp
 
         <b-navbar-nav class="d-flex align-items-center" style="z-index:100">
+            <b-button
+                v-if="isMobileDevice"
+                class="btn btn-primary"
+                variant="primary"
+                style="text-transform: none"
+                @click="switchToMobile()"
+            >
+                <i class="fas fa-mobile"></i>
+                Switch to Mobile View
+            </b-button>
             <template v-for="item in {{ json_encode ($menuItems) }}">
                 <b-nav-item v-if="item.hasSubItems == false"
                             :href="item.link"
@@ -98,6 +108,7 @@
                     left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
+                        :key="subItem.url"                    
                         :href="subItem.url"
                         :target="subItem.attributes.target"
                     >
@@ -117,10 +128,8 @@
             <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             @endif
 
-            @can('view-notifications')
-                <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
-                </notifications>
-            @endcan
+            <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+            </notifications>
             <li class="separator d-none d-lg-block"></li>
             <li class="d-none d-lg-block">
                 @php

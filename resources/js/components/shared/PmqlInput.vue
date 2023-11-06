@@ -24,6 +24,9 @@
             :param-participants="urlPmql ? '' : paramParticipants"
             :param-request="urlPmql ? '' : paramRequest"
             :param-name="urlPmql ? '' : paramName"
+            :param-projects="this.urlPmql ? '' : paramProjects"
+            :param-project-members="this.urlPmql ? '' : paramProjectMembers"
+            :param-project-categories="this.urlPmql ? '' : paramProjectCategories"
             :permission="permission"
             @filterspmqlchange="onFiltersPmqlChange"
           />
@@ -175,12 +178,16 @@ export default {
     "collectionId",
     "inputLabel",
     "showFilters",
+    "hidePmqlSection",
 
     "paramProcess",
     "paramStatus",
     "paramRequester",
     "paramParticipants",
     "paramRequest",
+    "paramProjects",
+    'paramProjectMembers',
+    'paramProjectCategories',
     "paramName",
     "permission",
   ],
@@ -207,7 +214,7 @@ export default {
 
   computed: {
     showPmqlSection() {
-      return this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
+      return !this.hidePmqlSection && this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
     },
     usageText() {
       const promptTokens = `Prompt tokens: ${this.usage.promptTokens}`;

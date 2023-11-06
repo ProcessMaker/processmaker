@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -203,6 +204,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'canceled',
         'completed',
         'error',
+        'comment',
     ];
 
     public $taskNotifiableTypes = [
@@ -220,6 +222,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
     protected $appends = [
         'has_timer_start_events',
+        'projects',
     ];
 
     protected $casts = [
@@ -246,12 +249,36 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
+            // return an empty collection
+            return new HasMany($this->newQuery(), $this, '', '');
+        }
+
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
+    }
+
+    public function projectAsset()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets',
+            'asset_id',
+            'project_id',
+        )->withTimeStamps();
     }
 
     /**
@@ -428,6 +455,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
         if ($this->bpmn) {
             $this->bpmnDefinitions->loadXML($this->bpmn);
+
             // Load the collaborations if exists
             return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
         }

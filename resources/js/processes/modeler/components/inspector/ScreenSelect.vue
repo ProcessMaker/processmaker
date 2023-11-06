@@ -38,6 +38,9 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
+      v-if="!content.id"
+      :screen-select-id="uniqId"
+      :screen-type="params.type"
       label="screen"
       @asset="processAssetCreation"
     />
@@ -53,19 +56,33 @@
 </template>
 
 <script>
+import { uniqueId } from "lodash";
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+
+const channel = new BroadcastChannel("assetCreation");
 
 export default {
   components: {
     ModelerAssetQuickCreate,
   },
-  props: ["value", "label", "helper", "params", "required", "placeholder"],
+  props: [
+    "value",
+    "label",
+    "helper",
+    "params",
+    "required",
+    "placeholder",
+    "defaultKey",
+  ],
   data() {
     return {
       content: "",
       loading: false,
       screens: [],
       error: null,
+      localValue: this.value,
+      uniqId: uniqueId("screen-select-"),
     };
   },
   watch: {
@@ -93,11 +110,19 @@ export default {
       },
     },
   },
+  beforeDestroy() {
+    channel.close();
+  },
   mounted() {
     this.validate();
     if (this.value) {
       this.loadScreen(this.value);
     }
+    this.setDefault();
+    channel.onmessage = ({ data }) => {
+      console.log("channel message", data);
+      this.processAssetCreation(data);
+    };
   },
   methods: {
     type() {
@@ -128,7 +153,12 @@ export default {
           }
         });
     },
-    load(filter) {
+    /**
+     *
+     * @param {Object=} filter - The filters to apply for the GET request
+     * @returns {Promise<void>}
+     */
+    async load(filter) {
       const params = {
         type: this.type(),
         interactive: this.interactive(),
@@ -139,25 +169,40 @@ export default {
         ...this.params,
       };
       this.loading = true;
+      try {
+        const { data } = await ProcessMaker.apiClient.get(
+          "screens?exclude=config",
+          { params },
+        );
+        this.loading = false;
+        this.screens = data.data;
+      } catch (err) {
+        console.error("There was a problem getting the screens", err);
+        this.loading = false;
+      }
+    },
+    setDefault() {
+      if (!this.defaultKey || this.value) {
+        // No need to set a default
+        return;
+      }
+
       ProcessMaker.apiClient
-        .get("screens?exclude=config", {
-          params,
-        })
+        .get("screens", { params: { key: this.defaultKey } })
         .then(({ data }) => {
-          this.loading = false;
-          this.screens = data.data;
-        })
-        .catch((err) => {
-          this.loading = false;
+          this.content = data.data[0];
         });
     },
     /**
      * @param {Object} data - The response we get from the emitter
-     * @param {string} data.id - the screen id
+     * @param {string} data.asset - the screen
      * @param {string} data.assetType - The Asset type, ex: screen
+     * @param {string} data.screenSelectId - Identifier for the screen select component that started the call
      */
-    processAssetCreation({ id, assetType }) {
-      if (assetType === "screen") this.$emit("input", id);
+    processAssetCreation({ asset, assetType, screenSelectId }) {
+      if (assetType === "screen" && this.uniqId === screenSelectId) {
+        this.content = asset;
+      }
     },
     validate() {
       if (!this.required || (this.value && this.value !== undefined)) {
@@ -169,7 +214,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-</style>

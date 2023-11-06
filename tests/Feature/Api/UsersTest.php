@@ -44,7 +44,7 @@ class UsersTest extends TestCase
     public function getUpdatedData()
     {
         $faker = Faker::create();
-        
+
         return [
             'username' => 'newusername',
             'email' => $faker->email(),
@@ -63,7 +63,7 @@ class UsersTest extends TestCase
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
             'password' => $faker->sentence(10),
         ];
-    } 
+    }
 
     protected function withUserSetup()
     {
@@ -72,7 +72,6 @@ class UsersTest extends TestCase
 
         (new PermissionSeeder)->run($this->user);
     }
-
 
     /**
      * Test verify the parameter required for create form
@@ -135,7 +134,7 @@ class UsersTest extends TestCase
 
         $this->assertArrayHasKey('username', $response->json()['errors']);
 
-        $this->assertEquals('The username has already been taken.', $response->json()['errors']['username'][0]);
+        $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
     public function testDefaultValuesOfUser()
@@ -436,7 +435,7 @@ class UsersTest extends TestCase
         ]);
         // Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The username has already been taken');
+        $response->assertSeeText('The Username has already been taken');
     }
 
     /**
@@ -597,13 +596,13 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password field is required.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password field is required.', $json['errors']['password'][0]);
 
         $payload['password'] = 'abc';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
@@ -617,7 +616,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password field must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password field must be at least 8 characters.', $json['errors']['password'][0]);
 
         $payload['password'] = 'Abc12345';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
@@ -712,7 +711,7 @@ class UsersTest extends TestCase
     }
 
     /**
-     * Update username and password 
+     * Update username and password
      * If is an admin user can edit username and password himself
      */
     public function testUpdateUserAdmin()
@@ -776,5 +775,4 @@ class UsersTest extends TestCase
         // Check that it has changed
         $this->assertNotEquals($verify, $verifyNew);
     }
-
 }

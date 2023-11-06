@@ -33,7 +33,12 @@ class ScriptExecutorExporter extends ExporterBase
                 if (!empty($this->model->getChanges())) {
                     $original = $this->model->getAttributes();
                     ScriptExecutorUpdated::dispatch($this->model->id, $original, $this->model->getChanges());
-                    BuildScriptExecutor::dispatch($this->model->id, $userId);
+                    if (!app()->runningInConsole()) {
+                        $user = Auth::user();
+                    } else {
+                        $user = User::where('is_administrator', 1)->first();
+                    }
+                    BuildScriptExecutor::dispatch($this->model->id, $user->id);
                 }
                 break;
 

@@ -144,6 +144,11 @@ class ScreenController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
+
+        if ($request->has('key')) {
+            $query->where('key', $request->get('key'));
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
@@ -216,7 +221,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
         $screen->saveOrFail();
-        $screen->assignAssetsToProjects($request, Screen::class);
+        $screen->syncProjectAsset($request, Screen::class);
 
         //Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
@@ -264,7 +269,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $original = $screen->getOriginal();
         $screen->saveOrFail();
-        $screen->assignAssetsToProjects($request, Screen::class);
+        $screen->syncProjectAsset($request, Screen::class);
 
         //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use ProcessMaker\Events\ProcessCreated;
 use ProcessMaker\Events\TemplateDeleted;
 use ProcessMaker\Events\TemplatePublished;
@@ -143,6 +144,8 @@ class TemplateController extends Controller
                 $response = $this->template->create($type, $request);
             }
         } elseif ($type === 'update-assets') {
+            $request['request'] = json_decode($request['request'], true);
+            $request['existingAssets'] = json_decode($request['existingAssets'], true);
             $request->validate([
                 'id' => 'required|numeric',
                 'request' => 'required|array',
@@ -205,25 +208,34 @@ class TemplateController extends Controller
 
     private function checkIfAssetsExist($request)
     {
-        $templateId = (int) $request->id;
-        $template = ProcessTemplates::where('id', $templateId)->firstOrFail();
+        $template = ProcessTemplates::findOrFail($request->id);
         $payload = json_decode($template->manifest, true);
 
         // Get assets form the template
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
+            if (Str::contains($asset['name'], 'Screen Interstitial')
+                || Str::contains($asset['model'], 'CommentConfiguration')
+            ) {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
+            if (!$asset['model']::where('uuid', $key)->exists()
+                || $payload['root'] === $asset['attributes']['uuid']
+                || Str::contains($asset['type'], 'Category')
+            ) {
+                continue;
+            }
+
             $item = [
-                'type' => $asset['type'],
+                'type' => ($asset['type'] === 'Process') ? 'SubProcess' : $asset['type'],
                 'uuid' => $key,
                 'model' => $asset['model'],
                 'name' => $asset['name'],
                 'mode' => 'copy',
             ];
-
-            if (!$asset['model']::where('uuid', $key)->exists() || $asset['type'] === 'Process') {
-                continue;
-            }
 
             $existingOptions[] = $item;
         }

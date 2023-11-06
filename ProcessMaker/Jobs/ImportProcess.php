@@ -875,6 +875,11 @@ class ImportProcess implements ShouldQueue
             $this->file = base64_decode($this->fileContents);
             $this->file = json_decode($this->file);
         }
+
+        //replace tag prefix bpmn2 to bpmn
+        if (property_exists($this->file, 'process') && property_exists($this->file->process, 'bpmn')) {
+            $this->file->process->bpmn = str_replace('bpmn2', 'bpmn', $this->file->process->bpmn);
+        }
     }
 
     /**

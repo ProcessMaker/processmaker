@@ -22,7 +22,7 @@
       >
         <template slot="title" slot-scope="props">
           <b-link
-            :href="onAction('edit-screen', props.rowData, props.rowIndex)"
+            :href="onScreenNavigate('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
           ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
@@ -30,16 +30,16 @@
 
         <template slot="actions" slot-scope="props">
           <ellipsis-menu
-            :actions="actions"
+            :actions="screenActions"
             :permission="permission"
             :data="props.rowData"
             :divider="true"
-            @navigate="onAction"
+            @navigate="onScreenNavigate"
           />
         </template>
       </vuetable>
 
-      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName"/>
+      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
 
       <pagination
         single="Screen"
@@ -93,71 +93,24 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
+import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, AddToProjectModal },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
   props: ["filter", "id", "permission"],
   data() {
     return {
-      actions: [
-        {
-          value: "edit-screen",
-          content: "Edit Screen",
-          link: true,
-          href: "/designer/screen-builder/{{id}}/edit",
-          permission: "edit-screens",
-          icon: "fas fa-pen-square",
-        },
-        {
-          value: "edit-item",
-          content: "Configure",
-          link: true,
-          href: "/designer/screens/{{id}}/edit",
-          permission: "edit-screens",
-          icon: "fas fa-cog",
-        },
-        { 
-          value: "add-to-project", 
-          content: "Add to Project",
-          icon: "fas fa-folder-plus"
-        },
-        {
-          value: "duplicate-item",
-          content: "Copy",
-          permission: "create-screens",
-          icon: "fas fa-copy",
-        },
-        {
-          value: "export-item",
-          content: "Export",
-          link: true,
-          href: "/designer/screens/{{id}}/export",
-          permission: "export-screens",
-          icon: "fas fa-file-export",
-        },
-        {
-          value: "remove-item",
-          content: "Delete",
-          permission: "delete-screens",
-          icon: "fas fa-trash-alt",
-        },
-      ],
       orderBy: "title",
       screenId: null,
       assetName: " ",
-      dupScreen: {
-        title: "",
-        type: "",
-        category: {},
-        screen_category_id: "",
-        description: ""
-      },
-      errors: [],
+      assignedProjects: [],
       sortOrder: [
         {
           field: "title",
@@ -236,57 +189,12 @@ export default {
           }
         });
     },
-    showAddToProjectModal(title, id) {        
+    showAddToProjectModal(title, id, projects) {        
       this.screenId = id;
       this.assetName = title;
+      this.assignedProjects = projects;
       this.$refs["add-to-project-modal"].show();
     },
-    onAction(actionType, data, index) {
-      if (actionType.value) {
-        switch (actionType.value) {
-        case "duplicate-item":
-          this.dupScreen.title = data.title + ' ' + this.$t('Copy');
-          this.dupScreen.type = data.type;
-          this.dupScreen.category = data.category;
-          this.dupScreen.screen_category_id = data.screen_category_id;
-          this.dupScreen.description = data.description;
-          this.dupScreen.id = data.id;
-          this.showModal();
-          break;
-        case "remove-item":
-          let that = this;
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-             this.$t("Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-                item: data.title,
-              }),
-              "",
-            function() {
-              ProcessMaker.apiClient
-                .delete("screens/" + data.id)
-                .then(response => {
-                  ProcessMaker.alert(
-                    this.$t("The screen was deleted."),
-                    "success"
-                  );
-                  that.fetch();
-                });
-            }
-          );
-            break;
-            case 'add-to-project':
-              this.showAddToProjectModal(data.title, data.id);
-            break;
-        }
-    } else {
-        switch (actionType) {
-        case "edit-screen":
-          let link = "/designer/screen-builder/" + data.id + "/edit";
-          return link;
-          break;
-        }
-    }
-  },
     fetch() {
       this.loading = true;
       //change method sort by slot name

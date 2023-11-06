@@ -27,6 +27,8 @@ class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
 
+    const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
+
     /**
      * List process templates
      *
@@ -218,6 +220,13 @@ class ProcessTemplate implements TemplateInterface
 
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
+            // Exclude the import of comment configurations to account for the unavailability
+            // of the comment configuration table in the database.
+            if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
             $postOptions[$key] = [
                 'mode' => 'copy',
                 'isTemplate' => false,
@@ -242,6 +251,7 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+
                 // TODO:Check on ['manager_id'] when updating assets
                 if (!isset($existingAssets)) {
                     $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
@@ -259,7 +269,25 @@ class ProcessTemplate implements TemplateInterface
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
-        return response()->json(['processId' => $processId]);
+        $process = Process::findOrFail($processId);
+
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
+            $manifest = $this->getManifest('process', $processId);
+
+            foreach (explode(',', $requestData['projects']) as $project) {
+                foreach ($manifest['export'] as $asset) {
+                    $model = $asset['model']::find($asset['attributes']['id']);
+                    $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
+                    $projectAsset->create([
+                        'project_id' => $project,
+                        'asset_id' => $model->id,
+                        'asset_type' => get_class($model),
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['processId' => $processId, 'processName' => $process->name]);
     }
 
     /**

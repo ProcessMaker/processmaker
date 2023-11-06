@@ -56,13 +56,14 @@ class ScriptController extends Controller
     public function edit(Script $script, User $users)
     {
         $selectedUser = $script->runAsUser;
+        $assignedProjects = json_decode($script->projects, true);
         $scriptExecutors = ScriptExecutor::list($script->scriptExecutor->language);
         $addons = $this->getPluginAddons('edit', compact(['script']));
 
-        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors', 'addons'));
+        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors', 'addons', 'assignedProjects'));
     }
 
-    public function builder(ScriptBuilderManager $manager, Request $request, Script $script)
+    public function builder(ScriptBuilderManager $manager, Request $request, Script $script, $processId = null)
     {
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
@@ -91,6 +92,7 @@ class ScriptController extends Controller
             'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
             'user' => \Auth::user(),
+            'processId' => $processId,
         ]);
     }
 
@@ -110,5 +112,35 @@ class ScriptController extends Controller
         }
 
         return $attributes;
+    }
+
+    public function preview(Request $request)
+    {
+        $data = json_decode($request->query('node'), true) ?? [];
+        $script = Script::find($data['scriptRef']);
+
+        $processRequestAttributes = $this->getProcessRequestAttributes();
+        $processRequestAttributes['user_id'] = $request->user()->id;
+
+        $testData = [
+            '_request' => $processRequestAttributes,
+        ];
+
+        $draft = $script->versions()->draft()->first();
+        if ($draft) {
+            $script->fill($draft->only(['code']));
+        }
+
+        $manager = new ScriptBuilderManager();
+
+        return view('processes.scripts.preview', [
+            'script' => $script,
+            'manager' => $manager,
+            'testData' => $testData,
+            'autoSaveDelay' => 0,
+            'isVersionsInstalled' => false,
+            'isDraft' => true,
+            'user' => \Auth::user(),
+        ]);
     }
 }
