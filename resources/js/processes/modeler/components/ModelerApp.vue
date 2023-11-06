@@ -129,7 +129,16 @@ export default {
       };
     },
     closeHref() {
-      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
+      let redirectUrl = "/processes";
+
+      const assetRedirectUrl = this.constructAssetRedirectUrl();
+      if (assetRedirectUrl) {
+        redirectUrl = assetRedirectUrl;
+      } else if (this.process?.asset_type === "PM_BLOCK") {
+        redirectUrl = "/designer/pm-blocks";
+      }
+
+      return redirectUrl;
     }
   },
   watch: {
@@ -214,14 +223,13 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
+      redirectUrl = this.constructAssetRedirectUrl(redirectUrl);
+    
       if (this.externalEmit.includes("open-modal-versions")) {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
 
-      if (redirectUrl === null && this.assetRedirectionDestination === 'project' && this.destinationId) {
-        redirectUrl = `/designer/projects/${this.destinationId}`;
-      }
       window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId);
     },
     emitDiscardEvent() {
@@ -296,6 +304,13 @@ export default {
     },
     publishPmBlock() {
       this.$refs["create-pm-block-modal"].show();
+    },
+    constructAssetRedirectUrl(redirectUrl = null) {
+      if (redirectUrl === null && this.assetRedirectionDestination === "project" && this.destinationId) {
+        return `/designer/projects/${this.destinationId}`;
+      }
+
+      return redirectUrl;
     },
   },
 };
