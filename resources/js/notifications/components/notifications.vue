@@ -476,12 +476,13 @@ export default {
 }
 
 .notification-menu-button {
-  color: $light;
+  color: $dark;
 }
 .notification-menu-button i {
   color: $light;
 }
 
+.notification-menu-button.is-open,
 .notification-menu-button.is-open i {
   color: $light;
 }

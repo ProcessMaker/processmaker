@@ -16,7 +16,6 @@
     </template>
     <template v-if="!timeline" v-for="(item,index) in comments">
       <component
-        v-if="item.type==='LOG'"
         v-bind:is="component(item)"
         v-bind:key="`timeline-item-${index}`"
         v-bind:value="item"
@@ -108,6 +107,7 @@ export default {
             commentable_type: this.commentable_type,
             includes: 'children',
             order_by: 'id',
+            type: 'LOG',
           }
         })
         .then(response => {

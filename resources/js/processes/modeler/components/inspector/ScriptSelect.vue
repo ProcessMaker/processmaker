@@ -25,11 +25,21 @@
         {{ $t("No Data Available") }}
       </template>
     </multiselect>
-    <div v-if="error" class="invalid-feedback" role="alert">
+    <div
+      v-if="error"
+      class="invalid-feedback"
+      role="alert"
+    >
       <div>{{ error }}</div>
     </div>
-    <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
-    <modeler-asset-quick-create label="script" @asset="processAssetCreation" />
+    <small
+      v-if="helper"
+      class="form-text text-muted"
+    >{{ $t(helper) }}</small>
+    <modeler-asset-quick-create
+      label="script"
+      @asset="processAssetCreation"
+    />
     <a
       v-if="content.id"
       :href="`/designer/scripts/${content.id}/builder`"
@@ -43,7 +53,7 @@
 
 <script>
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
-import { find } from "lodash";
+import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
   components: {
@@ -154,19 +164,14 @@ export default {
     },
     /**
      * @param {Object} data - The response we get from the emitter
-     * @param {string} data.id - the screen id
+     * @param {string} data.asset - the screen
      * @param {string} data.assetType - The Asset type, ex: screen
      */
-    async processAssetCreation({ id, assetType }) {
+    processAssetCreation({ asset, assetType }) {
       if (assetType === "script") {
-        await this.load();
-        this.content = find(this.scripts, (script) => script.id === id);
+        this.content = asset;
       }
     },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-</style>

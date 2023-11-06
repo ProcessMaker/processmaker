@@ -69,6 +69,9 @@ class PersistenceHandler
                 case 'activity_closed':
                     $this->persistActivityClosed($transaction);
                     break;
+                case 'activity_skipped':
+                    $this->persistActivitySkipped($transaction);
+                    break;
                 case 'throw_event_token_arrives':
                     $this->persistThrowEventTokenArrives($transaction);
                     break;
