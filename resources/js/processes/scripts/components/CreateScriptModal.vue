@@ -261,18 +261,6 @@ export default {
     channel.close();
   },
   methods: {
-    show() {
-      this.$bvModal.show("createScript");
-    },
-    /**
-     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-     * @returns {boolean}
-     */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
-    },
-    methods: {
       show() {
         this.$bvModal.show("createScript");
       },
