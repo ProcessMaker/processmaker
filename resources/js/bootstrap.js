@@ -49,6 +49,9 @@ window.ProcessesComponents = require("./processes/components");
 window.ScreensComponents = require("./processes/screens/components");
 window.ScriptsComponents = require("./processes/scripts/components");
 
+window.RequestsComponents = import("./requests/components");
+window.TasksComponents = import("./tasks/components");
+
 /**
  * Exporting Modeler inspector components
  */
@@ -237,7 +240,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };
@@ -335,9 +338,9 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
+      if (typeof window.ProcessMaker.CommentsCallback === "function") {
+        window.ProcessMaker.CommentsCallback();
+      }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
@@ -377,9 +380,9 @@ if (userID) {
       }
     })
     .listen(".CommentsUpdated", (e) => {
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
+      if (typeof window.ProcessMaker.CommentsCallback === "function") {
+        window.ProcessMaker.CommentsCallback();
+      }
     });
 }
 

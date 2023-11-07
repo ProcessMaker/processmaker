@@ -21,6 +21,8 @@ mix.webpackConfig({
     "monaco-editor",
     "SharedComponents",
     "CommonMixins",
+    "RequestsComponents",
+    "TasksComponents",
     "ModelerInspector",
   ],
   resolve: {
