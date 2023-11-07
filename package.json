@@ -24,6 +24,7 @@
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
         "accounting": "^0.4.1",
+        "babel-plugin-istanbul": "^6.1.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
         "cross-env": "^7.0.3",
         "cypress": "^9.5.4",
