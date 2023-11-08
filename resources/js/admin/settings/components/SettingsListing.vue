@@ -7,28 +7,28 @@
       :ai-enabled="false"
       :aria-label="$t('Advanced Search (PMQL)')"
       @submit="onNLQConversion">
-        <template v-slot:right-buttons>
-            <div v-if="topButtons" class="d-flex">
-                <b-button
-                    v-for="(btn,index) in topButtons"
-                    :ref="formatGroupName(btn.group)"
-                    :key="`btn-${index}`"
-                    class="ml-2 nowrap"
-                    v-bind="btn.ui.props"
-                    @click="handler(btn)"
-                    :disabled="false"
-                    >
-                    <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-                    <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-                    {{btn.name}}
-                </b-button>
-            </div>
-        </template>
+      <template v-slot:right-buttons>
+        <div v-if="topButtons" class="d-flex">
+          <b-button
+            v-for="(btn,index) in topButtons"
+            :ref="formatGroupName(btn.group)"
+            :key="`btn-${index}`"
+            class="ml-2 nowrap"
+            v-bind="btn.ui.props"
+            @click="handler(btn)"
+            :disabled="false"
+            >
+            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
+            {{btn.name}}
+          </b-button>
+        </div>
+      </template>
     </pmql-input>
 
     <div class="p-5 text-center" v-if="shouldDisplayNoDataMessage">
-        <h3>{{ noDataMessageConfig.name }}</h3>
-        <small>{{noDataMessageConfig.helper }}</small>
+      <h3>{{ noDataMessageConfig.name }}</h3>
+      <small>{{noDataMessageConfig.helper }}</small>
     </div>
 
     <div v-else class="card card-body table-card">
@@ -44,7 +44,7 @@
         :filter="searchQuery"
         show-empty
         responsive
-      >
+        >
         <template v-slot:cell(name)="row">
           <div v-if="row.item.name" v-uni-id="row.item.id.toString()" class="capitalize">{{ $t(row.item.name) }}</div>
           <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
@@ -64,9 +64,11 @@
                 :disabled="row.item.readonly" 
                 @click="onEdit(row)" 
                 variant="link" 
-               >
-                  <i class="fa-lg fas fa-edit"></i>
-                </b-button>
+                size="sm"
+                class="settings-listing-button"
+                >
+                <i class="fa-lg fas fa-edit settings-listing-button"></i>
+              </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
               <b-button
@@ -77,42 +79,49 @@
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-              >
-                <i class="fa-lg fas fa-copy" />
+                size="sm"
+                class="settings-listing-button"
+                >
+                <i class="fa-lg fas fa-copy settings-listing-button" />
               </b-button>
-              
-            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
-              <b-button 
-              :aria-label="$t('Delete')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              @click="onDelete(row)" 
-              variant="link" 
-              >
-                <i class="fa-lg fas fa-trash-alt"></i>
-              </b-button>
-            </span>
 
-            <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
-              <b-button 
-              :aria-label="$t('Clear')"
-              v-uni-aria-describedby="row.item.id.toString()"
-              :disabled="disableClear(row.item)" 
-              @click="onClear(row)" 
-              variant="link" 
-              >
-                <i class="fa-lg fas fa-trash-alt"></i>
-              </b-button>
-            </span>
-            <span v-else class="invisible">
-              <b-button 
-                variant="link" 
-                size="lg"
-                v-uni-aria-describedby="row.item.id.toString()">
-                  <i class="fas fa-trash-alt"></i>
-              </b-button>
-            </span>
+              <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
+                <b-button 
+                  :aria-label="$t('Delete')"
+                  v-uni-aria-describedby="row.item.id.toString()"
+                  @click="onDelete(row)" 
+                  variant="link" 
+                  size="sm"
+                  class="settings-listing-button"
+                  >
+                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                </b-button>
+              </span>
+
+              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+                <b-button 
+                  :aria-label="$t('Clear')"
+                  v-uni-aria-describedby="row.item.id.toString()"
+                  :disabled="disableClear(row.item)" 
+                  @click="onClear(row)" 
+                  variant="link" 
+                  size="sm"
+                  class="settings-listing-button"
+                  >
+                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                </b-button>
+              </span>
+              <span v-else class="invisible">
+                <b-button 
+                  variant="link" 
+                  size="sm"
+                  class="settings-listing-button"
+                  v-uni-aria-describedby="row.item.id.toString()">
+                  <i class="fas fa-trash-alt settings-listing-button"></i>
+                </b-button>
+              </span>
+            </template>
           </template>
-        </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
@@ -140,7 +149,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { BasicSearch } from "SharedComponents";
@@ -230,21 +238,21 @@ export default {
       key: "name",
       label: "Setting",
       sortable: true,
-      tdClass: "align-middle td-name",
+      tdClass: "align-middle td-name settings-listing-td1",
     });
 
     this.fields.push({
       key: "config",
       label: "Configuration",
       sortable: false,
-      tdClass: "align-middle td-config",
+      tdClass: "align-middle td-config settings-listing-td2",
     });
 
     this.fields.push({
       key: "actions",
       label: "",
       sortable: false,
-      tdClass: "align-middle text-right",
+      tdClass: "align-middle settings-listing-td3",
     });
     
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
@@ -550,6 +558,17 @@ export default {
 };
 </script>
 
+<style>
+.settings-listing-td1 {
+}
+.settings-listing-td2 {
+  width: 140px;
+}
+.settings-listing-td3 {
+  min-width: 95px;
+  max-width: 140px;
+}
+</style>
 <style lang="scss" scoped>
 @import '../../../../sass/colors';
 
@@ -559,12 +578,13 @@ export default {
     padding: 0 !important;
   }
 }
-
 .capitalize {
   text-transform: capitalize;
 }
-
 .nowrap {
   white-space: nowrap;
+}
+.settings-listing-button {
+  padding: 0px;
 }
 </style>
