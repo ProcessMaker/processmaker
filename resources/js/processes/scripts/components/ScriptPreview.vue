@@ -38,7 +38,8 @@ export default {
       executionKey: null,
       resizing: false,
       monacoOptions: {
-        automaticLayout: true
+        automaticLayout: true,
+        readOnly: true,
       },
       code: this.script.code,
       preview: {
