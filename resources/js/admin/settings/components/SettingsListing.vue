@@ -64,7 +64,6 @@
                 :disabled="row.item.readonly" 
                 @click="onEdit(row)" 
                 variant="link" 
-                size="sm"
                 class="settings-listing-button"
                 >
                 <i class="fa-lg fas fa-edit settings-listing-button"></i>
@@ -79,7 +78,6 @@
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-                size="sm"
                 class="settings-listing-button"
                 >
                 <i class="fa-lg fas fa-copy settings-listing-button" />
@@ -91,7 +89,6 @@
                   v-uni-aria-describedby="row.item.id.toString()"
                   @click="onDelete(row)" 
                   variant="link" 
-                  size="sm"
                   class="settings-listing-button"
                   >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
@@ -105,7 +102,6 @@
                   :disabled="disableClear(row.item)" 
                   @click="onClear(row)" 
                   variant="link" 
-                  size="sm"
                   class="settings-listing-button"
                   >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
@@ -114,7 +110,6 @@
               <span v-else class="invisible">
                 <b-button 
                   variant="link" 
-                  size="sm"
                   class="settings-listing-button"
                   v-uni-aria-describedby="row.item.id.toString()">
                   <i class="fas fa-trash-alt settings-listing-button"></i>
@@ -560,13 +555,13 @@ export default {
 
 <style>
 .settings-listing-td1 {
+  width: 100%;
 }
 .settings-listing-td2 {
-  width: 140px;
+  min-width: 140px;
 }
 .settings-listing-td3 {
-  min-width: 95px;
-  max-width: 140px;
+  min-width: 100px;
 }
 </style>
 <style lang="scss" scoped>
