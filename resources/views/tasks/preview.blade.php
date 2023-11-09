@@ -107,6 +107,7 @@
                           @@error="error"
                           @closed="closed"
                           @redirect="redirectToTask"
+                          :avoid-close="true"
                         ></task>
                     </div>
                 </div>
