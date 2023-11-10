@@ -555,12 +555,13 @@ export default {
 
 <style>
 .settings-listing-td1 {
-  width: 100%;
+  width: 50%;
 }
 .settings-listing-td2 {
-  min-width: 140px;
+  width: 40%;
 }
 .settings-listing-td3 {
+  width: 10%;
   min-width: 100px;
 }
 </style>
