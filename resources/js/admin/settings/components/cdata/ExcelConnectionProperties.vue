@@ -39,27 +39,6 @@
         name="uri"
       />
     </b-form-group>
-
-    <b-form-group
-      v-if="config.connection_type === 'Dropbox'"
-      :label="$t('Access Token')"
-      :description="
-        formDescription(
-          'The access token can be used to access your account via the API.',
-          'o_auth_access_token',
-          errors
-        )
-      "
-      :invalid-feedback="errorMessage('o_auth_access_token', errors)"
-      :state="errorState('o_auth_access_token', errors)"
-    >
-      <b-form-input
-        v-model="config.o_auth_access_token"
-        autocomplete="off"
-        name="o_auth_access_token"
-        :state="errorState('o_auth_access_token', errors)"
-      />
-    </b-form-group>
   </div>
 </template>
 
@@ -80,7 +59,6 @@ export default {
       config: {
         connection_type: "",
         uri: "",
-        o_auth_access_token: "",
         AuthScheme: "OAuth",
       },
       connectionOptions: {
@@ -130,7 +108,6 @@ export default {
   mounted() {
     this.config.connection_type = this.formData?.connection_type ?? "";
     this.config.uri = this.formData?.uri ?? "";
-    this.config.o_auth_access_token = this.formData?.o_auth_access_token ?? "";
   },
 };
 </script>
