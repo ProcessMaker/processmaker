@@ -16,5 +16,5 @@ return [
 
     'default' => env('VUE_APP_WEBSOCKET_PROVIDER', 'null'),
     'url' => env('VUE_APP_WEBSOCKET_PROVIDER_URL', 'null'),
-    'enabled' => env('VUE_APP_COLLABORATIVE_ENABLED', 'null'),
+    'enabled' => env('VUE_APP_COLLABORATIVE_ENABLED', 'true'),
 ];
