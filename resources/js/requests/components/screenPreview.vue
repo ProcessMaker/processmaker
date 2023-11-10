@@ -5,9 +5,6 @@
       no-body
       class="h-100 bg-white border-top-0"
     >
-      <!-- Card Header -->
-
-      <!-- Card Body -->
       <b-card-body
         id="screen-builder-container"
         class="overflow-auto p-0 h-100"
