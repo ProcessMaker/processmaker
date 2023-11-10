@@ -81,6 +81,7 @@ export default {
         connection_type: "",
         uri: "",
         o_auth_access_token: "",
+        AuthScheme: "OAuth",
       },
       connectionOptions: {
         oauth: [
