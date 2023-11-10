@@ -8,11 +8,8 @@
                 {{ $screen->title }}
             </div>
             <div class="col-12">
-                <screen-detail
-                    :can-print="false"
-                    :row-data="formData"
-                    :row-index="0"
-                    :timeout-on-load="false"
+                <screen-preview
+                    :screen="formData"
                 />
             </div>
         </div>
