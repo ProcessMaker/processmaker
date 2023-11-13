@@ -79,6 +79,7 @@ jobs:
           docker push ${REPOSITORY}:ci-cache
       - name: Build and Push the image to ECR
         run: |
+          echo "Base Image: ${BASE}"
           cd pm4-stm-docker
           docker-compose build processmaker
           docker push ${IMAGE}
