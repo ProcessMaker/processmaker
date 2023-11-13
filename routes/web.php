@@ -34,7 +34,7 @@ use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
-Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
+Route::middleware('auth', 'sanitize', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
