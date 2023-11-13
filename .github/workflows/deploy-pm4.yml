@@ -35,7 +35,7 @@ env:
   IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   pull_req_id: ${{github.event.pull_request.number}}
-  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base-php82' || 'ci-base' }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:php81') && 'ci-base' || 'ci-base-php82' }}
   CDATA_LICENSE_DOCUSIGN: ${{ secrets.CDATA_LICENSE_DOCUSIGN }}
   CDATA_LICENSE_EXCEL: ${{ secrets.CDATA_LICENSE_EXCEL }}
   CDATA_LICENSE_GITHUB: ${{ secrets.CDATA_LICENSE_GITHUB }}
