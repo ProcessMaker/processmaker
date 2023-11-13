@@ -144,6 +144,11 @@ class ScreenController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
+
+        if ($request->has('key')) {
+            $query->where('key', $request->get('key'));
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),
@@ -216,6 +221,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
         $screen->saveOrFail();
+        $screen->syncProjectAsset($request, Screen::class);
+
         //Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
         //Call event to store New Screen data in LOG
@@ -262,6 +269,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $original = $screen->getOriginal();
         $screen->saveOrFail();
+        $screen->syncProjectAsset($request, Screen::class);
 
         //Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
@@ -448,7 +456,7 @@ class ScreenController extends Controller
      */
     public function export(Request $request, Screen $screen)
     {
-        $fileKey = ExportScreen::dispatchNow($screen);
+        $fileKey = (new ExportScreen($screen))->handle();
 
         if ($fileKey) {
             return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
@@ -504,7 +512,7 @@ class ScreenController extends Controller
             );
         }
 
-        $import = ImportScreen::dispatchNow($content);
+        $import = (new ImportScreen($content))->handle();
 
         return ['status' => $import];
     }

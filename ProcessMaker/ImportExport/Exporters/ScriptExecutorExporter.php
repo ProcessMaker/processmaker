@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Models\User;
@@ -21,10 +21,13 @@ class ScriptExecutorExporter extends ExporterBase
 
     public function import() : bool
     {
+        $authenticatedUser = Auth::user();
+        $userId = $authenticatedUser ? $authenticatedUser->id : User::where('username', 'admin')->pluck('id');
+
         switch ($this->mode) {
             case 'copy':
             case 'new':
-                BuildScriptExecutor::dispatch($this->model->id, auth()->user()->id);
+                BuildScriptExecutor::dispatch($this->model->id, $userId);
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {

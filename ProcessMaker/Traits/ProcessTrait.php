@@ -161,4 +161,39 @@ trait ProcessTrait
             ? $query->wherePivot('process_version_id', '=', null)
             : $query;
     }
+
+    /**
+     * Get the tasks of the process
+     *
+     * @return array
+     */
+    public function getTasks()
+    {
+        $response = [];
+        if (empty($this->bpmn)) {
+            return $response;
+        }
+        $definitions = new BpmnDocument($this);
+        $definitions->loadXML($this->bpmn);
+        $types = [
+            'task',
+            'userTask',
+            'manualTask',
+            'scriptTask',
+            'serviceTask',
+            'callActivity',
+        ];
+        foreach ($types as $type) {
+            $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, $type);
+            foreach ($tasks as $task) {
+                $response[] = [
+                    'id' => $task->getAttribute('id'),
+                    'name' => $task->getAttribute('name'),
+                    'type' => $task->localName,
+                ];
+            }
+        }
+
+        return $response;
+    }
 }

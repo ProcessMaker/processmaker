@@ -164,7 +164,7 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(0, Process::where('name', 'package')->count());
     }
 
-    public function testSubprocessNotOnTargetInstance()
+    public function testSubprocessInTargetInstance()
     {
         $this->addGlobalSignalProcess();
 
@@ -182,10 +182,12 @@ class ProcessExporterTest extends TestCase
         \DB::rollBack(); // Delete all created items since DB::beginTransaction
 
         $this->import($payload);
-
         $process = Process::where('name', 'parent')->firstOrFail();
-        $this->assertEquals('', Utils::getAttributeAtXPath($process, $xpath, 'calledElement'));
-        $this->assertEquals('{}', Utils::getAttributeAtXPath($process, $xpath, 'pm:config'));
+        $newSubProcess = Process::where('name', 'sub')->firstOrFail();
+
+        $this->assertEquals(
+            'ProcessId-' . $newSubProcess->id, Utils::getAttributeAtXPath($process, $xpath, 'calledElement')
+        );
     }
 
     public function testProcessTaskScreen()

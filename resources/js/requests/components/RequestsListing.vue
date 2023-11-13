@@ -1,88 +1,111 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for=/requests\?page|results\?page/
-            v-show="shouldShowLoader"
-            :empty="$t('No Data Available')"
-            :empty-desc="$t('')"
-            empty-icon="noData"
+      v-show="shouldShowLoader"
+      :for="/requests\?page|results\?page/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body table-card"
+    >
       <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
+        :data-manager="dataManager"
+        :sort-order="sortOrder"
         :css="css"
+        ref="vuetable"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
         pagination-path="meta"
-        ref="vuetable"
+        @vuetable:pagination-data="onPaginationData"
       >
-        <template slot="ids" slot-scope="props">
-          <b-link class="text-nowrap" :href="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
+        <template
+          slot="ids"
+          slot-scope="props"
+        >
+          <b-link
+            class="text-nowrap"
+            :href="openRequest(props.rowData, props.rowIndex)"
+          >
+            #{{ props.rowData.id }}
+          </b-link>
         </template>
-        <template slot="name" slot-scope="props">
+        <template
+          slot="name"
+          slot-scope="props"
+        >
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
-        <template slot="participants" slot-scope="props">
+        <template
+          slot="participants"
+          slot-scope="props"
+        >
           <avatar-image
             v-for="participant in props.rowData.participants"
             :key="participant.id"
             size="25"
             hide-name="true"
             :input-data="participant"
-          ></avatar-image>
+          />
         </template>
-        <template slot="actions" slot-scope="props">
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
           <div class="actions">
             <div class="popout">
               <b-btn
+                v-b-tooltip.hover
+                v-uni-aria-describedby="props.rowData.id.toString()"
                 variant="link"
                 :href="openRequest(props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
                 :title="$t('Open Request')"
-                v-uni-aria-describedby="props.rowData.id.toString()"
               >
-                <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
+                <i class="fas fa-caret-square-right fa-lg fa-fw" />
               </b-btn>
             </div>
           </div>
         </template>
       </vuetable>
       <pagination
+        ref="pagination"
         :single="$t('Request')"
         :plural="$t('Requests')"
-        :perPageSelectEnabled="true"
+        :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      />
     </div>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
+import moment from "moment";
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
-import moment from "moment";
-import { createUniqIdsMixin } from "vue-uniq-ids";
+import ListMixin from "./ListMixin";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
-Vue.component("avatar-image", AvatarImage);
+Vue.component("AvatarImage", AvatarImage);
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},
     columns: {},
     pmql: {},
     savedSearch: {
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -93,8 +116,8 @@ export default {
         {
           field: "id",
           sortField: "id",
-          direction: "desc"
-        }
+          direction: "desc",
+        },
       ],
       fields: [],
       previousFilter: "",
@@ -107,7 +130,7 @@ export default {
         return `saved-searches/${this.savedSearch}/results`;
       }
 
-      return 'requests';
+      return "requests";
     },
   },
   mounted() {
@@ -115,24 +138,24 @@ export default {
   },
   methods: {
     setupColumns() {
-      let columns = this.getColumns();
+      const columns = this.getColumns();
 
-      columns.forEach(column => {
-        let field = {
-          title: () => this.$t(column.label)
+      columns.forEach((column) => {
+        const field = {
+          title: () => this.$t(column.label),
         };
 
         switch (column.field) {
-          case 'id':
-            field.name = '__slot:ids';
-            field.title = '#';
+          case "id":
+            field.name = "__slot:ids";
+            field.title = "#";
             break;
-          case 'participants':
-            field.name = '__slot:participants';
+          case "participants":
+            field.name = "__slot:participants";
             break;
-          case 'name':
-            field.name = '__slot:name';
-            break
+          case "name":
+            field.name = "__slot:name";
+            break;
           default:
             field.name = column.field;
         }
@@ -141,12 +164,12 @@ export default {
           field.field = column.field;
         }
 
-        if (column.format === 'datetime') {
-          field.callback = 'formatDateUser|datetime';
+        if (column.format === "datetime") {
+          field.callback = "formatDateUser|datetime";
         }
 
-        if (column.format === 'date') {
-          field.callback = 'formatDateUser|date';
+        if (column.format === "date") {
+          field.callback = "formatDateUser|date";
         }
 
         if (column.sortable === true && !field.sortField) {
@@ -158,62 +181,61 @@ export default {
 
       this.fields.push({
         name: "__slot:actions",
-        title: ""
+        title: "",
       });
 
       // this is needed because fields in vuetable2 are not reactive
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.$refs.vuetable.normalizeFields();
       });
     },
     getColumns() {
       if (this.$props.columns) {
         return this.$props.columns;
-      } else {
-        return [
-          {
-            "label": "#",
-            "field": "id",
-            "sortable": true,
-            "default": true
-          },
-          {
-            "label": "Name",
-            "field": "name",
-            "sortable": true,
-            "default": true
-          },
-          {
-            "label": "Status",
-            "field": "status",
-            "sortable": true,
-            "default": true
-          },
-          {
-            "label": "Participants",
-            "field": "participants",
-            "sortable": false,
-            "default": true
-          },
-          {
-            "label": "Started",
-            "field": "initiated_at",
-            "format": "datetime",
-            "sortable": true,
-            "default": true
-          },
-          {
-            "label": "Completed",
-            "field": "completed_at",
-            "format": "datetime",
-            "sortable": true,
-            "default": true
-          }
-        ];
       }
+      return [
+        {
+          label: "#",
+          field: "id",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Name",
+          field: "name",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Participants",
+          field: "participants",
+          sortable: false,
+          default: true,
+        },
+        {
+          label: "Started",
+          field: "initiated_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+        },
+      ];
     },
     openRequest(data, index) {
-      return "/requests/" + data.id;
+      return `/requests/${data.id}`;
     },
     formatStatus(status) {
       let color = "success",

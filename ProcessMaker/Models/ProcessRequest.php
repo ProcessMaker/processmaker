@@ -896,9 +896,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             return null;
         }
 
-        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
-            $filtered['id'] . '/' .
-            $filtered['file_name'];
+        $path = Storage::disk('public')->path($filtered['id'] . '/' . $filtered['file_name']);
 
         return $path;
     }
@@ -913,6 +911,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if ($this->errors) {
             return $this->errors;
         }
+
         // select tokens with errors
         return $this->tokens()
             ->select('token_properties->error as message', 'created_at', 'element_name')

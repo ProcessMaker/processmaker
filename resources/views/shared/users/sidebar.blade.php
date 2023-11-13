@@ -22,35 +22,48 @@
         </div>
     </div>
     <div class="card card-body mt-3">
-        <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
-        <div class="form-group">
-            {!! Form::label('username', __('Username') . '<small class="ml-1">*</small>',  [], false) !!}
-            {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-            => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
-            <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
-        </div>
-        <div class="form-group">
-            <small class="form-text text-muted">
-                {{__('Leave the password blank to keep the current password:')}}
-            </small>
-        </div>
-        <div class="form-group">
-            {!! Form::label('password', __('New Password')) !!}
-            <vue-password v-model="formData.password" :disable-toggle=true>
-                <div slot="password-input" slot-scope="props">
-                    {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-                    => 'formData.password', 'autocomplete' => 'new-password', '@input' => 'props.updatePassword($event.target.value)',
-                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+        <fieldset :disabled="{{ \Auth::user()->hasPermission('edit-user-and-password') || \Auth::user()->is_administrator ? 'false' : 'true' }}">  
+            <legend> 
+                <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
+            </legend>
+            <div class="form-group">
+               {!! Form::label('username', __('Username') . '<small class="ml-1">*</small>',  [], false) !!}
+               {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+               => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
+               <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
+            </div>
+            @can('edit-user-and-password')
+                <div class="form-group">
+                    <small class="form-text text-muted">
+                        {{__('Leave the password blank to keep the current password:')}}
+                    </small>
                 </div>
-            </vue-password>
-        </div>
+            @endcan
+            <div class="form-group">
+                {!! Form::label('password', __('New Password')) !!}
+                <vue-password v-model="formData.password" :disable-toggle=true>
+                    <div slot="password-input" slot-scope="props">
+                        {!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+                        => 'formData.password', 'autocomplete' => 'new-password', '@input' => 'props.updatePassword($event.target.value)',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                    </div>
+                </vue-password>
+            </div>
 
-        <div class="form-group">
-            {!! Form::label('confPassword', __('Confirm Password')) !!}
-            {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-            => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-            <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-if="errors.password">@{{errors.password[0]}}</div>
-        </div>
+            <div class="form-group">
+                {!! Form::label('confPassword', __('Confirm Password')) !!}
+                {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
+                => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-if="errors.password">@{{errors.password[0]}}</div>
+            </div>
+            @cannot('edit-user-and-password')
+                <div class="form-group">
+                    <small class="form-text text-muted">
+                        {{__('To change the current username and password please contact your administrator.')}}
+                    </small>
+                </div>
+            @endcannot
+        </fieldset>
 
         @if (!\Request::is('profile/edit'))
         <div class="form-group">

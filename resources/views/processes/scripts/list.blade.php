@@ -15,6 +15,7 @@
                     <create-script-modal
                         :count-categories='@json($config->countCategories)'
                         :script-executors='@json($config->scriptExecutors)'
+                        is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
                     ></create-script-modal>
                 @endcan
             </div>

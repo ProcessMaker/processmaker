@@ -72,7 +72,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
+        CompleteActivity::dispatchSync($definitions, $instance, $token, $data);
     }
 
     /**
@@ -112,7 +112,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         //Validate data
         $element = $token->getDefinition(true);
         $this->validateData($data, $definitions, $element);
-        CatchEvent::dispatchNow($definitions, $instance, $token, $data);
+        CatchEvent::dispatchSync($definitions, $instance, $token, $data);
     }
 
     /**
@@ -135,7 +135,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     ) {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
-        BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
+        BoundaryEvent::dispatchSync($definitions, $instance, $token, $boundaryEvent, $data);
     }
 
     /**
@@ -152,8 +152,9 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     {
         //Validate data
         $this->validateData($data, $definitions, $event);
+
         //Schedule BPMN Action
-        return StartEvent::dispatchNow($definitions, $event, $data);
+        return (new StartEvent($definitions, $event, $data))->handle();
     }
 
     /**
@@ -169,11 +170,12 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     {
         //Validate data
         $this->validateData($data, $definitions, $process);
+
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
         //Schedule BPMN Action
-        return CallProcess::dispatchNow($definitions, $process, $data);
+        return (new CallProcess($definitions, $process, $data))->handle();
     }
 
     /**
@@ -410,11 +412,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
     /**
      * Run the service task implementation
+     *
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
-     *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
@@ -423,5 +425,18 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         $service = new $class();
 
         return $service->run($data, $config, $tokenId, $timeout);
+    }
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation)
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+
+        return $class;
     }
 }

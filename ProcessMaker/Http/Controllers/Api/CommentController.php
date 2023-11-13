@@ -35,9 +35,11 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorizeComment($request);
+
         $query = Comment::query()
             ->with('user')
-            ->with('children');
+            ->with('repliedMessage');
 
         $flag = 'visible';
         if (\Auth::user()->is_administrator) {
@@ -48,16 +50,21 @@ class CommentController extends Controller
         $commentable_id = $request->input('commentable_id', null);
         $commentable_type = $request->input('commentable_type', null);
 
+        if ($request->has('type')) {
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
+        }
+
         // from a request return comments for the request and their taks
         if ($commentable_type === ProcessRequest::class && $commentable_id) {
             $requestTokens = ProcessRequestToken::where('process_request_id', $commentable_id)->get();
             $tokenIds = $requestTokens->pluck('id');
             $query->where(function ($query) use ($commentable_id) {
                 $query->where('commentable_type', ProcessRequest::class)
-                        ->where('commentable_id', $commentable_id);
+                    ->where('commentable_id', $commentable_id);
             })->orWhere(function ($query) use ($tokenIds) {
                 $query->where('commentable_type', ProcessRequestToken::class)
-                        ->whereIn('commentable_id', $tokenIds);
+                    ->whereIn('commentable_id', $tokenIds);
             });
         } else {
             if ($commentable_type) {
@@ -78,6 +85,18 @@ class CommentController extends Controller
         return new ApiCollection($response);
     }
 
+    private function authorizeComment(Request $request)
+    {
+        $request->validate([
+            'commentable_id' => 'required',
+            'commentable_type' => 'required',
+        ]);
+        $commentable_id = $request->input('commentable_id');
+        $commentable_type = $request->input('commentable_type');
+        $commentable = $commentable_type::findOrFail($commentable_id);
+        $this->authorize('view', $commentable);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -89,6 +108,8 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorizeComment($request);
+
         $data['user_id'] = Auth::user()->id;
         $request->merge($data);
         $request->validate(Comment::rules());
@@ -109,6 +130,8 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
+        $this->authorize('view', $comment->commentable);
+
         return new CommentResource($comment);
     }
 

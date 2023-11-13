@@ -9,7 +9,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenType;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -34,6 +39,22 @@ class ModelerController extends Controller
          */
         event(new ModelerStarting($manager));
 
+        // For create subprocess modal in modeler
+        $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
+        // For create screen modal in modeler
+        $screenTypes = [];
+        foreach (ScreenType::pluck('name')->toArray() as $type) {
+            $screenTypes[$type] = __(ucwords(strtolower($type)));
+        }
+        asort($screenTypes);
+        $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
+
+        // For create script modal in modeler
+        $scriptExecutors = ScriptExecutor::list();
+        $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
         $draft = $process->versions()->draft()->first();
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
@@ -47,6 +68,12 @@ class ModelerController extends Controller
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
             'pmBlockList' => $pmBlockList,
+            'screenTypes' => $screenTypes,
+            'scriptExecutors' => $scriptExecutors,
+            'countProcessCategories' => $countProcessCategories,
+            'countScreenCategories' => $countScreenCategories,
+            'countScriptCategories' => $countScriptCategories,
+            'isProjectsInstalled' => $isProjectsInstalled,
         ]);
     }
 
@@ -54,6 +81,19 @@ class ModelerController extends Controller
      * Invokes the Modeler for In-flight Process Map rendering.
      */
     public function inflight(ModelerManager $manager, Process $process, ProcessRequest $request)
+    {
+        // Use the process version that was active when the request was started. PR #4934
+        $processRequest = ProcessRequest::find($request->id);
+
+        return $this->renderInflight($manager, $process, $processRequest, $request->id);
+    }
+
+    /**
+     * Invokes the Modeler for In-flight Process Map.
+     *
+     * This method is required by package-testing to overwrite the 3rd parameter ProcessRequest $request parameter.
+     */
+    public function renderInflight(ModelerManager $manager, Process $process, $processRequest, $processRequestId)
     {
         $pmBlockList = $this->getPmBlockList();
 
@@ -64,16 +104,18 @@ class ModelerController extends Controller
         $requestInProgressNodes = [];
         $requestIdleNodes = [];
 
-        // Use the process version that was active when the request was started.
-        $processRequest = ProcessRequest::find($request->id);
         if ($processRequest) {
             $bpmn = $process->versions()
                 ->where('id', $processRequest->process_version_id)
                 ->firstOrFail()
                 ->bpmn;
 
-            $requestCompletedNodes = $processRequest->tokens()->whereIn('status', ['CLOSED', 'TRIGGERED'])->pluck('element_id');
-            $requestInProgressNodes = $processRequest->tokens()->where('status', 'ACTIVE')->pluck('element_id');
+            $requestCompletedNodes = $processRequest->tokens()
+                ->whereIn('status', ['CLOSED', 'COMPLETED', 'TRIGGERED'])
+                ->pluck('element_id');
+            $requestInProgressNodes = $processRequest->tokens()
+                ->whereIn('status', ['ACTIVE', 'INCOMING'])
+                ->pluck('element_id');
             // Remove any node that is 'ACTIVE' from the completed list.
             $filteredCompletedNodes = $requestCompletedNodes->diff($requestInProgressNodes)->values();
 
@@ -96,7 +138,7 @@ class ModelerController extends Controller
             'requestCompletedNodes' => $filteredCompletedNodes,
             'requestInProgressNodes' => $requestInProgressNodes,
             'requestIdleNodes' => $requestIdleNodes,
-            'requestId' => $request->id,
+            'requestId' => $processRequestId,
             'pmBlockList' => $pmBlockList,
         ]);
     }

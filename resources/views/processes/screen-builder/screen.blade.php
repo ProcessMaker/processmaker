@@ -23,7 +23,8 @@
                    :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
-                   :is-draft="@json($isDraft)">
+                   :is-draft="@json($isDraft)"
+                   :process-id="{{ (!$processId ? 0 : $processId) }}">
         </component>
     </div>
 @endsection
@@ -87,6 +88,7 @@
           console.warn("Screen builder version does not have watchers");
         }
       });
+      window.Processmaker.user = @json($currentUser);
     </script>
     <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)

@@ -239,7 +239,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             case 'manager':
                 $process = $this->process()->first();
 
-                return collect([optional($process)->manager_id]);
+                return collect([$process?->manager_id]);
                 break;
             default:
                 return collect([]);
@@ -337,6 +337,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             $isManualTask = $localName === 'manualTask';
             $defaultScreen = $isManualTask ? 'default-display-screen' : 'default-form-screen';
             $screen = Screen::firstWhere('key', $defaultScreen);
+
+            if (array_key_exists('implementation', $definition) && $definition['implementation'] === 'package-ai/processmaker-ai-assistant') {
+                $defaultScreen = 'default-ai-form-screen';
+                $screen = Screen::firstWhere('key', $defaultScreen);
+            }
         }
 
         return $screen;
@@ -502,6 +507,18 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function subProcessRequest()
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
+    }
+
+    /**
+     * Scope overdue
+     *
+     * @var Builder
+     */
+    public function scopeOverdue($query, $overdue = '')
+    {
+        if (!empty($overdue)) {
+            return $query->where('due_at', '<', Carbon::now());
+        }
     }
 
     /**

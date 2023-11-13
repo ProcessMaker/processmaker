@@ -137,6 +137,7 @@ ProcessMaker.EventBus.$on(
         label: "Display Next Assigned Task to Task Assignee",
         helper: "Directs Task assignee to the next assigned Task",
         name: "interstitial",
+        enabledByDefault: true,
       },
     });
 
@@ -149,7 +150,7 @@ ProcessMaker.EventBus.$on(
         name: "screenRef",
         required: true,
         params: {
-          type: "FORM",
+          type: "FORM,CONVERSATIONAL",
           interactive: true,
         },
       },
@@ -221,7 +222,7 @@ ProcessMaker.EventBus.$on(
         required: true,
       },
     });
- 
+
     registerInspectorExtension(scriptTask, {
       component: "FormAccordion",
       container: true,
@@ -233,32 +234,31 @@ ProcessMaker.EventBus.$on(
       },
       items: [
         {
-          component: 'ErrorHandlingTimeout',
+          component: "ErrorHandlingTimeout",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryAttempts',
+          component: "ErrorHandlingRetryAttempts",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'ErrorHandlingRetryWaitTime',
+          component: "ErrorHandlingRetryWaitTime",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
         {
-          component: 'NotifyProcessManager',
+          component: "NotifyProcessManager",
           config: {
-            type: 'script' 
+            type: "script",
           },
         },
       ],
     });
-    
 
     registerInspectorExtension(scriptTask, {
       component: "ConfigEditor",
@@ -464,5 +464,28 @@ ProcessMaker.EventBus.$on(
     });
   },
 );
+
+ProcessMaker.EventBus.$on(
+  "modeler-init",
+  (event) => {
+    event.registerPreview({
+      url: '/designer/screens/preview',
+      assetUrl: (nodeData) => `/designer/screen-builder/${nodeData.screenRef}/edit`,
+      receivingParams: ['screenRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:Task',
+    });
+    event.registerPreview({
+      url: '/designer/screens/preview',
+      assetUrl: (nodeData) => `/designer/screen-builder/${nodeData.screenRef}/edit`,
+      receivingParams: ['screenRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:ManualTask',
+    });
+    event.registerPreview({
+      url: '/designer/scripts/preview',
+      assetUrl: (nodeData) => `/designer/scripts/${nodeData.scriptRef}/builder`,
+      receivingParams: ['scriptRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
+    });
+  });
 
 validateScreenRef();

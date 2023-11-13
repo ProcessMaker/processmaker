@@ -29,6 +29,7 @@ class SetLocale
             // Use the App facade to set the locale for our request lifecycle
             App::setLocale($locale);
         }
+
         // Process next
         return $next($request);
     }

@@ -59,7 +59,7 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
 
-        return new ApiCollection(ScriptExecutor::all());
+        return new ApiCollection(ScriptExecutor::nonSystem()->get());
     }
 
     /**
@@ -241,7 +241,7 @@ class ScriptExecutorController extends Controller
             exec($cmd, $out, $return);
 
             if ($return !== 0) {
-                throw ValidationException::withMessages(['delete' => _('Error removing image.') . " ${cmd} " . implode("\n", $out)]);
+                throw ValidationException::withMessages(['delete' => _('Error removing image.') . " {$cmd} " . implode("\n", $out)]);
             }
         }
 

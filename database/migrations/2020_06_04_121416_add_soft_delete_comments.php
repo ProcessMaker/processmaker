@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Comment;
 
-class AddSoftDeleteComments extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -36,4 +35,4 @@ class AddSoftDeleteComments extends Migration
             $table->dropSoftDeletes();
         });
     }
-}
+};

@@ -2,14 +2,7 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use ProcessMaker\Assets\ScreensInScreen;
-use ProcessMaker\ImportExport\DependentType;
-use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ProcessCategory;
 
 class TemplateExporter extends ExporterBase
 {
@@ -17,10 +10,25 @@ class TemplateExporter extends ExporterBase
 
     public function export() : void
     {
+        $this->exportCategories();
     }
 
     public function import() : bool
     {
+        $this->associateCategories(ProcessCategory::class, 'process_category_id');
+        if (!$this->model->process_category_id) {
+            // set category by defatult
+            $this->model->process_category_id = ProcessCategory::firstOrCreate(
+                ['name' => 'Default Templates'],
+                [
+                    'name' => 'Default Templates',
+                    'status' => 'ACTIVE',
+                    'is_system' => 0,
+                ]
+            )->getKey();
+        }
+        $this->model->setProcessCategoryIdAttribute($this->model->process_category_id);
+        $this->model->save();
         return true;
     }
 }

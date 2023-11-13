@@ -23,22 +23,25 @@
         <template slot="title" slot-scope="props">
           <b-link
             v-if="permission.includes('edit-scripts')"
-            :href="onAction('edit-script', props.rowData, props.rowIndex)"
+            :href="`/designer/scripts/${props.rowData.id}/builder`"
             v-uni-id="props.rowData.id.toString()"
-          >{{props.rowData.title}}</b-link>
+          >{{ props.rowData.title }}</b-link>
           <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
           <ellipsis-menu
-            :actions="actions"
+            :actions="scriptActions"
             :permission="permission"
             :data="props.rowData"
             :divider="true"
-            @navigate="onAction"
+            @navigate="onScriptNavigate"
           />
         </template>
       </vuetable>
+
+      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
+
       <pagination
         :single="$t('Script')"
         :plural="$t('Scripts')"
@@ -86,53 +89,20 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
+import scriptNavigationMixin from "../../../components/shared/scriptNavigation";
+import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+  components: { EllipsisMenu, AddToProjectModal },
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, scriptNavigationMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
-      actions: [
-        {
-          value: "edit-script",
-          content: "Edit Script",
-          link: true,
-          href: "/designer/scripts/{{id}}/builder",
-          permission: "edit-scripts",
-          icon: "fas fa-pen-square",
-        },
-        {
-          value: "edit-item",
-          content: "Configure",
-          link: true,
-          href: "/designer/scripts/{{id}}/edit",
-          permission: "edit-scripts",
-          icon: "fas fa-cog",
-        },
-        {
-          value: "duplicate-item",
-          content: "Copy",
-          permission: "create-scripts",
-          icon: "fas fa-copy",
-        },
-        {
-          value: "remove-item",
-          content: "Delete",
-          permission: "delete-scripts",
-          icon: "fas fa-trash-alt",
-        },
-      ],
-      dupScript: {
-        title: "",
-        type: "",
-        category: {},
-        description: "",
-        script_category_id: "",
-      },
-      errors: [],
+      assetId: null,
+      assetName: "",
       orderBy: "title",
 
       sortOrder: [
@@ -210,42 +180,6 @@ export default {
           }
         });
     },
-    onAction(action, data, index) {
-      if (action.value) {
-        switch (action.value) {
-        case "duplicate-item":
-          this.dupScript.title = data.title + " Copy";
-          this.dupScript.language = data.language;
-          this.dupScript.code = data.code;
-          this.dupScript.description = data.description;
-          this.dupScript.category = data.category;
-          this.dupScript.script_category_id = data.script_category_id;
-          this.dupScript.id = data.id;
-          this.dupScript.run_as_user_id = data.run_as_user_id;
-          this.showModal();
-          break;
-        case "remove-item":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t("Are you sure you want to delete {{item}}? Deleting this asset will break any active tasks that are assigned.", {
-              item: data.title
-            }),
-            "",
-            () => {
-              this.$emit("delete", data);
-            }
-          );
-          break;
-        }
-      } else {
-        switch (action) {
-        case "edit-script":
-          let link = "/designer/scripts/" + data.id + "/builder";
-          return link;
-          break;
-        }
-      }
-    },
     formatLanguage(language) {
       return language;
     },
@@ -271,7 +205,12 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    }
+    },
+    showAddToProjectModal(title, id) {        
+      this.assetId = id;
+      this.assetName = title;
+      this.$refs["add-to-project-modal"].show();
+    },
   },
 
   computed: {}

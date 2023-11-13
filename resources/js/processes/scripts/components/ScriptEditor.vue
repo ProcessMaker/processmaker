@@ -1,53 +1,100 @@
 <template>
   <b-container class="h-100">
-    <b-card
-      no-body
-      class="h-100"
-    >
-      <top-menu
-        ref="menuScript"
-        :options="optionsMenu"
-      />
-
-      <b-card-body
-        ref="editorContainer"
-        class="overflow-hidden p-4"
-      >
+    <b-card no-body class="h-100" >
+      <top-menu v-show="!previewChanges" ref="menuScript" :options="optionsMenu" />
+      <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
         <b-row class="h-100">
-          <b-col
-            cols="9"
-            class="h-100 p-0"
-          >
-            <monaco-editor
-              v-model="code"
-              class="h-100"
-              :class="{hidden: resizing}"
-              :options="monacoOptions"
-              :language="language"
-            />
+          <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
+            <b-row class="h-100 w-100">
+              <b-col cols="12" class="h-100 p-0">
+                <div v-if="packageAi" v-show="showDiffEditor || showExplainEditor">
+                  <div class="d-flex">
+                    <div class="left-header-width pb-3 pl-3">
+                      <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
+                        <span>{{ $t('Current Script') }}</span>
+                      </div>
+                    </div>
+                    <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse header-x-padding">
+                        <span>{{ $t('AI Generated Response') }}</span>
+                        <div>
+                          <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
+                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply changes  ') }}</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else-if="showExplainEditor" class="right-header-width pb-3 pl-3">
+                      <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border header-x-padding">
+                        <span>{{ $t('AI Explanation') }}</span>
+                        <div>
+                          <button class="btn" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between" :class="{'h-100': !(showExplainEditor || showDiffEditor), 'editors-container': showExplainEditor || showDiffEditor}">
+                  <monaco-editor
+                    ref="editor"
+                    v-show="showEditor"
+                    v-model="code"
+                    :class="[{hidden: resizing}, showExplainEditor ? 'w-50' : 'w-100']"
+                    :options="monacoOptions"
+                    :language="language"
+                    :diff-editor="false"
+                  />
+                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4 explain-editor-container">
+                    <div class="mx-auto explain-editor pb-5" v-html="newCode">
+                    </div>
+                  </div>
+
+                  <monaco-editor
+                    ref="diffEditor"
+                    v-show="showDiffEditor"
+                    class="diff-height w-100"
+                    :class="{hidden: resizing}"
+                    :options="monacoOptionsDiff"
+                    :language="language"
+                    :diff-editor="true"
+                    :value="newCode"
+                    :original="code"
+                  />
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
-          <b-col
-            cols="3"
-            class="h-100"
-          >
-            <b-card
-              no-body
-              class="h-100"
-            >
+
+          <!-- Progress panel -->
+          <b-col v-if="packageAi && loading" cols="3" class="h-100">
+            <div class="h-100 px-5 d-flex justify-items-center justify-content-center flex-column progress-panel">
+              <div class="w-100 d-flex justify-content-between text-muted">
+                <div><small>{{ loaderAction }}...</small></div>
+                <div v-if="progress.progress"><small>{{ Math.trunc(progress.progress) }}%</small></div>
+              </div>
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': progress.progress + '%'}" :aria-valuenow="progress.progress" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="text-right progress-panel-footer">
+                <button class="btn btn-light" @click="cancelRequest()">{{ $t('Cancel') }}</button>
+              </div>
+            </div>
+          </b-col>
+
+          <!-- Right panel -->
+          <b-col v-if="!loading && !previewChanges" cols="3" class="h-100">
+            <b-card no-body class="h-100">
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
-                  <b-col
-                    align-self="end"
-                    class="text-right"
-                  >
+                  <b-col align-self="end" class="text-right">
                     <b-button
                       class="text-capitalize pl-3 pr-3"
                       :disabled="preview.executing"
                       size="sm"
-                      @click="execute"
-                    >
+                      @click="execute" >
                       <i class="fas fa-caret-square-right" />
                       {{ $t('Run') }}
                     </b-button>
@@ -57,6 +104,23 @@
 
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
+                  <ai-tab
+                    ref="aiTab"
+                    :user="user"
+                    :source-code="code"
+                    :language="language"
+                    :selection="selection"
+                    :package-ai="packageAi"
+                    :process-id="processId"
+                    :default-prompt="prompt"
+                    :lineContext="lineContext"
+                    @get-selection="onGetSelection"
+                    @request-started="onRequestStarted"
+                    @current-nonce-changed="onCurrentNonceChanged"
+                    @set-diff="onSetDiff"
+                    @set-action="onSetAction"
+                    @prompt-changed="onPromptChanged"
+                  />
                   <b-list-group-item class="script-toggle border-0 mb-0">
                     <b-row v-b-toggle.configuration>
                       <b-col>
@@ -120,6 +184,16 @@
                         <i class="far fa-caret-square-right" />
                         {{ $t('Output') }}
                       </b-col>
+                      <b-col class="text-right">
+                        <button
+                          type="button"
+                          v-b-modal.data-preview
+                          class="btn-sm float-right"
+                          @click.stop
+                        >
+                          <i class="fas ml-auto fas fa-expand" />
+                        </button>
+                      </b-col>
                       <b-col
                         align-self="end"
                         cols="1"
@@ -155,6 +229,37 @@
               </b-card-body>
             </b-card>
           </b-col>
+
+          <!-- Right Panel generate script -->
+          <b-col v-if="!loading && previewChanges && action ==='generate'" cols="3" class="h-100">
+            <b-card no-body class="h-100">
+              <b-card-header class="light-gray-background">
+                {{ $t('Generate Script From Text') }}
+              </b-card-header>
+
+              <b-card-body class="overflow-hidden p-0">
+                <b-list-group class="w-100 h-100 overflow-auto">
+                  <ai-tab
+                    ref="aiTab2"
+                    :default-prompt="prompt"
+                    :user="user"
+                    :sourceCode="code"
+                    :language="language"
+                    :selection="selection"
+                    :package-ai="packageAi"
+                    :default-selected="'generate'"
+                    :lineContext="lineContext"
+                    @get-selection="onGetSelection"
+                    @request-started="onRequestStarted"
+                    @current-nonce-changed="onCurrentNonceChanged"
+                    @set-diff="onSetDiff"
+                    @set-action="onSetAction"
+                    @prompt-changed="onPromptChanged"
+                  />
+                </b-list-group>
+              </b-card-body>
+            </b-card>
+          </b-col>
         </b-row>
       </b-card-body>
 
@@ -179,6 +284,33 @@
         </span>
       </b-card-footer>
     </b-card>
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="stringifyJson"
+            :options="monacoOptionsOutput"
+            data-cy="editorViewFrame"
+            class="editor-modal"
+            language="json"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="stringifyJson"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
   </b-container>
 </template>
 
@@ -189,11 +321,13 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import AiTab from "./AiTab.vue";
 
 export default {
   components: {
     MonacoEditor,
     TopMenu,
+    AiTab,
   },
   mixins: [...autosaveMixins],
   props: {
@@ -221,6 +355,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    packageAi: {
+      default: 0,
+    },
+    processId: {
+      default: 0,
+    },
+    user: {
+    },
   },
   data() {
     const options = [
@@ -231,19 +373,50 @@ export default {
         title: this.$t("Save Script"),
         name: this.$t("Save"),
         icon: "fas fa-save",
+        loaderAction: "",
         action: () => {
-          ProcessMaker.EventBus.$emit("save-script");
+          ProcessMaker.EventBus.$emit("save-script", true);
         },
       },
     ];
 
     return {
       executionKey: null,
+      iframeHeight: "600px",
+      stringifyJson: "",
       resizing: false,
       monacoOptions: {
         automaticLayout: true,
       },
+      monacoOptionsDiff: {
+        automaticLayout: true,
+        originalEditable: false, // for left pane
+        readOnly: true,
+        enableSplitViewResizing: false,
+        renderSideBySide: true,
+        renderOverviewRuler: false,
+      },
+      monacoOptionsOutput: {
+        language: "json",
+        lineNumbers: "off",
+        readOnly: true,
+        formatOnPaste: true,
+        formatOnType: true,
+        automaticLayout: true,
+        minimap: { enabled: false },
+      },
       code: this.script.code,
+      newCode: "",
+      prompt: "",
+      action: "",
+      loading: false,
+      selection: null,
+      lineContext: null,
+      isDiffEditor: false,
+      currentNonce: null,
+      progress: {
+        progress: 0,
+      },
       preview: {
         error: {
           exception: "",
@@ -256,6 +429,7 @@ export default {
         success: false,
         failure: false,
       },
+      changesApplied: true,
       outputOpen: true,
       optionsMenu: options,
       // eslint-disable-next-line max-len
@@ -274,6 +448,18 @@ export default {
     };
   },
   computed: {
+    previewChanges() {
+      return this.showDiffEditor || this.showExplainEditor;
+    },
+    showEditor() {
+      return !this.showDiffEditor;
+    },
+    showDiffEditor() {
+      return this.packageAi && this.newCode !== "" && !this.changesApplied && this.isDiffEditor;
+    },
+    showExplainEditor() {
+      return this.packageAi && this.newCode !== "" && !this.changesApplied && !this.isDiffEditor;
+    },
     language() {
       return this.scriptExecutor.language;
     },
@@ -285,6 +471,7 @@ export default {
             code: this.code,
             title: this.script.title,
             description: this.script.description,
+            projects: this.script.projects,
             script_executor_id: this.script.script_executor_id,
             run_as_user_id: this.script.run_as_user_id,
             timeout: this.script.timeout,
@@ -307,9 +494,17 @@ export default {
     },
   },
   mounted() {
+    if (!localStorage.getItem("cancelledJobs") || localStorage.getItem("cancelledJobs") === "null") {
+      this.cancelledJobs = [];
+    } else {
+      this.cancelledJobs = JSON.parse(localStorage.getItem("cancelledJobs"));
+    }
+
+    this.subscribeToProgress();
+
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
-      this.save(onSuccess, onError);
+    ProcessMaker.EventBus.$on("save-script", (shouldRedirect, onSuccess, onError) => {
+      this.save(onSuccess, onError, shouldRedirect);
     });
     ProcessMaker.EventBus.$on("script-close", () => {
       this.onClose();
@@ -326,18 +521,169 @@ export default {
       this.outputResponse(response);
     });
     this.loadBoilerplateTemplate();
+    this.onGetSelection();
 
     // Display version indicator.
     this.setVersionIndicator();
 
     // Display ellipsis menu.
     this.setEllipsisMenu();
+
+    if (this.processId !== 0) {
+      this.prompt = `${this.script.title}\n${this.script.description}`;
+    }
   },
+
   beforeDestroy() {
     window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
+    applyChanges() {
+      this.code = this.newCode;
+      this.newCode = "";
+      this.changesApplied = true;
+      this.action = "";
+      this.$refs.aiTab2.showMenu();
+    },
+    cancelChanges() {
+      this.newCode = "";
+      this.changesApplied = true;
+      this.action = "";
+      this.$refs.aiTab2.showMenu();
+    },
+    cancelRequest() {
+      if (this.currentNonce) {
+        this.cancelledJobs.push(this.currentNonce);
+        localStorage.setItem("cancelledJobs", JSON.stringify(this.cancelledJobs));
+        this.loading = false;
+        this.progress.progress = 0;
+        this.action = "";
+        this.$refs.aiTab2.showMenu();
+      }
+    },
+    closeExplanation() {
+      this.newCode = "";
+      this.action = "";
+    },
+    onCurrentNonceChanged(currentNonce) {
+      this.currentNonce = currentNonce;
+    },
+    onSetDiff(isDiff) {
+      this.isDiffEditor = isDiff;
+      if (this.selection) {
+        this.$refs.diffEditor.getMonaco().getOriginalEditor().setSelection(this.selection);
+      }
+    },
+    onSetAction(action) {
+      this.action = action;
+    },
+    onPromptChanged(prompt) {
+      this.prompt = prompt;
+    },
+    onGetSelection() {
+      const editor = this.showDiffEditor ? this.$refs.diffEditor.getMonaco().getOriginalEditor() : this.$refs.editor.getMonaco();
+      if (editor) {
+        const context = {};
+        const selection = editor.getSelection();
+        this.selection = selection;
+
+        const currentLineUnsanitized = editor.getModel().getLineContent(selection.startLineNumber);
+        context.currentLine = this.sanitize(currentLineUnsanitized);
+        const newStartColumnPosition = this.prevCharactersCount(currentLineUnsanitized.substring(0, selection.startColumn - 1));
+        this.$set(this.selection, "newStartColumn", newStartColumnPosition);
+
+        if (this.selection.startLineNumber === 1) {
+          context.previousLine = null;
+        } else {
+          context.previousLine = this.sanitize(editor.getModel().getLineContent(selection.startLineNumber - 1));
+        }
+
+        if (editor.getModel().getLineCount() === selection.startLineNumber) {
+          context.nextLine = null;
+        } else {
+          context.nextLine = this.sanitize(editor.getModel().getLineContent(selection.startLineNumber + 1));
+        }
+
+        this.lineContext = context;
+      }
+    },
+    sanitize(string) {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#x27;",
+        "/": "&#x2F;",
+      };
+      const reg = /[&<>"'/]/ig;
+      return string.replace(reg, (match) => (map[match]));
+    },
+    prevCharactersCount(subString) {
+      return this.sanitize(subString).length;
+    },
+    onRequestStarted(progress, action) {
+      this.loading = true;
+      this.progress = progress;
+      this.loaderAction = action;
+    },
+    subscribeToProgress() {
+      const channel = `ProcessMaker.Models.User.${this.user.id}`;
+      const streamProgressEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateScriptProgressEvent";
+      window.Echo.private(channel).listen(
+        streamProgressEvent,
+        (response) => {
+          if (response.data.promptSessionId !== localStorage.promptSessionId) {
+            return;
+          }
+
+          if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
+            return;
+          }
+
+          if (response.data) {
+            if (response.data.progress.status === "running") {
+              this.loading = true;
+              this.progress = response.data.progress;
+            } else if (response.data.progress.status === "error") {
+              this.loading = false;
+              this.progress.progress = 0;
+              window.ProcessMaker.alert(response.data.message, "danger");
+            } else {
+              this.getScriptVersion(response.data.scriptVersionId);
+              this.progress.progress = 100;
+              setTimeout(() => {
+                this.loading = false;
+                this.progress.progress = 0;
+                this.changesApplied = false;
+              }, 500);
+            }
+          }
+        },
+      );
+    },
+    getScriptVersion(scriptVersionId) {
+      const url = "/package-ai/getScriptVersion";
+
+      const params = {
+        server: window.location.host,
+        scriptVersionId,
+      };
+
+      ProcessMaker.apiClient
+        .post(url, params)
+        .then((response) => {
+          this.newCode = response.data.version.diff;
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          if (error.response.status !== 404) {
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
+        });
+    },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
       const { clientHeight } = this.$refs.editorContainer;
@@ -355,6 +701,7 @@ export default {
       if (output && !this.outputOpen) {
         this.outputOpen = true;
       }
+      this.stringifyJson = JSON.stringify(output, null, 2);
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {
@@ -401,22 +748,28 @@ export default {
         this.executionKey = response.data.key;
       });
     },
-    save(onSuccess, onError) {
+    save(onSuccess, onError, shouldRedirect = false) {
       ProcessMaker.apiClient
         .put(`scripts/${this.script.id}`, {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
+          projects: this.script.projects,
           script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,
         })
         .then((response) => {
+          window.ProcessMaker.EventBus.$emit("save-changes");
           ProcessMaker.alert(this.$t("The script was saved."), "success");
           // Set published status.
           this.setVersionIndicator(false);
           if (typeof onSuccess === "function") {
             onSuccess(response);
+          }
+
+          if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
+            window.location = `/modeler/${this.processId}`;
           }
         }).catch((err) => {
           if (typeof onError === "function") {
@@ -457,7 +810,7 @@ export default {
         }
 
         // Save boilerplate template to avoid issues when script code is [].
-        ProcessMaker.EventBus.$emit("save-script");
+        ProcessMaker.EventBus.$emit("save-script", false);
       }
     },
     setVersionIndicator(isDraft = null) {
@@ -505,6 +858,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.custom-alert {
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 800px;
+  margin: auto;
+  top: 3px;
+}
 .container {
   max-width: 100%;
   padding: 0 0 0 0;
@@ -530,5 +892,127 @@ export default {
 
 .output {
   min-height: 300px;
+}
+
+.diff-height {
+  height: calc(100% - 30px);
+}
+
+.bg-primary-light {
+  background: #CBDFFF;
+}
+
+.left-header-width {
+  width: calc(50% - 9px);
+}
+
+.right-header-width {
+  width: calc(50% + 9px);
+}
+
+.editor-header-border {
+  border: 1px solid;
+  border-radius: 0.125rem;
+  padding: 0.52rem;
+  border-color: #e3e3e3;
+}
+
+.editor-header-border.bg-primary-light {
+  border-color: #8AB8FF;
+}
+.progress {
+  height: 0.7rem;
+  border-radius: 1em;
+}
+
+.progress-panel {
+  background: #f8f8f8;
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+}
+.progress-panel-footer {
+  position: absolute;
+  bottom: 1rem;
+  right: 2rem;
+}
+.editors-container {
+  height: calc(100% - 1rem);
+  // text-align: justify;
+}
+.explain-editor-container {
+  white-space: pre-line;
+  overflow-y: auto;
+}
+.explain-editor {
+  max-width: 700px;
+}
+.pulse {
+  animation: pulse-animation 2s infinite;
+}
+.header-x-padding {
+  padding-left: .8rem;
+  padding-right: .8rem;
+}
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgb(28 114 194 / 50%);;
+  }
+  100% {
+    box-shadow: 0 0 0 13px rgba(0, 0, 0, 0);
+  }
+}
+</style>
+
+<style lang="scss">
+.summary-header {
+  font-size: 130%;
+}
+.summary-content {
+  border: 0;
+  border-left: 5px solid #1c72c2;
+  background: #cbdfff47;
+  color: #114a75;
+  text-align: justify;
+  border-radius: 3px;
+  padding: 1.5rem;
+}
+.explanation-header {
+  font-size: 130%;
+}
+
+.blink {
+  animation: blink-animation .8s infinite;
+}
+@keyframes blink-animation {
+  0% { opacity: 0 }
+  100% { opacity: 1 }
+}
+
+//JSON Browser
+.tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+}
+.editor-modal {
+  height: 600px;
+}
+
+// Monaco editor diff styles
+.monaco-diff-editor .line-insert, .monaco-diff-editor .char-insert, .monaco-editor .margin-view-overlays .cldr {
+  background: #e6ffec !important;
+}
+.monaco-editor .gutter-insert, .monaco-diff-editor .gutter-insert {
+  background-color: #c7f8d3 !important;
+}
+.cldr.insert-sign.codicon.codicon-diff-insert {
+    background: #c7f8d3 !important;
+}
+.monaco-diff-editor .line-delete, .monaco-diff-editor .char-delete, .monaco-editor .margin-view-overlays .cldr {
+  background: #ffebe9 !important;
+}
+.monaco-editor .gutter-delete, .monaco-diff-editor .gutter-delete {
+  background-color: rgba(255, 0, 0, 0.2) !important;
+}
+.cldr.delete-sign.codicon.codicon-diff-remove {
+    background: #fbc7c7 !important;
 }
 </style>

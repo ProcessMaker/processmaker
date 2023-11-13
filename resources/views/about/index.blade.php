@@ -44,6 +44,11 @@
           @endforeach
         </ul>
         @endif
+        @if ($microServices)
+        <div id="ms-section">
+          @include('about.microservices')
+        </div>
+        @endif
         <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? __('Enabled') : __('Disabled') }}</div>
         <hr>
         &copy;{{date('Y')}}. {{__('All Rights Reserved')}}.
@@ -58,12 +63,31 @@
     </div>
   </div>
 </div>
+<script>
+async function refreshMs() {
+  const update = await (await fetch('?partial=ms')).text();
+  const msSection = document.getElementById('ms-section');
+  if (!msSection) {
+    return;
+  }
+  msSection.innerHTML = update;
+  const hasWaiting = update.indexOf('waiting') > -1;
+  if (hasWaiting) {
+    setTimeout(refreshMs, 3000);
+  }
+}
+setTimeout(refreshMs, 1000);
+</script>
 @endsection
 
 @section('css')
 <style>
 .about-logo {
   max-width: 300px;
+}
+.waiting {
+  width: 1rem;
+  height: 1rem;
 }
 </style>
 @endsection

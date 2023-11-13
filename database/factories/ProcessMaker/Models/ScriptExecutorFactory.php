@@ -15,10 +15,11 @@ class ScriptExecutorFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->sentence,
+            'title' => $this->faker->sentence(),
+            'description' => $this->faker->sentence(),
             'config' => '',
             'language' => 'php',
+            'is_system' => false,
         ];
     }
 }

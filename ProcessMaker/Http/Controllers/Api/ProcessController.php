@@ -18,6 +18,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
@@ -233,8 +234,8 @@ class ProcessController extends Controller
         // Validate if exists file bpmn
         if ($request->has('file')) {
             $data['bpmn'] = $request->file('file')->get();
-            $request->request->add(['bpmn' => $data['bpmn']]);
-            $request->request->remove('file');
+            $request->merge(['bpmn' => $data['bpmn']]);
+            $request->offsetUnset('file');
             unset($data['file']);
             $processCreated = ProcessCreated::BPMN_CREATION;
         }
@@ -265,6 +266,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
+            $process->syncProjectAsset($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -339,7 +341,7 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id', 'projects'));
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id', null);
         }
@@ -381,6 +383,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
+            $process->syncProjectAsset($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -395,6 +398,50 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    public function updateBpmn(Request $request, Process $process)
+    {
+        $request->validate(Process::rules($process));
+
+        // bpmn validation
+        if ($schemaErrors = $this->validateBpmn($request)) {
+            $warnings = [];
+            foreach ($schemaErrors as $error) {
+                if (is_string($error)) {
+                    $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                    $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                } else {
+                    $warnings[] = $error;
+                }
+            }
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
+        }
+
+        $process->bpmn = $request->input('bpmn');
+        $process->name = $request->input('name');
+        $process->description = $request->input('description');
+        $process->saveOrFail();
+
+        // If is a subprocess, we need to update the name in the BPMN too
+        if ($request->input('parentProcessId') && $request->input('nodeId')) {
+            $parentProcess = Process::findOrFail($request->input('parentProcessId'));
+            $definitions = $parentProcess->getDefinitions();
+            $elements = $definitions->getElementsByTagName('callActivity');
+            foreach ($elements as $element) {
+                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                    $element->setAttribute('name', $request->input('name'));
+                }
+            }
+            $parentProcess->bpmn = $definitions->saveXML();
+            $parentProcess->saveOrFail();
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 
     /**
@@ -888,7 +935,7 @@ class ProcessController extends Controller
      */
     public function export(Request $request, Process $process)
     {
-        $fileKey = ExportProcess::dispatchNow($process);
+        $fileKey = (new ExportProcess($process))->handle();
 
         if ($fileKey) {
             $url = url("/processes/{$process->id}/download/{$fileKey}");
@@ -999,7 +1046,7 @@ class ProcessController extends Controller
                 'code' => $code,
             ];
         }
-        $import = ImportProcess::dispatchNow($content);
+        $import = (new ImportProcess($content))->handle();
 
         return response([
             'status' => $import->status,
@@ -1457,5 +1504,33 @@ class ProcessController extends Controller
         $process->deleteDraft();
 
         return new Resource($process);
+    }
+
+    public function duplicate(Process $process, Request $request)
+    {
+        $request->validate(Process::rules());
+        $newProcess = new Process();
+
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
+        foreach ($process->getAttributes() as $attribute => $value) {
+            if (!in_array($attribute, $exclude)) {
+                $newProcess->{$attribute} = $process->{$attribute};
+            }
+        }
+        if ($request->has('name')) {
+            $newProcess->name = $request->input('name');
+        }
+        if ($request->has('description')) {
+            $newProcess->description = $request->input('description');
+        }
+        if ($request->has('process_category_id')) {
+            $newProcess->process_category_id = $request->input('process_category_id');
+        }
+        $newProcess->saveOrFail();
+        if ($request->has('projects')) {
+            $newProcess->syncProjectAsset($request, Process::class);
+        }
+
+        return new ApiResource($newProcess);
     }
 }
