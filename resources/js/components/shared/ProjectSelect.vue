@@ -49,9 +49,7 @@ export default {
     },
     options: {
       handler(newValue, oldValue) {
-        if (_.isEmpty(this.options)) {
-          this.load();
-        } else if (!_.isEqual(newValue, oldValue) && !_.isEmpty(this.value)) {
+        if (!_.isEqual(newValue, oldValue) && !_.isEmpty(this.value)) {
           this.setUpOptions();
         }
       },
