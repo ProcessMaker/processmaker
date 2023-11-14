@@ -55,10 +55,11 @@ div.main {
       'url':''
     },
   ]
-        
+
   window.ProcessMaker.multiplayer = {
     broadcaster: "{{config('multiplayer.default')}}",
     host: "{{config('multiplayer.url')}}",
+    enabled: "{{ config('multiplayer.enabled') }}",
   };
   window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.modeler = {

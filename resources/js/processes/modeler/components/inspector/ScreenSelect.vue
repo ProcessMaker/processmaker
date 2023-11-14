@@ -110,9 +110,6 @@ export default {
       },
     },
   },
-  beforeDestroy() {
-    channel.close();
-  },
   mounted() {
     this.validate();
     if (this.value) {
