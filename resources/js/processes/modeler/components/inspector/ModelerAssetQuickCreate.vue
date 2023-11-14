@@ -16,6 +16,8 @@ import { capitalize, kebabCase } from "lodash";
 import { AssetTypes } from "../../../../models/AssetTypes";
 import { ScreenTypes } from "../../../../models/screens";
 
+const channel = new BroadcastChannel("assetCreation");
+
 export default {
   name: "ModelerAssetQuickCreate",
   props: {
@@ -39,6 +41,11 @@ export default {
       type: String,
       required: false,
     },
+  },
+  mounted() {
+    channel.onmessage = ({ data }) => {
+      this.$emit("asset", data);
+    };
   },
   methods: {
     goToAsset() {
