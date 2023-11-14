@@ -20,6 +20,14 @@ export default {
           conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)",
         },
         {
+          value: "open-launchpad",
+          content: "Open Launchpad",
+          link: true,
+          href: "/processes/", //TO DO: Add path to Launchpad View when it's ready
+          permission: ["edit-processes", "create-projects", "view-projects"],
+          icon: "fas fa-file-export",
+        },
+        {
           value: "edit-designer",
           content: "Edit Process",
           link: true,
