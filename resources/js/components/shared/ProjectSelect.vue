@@ -49,6 +49,7 @@ export default {
     },
     options: {
       handler(newValue, oldValue) {
+
         if (!_.isEqual(newValue, oldValue) && !_.isEmpty(this.value)) {
           this.setUpOptions();
         }
@@ -107,7 +108,7 @@ export default {
           this.handleCompleteSelectedLoading(content);
         });
     },
-    load(filter) {
+    load: _.debounce(function (filter) {
       ProcessMaker.apiClient
         .get(this.apiList + "?order_direction=asc&status=active&per_page=1000" + (typeof filter === 'string' ? '&filter=' + filter : ''))
         .then(response => {
@@ -122,7 +123,7 @@ export default {
         .catch(err => {
           this.loading = false;
         });
-    },
+    }, 300),
     handleCompleteSelectedLoading(content) {
       if (!this.loading) {
         this.completeSelectedLoading(content)
