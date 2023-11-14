@@ -25,13 +25,7 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <span class="head-text">
-                {{ __('Enter the era of ') }}
-              </span>
-              <p><span class="display">{{ __('Hyper-Productivity') }}</span><span class="superscript">{{ __('TM') }}</span></p>
-              <span class="subtext">
-                {{ __('with the transformative power of Intelligent Automation.') }}
-              </span>
+              <img src="/img/slogan.svg" alt="ProcessMaker" />
               <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
@@ -153,7 +147,7 @@
     position: fixed;
     margin-left: 10%;
     width: 700px;
-
+    font-family: Poppins;
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
@@ -174,7 +168,8 @@
   .head-text {
     color: #FFF;
     font-size: 46.067px;
-    font-weight: 600;    
+    font-weight: 600;
+    font-family: Poppins;
   }
   .display {
     color: #FFC107;
@@ -186,11 +181,13 @@
     position: relative;
     top: -1.5em;
     font-weight: 600;
+    font-family: Poppins;
   }
   .subtext {
     width: 60%;
     color: #FFF;
     font-size: 24.017px;
+    font-family: Poppins;
   }
   .sub_logo {
     margin-top: 7%;
