@@ -234,6 +234,7 @@ export default {
       createScriptHooks: [],
       script: null,
       projects: [],
+      userRunScript: 1,
     };
   },
   mounted() {
@@ -266,7 +267,7 @@ export default {
     },
     getAdminUser() {
       ProcessMaker.apiClient
-        .get("/users/1")
+        .get(`/users/${this.userRunScript}`)
         .then((response) => {
           this.selectedUser = response.data;
         });
