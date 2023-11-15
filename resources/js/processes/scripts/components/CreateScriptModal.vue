@@ -270,6 +270,9 @@ export default {
         .get(`/users/${this.userRunScript}`)
         .then((response) => {
           this.selectedUser = response.data;
+        })
+        .catch((e) => {
+          ProcessMaker.alert(e.response.data.errors.delete[0], "danger");
         });
     },
     /**
