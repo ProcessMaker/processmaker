@@ -236,6 +236,9 @@ export default {
       projects: [],
     };
   },
+  mounted() {
+    this.getAdminUser();
+  },
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
@@ -260,6 +263,13 @@ export default {
   methods: {
     show() {
       this.$bvModal.show("createScript");
+    },
+    getAdminUser() {
+      ProcessMaker.apiClient
+        .get("/users/1")
+        .then((response) => {
+          this.selectedUser = response.data;
+        });
     },
     /**
        * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
