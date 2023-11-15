@@ -191,6 +191,7 @@ import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
+import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -234,6 +235,7 @@ export default {
       createScriptHooks: [],
       script: null,
       projects: [],
+      isQuickCreate: isQuickCreateFunc(),
       userRunScript: 1,
     };
   },
@@ -337,7 +339,7 @@ export default {
           } else if (this.copyAssetMode) {
             this.close();
           } else {
-            if (this.isQuickCreate()) {
+            if (this.isQuickCreate === true) {
               channel.postMessage({
                 assetType: "script",
                 asset: data,
