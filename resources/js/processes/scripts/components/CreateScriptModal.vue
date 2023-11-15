@@ -271,9 +271,6 @@ export default {
         .then((response) => {
           this.selectedUser = response.data;
         })
-        .catch((e) => {
-          ProcessMaker.alert(e.response.data.errors.delete[0], "danger");
-        });
     },
     /**
        * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
