@@ -48,8 +48,17 @@ export default {
       }
     },
     value: {
-      handler() {
-        this.loadSelectedOptions();
+      handler(newValue, oldValue) {
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
+        }
+      }
+    },
+    projectId: {
+      handler(newValue, oldValue) {
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
+        }
       }
     },
   },
@@ -58,6 +67,10 @@ export default {
       let selectedIds = this.value || [];
       if (!Array.isArray(selectedIds)) {
         selectedIds = this.value.split(',');
+      }
+
+      if (this.projectId && !selectedIds.includes(this.projectId)) {
+        selectedIds.push(this.projectId);
       }
       
       let idsToLoad = [];
@@ -99,6 +112,9 @@ export default {
   },
   mounted() {
     this.load();
+    if (this.projectId || this.value) {
+      this.loadSelectedOptions();
+    }
   },
 };
 </script>
