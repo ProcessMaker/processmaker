@@ -33,6 +33,12 @@ class GenerateMenus
                     ['route' => 'requests.index', 'id' => 'requests']
                 )->active('requests/*');
             });
+            $menu->group(['prefix' => 'processes'], function ($request_items) {
+                $request_items->add(
+                    __('Processes'),
+                    ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
+                )->active('processes-catalogue/*');
+            });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(
@@ -109,23 +115,8 @@ class GenerateMenus
                 ]);
             }
         });
-        Menu::make('sidebar_task', function ($menu) {
-            $submenu = $menu->add(__('Tasks'));
-            $submenu->add(__('To Do'), [
-                'route' => 'tasks.index',
-                'icon' => 'fa-list',
-                'id' => 'homeid',
-            ]);
-            $submenu->add(__('Completed'), [
-                'route' => ['tasks.index', 'status' => 'CLOSED'],
-                'icon' => 'fa-check-square',
-                'id' => 'homeid',
-            ]);
-            $submenu->add(__('Self Service'), [
-                'route' => ['tasks.index', 'status' => 'SELF_SERVICE'],
-                'icon' => 'fa-user',
-                'id' => 'homeid',
-            ]);
+        Menu::make('sidebar_processes_catalogue', function ($menu) {
+            $submenu = $menu->add(__('Processes'));
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));
