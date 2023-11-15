@@ -27,6 +27,7 @@ use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
 use ProcessMaker\Http\Controllers\Process\SignalController;
 use ProcessMaker\Http\Controllers\ProcessController;
+use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
 use ProcessMaker\Http\Controllers\TaskController;
@@ -89,6 +90,9 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
+
+    Route::get('processes-catalogue', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
+
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
