@@ -98,79 +98,103 @@
                 required
               />
             </b-form-group>
-            <b-form-group
-              :description="
-                formDescription(
-                  'Select a user to set the API access of the Script',
-                  'run_as_user_id',
-                  addError
-                )
-              "
-              :invalid-feedback="errorMessage('run_as_user_id', addError)"
-              :label="$t('Run script as')"
-              :state="errorState('run_as_user_id', addError)"
-              required
+            <div class="d-flex justify-content-end w-100">
+              <button
+                class="btn btn-link text-capitalize collapsed"
+                type="button"
+                data-toggle="collapse"
+                data-target="#collapseAdvancedOptions"
+                aria-expanded="false"
+                aria-controls="collapseAdvancedOptions"
+              >
+                <p class="closed">
+                  {{ $t('Advanced Options') }}
+                  <i class="fas fa-angle-double-down" />
+                </p>
+                <p class="opened">
+                  {{ $t('Less Options') }}
+                  <i class="fas fa-angle-double-up" />
+                </p>
+              </button>
+            </div>
+            <div
+              id="collapseAdvancedOptions"
+              class="collapse"
             >
-              <select-user
-                v-model="selectedUser"
-                :class="{
-                  'is-invalid': errorState('run_as_user_id', addError) == false,
-                }"
-                :multiple="false"
-                name="run_as_user_id"
+              <b-form-group
+                :description="
+                  formDescription(
+                    'Select a user to set the API access of the Script',
+                    'run_as_user_id',
+                    addError
+                  )
+                "
+                :invalid-feedback="errorMessage('run_as_user_id', addError)"
+                :label="$t('Run script as')"
+                :state="errorState('run_as_user_id', addError)"
+                required
+              >
+                <select-user
+                  v-model="selectedUser"
+                  :class="{
+                    'is-invalid': errorState('run_as_user_id', addError) == false,
+                  }"
+                  :multiple="false"
+                  name="run_as_user_id"
+                />
+              </b-form-group>
+              <slider-with-input
+                :description="
+                  $t(
+                    'How many seconds the script should be allowed to run (0 is unlimited).'
+                  )
+                "
+                :error="
+                  errorState('timeout', addError)
+                    ? null
+                    : errorMessage('timeout', addError)
+                "
+                :label="$t('Timeout')"
+                :max="300"
+                :min="0"
+                :value="timeout"
+                @input="timeout = $event"
               />
-            </b-form-group>
-            <slider-with-input
-              :description="
-                $t(
-                  'How many seconds the script should be allowed to run (0 is unlimited).'
-                )
-              "
-              :error="
-                errorState('timeout', addError)
-                  ? null
-                  : errorMessage('timeout', addError)
-              "
-              :label="$t('Timeout')"
-              :max="300"
-              :min="0"
-              :value="timeout"
-              @input="timeout = $event"
-            />
-            <slider-with-input
-              :description="
-                $t(
-                  'Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.'
-                )
-              "
-              :error="
-                errorState('retry_attempts', addError)
-                  ? null
-                  : errorMessage('retry_attempts', addError)
-              "
-              :label="$t('Retry Attempts')"
-              :max="10"
-              :min="0"
-              :value="retry_attempts"
-              @input="retry_attempts = $event"
-            />
-            <slider-with-input
-              :description="
-                $t(
-                  'Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.'
-                )
-              "
-              :error="
-                errorState('retry_wait_time', addError)
-                  ? null
-                  : errorMessage('retry_wait_time', addError)
-              "
-              :label="$t('Retry Wait Time')"
-              :max="3600"
-              :min="0"
-              :value="retry_wait_time"
-              @input="retry_wait_time = $event"
-            />
+              <slider-with-input
+                :description="
+                  $t(
+                    'Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.'
+                  )
+                "
+                :error="
+                  errorState('retry_attempts', addError)
+                    ? null
+                    : errorMessage('retry_attempts', addError)
+                "
+                :label="$t('Retry Attempts')"
+                :max="10"
+                :min="0"
+                :value="retry_attempts"
+                @input="retry_attempts = $event"
+              />
+              <slider-with-input
+                :description="
+                  $t(
+                    'Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.'
+                  )
+                "
+                :error="
+                  errorState('retry_wait_time', addError)
+                    ? null
+                    : errorMessage('retry_wait_time', addError)
+                "
+                :label="$t('Retry Wait Time')"
+                :max="3600"
+                :min="0"
+                :value="retry_wait_time"
+                @input="retry_wait_time = $event"
+              />
+            </div>
             <component
               :is="cmp"
               v-for="(cmp, index) in createScriptHooks"
@@ -369,3 +393,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .collapsed > .opened,
+  :not(.collapsed) > .closed {
+      display: none;
+  }
+</style>
