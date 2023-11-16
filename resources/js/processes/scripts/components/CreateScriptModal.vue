@@ -236,7 +236,11 @@ export default {
       script: null,
       projects: [],
       isQuickCreate: isQuickCreateFunc(),
+      userRunScript: 1,
     };
+  },
+  mounted() {
+    this.getAdminUser();
   },
   computed: {
     modalSetUp() {
@@ -262,6 +266,21 @@ export default {
   methods: {
     show() {
       this.$bvModal.show("createScript");
+    },
+    getAdminUser() {
+      ProcessMaker.apiClient
+        .get(`/users/${this.userRunScript}`)
+        .then((response) => {
+          this.selectedUser = response.data;
+        })
+    },
+    /**
+       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
+       * @returns {boolean}
+       */
+    isQuickCreate() {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams?.get("create") === "true";
     },
     onClose() {
       this.title = "";
