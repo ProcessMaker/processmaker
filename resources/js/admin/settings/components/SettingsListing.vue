@@ -64,9 +64,9 @@
                 :disabled="row.item.readonly" 
                 @click="onEdit(row)" 
                 variant="link" 
-                class="settings-listing-button"
+                class="btn btn-link"
                 >
-                <i class="fa-lg fas fa-edit settings-listing-button mr-3"></i>
+                <i class="fa-lg fas fa-edit"></i>
               </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
@@ -78,9 +78,9 @@
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-                class="settings-listing-button"
+                class="btn btn-link"
                 >
-                <i class="fa-lg fas fa-copy settings-listing-button mr-3" />
+                <i class="fa-lg fas fa-copy" />
               </b-button>
 
               <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
@@ -89,9 +89,9 @@
                   v-uni-aria-describedby="row.item.id.toString()"
                   @click="onDelete(row)" 
                   variant="link" 
-                  class="settings-listing-button"
+                  class="btn btn-link"
                   >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button mr-3"></i>
+                  <i class="fa-lg fas fa-trash-alt"></i>
                 </b-button>
               </span>
 
@@ -102,9 +102,9 @@
                   :disabled="disableClear(row.item)" 
                   @click="onClear(row)" 
                   variant="link" 
-                  class="settings-listing-button"
+                  class="btn btn-link"
                   >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                  <i class="fa-lg fas fa-trash-alt"></i>
                 </b-button>
               </span>
               <span v-else class="invisible">
@@ -233,21 +233,21 @@ export default {
       key: "name",
       label: "Setting",
       sortable: true,
-      tdClass: "align-middle td-name settings-listing-td1",
+      tdClass: "align-middle td-name",
     });
 
     this.fields.push({
       key: "config",
       label: "Configuration",
       sortable: false,
-      tdClass: "align-middle td-config settings-listing-td2",
+      tdClass: "align-middle td-config",
     });
 
     this.fields.push({
       key: "actions",
       label: "",
       sortable: false,
-      tdClass: "align-middle settings-listing-td3",
+      tdClass: "align-middle text-right",
     });
     
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
