@@ -258,6 +258,9 @@ export default {
       this.title = "";
       return this.$t("Create Script");
     },
+    isProjectRoute() {
+      return window.location.pathname.startsWith("/designer/projects/");
+    },
   },
   methods: {
     show() {
@@ -313,21 +316,12 @@ export default {
             hook.onsave(data);
           });
 
-          const url = `/designer/scripts/${data.id}/builder`;
-
-          if (this.callFromAiModeler) {
-            this.$emit("script-created-from-modeler", url, data.id, data.title);
-          } else if (this.copyAssetMode) {
-            this.close();
-          } else {
-            if (this.isQuickCreate === true) {
-              channel.postMessage({
-                assetType: "script",
-                asset: data,
-              });
-            }
-            window.location = url;
+          const url = new URL(`/designer/scripts/${data.id}/builder`, window.location.origin);
+          if (this.isProjectRoute) {
+            url.searchParams.append("project_id", this.projectId);
           }
+
+          this.handleRedirection(url, data);
         })
         .catch((error) => {
           this.disabled = false;
@@ -337,6 +331,20 @@ export default {
             throw error;
           }
         });
+    },
+    handleRedirection(url, data) {
+      if (this.callFromAiModeler) {
+        this.$emit("script-created-from-modeler", url, data.id, data.title);
+      } else if (this.copyAssetMode) {
+        this.close();
+      } else if (this.isQuickCreate === true) {
+        channel.postMessage({
+          assetType: "script",
+          asset: data,
+        });
+      } else {
+        window.location.href = url;
+      }
     },
   },
 };

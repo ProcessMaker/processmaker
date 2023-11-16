@@ -597,6 +597,9 @@ export default {
     ProcessMaker.EventBus.$on("script-discard", () => {
       this.discardDraft();
     });
+    ProcessMaker.EventBus.$on("handle-redirects", () => {
+      this.handleRedirects();
+    });
 
     window.addEventListener("resize", this.handleResize);
     const userID = document.head.querySelector("meta[name=\"user-id\"]");
@@ -856,6 +859,7 @@ export default {
           if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
             window.location = `/modeler/${this.processId}`;
           }
+          window.ProcessMaker.EventBus.$emit("handle-redirects");
         }).catch((err) => {
           if (typeof onError === "function") {
             onError(err);
@@ -936,6 +940,14 @@ export default {
             divider: false,
           },
         }, 4);
+      }
+    },
+    async handleRedirects() {
+      const queryParams = new URLSearchParams(window.location.search);
+      const projectId = queryParams.get("project_id");
+
+      if (projectId) {
+        window.location.href = `/designer/projects/${projectId}`;
       }
     },
   },
