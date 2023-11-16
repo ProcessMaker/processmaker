@@ -13,8 +13,12 @@
               alt="recent projects"
             >
           </div>
-          <h4 class="text-center"> {{ $t('Currently you dont have processes created') }} </h4>
-          <p class="text-center"> {{ $t('We compel you to create new processes using our templates') }} </p>
+          <h4 class="text-center">
+            {{ $t('Currently you dont have processes created') }}
+          </h4>
+          <p class="text-center">
+            {{ $t('We encourage you to create new processes using our templates') }}
+          </p>
           <p class="text-center my-4">
             <button
               type="button"
