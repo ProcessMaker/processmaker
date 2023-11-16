@@ -78,7 +78,7 @@ trait HasVersioning
 
     public function deleteDraft()
     {
-        $this->versions()->draft()->delete();
+        return $this->versions()->draft()->forceDelete();
     }
 
     private function getModelAttributes(): array
