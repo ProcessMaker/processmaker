@@ -25,7 +25,8 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan.svg" alt="Slogan ProcessMaker" />
+              <img src="/img/slogan.svg" alt="ProcessMaker" />
+              <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
           </div>
@@ -155,6 +156,10 @@
     position: fixed;
     margin-left: 10%;
     width: 700px;
+    font-family: Poppins;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .footer {
     margin-left: 10%;
@@ -168,6 +173,33 @@
   }
   .password-container {
     position: relative;
+  }
+  .head-text {
+    color: #FFF;
+    font-size: 46.067px;
+    font-weight: 600;
+    font-family: Poppins;
+  }
+  .display {
+    color: #FFC107;
+    font-size: 61.987px;
+    font-weight: 600;
+  }
+  .superscript {
+    color: #FFF;
+    position: relative;
+    top: -1.5em;
+    font-weight: 600;
+    font-family: Poppins;
+  }
+  .subtext {
+    width: 60%;
+    color: #FFF;
+    font-size: 24.017px;
+    font-family: Poppins;
+  }
+  .sub_logo {
+    margin-top: 7%;
   }
 </style>
 </html>
