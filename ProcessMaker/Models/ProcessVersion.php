@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
@@ -26,6 +27,7 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
     use HasSelfServiceTasks;
     use HasCategories;
     use ProcessTrait;
+    use SoftDeletes;
 
     const categoryClass = ProcessCategory::class;
 
