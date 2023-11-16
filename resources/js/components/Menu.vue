@@ -1,100 +1,99 @@
 <template>
-  <b-card-header>
-    <b-row>
-      <b-col>
-        <template v-for="(item, index) in section.left">
-          <b-button-group
-            v-if="isVisible(item, 'group')"
-            :key="index"
-            size="sm"
-          >
-            <b-button
-              v-for="(button, indexButton) in visibleItems(item)"
-              :key="indexButton"
-              :variant="button.variant || 'secondary'"
-              class="text-capitalize"
-              :title="button.title"
-              tabindex="1"
-              @click="executeFunction(button.action)"
-            >
-              <i :class="button.icon" />
-              {{ button.name }}
-            </b-button>
-          </b-button-group>
-
+  <b-row>
+    <b-col>
+      <template v-for="(item, index) in section.left">
+        <b-button-group
+          v-if="isVisible(item, 'group')"
+          :key="index"
+          size="sm"
+        >
           <b-button
-            v-if="isVisible(item, 'button')"
-            :key="index"
+            v-for="(button, indexButton) in visibleItems(item)"
+            :key="indexButton"
+            :variant="button.variant || 'secondary'"
             class="text-capitalize"
-            size="sm"
-            :variant="item.variant || 'secondary'"
-            :title="item.title"
-            @click="executeFunction(item.action)"
+            :title="button.title"
+            tabindex="1"
+            @click="executeFunction(button.action)"
           >
-            <i :class="item.icon" />
-            {{ item.name }}
+            <i :class="button.icon" />
+            {{ button.name }}
           </b-button>
+        </b-button-group>
 
-          <component
-            :is="item.type"
-            v-if="item.type !== 'group' && item.type !== 'button'"
-            :key="index"
-            :options="item.options"
-          />
-        </template>
-      </b-col>
+        <b-button
+          v-if="isVisible(item, 'button')"
+          :key="index"
+          class="text-capitalize"
+          size="sm"
+          :variant="item.variant || 'secondary'"
+          :title="item.title"
+          @click="executeFunction(item.action)"
+        >
+          <i :class="item.icon" />
+          {{ item.name }}
+        </b-button>
 
-      <b-col
-        v-if="sectionRight"
-        class="text-right"
-      >
-        <template v-for="(item, index) in section.right">
-          <b-button-group
-            v-if="isVisible(item, 'group')"
-            :key="index"
-            size="sm"
-          >
-            <b-button
-              v-for="(button, indexButton) in visibleItems(item)"
-              :key="`group-${indexButton}`"
-              :variant="button.variant || 'secondary'"
-              class="text-capitalize"
-              :title="button.title"
-              @click="executeFunction(button.action)"
-            >
-              <i :class="button.icon" />
-              {{ button.name }}
-            </b-button>
-          </b-button-group>
+        <component
+          :is="item.type"
+          v-if="item.type !== 'group' && item.type !== 'button'"
+          :key="index"
+          :options="item.options"
+        />
+      </template>
+    </b-col>
 
+    <b-col
+      v-if="sectionRight"
+      class="text-right"
+    >
+      <template v-for="(item, index) in section.right">
+        <b-button-group
+          v-if="isVisible(item, 'group')"
+          :key="index"
+          size="sm"
+          class="border-right"
+        >
           <b-button
-            v-if="isVisible(item, 'button')"
-            :key="index"
-            size="sm"
-            :variant="item.variant || 'secondary'"
-            class="text-capitalize"
-            :title="item.title"
-            @click="executeFunction(item.action)"
+            v-for="(button, indexButton) in visibleItems(item)"
+            :key="`group-${indexButton}`"
+            :variant="'link'"
+            class="text-capitalize text-muted"
+            :title="button.title"
+            @click="executeFunction(button.action)"
           >
-            <i :class="item.icon" />
-            {{ item.name }}
+            <i :class="button.icon" />
+            {{ button.name }}
           </b-button>
+        </b-button-group>
 
-          <component
-            :is="item.type"
-            v-if="item.type !== 'group' && item.type !== 'button'"
-            :ref="item.id"
-            v-bind="{
-              ...item.options
-            }"
-            :key="index"
-            :options="item.options"
-            @navigate="(action, data) => handleNavigate(action, data)"
-          />
-        </template>
-      </b-col>
-    </b-row>
-  </b-card-header>
+        <b-button
+          v-if="isVisible(item, 'button')"
+          :key="index"
+          size="sm"
+          :variant="item.variant || 'secondary'"
+          class="text-capitalize"
+          :title="item.title"
+          @click="executeFunction(item.action)"
+        >
+          <i :class="item.icon" />
+          {{ item.name }}
+        </b-button>
+
+        <component
+          :is="item.type"
+          v-if="item.type !== 'group' && item.type !== 'button'"
+          :ref="item.id"
+          v-bind="{
+            ...item.options
+          }"
+          :key="index"
+          :options="item.options"
+          @navigate="(action, data) => handleNavigate(action, data)"
+        />
+      </template>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
