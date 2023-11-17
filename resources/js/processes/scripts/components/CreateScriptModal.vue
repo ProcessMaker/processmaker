@@ -20,7 +20,10 @@
     >
       <b-row>
         <b-col cols="4">
-          <!-- TODO -->
+          <language-script
+            :languages="scriptExecutors"
+            :select="onSelect"
+          />
         </b-col>
         <b-col cols="8">
           <template v-if="countCategories">
@@ -225,6 +228,7 @@ import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
+import LanguageScript from "./LanguageScript.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -234,6 +238,7 @@ export default {
     Required,
     SliderWithInput,
     ProjectSelect,
+    LanguageScript,
   },
   mixins: [FormErrorsMixin],
   props: [
@@ -305,15 +310,7 @@ export default {
         .get(`/users/${this.userRunScript}`)
         .then((response) => {
           this.selectedUser = response.data;
-        })
-    },
-    /**
-       * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-       * @returns {boolean}
-       */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
+        });
     },
     onClose() {
       this.title = "";
@@ -389,6 +386,12 @@ export default {
             throw error;
           }
         });
+    },
+    /**
+     * Set the ID of the language selected
+     */
+    onSelect(langId) {
+      this.script_executor_id = langId;
     },
   },
 };
