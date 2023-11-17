@@ -160,6 +160,11 @@
                 "package-webentry": "2.18.0",
                 "packages": "^0"
             },
+            "docker-executors": {
+                "docker-executor-java": "1.0.3",
+                "docker-executor-python": "1.0.1",
+                "docker-executor-csharp": "1.0.1"
+            },
             "microservices": {
                 "pmai": "fall-2023"
             },
