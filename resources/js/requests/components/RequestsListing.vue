@@ -1,5 +1,5 @@
 <template>
-  <div class="data-table">
+  <div>
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
@@ -9,75 +9,10 @@
     />
     <div
       v-show="!shouldShowLoader"
-      class="card card-body table-card"
     >
-      <vuetable
-        :data-manager="dataManager"
-        :sort-order="sortOrder"
-        :css="css"
-        ref="vuetable"
-        :api-mode="false"
-        :fields="fields"
+      <filter-table
+        :headers="tableHeaders"
         :data="data"
-        data-path="data"
-        pagination-path="meta"
-        @vuetable:pagination-data="onPaginationData"
-      >
-        <template
-          slot="ids"
-          slot-scope="props"
-        >
-          <b-link
-            class="text-nowrap"
-            :href="openRequest(props.rowData, props.rowIndex)"
-          >
-            #{{ props.rowData.id }}
-          </b-link>
-        </template>
-        <template
-          slot="name"
-          slot-scope="props"
-        >
-          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
-        </template>
-        <template
-          slot="participants"
-          slot-scope="props"
-        >
-          <avatar-image
-            v-for="participant in props.rowData.participants"
-            :key="participant.id"
-            size="25"
-            hide-name="true"
-            :input-data="participant"
-          />
-        </template>
-        <template
-          slot="actions"
-          slot-scope="props"
-        >
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                v-b-tooltip.hover
-                v-uni-aria-describedby="props.rowData.id.toString()"
-                variant="link"
-                :href="openRequest(props.rowData, props.rowIndex)"
-                :title="$t('Open Request')"
-              >
-                <i class="fas fa-caret-square-right fa-lg fa-fw" />
-              </b-btn>
-            </div>
-          </div>
-        </template>
-      </vuetable>
-      <pagination
-        ref="pagination"
-        :single="$t('Request')"
-        :plural="$t('Requests')"
-        :per-page-select-enabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
       />
     </div>
   </div>
@@ -92,6 +27,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
+import { FilterTable } from "../../components/shared";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -122,6 +58,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      tableHeaders: [],
     };
   },
   computed: {
@@ -139,6 +76,7 @@ export default {
   methods: {
     setupColumns() {
       const columns = this.getColumns();
+      this.tableHeaders = this.getColumns();
 
       columns.forEach((column) => {
         const field = {
@@ -185,9 +123,9 @@ export default {
       });
 
       // this is needed because fields in vuetable2 are not reactive
-      this.$nextTick(() => {
-        this.$refs.vuetable.normalizeFields();
-      });
+      // this.$nextTick(() => {
+      //   this.$refs.vuetable.normalizeFields();
+      // });
     },
     getColumns() {
       if (this.$props.columns) {
@@ -199,24 +137,28 @@ export default {
           field: "id",
           sortable: true,
           default: true,
+          width: 50,
         },
         {
           label: "Name",
           field: "name",
           sortable: true,
           default: true,
+          width: 50,
         },
         {
           label: "Status",
           field: "status",
           sortable: true,
           default: true,
+          width: 50,
         },
         {
           label: "Participants",
           field: "participants",
           sortable: false,
           default: true,
+          width: 50,
         },
         {
           label: "Started",
@@ -224,6 +166,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
+          width: 50,
         },
         {
           label: "Completed",
@@ -231,6 +174,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
+          width: 50,
         },
       ];
     },
@@ -266,6 +210,16 @@ export default {
         "</span>"
       );
     },
+    formatParticipants(participants) {
+      return {
+        component: "AvatarImage",
+        props: {
+          size: "25",
+          "input-data": participants,
+          "hide-name": true,
+        },
+      };
+    },
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;
@@ -275,6 +229,7 @@ export default {
       for (let record of data.data) {
         //format Status
         record["status"] = this.formatStatus(record["status"]);
+        record["participants"] = this.formatParticipants(record["participants"]);
       }
       return data;
     },
