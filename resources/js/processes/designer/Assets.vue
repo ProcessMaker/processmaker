@@ -31,8 +31,10 @@
             <asset-buttons
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
+              :asset_name="asset.asset_name"
               :url-path="asset.urlPath"
               :url-asset="asset.urlAsset"
+              @open-create-script-modal="openScriptModal"
             />
           </template>
         </b-card>
@@ -58,6 +60,7 @@
 
           <template v-if="showButtonsPackage[index]">
             <asset-buttons
+              :asset_name="asset.asset_name"
               :asset_name_all="asset.asset_name_all"
               :asset_name_new="asset.asset_name_new"
               :url-path="asset.urlPath"
@@ -68,18 +71,27 @@
         <b-card style="opacity: 0"/>
       </b-card-group>
     </div>
+    <create-script-modal
+      id="addNewScript"
+      ref="addNewScript"
+      hide-add-btn="true"
+      :script-executors="scriptExecutors"
+      :count-categories="scriptCategoryCount"
+    />
   </div>
 </template>
 <script>
 import Asset from "./Asset.vue";
 import AssetButtons from "./AssetButtons.vue";
+import CreateScriptModal from "../scripts/components/CreateScriptModal.vue";
 
 export default {
   components: {
     Asset,
     AssetButtons,
+    CreateScriptModal,
   },
-  props: ["permission"],
+  props: ["permission", "scriptExecutors", "scriptCategoryCount"],
   data() {
     return {
       urlPath: "",
@@ -156,6 +168,9 @@ export default {
       || this.permission.includes("create-processes")
       || this.permission.includes("create-screens")
       || this.permission.includes("create-scripts");
+    },
+    openScriptModal() {
+      this.$refs.addNewScript.show();
     },
   },
 };

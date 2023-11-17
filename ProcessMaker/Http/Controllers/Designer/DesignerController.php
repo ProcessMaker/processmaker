@@ -4,9 +4,12 @@ namespace ProcessMaker\Http\Controllers\Designer;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr; 
 use Illuminate\Support\Composer;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class DesignerController extends Controller
@@ -32,6 +35,20 @@ class DesignerController extends Controller
 
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
-        return view('designer.index', compact('listConfig', 'currentUser'));
+        $scriptCategoryCount = ScriptCategory::count();
+
+        $scriptExecutors = ScriptExecutor::all()->pluck('title', 'language')->toArray();
+        $counter = 0;
+        $scriptExecutors = json_encode(Arr::mapWithKeys($scriptExecutors, function (string $value, $key) use (&$counter) {
+            $counter++;
+            return [$counter => "{$key} - " . $value];
+        }));
+
+        return view('designer.index', compact(
+            'listConfig',
+            'currentUser',
+            'scriptExecutors',
+            'scriptCategoryCount',
+        ));
     }
 }

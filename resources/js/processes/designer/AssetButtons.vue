@@ -1,28 +1,30 @@
 <template>
-  <b-card-text>
-    <div class="button-container">
-      <b-button
-        size="sm"
-        class="custom-button custom-text mb-2"
-        block
-        @click="openAsset(urlAsset)"
-      >
-        {{ $t(asset_name_new) }}
-        <i class="fas fa-arrow-right ml-2 align-middle" />
-      </b-button>
-    </div>
-    <div class="button-container">
-      <b-button
-        size="sm"
-        class="custom-button custom-text"
-        block
-        @click="callURL()"
-      >
-        {{ $t(asset_name_all) }}
-        <i class="fas fa-arrow-right ml-2 align-middle" />
-      </b-button>
-    </div>
-  </b-card-text>
+  <div>
+    <b-card-text>
+      <div class="button-container">
+        <b-button
+          size="sm"
+          class="custom-button custom-text mb-2"
+          block
+          @click="openAsset(urlAsset)"
+        >
+          {{ $t(asset_name_new) }}
+          <i class="fas fa-arrow-right ml-2 align-middle" />
+        </b-button>
+      </div>
+      <div class="button-container">
+        <b-button
+          size="sm"
+          class="custom-button custom-text"
+          block
+          @click="callURL()"
+        >
+          {{ $t(asset_name_all) }}
+          <i class="fas fa-arrow-right ml-2 align-middle" />
+        </b-button>
+      </div>
+    </b-card-text>
+  </div>
 </template>
 
 <script>
@@ -35,14 +37,23 @@ export default {
     asset_name_new: String,
   },
   data() {
-    return {};
+    return {
+      isScriptButton: false,
+    };
+  },
+  mounted() {
+    this.isScriptButton = (this.asset_name === "Scripts");
   },
   methods: {
     callURL() {
       window.location.href = window.location.origin + this.urlPath;
     },
     openAsset(url) {
-      window.open(url, "_blank");
+      if (this.isScriptButton) {
+        this.$emit("open-create-script-modal");
+      } else {
+        window.open(url, "_blank");
+      }
     },
   },
 };
