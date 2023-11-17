@@ -287,7 +287,6 @@
             const url = `/package-ai/processes/create/${response.data.id}`;
             this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
           } else {
-            console.log('wut', this.isAiGenerated, response.data.id);
             this.isAiGenerated
               ? window.location = "/modeler/" + response.data.id + "?ai=1"
               : window.location = "/modeler/" + response.data.id;
