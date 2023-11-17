@@ -482,7 +482,7 @@ ProcessMaker.EventBus.$on(
     });
     event.registerPreview({
       url: '/designer/scripts/preview',
-      assetUrl: (nodeData) => nodeData.scriptRef ? `/designer/screen-builder/${nodeData.scriptRef}/edit` : null,
+      assetUrl: (nodeData) => nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null,
       receivingParams: ['scriptRef'],
       matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
     });
