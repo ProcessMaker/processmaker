@@ -12,28 +12,19 @@ return new class extends Migration {
      */
     public function up()
     {
-        if (!Schema::hasColumn('process_versions', 'draft')) {
-            Schema::table('process_versions', function (Blueprint $table) {
-                $table->boolean('draft')->default(false)->after('user_id');
-            });
-        }
+        $tables = [
+            'process_versions',
+            'screen_versions',
+            'script_versions',
+            'script_executor_versions',
+        ];
 
-        if (!Schema::hasColumn('screen_versions', 'draft')) {
-            Schema::table('screen_versions', function (Blueprint $table) {
-                $table->boolean('draft')->default(false)->after('screen_category_id');
-            });
-        }
-
-        if (!Schema::hasColumn('script_versions', 'draft')) {
-            Schema::table('script_versions', function (Blueprint $table) {
-                $table->boolean('draft')->default(false)->after('script_id');
-            });
-        }
-
-        if (!Schema::hasColumn('script_executor_versions', 'draft')) {
-            Schema::table('script_executor_versions', function (Blueprint $table) {
-                $table->boolean('draft')->default(false)->after('script_executor_id');
-            });
+        foreach ($tables as $table) {
+            if (!Schema::hasColumn($table, 'draft')) {
+                Schema::table($table, function (Blueprint $table) {
+                    $table->boolean('draft')->default(false);
+                });
+            }
         }
     }
 
@@ -44,17 +35,17 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('process_versions', function (Blueprint $table) {
-            $table->dropColumn('draft');
-        });
-        Schema::table('screen_versions', function (Blueprint $table) {
-            $table->dropColumn('draft');
-        });
-        Schema::table('script_versions', function (Blueprint $table) {
-            $table->dropColumn('draft');
-        });
-        Schema::table('script_executor_versions', function (Blueprint $table) {
-            $table->dropColumn('draft');
-        });
+        $tables = [
+            'process_versions',
+            'screen_versions',
+            'script_versions',
+            'script_executor_versions',
+        ];
+
+        foreach ($tables as $table) {
+            Schema::table($table, function (Blueprint $table) {
+                $table->dropColumn('draft');
+            });
+        }
     }
 };
