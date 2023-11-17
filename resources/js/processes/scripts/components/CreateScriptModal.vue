@@ -98,124 +98,148 @@
                 required
               />
             </b-form-group>
-            <b-form-group
-              :description="
-                formDescription(
-                  'Select a user to set the API access of the Script',
-                  'run_as_user_id',
-                  addError
-                )
-              "
-              :invalid-feedback="errorMessage('run_as_user_id', addError)"
-              :label="$t('Run script as')"
-              :state="errorState('run_as_user_id', addError)"
-              required
+            <div class="d-flex justify-content-end w-100">
+              <button
+                class="btn btn-link text-capitalize collapsed"
+                type="button"
+                data-toggle="collapse"
+                data-target="#collapseAdvancedOptions"
+                aria-expanded="false"
+                aria-controls="collapseAdvancedOptions"
+              >
+                <p class="closed">
+                  {{ $t('Advanced Options') }}
+                  <i class="fas fa-angle-double-down" />
+                </p>
+                <p class="opened">
+                  {{ $t('Less Options') }}
+                  <i class="fas fa-angle-double-up" />
+                </p>
+              </button>
+            </div>
+            <div
+              id="collapseAdvancedOptions"
+              class="collapse"
             >
-              <select-user
-                v-model="selectedUser"
-                :class="{
-                  'is-invalid': errorState('run_as_user_id', addError) == false,
-                }"
-                :multiple="false"
-                name="run_as_user_id"
-              />
-            </b-form-group>
-            <b-form-group
-              class="form-group-border"
-              :invalid-feedback="errorMessage('timeout', addError)"
-              :error="
-                errorState('timeout', addError)
-                  ? null
-                  : errorMessage('timeout', addError)
-              "
-            >
-              <div class="d-flex d-flex justify-content-between align-items-center mb-3">
-                <div class="label-description">
-                  <label
-                    class="label-number"
-                    for="inputTimeout"
-                  >
-                    {{ $t('Timeout') }}
-                  </label>
-                  <p class="text-muted m-0">
-                    {{ $t('How many seconds the script should be allowed to run (0 is unlimited).') }}
-                  </p>
-                </div>
-                <b-form-input
-                  id="inputTimeout"
-                  v-model="timeout"
-                  class="input-number"
-                  type="number"
-                  :max="300"
-                  :min="0"
-                  name="timeout"
+              <b-form-group
+                :description="
+                  formDescription(
+                    'Select a user to set the API access of the Script',
+                    'run_as_user_id',
+                    addError
+                  )
+                "
+                :invalid-feedback="errorMessage('run_as_user_id', addError)"
+                :label="$t('Run script as')"
+                :state="errorState('run_as_user_id', addError)"
+                required
+              >
+                <select-user
+                  v-model="selectedUser"
+                  :class="{
+                    'is-invalid': errorState('run_as_user_id', addError) == false,
+                  }"
+                  :multiple="false"
+                  name="run_as_user_id"
                 />
-              </div>
-            </b-form-group>
-            <b-form-group
-              class="form-group-border"
-              :invalid-feedback="errorMessage('retry_attempts', addError)"
-              :error="
-                errorState('retry_attempts', addError)
-                  ? null
-                  : errorMessage('retry_attempts', addError)
-              "
-            >
-              <div class="d-flex d-flex justify-content-between align-items-center mb-3">
-                <div class="label-description">
-                  <label
-                    class="label-number"
-                    for="inputRetryAttempts"
-                  >
-                    {{ $t('Retry Attempts') }}
-                  </label>
-                  <p class="text-muted m-0">
-                    {{ $t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.') }}
-                  </p>
+              </b-form-group>
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('timeout', addError)"
+                :error="
+                  errorState('timeout', addError)
+                    ? null
+                    : errorMessage('timeout', addError)
+                "
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="label-number"
+                      for="inputTimeout"
+                    >
+                      {{ $t('Timeout') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('How many seconds the script should be allowed to run (0 is unlimited).') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputTimeout"
+                    v-model="timeout"
+                    class="input-number"
+                    type="number"
+                    :max="300"
+                    :min="0"
+                    name="timeout"
+                  />
                 </div>
-                <b-form-input
-                  id="inputRetryAttempts"
-                  v-model="retry_attempts"
-                  class="input-number"
-                  type="number"
-                  :max="10"
-                  :min="0"
-                  name="retry_attempts"
-                />
-              </div>
-            </b-form-group>
-            <b-form-group
-              class="form-group-border"
-              :invalid-feedback="errorMessage('retry_wait_time', addError)"
-              :error="
-                errorState('retry_wait_time', addError)
-                  ? null
-                  : errorMessage('retry_wait_time', addError)
-              "
-            >
-              <div class="d-flex d-flex justify-content-between align-items-center mb-3">
-                <div class="label-description">
-                  <label
-                    class="label-number"
-                    for="inputRetryWaitTime"
-                  >
-                    {{ $t('Retry Wait Time') }}
-                  </label>
-                  <p class="text-muted m-0">
-                    {{ $t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.') }}
-                  </p>
+              </b-form-group>
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('retry_attempts', addError)"
+                :error="
+                  errorState('retry_attempts', addError)
+                    ? null
+                    : errorMessage('retry_attempts', addError)
+                "
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="label-number"
+                      for="inputRetryAttempts"
+                    >
+                      {{ $t('Retry Attempts') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputRetryAttempts"
+                    v-model="retry_attempts"
+                    class="input-number"
+                    type="number"
+                    :max="10"
+                    :min="0"
+                    name="retry_attempts"
+                  />
                 </div>
-                <b-form-input
-                  id="inputRetryWaitTime"
-                  v-model="retry_wait_time"
-                  class="input-number"
-                  type="number"
-                  :max="3600"
-                  :min="0"
-                  name="retry_wait_time"
-                />
-              </div>
-            </b-form-group>
+              </b-form-group>
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('retry_wait_time', addError)"
+                :error="
+                  errorState('retry_wait_time', addError)
+                    ? null
+                    : errorMessage('retry_wait_time', addError)
+                "
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="label-number"
+                      for="inputRetryWaitTime"
+                    >
+                      {{ $t('Retry Wait Time') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputRetryWaitTime"
+                    v-model="retry_wait_time"
+                    class="input-number"
+                    type="number"
+                    :max="3600"
+                    :min="0"
+                    name="retry_wait_time"
+                  />
+                </div>
+              </b-form-group>
+            </div>
             <component
               :is="cmp"
               v-for="(cmp, index) in createScriptHooks"
@@ -427,5 +451,9 @@ export default {
   }
   .form-group-border{
     border-bottom: 1px solid #CDDDEE;
+  }
+  .collapsed > .opened,
+  :not(.collapsed) > .closed {
+      display: none;
   }
 </style>
