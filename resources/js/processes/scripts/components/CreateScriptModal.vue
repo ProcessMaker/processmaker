@@ -9,14 +9,12 @@
     >
       <i class="fas fa-plus" /> {{ $t("Script") }}
     </b-button>
-    <modal
+    <b-modal
       id="createScript"
       size="xl"
       scrollable
       :ok-disabled="disabled"
       :title="modalSetUp"
-      @hidden="onClose"
-      @ok.prevent="onSubmit"
     >
       <b-row>
         <b-col cols="4">
@@ -24,7 +22,6 @@
         </b-col>
         <b-col cols="8">
           <template v-if="countCategories">
-            <required />
             <b-form-group
               :description="
                 formDescription(
@@ -236,7 +233,16 @@
           </template>
         </b-col>
       </b-row>
-    </modal>
+      <div slot="modal-footer" class="w-100 m-0 d-flex d-flex align-items-center">
+        <required />
+        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onClose">
+          {{ $t('Cancel') }}
+        </button>
+        <button type="button" class="btn btn-secondary ml-3" @click="onSubmit">
+          {{ $t('Save') }}
+        </button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
