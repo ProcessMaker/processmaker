@@ -638,6 +638,10 @@ export default {
             return;
           }
 
+          if (response.data.nonce !== this.currentNonce) {
+            return;
+          }
+
           if (this.cancelledJobs.some((element) => element === response.data.nonce)) {
             return;
           }
