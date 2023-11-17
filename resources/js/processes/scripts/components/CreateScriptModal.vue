@@ -62,15 +62,6 @@
                 rows="2"
               />
             </b-form-group>
-            <category-select
-              v-show="!projectAsset"
-              v-model="script_category_id"
-              :errors="addError.script_category_id"
-              :label="$t('Category')"
-              api-get="script_categories"
-              api-list="script_categories"
-              name="script_category_id"
-            />
             <project-select
               v-if="isProjectsInstalled"
               v-model="projects"
@@ -82,25 +73,18 @@
               name="project"
               :project-id="projectId"
             />
-            <b-form-group
-              :invalid-feedback="errorMessage('script_executor_id', addError)"
-              :label="$t('Language')"
-              :state="errorState('script_executor_id', addError)"
-              :disabled="copyAssetMode"
-              required
-            >
-              <b-form-select
-                v-model="script_executor_id"
-                :options="scriptExecutors"
-                :state="errorState('script_executor_id', addError)"
-                :disabled="copyAssetMode"
-                name="script_executor_id"
-                required
-              />
-            </b-form-group>
+            <category-select
+              v-show="!projectAsset"
+              v-model="script_category_id"
+              :errors="addError.script_category_id"
+              :label="$t('Category')"
+              api-get="script_categories"
+              api-list="script_categories"
+              name="script_category_id"
+            />
             <div class="d-flex justify-content-end w-100">
               <button
-                class="btn btn-link text-capitalize collapsed"
+                class="btn btn-link text-capitalize weight-600 collapsed"
                 type="button"
                 data-toggle="collapse"
                 data-target="#collapseAdvancedOptions"
@@ -122,13 +106,6 @@
               class="collapse"
             >
               <b-form-group
-                :description="
-                  formDescription(
-                    'Select a user to set the API access of the Script',
-                    'run_as_user_id',
-                    addError
-                  )
-                "
                 :invalid-feedback="errorMessage('run_as_user_id', addError)"
                 :label="$t('Run script as')"
                 :state="errorState('run_as_user_id', addError)"
@@ -155,7 +132,7 @@
                 <div class="d-flex d-flex justify-content-between align-items-center mb-3">
                   <div class="label-description">
                     <label
-                      class="label-number"
+                      class="weight-600"
                       for="inputTimeout"
                     >
                       {{ $t('Timeout') }}
@@ -187,7 +164,7 @@
                 <div class="d-flex d-flex justify-content-between align-items-center mb-3">
                   <div class="label-description">
                     <label
-                      class="label-number"
+                      class="weight-600"
                       for="inputRetryAttempts"
                     >
                       {{ $t('Retry Attempts') }}
@@ -219,7 +196,7 @@
                 <div class="d-flex d-flex justify-content-between align-items-center mb-3">
                   <div class="label-description">
                     <label
-                      class="label-number"
+                      class="weight-600"
                       for="inputRetryWaitTime"
                     >
                       {{ $t('Retry Wait Time') }}
@@ -446,7 +423,7 @@ export default {
   .input-number {
     width: 15%;
   }
-  .label-number {
+  .weight-600{
     font-weight: 600;
   }
   .form-group-border{
