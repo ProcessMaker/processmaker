@@ -93,7 +93,14 @@ class LicensedPackageManifest extends PackageManifest
     {
         $composer = json_decode(file_get_contents(base_path('composer.json')), true);
 
-        return collect($composer['extra']['processmaker']['enterprise'])
+        // Add enterprise packages
+        $packages = collect($composer['extra']['processmaker']['enterprise']);
+        // Add custom packages
+        $packages = $packages->concat(collect($composer['extra']['processmaker']['custom']));
+        // Add docker-executors packages
+        $packages = $packages->concat(collect($composer['extra']['processmaker']['docker-executors']));
+
+        return $packages
             ->map(fn ($k, $v) => "processmaker/{$v}")
             ->values();
     }
