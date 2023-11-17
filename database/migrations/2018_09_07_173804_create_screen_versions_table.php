@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->json('computed')->nullable();
             $table->text('custom_css')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('screen_id')->references('id')->on('screens')->onDelete('cascade');
         });

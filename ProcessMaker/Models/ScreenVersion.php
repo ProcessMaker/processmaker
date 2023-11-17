@@ -3,12 +3,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
 
 class ScreenVersion extends ProcessMakerModel implements ScreenInterface
 {
     use HasCategories;
+    use SoftDeletes;
 
     const categoryClass = ScreenCategory::class;
 

@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->text('code')->nullable();
             $table->unsignedInteger('run_as_user_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('script_id')->references('id')->on('scripts')->onDelete('cascade');
         });

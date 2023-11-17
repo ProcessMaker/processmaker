@@ -3,12 +3,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\HasCategories;
 
 class ScriptVersion extends ProcessMakerModel implements ScriptInterface
 {
     use HasCategories;
+    use SoftDeletes;
 
     const categoryClass = ScriptCategory::class;
 
