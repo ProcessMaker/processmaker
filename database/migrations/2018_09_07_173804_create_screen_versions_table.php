@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->increments('id');
             $table->unsignedInteger('screen_id');
             $table->unsignedInteger('screen_category_id')->nullable();
+            $table->boolean('draft')->default(false);
             $table->text('title');
             $table->text('description');
             $table->string('type', 20)->default('FORM');

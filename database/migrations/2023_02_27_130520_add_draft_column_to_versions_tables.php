@@ -12,18 +12,29 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('process_versions', function (Blueprint $table) {
-            $table->boolean('draft')->default(false)->after('user_id');
-        });
-        Schema::table('screen_versions', function (Blueprint $table) {
-            $table->boolean('draft')->default(false)->after('screen_category_id');
-        });
-        Schema::table('script_versions', function (Blueprint $table) {
-            $table->boolean('draft')->default(false)->after('script_id');
-        });
-        Schema::table('script_executor_versions', function (Blueprint $table) {
-            $table->boolean('draft')->default(false)->after('script_executor_id');
-        });
+        if (!Schema::hasColumn('process_versions', 'draft')) {
+            Schema::table('process_versions', function (Blueprint $table) {
+                $table->boolean('draft')->default(false)->after('user_id');
+            });
+        }
+
+        if (!Schema::hasColumn('screen_versions', 'draft')) {
+            Schema::table('screen_versions', function (Blueprint $table) {
+                $table->boolean('draft')->default(false)->after('screen_category_id');
+            });
+        }
+
+        if (!Schema::hasColumn('script_versions', 'draft')) {
+            Schema::table('script_versions', function (Blueprint $table) {
+                $table->boolean('draft')->default(false)->after('script_id');
+            });
+        }
+
+        if (!Schema::hasColumn('script_executor_versions', 'draft')) {
+            Schema::table('script_executor_versions', function (Blueprint $table) {
+                $table->boolean('draft')->default(false)->after('script_executor_id');
+            });
+        }
     }
 
     /**

@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('script_executor_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('script_executor_id');
+            $table->boolean('draft')->default(false);
 
             $table->string('title');
             $table->text('description')->nullable();

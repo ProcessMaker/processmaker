@@ -28,13 +28,7 @@ trait HasVersioning
      */
     public function scopePublished($query)
     {
-        $query->whereHas('versions', function ($query) {
-            // Avoid migration errors when 'draft' column does not exist.
-            $hasDraftColumn = Schema::hasColumn($query->getModel()->getTable(), 'draft');
-            $query->when($hasDraftColumn, function ($query) {
-                $query->where('draft', false);
-            });
-        });
+        return $query->whereHas('versions', fn ($query) => $query->where('draft', false));
     }
 
     /**

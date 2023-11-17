@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('script_versions', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('script_id');
+            $table->boolean('draft')->default(false);
 
             $table->string('key')->unique()->nullable();
             $table->text('title');

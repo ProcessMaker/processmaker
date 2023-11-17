@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('process_category_id')->nullable();
             $table->unsignedInteger('user_id');
+            $table->boolean('draft')->default(false);
             $table->text('bpmn');
             $table->text('description');
             $table->string('name');
