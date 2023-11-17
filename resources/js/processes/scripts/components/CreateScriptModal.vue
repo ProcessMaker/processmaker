@@ -13,6 +13,7 @@
       id="createScript"
       size="xl"
       scrollable
+      centered
       :ok-disabled="disabled"
       :title="modalSetUp"
     >
