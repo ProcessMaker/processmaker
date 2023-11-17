@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class Permission extends ProcessMakerModel
 {
@@ -102,5 +103,29 @@ class Permission extends ProcessMakerModel
     public function groups()
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'assignable');
+    }
+
+    /**
+     * This retrieves the users who have permissions in a list of groups.
+     * 
+     * @param array $groups
+     * @return Collection
+     */
+    public static function getUsersByGroup(array $groups) 
+    {
+        $users = DB::table('assignables')
+                ->join('permissions', function ($join) use ($groups) {
+                    $join->on('assignables.permission_id', '=', 'permissions.id')
+                    ->whereIn('permissions.group', $groups);
+                })
+                ->join('users', function ($join) {
+                    $join->on('assignables.assignable_type', '=', DB::raw("'ProcessMaker\\\Models\\\User'"))
+                    ->on('assignables.assignable_id', '=', 'users.id');
+                })
+                ->select('users.*')
+                ->union(\ProcessMaker\Models\User::where('is_administrator', '=', true))
+                ->groupBy('users.id')
+                ->get();
+        return $users;
     }
 }
