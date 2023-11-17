@@ -21,7 +21,10 @@
         <b-col cols="4">
           <!-- TODO -->
         </b-col>
-        <b-col cols="8">
+        <b-col
+          cols="8"
+          class="script-form"
+        >
           <template v-if="countCategories">
             <b-form-group
               :description="
@@ -439,5 +442,11 @@ export default {
   .collapsed > .opened,
   :not(.collapsed) > .closed {
       display: none;
+  }
+  .script-form {
+    overflow-y: scroll;
+    display: block;
+    height: 100%;
+    max-height: 470px;
   }
 </style>
