@@ -150,7 +150,7 @@ ProcessMaker.EventBus.$on(
         name: "screenRef",
         required: true,
         params: {
-          type: "FORM,CONVERSATIONAL",
+          type: "FORM,CONVERSATIONAL,EMAIL,DISPLAY",
           interactive: true,
         },
       },
