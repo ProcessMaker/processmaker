@@ -99,7 +99,28 @@
             "build": "62a12d5f",
             "custom": {
                 "package-ellucian-ethos": "1.14.0",
-                "package-plaid": "1.2.0"
+                "package-plaid": "1.2.0",
+                "paypal-package": "dev-fall",
+                "pps-adsync": "dev-fall",
+                "ps_ethos": "dev-fall",
+                "package-irisbank": "dev-fall",
+                "package-pinnacle": "dev-fall",
+                "package-esign": "dev-fall",
+                "package-thermofisher": "dev-fall",
+                "customer-adoa": "dev-fall",
+                "pps-file-storage": "dev-fall",
+                "package-csi": "dev-fall",
+                "package-jxchange": "dev-fall",
+                "package-zjukumari-logs": "dev-fall",
+                "package-zj-wingate": "dev-fall",
+                "package-banner-sync": "dev-fall",
+                "package-service-task": "dev-fall",
+                "package-saved-search-filters": "dev-fall",
+                "package-alloy": "dev-fall",
+                "package-lesschwab": "dev-fall",
+                "package-proservice-tools": "dev-fall",
+                "package-foxley-management": "dev-fall",
+                "package-email-listener": "dev-fall"
             },
             "enterprise": {
                 "connector-docusign": "1.6.0",
@@ -138,6 +159,11 @@
                 "package-vocabularies": "2.13.0",
                 "package-webentry": "2.18.0",
                 "packages": "^0"
+            },
+            "docker-executors": {
+                "docker-executor-java": "1.0.3",
+                "docker-executor-python": "1.0.1",
+                "docker-executor-csharp": "1.0.1"
             },
             "microservices": {
                 "pmai": "fall-2023"
