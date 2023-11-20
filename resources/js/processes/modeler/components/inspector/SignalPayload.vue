@@ -96,6 +96,12 @@ export default {
           this.node().eventDefinitions.forEach(definition => {
             if(definition.$type === 'bpmn:SignalEventDefinition') {
               definition.config = JSON.stringify(this.config);
+
+              window.ProcessMaker.EventBus.$emit('multiplayer-updateInspectorProperty', {
+                id: this.node().id,
+                key: 'signalPayload',
+                value: JSON.stringify(this.config),
+              });
             }
           }, this)
         }
@@ -106,6 +112,12 @@ export default {
     payloadChange(selectedObject) {
       this.config.payload[0].id = selectedObject.id;
       this.$set(this.node().eventDefinitions[0], "config", JSON.stringify(this.config));
+
+      window.ProcessMaker.EventBus.$emit('multiplayer-updateInspectorProperty', {
+        id: this.node().id,
+        key: 'signalPayload',
+        value: JSON.stringify(this.config),
+      });
     },
     node() {
       const modeler =  this.$root.$children[0].$refs.modeler;
@@ -140,7 +152,7 @@ export default {
   .displayed-expression {
     width: 146px;
   }
-  
+
   .displayed-expression,
   .special-assignment-input {
     font-family: monospace;
