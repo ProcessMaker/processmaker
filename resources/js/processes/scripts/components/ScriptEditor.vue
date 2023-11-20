@@ -544,13 +544,11 @@ export default {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
-      this.$refs.aiTab2.showMenu();
     },
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
-      this.$refs.aiTab2.showMenu();
     },
     cancelRequest() {
       if (this.currentNonce) {
@@ -559,7 +557,6 @@ export default {
         this.loading = false;
         this.progress.progress = 0;
         this.action = "";
-        this.$refs.aiTab2.showMenu();
       }
     },
     closeExplanation() {
@@ -635,6 +632,10 @@ export default {
         streamProgressEvent,
         (response) => {
           if (response.data.promptSessionId !== localStorage.promptSessionId) {
+            return;
+          }
+
+          if (response.data.nonce !== this.currentNonce) {
             return;
           }
 

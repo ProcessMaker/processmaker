@@ -165,6 +165,9 @@ export default {
       // in any case the screenType if the only one, default to the first value
       if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
     }
+    if (this.callFromAiModeler === true) {
+      this.screenTypes = this.types;
+    } 
   },
   methods: {
     show() {
@@ -194,14 +197,6 @@ export default {
       this.disabled = false;
       this.$emit('reload');
     },  
-    /**
-     * Check if the search params contains create=true which means is coming from the Modeler as a Quick Asset Creation
-     * @returns {boolean}
-     */
-    isQuickCreate() {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams?.get("create") === "true";
-    },
     onSubmit() {
       this.resetErrors();
       // single click

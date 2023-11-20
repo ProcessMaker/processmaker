@@ -36,7 +36,7 @@
     <b-list-group-item
       class="p-0 border-left-0 border-right-0 border-top-0 mb-0"
     >
-      <b-collapse id="assistant" :visible="showPromptArea">
+      <b-collapse id="assistant" :visible="true">
         <div v-if="!showPromptArea">
           <div class="card-header m-0 d-flex border-0 pb-1 px-2">
             <div class="d-flex w-50 p-2 ai-button-container">
@@ -180,8 +180,8 @@ export default {
       this.prompt = this.defaultPrompt;
     }
 
-    if (this.processId !== 0) {
-      this.showPromptArea = true;
+    if (this.processId === 0) {
+      this.showMenu();
     }
   },
   methods: {

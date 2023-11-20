@@ -63,7 +63,7 @@
             />
             <div
               v-else
-              :class="{ 'device-mobile': deviceScreen === 'mobile' }"
+              :class="{ 'device-mobile': deviceScreen === 'mobile', 'device-screen': deviceScreen !== 'mobile' }"
             >
               <component
                 :is="renderComponent"
@@ -1169,5 +1169,8 @@ export default {
       width: 480px;
       border: 1px solid rgba(0,0,0,.125);
       margin: 0px auto;
+    }
+    .device-screen {
+      width: 100%;
     }
 </style>
