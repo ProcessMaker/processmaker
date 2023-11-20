@@ -111,7 +111,7 @@
             >
               <b-form-group
                 :invalid-feedback="errorMessage('run_as_user_id', addError)"
-                :label="$t('Run script as')"
+                :label="$t('Run Script As')"
                 :state="errorState('run_as_user_id', addError)"
                 required
               >
