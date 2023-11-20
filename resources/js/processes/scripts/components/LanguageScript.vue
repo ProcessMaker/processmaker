@@ -3,32 +3,50 @@
     <label class="choose-lang m-2 text-uppercase">
       {{ $t("Choose a language") }}
     </label>
-    <div
-      v-for="(lang, index) in languages"
-      :key="index"
-    >
-      <b-card
-        :ref="`${lang}`"
-        class="mt-2 card-lang"
-        @click="selectLanguage(lang, index)"
+    <div class="content-lang">
+      <template
+        v-for="(lang, index) in languages"
       >
-        <b-card-text>
-          <img
-            :src="getImage(lang)"
-            :alt="lang"
-          >
-          <span class="text-uppercase ml-2">
-            {{ lang }}
-          </span>
-        </b-card-text>
-      </b-card>
+        <b-card
+          :key="index"
+          :ref="`${lang}`"
+          class="mt-2"
+          @click="selectLanguage(lang, index)"
+        >
+          <b-card-text>
+            <img
+              :src="getImage(lang)"
+              :alt="lang"
+            >
+            <span class="text-uppercase ml-2">
+              {{ lang }}
+            </span>
+          </b-card-text>
+        </b-card>
+      </template>
+      <span
+        v-if="showError !== ''"
+        class="d-block invalid-feedback"
+      >
+        {{ invalid_feedback }}
+      </span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ["languages", "select"],
+  props: ["languages", "select", "invalid_feedback"],
+  data() {
+    return {
+      showError: false,
+    };
+  },
+  watch: {
+    invalid_feedback(newVal) {
+      this.showError = newVal === "";
+    },
+  },
   methods: {
     /**
      * Check the language selected and emit to modal
@@ -63,8 +81,6 @@ export default {
   }
   .card-lang {
     cursor: pointer;
-    width: 90%;
-    margin-left: 5%;
   }
   .container-lang {
     background-color: #F6F9FB;
@@ -73,5 +89,9 @@ export default {
   }
   .choose-lang {
     color: #6A7888;
+  }
+  .content-lang {
+    width: 90%;
+    margin-left: 5%;
   }
 </style>

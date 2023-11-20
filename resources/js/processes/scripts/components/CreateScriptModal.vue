@@ -14,6 +14,7 @@
       size="xl"
       scrollable
       centered
+      no-close-on-backdrop
       :ok-disabled="disabled"
       :title="modalSetUp"
     >
@@ -22,6 +23,7 @@
           <language-script
             :languages="scriptExecutors"
             :select="onSelect"
+            :invalid_feedback="errorMessage('script_executor_id', addError)"
           />
         </b-col>
         <b-col
@@ -240,12 +242,23 @@
           </template>
         </b-col>
       </b-row>
-      <div slot="modal-footer" class="w-100 m-0 d-flex d-flex align-items-center">
+      <div
+        slot="modal-footer"
+        class="w-100 m-0 d-flex d-flex align-items-center"
+      >
         <required />
-        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onClose">
+        <button
+          type="button"
+          class="btn btn-outline-secondary ml-auto"
+          @click="onClose"
+        >
           {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSubmit">
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          @click="onSubmit"
+        >
           {{ $t('Save') }}
         </button>
       </div>
@@ -309,9 +322,6 @@ export default {
       userRunScript: 1,
     };
   },
-  mounted() {
-    this.getAdminUser();
-  },
   computed: {
     modalSetUp() {
       if (this.copyAssetMode) {
@@ -332,6 +342,9 @@ export default {
       this.title = "";
       return this.$t("Create Script");
     },
+  },
+  mounted() {
+    this.getAdminUser();
   },
   methods: {
     show() {
@@ -356,6 +369,7 @@ export default {
       this.retry_attempts = 0;
       this.retry_wait_time = 5;
       this.addError = {};
+      this.close();
     },
     close() {
       this.$bvModal.hide("createScript");
