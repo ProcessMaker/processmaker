@@ -444,9 +444,8 @@ export default {
       display: none;
   }
   .script-form {
-    overflow-y: scroll;
     display: block;
     height: 100%;
-    max-height: 470px;
+    max-height: 446px;
   }
 </style>
