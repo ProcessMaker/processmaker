@@ -9,14 +9,13 @@
     >
       <i class="fas fa-plus" /> {{ $t("Script") }}
     </b-button>
-    <modal
+    <b-modal
       id="createScript"
       size="xl"
       scrollable
+      centered
       :ok-disabled="disabled"
       :title="modalSetUp"
-      @hidden="onClose"
-      @ok.prevent="onSubmit"
     >
       <b-row>
         <b-col cols="4">
@@ -25,9 +24,11 @@
             :select="onSelect"
           />
         </b-col>
-        <b-col cols="8">
+        <b-col
+          cols="8"
+          class="script-form"
+        >
           <template v-if="countCategories">
-            <required />
             <b-form-group
               :description="
                 formDescription(
@@ -65,15 +66,6 @@
                 rows="2"
               />
             </b-form-group>
-            <category-select
-              v-show="!projectAsset"
-              v-model="script_category_id"
-              :errors="addError.script_category_id"
-              :label="$t('Category')"
-              api-get="script_categories"
-              api-list="script_categories"
-              name="script_category_id"
-            />
             <project-select
               v-if="isProjectsInstalled"
               v-model="projects"
@@ -85,25 +77,18 @@
               name="project"
               :project-id="projectId"
             />
-            <b-form-group
-              :invalid-feedback="errorMessage('script_executor_id', addError)"
-              :label="$t('Language')"
-              :state="errorState('script_executor_id', addError)"
-              :disabled="copyAssetMode"
-              required
-            >
-              <b-form-select
-                v-model="script_executor_id"
-                :options="scriptExecutors"
-                :state="errorState('script_executor_id', addError)"
-                :disabled="copyAssetMode"
-                name="script_executor_id"
-                required
-              />
-            </b-form-group>
+            <category-select
+              v-show="!projectAsset"
+              v-model="script_category_id"
+              :errors="addError.script_category_id"
+              :label="$t('Category')"
+              api-get="script_categories"
+              api-list="script_categories"
+              name="script_category_id"
+            />
             <div class="d-flex justify-content-end w-100">
               <button
-                class="btn btn-link text-capitalize collapsed"
+                class="btn btn-link text-capitalize weight-600 collapsed"
                 type="button"
                 data-toggle="collapse"
                 data-target="#collapseAdvancedOptions"
@@ -125,13 +110,6 @@
               class="collapse"
             >
               <b-form-group
-                :description="
-                  formDescription(
-                    'Select a user to set the API access of the Script',
-                    'run_as_user_id',
-                    addError
-                  )
-                "
                 :invalid-feedback="errorMessage('run_as_user_id', addError)"
                 :label="$t('Run script as')"
                 :state="errorState('run_as_user_id', addError)"
@@ -146,57 +124,102 @@
                   name="run_as_user_id"
                 />
               </b-form-group>
-              <slider-with-input
-                :description="
-                  $t(
-                    'How many seconds the script should be allowed to run (0 is unlimited).'
-                  )
-                "
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('timeout', addError)"
                 :error="
                   errorState('timeout', addError)
                     ? null
                     : errorMessage('timeout', addError)
                 "
-                :label="$t('Timeout')"
-                :max="300"
-                :min="0"
-                :value="timeout"
-                @input="timeout = $event"
-              />
-              <slider-with-input
-                :description="
-                  $t(
-                    'Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.'
-                  )
-                "
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="weight-600"
+                      for="inputTimeout"
+                    >
+                      {{ $t('Timeout') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('How many seconds the script should be allowed to run (0 is unlimited).') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputTimeout"
+                    v-model="timeout"
+                    class="input-number"
+                    type="number"
+                    :max="300"
+                    :min="0"
+                    name="timeout"
+                  />
+                </div>
+              </b-form-group>
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('retry_attempts', addError)"
                 :error="
                   errorState('retry_attempts', addError)
                     ? null
                     : errorMessage('retry_attempts', addError)
                 "
-                :label="$t('Retry Attempts')"
-                :max="10"
-                :min="0"
-                :value="retry_attempts"
-                @input="retry_attempts = $event"
-              />
-              <slider-with-input
-                :description="
-                  $t(
-                    'Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.'
-                  )
-                "
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="weight-600"
+                      for="inputRetryAttempts"
+                    >
+                      {{ $t('Retry Attempts') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('Number of times to retry. Leave empty to use script default. Set to 0 for no retry attempts.') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputRetryAttempts"
+                    v-model="retry_attempts"
+                    class="input-number"
+                    type="number"
+                    :max="10"
+                    :min="0"
+                    name="retry_attempts"
+                  />
+                </div>
+              </b-form-group>
+              <b-form-group
+                class="form-group-border"
+                :invalid-feedback="errorMessage('retry_wait_time', addError)"
                 :error="
                   errorState('retry_wait_time', addError)
                     ? null
                     : errorMessage('retry_wait_time', addError)
                 "
-                :label="$t('Retry Wait Time')"
-                :max="3600"
-                :min="0"
-                :value="retry_wait_time"
-                @input="retry_wait_time = $event"
-              />
+              >
+                <div class="d-flex d-flex justify-content-between align-items-center mb-3">
+                  <div class="label-description">
+                    <label
+                      class="weight-600"
+                      for="inputRetryWaitTime"
+                    >
+                      {{ $t('Retry Wait Time') }}
+                    </label>
+                    <p class="text-muted m-0">
+                      {{ $t('Seconds to wait before retrying. Leave empty to use script default. Set to 0 for no retry wait time.') }}
+                    </p>
+                  </div>
+                  <b-form-input
+                    id="inputRetryWaitTime"
+                    v-model="retry_wait_time"
+                    class="input-number"
+                    type="number"
+                    :max="3600"
+                    :min="0"
+                    name="retry_wait_time"
+                  />
+                </div>
+              </b-form-group>
             </div>
             <component
               :is="cmp"
@@ -217,7 +240,16 @@
           </template>
         </b-col>
       </b-row>
-    </modal>
+      <div slot="modal-footer" class="w-100 m-0 d-flex d-flex align-items-center">
+        <required />
+        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onClose">
+          {{ $t('Cancel') }}
+        </button>
+        <button type="button" class="btn btn-secondary ml-3" @click="onSubmit">
+          {{ $t('Save') }}
+        </button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -398,8 +430,25 @@ export default {
 </script>
 
 <style scoped>
+  .label-description {
+    width: 80%;
+  }
+  .input-number {
+    width: 15%;
+  }
+  .weight-600{
+    font-weight: 600;
+  }
+  .form-group-border{
+    border-bottom: 1px solid #CDDDEE;
+  }
   .collapsed > .opened,
   :not(.collapsed) > .closed {
       display: none;
+  }
+  .script-form {
+    display: block;
+    height: 100%;
+    max-height: 446px;
   }
 </style>
