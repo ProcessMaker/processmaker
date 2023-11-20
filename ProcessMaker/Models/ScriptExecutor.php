@@ -154,7 +154,7 @@ class ScriptExecutor extends ProcessMakerModel
         }
 
         foreach ($executors->get() as $executor) {
-            $list[$executor->id] = $executor->language . ' - ' . $executor->title;
+            $list[$executor->id] = $executor->language;
         }
 
         return $list;
