@@ -333,9 +333,6 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
@@ -373,11 +370,6 @@ if (userID) {
       } else {
         window.ProcessMaker.alert(e.message, "warning");
       }
-    })
-    .listen(".CommentsUpdated", (e) => {
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
     });
 }
 

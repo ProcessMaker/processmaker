@@ -235,18 +235,18 @@ export default {
      */
     generateAssetLink(data) {
       switch (data.asset_type) {
-        case "Process":
-          return `/modeler/${data.id}`;
-        case "Screen":
-          return `/designer/screen-builder/${data.id}/edit`;
-        case "Script":
-          return `/designer/scripts/${data.id}/edit`;
-        case "Data Source":
-          return `/designer/data-sources/${data.id}/edit`;
-        case "Decision Table":
-          return `/designer/decision-tables/${data.id}/edit`;
+        case 'Process':
+            return `/modeler/${data.id}`;
+        case 'Screen':
+            return `/designer/screen-builder/${data.id}/edit`;
+        case 'Script':
+            return `/designer/scripts/${data.id}/builder`;
+        case 'Data Source':
+            return `/designer/data-sources/${data.id}/edit`;
+        case 'Decision Table':
+            return `/designer/decision-tables/table-builder/${data.id}/edit`;
         default:
-          return ""; // Handle unknown asset types as needed
+            return ''; // Handle unknown asset types as needed
       }
     },
     /**

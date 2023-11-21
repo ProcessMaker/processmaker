@@ -42,13 +42,11 @@ export default {
       required: false,
     },
   },
-  mounted() {
-    channel.onmessage = ({ data }) => {
-      this.$emit("asset", data);
-    };
-  },
   methods: {
     goToAsset() {
+      channel.onmessage = ({ data }) => {
+        this.$emit("asset", data);
+      };
       let url = `/designer/${kebabCase(
         this.label,
       )}s?create=true&screenSelectId=${this.screenSelectId}`;
