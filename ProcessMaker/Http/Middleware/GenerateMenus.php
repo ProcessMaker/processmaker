@@ -121,6 +121,24 @@ class GenerateMenus
                 ]);
             }
         });
+        Menu::make('sidebar_task', function ($menu) {
+            $submenu = $menu->add(__('Tasks'));
+            $submenu->add(__('To Do'), [
+                'route' => 'tasks.index',
+                'icon' => 'fa-list',
+                'id' => 'homeid',
+            ]);
+            $submenu->add(__('Completed'), [
+                'route' => ['tasks.index', 'status' => 'CLOSED'],
+                'icon' => 'fa-check-square',
+                'id' => 'homeid',
+            ]);
+            $submenu->add(__('Self Service'), [
+                'route' => ['tasks.index', 'status' => 'SELF_SERVICE'],
+                'icon' => 'fa-user',
+                'id' => 'homeid',
+            ]);
+        });
         Menu::make('sidebar_processes_catalogue', function ($menu) {
             $submenu = $menu->add(__('Processes'));
         });
