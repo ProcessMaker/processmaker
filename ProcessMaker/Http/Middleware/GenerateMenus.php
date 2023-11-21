@@ -39,12 +39,6 @@ class GenerateMenus
                     ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
                 )->active('processes-catalogue/*');
             });
-            $menu->group(['prefix' => 'processes'], function ($request_items) {
-                $request_items->add(
-                    __('Processes'),
-                    ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
-                )->active('processes-catalogue/*');
-            });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(
