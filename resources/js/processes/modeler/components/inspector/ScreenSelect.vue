@@ -60,8 +60,6 @@ import { uniqueId } from "lodash";
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
 import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 
-const channel = new BroadcastChannel("assetCreation");
-
 export default {
   components: {
     ModelerAssetQuickCreate,
@@ -116,10 +114,6 @@ export default {
       this.loadScreen(this.value);
     }
     this.setDefault();
-    channel.onmessage = ({ data }) => {
-      console.log("channel message", data);
-      this.processAssetCreation(data);
-    };
   },
   methods: {
     type() {

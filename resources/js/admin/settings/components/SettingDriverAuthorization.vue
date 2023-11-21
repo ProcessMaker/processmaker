@@ -3,9 +3,9 @@
     <div v-if="hasAuthorizedBadge">
       <b-badge
         pill
-        :variant="setting.ui.authorizedBadge ? 'success' : 'warning'"
+        :variant="isAuthorized ? 'success' : 'warning'"
       >
-        <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
+        <span v-if="isAuthorized">{{ $t('Authorized') }}</span>
         <span v-else>{{ $t('Not Authorized') }}</span>
       </b-badge>
     </div>
@@ -146,7 +146,7 @@
         <button
           type="button"
           class="btn btn-secondary ml-3"
-          :disabled=" isInvalid || !changed "
+          :disabled="isButtonDisabled"
           @click="onSave"
         >
           {{ $t('Authorize') }}
@@ -216,6 +216,12 @@ export default {
       const hasAuthorizedBadge = !!_.has(this.setting, "ui.authorizedBadge");
       return hasAuthorizedBadge;
     },
+    isAuthorized() {
+      if (this.hasAuthorizedBadge) {
+        return Boolean(this.setting.ui.authorizedBadge);
+      }
+      return false;
+    },
     changed() {
       return JSON.stringify(this.formData) !== JSON.stringify(this.transformed);
     },
@@ -224,6 +230,9 @@ export default {
         return "fa-eye";
       }
       return "fa-eye-slash";
+    },
+    isButtonDisabled() {
+      return this.isInvalid || (this.isAuthorized && !this.changed);
     },
   },
   watch: {
