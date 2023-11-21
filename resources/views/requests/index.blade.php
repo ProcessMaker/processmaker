@@ -51,39 +51,40 @@
                 @endcan
             </counter-card-group>
 
+            <div class="card card-body">
+                <div id="search-bar" class="search advanced-search mb-2">
+                <div class="d-flex">
+                    <div class="flex-grow-1">
+                    <pmql-input
+                        ref="pmql_input"
+                        search-type="requests"
+                        :value="pmql"
+                        :url-pmql="urlPmql"
+                        :filters-value="pmql"
+                        :ai-enabled="false"
+                        :show-filters="true"
+                        :aria-label="$t('Advanced Search (PMQL)')"
+                        :param-status="status" 
+                        :param-requester="requester" 
+                        :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
+                        @submit="onNLQConversion"
+                        @filterspmqlchange="onFiltersPmqlChange">
 
-            <div id="search-bar" class="search advanced-search mb-2">
-              <div class="d-flex">
-                <div class="flex-grow-1">
-                  <pmql-input
-                    ref="pmql_input"
-                    search-type="requests"
-                    :value="pmql"
-                    :url-pmql="urlPmql"
-                    :filters-value="pmql"
-                    :ai-enabled="false"
-                    :show-filters="true"
-                    :aria-label="$t('Advanced Search (PMQL)')"
-                    :param-status="status" 
-                    :param-requester="requester" 
-                    :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
-                    @submit="onNLQConversion"
-                    @filterspmqlchange="onFiltersPmqlChange">
-
-                    <template v-slot:left-buttons>
-                      <div class="d-flex">
-                        <div class="d-flex mr-1" v-for="addition in additions">
-                          <component class="d-flex" :is="addition" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"></component>
+                        <template v-slot:left-buttons>
+                        <div class="d-flex">
+                            <div class="d-flex mr-1" v-for="addition in additions">
+                            <component class="d-flex" :is="addition" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"></component>
+                            </div>
                         </div>
-                      </div>
-                    </template>
+                        </template>
 
-                  </pmql-input>
+                    </pmql-input>
+                    </div>
                 </div>
-              </div>
-            </div>
+                </div>
 
-            <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
+                <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
+            </div>
         </div>
     </div>
 </div>

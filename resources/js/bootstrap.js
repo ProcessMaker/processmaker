@@ -28,6 +28,7 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
+import FilterTable from "./components/shared/FilterTable.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -89,6 +90,7 @@ window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("global-search", GlobalSearch);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
+window.Vue.component("filter-table", FilterTable);
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
