@@ -18,6 +18,7 @@ use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Filters\Filter;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -136,6 +137,10 @@ class ProcessRequestController extends Controller
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
+        }
+
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
         }
 
         $query->nonSystem();
