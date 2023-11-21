@@ -102,14 +102,14 @@
 import Required from "../../components/shared/Required.vue";
 import Modal from "../../components/shared/Modal.vue";
 import FormErrorsMixin from "../../components/shared/FormErrorsMixin";
-import TemplateSearch from "../../components/templates/TemplateSearch.vue";
 import ProjectSelect from "../../components/shared/ProjectSelect.vue";
+import AssetRedirectMixin from "../../modules/assetRedirectMixin";
 
 export default {
   components: {
-    Modal, Required, TemplateSearch, ProjectSelect,
+    Modal, Required, ProjectSelect,
   },
-  mixins: [FormErrorsMixin],
+  mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
     "countCategories",
     "blankTemplate",
@@ -194,8 +194,8 @@ export default {
         return;
       }
 
-      this.selectedFile = files[0].name;
-      this.file = files[0];
+      [this.file] = files;
+      this.selectedFile = this.file.name;
     },
     onClose() {
       this.name = "";
@@ -292,24 +292,29 @@ export default {
           },
         },
       )
-        .then((response) => {
+        .then(({ data }) => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
 
           ProcessMaker.alert(this.$t("The process was created."), "success");
 
-          if (this.callFromAiModeler) {
-            const url = `/package-ai/processes/create/${response.data.id}`;
-            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
-          } else {
-            window.location = `/modeler/${response.data.id}`;
-          }
+          const url = new URL(`/modeler/${data.id}`, window.location.origin);
+          this.appendProjectIdToURL(url, this.projectId);
+          this.handleRedirection(url, data);
         })
         .catch((error) => {
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
+    },
+    handleRedirection(url, data) {
+      if (this.callFromAiModeler) {
+        const redirectUrl = `/package-ai/processes/create/${data.id}`;
+        this.$emit("process-created-from-modeler", redirectUrl, data.id, data.name);
+      } else {
+        window.location.href = url;
+      }
     },
   },
 };
