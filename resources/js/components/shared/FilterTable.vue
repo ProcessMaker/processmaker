@@ -54,6 +54,7 @@
 <script>
 
 import AvatarImage from "../../components/AvatarImage.vue"
+import moment from "moment";
 
 export default {
   components: {
@@ -71,6 +72,19 @@ export default {
       startWidth: 0,
       resizingColumnIndex: -1,
     };
+  },
+  watch: {
+    data() {
+      this.headers.forEach(column => {
+        if(column.format) {
+          if (column.format === 'datetime' || column.format === 'date') {
+            this.data.data.forEach(element => {
+              element[column.field] = this.formatDate(element[column.field], column.format);
+            });
+          }
+        }
+      });
+    },
   },
   mounted() {
 
@@ -111,11 +125,14 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
-  },
-  watch: {
-    data() {
-      console.log(this.data)
-    }
+    formatDate(date, mask) {
+      if (mask === 'datetime') {
+        return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
+      }
+      if (mask === 'date') {
+        return date === null ? "-" : moment(date).format("MM/DD/YY");
+      }
+    },
   },
 };
 </script>
@@ -123,6 +140,8 @@ export default {
 <style>
 .table-resizable {
   overflow-x: auto;
+  max-height: 550px;
+  overflow-y: auto;
 }
 
 .table-resizable th {
@@ -147,6 +166,7 @@ export default {
 }
 .filter-table {
   width: 100%;
+  max-height: 400px;
   border-collapse: collapse;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
   border-right: 1px solid rgba(0, 0, 0, 0.125);
@@ -155,6 +175,29 @@ export default {
 .filter-table td {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  padding: 8px; /* Ajusta el relleno si es necesario */
+  padding: 10px 16px;
+}
+.filter-table th:hover {
+  background-color: #FAFBFC;
+  color: #1572C2;
+}
+.filter-table tbody tr:hover {
+  background-color: #FAFBFC;
+  color: #1572C2;
+}
+
+.filter-table th {
+  position: relative;
+}
+
+.filter-table th:hover::after {
+  content: '\2026'; /* Código Unicode para el carácter de elipsis */
+  position: absolute;
+  top: 50%;
+  right: 7px; /* Ajusta la distancia desde el borde derecho */
+  transform: translateY(-50%) rotate(90deg);
+  font-size: 16px; /* Ajusta el tamaño del elipsis */
+  line-height: 1; /* Ajusta la alineación vertical */
+  cursor: pointer;
 }
 </style>
