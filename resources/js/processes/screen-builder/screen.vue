@@ -281,10 +281,9 @@
         <b-col cols="6">
           <tree-view
             v-model="previewDataStringify"
-            :iframeHeight="iframeHeight"
+            :iframe-height="iframeHeight"
             style="border:1px; solid gray;"
-          >
-          </tree-view>
+          />
         </b-col>
       </b-row>
     </b-modal>
@@ -324,6 +323,7 @@ import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 import autosaveMixins from "../../modules/autosave/mixins";
+import assetRedirectMixin from "../../modules/assetRedirectMixin";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -351,7 +351,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
   },
-  mixins: [...autosaveMixins],
+  mixins: [...autosaveMixins, assetRedirectMixin],
   props: {
     screen: {
       type: Object,
@@ -560,7 +560,6 @@ export default {
           },
         ],
       },
-      closeHref: "/designer/screens",
       iframeHeight: "600px",
     };
   },
@@ -647,6 +646,9 @@ export default {
             this.setLoadingState(false);
           });
       };
+    },
+    closeHref() {
+      return this.redirectUrl ? this.redirectUrl : "/designer/screens";
     },
   },
   watch: {
@@ -1066,8 +1068,12 @@ export default {
               onSuccess(response);
             }
 
-            if (this.processId !== 0 && this.processId !== undefined && !exportScreen) {
-              window.location = `/modeler/${this.processId}`;
+            if (!exportScreen) {
+              if (this.processId) {
+                window.location = `/modeler/${this.processId}`;
+              }
+
+              window.ProcessMaker.EventBus.$emit("redirect");
             }
           })
           .catch((err) => {

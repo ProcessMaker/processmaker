@@ -406,6 +406,7 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import assetRedirectMixin from "../../../modules/assetRedirectMixin";
 import AiTab from "./AiTab.vue";
 
 export default {
@@ -414,7 +415,7 @@ export default {
     TopMenu,
     AiTab,
   },
-  mixins: [...autosaveMixins],
+  mixins: [...autosaveMixins, assetRedirectMixin],
   props: {
     script: {
       type: Object,
@@ -533,7 +534,6 @@ export default {
           },
         ],
       },
-      redirectUrl: null,
     };
   },
   computed: {
@@ -604,9 +604,6 @@ export default {
     ProcessMaker.EventBus.$on("script-discard", () => {
       this.discardDraft();
     });
-    ProcessMaker.EventBus.$on("redirect", () => {
-      this.handleRedirection();
-    });
 
     window.addEventListener("resize", this.handleResize);
     const userID = document.head.querySelector("meta[name=\"user-id\"]");
@@ -627,8 +624,6 @@ export default {
     if (this.processId !== 0) {
       this.prompt = `${this.script.title}\n${this.script.description}`;
     }
-
-    this.setRedirectUrl();
   },
 
   beforeDestroy() {
@@ -954,19 +949,6 @@ export default {
             divider: false,
           },
         }, 4);
-      }
-    },
-    setRedirectUrl() {
-      const queryParams = new URLSearchParams(window.location.search);
-      const projectId = queryParams.get("project_id");
-
-      if (projectId) {
-        this.redirectUrl = `/designer/projects/${projectId}`;
-      }
-    },
-    handleRedirection() {
-      if (this.redirectUrl) {
-        window.location.href = this.redirectUrl;
       }
     },
   },
