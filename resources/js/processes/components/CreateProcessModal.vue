@@ -102,8 +102,8 @@
 import Required from "../../components/shared/Required.vue";
 import Modal from "../../components/shared/Modal.vue";
 import FormErrorsMixin from "../../components/shared/FormErrorsMixin";
+import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import ProjectSelect from "../../components/shared/ProjectSelect.vue";
-import AssetRedirectMixin from "../../modules/assetRedirectMixin";
 
 export default {
   components: {

@@ -108,7 +108,7 @@ import {
   screenSelectId,
 } from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
-import AssetRedirectMixin from "../../../modules/assetRedirectMixin";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 const channel = new BroadcastChannel("assetCreation");
 

@@ -322,8 +322,8 @@ import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
+import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import autosaveMixins from "../../modules/autosave/mixins";
-import assetRedirectMixin from "../../modules/assetRedirectMixin";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -351,7 +351,7 @@ export default {
     TopMenu,
     DataLoadingBasic,
   },
-  mixins: [...autosaveMixins, assetRedirectMixin],
+  mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
     screen: {
       type: Object,

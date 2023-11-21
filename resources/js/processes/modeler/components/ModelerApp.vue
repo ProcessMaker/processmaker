@@ -66,7 +66,7 @@ import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import assetRedirectMixin from "../../../modules/assetRedirectMixin";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 export default {
   name: "ModelerApp",
@@ -76,7 +76,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
   },
-  mixins: [...autosaveMixins, assetRedirectMixin],
+  mixins: [...autosaveMixins, AssetRedirectMixin],
   data() {
     return {
       self: this,

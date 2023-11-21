@@ -406,7 +406,7 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
-import assetRedirectMixin from "../../../modules/assetRedirectMixin";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";
 
 export default {
@@ -415,7 +415,7 @@ export default {
     TopMenu,
     AiTab,
   },
-  mixins: [...autosaveMixins, assetRedirectMixin],
+  mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
     script: {
       type: Object,

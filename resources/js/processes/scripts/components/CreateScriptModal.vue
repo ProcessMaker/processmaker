@@ -187,12 +187,12 @@
 
 <script>
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
-import AssetRedirectMixin from "../../../modules/assetRedirectMixin";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -202,9 +202,8 @@ export default {
     Required,
     SliderWithInput,
     ProjectSelect,
-    AssetRedirectMixin,
   },
-  mixins: [FormErrorsMixin],
+  mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
     "countCategories",
     "scriptExecutors",
