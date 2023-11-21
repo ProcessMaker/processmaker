@@ -13,6 +13,8 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        @table-elipsis-click="handleElipsisClick"
+        @table-row-click="handleRowClick"
       />
     </div>
   </div>
@@ -203,9 +205,11 @@ export default {
           break;
       }
       return (
-        '<i class="fas fa-circle text-' +
+        '<span class="badge badge-' +
         color +
-        '"></i> <span>' +
+        ' status-' +
+        color +
+        '">' +
         this.$t(label) +
         "</span>"
       );
@@ -307,6 +311,12 @@ export default {
             }
           });
       });
+    },
+    handleElipsisClick(event) {
+      console.log(event);
+    },
+    handleRowClick(row) {
+      window.location.href = this.openRequest(row, 1);
     },
   },
 };

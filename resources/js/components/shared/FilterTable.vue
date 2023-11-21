@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th
+            class="ellipsis-column"
             v-for="(column, index) in headers"
             :key="index"
           >
@@ -26,6 +27,7 @@
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
+          @click="handleRowClick(row)"
         >
           <td
             v-for="(header, index) in headers"
@@ -87,7 +89,13 @@ export default {
     },
   },
   mounted() {
+    this.$nextTick(() => {
+    const ellipsisColumn = document.querySelectorAll('.ellipsis-column');
 
+    ellipsisColumn.forEach((column) => {
+      column.addEventListener('click', this.handleEllipsisClick);
+    });
+    });
   },
   methods: {
     containsHTML(text) {
@@ -132,6 +140,12 @@ export default {
       if (mask === 'date') {
         return date === null ? "-" : moment(date).format("MM/DD/YY");
       }
+    },
+    handleEllipsisClick(event) {
+      this.$emit('table-elipsis-click', event);
+    },
+    handleRowClick(row) {
+      this.$emit('table-row-click', row);
     },
   },
 };
@@ -191,13 +205,31 @@ export default {
 }
 
 .filter-table th:hover::after {
-  content: '\2026'; /* Código Unicode para el carácter de elipsis */
+  content: '\2026';
   position: absolute;
   top: 50%;
-  right: 7px; /* Ajusta la distancia desde el borde derecho */
+  right: 7px;
   transform: translateY(-50%) rotate(90deg);
-  font-size: 16px; /* Ajusta el tamaño del elipsis */
-  line-height: 1; /* Ajusta la alineación vertical */
+  font-size: 16px;
+  line-height: 1;
   cursor: pointer;
+}
+.status-success {
+  background-color: rgba(78, 160, 117, 0.2);
+  color: rgba(78, 160, 117, 1);
+  width: 120px;
+  border-radius: 5px;
+}
+.status-danger {
+  background-color:rgba(237, 72, 88, 0.2);
+  color: rgba(237, 72, 88, 1);
+  width: 120px;
+  border-radius: 5px;
+}
+.status-primary {
+  background: rgba(21, 114, 194, 0.2);
+  color: rgba(21, 114, 194, 1);
+  width: 120px;
+  border-radius: 5px;
 }
 </style>
