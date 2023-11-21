@@ -695,12 +695,9 @@ export default {
         this.allLoading(true);
 
         const { data } = await ProcessMaker.apiClient.get("/projects/search?type=project_all");
-        const projectsFilter = await ProcessMaker.apiClient.get("/projects?status=all&per_page=100");
         
-        if (projectsFilter.data.data) {
-          this.projectOptions = projectsFilter.data.data;
-        }
-
+        this.projectOptions = data.projects ? data.projects : [];
+        
         if (data.members?.users) {
           const usersWithMappedNames = data.members.users
             .filter(user => !!user)
