@@ -192,6 +192,7 @@ import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import SliderWithInput from "../../../components/shared/SliderWithInput.vue";
 import { isQuickCreate as isQuickCreateFunc } from "../../../utils/isQuickCreate";
+import AssetRedirectMixin from "../../../modules/assetRedirectMixin";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -201,6 +202,7 @@ export default {
     Required,
     SliderWithInput,
     ProjectSelect,
+    AssetRedirectMixin,
   },
   mixins: [FormErrorsMixin],
   props: [
@@ -258,9 +260,6 @@ export default {
       this.title = "";
       return this.$t("Create Script");
     },
-    isProjectRoute() {
-      return window.location.pathname.startsWith("/designer/projects/");
-    },
   },
   methods: {
     show() {
@@ -317,10 +316,7 @@ export default {
           });
 
           const url = new URL(`/designer/scripts/${data.id}/builder`, window.location.origin);
-          if (this.isProjectRoute) {
-            url.searchParams.append("project_id", this.projectId);
-          }
-
+          this.appendProjectIdToURL(url, this.projectId);
           this.handleRedirection(url, data);
         })
         .catch((error) => {
