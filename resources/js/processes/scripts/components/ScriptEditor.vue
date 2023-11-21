@@ -441,12 +441,16 @@ export default {
       default: false,
     },
     packageAi: {
+      type: [String, Number],
       default: 0,
     },
     processId: {
+      type: Number,
       default: 0,
     },
     user: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -529,7 +533,7 @@ export default {
           },
         ],
       },
-      closeHref: "/designer/scripts",
+      redirectUrl: null,
     };
   },
   computed: {
@@ -570,6 +574,9 @@ export default {
           });
       };
     },
+    closeHref() {
+      return this.redirectUrl ? this.redirectUrl : "/designer/scripts";
+    },
   },
   watch: {
     "preview.output": "handlePreviewOutputChange",
@@ -597,8 +604,8 @@ export default {
     ProcessMaker.EventBus.$on("script-discard", () => {
       this.discardDraft();
     });
-    ProcessMaker.EventBus.$on("handle-redirects", () => {
-      this.handleRedirects();
+    ProcessMaker.EventBus.$on("redirect", () => {
+      this.handleRedirection();
     });
 
     window.addEventListener("resize", this.handleResize);
@@ -620,6 +627,8 @@ export default {
     if (this.processId !== 0) {
       this.prompt = `${this.script.title}\n${this.script.description}`;
     }
+
+    this.setRedirectUrl();
   },
 
   beforeDestroy() {
@@ -857,10 +866,13 @@ export default {
             onSuccess(response);
           }
 
-          if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
-            window.location = `/modeler/${this.processId}`;
+          if (shouldRedirect) {
+            if (this.processId) {
+              window.location = `/modeler/${this.processId}`;
+            }
+
+            window.ProcessMaker.EventBus.$emit("redirect");
           }
-          window.ProcessMaker.EventBus.$emit("handle-redirects");
         }).catch((err) => {
           if (typeof onError === "function") {
             onError(err);
@@ -900,7 +912,8 @@ export default {
         }
 
         // Save boilerplate template to avoid issues when script code is [].
-        ProcessMaker.EventBus.$emit("save-script", false);
+        const shouldRedirect = false;
+        ProcessMaker.EventBus.$emit("save-script", shouldRedirect);
       }
     },
     setVersionIndicator(isDraft = null) {
@@ -943,12 +956,17 @@ export default {
         }, 4);
       }
     },
-    async handleRedirects() {
+    setRedirectUrl() {
       const queryParams = new URLSearchParams(window.location.search);
       const projectId = queryParams.get("project_id");
 
       if (projectId) {
-        window.location.href = `/designer/projects/${projectId}`;
+        this.redirectUrl = `/designer/projects/${projectId}`;
+      }
+    },
+    handleRedirection() {
+      if (this.redirectUrl) {
+        window.location.href = this.redirectUrl;
       }
     },
   },
