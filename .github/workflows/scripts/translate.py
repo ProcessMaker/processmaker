@@ -1,11 +1,12 @@
 import json
 import os
 import openai
+import litellm
 import sys
 import time
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
-openai.organization = os.environ["OPENAI_ORG"]
+litellm.api_key = os.environ["OPENAI_API_KEY"]
+litellm.organization = os.environ["OPENAI_ORG"]
 
 # Supported languages dictionary
 languages = {
@@ -50,7 +51,7 @@ def main():
             while retry_count < max_retries:
                 try:
                     start_time = time.time()
-                    response=openai.ChatCompletion.create(
+                    response=litellm.completion(
                         model='gpt-4',
                         messages=[
                           {
