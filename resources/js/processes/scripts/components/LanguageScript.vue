@@ -13,14 +13,24 @@
           class="mt-2"
           @click="selectLanguage(lang, index)"
         >
-          <b-card-text>
-            <img
-              :src="getImage(lang)"
-              :alt="lang.title"
+          <b-card-text class="row">
+            <b-col cols="2">
+              <img
+                :src="getImage(lang)"
+                :alt="lang.title"
+              >
+            </b-col>
+            <b-col
+              class="d-flex flex-column"
+              cols="10"
             >
-            <span class="text-uppercase ml-2">
-              {{ lang.language }}
-            </span>
+              <span class="text-uppercase">
+                {{ lang.language }}
+              </span>
+              <span class="text-title text-muted font-italic">
+                {{ lang.title }}
+              </span>
+            </b-col>
           </b-card-text>
         </b-card>
       </template>
@@ -95,7 +105,9 @@ export default {
   .container-lang {
     background-color: #F6F9FB;
     height: 100%;
+    max-height: 450px;
     font-size: 14px;
+    overflow-y: auto;
   }
   .choose-lang {
     color: #6A7888;
@@ -103,5 +115,11 @@ export default {
   .content-lang {
     width: 90%;
     margin-left: 5%;
+  }
+  .card-body {
+    padding: 12px;
+  }
+  .text-title {
+    font-size: 12px;
   }
 </style>
