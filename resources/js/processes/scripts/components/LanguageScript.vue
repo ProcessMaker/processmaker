@@ -9,17 +9,17 @@
       >
         <b-card
           :key="index"
-          :ref="`${lang}`"
+          :ref="`${lang.title}`"
           class="mt-2"
           @click="selectLanguage(lang, index)"
         >
           <b-card-text>
             <img
               :src="getImage(lang)"
-              :alt="lang"
+              :alt="lang.title"
             >
             <span class="text-uppercase ml-2">
-              {{ lang }}
+              {{ lang.language }}
             </span>
           </b-card-text>
         </b-card>
@@ -59,7 +59,17 @@ export default {
      * Get the Icon of the language
      */
     getImage(lang) {
-      return `/img/script_lang/${lang}.svg`;
+      let srcImage = "";
+      switch (lang.language) {
+        case "php":
+        case "javascript":
+        case "lua":
+          srcImage = `/img/script_lang/${lang.language}.svg`;
+          break;
+        default:
+          srcImage = "/img/script_lang/default.svg";
+      }
+      return srcImage;
     },
     /**
      * Add the border to the item selected
@@ -68,7 +78,7 @@ export default {
       for (const item in this.$refs) {
         this.$refs[item][0].className = "card mb-2 card-lang";
       }
-      this.$refs[lang][0].className = "card mb-2 card-lang selected";
+      this.$refs[lang.title][0].className = "card mb-2 card-lang selected";
     },
   },
 };
