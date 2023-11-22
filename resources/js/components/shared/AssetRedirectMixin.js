@@ -30,9 +30,13 @@ export default {
       }
     },
     handleRedirection() {
-      if (this.redirectUrl) {
-        window.location.href = this.redirectUrl;
-      }
+      return new Promise((resolve) => {
+        if (this.redirectUrl) {
+          window.location.href = this.redirectUrl;
+          resolve(true);
+        }
+        resolve(false);
+      });
     },
   },
 };
