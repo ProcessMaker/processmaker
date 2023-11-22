@@ -3,16 +3,22 @@
     <table class="filter-table">
       <thead>
         <tr>
+          <th class="border" :colspan="headers.length"></th>
+        </tr>
+        <tr>
           <th
             class="ellipsis-column"
             v-for="(column, index) in headers"
             :key="index"
+            :class="{ 'sortable-column': column.sortable }"
           >
             <div
               class="column-header"
               :style="{ width: column.width + 'px' }"
             >
-              {{ column.label }}
+              <slot name="header-{{ column.field }}">
+                {{ column.label }}
+              </slot>
             </div>
             <div
               v-if="index !== headers.length - 1"
@@ -21,6 +27,9 @@
             >
             </div>
           </th>
+        </tr>
+        <tr>
+          <th class="border" :colspan="headers.length"></th>
         </tr>
       </thead>
       <tbody>
@@ -90,11 +99,12 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-    const ellipsisColumn = document.querySelectorAll('.ellipsis-column');
+      const ellipsisColumn = document.querySelectorAll('.ellipsis-column');
 
-    ellipsisColumn.forEach((column) => {
-      column.addEventListener('click', this.handleEllipsisClick);
-    });
+      ellipsisColumn.forEach((column) => {
+        column.addEventListener('click', this.handleEllipsisClick);
+      });
+      console.log(this.headers.length);
     });
   },
   methods: {
@@ -154,7 +164,7 @@ export default {
 <style>
 .table-resizable {
   overflow-x: auto;
-  max-height: 550px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -184,11 +194,14 @@ export default {
   border-collapse: collapse;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
   border-right: 1px solid rgba(0, 0, 0, 0.125);
+  position: relative;
 }
-.filter-table th,
 .filter-table td {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 10px 16px;
+}
+.ellipsis-column {
   padding: 10px 16px;
 }
 .filter-table th:hover {
@@ -199,12 +212,12 @@ export default {
   background-color: #FAFBFC;
   color: #1572C2;
 }
-
-.filter-table th {
-  position: relative;
+.filter-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
 }
-
-.filter-table th:hover::after {
+.filter-table .sortable-column:hover::after {
   content: '\2026';
   position: absolute;
   top: 50%;
@@ -231,5 +244,11 @@ export default {
   color: rgba(21, 114, 194, 1);
   width: 120px;
   border-radius: 5px;
+}
+.border {
+  height: 1px;
+  padding: 0 !important;
+  background-color: rgba(0, 0, 0, 0.125);
+  border: 0 !important;
 }
 </style>
