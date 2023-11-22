@@ -158,7 +158,20 @@ class Filter
         });
     }
 
-    private function customStatus($query)
+    private function taskStatus($query)
     {
+    }
+
+    private function valueAliasAdapter($query)
+    {
+        $expression = (object) ['operator' => $this->operator];
+        switch ($this->subjectType) {
+            case self::TYPE_PARTICIPANTS:
+                $method = 'valueAliasParticipants';
+                break;
+            case self::TYPE_STATUS:
+                $method = 'valueAliasStatus';
+                break;
+        }
     }
 }
