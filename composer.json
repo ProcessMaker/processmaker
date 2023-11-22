@@ -120,7 +120,10 @@
                 "package-lesschwab": "dev-fall",
                 "package-proservice-tools": "dev-fall",
                 "package-foxley-management": "dev-fall",
-                "package-email-listener": "dev-fall"
+                "package-email-listener": "dev-fall",
+                "package-jz-sonymusic": "1.0.4",
+                "pm-platform": "dev-fall",
+                "package-jz-nas": "dev-fall"
             },
             "enterprise": {
                 "connector-docusign": "1.6.0",
