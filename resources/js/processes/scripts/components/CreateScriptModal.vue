@@ -17,7 +17,7 @@
       no-close-on-backdrop
       :ok-disabled="disabled"
       :title="modalSetUp"
-      @hidden="modalHidden"
+      @hidden="onClose"
     >
       <b-row>
         <b-col cols="4">
@@ -348,9 +348,6 @@ export default {
     this.getAdminUser();
   },
   methods: {
-    modalHidden() {
-      this.onClose();
-    },
     show() {
       this.$bvModal.show("createScript");
     },
@@ -373,6 +370,7 @@ export default {
       this.retry_attempts = 0;
       this.retry_wait_time = 5;
       this.addError = {};
+      this.getAdminUser();
       this.close();
     },
     close() {
