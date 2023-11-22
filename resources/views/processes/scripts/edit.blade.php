@@ -64,10 +64,15 @@
                             </select-user>
                             <div class="invalid-feedback" role="alert" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                         </div>
-
+                        @php
+                            $scriptExecutorsLang = [];
+                            foreach ($scriptExecutors as $key => $value) {
+                                $scriptExecutorsLang[$key] = $value["language"] . " - " . $value["title"];
+                            }
+                        @endphp
                         <div class="form-group">
                             {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
-                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
+                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutorsLang, null, ['class'=>
                             'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
                             \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
                             <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
