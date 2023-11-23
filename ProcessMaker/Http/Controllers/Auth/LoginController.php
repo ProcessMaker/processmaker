@@ -6,6 +6,7 @@ use App;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
@@ -57,8 +58,9 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        $existErrorSso = Cache::get('ERROR_SSO', false);
         // Review if we need to redirect the default SSO
-        if (config('app.enable_default_sso')) {
+        if (config('app.enable_default_sso') && !$existErrorSso) {
             $arrayAddons = $addons->toArray();
             $driver = $this->getDefaultSSO($arrayAddons);
             // If a default SSO was defined we will to redirect
