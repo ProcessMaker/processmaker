@@ -58,14 +58,14 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
-        $existErrorSso = Cache::get('ERROR_SSO', false);
+        $driverSSO = null;
         // Review if we need to redirect the default SSO
-        if (config('app.enable_default_sso') && !$existErrorSso) {
+        if (config('app.enable_default_sso')) {
             $arrayAddons = $addons->toArray();
             $driver = $this->getDefaultSSO($arrayAddons);
             // If a default SSO was defined we will to redirect
             if (!empty($driver)) {
-                return redirect()->route('sso.redirect', ['driver' => $driver]);
+                $driverSSO = $driver;
             }
         }
         $block = $manager->getBlock();
@@ -84,7 +84,7 @@ class LoginController extends Controller
             'none'
         );
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
-        $response = response(view($loginView, compact('addons', 'block')));
+        $response = response(view($loginView, compact('addons', 'block', 'driver')));
         $response->withCookie($cookie);
 
         return $response;
