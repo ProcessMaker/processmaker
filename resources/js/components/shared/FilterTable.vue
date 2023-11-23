@@ -18,6 +18,7 @@
             >
               <slot :name="column.field">
                 {{ column.label }}
+                <PMColumnFilterPopover :id="'pm-table-column-'+index" :container="''"></PMColumnFilterPopover>
               </slot>
             </div>
             <div
@@ -68,10 +69,12 @@
 
 import AvatarImage from "../../components/AvatarImage.vue"
 import moment from "moment";
+import PMColumnFilterPopover from "../PMColumnFilterPopover/PMColumnFilterPopover.vue";
 
 export default {
   components: {
-    AvatarImage
+    AvatarImage,
+    PMColumnFilterPopover,
   },
   props: {
     headers: [],
