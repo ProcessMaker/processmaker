@@ -115,7 +115,8 @@
       "categoryType", 
       "callFromAiModeler",
       "isProjectSelectionRequired",
-      "projectId"
+      "projectId",
+      "isAiGenerated"
     ],
     data: function() {
       return {
@@ -286,7 +287,10 @@
             const url = `/package-ai/processes/create/${response.data.id}`;
             this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
           } else {
-            window.location = `/modeler/${response.data.id}`;
+            window.location =
+              this.isAiGenerated
+                ? "/modeler/" + response.data.id + "?ai=true"
+                : "/modeler/" + response.data.id;
           }
         })
         .catch(error => {
