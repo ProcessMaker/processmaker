@@ -15,7 +15,28 @@
         :data="data"
         @table-elipsis-click="handleElipsisClick"
         @table-row-click="handleRowClick"
-      />
+      >
+        <template v-for="(row, index) in data.data" v-slot:[`row-${index}`]>
+          <td
+            v-for="(header, index) in tableHeaders"
+            :key="index"
+          >
+            <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
+            <template v-else>
+              <template v-if="isComponent(row[header.field])">
+                <component 
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template v-else>
+                {{ row[header.field] }}
+              </template>
+            </template>
+          </td>
+        </template>
+      </filter-table>
     </div>
   </div>
 </template>
@@ -318,8 +339,35 @@ export default {
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);
     },
+    containsHTML(text) {
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+    },
+    isComponent(content) {
+      if (content && typeof content === 'object') {
+        return content.component && typeof content.props === 'object';
+      }
+    },
   },
 };
 </script>
 <style>
+.status-success {
+  background-color: rgba(78, 160, 117, 0.2);
+  color: rgba(78, 160, 117, 1);
+  width: 120px;
+  border-radius: 5px;
+}
+.status-danger {
+  background-color:rgba(237, 72, 88, 0.2);
+  color: rgba(237, 72, 88, 1);
+  width: 120px;
+  border-radius: 5px;
+}
+.status-primary {
+  background: rgba(21, 114, 194, 0.2);
+  color: rgba(21, 114, 194, 1);
+  width: 120px;
+  border-radius: 5px;
+}
 </style>

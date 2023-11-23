@@ -16,7 +16,7 @@
               class="column-header"
               :style="{ width: column.width + 'px' }"
             >
-              <slot name="header-{{ column.field }}">
+              <slot :name="column.field">
                 {{ column.label }}
               </slot>
             </div>
@@ -38,6 +38,7 @@
           :key="rowIndex"
           @click="handleRowClick(row)"
         >
+          <slot :name="`row-${rowIndex}`">
           <td
             v-for="(header, index) in headers"
             :key="index"
@@ -56,6 +57,7 @@
               </template>
             </template>
           </td>
+          </slot>
         </tr>
       </tbody>
     </table>
@@ -104,7 +106,6 @@ export default {
       ellipsisColumn.forEach((column) => {
         column.addEventListener('click', this.handleEllipsisClick);
       });
-      console.log(this.headers.length);
     });
   },
   methods: {
@@ -226,24 +227,6 @@ export default {
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
-}
-.status-success {
-  background-color: rgba(78, 160, 117, 0.2);
-  color: rgba(78, 160, 117, 1);
-  width: 120px;
-  border-radius: 5px;
-}
-.status-danger {
-  background-color:rgba(237, 72, 88, 0.2);
-  color: rgba(237, 72, 88, 1);
-  width: 120px;
-  border-radius: 5px;
-}
-.status-primary {
-  background: rgba(21, 114, 194, 0.2);
-  color: rgba(21, 114, 194, 1);
-  width: 120px;
-  border-radius: 5px;
 }
 .border {
   height: 1px;
