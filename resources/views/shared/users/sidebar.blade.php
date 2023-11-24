@@ -54,7 +54,8 @@
                 {!! Form::label('confPassword', __('Confirm Password')) !!}
                 {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                 => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-                <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-for="(error, index) in errors.password">@{{error}}</div>
+                <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
+                     v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
             @cannot('edit-user-and-password')
                 <div class="form-group">
