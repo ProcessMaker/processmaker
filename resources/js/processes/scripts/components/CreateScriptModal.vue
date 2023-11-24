@@ -371,6 +371,7 @@ export default {
       this.retry_wait_time = 5;
       this.addError = {};
       this.getAdminUser();
+      this.projects = [];
       this.close();
     },
     close() {
