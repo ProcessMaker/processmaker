@@ -59,7 +59,7 @@
                           :errors="errors.projects">
                         </project-select>
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
+                            <label class="typo__label">{{__('Run Script As')}}<small class="ml-1">*</small></label>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
                             </select-user>
                             <div class="invalid-feedback" role="alert" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
