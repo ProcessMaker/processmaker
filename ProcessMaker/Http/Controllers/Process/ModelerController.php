@@ -67,7 +67,7 @@ class ModelerController extends Controller
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
-            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
+            'isVersionsInstalled' => PackageHelper::isPmPackageVersionsInstalled(),
             'isDraft' => $draft !== null,
             'pmBlockList' => $pmBlockList,
             'externalIntegrationsList' => $externalIntegrationsList,
@@ -132,7 +132,13 @@ class ModelerController extends Controller
             $requestIdleNodes = $nodeIds->diff($filteredCompletedNodes)->diff($requestInProgressNodes)->values();
 
             // Add completed sequence flow to the list of completed nodes.
-            $sequenceFlowNodes = $this->getCompletedSequenceFlow($xml, $filteredCompletedNodes->implode(' '), $requestInProgressNodes->implode(' '), $matchingNodes->implode(' '));
+            $sequenceFlowNodes = $this->getCompletedSequenceFlow(
+                $xml,
+                $processRequest,
+                $filteredCompletedNodes->implode(' '),
+                $requestInProgressNodes->implode(' '),
+                $matchingNodes->implode(' ')
+            );
             $filteredCompletedNodes = $filteredCompletedNodes->merge($sequenceFlowNodes);
         }
 

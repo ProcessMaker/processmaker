@@ -68,18 +68,56 @@ trait ProcessMapTrait
     }
 
     /**
-     * Performs an XPath query to get sequenceFlow elements
-     * whose 'sourceRef' attribute is in the string of completed nodes
-     * and 'targetRef' attribute is in the string of in-progress and completed nodes
-     * also validates Nodes in progress that were completed before to obtain their paths.
+     * Fetches completed sequence flows from an XML based on completed and in-progress nodes.
+     * It identifies sequence flows where the source is in the completed nodes list
+     * and the target is either in-progress or completed.
+     * Additionally, it checks for nodes that were in progress but are now completed.
+     *
+     * @return Collection
      */
-    private function getCompletedSequenceFlow(SimpleXMLElement $xml, string $completedNodesStr, string $inProgressNodesStr, string $completedInProgressNode): Collection
-    {
-        $inProgressAndCompletedNodes = $completedNodesStr . ' ' . $inProgressNodesStr;
-        $query = '//bpmn:sequenceFlow[contains("' . $completedNodesStr . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
-        $query = $query . ' | //bpmn:sequenceFlow[contains("' . $completedInProgressNode . '", @sourceRef) and contains("' . $inProgressAndCompletedNodes . '", @targetRef)]/@id';
+    private function getCompletedSequenceFlow(
+        SimpleXMLElement $xml,
+        ProcessRequest $processRequest,
+        string $completedNodesStr,
+        string $inProgressNodesStr,
+        string $completedInProgressStr
+    ) {
+        $baseQuery = '//bpmn:sequenceFlow[contains("%s", @sourceRef) and contains("%s", @targetRef)]';
 
-        return $this->filterXML($xml, $query);
+        $inProgressAndCompletedNodesStr = "{$completedNodesStr} {$inProgressNodesStr}";
+        $completedQuery = sprintf($baseQuery, $completedNodesStr, $inProgressAndCompletedNodesStr);
+        $inProgressQuery = sprintf($baseQuery, $completedInProgressStr, $inProgressAndCompletedNodesStr);
+        $query = $completedQuery . ' | ' . $inProgressQuery;
+
+        // Get and transform elements.
+        $elements = collect($xml->xpath($query))->map(function ($element) {
+            $conditionExpressions = $element->xpath('bpmn:conditionExpression');
+
+            return [
+                'id' => (string) $element['id'],
+                'conditionExpression' => $conditionExpressions ? (string) $conditionExpressions[0] : null,
+            ];
+        });
+
+        // Filter based on conditionExpression.
+        $data = (array) $processRequest->data;
+
+        return $elements->filter(function ($element) use ($data) {
+            $expression = $element['conditionExpression'];
+            if ($expression) {
+                foreach ($data as $key => $value) {
+                    $expression = str_replace($key, var_export($value, true), $expression);
+                }
+
+                try {
+                    return eval("return {$expression};");
+                } catch (Throwable $e) {
+                    return false;
+                }
+            }
+
+            return true;
+        })->pluck('id');
     }
 
     /**
