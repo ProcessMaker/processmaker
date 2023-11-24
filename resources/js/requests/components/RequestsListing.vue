@@ -16,6 +16,15 @@
         @table-elipsis-click="handleElipsisClick"
         @table-row-click="handleRowClick"
       >
+        <!-- Slot Table Header -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+          <div :key="index">{{ column.label }}</div>
+        </template>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
+          <PMColumnFilterPopover v-if="column.sortable" :key="index" :id="'pm-table-column-'+index" :container="''"></PMColumnFilterPopover>
+        </template>
+        <!-- Slot Table Body -->
         <template v-for="(row, index) in data.data" v-slot:[`row-${index}`]>
           <td
             v-for="(header, index) in tableHeaders"
@@ -24,7 +33,7 @@
             <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
-                <component 
+                <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
                 >
@@ -51,12 +60,16 @@ import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
+import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 
 export default {
+  components: {
+    PMColumnFilterPopover,
+  },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},

@@ -1,36 +1,39 @@
 <template>
-  <div class="table-resizable">
-    <table class="filter-table">
+  <div class="pm-table-container">
+    <table class="pm-table-filter">
       <thead>
         <tr>
-          <th class="border" :colspan="headers.length"></th>
+          <th class="pm-table-border" :colspan="headers.length"></th>
         </tr>
         <tr>
           <th
-            class="ellipsis-column"
+            class="pm-table-ellipsis-column"
             v-for="(column, index) in headers"
             :key="index"
-            :class="{ 'sortable-column': column.sortable }"
           >
             <div
-              class="column-header"
+              class="pm-table-column-header"
               :style="{ width: column.width + 'px' }"
             >
               <slot :name="column.field">
                 {{ column.label }}
-                <PMColumnFilterPopover :id="'pm-table-column-'+index" :container="''"></PMColumnFilterPopover>
+              </slot>
+            </div>
+            <div class="pm-table-filter-button">
+              <slot :name="`filter-${column.field}`">
+                
               </slot>
             </div>
             <div
               v-if="index !== headers.length - 1"
-              class="column-resizer"
+              class="pm-table-column-resizer"
               @mousedown="startResize(index)"
             >
             </div>
           </th>
         </tr>
         <tr>
-          <th class="border" :colspan="headers.length"></th>
+          <th class="pm-table-border" :colspan="headers.length"></th>
         </tr>
       </thead>
       <tbody>
@@ -67,14 +70,10 @@
 
 <script>
 
-import AvatarImage from "../../components/AvatarImage.vue"
 import moment from "moment";
-import PMColumnFilterPopover from "../PMColumnFilterPopover/PMColumnFilterPopover.vue";
 
 export default {
   components: {
-    AvatarImage,
-    PMColumnFilterPopover,
   },
   props: {
     headers: [],
@@ -104,7 +103,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      const ellipsisColumn = document.querySelectorAll('.ellipsis-column');
+      const ellipsisColumn = document.querySelectorAll('.pm-table-ellipsis-column');
 
       ellipsisColumn.forEach((column) => {
         column.addEventListener('click', this.handleEllipsisClick);
@@ -166,23 +165,23 @@ export default {
 </script>
 
 <style>
-.table-resizable {
+.pm-table-container {
   overflow-x: auto;
   max-height: 400px;
   overflow-y: auto;
 }
 
-.table-resizable th {
+.pm-table-container th {
   position: relative;
   padding: 8px;
 }
 
-.column-header {
+.pm-table-column-header {
   overflow: hidden;
   white-space: nowrap;
 }
 
-.column-resizer {
+.pm-table-column-resizer {
   position: absolute;
   right: -5px;
   top: 50%;
@@ -192,7 +191,7 @@ export default {
   cursor: col-resize;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
 }
-.filter-table {
+.pm-table-filter {
   width: 100%;
   max-height: 400px;
   border-collapse: collapse;
@@ -200,28 +199,28 @@ export default {
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   position: relative;
 }
-.filter-table td {
+.pm-table-filter td {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
 }
-.ellipsis-column {
+.pm-table-ellipsis-column {
   padding: 10px 16px;
 }
-.filter-table th:hover {
+.pm-table-filter th:hover {
   background-color: #FAFBFC;
   color: #1572C2;
 }
-.filter-table tbody tr:hover {
+.pm-table-filter tbody tr:hover {
   background-color: #FAFBFC;
   color: #1572C2;
 }
-.filter-table thead {
+.pm-table-filter thead {
   position: sticky;
   top: 0;
   background-color: #fff;
 }
-.filter-table .sortable-column:hover::after {
+.pm-table-filter .sortable-column:hover::after {
   content: '\2026';
   position: absolute;
   top: 50%;
@@ -231,10 +230,22 @@ export default {
   line-height: 1;
   cursor: pointer;
 }
-.border {
+.pm-table-border {
   height: 1px;
   padding: 0 !important;
   background-color: rgba(0, 0, 0, 0.125);
   border: 0 !important;
 }
+.pm-table-filter-button {
+  position: absolute;
+  top: 10%;
+  right: 7px;
+}
+.pm-table-ellipsis-column .pm-table-filter-button {
+  display: none;
+}
+.pm-table-ellipsis-column:hover .pm-table-filter-button {
+  display: block;
+}
+
 </style>
