@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
-use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
@@ -183,13 +183,28 @@ class User extends Authenticatable implements HasMedia
      */
     public static function passwordRules(self $existing = null)
     {
-        return array_filter([
+        // Mandatory policies
+        $passwordPolicies = [
             'required',
             $existing ? 'sometimes' : '',
-            'min:8',
-            new StringHasNumberOrSpecialCharacter(),
-            new StringHasAtLeastOneUpperCaseCharacter(),
-        ]);
+        ];
+        // Configurable policies
+        $passwordRules = Password::min(config('password-policies.minimum_length'));
+        if (config('password-policies.maximum_length')) {
+            $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
+        }
+        if (config('password-policies.numbers')) {
+            $passwordRules->numbers();
+        }
+        if (config('password-policies.uppercase')) {
+            $passwordPolicies[] = new StringHasAtLeastOneUpperCaseCharacter();
+        }
+        if (config('password-policies.special')) {
+            $passwordRules->symbols();
+        }
+        $passwordPolicies[] = $passwordRules;
+
+        return $passwordPolicies;
     }
 
     /**
