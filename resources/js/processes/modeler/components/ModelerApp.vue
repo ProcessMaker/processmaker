@@ -276,12 +276,14 @@ export default {
         ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         // Set published status.
         this.setVersionIndicator(false);
-        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId);
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
           window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
         }
-        window.ProcessMaker.EventBus.$emit("redirect");
+        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId);
+        if (!redirectUrl) {
+          window.ProcessMaker.EventBus.$emit("redirect");
+        }
         if (typeof onSuccess === "function") {
           onSuccess(response);
         }
