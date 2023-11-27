@@ -23,7 +23,7 @@ export default {
           value: "open-launchpad",
           content: "Open Launchpad",
           link: true,
-          href: "/processes-catalogue/",
+          href: "/processes-catalogue/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
           icon: "fas fa-file-export",
         },
