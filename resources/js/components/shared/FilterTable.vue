@@ -76,8 +76,36 @@ export default {
   components: {
   },
   props: {
-    headers: [],
-    data: [],
+    headers: {
+      default: [
+        {
+          label: "#",
+          field: "id",
+          sortable: true,
+          width: 45,
+        },
+      ],
+      type: [
+        {
+          label: String,
+          field: String,
+          sortable: Boolean,
+          width: Number,
+        },
+      ],
+    },
+    data: {
+      default: [
+        {
+          id: 24,
+        },
+      ],
+      type: [
+        {
+          id: Number,
+        },
+      ],
+    },
   },
   data() {
     return {
@@ -90,10 +118,10 @@ export default {
   },
   watch: {
     data() {
-      this.headers.forEach(column => {
-        if(column.format) {
+      this.headers.forEach((column) => {
+        if (column.format) {
           if (column.format === 'datetime' || column.format === 'date') {
-            this.data.data.forEach(element => {
+            this.data.data.forEach((element) => {
               element[column.field] = this.formatDate(element[column.field], column.format);
             });
           }
@@ -147,11 +175,13 @@ export default {
       }
     },
     formatDate(date, mask) {
+      const dateTimeFormat = "MM/DD/YY HH:mm";
+      const dateFormat = "MM/DD/YY";
       if (mask === 'datetime') {
-        return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
+        return date === null ? "-" : moment(date).format(dateTimeFormat);
       }
       if (mask === 'date') {
-        return date === null ? "-" : moment(date).format("MM/DD/YY");
+        return date === null ? "-" : moment(date).format(dateFormat);
       }
     },
     handleEllipsisClick(event) {

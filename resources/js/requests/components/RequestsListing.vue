@@ -157,11 +157,6 @@ export default {
         name: "__slot:actions",
         title: "",
       });
-
-      // this is needed because fields in vuetable2 are not reactive
-      // this.$nextTick(() => {
-      //   this.$refs.vuetable.normalizeFields();
-      // });
     },
     getColumns() {
       if (this.$props.columns) {

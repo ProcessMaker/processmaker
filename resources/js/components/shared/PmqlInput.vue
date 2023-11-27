@@ -59,9 +59,6 @@
               @input="onInput()"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
 
-            <!-- <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <code v-if="showPmqlSection && !condensed" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code> -->
-
             <div v-if="showAiIndicator && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
             <span v-if="showAiIndicator && !condensed" class="badge badge-pill badge-success">AI</span>
 
@@ -87,13 +84,6 @@
               PMQL
             </b-badge>
           </div>
-
-          <!-- <div v-if="showPmqlSection && condensed">
-            <div class="separator-horizontal align-items-center"></div>
-          </div>
-          <code v-if="showPmqlSection && condensed" class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2" :style="styles?.pmql">
-            {{ pmql }}
-          </code> -->
         </div>
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
           <slot name="right-buttons"></slot>
