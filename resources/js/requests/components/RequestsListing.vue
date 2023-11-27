@@ -3,8 +3,8 @@
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
+      :empty="$t('¡ Whoops ! No results')"
+      :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
       empty-icon="noData"
     />
     <div
