@@ -25,14 +25,9 @@ env:
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   DOM_EKS: ${{ secrets.DOM_EKS }}
-  #BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
-  BASE: ${{ contains(github.event.pull_request.body, 'ci:php81') && 'ci-base' || 'ci-base-php82' }}
-  CDATA_LICENSE_DOCUSIGN: ${{ secrets.CDATA_LICENSE_DOCUSIGN }}
-  CDATA_LICENSE_EXCEL: ${{ secrets.CDATA_LICENSE_EXCEL }}
-  CDATA_LICENSE_GITHUB: ${{ secrets.CDATA_LICENSE_GITHUB }}
-  CDATA_LICENSE_SLACK: ${{ secrets.CDATA_LICENSE_SLACK }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -188,4 +183,3 @@ jobs:
           git add .
           git commit -m "Delete Instance : ci-$deploy"
           git push origin main
-
