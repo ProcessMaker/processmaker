@@ -2,15 +2,14 @@
     <div>
         <b-card 
             no-body 
-            class="template-select-card" 
-            :class="type === 'wizard' ? 'wizard-card p-0' : 'p-1'" 
+            class="template-select-card wizard-card p-0" 
             :style="{ backgroundImage: 'url(' + template?.backgroundImage + ')' }" 
             @click="showDetails()" 
             @mouseenter="addHoverClass" 
             @mouseleave="removeHoverClass"
         >
     
-            <b-card-body v-if="type === 'wizard'">
+            <b-card-body>
                 <div class="wizard-icon-container text-right mb-3">
                     <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
                 </div>
@@ -19,16 +18,6 @@
                     <h5>{{ template.name | str_limit(30) }}</h5>
                     {{ template.shortDescription | str_limit(150) }}
                 </b-card-text>
-            </b-card-body>
-    
-            <b-card-body v-else :title="template.name | str_limit(30)" class="card-body">
-                <b-card-text class="mb-2">
-                    {{ template.description | str_limit(150) }}
-                </b-card-text>
-                <b-badge v-for="category in categories" :key="category.id" pill class="category-badge mb-3 mr-1">
-                    {{ category.name }}
-                </b-badge>
-                <small v-if="template.categories.length > 3" class="text-muted">+{{ catCount }}</small>
             </b-card-body>
         </b-card>
     </div>
