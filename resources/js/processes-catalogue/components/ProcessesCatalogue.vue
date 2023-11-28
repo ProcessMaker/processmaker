@@ -1,53 +1,55 @@
 <template>
   <div>
     <breadcrumbs />
-    <div class="d-flex w-100">
-      <div class="w-25">
+    <b-row>
+      <b-col cols="2">
         <h4> {{ $t('Processes Browser') }} </h4>
-      </div>
-      <div class="w-100">
-        <div v-if="!fields.length" class="d-flex justify-content-center py-5 w-100">
-          <div>
-            <div class="d-flex justify-content-center my-5">
-              <img
-                class="image d-flex"
-                src="/img/processes-catalogue-empty.svg"
-                alt="recent projects"
-              >
-            </div>
-            <h4 class="text-center">
-              {{ $t('Currently you dont have processes created') }}
-            </h4>
-            <p class="text-center">
-              {{ $t('We encourage you to create new processes using our templates') }}
-            </p>
-            <p class="text-center my-4">
-              <button
-                type="button"
-                class="btn btn-primary text-capitalize"
-              >
-                {{ $t("Show Me The Templates") }}
-              </button>
-            </p>
-          </div>
+        <MenuCatologue
+          :data="listCategories"
+          :select="selectCategorie"
+          class="mt-3"
+        />
+      </b-col>
+      <b-col cols="10">
+        <div
+          v-if="!fields.length"
+          class="d-flex justify-content-center py-5"
+        >
+          <CatalogueEmpty />
         </div>
-      </div>
-    </div>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
+import MenuCatologue from "./menuCatologue.vue";
+import CatalogueEmpty from "./CatalogueEmpty.vue";
 
 import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
-  components: { Breadcrumbs },
+  components: { MenuCatologue, CatalogueEmpty, Breadcrumbs },
   data() {
     return {
+      listCategories: [],
       fields: [],
     };
   },
+  mounted() {
+    this.getCategories();
+  },
   methods: {
+    getCategories() {
+      ProcessMaker.apiClient
+        .get("process_categories")
+        .then((response) => {
+          this.listCategories = response.data.data;
+        });
+    },
+    selectCategorie(value) {
+      console.log(value);
+    },
   },
 };
 </script>
