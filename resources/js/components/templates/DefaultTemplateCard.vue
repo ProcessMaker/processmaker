@@ -21,8 +21,17 @@
 </template>
 
 <script>
+import templateMixin from './mixins/template.js';
+
 export default {
+    mixins: [templateMixin],
     props: ['template'],
+    data() {
+        return {
+            thumbnail: null,
+            catLimit: 3,
+        };
+    },
     computed: {
         categories() {
             return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
@@ -33,10 +42,6 @@ export default {
         },
     },
     methods: {
-        showDetails() {
-            this.$emit("show-details", { template: this.template });
-        },
-        
     }
 }
 </script>

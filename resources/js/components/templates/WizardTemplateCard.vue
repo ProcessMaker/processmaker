@@ -24,27 +24,13 @@
 </template>
 
 <script>
+import templateMixin from './mixins/template.js';
+
 export default {
+    mixins: [templateMixin],
     props: ['template'],
-    computed: {
-        categories() {
-            return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
-        },
-        catCount() {
-            const { length } = this.template.categories;
-            return length - this.catLimit;
-        },
-    },
-    methods: {
-        showDetails() {
-            this.$emit("show-details", { template: this.template });
-        },
-        
-    }
 }
 </script>
-
-
 
 <style lang="scss" scoped>
 .template-select-card-container {

@@ -3,110 +3,30 @@
     <wizard-template-card
       v-if="type === 'wizard'"
       :template="template"
-      @showDetails="showDetails()" 
-      @mouseenter="addHoverClass"
-      @mouseleave="removeHoverClass"
+      @show-details="showDetails()" 
     />
     <default-template-card
       v-else
       :template="template"
-      @showDetails="showDetails()" 
-      @mouseenter="addHoverClass"
-      @mouseleave="removeHoverClass"
+      @show-details="showDetails()" 
     />
-    
-    
-    <!-- <b-card
-      no-body
-      class="template-select-card"
-      :class=" type === 'wizard' ? 'wizard-card p-0' : 'p-1'"
-      :style="{backgroundImage: 'url(' + template?.backgroundImage + ')'}"
-      @click="showDetails()"
-      @mouseenter="addHoverClass"
-      @mouseleave="removeHoverClass"
-    >
-    
-      <b-card-body v-if="type === 'wizard'">
-        <div class="wizard-icon-container text-right mb-3">
-          <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
-        </div>
-        <b-card-text class="mb-2">
-          <img :src="template.icon" :alt="template.name + 'icon'" width="30px"/>
-          <h5>{{ template.name  | str_limit(30) }}</h5>
-          {{ template.shortDescription | str_limit(150) }}
-        </b-card-text>
-      </b-card-body>
-
-      <b-card-body v-else
-        :title="template.name | str_limit(30)"
-        class="card-body"
-      >
-        <b-card-text class="mb-2">
-          {{ template.description | str_limit(150) }}
-        </b-card-text>
-        <b-badge
-          v-for="category in categories"
-          :key="category.id"
-          pill
-          class="category-badge mb-3 mr-1"
-        >
-          {{ category.name }}
-        </b-badge>
-        <small
-          v-if="template.categories.length > 3"
-          class="text-muted"
-        >+{{ catCount }}</small>
-      </b-card-body>
-    </b-card> -->
   </div>
 </template>
 
 <script>
-import Vue from "vue";
 import WizardTemplateCard from './WizardTemplateCard';
 import DefaultTemplateCard from './DefaultTemplateCard';
-
-Vue.filter("str_limit", (value, size) => {
-  if (!value) return "";
-  value = value.toString();
-
-  if (value.length <= size) {
-    return value;
-  }
-  return `${value.substr(0, size)}...`;
-});
 
 export default {
   components: {WizardTemplateCard, DefaultTemplateCard},
   props: ["template", "type"],
   data() {
     return {
-      thumbnail: null,
-      catLimit: 3,
     };
-  },
-  // computed: {
-  //   categories() {
-  //     return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
-  //   },
-  //   catCount() {
-  //     const { length } = this.template.categories;
-  //     return length - this.catLimit;
-  //   },
-  // },
-  watch: {},
-  beforeMount() {},
-  mounted() {
   },
   methods: {
     showDetails() {
       this.$emit("show-details", { template: this.template });
-    },
-    addHoverClass(event) {
-      event.target.classList.add("hover");
-    },
-    removeHoverClass(event) {
-      event.target.classList.remove("hover");
     },
   },
 };
