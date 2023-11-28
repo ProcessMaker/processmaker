@@ -3,7 +3,15 @@
     <div class="w-25">
       <h4> {{ $t('Processes Browser') }} </h4>
       <ul>
-        <li>Wizard Templates</li>
+        <li> 
+          <button
+            type="button"
+            class="btn btn-link"
+            @click="wizardTemplatesSelected"
+          >
+            {{ $t('Wizard Templates') }}
+          </button>
+        </li>
       </ul>
     </div>
     <div class="w-100">
@@ -49,13 +57,11 @@ export default {
     };
   },
   methods: {
-    fetchWizardTemplates() {
-      console.log('fetchWizardTemplates', this.wizardTemplates);
+    wizardTemplatesSelected() {
       this.showWizardTemplates = true;
     }
   },
   mounted() {
-    this.fetchWizardTemplates();
   }
 };
 </script>
