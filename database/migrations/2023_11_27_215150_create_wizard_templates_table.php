@@ -13,7 +13,7 @@ class CreateWizardTemplatesTable extends Migration
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('process_template_id')->nullable();
             $table->unsignedInteger('process_id');
-            $table->unsignedInteger('media_id');
+            $table->string('media_collection')->nullable();
             $table->timestamps();
 
             // Foreign keys
@@ -22,11 +22,6 @@ class CreateWizardTemplatesTable extends Migration
                 ->on('processes')
                 ->onDelete('cascade')
                 ->constrained('processes');
-            $table->foreign('media_id')
-                ->references('id')
-                ->on('media')
-                ->onDelete('cascade')
-                ->constrained('media');
         });
     }
 
