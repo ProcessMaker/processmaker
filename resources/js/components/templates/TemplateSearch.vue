@@ -54,7 +54,7 @@
             />
           </b-card-group>
         </template>
-        <template-details v-if="component === 'template-details'" :template="template"></template-details>
+        <template-details v-if="component === 'template-details'" :template="template" :type="type"></template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
