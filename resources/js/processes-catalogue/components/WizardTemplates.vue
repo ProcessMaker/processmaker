@@ -1,11 +1,11 @@
 <template>
-    <div class="wizard-template-container">
+    <div class="container wizard-template-container">
         <template-search
         type="wizard"
         package-ai="false"
         :component="currentComponent" 
         @show-details="showDetails($event)"
-        :showSmallDeck="false"
+        :showTemplateOptionsActionBar="false"
         ></template-search>
     </div>
 </template>

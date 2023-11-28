@@ -10,11 +10,10 @@
         <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
       </b-input-group>
     </div>
-    <div class="cards-container">
-      <b-card-group v-if="showSmallDeck" id="template-options" deck class="d-flex small-deck-margin">
+    <div class="cards-container" :class="type !== 'wizard' ? 'fixed-height' : '' ">
+      <b-card-group v-if="showTemplateOptionsActionBar && component === 'template-select-card' " id="template-options" deck class="d-flex small-deck-margin">
         <button-card
           class="col-4 p-0"
-          v-show="component === 'template-select-card'"
           :button="blankProcessButton"
           @show-details="showDetails($event)"
           @card-button-clicked="$emit('blank-process-button-clicked')"
@@ -22,21 +21,20 @@
 
         <div v-if="packageAi" class="col-8 p-0">
           <button-card
-            v-if="component === 'template-select-card'"
             :button="aiProcessButton"
             @show-details="showDetails($event)"
             @card-button-clicked="$emit('ai-process-button-clicked')"
           />
         </div>
-        <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
-          <small class="mr-2 text-secondary">Templates</small>
+        <div class="d-flex w-100 align-items-center my-3 card-separator">
+          <small class="mr-2 text-secondary">{{ $t('Templates') }}</small>
           <div class="flex-grow-1 border-bottom"></div>
         </div>
 
       </b-card-group>
 
       <div class="pb-2 template-container">
-        <template v-if="noResults === true">
+        <template v-if="noResults">
           <div class="no-data-icon d-flex d-block justify-content-center pb-2">
             <i class="fas fa-umbrella-beach mt-5" />
           </div>
@@ -97,7 +95,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
   components: { ButtonCard, TemplateSelectCard, TemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showSmallDeck'],
+  props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
   data() {
     return {
       filter: "",
@@ -286,9 +284,11 @@ export default {
   margin-right: 0.7rem;
 }
 .cards-container {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 415px;
+  &.fixed-height {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 415px;
+  }
 }
 .template-options {
   display: flex;
