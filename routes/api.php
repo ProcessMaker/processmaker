@@ -32,9 +32,8 @@ use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
-use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
-use ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
@@ -254,6 +253,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
+
+    // Wizard Templates
+    Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
 
     // Process Translations
     Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index')->middleware('can:view-process-translations');

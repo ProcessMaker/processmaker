@@ -1,0 +1,21 @@
+<?php
+
+namespace Database\Factories\ProcessMaker\Models;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\WizardTemplate;
+
+class WizardTemplateFactory extends Factory
+{
+    protected $model = WizardTemplate::class;
+
+    public function definition()
+    {
+        return [
+            'uuid' => $this->faker->uuid,
+            'process_template_id' => $this->faker->numberBetween(1, 100),
+            'process_id' => Process::factory()->create()->id,
+        ];
+    }
+}
