@@ -2,8 +2,11 @@ import { BNavbar } from "bootstrap-vue";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import moment from "moment";
 import moment_timezone from "moment-timezone";
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import newRequestModal from "./components/requests/requestModal";
 import requestModal from "./components/requests/modal";
-import notifications from "./components/requests/notifications";
+import requestModalMobile from "./components/requests/modalMobile";
+import notifications from "./notifications/components/notifications";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -13,13 +16,14 @@ import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
+import ProjectSelect from "./components/shared/ProjectSelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from "./components/TimelineItem";
 import Required from "./components/shared/Required";
-import { sanitizeUrl } from "@braintree/sanitize-url";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
+import WelcomeModal from "./Mobile/WelcomeModal";
 import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
@@ -54,6 +58,7 @@ Vue.component("SelectStatus", SelectStatus);
 Vue.component("SelectUser", SelectUser);
 Vue.component("SelectUserGroup", SelectUserGroup);
 Vue.component("CategorySelect", CategorySelect);
+Vue.component("ProjectSelect", ProjectSelect);
 Vue.component("SelectFromApi", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -61,9 +66,21 @@ Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("TimelineItem", TimelineItem);
 Vue.component("Required", Required);
+Vue.component("Welcome", WelcomeModal);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
+
+// Verify if is mobile
+const browser = navigator.userAgent;
+const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(browser);
+window.ProcessMaker.mobileApp = false;
+if (isMobileDevice) {
+  window.ProcessMaker.mobileApp = true;
+}
+
+// Verify is in mobile mode
+const isMobileNavbar = window.ProcessMaker.events.$cookies.get("isMobile");
 
 window.ProcessMaker.nodeTypes = [];
 window.ProcessMaker.nodeTypes.get = function (id) {
@@ -81,6 +98,7 @@ window.ProcessMaker.navbar = new Vue({
     ConfirmationModal,
     MessageModal,
     NavbarProfile,
+    newRequestModal,
   },
   data() {
     return {
@@ -90,6 +108,7 @@ window.ProcessMaker.navbar = new Vue({
       confirmMessage: "",
       confirmVariant: "",
       confirmCallback: "",
+      confirmSize: "md",
       messageTitle: "",
       messageMessage: "",
       messageVariant: "",
@@ -103,6 +122,7 @@ window.ProcessMaker.navbar = new Vue({
       sessionWarnSeconds: "",
       taskTitle: "",
       isMobile: false,
+      isMobileDevice: window.ProcessMaker.mobileApp,
     };
   },
   watch: {
@@ -151,6 +171,10 @@ window.ProcessMaker.navbar = new Vue({
       const nextScreenAlerts = array.filter((alert) => alert.stayNextScreen);
       window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
     },
+    switchToMobile() {
+      this.$cookies.set("isMobile", true);
+      window.open("/requests", "_self");
+    },
     getRoutes() {
       if (this.$refs.breadcrumbs) {
         return this.$refs.breadcrumbs.list;
@@ -168,6 +192,35 @@ window.ProcessMaker.navbar = new Vue({
     },
   },
 });
+
+// Assign our navbar component to our global ProcessMaker object
+if (isMobileNavbar === "true") {
+  window.ProcessMaker.navbarMobile = new Vue({
+    el: "#navbarMobile",
+    components: {
+      requestModalMobile,
+      WelcomeModal,
+    },
+    data() {
+      return {
+      };
+    },
+    mounted() {
+      if (this.$cookies.get("firstMounted") === "true") {
+        $("#welcomeModal").modal("show");
+      }
+    },
+    methods: {
+      switchToDesktop() {
+        this.$cookies.set("isMobile", false);
+        window.location.reload();
+      },
+      onResize() {
+        this.isMobile = window.innerWidth < 992;
+      },
+    },
+  });
+}
 
 // Breadcrumbs are now part of the navbar component. Alias it here.
 window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
@@ -208,12 +261,13 @@ window.ProcessMaker.closeSessionModal = function () {
 };
 
 // Set out own specific confirm modal.
-window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
+window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md") {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
+  ProcessMaker.navbar.confirmSize = size;
 };
 
 // Set out own specific message modal.

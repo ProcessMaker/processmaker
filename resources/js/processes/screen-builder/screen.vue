@@ -28,6 +28,7 @@
           :screen-type="type"
           :screen="screen"
           :render-controls="displayBuilder"
+          :process-id="processId"
           @change="updateConfig"
         >
           <data-loading-basic
@@ -60,7 +61,10 @@
               @update="onUpdate"
               @css-errors="cssErrors = $event"
             />
-            <div v-else>
+            <div
+              v-else
+              :class="{ 'device-mobile': deviceScreen === 'mobile', 'device-screen': deviceScreen !== 'mobile' }"
+            >
               <component
                 :is="renderComponent"
                 v-model="previewData"
@@ -136,6 +140,15 @@
                 >
                   <i class="fas fa-file-code mr-2" />
                   {{ $t('Data Preview') }}
+                  <b-button
+                    v-b-modal.data-preview
+                    squared
+                    variant="outline-dark"
+                    class="fas ml-auto btn-sm tree-button"
+                    @click.stop
+                  >
+                    <i class="fas ml-auto fas fa-expand" />
+                  </b-button>
                   <i
                     class="fas ml-auto"
                     :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"
@@ -248,6 +261,33 @@
       </b-card-footer>
     </b-card>
     <!-- Modals -->
+    <b-modal
+      id="data-preview"
+      hide-footer
+      size="xl"
+      title="Output Preview Panel"
+      header-close-content="&times;"
+    >
+      <b-row class="h-100">
+        <b-col cols="6">
+          <monaco-editor
+            v-model="previewDataStringify"
+            :options="monacoOptions"
+            class="editor"
+            language="json"
+            @editorDidMount="monacoMounted"
+          />
+        </b-col>
+        <b-col cols="6">
+          <tree-view
+            v-model="previewDataStringify"
+            :iframeHeight="iframeHeight"
+            style="border:1px; solid gray;"
+          >
+          </tree-view>
+        </b-col>
+      </b-row>
+    </b-modal>
     <computed-properties
       ref="computedProperties"
       v-model="computed"
@@ -336,6 +376,9 @@ export default {
     isDraft: {
       type: Boolean,
       default: false,
+    },
+    processId: {
+      default: 0,
     },
   },
   data() {
@@ -518,6 +561,7 @@ export default {
         ],
       },
       closeHref: "/designer/screens",
+      iframeHeight: "600px",
     };
   },
   computed: {
@@ -582,6 +626,7 @@ export default {
             title: this.screen.title,
             description: this.screen.description,
             type: this.screen.type,
+            projects: this.screen.projects,
             config: this.config,
             computed: this.computed,
             custom_css: this.customCSS,
@@ -808,7 +853,9 @@ export default {
       this.deviceScreen = deviceScreen;
 
       this.$nextTick(() => {
-        this.$refs.renderer.checkIfIsMobile();
+        if (this.$refs.renderer) {
+          this.$refs.renderer.checkIfIsMobile();
+        }
       });
     },
     onUpdate(data) {
@@ -1002,6 +1049,7 @@ export default {
             description: this.screen.description,
             type: this.screen.type,
             config: this.config,
+            projects: this.screen.projects,
             computed: this.computed,
             custom_css: this.customCSS,
             watchers: this.watchers,
@@ -1016,6 +1064,10 @@ export default {
             ProcessMaker.EventBus.$emit("save-changes");
             if (typeof onSuccess === "function") {
               onSuccess(response);
+            }
+
+            if (this.processId !== 0 && this.processId !== undefined && !exportScreen) {
+              window.location = `/modeler/${this.processId}`;
             }
           })
           .catch((err) => {
@@ -1109,5 +1161,16 @@ export default {
     }
     .editor {
       height: 30em;
+    }
+    .tree-button {
+      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
+    }
+    .device-mobile {
+      width: 480px;
+      border: 1px solid rgba(0,0,0,.125);
+      margin: 0px auto;
+    }
+    .device-screen {
+      width: 100%;
     }
 </style>

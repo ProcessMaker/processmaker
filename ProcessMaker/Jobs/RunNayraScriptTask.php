@@ -66,11 +66,6 @@ class RunNayraScriptTask implements ShouldQueue
         }
         $scriptRef = $element->getProperty('scriptRef');
         $configuration = json_decode($element->getProperty('config'), true);
-        $errorHandling = json_decode($element->getProperty('errorHandling'), true);
-        if ($errorHandling === null) {
-            $errorHandling = [];
-        }
-
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
@@ -96,9 +91,13 @@ class RunNayraScriptTask implements ShouldQueue
                 $script = $script->versionFor($instance);
             }
 
+            $errorHandling = new ErrorHandling($element, $token);
+            $errorHandling->setDefaultsFromDataSourceConfig($configuration);
+
             $dataManager = new DataManager();
             $data = $dataManager->getData($token);
-            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling);
+
+            $response = $script->runScript($data, $configuration, $token->getId(), $errorHandling->timeout());
 
             // Dispatch complete task action
             WorkflowManager::completeTask($processModel, $instance, $token, $response['output']);

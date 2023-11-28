@@ -27,7 +27,7 @@ class ProcessExporter extends ExporterBase
 
     public ExportManager $manager;
 
-    public $discard = true;
+    public $discard = false;
 
     public function export() : void
     {

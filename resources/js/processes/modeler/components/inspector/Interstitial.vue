@@ -1,79 +1,107 @@
 <template>
-    <div>
-        <div :class="{'has-error':error}">
-            <form-checkbox
-                :label="$t('Display Next Assigned Task to Task Assignee')"
-                :checked="allowInterstitialGetter"
-                @change="allowInterstitialSetter">
-            </form-checkbox>
-            <small v-if="error" class="text-danger">{{ error }}</small>
-            <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
-        </div>
-        <screen-select
-            v-if="allowInterstitialGetter"
-            :label="$t('Screen Interstitial')"
-            :required="true"
-            :placeholder="$t('Default Screen')"
-            :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
-            :params="parameters"
-            v-model="screen"
-        />
-
+  <div>
+    <div :class="{'has-error': error}">
+      <form-checkbox
+        :label="$t('Display Next Assigned Task to Task Assignee')"
+        :checked="allowInterstitial"
+        @change="checked"
+      />
+      <small
+        v-if="error"
+        class="text-danger"
+      >{{ error }}</small>
+      <small
+        v-if="helper"
+        class="form-text text-muted"
+      >{{ $t(helper) }}</small>
     </div>
+    <screen-select
+      v-if="allowInterstitial"
+      v-model="screen"
+      :label="$t('Screen Interstitial')"
+      :required="true"
+      :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
+      :params="parameters"
+      default-key="interstitial"
+    />
+  </div>
 </template>
 
 <script>
+import { get } from "lodash";
+import { FormCheckbox } from "@processmaker/vue-form-elements";
+import ScreenSelect from "./ScreenSelect.vue";
 
-  import ScreenSelect from "./ScreenSelect";
-  export default {
-    components: {ScreenSelect},
-    props: ["value", "label", "helper"],
-    data () {
-      return {
-        screen: null,
-        loading: false,
-        error: '',
-        parameters: {
-          type: 'DISPLAY',
-        }
-      };
+export default {
+  components: { ScreenSelect, FormCheckbox },
+  props: {
+    label: {
+      type: String,
+      default: "",
     },
-    computed: {
-      /**
-       * Get the value of the edited property
-       */
-      allowInterstitialGetter () {
-        const node = this.node;
+    helper: {
+      type: String,
+      default: "",
+    },
+    enabledByDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      screen: null,
+      loading: false,
+      error: "",
+      parameters: {
+        type: "DISPLAY",
+      },
+    };
+  },
+  computed: {
+    /**
+     * Get the value of the edited property
+     */
+    allowInterstitial: {
+      get() {
+        const { node } = this;
+        // Get the value of allowInterstitial or set it to true if it hasn't been defined yet.
+        const value = get(node, "allowInterstitial", this.enabledByDefault);
 
-        const value = _.get(node, "allowInterstitial");
-
-        this.screen = _.get(node, "interstitialScreenRef");
+        this.screen = get(node, "interstitialScreenRef");
         return value;
       },
-
-      node () {
-        return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-      }
-    },
-    watch: {
-      screen: {
-        handler(value) {
-          this.$set(this.node, "interstitialScreenRef", value);
-        }
-      }
-    },
-    methods: {
       /**
        * Update allowInterstitial property
        */
-      allowInterstitialSetter (value) {
+      set(value) {
         this.$set(this.node, "allowInterstitial", value);
       },
     },
-    mounted() {
-      if (!this.node.allowInterstitial) {
-        this.$set(this.node, "allowInterstitial", false);
-      }
+
+    node() {
+      return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
+    },
+  },
+  watch: {
+    screen: {
+      handler(value) {
+        this.$set(this.node, "interstitialScreenRef", value);
+      },
+    },
+  },
+  mounted() {
+    if (!("allowInterstitial" in this.node)) {
+      this.$set(this.node, "allowInterstitial", this.enabledByDefault);
     }
-  };
+  },
+  methods: {
+    /**
+     * @param {Boolean} checkboxChecked
+     */
+    checked(checkboxChecked) {
+      this.allowInterstitial = checkboxChecked;
+    },
+  },
+};
 </script>

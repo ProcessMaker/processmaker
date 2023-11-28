@@ -41,11 +41,25 @@
             name="description"
           ></b-form-textarea>
         </b-form-group>
-        <category-select :label="$t('Category')" api-get="process_categories"
-          api-list="process_categories" v-model="process_category_id"
+        <category-select
+          :label="$t('Category')"
+          api-get="process_categories"
+          api-list="process_categories"
+          v-model="process_category_id"
           :errors="addError?.process_category_id"
           name="category"
         ></category-select>
+        <project-select 
+          v-if="isProjectsInstalled"
+          :required="isProjectSelectionRequired"
+          :label="$t('Project')"
+          api-get="projects"
+          api-list="projects"
+          v-model="projects"
+          :errors="addError?.projects"
+          name="project"
+          :projectId="projectId"
+        ></project-select>
        <b-form-group
           :label="$t('Process Manager')"
         >
@@ -82,13 +96,27 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import Required from "../../components/shared/Required.vue";
+  import Modal from "../../components/shared/Modal.vue";
+  import FormErrorsMixin from "../../components/shared/FormErrorsMixin";
   import TemplateSearch from "../../components/templates/TemplateSearch.vue";
+  import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 
   export default {
-    components: { Modal, Required, TemplateSearch },
+    components: { Modal, Required, TemplateSearch, ProjectSelect },
     mixins: [ FormErrorsMixin ],
-    props: ["countCategories", "blankTemplate", "selectedTemplate", "templateData", "generativeProcessData"],
+    props: [
+      "countCategories", 
+      "blankTemplate", 
+      "selectedTemplate", 
+      "templateData", 
+      "generativeProcessData", 
+      "isProjectsInstalled", 
+      "categoryType", 
+      "callFromAiModeler",
+      "isProjectSelectionRequired",
+      "projectId"
+    ],
     data: function() {
       return {
         showModal: false,
@@ -97,14 +125,17 @@
         categoryOptions: "",
         description: "",
         process_category_id: "",
+        category_type_id: "",
+        projects: [],
+        projectCategories: false,
         template_version: null,
         addError: {},
         status: "",
         bpmn: "",
         disabled: false,
         customModalButtons: [
-            {'content': 'Cancel', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-            {'content': 'Create', 'action': 'createTemplate', 'variant': 'primary', 'disabled': false, 'hidden': false},
+            {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
+            {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
         ],
         manager: "",
       }
@@ -114,7 +145,11 @@
         if (this.selectedTemplate) {
           this.name = this.templateData.name;
           this.description = this.templateData.description;  
-          this.process_category_id = this.templateData.category_id;
+          if (this.categoryType) {
+            this.category_type_id = this.templateData.category_id;
+          } else {
+            this.process_category_id = this.templateData.category_id;
+          }
           this.template_version = this.templateData.version;
         }
       },
@@ -123,6 +158,12 @@
           this.manager = "";
         }
       },
+    },
+    mounted() {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.size > 0 && searchParams.get("create") === "true") {
+          this.show();
+      };
     },
     methods: {
       onShown() {
@@ -151,12 +192,14 @@
         this.name = "";
         this.description = "";
         this.process_category_id = "";
+        this.category_type_id = "";
+        this.projects = [];
         this.status = "";
         this.addError = {};
-        this.selectedFile = '';
+        this.selectedFile = "";
         this.file = null;
         this.manager = "";
-        this.$emit('resetModal');
+        this.$emit("resetModal");
       },
       onSubmit () {
         this.errors = Object.assign({}, {
@@ -179,6 +222,7 @@
         formData.append("name", this.name);
         formData.append("description", this.description);
         formData.append("process_category_id", this.process_category_id);
+        formData.append("projects", this.projects);
         formData.append("manager_id", this.manager.id);
         if (this.file) {
           formData.append("file", this.file);
@@ -201,8 +245,23 @@
           }
         })
         .then(response => {
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
-          window.location = "/modeler/" + response.data.processId;
+          if (response.data.existingAssets) {
+            const assets = JSON.stringify(response.data.existingAssets);
+            const responseId = response.data.id;
+            const request = JSON.stringify(response.data.request);
+            window.history.pushState({
+              assets: assets,
+              name: this.templateData.name,
+              responseId: responseId,
+              request: request},
+              "",
+              '/template/assets'
+            );
+            window.location = '/template/assets';
+          } else {
+            ProcessMaker.alert(this.$t("The process was created."), "success");
+            window.location = "/modeler/" + response.data.processId;
+          }
         })
         .catch(error => {
           this.disabled = false;
@@ -213,15 +272,22 @@
         ProcessMaker.apiClient.post("/processes", formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         })
-        .then(response => {
+        .then((response) => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
-          ProcessMaker.alert(this.$t('The process was created.'), "success");
-          window.location = "/modeler/" + response.data.id;
+
+          ProcessMaker.alert(this.$t("The process was created."), "success");
+
+          if (this.callFromAiModeler) {
+            const url = `/package-ai/processes/create/${response.data.id}`;
+            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
+          } else {
+            window.location = `/modeler/${response.data.id}`;
+          }
         })
         .catch(error => {
           this.disabled = false;

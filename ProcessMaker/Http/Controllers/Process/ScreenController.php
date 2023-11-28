@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
@@ -42,9 +44,9 @@ class ScreenController extends Controller
             'countField' => 'screens_count',
             'apiListInclude' => 'screensCount',
             'permissions' => [
-                'view'   => $request->user()->can('view-screen-categories'),
+                'view' => $request->user()->can('view-screen-categories'),
                 'create' => $request->user()->can('create-screen-categories'),
-                'edit'   => $request->user()->can('edit-screen-categories'),
+                'edit' => $request->user()->can('edit-screen-categories'),
                 'delete' => $request->user()->can('delete-screen-categories'),
             ],
         ];
@@ -67,8 +69,9 @@ class ScreenController extends Controller
     public function edit(Screen $screen)
     {
         $addons = $this->getPluginAddons('edit', compact(['screen']));
+        $assignedProjects = json_decode($screen->projects, true);
 
-        return view('processes.screens.edit', compact('screen', 'addons'));
+        return view('processes.screens.edit', compact('screen', 'addons', 'assignedProjects'));
     }
 
     /**
@@ -117,5 +120,16 @@ class ScreenController extends Controller
                 'Content-type' => 'application/json',
             ]);
         }
+    }
+
+    public function preview(Request $request)
+    {
+        $data = json_decode($request->query('node'), true) ?? [];
+        $screen = Screen::find($data['screenRef']);
+
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, $screen->type ?? 'FORM'));
+
+        return view('processes.screens.preview', compact('screen', 'manager'));
     }
 }

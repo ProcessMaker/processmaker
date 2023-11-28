@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -33,10 +34,14 @@ class TaskController extends Controller
             $title = 'Completed Tasks';
         }
 
+        if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+            return view('tasks.mobile', compact('title'));
+        }
+
         return view('tasks.index', compact('title'));
     }
 
-    public function edit(ProcessRequestToken $task)
+    public function edit(ProcessRequestToken $task, string $preview = '')
     {
         $task = $task->loadTokenInstance();
         $dataManager = new DataManager();
@@ -73,6 +78,32 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
+            if (!empty($preview)) {
+                return view('tasks.preview', [
+                    'task' => $task,
+                    'dueLabels' => self::$dueLabels,
+                    'manager' => $manager,
+                    'submitUrl' => $submitUrl,
+                    'files' => $task->processRequest->requestFiles(),
+                    'addons' => $this->getPluginAddons('edit', []),
+                    'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                    'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                ]);
+            }
+
+            if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
+                return view('tasks.editMobile', [
+                    'task' => $task,
+                    'dueLabels' => self::$dueLabels,
+                    'manager' => $manager,
+                    'submitUrl' => $submitUrl,
+                    'files' => $task->processRequest->requestFiles(),
+                    'addons' => $this->getPluginAddons('edit', []),
+                    'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                    'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                ]);
+            }
+
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
@@ -81,6 +112,7 @@ class TaskController extends Controller
                 'files' => $task->processRequest->requestFiles(),
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
             ]);
         }
     }

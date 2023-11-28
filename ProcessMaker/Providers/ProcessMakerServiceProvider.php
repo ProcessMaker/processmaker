@@ -3,19 +3,22 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\PackageManifest;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
 use Illuminate\Support\Str;
-use Lavary\Menu\Menu;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
+use Lavary\Menu\Menu;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
+use ProcessMaker\LicensedPackageManifest;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
 use ProcessMaker\Models;
@@ -138,6 +141,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Miscellaneous vendor customization
         static::configureVendors();
+
+        $this->app->singleton(PackageManifest::class, fn () => new LicensedPackageManifest(
+            new Filesystem, $this->app->basePath(), $this->app->getCachedPackagesPath()
+        ));
     }
 
     /**

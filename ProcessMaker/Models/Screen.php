@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Contracts\ScreenInterface;
@@ -12,6 +13,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasScreenFields;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -69,6 +71,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     use HasVersioning;
     use ExtendedPMQL;
     use Exportable;
+    use ProjectAssetTrait;
 
     const categoryClass = ScreenCategory::class;
 
@@ -85,6 +88,10 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         'computed' => 'array',
         'watchers' => 'array',
         'translations' => 'array',
+    ];
+
+    protected $appends = [
+        'projects',
     ];
 
     /**
@@ -152,6 +159,29 @@ class Screen extends ProcessMakerModel implements ScreenInterface
     public function category()
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
+    }
+
+    /**
+     * Get the associated projects
+     */
+    public function projects()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
+            'project_assets',
+            'asset_id',
+            'project_id',
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
     }
 
     public function scopeExclude($query, $value = [])
@@ -227,5 +257,48 @@ class Screen extends ProcessMakerModel implements ScreenInterface
         }
 
         return $screenIds;
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter, $filterStr) {
+            $query->where('screens.title', 'like', $filter)
+                 ->orWhere('screens.description', 'like', $filter)
+                 ->orWhere('screens.status', '=', $filterStr)
+                 ->orWhereIn('screens.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('screen_categories', function ($join) {
+                             $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('screen_categories.name', 'like', $filter);
+                 });
+        });
+
+        return $query;
     }
 }

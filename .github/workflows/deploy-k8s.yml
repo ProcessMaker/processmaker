@@ -1,0 +1,210 @@
+name: deploy-k8s
+run-name: ${{ github.actor }} send deploy EKS 🚀
+on: 
+  pull_request:
+    types: [opened, reopened, synchronize, edited, closed]
+  schedule:
+    - cron: '30 2 * * *'  # every day at midnight
+  push:
+    branches:
+      - FOUR-9465
+  workflow_dispatch:
+  workflow_call:
+env:
+  K8S_BRANCH: FOUR-12408
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: ${{ secrets.AWS_REGION }}  
+  AWS_URL: ${{ secrets.AWS_URL }}
+  pull_req_id: ${{github.event.pull_request.number}}
+  DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
+  # IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  DEPLOY: ${{ secrets.DEPLOY }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_EMAIL: ${{ secrets.GH_EMAIL }}
+  GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
+  DOM_EKS: ${{ secrets.DOM_EKS }}
+  #BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:php81') && 'ci-base' || 'ci-base-php82' }}
+  CDATA_LICENSE_DOCUSIGN: ${{ secrets.CDATA_LICENSE_DOCUSIGN }}
+  CDATA_LICENSE_EXCEL: ${{ secrets.CDATA_LICENSE_EXCEL }}
+  CDATA_LICENSE_GITHUB: ${{ secrets.CDATA_LICENSE_GITHUB }}
+  CDATA_LICENSE_SLACK: ${{ secrets.CDATA_LICENSE_SLACK }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  imageEKS: 
+    name: build-docker-image-EKS
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Build ENVs
+        run: |
+          export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"      
+      - name: Clone repo K8S
+        run: |
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+      - name: Generate image EKS
+        run: |          
+          cd pm4-k8s-distribution/images && sh ./fetchPM.sh $CI_PACKAGE_BRANCH
+          TAG_IMAGE_OSS=processmaker/processmaker
+          TAG_IMAGE_ENT=processmaker/enterprise
+          PM4_BASELINE_IMAGE=$TAG_IMAGE_OSS:$TAG-baseline
+          PM4_CACHE_IMAGE=$TAG_IMAGE_OSS:$TAG-cache
+          PM4_CORE_IMAGE=$TAG_IMAGE_OSS:$TAG
+          PM4_ENT_IMAGE=$TAG_IMAGE_ENT:$TAG
+          PM4_VERSION=$(cat version|sed 's/+/-/g')
+          docker build -f Dockerfile.baseline --tag $PM4_BASELINE_IMAGE .
+          docker build -f Dockerfile.cache --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --tag $PM4_CACHE_IMAGE .
+          docker build -f Dockerfile.core --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_CORE_IMAGE .
+          docker build -f Dockerfile.enterprise --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_ENT_IMAGE .
+          echo "VERSION=$PM4_VERSION" >> $GITHUB_ENV
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret'
+          severity: 'MEDIUM,HIGH,CRITICAL'
+          timeout: '20m'
+      #- name: Push Base to ECR
+      #  if: env.BUILD_BASE == '1'  
+      #  run: |
+      #    docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base-php81
+      #    docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base
+      #- name: Push Enterprise Image to ECR
+      #  run: |
+      #    docker push $IMAGE
+      - name: List Images
+        run: |
+          docker images
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Push Enterprise Image to Harbor
+        run: |
+          docker tag local/enterprise:$IMAGE_TAG ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
+          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
+  phpunit:
+    name: phpunit
+    needs: imageEKS
+    runs-on: ubuntu-22.04
+    if: github.event.action != 'closed'
+    steps:
+      - name: Build ENVs
+        run: |
+          export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Run PHPUnit
+        run: |          
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE          
+          docker-compose down -v          
+          docker-compose build phpunit          
+          docker-compose run phpunit
+
+  deployEKS:
+    name: build-deploy-EKS
+    if: contains(github.event.pull_request.body, 'ci:deploy')
+    needs: imageEKS
+    runs-on: ubuntu-22.04    
+    steps:
+      - name: Build ENVs
+        run: |
+          export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+          cd argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          cd pm4-k8s-distribution/images/pm4-tools
+          composer install --no-interaction
+          cd ..
+      - name: Add instance EKS           
+        run: |
+          cd argocd 
+          deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
+          current_datetime=$(echo -n ${{env.CURRENT_DATE}} | md5sum | head -c 10)
+          if ! echo $(ls ci/) | grep $deploy; then
+            echo "Creating Deploy :: $deploy"
+            cp template-argocd.yaml ci/ci-$deploy.yaml
+            cp template-db.yaml ./ci/job_database.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{image}}/$IMAGE_TAG/" ./ci/ci-$deploy.yaml
+            sed -i "s/{{instance}}/ci-$deploy/" ./ci/job_database.yaml
+            git status
+            git add .
+            git commit -m "Deploy CICD : ci-$deploy"
+            git push origin main             
+          else
+            echo "Bouncing"
+            rm -rf ci/job_bounce_develop.yaml
+            cp template-bounce.yaml ci/job_bounce_develop.yaml
+            sed -i "s/{{instance}}/ci-$deploy/g" ./ci/job_bounce_develop.yaml
+            sed -i "s/{{current_datetime}}/$current_datetime/g" ./ci/job_bounce_develop.yaml
+            git status
+            git add .
+            git commit -m "BOUNCE CICD : ci-$deploy"
+            git push origin main
+            echo "Exist Deploy :: https://ci-$deploy$DOM_EKS"
+          fi
+          export INSTANCE_URL=https://ci-$deploy$DOM_EKS
+          echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
+          ../pm4-k8s-distribution/images/pm4-tools/pm wait-for-instance-ready
+      - name: Comment Instance
+        run: |
+          echo "Instance URL: '${INSTANCE_URL}'"
+          bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"    
+  deleteEKS:
+    name: Delete Instance
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Build ENVs
+        run: |
+          export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b main "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+      - run: git config --global user.email $GH_EMAIL
+      - run: git config --global user.name $GH_USER
+      - name: Remove instance EKS            
+        run: |
+          cd argocd/ci/
+          deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
+          rm -rf ci-$deploy.yaml
+          git status
+          git add .
+          git commit -m "Delete Instance : ci-$deploy"
+          git push origin main
+

@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\ProcessRequest;
 
@@ -50,10 +51,16 @@ trait HasVersioning
     public function saveVersion()
     {
         $attributes = $this->getModelAttributes();
-        $this->versions()->create($attributes);
+        $version = $this->versions()->create($attributes);
 
         // Delete draft version.
-        $this->deleteDraft();
+        try {
+            $this->deleteDraft();
+        } catch(QueryException $e) {
+            // Skip delete if the screen version is used in a process.
+        }
+
+        return $version;
     }
 
     /**
@@ -64,7 +71,7 @@ trait HasVersioning
         $attributes = $this->getModelAttributes();
         $attributes['draft'] = true;
 
-        $this->versions()->updateOrCreate([
+        return $this->versions()->updateOrCreate([
             'draft' => true,
         ], $attributes);
     }
@@ -84,7 +91,8 @@ trait HasVersioning
             $attributes['uuid'],
             $attributes['updated_at'],
             $attributes['created_at'],
-            $attributes['has_timer_start_events']);
+            $attributes['has_timer_start_events'],
+            $attributes['projects']);
 
         return $attributes;
     }

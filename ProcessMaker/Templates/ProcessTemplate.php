@@ -27,6 +27,8 @@ class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
 
+    const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
+
     /**
      * List process templates
      *
@@ -209,41 +211,83 @@ class ProcessTemplate implements TemplateInterface
         $template->fill($request->except('id'));
 
         $payload = json_decode($template->manifest, true);
-        $payload['name'] = $request['name'];
-        $payload['description'] = $request['description'];
+        // Check for existing assets
+        $existingAssets = $request->existingAssets;
+        $requestData = $existingAssets ? $request->toArray()['request'] : $request;
+
+        $payload['name'] = $requestData['name'];
+        $payload['description'] = $requestData['description'];
 
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
+            // Exclude the import of comment configurations to account for the unavailability
+            // of the comment configuration table in the database.
+            if ($asset['model'] === 'ProcessMaker\Package\PackageComments\Models\CommentConfiguration') {
+                unset($payload['export'][$key]);
+                continue;
+            }
+
             $postOptions[$key] = [
                 'mode' => 'copy',
                 'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
 
+            if ($existingAssets) {
+                foreach ($existingAssets as $item) {
+                    $uuid = $item['uuid'];
+                    if (isset($postOptions[$uuid])) {
+                        $postOptions[$uuid]['mode'] = $item['mode'];
+                    }
+                }
+            }
+
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
-                $payload['export'][$key]['attributes']['name'] = $request['name'];
-                $payload['export'][$key]['attributes']['description'] = $request['description'];
-                $payload['export'][$key]['attributes']['process_category_id'] = $request['process_category_id'];
+                $payload['export'][$key]['attributes']['name'] = $requestData['name'];
+                $payload['export'][$key]['attributes']['description'] = $requestData['description'];
+                $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
 
-                $payload['export'][$key]['name'] = $request['name'];
-                $payload['export'][$key]['description'] = $request['description'];
-                $payload['export'][$key]['process_category_id'] = $request['process_category_id'];
-                $payload['export'][$key]['process_manager_id'] = $request['manager_id'];
+                $payload['export'][$key]['name'] = $requestData['name'];
+                $payload['export'][$key]['description'] = $requestData['description'];
+                $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
+
+                // TODO:Check on ['manager_id'] when updating assets
+                if (!isset($existingAssets)) {
+                    $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
+                }
             }
             if (in_array($asset['type'], ['Process', 'Screen', 'Scripts', 'Collections', 'DataConnector'])) {
                 $payload['export'][$key]['attributes']['is_template'] = false;
                 $payload['export'][$key]['is_template'] = false;
             }
         }
-
         $options = new Options($postOptions);
+
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
-        return response()->json(['processId' => $processId]);
+        $process = Process::findOrFail($processId);
+
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
+            $manifest = $this->getManifest('process', $processId);
+
+            foreach (explode(',', $requestData['projects']) as $project) {
+                foreach ($manifest['export'] as $asset) {
+                    $model = $asset['model']::find($asset['attributes']['id']);
+                    $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
+                    $projectAsset->create([
+                        'project_id' => $project,
+                        'asset_id' => $model->id,
+                        'asset_type' => get_class($model),
+                    ]);
+                }
+            }
+        }
+
+        return response()->json(['processId' => $processId, 'processName' => $process->name]);
     }
 
     /**

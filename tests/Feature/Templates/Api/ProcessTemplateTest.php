@@ -4,12 +4,14 @@ namespace Tests\Feature\Templates\Api;
 
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\DB;
+use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
@@ -239,6 +241,81 @@ class ProcessTemplateTest extends TestCase
         }
     }
 
+    public function testUpdateAssetsWhenCreatingProcess()
+    {
+        $this->addGlobalSignalProcess();
+        $user = User::factory()->create();
+
+        $screen = Screen::factory()->create(['title' => 'First Screen']);
+        $secondScreen = Screen::factory()->create(['title' => 'Second Screen']);
+
+        $script = Script::factory()->create(['title' => 'First Script']);
+        $secondScript = Script::factory()->create(['title' => 'Second Script']);
+
+        $process = $this->createProcess('process-with-multiple-assets', ['name' => 'Test Process']);
+        $definition = '/bpmn:definitions/bpmn:process/bpmn:';
+
+        Utils::setAttributeAtXPath($process, $definition . 'task[1]', 'pm:screenRef', $screen->id);
+        Utils::setAttributeAtXPath($process, $definition . 'scriptTask[1]', 'pm:scriptRef', $script->id);
+        Utils::setAttributeAtXPath($process, $definition . 'task[2]', 'pm:screenRef', $secondScreen->id);
+        Utils::setAttributeAtXPath($process, $definition . 'scriptTask[2]', 'pm:scriptRef', $secondScript->id);
+
+        $process->save();
+
+        $manifest = $this->getManifest('process', $process->id);
+
+        $template = ProcessTemplates::factory()->create(
+            [
+                'name' => 'Test Duplicate Name Template',
+                'process_id' => $process->id,
+                'process_category_id' => $process->process_category_id,
+                'manifest' => json_encode($manifest),
+            ]);
+
+        $params = [
+            'user_id' => $user->id,
+            'name' => 'Test Updating Assets of a template',
+            'description' => 'Description of the process',
+            'process_category_id' => $template['process_category_id'],
+            'mode' => 'copy',
+            'version' => $template->version,
+            'saveAssetMode' => 'saveAllAssets',
+        ];
+
+        // First Request
+        $route = route('api.template.create', ['type' => 'process', 'id' => $template->id]);
+        $response = $this->apiCall('POST', $route, $params);
+        $response->assertStatus(200);
+
+        // Response for the update assets page
+        $updatePageResponse = $response->json();
+
+        // Update some of the assets mode
+        $updatePageResponse['existingAssets'][0]['mode'] = 'discard';
+        $updatePageResponse['existingAssets'][1]['mode'] = 'discard'; // First Screen
+        $updatePageResponse['existingAssets'][2]['mode'] = 'update';  // Second Screen
+        $updatePageResponse['existingAssets'][3]['mode'] = 'copy'; // First Script
+        $updatePageResponse['existingAssets'][4]['mode'] = 'discard'; // Second Script
+
+        $updatePageResponse['request'] = json_encode($updatePageResponse['request']);
+        $updatePageResponse['existingAssets'] = json_encode($updatePageResponse['existingAssets']);
+
+        // New Request with updated assets mode
+        $route = route('api.template.create', ['type' => 'update-assets', 'id' => $updatePageResponse['id']]);
+        $response = $this->apiCall('POST', $route, $updatePageResponse);
+
+        $response->assertStatus(200);
+        $this->assertEquals('2', Screen::count());
+        $this->assertDatabaseHas('scripts', ['title' => 'First Script 2']);
+        $this->assertEquals('3', Script::count());
+
+        $id = json_decode($response->getContent(), true)['processId'];
+        $newProcess = Process::where('id', $id)->firstOrFail();
+
+        $this->assertEquals('Test Updating Assets of a template', $newProcess->name);
+        $this->assertEquals('Description of the process', $newProcess->description);
+    }
+
     /**
      * Tests the fixtures of the private PHP function.
      *
@@ -296,5 +373,21 @@ class ProcessTemplateTest extends TestCase
         );
 
         return $response;
+    }
+
+    /**
+     * Get asset manifest.
+     *
+     * @param string $type
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function getManifest(string $type, int $id) : array
+    {
+        $response = (new ExportController)->manifest($type, $id);
+
+        return json_decode($response->getContent(), true);
     }
 }

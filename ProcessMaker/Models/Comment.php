@@ -49,7 +49,7 @@ class Comment extends ProcessMakerModel
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
+        'user_id', 'parent_id', 'group_id', 'group_name', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type',
     ];
 
     protected $casts = [
@@ -120,6 +120,15 @@ class Comment extends ProcessMakerModel
     }
 
     /**
+     * Replied message.
+     */
+    public function repliedMessage()
+    {
+        return $this->hasOne(self::class, 'id', 'parent_id')
+                ->with('user');
+    }
+
+    /**
      * Get element_name attribute for notifications
      */
     public function getElementNameAttribute()
@@ -132,6 +141,8 @@ class Comment extends ProcessMakerModel
             return $this->commentable->manager_name;
         } elseif ($this->commentable instanceof self) {
             return $this->commentable->element_name;
+        } elseif ($this->commentable instanceof Process) {
+            return $this->commentable->name;
         } else {
             return get_class($this->commentable);
         }
@@ -178,6 +189,8 @@ class Comment extends ProcessMakerModel
             return sprintf('/requests/%s#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof ProcessRequestToken) {
             return sprintf('/tasks/%s/edit#comment-%s', $this->commentable->id, $id);
+        } elseif ($this->commentable instanceof Process) {
+            return sprintf('/modeler/%s#comment-%s', $this->commentable->id, $id);
         } elseif ($this->commentable instanceof Media) {
             return $this->commentable->manager_url;
         } elseif ($this->commentable instanceof self) {

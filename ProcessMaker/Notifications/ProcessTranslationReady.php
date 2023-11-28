@@ -47,7 +47,13 @@ class ProcessTranslationReady extends Notification
      */
     public function toArray($notifiable)
     {
+        $data = [
+            'humanLanguage' => $this->targetLanguage['humanLanguage'],
+            'processName' => $this->process->name
+        ];
+        $message = __('Process translation to :humanLanguage completed for process: :processName', $data);
         return [
+            'message' => $message,
             'code' => $this->code,
             'name' => __('Process translated'),
             'processId' => $this->process->id ?? '',

@@ -13,6 +13,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
 use ProcessMaker\Packages\Connectors\DataSources\Models\DataSourceCategory;
@@ -107,6 +108,8 @@ trait HideSystemResources
             });
         } elseif (static::class === ProcessTemplates::class) {
             return $query->where('process_templates.is_system', false);
+        } elseif (static::class === ScriptExecutor::class) {
+            return $query->where('is_system', false);
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

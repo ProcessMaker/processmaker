@@ -42,3 +42,6 @@ cypress/downloads
 .php-cs-fixer.cache
 .phpunit.result.cache
 .editorconfig
+resources/lang/de
+resources/lang/es
+resources/lang/fr

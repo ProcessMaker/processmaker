@@ -37,12 +37,6 @@ class PermissionSeeder extends Seeder
             'cancel-process-translations',
             'delete-process-translations',
         ],
-        'Comments' => [
-            'create-comments',
-            'delete-comments',
-            'edit-comments',
-            'view-comments',
-        ],
         'Environment Variables' => [
             'create-environment_variables',
             'delete-environment_variables',
@@ -85,6 +79,9 @@ class PermissionSeeder extends Seeder
             'view-other-users-profiles',
             'edit-personal-profile',
         ],
+        'Username and Password' => [
+            'edit-user-and-password',
+        ],
         'Requests' => [
             'view-all_requests',
             'edit-request_data',
@@ -95,12 +92,6 @@ class PermissionSeeder extends Seeder
             'view-files',
             'edit-files',
             'delete-files',
-        ],
-        'Notifications (API)' => [
-            'create-notifications',
-            'view-notifications',
-            'edit-notifications',
-            'delete-notifications',
         ],
         'Task Assignments (API)' => [
             'create-task_assignments',

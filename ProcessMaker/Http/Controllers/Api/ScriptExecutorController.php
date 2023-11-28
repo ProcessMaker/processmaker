@@ -59,7 +59,7 @@ class ScriptExecutorController extends Controller
     {
         $this->checkAuth($request);
 
-        return new ApiCollection(ScriptExecutor::all());
+        return new ApiCollection(ScriptExecutor::nonSystem()->get());
     }
 
     /**
@@ -241,7 +241,7 @@ class ScriptExecutorController extends Controller
             exec($cmd, $out, $return);
 
             if ($return !== 0) {
-                throw ValidationException::withMessages(['delete' => _('Error removing image.') . " ${cmd} " . implode("\n", $out)]);
+                throw ValidationException::withMessages(['delete' => _('Error removing image.') . " {$cmd} " . implode("\n", $out)]);
             }
         }
 
@@ -347,11 +347,13 @@ class ScriptExecutorController extends Controller
     {
         $languages = [];
         foreach (Script::scriptFormats() as $key => $config) {
-            $languages[] = [
-                'value' => $key,
-                'text' => $config['name'],
-                'initDockerfile' => ScriptExecutor::initDockerfile($key),
-            ];
+            if (!array_key_exists( 'system', $config) || (array_key_exists( 'system', $config) && !$config['system'])) {
+                $languages[] = [
+                    'value' => $key,
+                    'text' => $config['name'],
+                    'initDockerfile' => ScriptExecutor::initDockerfile($key),
+                ];
+            }
         }
 
         return ['languages' => $languages];
