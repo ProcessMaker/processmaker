@@ -7,7 +7,7 @@ on:
     - cron: '30 2 * * *'  # every day at midnight
   push:
     branches:
-      - FOUR-9465
+      - FOUR-9465-develop
   workflow_dispatch:
   workflow_call:
 env:
