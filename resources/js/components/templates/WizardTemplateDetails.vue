@@ -20,8 +20,10 @@
 </template>
 
 <script>
+import Modal from "../shared/Modal.vue";
+
   export default {
-    components: { },
+    components: { Modal },
     mixins: [],
     props: ["template"],
     data: function() {
@@ -29,6 +31,9 @@
       }
     },
     methods: {
+      close() {
+        this.$bvModal.hide("wizardTemplateDetails");
+      },
     },
     computed: {
     },
