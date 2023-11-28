@@ -1,13 +1,43 @@
 <template>
   <div class="pb-2 template-select-card-container">
-    <b-card
+    <wizard-template-card
+      v-if="type === 'wizard'"
+      :template="template"
+      @showDetails="showDetails()" 
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    />
+    <default-template-card
+      v-else
+      :template="template"
+      @showDetails="showDetails()" 
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    />
+    
+    
+    <!-- <b-card
       no-body
       class="template-select-card"
+      :class=" type === 'wizard' ? 'wizard-card p-0' : 'p-1'"
+      :style="{backgroundImage: 'url(' + template?.backgroundImage + ')'}"
       @click="showDetails()"
       @mouseenter="addHoverClass"
       @mouseleave="removeHoverClass"
     >
-      <b-card-body
+    
+      <b-card-body v-if="type === 'wizard'">
+        <div class="wizard-icon-container text-right mb-3">
+          <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
+        </div>
+        <b-card-text class="mb-2">
+          <img :src="template.icon" :alt="template.name + 'icon'" width="30px"/>
+          <h5>{{ template.name  | str_limit(30) }}</h5>
+          {{ template.shortDescription | str_limit(150) }}
+        </b-card-text>
+      </b-card-body>
+
+      <b-card-body v-else
         :title="template.name | str_limit(30)"
         class="card-body"
       >
@@ -27,12 +57,14 @@
           class="text-muted"
         >+{{ catCount }}</small>
       </b-card-body>
-    </b-card>
+    </b-card> -->
   </div>
 </template>
 
 <script>
 import Vue from "vue";
+import WizardTemplateCard from './WizardTemplateCard';
+import DefaultTemplateCard from './DefaultTemplateCard';
 
 Vue.filter("str_limit", (value, size) => {
   if (!value) return "";
@@ -45,23 +77,23 @@ Vue.filter("str_limit", (value, size) => {
 });
 
 export default {
-  components: {},
-  props: ["template"],
+  components: {WizardTemplateCard, DefaultTemplateCard},
+  props: ["template", "type"],
   data() {
     return {
       thumbnail: null,
       catLimit: 3,
     };
   },
-  computed: {
-    categories() {
-      return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
-    },
-    catCount() {
-      const { length } = this.template.categories;
-      return length - this.catLimit;
-    },
-  },
+  // computed: {
+  //   categories() {
+  //     return this.catLimit ? this.template.categories.slice(0, this.catLimit) : this.template.categories;
+  //   },
+  //   catCount() {
+  //     const { length } = this.template.categories;
+  //     return length - this.catLimit;
+  //   },
+  // },
   watch: {},
   beforeMount() {},
   mounted() {
@@ -118,6 +150,20 @@ export default {
   background-color: #DEEBFF;
   color: #104A75;
   font-size: 12px;
+}
+
+.wizard-card {
+  border-radius: 16px;
+  border: 1px solid #CDDDEE;
+  background-size: cover;
+  height: 243px;
+  .card-body {
+    padding: 10px !important;
+  }
+}
+
+.wizard-card:hover {
+  box-shadow: 0px 10px 20px 4px #00000021;
 }
 
 .hover {

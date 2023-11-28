@@ -2,9 +2,12 @@
   <div class="d-flex w-100">
     <div class="w-25">
       <h4> {{ $t('Processes Browser') }} </h4>
+      <ul>
+        <li>Wizard Templates</li>
+      </ul>
     </div>
     <div class="w-100">
-      <div v-if="!fields.length" class="d-flex justify-content-center py-5 w-100">
+      <div v-if="!showWizardTemplates && !fields.length" class="d-flex justify-content-center py-5 w-100">
         <div>
           <div class="d-flex justify-content-center my-5">
             <img
@@ -29,20 +32,31 @@
           </p>
         </div>
       </div>
+      <wizard-templates v-if="showWizardTemplates"></wizard-templates>
     </div>
   </div>
 </template>
 
 <script>
-
+import WizardTemplates from './WizardTemplates.vue';
 export default {
+  components: { WizardTemplates },
   data() {
     return {
       fields: [],
+      wizardTemplates: [],
+      showWizardTemplates: false,
     };
   },
   methods: {
+    fetchWizardTemplates() {
+      console.log('fetchWizardTemplates', this.wizardTemplates);
+      this.showWizardTemplates = true;
+    }
   },
+  mounted() {
+    this.fetchWizardTemplates();
+  }
 };
 </script>
 
