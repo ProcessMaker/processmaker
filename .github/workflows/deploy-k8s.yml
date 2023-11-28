@@ -5,10 +5,13 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   schedule:
     - cron: '30 2 * * *'  # every day at midnight
+  push:
+    branches:
+      - FOUR-9465-develop
   workflow_dispatch:
   workflow_call:
 env:
-  K8S_BRANCH: SCO-19638
+  K8S_BRANCH: FOUR-12408
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: ${{ secrets.AWS_REGION }}  
@@ -25,9 +28,14 @@ env:
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
   GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
   DOM_EKS: ${{ secrets.DOM_EKS }}
-  BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
+  #BASE: ${{ contains(github.event.pull_request.body, 'ci:next') && 'ci-base' || 'ci-base-php81' }}
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
+  BASE: ${{ contains(github.event.pull_request.body, 'ci:php81') && 'ci-base' || 'ci-base-php82' }}
+  CDATA_LICENSE_DOCUSIGN: ${{ secrets.CDATA_LICENSE_DOCUSIGN }}
+  CDATA_LICENSE_EXCEL: ${{ secrets.CDATA_LICENSE_EXCEL }}
+  CDATA_LICENSE_GITHUB: ${{ secrets.CDATA_LICENSE_GITHUB }}
+  CDATA_LICENSE_SLACK: ${{ secrets.CDATA_LICENSE_SLACK }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -40,41 +48,57 @@ jobs:
         run: |
           export IMAGE_TAG=$(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
           echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
-          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "IMAGE=${{secrets.REGISTRY_HOST}}/processmaker/processmaker:$IMAGE_TAG" >> "$GITHUB_ENV"      
+      - name: Clone repo K8S
+        run: |
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+      - name: Generate image EKS
+        run: |          
+          cd pm4-k8s-distribution/images && sh ./fetchPM.sh $CI_PACKAGE_BRANCH
+          TAG_IMAGE_OSS=processmaker/processmaker
+          TAG_IMAGE_ENT=processmaker/enterprise
+          PM4_BASELINE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG-baseline
+          PM4_CACHE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG-cache
+          PM4_CORE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG
+          PM4_ENT_IMAGE=$TAG_IMAGE_ENT:$IMAGE_TAG
+          PM4_VERSION=$(cat version|sed 's/+/-/g')
+          docker build -f Dockerfile.baseline --tag $PM4_BASELINE_IMAGE .
+          docker build -f Dockerfile.cache --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --tag $PM4_CACHE_IMAGE .
+          docker build -f Dockerfile.core --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_CORE_IMAGE .
+          docker build -f Dockerfile.enterprise --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_ENT_IMAGE .
+          echo "VERSION=$PM4_VERSION" >> $GITHUB_ENV
+      #- name: Run Trivy vulnerability scanner
+      #  uses: aquasecurity/trivy-action@master
+      #  with:
+      #    image-ref: ${{ env.IMAGE }}
+      #    format: 'table'
+      #    exit-code: '0'
+      #    ignore-unfixed: false
+      #    vuln-type: 'os,library'
+      #    scanners: 'vuln,secret'
+      #    severity: 'MEDIUM,HIGH,CRITICAL'
+      #    timeout: '20m'
+      #- name: Push Base to ECR
+      #  if: env.BUILD_BASE == '1'  
+      #  run: |
+      #    docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base-php81
+      #    docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base
+      #- name: Push Enterprise Image to ECR
+      #  run: |
+      #    docker push $IMAGE
+      - name: List Images
+        run: |
+          docker images
       - name: Login to Harbor
         uses: docker/login-action@v2
         with:
           registry: ${{ secrets.REGISTRY_HOST }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - name: Clone repo K8S
+      - name: Push Enterprise Image to Harbor
         run: |
-          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-      - name: Generate image EKS
-        run: |
-          cd pm4-k8s-distribution/images
-          export CICD=1
-          export REGISTRY=${{secrets.REGISTRY_HOST}}
-          bash build.k8s.sh $CI_PACKAGE_BRANCH $IMAGE_TAG $BASE
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.IMAGE }}
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: false
-          vuln-type: 'os,library'
-          scanners: 'vuln,secret'
-          severity: 'MEDIUM,HIGH,CRITICAL'
-          timeout: '20m'
-      - name: Push Base to ECR
-        if: env.BUILD_BASE == '1'  
-        run: |
-          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base-php81
-          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:ci-base
-      - name: Push Enterprise Image to ECR
-        run: |
-          docker push $IMAGE
+          docker tag processmaker/enterprise:$IMAGE_TAG ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
+          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
   phpunit:
     name: phpunit
     needs: imageEKS
@@ -183,3 +207,4 @@ jobs:
           git add .
           git commit -m "Delete Instance : ci-$deploy"
           git push origin main
+
