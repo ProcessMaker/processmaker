@@ -698,7 +698,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return callable
      */
-    private function valueAliasParticipant($value, $expression)
+    public function valueAliasParticipant($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
 

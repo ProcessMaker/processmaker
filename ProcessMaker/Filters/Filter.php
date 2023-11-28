@@ -2,9 +2,11 @@
 
 namespace ProcessMaker\Filters;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 
-// Represents a subject, operator, and value
 class Filter
 {
     const TYPE_PARTICIPANTS = 'Participants';
@@ -12,6 +14,8 @@ class Filter
     const TYPE_STATUS = 'Status';
 
     const TYPE_FIELD = 'Field';
+
+    const TYPE_PROCESS = 'Process';
 
     public string|null $subjectValue;
 
@@ -23,7 +27,7 @@ class Filter
 
     public array $or;
 
-    public static function filter($query, string $filterDefinitions)
+    public static function filter(Builder $query, string $filterDefinitions)
     {
         $filterDefinitions = json_decode($filterDefinitions, true);
         $query->where(function ($query) use ($filterDefinitions) {
@@ -42,7 +46,7 @@ class Filter
         $this->or = Arr::get($definition, 'or', []);
     }
 
-    public function addToQuery($query)
+    public function addToQuery(Builder $query)
     {
         if (!empty($this->or)) {
             $query->where(function ($query) {
@@ -55,10 +59,10 @@ class Filter
 
     private function apply($query)
     {
-        if ($this->subjectType === self::TYPE_PARTICIPANTS) {
-            $this->participants($query);
-        } elseif ($this->subjectType === self::TYPE_STATUS) {
-            $this->status($query);
+        if ($valueAliasMethod = $this->valueAliasMethod()) {
+            $this->valueAliasAdapter($valueAliasMethod, $query);
+        } elseif ($this->subjectType === self::TYPE_PROCESS) {
+            $this->filterByProcessId($query);
         } else {
             $this->applyQueryBuilderMethod($query);
         }
@@ -133,6 +137,10 @@ class Filter
             return 'user_id';
         }
 
+        if ($this->subjectType === self::TYPE_PROCESS) {
+            return 'process_id';
+        }
+
         return $this->subjectValue;
     }
 
@@ -149,29 +157,69 @@ class Filter
         return $this->value;
     }
 
-    private function participants($query)
+    /**
+     * Forward Status and Participant subjects to PMQL methods on the models.
+     *
+     * For now, we only need Participants and Status because Request and Requester
+     * are columns on the tables (process_request_id and user_id).
+     */
+    private function valueAliasMethod()
     {
-        $query->whereIn('id', function ($subQuery) {
-            $subQuery->select('process_request_id')->from('process_request_tokens')
-                ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
-            $this->applyQueryBuilderMethod($subQuery);
-        });
-    }
+        $method = null;
 
-    private function taskStatus($query)
-    {
-    }
-
-    private function valueAliasAdapter($query)
-    {
-        $expression = (object) ['operator' => $this->operator];
         switch ($this->subjectType) {
             case self::TYPE_PARTICIPANTS:
-                $method = 'valueAliasParticipants';
+                $method = 'valueAliasParticipant';
                 break;
             case self::TYPE_STATUS:
                 $method = 'valueAliasStatus';
                 break;
+        }
+
+        return $method;
+    }
+
+    private function valueAliasAdapter(string $method, Builder $query)
+    {
+        $operator = $this->operator();
+        if ($operator === 'in') {
+            $operator = '=';
+        }
+        $values = (array) $this->value();
+
+        $expression = (object) ['operator' => $operator];
+
+        $model = $query->getModel();
+
+        if ($method === 'valueAliasParticipant') {
+            $values = $this->convertUserIdsToUsernames($values);
+        }
+
+        foreach ($values as $i => $value) {
+            if ($i === 0) {
+                $query->where($model->$method($value, $expression));
+            } else {
+                $query->orWhere($model->$method($value, $expression));
+            }
+        }
+    }
+
+    private function convertUserIdsToUsernames($values)
+    {
+        return array_map(function ($value) {
+            return User::find($value)?->username;
+        }, $values);
+    }
+
+    private function filterByProcessId(Builder $query)
+    {
+        if ($query->getModel() instanceof ProcessRequestToken) {
+            $query->whereIn('process_request_id', function ($query) {
+                $query->select('id')->from('process_requests')
+                    ->whereIn('process_id', (array) $this->value());
+            });
+        } else {
+            $this->applyQueryBuilderMethod($query);
         }
     }
 }

@@ -2,14 +2,17 @@
 
 namespace Tests;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 
 class FilterTest extends TestCase
 {
-    private function filter($filterDefinition)
+    private function filter($filterDefinition, $model = ProcessRequest::class)
     {
-        $query = ProcessRequest::query();
+        $query = $model::query();
         Filter::filter($query, json_encode($filterDefinition));
 
         return $query->toRawSql();
@@ -104,23 +107,105 @@ class FilterTest extends TestCase
 
     public function testParticipants()
     {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $user3 = User::factory()->create();
+
         $sql = $this->filter([
             [
                 'subject' => ['type' => 'Participants'],
                 'operator' => 'in',
-                'value' => [1, 2, 3],
+                'value' => [$user1->id, $user2->id],
                 'or' => [
                     [
                         'subject' => ['type' => 'Participants'],
                         'operator' => '=',
-                        'value' => 5,
+                        'value' => $user3->id,
                     ],
                 ],
             ],
         ]);
 
         $this->assertEquals(
-            "select * from `process_requests` where ((`id` in (select `process_request_id` from `process_request_tokens` where `element_type` in ('task', 'userTask', 'startEvent') and `user_id` in (1, 2, 3)) or (`id` in (select `process_request_id` from `process_request_tokens` where `element_type` in ('task', 'userTask', 'startEvent') and `user_id` = 5))))",
+            'select * from `process_requests` where (((' .
+                "`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user1->id} and `element_type` in ('task', 'userTask', 'startEvent'))) " .
+                "or (`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user2->id} and `element_type` in ('task', 'userTask', 'startEvent'))) " .
+                "or ((`id` in (select `process_request_id` from `process_request_tokens` where `user_id` = {$user3->id} and `element_type` in ('task', 'userTask', 'startEvent'))))))",
+            $sql
+        );
+    }
+
+    public function testRequestStatus()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => 'in',
+                'value' => ['In Progress', 'Completed'],
+            ],
+        ]);
+
+        $this->assertEquals(
+            "select * from `process_requests` where ((`status` = 'ACTIVE') or (`status` = 'COMPLETED'))",
+            $sql
+        );
+    }
+
+    public function testTaskStatus()
+    {
+        $user = User::factory()->create();
+
+        $selfServiceTask = ProcessRequestToken::factory()->create([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'self_service_groups' => ['users' => [$user->id]],
+        ]);
+
+        Auth::shouldReceive('user')->andReturn($user);
+
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Status'],
+                'operator' => '=',
+                'value' => 'Self Service',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertEquals(
+            "select * from `process_request_tokens` where ((`id` in ({$selfServiceTask->id})))",
+            $sql
+        );
+    }
+
+    public function testRequestProcess()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Process'],
+                'operator' => 'in',
+                'value' => [5, 6],
+            ],
+        ]);
+
+        $this->assertEquals(
+            'select * from `process_requests` where (`process_id` in (5, 6))',
+            $sql
+        );
+    }
+
+    public function testTaskProcess()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Process'],
+                'operator' => '=',
+                'value' => 5,
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertEquals(
+            'select * from `process_request_tokens` where (`process_request_id` in (select `id` from `process_requests` where `process_id` in (5)))',
             $sql
         );
     }
