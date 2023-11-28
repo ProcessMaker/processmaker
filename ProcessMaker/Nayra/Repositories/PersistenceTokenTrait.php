@@ -172,7 +172,7 @@ trait PersistenceTokenTrait
             return;
         }
         $transition = $gateway->getTransitions()[$transaction['transition']] ?? null;
-        if (empty($transaction)) {
+        if (empty($transition)) {
             Log::info('Invalid transition for gateway token passed. ' . json_encode($transaction));
             return;
         }
