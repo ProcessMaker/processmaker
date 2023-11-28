@@ -67,17 +67,17 @@ jobs:
           docker build -f Dockerfile.core --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_CORE_IMAGE .
           docker build -f Dockerfile.enterprise --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --build-arg CACHE_IMAGE=$PM4_CACHE_IMAGE --build-arg BUILD_VERSION=$PM4_VERSION --tag $PM4_ENT_IMAGE .
           echo "VERSION=$PM4_VERSION" >> $GITHUB_ENV
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.IMAGE }}
-          format: 'table'
-          exit-code: '0'
-          ignore-unfixed: false
-          vuln-type: 'os,library'
-          scanners: 'vuln,secret'
-          severity: 'MEDIUM,HIGH,CRITICAL'
-          timeout: '20m'
+      #- name: Run Trivy vulnerability scanner
+      #  uses: aquasecurity/trivy-action@master
+      #  with:
+      #    image-ref: ${{ env.IMAGE }}
+      #    format: 'table'
+      #    exit-code: '0'
+      #    ignore-unfixed: false
+      #    vuln-type: 'os,library'
+      #    scanners: 'vuln,secret'
+      #    severity: 'MEDIUM,HIGH,CRITICAL'
+      #    timeout: '20m'
       #- name: Push Base to ECR
       #  if: env.BUILD_BASE == '1'  
       #  run: |
