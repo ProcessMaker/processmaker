@@ -57,10 +57,10 @@ jobs:
           cd pm4-k8s-distribution/images && sh ./fetchPM.sh $CI_PACKAGE_BRANCH
           TAG_IMAGE_OSS=processmaker/processmaker
           TAG_IMAGE_ENT=processmaker/enterprise
-          PM4_BASELINE_IMAGE=$TAG_IMAGE_OSS:$TAG-baseline
-          PM4_CACHE_IMAGE=$TAG_IMAGE_OSS:$TAG-cache
-          PM4_CORE_IMAGE=$TAG_IMAGE_OSS:$TAG
-          PM4_ENT_IMAGE=$TAG_IMAGE_ENT:$TAG
+          PM4_BASELINE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG-baseline
+          PM4_CACHE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG-cache
+          PM4_CORE_IMAGE=$TAG_IMAGE_OSS:$IMAGE_TAG
+          PM4_ENT_IMAGE=$TAG_IMAGE_ENT:$IMAGE_TAG
           PM4_VERSION=$(cat version|sed 's/+/-/g')
           docker build -f Dockerfile.baseline --tag $PM4_BASELINE_IMAGE .
           docker build -f Dockerfile.cache --build-arg BASE_IMAGE=$PM4_BASELINE_IMAGE --tag $PM4_CACHE_IMAGE .
