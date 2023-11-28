@@ -14,7 +14,7 @@
       </li>
 
       <li v-if="category" class="breadcrumb-item">
-        <a :href="caegoryRoute" :aria-label="category">
+        <a :href="categoryRoute" :aria-label="category">
           {{ category }}
         </a>
       </li>
@@ -29,7 +29,7 @@
 <script>
 export default {
   router: window.ProcessMaker.Router,
-  props: ["process", "caegoryRoute", "category"],
+  props: ["process", "categoryRoute", "category"],
   data() {
     return {
       list: [],

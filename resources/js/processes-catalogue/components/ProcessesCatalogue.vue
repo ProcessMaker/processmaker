@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div>
-      <breadcrumbs />
-    </div>
+    <breadcrumbs />
     <div class="d-flex w-100">
       <div class="w-25">
         <h4> {{ $t('Processes Browser') }} </h4>
