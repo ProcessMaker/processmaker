@@ -97,7 +97,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: Push Enterprise Image to Harbor
         run: |
-          docker tag local/enterprise:$IMAGE_TAG ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
+          docker tag processmaker/enterprise:$IMAGE_TAG ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$IMAGE_TAG
   phpunit:
     name: phpunit
