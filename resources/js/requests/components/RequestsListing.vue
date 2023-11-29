@@ -25,10 +25,10 @@
           <PMColumnFilterPopover v-if="column.sortable" :key="index" :id="'pm-table-column-'+index" :container="''"></PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
-        <template v-for="(row, index) in data.data" v-slot:[`row-${index}`]>
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
-            v-for="(header, index) in tableHeaders"
-            :key="index"
+            v-for="(header, colIndex) in tableHeaders"
+            :key="colIndex"
           >
             <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
             <template v-else>
@@ -40,7 +40,12 @@
                 </component>
               </template>
               <template v-else>
-                {{ row[header.field] }}
+                <div
+                  :ref="`element-${rowIndex}-${colIndex}`" :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  {{ row[header.field] }}
+                </div>
               </template>
             </template>
           </td>
@@ -176,6 +181,7 @@ export default {
           sortable: true,
           default: true,
           width: 140,
+          truncate: true,
         },
         {
           label: "Status",
@@ -249,7 +255,7 @@ export default {
         props: {
           size: "25",
           "input-data": participants,
-          "hide-name": true,
+          "hide-name": false,
         },
       };
     },

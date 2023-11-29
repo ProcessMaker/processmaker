@@ -1,6 +1,9 @@
 <template>
   <div class="pm-table-container">
-    <table class="pm-table-filter">
+    <table
+      class="pm-table-filter"
+      aria-label="custom-pm-table"
+    >
       <thead>
         <tr>
           <th class="pm-table-border" :colspan="headers.length"></th>
@@ -10,13 +13,14 @@
             class="pm-table-ellipsis-column"
             v-for="(column, index) in headers"
             :key="index"
+            :id="`column-${index}`"
           >
             <div
               class="pm-table-column-header"
               :style="{ width: column.width + 'px' }"
             >
               <slot :name="column.field">
-                {{ column.label }}
+                  {{ column.label }}
               </slot>
             </div>
             <div class="pm-table-filter-button">
@@ -43,24 +47,24 @@
           @click="handleRowClick(row)"
         >
           <slot :name="`row-${rowIndex}`">
-          <td
-            v-for="(header, index) in headers"
-            :key="index"
-          >
-            <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
-            <template v-else>
-              <template v-if="isComponent(row[header.field])">
-                <component 
-                  :is="row[header.field].component"
-                  v-bind="row[header.field].props"
-                >
-                </component>
-              </template>
+            <td
+              v-for="(header, index) in headers"
+              :key="index"
+            >
+              <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
               <template v-else>
-                {{ row[header.field] }}
+                <template v-if="isComponent(row[header.field])">
+                  <component
+                    :is="row[header.field].component"
+                    v-bind="row[header.field].props"
+                  >
+                  </component>
+                </template>
+                <template v-else>
+                  {{ row[header.field] }}
+                </template>
               </template>
-            </template>
-          </td>
+            </td>
           </slot>
         </tr>
       </tbody>
@@ -77,35 +81,12 @@ export default {
   },
   props: {
     headers: {
-      default: [
-        {
-          label: "#",
-          field: "id",
-          sortable: true,
-          width: 45,
-        },
-      ],
-      type: [
-        {
-          label: String,
-          field: String,
-          sortable: Boolean,
-          width: Number,
-        },
-      ],
+      type: Array,
+      default: function () {
+        return [];
+      }
     },
-    data: {
-      default: [
-        {
-          id: 24,
-        },
-      ],
-      type: [
-        {
-          id: Number,
-        },
-      ],
-    },
+    data: [],
   },
   data() {
     return {
@@ -277,5 +258,9 @@ export default {
 .pm-table-ellipsis-column:hover .pm-table-filter-button {
   display: block;
 }
-
+.pm-table-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
