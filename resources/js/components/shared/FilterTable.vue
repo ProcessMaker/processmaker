@@ -1,6 +1,9 @@
 <template>
   <div class="pm-table-container">
-    <table class="pm-table-filter">
+    <table
+      class="pm-table-filter"
+      aria-label="custom-pm-table"
+    >
       <thead>
         <tr>
           <th class="pm-table-border" :colspan="headers.length"></th>
