@@ -17,6 +17,7 @@
         >
           <CatalogueEmpty />
         </div>
+        <CardProcess />
       </b-col>
     </b-row>
   </div>
@@ -25,11 +26,13 @@
 <script>
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
-
+import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
-  components: { MenuCatologue, CatalogueEmpty, Breadcrumbs },
+  components: {
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess,
+  },
   data() {
     return {
       listCategories: [],
