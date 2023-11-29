@@ -13,7 +13,14 @@
           {{ processName }}
         </h4>
         <span class="border border-secondary rounded-circle bg-white">
-          h
+          <ellipsis-menu
+            :actions="processActions"
+            :permission="permission"
+            :data="processData"
+            :is-documenter-installed="isDocumenterInstalled"
+            :divider="false"
+            @navigate="onProcessNavigate"
+          />
         </span>
       </div>
       <p> {{ processDescription }}</p>
@@ -23,16 +30,19 @@
 
 <script>
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
+  import processNavigationMixin from "../../components/shared/processNavigation";
 
 export default {
   components: { EllipsisMenu },
-  mixins: [ellipsisMenuMixin],
-  props: ["processId"],
+  mixins: [ellipsisMenuMixin, processNavigationMixin],
+  props: ["processId", "permission", "isDocumenterInstalled"],
   data() {
     return {
       processName: "",
       processDescription: "",
+      processData: {},
     };
   },
   mounted() {
@@ -46,7 +56,8 @@ export default {
       window.ProcessMaker.apiClient
         .get(`processes/${this.processId}`)
         .then((response) => {
-          console.log(response.data);
+          console.log(response);
+          this.processData = response.data;
           this.processName = response.data.name;
           this.processDescription = response.data.description;
         });

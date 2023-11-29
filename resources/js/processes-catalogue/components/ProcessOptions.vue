@@ -9,10 +9,7 @@
     >
       <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
     </button>
-    <div
-      class="dropdown-menu p-3 pb-0 mt-2"
-      style="width: 248px; border-radius: 5px;"
-    >
+    <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
       <p
         class="font-weight-bold px-1"
         style="font-size: 14px"
@@ -100,5 +97,13 @@ export default {
   border: 0px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 280px;
+    overflow-x: hidden;
+    width: 248px;
+    border-radius: 5px;
 }
 </style>
