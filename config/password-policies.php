@@ -6,6 +6,6 @@ return [
     'numbers' => env('PASSWORD_POLICY_NUMBERS', true),
     'uppercase' => env('PASSWORD_POLICY_UPPERCASE', true),
     'special' => env('PASSWORD_POLICY_SPECIAL', true),
-    //'expiration_days' => env('PASSWORD_POLICY_EXPIRATION_DAYS', 0), // 0 never expires
+    'expiration_days' => env('PASSWORD_POLICY_EXPIRATION_DAYS', null),
     'login_attempts' => env('PASSWORD_POLICY_LOGIN_ATTEMPTS', 5),
 ];
