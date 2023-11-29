@@ -892,4 +892,27 @@ class ProcessRequestsTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $request->id . '/tokens?element_id=' . $token->element_id);
         $response->assertStatus(200);
     }
+
+    public function testAdvancedFilter()
+    {
+        $hit = ProcessRequest::factory()->create([
+            'data' => ['foo' => 'bar'],
+        ]);
+        $miss = ProcessRequest::factory()->create([
+            'data' => ['foo' => 'baz'],
+        ]);
+
+        $filterString = json_encode([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.foo'],
+                'operator' => '=',
+                'value' => 'bar',
+            ],
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL, ['advanced_filter' => $filterString, 'include' => 'data']);
+        $json = $response->json();
+
+        $this->assertEquals($hit->id, $json['data'][0]['id']);
+    }
 }
