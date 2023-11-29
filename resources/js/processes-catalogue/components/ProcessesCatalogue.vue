@@ -7,9 +7,10 @@
         <MenuCatologue
           :data="listCategories"
           :select="selectCategorie"
+          @wizardLinkSelect="showWizardTemplates = 'true'"
           class="mt-3"
         />
-        <ul>
+        <!-- <ul>
           <li>
             <button
               type="button"
@@ -19,14 +20,14 @@
               {{ $t('Wizard Templates') }}
             </button>
           </li>
-        </ul>
+        </ul> -->
       </b-col>
       <b-col cols="10">
         <div
-          v-if="!showWizardTemplates && !fields.length"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <wizard-templates v-if="showWizardTemplates" />
+          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
       </b-col>
     </b-row>
@@ -36,7 +37,6 @@
 <script>
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
-
 import Breadcrumbs from "./Breadcrumbs.vue";
 import WizardTemplates from "./WizardTemplates.vue";
 
@@ -65,9 +65,6 @@ export default {
     },
     selectCategorie(value) {
       console.log(value);
-    },
-    wizardTemplatesSelected() {
-      this.showWizardTemplates = true;
     },
   },
 };
