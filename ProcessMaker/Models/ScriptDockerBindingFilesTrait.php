@@ -73,7 +73,7 @@ trait ScriptDockerBindingFilesTrait
 
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            if ($returnCode == 137) {
+            if ($returnCode == 137 || $returnCode == 9) {
                 Log::error('Script timed out');
                 throw new ScriptTimeoutException(
                     __('Script took too long to complete. Consider increasing the timeout.')

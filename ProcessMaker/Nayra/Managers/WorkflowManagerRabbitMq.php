@@ -681,6 +681,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
                 $user->removeOldRunScriptTokens();
                 $token = new GenerateAccessToken($user);
+
                 return $token->getToken();
             });
             $environmentVariables['API_TOKEN'] = $accessToken;

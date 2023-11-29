@@ -25,7 +25,6 @@ import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
-import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 
@@ -86,7 +85,6 @@ window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
-window.Vue.component("global-search", GlobalSearch);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
 let translationsLoaded = false;
@@ -333,9 +331,6 @@ if (userID) {
   window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
     .notification((token) => {
       ProcessMaker.pushNotification(token);
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
     })
     .listen(".SessionStarted", (e) => {
       const lifetime = parseInt(eval(e.lifetime));
@@ -373,11 +368,6 @@ if (userID) {
       } else {
         window.ProcessMaker.alert(e.message, "warning");
       }
-    })
-    .listen(".CommentsUpdated", (e) => {
-        if(typeof window.ProcessMaker.CommentsCallback === 'function'){
-            window.ProcessMaker.CommentsCallback();
-        }
     });
 }
 
