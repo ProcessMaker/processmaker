@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4">
+  <div class="welcome-header mb-4">
     <avatar-image
       id="avatarMenu"
       ref="userMenuButton"
@@ -60,5 +60,11 @@ export default {
   font-weight: 600;
   line-height: 60.922px;
   letter-spacing: -0.61px;
+}
+.welcome-header {
+  display: flex;
+  height: 64px;
+  align-items: flex-start;
+  gap: 17px;
 }
 </style>

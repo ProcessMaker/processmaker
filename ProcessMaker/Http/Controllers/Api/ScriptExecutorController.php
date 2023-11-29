@@ -347,11 +347,13 @@ class ScriptExecutorController extends Controller
     {
         $languages = [];
         foreach (Script::scriptFormats() as $key => $config) {
-            $languages[] = [
-                'value' => $key,
-                'text' => $config['name'],
-                'initDockerfile' => ScriptExecutor::initDockerfile($key),
-            ];
+            if (!array_key_exists( 'system', $config) || (array_key_exists( 'system', $config) && !$config['system'])) {
+                $languages[] = [
+                    'value' => $key,
+                    'text' => $config['name'],
+                    'initDockerfile' => ScriptExecutor::initDockerfile($key),
+                ];
+            }
         }
 
         return ['languages' => $languages];
