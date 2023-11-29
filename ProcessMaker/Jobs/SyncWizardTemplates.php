@@ -11,8 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\WizardTemplate;
-use ProcessMaker\Models\WizardTemplateCategory;
 
 class SyncWizardTemplates implements ShouldQueue
 {
@@ -46,10 +46,10 @@ class SyncWizardTemplates implements ShouldQueue
                         ? explode(',', $config['wizard_categories'])
                         : [$config['wizard_categories']];
 
-        $wizardTemplateCategoryId = WizardTemplateCategory::firstOrCreate(
-            ['name' => 'Default Wizard Templates'],
+        $wizardTemplateCategoryId = ProcessCategory::firstOrCreate(
+            ['name' => 'Wizard Templates'],
             [
-                'name' => 'Default Wizard Templates',
+                'name' => 'Wizard Templates',
                 'status' => 'ACTIVE',
                 'is_system' => 0,
             ]
@@ -86,7 +86,7 @@ class SyncWizardTemplates implements ShouldQueue
                     throw new Exception("Unable to fetch wizard template {$template['name']}.");
                 }
                 $payload = $response->json();
-                $dataKey = "export.{$payload['root']}.attributes.wizard_template_category_id";
+                $dataKey = "export.{$payload['root']}.attributes.process_category_id";
                 data_set($payload, $dataKey, $wizardTemplateCategoryId);
 
                 $options = new Options([
