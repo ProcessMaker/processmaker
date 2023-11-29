@@ -39,6 +39,11 @@ class LanguageTranslationHandler extends OpenAiHandler
         $this->processId = $processId;
     }
 
+    public function getPromptsPath()
+    {
+        return app_path() . '/Ai/Prompts/';
+    }
+
     public function getPromptFile($type = null)
     {
         return file_get_contents($this->getPromptsPath() . 'language_translation_' . $type . '.md');

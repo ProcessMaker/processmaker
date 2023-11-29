@@ -9,10 +9,21 @@
           :select="selectCategorie"
           class="mt-3"
         />
+        <ul>
+          <li>
+            <button
+              type="button"
+              class="btn btn-link"
+              @click="wizardTemplatesSelected"
+            >
+              {{ $t('Wizard Templates') }}
+            </button>
+          </li>
+        </ul>
       </b-col>
       <b-col cols="10">
         <div
-          v-if="!fields.length"
+          v-if="!showWizardTemplates && !fields.length"
           class="d-flex justify-content-center py-5"
         >
           <CatalogueEmpty />
@@ -27,13 +38,18 @@ import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 
 import Breadcrumbs from "./Breadcrumbs.vue";
+import WizardTemplates from "./WizardTemplates.vue";
 
 export default {
-  components: { MenuCatologue, CatalogueEmpty, Breadcrumbs },
+  components: {
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, WizardTemplates,
+  },
   data() {
     return {
       listCategories: [],
       fields: [],
+      wizardTemplates: [],
+      showWizardTemplates: false,
     };
   },
   mounted() {
@@ -49,6 +65,9 @@ export default {
     },
     selectCategorie(value) {
       console.log(value);
+    },
+    wizardTemplatesSelected() {
+      this.showWizardTemplates = true;
     },
   },
 };

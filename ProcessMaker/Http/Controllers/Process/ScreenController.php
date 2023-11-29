@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
@@ -125,6 +127,9 @@ class ScreenController extends Controller
         $data = json_decode($request->query('node'), true) ?? [];
         $screen = Screen::find($data['screenRef']);
 
-        return view('processes.screens.preview', compact('screen'));
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, $screen->type ?? 'FORM'));
+
+        return view('processes.screens.preview', compact('screen', 'manager'));
     }
 }
