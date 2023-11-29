@@ -20,7 +20,7 @@ class HomeController extends Controller
                 return redirect('/requests');
             }
             // Redirect to home dynamic only if the package was enable
-            if (!$isMobile && class_exists(\ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::class)) {
+            if (!$isMobile && hasPackage('package-dynamic-ui')) {
                 $user = \Auth::user();
                 $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
 
