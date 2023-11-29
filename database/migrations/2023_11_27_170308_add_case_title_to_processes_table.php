@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::table('processes', function (Blueprint $table) {
             $table->string('case_title', 200)->nullable();
         });
+        Schema::table('process_versions', function (Blueprint $table) {
+            $table->string('case_title', 200)->nullable();
+        });
     }
 
     /**
@@ -22,6 +25,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('processes', function (Blueprint $table) {
+            $table->dropColumn('case_title');
+        });
+        Schema::table('process_versions', function (Blueprint $table) {
             $table->dropColumn('case_title');
         });
     }
