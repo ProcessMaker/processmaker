@@ -49,9 +49,10 @@ class ProcessTranslationReady extends Notification
     {
         $data = [
             'humanLanguage' => $this->targetLanguage['humanLanguage'],
-            'processName' => $this->process->name
+            'processName' => $this->process->name,
         ];
         $message = __('Process translation to :humanLanguage completed for process: :processName', $data);
+
         return [
             'message' => $message,
             'code' => $this->code,
