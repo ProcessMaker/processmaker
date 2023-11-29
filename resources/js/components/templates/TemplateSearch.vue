@@ -163,7 +163,7 @@ export default {
               description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
               icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
               backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png', 'https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png'],
+              sliderImages: ['https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png', 'https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png'],
               helperProcessId: 1,
               categories:'1',
             },

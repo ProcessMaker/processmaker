@@ -2,19 +2,41 @@
   <div>
     <modal
       id="wizardTemplateDetails"
+      class="wizard-template-modal"
       size="huge"
       :hide-footer="true"
       @close="close"
     >
-      <div class="wizard-details-container text-left mb-3">
-        <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3">
-        <h5 class="text-uppercase mb-1">{{ template.name | str_limit(30) }}</h5>
-        <h2>{{ template.headline | str_limit(150) }}</h2>
-        <h4>{{ template.description | str_limit(150) }}</h4>
-      </div>
-      <b-carousel-slide
-        :img-src="template.sliderImages"
-      ></b-carousel-slide>
+      <b-row>
+        <b-col>
+          <div class="wizard-details-container text-left mb-3">
+            <span>
+              <img
+                :src="template.icon"
+                :alt="template.name + 'icon'"
+                width="45px"
+                class="mb-3 d-inline-block"
+              >
+            </span>
+            <span>
+              <h5 class="text-uppercase mb-1 d-inline-block font-weight-bold template-name">{{ template.name | str_limit(30) }}</h5>
+            </span>
+            <div class="wizard-details-text">
+              <h2 class="wizard-details-headline">{{ template.headline | str_limit(150) }}</h2>
+              <p class="wizard-details-description">{{ template.description | str_limit(150) }}</p>
+              <button class="wizard-details-button text-uppercase">
+                <i class="fas fa-play-circle" />
+                {{ $t('Call to Action') }}
+              </button>
+            </div>
+          </div>
+        </b-col>
+        <b-col>
+          <b-carousel :interval="0">
+            <b-carousel-slide v-for="(image, index) in template.sliderImages" :key="index" :img-src="image"/>
+          </b-carousel>
+        </b-col>
+      </b-row>
     </modal>
   </div>
 </template>
@@ -22,26 +44,49 @@
 <script>
 import Modal from "../shared/Modal.vue";
 
-  export default {
-    components: { Modal },
-    mixins: [],
-    props: ["template"],
-    data: function() {
-      return {
-      }
+export default {
+  components: { Modal },
+  mixins: [],
+  props: ["template"],
+  data() {
+    return {
+    };
+  },
+  computed: {
+  },
+  mounted() {
+    this.show();
+  },
+  methods: {
+    show() {
+      this.$bvModal.show("wizardTemplateDetails");
     },
-    methods: {
-      close() {
-        this.$bvModal.hide("wizardTemplateDetails");
-      },
+    close() {
+      this.$bvModal.hide("wizardTemplateDetails");
     },
-    computed: {
-    },
-    mounted() {
-    },
-  };
+  },
+};
 </script>
 
 <style scoped>
+.wizard-details-text {
+  font-weight: 400;
+}
+.wizard-details-description {
+  font-size: 16px;
+}
 
+.wizard-details-headline {
+  font-size: 26px;
+}
+
+.wizard-details-button{
+  border-radius: 11px;
+  border: none;
+  background-color: #1572C2;
+  color: #FFFFFF;
+  display: inline-flex;
+  padding: 7px 16px;
+  align-items: center;
+}
 </style>
