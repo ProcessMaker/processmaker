@@ -3,16 +3,15 @@
     <b-button :id="'pm-cff-button-'+id" 
               variant="light"
               size="sm">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-        <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
-      </svg>
+      <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
     <b-popover :target="'pm-cff-button-'+id"
                triggers="click"
                :show.sync="popoverShow"
                placement="bottom"
                :container="container"
-               @show="onShow">
+               @show="onShow"
+               custom-class="pm-filter-popover">
       <PMColumnFilterForm @onSortAscending="onSortAscending"
                            @onSortDescending="onSortDescending"
                            @onCancel="onCancel"
@@ -24,9 +23,12 @@
 
 <script>
   import PMColumnFilterForm from "./PMColumnFilterForm"
+  import PMColumnFilterIconThreeDots from "./PMColumnFilterIconThreeDots"
+
   export default {
     components: {
-      PMColumnFilterForm
+      PMColumnFilterForm,
+      PMColumnFilterIconThreeDots
     },
     props: ["container", "id"],
     data() {
@@ -59,6 +61,9 @@
 </script>
 
 <style>
+  .pm-filter-popover .popover-body{
+    padding: 0.5rem 0.75rem !important;
+  }
 </style>
 <style scoped>
   .popover{
