@@ -9,7 +9,9 @@
     </div>
 
     <div class="d-flex d-lg-none w-100">
-      <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
+        @if(hasPackage('package-ai'))
+        <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
+        @endif
     </div>
 
     <b-collapse is-nav id="nav-collapse">

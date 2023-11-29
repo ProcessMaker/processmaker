@@ -144,7 +144,7 @@ class ProcessPolicy
 
     /**
      * This determine if user can view processes.
-     * 
+     *
      * @param User $user
      * @param Process $process
      * @return bool

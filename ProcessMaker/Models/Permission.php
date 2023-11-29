@@ -107,11 +107,11 @@ class Permission extends ProcessMakerModel
 
     /**
      * This retrieves the users who have permissions in a list of groups.
-     * 
+     *
      * @param array $groups
      * @return Collection
      */
-    public static function getUsersByGroup(array $groups) 
+    public static function getUsersByGroup(array $groups)
     {
         $users = DB::table('assignables')
                 ->join('permissions', function ($join) use ($groups) {
@@ -126,6 +126,7 @@ class Permission extends ProcessMakerModel
                 ->union(\ProcessMaker\Models\User::where('is_administrator', '=', true))
                 ->groupBy('users.id')
                 ->get();
+
         return $users;
     }
 }

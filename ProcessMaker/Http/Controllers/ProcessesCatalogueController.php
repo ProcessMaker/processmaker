@@ -13,17 +13,18 @@ class ProcessesCatalogueController extends Controller
     {
         return view('processes-catalogue.index');
     }
+
     /**
      * @param Process $process
      * @param string $id
-     * 
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function open(Process $process, $id)
     {
         return view('processes-catalogue.open', [
             'process' => $process,
-            'processId' => $id
+            'processId' => $id,
         ]);
     }
 }
