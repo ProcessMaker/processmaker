@@ -57,6 +57,9 @@ export default {
     this.getStartEvents();
   },
   methods: {
+    /**
+     * get start events for dropdown Menu
+     */
     getStartEvents() {
       window.ProcessMaker.apiClient
         .get(`processes/${this.processId}`)
@@ -69,18 +72,17 @@ export default {
           });
         });
     },
+    /**
+     * Start new request
+     */
     goToNewRequest(event) {
-      window.ProcessMaker.apiClient
+      ProcessMaker.apiClient
         .post(`/process_events/${this.processId}?event=${event}`)
         .then((response) => {
           this.spin = 0;
           let instance = response.data;
           this.$cookies.set("fromTriggerStartEvent", true, "1min");
-          if (this.$cookies.get("isMobile") === "true") {
-            window.location = `/requests/mobile/${instance.id}`;
-          } else {
-            window.location = `/requests/${instance.id}`;
-          }
+          window.location = `/requests/${instance.id}`;
         }).catch((err) => {
           const data = err.response.data;
           if (data.message) {
