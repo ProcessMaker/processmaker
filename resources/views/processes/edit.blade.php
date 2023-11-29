@@ -106,8 +106,9 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
                                     ])
                                 !!}
-                                <small class="form-text text-muted"
-                                    v-if="! errors.name">{{ __('This field has a limit of 200 characters when calculated') }}</small>
+                                <small class="form-text text-muted" v-if="! errors.name">
+                                    {{ __('This field has a limit of 200 characters when calculated') }}
+                                </small>
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
