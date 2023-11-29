@@ -47,91 +47,74 @@ export default {
         }
       }
     },
-    options: {
+    value: {
       handler(newValue, oldValue) {
-
-        if (!_.isEqual(newValue, oldValue) && !_.isEmpty(this.value)) {
-          this.setUpOptions();
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
         }
-      },
-    }
+      }
+    },
+    projectId: {
+      handler(newValue, oldValue) {
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
+        }
+      }
+    },
   },
   methods: {
-    setUpOptions() {
-      if (this.value) {
-        const content = [];
-        const selected = String(this.value).split(',');
-        this.loading = selected.length;
-        selected.forEach(project => {
-          this.getOptionData(project, content);
-        });
-      } else {
-        this.content.splice(0);
+    loadSelectedOptions() {
+      let selectedIds = this.value || [];
+      if (!Array.isArray(selectedIds)) {
+        selectedIds = this.value.split(',');
       }
-    },
-    setCurrentProject() {
-      if (!this.projectId) {
+
+      if (this.projectId && !selectedIds.includes(this.projectId)) {
+        selectedIds.push(this.projectId);
+      }
+      
+      let idsToLoad = [];
+      selectedIds.forEach(id => {
+        if (!this.options.find(item => item.id == id)) {
+          idsToLoad.push(id);
+        }
+      });
+
+      if (idsToLoad.length == 0) {
         return;
       }
 
-      this.currentProject = this.options.find(project => project.id == this.projectId);
-
-      if (this.currentProject) {
-        this.content = [this.currentProject];
-      }
-    },
-    completeSelectedLoading(content) {
-      this.loading = false;
-      this.content.splice(0);
-      this.content.push(...content);
-    },
-    getOptionData(id, content) {
-      const option = this.options.concat(this.content).find(item => item.id == id);
-      if (option) {
-        this.loading--;
-        content.push(option);
-        this.handleCompleteSelectedLoading(content);
-        return;
-      }
-      ProcessMaker.apiClient
-        .get(this.apiGet)
-        .then(response => {
-          this.loading--;
-          content.push(response.data.data);
-          this.handleCompleteSelectedLoading(content);
-        })
-        .catch(error => {
-          this.loading--;
-          if (error.response.status === 404) {
-            this.error = this.$t('Selected not found');
+      const params = { only_ids: idsToLoad.join(',') };
+      ProcessMaker.apiClient.get(this.apiList, { params }).then(response => {
+        this.content = response.data.data;
+        response.data.data.forEach(project => {
+          if (!this.options.find(item => item.id == project.id)) {
+            this.options.push(project);
           }
-          this.handleCompleteSelectedLoading(content);
-        });
+        })
+      });
     },
     load: _.debounce(function (filter) {
       ProcessMaker.apiClient
-        .get(this.apiList + "?order_direction=asc&status=active&per_page=1000" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+        .get(this.apiList + "?order_direction=asc&status=active&per_page=10" + (typeof filter === 'string' ? '&filter=' + filter : ''))
         .then(response => {
           this.loading = false;
-          this.options = response.data.data;
-
-          if (!this.initialLoadExecuted) {
-            this.setCurrentProject(this.options);
-            this.initialLoadExecuted = true;
-          }
+          response.data.data.forEach(project => {
+            if (!this.options.find(item => item.id == project.id)) {
+              this.options.push(project);
+            }
+          });
         })
         .catch(err => {
           this.loading = false;
         });
     }, 300),
-    handleCompleteSelectedLoading(content) {
-      if (!this.loading) {
-        this.completeSelectedLoading(content)
-      }
-    }
   },
   mounted() {
     this.load();
+    if (this.projectId || this.value) {
+      this.loadSelectedOptions();
+    }
   },
 };
 </script>

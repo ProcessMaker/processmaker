@@ -63,15 +63,13 @@ class OauthMailManager extends MailManager
             case 'google':
                 $accessToken = $this->checkForExpiredAccessToken();
                 // Update Authentication Mode
-                $transport->setAuthMode('XOAUTH2')
-                ->setUsername($this->fromAddress)
+                $transport->setUsername($this->fromAddress)
                 ->setPassword($accessToken);
                 break;
             case 'office365':
                 $accessToken = $this->checkForExpiredAccessToken();
                 // Update Authentication Mode
-                $transport->setAuthMode('XOAUTH2')
-                ->setUsername($this->fromAddress)
+                $transport->setUsername($this->fromAddress)
                 ->setPassword($accessToken);
                 break;
         }

@@ -17,13 +17,14 @@
         <div class="d-flex">
           <b-col cols="9">
             <process-map
-              :process-id="processId"
+              :process="process"
               :permission="permission"
+              :current-user-id="currentUserId"
               :is-documenter-installed="isDocumenterInstalled"
             />
           </b-col>
           <b-col cols="3">
-            <process-options :process-id="processId" />
+            <process-options :process="process" />
           </b-col>
         </div>
         <b-col cols="12">
@@ -41,7 +42,7 @@ import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
   components: { ProcessOptions, Breadcrumbs, ProcessMap },
-  props: ["processId", "permission", "isDocumenterInstalled"],
+  props: ["process", "permission", "isDocumenterInstalled"],
   data() {
     return {
       fields: [],
