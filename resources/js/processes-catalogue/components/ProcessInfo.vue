@@ -14,7 +14,7 @@
     <b-col cols="10">
       <div class="d-flex">
         <b-col cols="9">
-          Process Map
+          <process-map :process-id="processId" />
         </b-col>
         <b-col cols="3">
           <process-options :process-id="processId" />
@@ -28,10 +28,11 @@
 </template>
 
 <script>
+import ProcessMap from "./ProcessMap.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 
 export default {
-  components: { ProcessOptions },
+  components: { ProcessOptions, ProcessMap },
   props: ["processId"],
   data() {
     return {
