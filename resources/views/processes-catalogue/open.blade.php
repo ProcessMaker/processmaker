@@ -10,7 +10,7 @@
 
 @section('content')
   <div id="open-process" class="px-3 page-content mb-0">
-    <process-info :processId={{$processId}}></process-info>
+    <process-info :process-id={{$id}}></process-info>
   </div>
 @endsection
 

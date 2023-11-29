@@ -21,9 +21,6 @@ class ProcessesCatalogueController extends Controller
      */
     public function open(Process $process, $id)
     {
-        return view('processes-catalogue.open', [
-            'process' => $process,
-            'processId' => $id
-        ]);
+        return view('processes-catalogue.open', compact('id'));
     }
 }

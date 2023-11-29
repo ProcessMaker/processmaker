@@ -17,7 +17,7 @@
           Process Map
         </b-col>
         <b-col cols="3">
-          Process Options
+          <process-options :process-id="processId" />
         </b-col>
       </div>
       <b-col cols="12">
@@ -28,8 +28,11 @@
 </template>
 
 <script>
+import ProcessOptions from "./ProcessOptions.vue";
 
 export default {
+  components: { ProcessOptions },
+  props: ["processId"],
   data() {
     return {
       fields: [],
