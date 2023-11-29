@@ -43,6 +43,7 @@ class VerifyChangePasswordNeeded
             Auth::user() && Auth::user()->password_changed_at;
 
         return $validationRequired &&
-            (Carbon::now()->diffInDays(Auth::user()->password_changed_at) >= config('password-policies.expiration_days'));
+            (Carbon::now()->diffInDays(Auth::user()->password_changed_at) >=
+                config('password-policies.expiration_days'));
     }
 }
