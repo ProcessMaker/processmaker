@@ -10,7 +10,7 @@
       <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
     </button>
     <div
-      class="dropdown-menu p-3 pb-0 mt-2"
+      class="dropdown-menu scrollable-menu p-3 pb-0 mt-2"
       style="width: 248px; border-radius: 5px;"
     >
       <p
@@ -19,6 +19,69 @@
       >
         {{ $t('Starting events') }}
       </p>
+      <div
+        v-for="event in processEvents"
+        :key="event.id"
+        class="mt-2"
+      >
+        <p
+          class="text-capitalize mb-1"
+          style="font-weight: 600"
+        >
+          {{ event.name }}
+        </p>
+        <button
+          type="button"
+          class="btn btn-outline-success border-0 p-1"
+          @click="goToNewRequest(event.id)"
+        >
+          <i class="fas fa-play-circle p-1" />
+          {{ $t('Start') }}
+        </button>
+        <hr class="mt-2 mb-0">
+      </div>
+      <div
+        v-for="event in processEvents"
+        :key="event.id"
+        class="mt-2"
+      >
+        <p
+          class="text-capitalize mb-1"
+          style="font-weight: 600"
+        >
+          {{ event.name }}
+        </p>
+        <button
+          type="button"
+          class="btn btn-outline-success border-0 p-1"
+          @click="goToNewRequest(event.id)"
+        >
+          <i class="fas fa-play-circle p-1" />
+          {{ $t('Start') }}
+        </button>
+        <hr class="mt-2 mb-0">
+      </div>
+      <div
+        v-for="event in processEvents"
+        :key="event.id"
+        class="mt-2"
+      >
+        <p
+          class="text-capitalize mb-1"
+          style="font-weight: 600"
+        >
+          {{ event.name }}
+        </p>
+        <button
+          type="button"
+          class="btn btn-outline-success border-0 p-1"
+          @click="goToNewRequest(event.id)"
+        >
+          <i class="fas fa-play-circle p-1" />
+          {{ $t('Start') }}
+        </button>
+        <hr class="mt-2 mb-0">
+      </div>
       <div
         v-for="event in processEvents"
         :key="event.id"
@@ -100,5 +163,11 @@ export default {
   border: 0px;
   font-size: 16px;
   font-weight: 600;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 280px;
+    overflow-x: hidden;
 }
 </style>
