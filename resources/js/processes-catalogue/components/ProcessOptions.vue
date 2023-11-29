@@ -40,69 +40,6 @@
         </button>
         <hr class="mt-2 mb-0">
       </div>
-      <div
-        v-for="event in processEvents"
-        :key="event.id"
-        class="mt-2"
-      >
-        <p
-          class="text-capitalize mb-1"
-          style="font-weight: 600"
-        >
-          {{ event.name }}
-        </p>
-        <button
-          type="button"
-          class="btn btn-outline-success border-0 p-1"
-          @click="goToNewRequest(event.id)"
-        >
-          <i class="fas fa-play-circle p-1" />
-          {{ $t('Start') }}
-        </button>
-        <hr class="mt-2 mb-0">
-      </div>
-      <div
-        v-for="event in processEvents"
-        :key="event.id"
-        class="mt-2"
-      >
-        <p
-          class="text-capitalize mb-1"
-          style="font-weight: 600"
-        >
-          {{ event.name }}
-        </p>
-        <button
-          type="button"
-          class="btn btn-outline-success border-0 p-1"
-          @click="goToNewRequest(event.id)"
-        >
-          <i class="fas fa-play-circle p-1" />
-          {{ $t('Start') }}
-        </button>
-        <hr class="mt-2 mb-0">
-      </div>
-      <div
-        v-for="event in processEvents"
-        :key="event.id"
-        class="mt-2"
-      >
-        <p
-          class="text-capitalize mb-1"
-          style="font-weight: 600"
-        >
-          {{ event.name }}
-        </p>
-        <button
-          type="button"
-          class="btn btn-outline-success border-0 p-1"
-          @click="goToNewRequest(event.id)"
-        >
-          <i class="fas fa-play-circle p-1" />
-          {{ $t('Start') }}
-        </button>
-        <hr class="mt-2 mb-0">
-      </div>
     </div>
   </div>
 </template>
