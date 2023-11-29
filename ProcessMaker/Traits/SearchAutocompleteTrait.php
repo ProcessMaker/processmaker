@@ -190,19 +190,36 @@ trait SearchAutocompleteTrait
         $projectModalClass = 'ProcessMaker\Package\Projects\Models\Project';
         $project = new $projectModalClass;
 
-        if (empty($query)) {
-            $results = $project->get();
-        } else {
-            $results = $project->pmql('title = "' . $query . '"', function ($expression) {
-                return function ($query) use ($expression) {
-                    $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
-                };
-            })->get();
-        }
+        $projectMemberModalClass = 'ProcessMaker\Package\Projects\Models\ProjectMember';
+        $projectMember = new $projectMemberModalClass;
+        $user = Auth::user();
+        $ids = $projectMember->getProjectWhereTheUserIsMember($user);
+
+        $results = empty($query)
+            ? $this->searchProjectsNoQuery($project, $user, $ids)
+            : $this->searchProjectsWithQuery($project, $query, $user, $ids);
 
         return $results->map(function ($request) {
             return $request->only(['id', 'title']);
         });
+    }
+
+    private function searchProjectsNoQuery($project, $user, $ids)
+    {
+        return $project->where(function ($query) use ($user, $ids) {
+            $query->owner($user->id)->orWhereIn('id', $ids);
+        })->get();
+    }
+
+    private function searchProjectsWithQuery($project, $query, $user, $ids)
+    {
+        return $project->pmql('title = "' . $query . '"', function ($expression) use ($user, $ids) {
+            return function ($query) use ($expression, $user, $ids) {
+                $query->owner($user->id)
+                    ->orWhereIn('id', $ids)
+                    ->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+            };
+        })->get();
     }
 
     private function searchProjectMembers($query)

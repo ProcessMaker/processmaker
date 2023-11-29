@@ -106,6 +106,7 @@ class AuthServiceProvider extends ServiceProvider
             'designer/screen-builder',
             'modeler/',
             'script/',
+            'designer/scripts',
             'designer/decision-tables',
             'designer/data-sources',
         ];

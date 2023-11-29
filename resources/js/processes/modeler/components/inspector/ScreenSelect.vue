@@ -38,7 +38,7 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
-      v-if="!content.id"
+      v-if="!content?.id"
       :screen-select-id="uniqId"
       :screen-type="params.type"
       label="screen"
@@ -128,6 +128,10 @@ export default {
       }
       return false;
     },
+    /**
+     * Loads the screen
+     * @param {Object} value - Screen
+     */
     loadScreen(value) {
       this.loading = true;
       ProcessMaker.apiClient
@@ -192,7 +196,7 @@ export default {
      */
     processAssetCreation({ asset, assetType, screenSelectId }) {
       if (assetType === "screen" && this.uniqId === screenSelectId) {
-        this.content = asset;
+        this.loadScreen(asset.id);
       }
     },
     validate() {
