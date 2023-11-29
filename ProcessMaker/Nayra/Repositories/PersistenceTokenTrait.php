@@ -3,6 +3,7 @@
 namespace ProcessMaker\Nayra\Repositories;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
@@ -166,9 +167,17 @@ trait PersistenceTokenTrait
     public function persistGatewayTokenPassed(array $transaction)
     {
         $gateway = $this->deserializer->unserializeEntity($transaction['gateway']);
-        $transition = $this->deserializer->unserializeEntity($transaction['transition']);
+        if (!is_numeric($transaction['transition'])) {
+            Log::info('Invalid transition id for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
+        $transition = $gateway->getTransitions()[$transaction['transition']] ?? null;
+        if (empty($transition)) {
+            Log::info('Invalid transition for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
         $tokens = $this->deserializer->unserializeTokensCollection($transaction['tokens']);
-        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens[0]);
+        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens->item(0));
 
         // Comments
         $subscriber = new CommentsSubscriber();
