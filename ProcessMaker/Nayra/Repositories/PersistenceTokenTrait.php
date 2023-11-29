@@ -3,6 +3,7 @@
 namespace ProcessMaker\Nayra\Repositories;
 
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
@@ -297,5 +298,13 @@ trait PersistenceTokenTrait
         $version = $aboutInfo['version'];
         error_log("Microservice $name version $version is running.");
         Cache::put(self::$aboutCacheKey, $aboutInfo, 60);
+    }
+
+    public function throwGlobalSignalEvent(array $transaction)
+    {
+        $throwElement = $this->deserializer->unserializeEntity($transaction['throw_element']);
+        $token = $transaction['token'] ? $this->deserializer->unserializeToken($transaction['token']) : null;
+        $eventDefinition = $throwElement->getEventDefinitions()->item(0);
+        WorkflowManager::throwSignalEventDefinition($eventDefinition, $token);
     }
 }
