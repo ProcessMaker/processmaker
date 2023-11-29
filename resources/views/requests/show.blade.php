@@ -236,14 +236,26 @@
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                  <div v-if="iframeLoading" class="d-flex justify-content-center">
+                  <div v-if="isObjectLoading" class="d-flex justify-content-center">
                     <div class="spinner-border text-primary" role="status"></div>
                   </div>
-                  <div v-show="!iframeLoading">
-                    <iframe class="card"
-                      src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request' => $request->id]) }}"
-                      width="100%" height="640px" frameborder="0" style="border-radius: 4px;"
-                      @load="onLoadIframe"></iframe>
+                  <div :class="{ 'hidden': isObjectLoading }">
+                    <object ref="processMap" class="card"
+                      data="{{ route('modeler.inflight', [
+                        'process' => $request->process->id,
+                        'request' => $request->id
+                      ]) }}"
+                      width="100%"
+                      :height="isObjectLoading ? 'auto' : '640px'"
+                      frameborder="0"
+                      type="text/html"
+                      style="border-radius: 4px;"
+                      @load="onLoadedObject">
+                      <!-- Accessible Alternative Content -->
+                      <p>
+                        {{ __('Content not available. Check settings or try a different device.') }}
+                      </p>
+                    </object>
                   </div>
                 </div>
               </div>
@@ -419,7 +431,7 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          iframeLoading: false,
+          isObjectLoading: false,
           showTree: false,
         };
       },
@@ -543,12 +555,12 @@
         switchTab(tab) {
           this.activeTab = tab;
           if (tab === 'overview') {
-            this.iframeLoading = true;
+            this.isObjectLoading = true;
           }
           ProcessMaker.EventBus.$emit('tab-switched', tab);
         },
-        onLoadIframe() {
-          this.iframeLoading = false;
+        onLoadedObject() {
+          this.isObjectLoading = false;
         },
         requestStatusClass(status) {
           status = status.toLowerCase();
@@ -734,4 +746,14 @@
       },
     });
   </script>
+@endsection
+
+@section('css')
+<style>
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
 @endsection

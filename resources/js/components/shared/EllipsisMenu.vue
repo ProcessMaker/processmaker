@@ -165,11 +165,17 @@ export default {
     filterActionsByPermissions() {
       return this.actions.filter(action => {
         // Check if the action has a 'permission' property and it's a non-empty string
-        if (!action.permission || typeof action.permission !== 'string' || action.permission.trim() === '') {
+        if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
             return true; // No specific permission required or invalid format, so allow the action.
         }
-
-        const requiredPermissions = action.permission.split(',');
+        let requiredPermissions;
+        // Check if this.permission is of type string
+        if (typeof action.permission === 'string') {
+          requiredPermissions = action.permission.split(',');
+        } else {
+          requiredPermissions = action.permission;
+        }
+        
         // Check if this.permission is of type object
         if (typeof this.permission === 'object' && this.permission !== null) {
           const keys = Object.keys(this.permission);

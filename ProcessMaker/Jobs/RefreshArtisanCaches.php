@@ -31,10 +31,10 @@ class RefreshArtisanCaches implements ShouldQueue
      */
     public function handle()
     {
-        Artisan::call('clear-compiled', $options = [
+        $options = [
             '--no-interaction' => true,
             '--quiet' => true,
-        ]);
+        ];
 
         if (app()->configurationIsCached()) {
             Artisan::call('config:cache', $options);
