@@ -458,6 +458,7 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 .pmql-tooltip .arrow::before {
   border-bottom-color: #F2F8FE !important;
+  border-top-color: #F2F8FE !important;
 }
 .copy-icon {
   margin-left: 14px;

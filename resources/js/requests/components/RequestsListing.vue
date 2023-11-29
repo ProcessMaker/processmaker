@@ -41,10 +41,18 @@
               </template>
               <template v-else>
                 <div
-                  :ref="`element-${rowIndex}-${colIndex}`" :class="{ 'pm-table-truncate': header.truncate }"
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
                   {{ row[header.field] }}
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${rowIndex}-${colIndex}`"
+                    custom-class="pmql-tooltip"
+                  >
+                    {{ row[header.field] }}
+                  </b-tooltip>
                 </div>
               </template>
             </template>
