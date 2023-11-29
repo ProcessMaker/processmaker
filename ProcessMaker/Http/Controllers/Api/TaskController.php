@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Filters\Filter;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
@@ -206,6 +207,10 @@ class TaskController extends Controller
             } catch (SyntaxError $e) {
                 abort('Your PMQL contains invalid syntax.', 400);
             }
+        }
+
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
         }
 
         // If only the total is being requested (by a Saved Search), send it now
