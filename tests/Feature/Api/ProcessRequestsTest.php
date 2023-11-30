@@ -340,7 +340,7 @@ class ProcessRequestsTest extends TestCase
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
             'name' => $faker->unique()->name(),
-            'data' => '{"test":1}',
+            'data' => ['test' => 1],
             'process_id' => json_decode($verify->getContent())->process_id,
         ]);
 

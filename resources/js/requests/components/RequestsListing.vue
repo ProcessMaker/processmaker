@@ -201,7 +201,13 @@ export default {
           default: true,
         },
         {
-          label: "Name",
+          label: "Case Title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Process Name",
           field: "name",
           sortable: true,
           default: true,
@@ -356,5 +362,3 @@ export default {
   },
 };
 </script>
-<style>
-</style>
