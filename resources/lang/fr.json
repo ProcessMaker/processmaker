@@ -1801,5 +1801,6 @@
   "This environment already contains an older version of the {{ item }} named '{{ name }}.'": "Cet environnement contient déjà une version plus ancienne de {{ item }} nommé '{{ name }}'.",
   "This environment already contains the same version of the {{ item }} named '{{ name }}.'": "Cet environnement contient déjà la même version de l'{{ item }} nommé '{{ name }}'.",
   "Visit our Gallery for more Templates": "Visitez notre Galerie pour plus de Modèles",
-  "Start a new process from a blank canvas, a text description, or a preset template.": "Démarrez un nouveau processus à partir d'une toile vierge, d'une description textuelle ou d'un modèle prédéfini."
+  "Start a new process from a blank canvas, a text description, or a preset template.": "Démarrez un nouveau processus à partir d'une toile vierge, d'une description textuelle ou d'un modèle prédéfini.",
+  "Your password has expired.": "Your password has expired."
 }
