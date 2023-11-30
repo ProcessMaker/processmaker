@@ -10,7 +10,13 @@
 
 @section('content')
   <div id="open-process" class="px-3 page-content mb-0">
-    <process-info :process-id={{$id}}></process-info>
+    <process-info
+      :process="{{$process}}"
+      :current-user-id="{{ \Auth::user()->id }}"
+      :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
+      is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
+    >
+    </process-info>
   </div>
 @endsection
 

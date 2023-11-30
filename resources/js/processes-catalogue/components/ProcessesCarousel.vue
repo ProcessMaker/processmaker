@@ -25,8 +25,8 @@ export default {
       type: Number,
       required: true,
     },
-    processId: {
-      type: Number,
+    process: {
+      type: Object,
       required: true,
     },
   },
