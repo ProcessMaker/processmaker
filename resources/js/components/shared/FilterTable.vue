@@ -14,6 +14,7 @@
             v-for="(column, index) in headers"
             :key="index"
             :id="`column-${index}`"
+            :class="{ 'pm-table-filter-applied': column.filterApplied }"
           >
             <div
               class="pm-table-column-header"
@@ -185,6 +186,7 @@ export default {
 .pm-table-container th {
   position: relative;
   padding: 8px;
+  max-width: 800px;
 }
 
 .pm-table-column-header {
@@ -253,14 +255,34 @@ export default {
   right: 7px;
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
 }
 .pm-table-ellipsis-column:hover .pm-table-filter-button {
-  display: block;
+  opacity: 1;
+  visibility: visible;
 }
 .pm-table-truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.pm-table-tooltip {
+  opacity: 1 !important;
+}
+.pm-table-tooltip .tooltip-inner {
+  background-color: #F2F8FE;
+  color: #6A7888;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  max-width: 250px;
+  padding: 14px;
+  border-radius: 7px;
+}
+.pm-table-tooltip .arrow::before {
+  border-bottom-color: #F2F8FE !important;
+  border-top-color: #F2F8FE !important;
+}
+.pm-table-filter-applied {
+  color: #1572C2;
 }
 </style>

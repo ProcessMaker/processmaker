@@ -49,7 +49,7 @@
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
-                    custom-class="pmql-tooltip"
+                    custom-class="pm-table-tooltip"
                   >
                     {{ row[header.field] }}
                   </b-tooltip>
@@ -197,6 +197,7 @@ export default {
           sortable: true,
           default: true,
           width: 190,
+          filterApplied: true,
         },
         {
           label: "Participants",
@@ -377,19 +378,19 @@ export default {
 .status-success {
   background-color: rgba(78, 160, 117, 0.2);
   color: rgba(78, 160, 117, 1);
-  width: 120px;
+  width: 100px;
   border-radius: 5px;
 }
 .status-danger {
   background-color:rgba(237, 72, 88, 0.2);
   color: rgba(237, 72, 88, 1);
-  width: 120px;
+  width: 100px;
   border-radius: 5px;
 }
 .status-primary {
   background: rgba(21, 114, 194, 0.2);
   color: rgba(21, 114, 194, 1);
-  width: 120px;
+  width: 100px;
   border-radius: 5px;
 }
 </style>
