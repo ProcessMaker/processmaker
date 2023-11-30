@@ -7,8 +7,8 @@
       class="m-1"
     >
       <div class="d-flex justify-content-between pl-3 pr-3">
-        <i class="fas fa-play-circle" />
-        {{ $t("Avaible Processses") }}
+        <i :class="preicon" />
+        {{ $t(title) }}
         <i class="fas fa-sort-down" />
       </div>
     </div>
@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  props: ["data", "select"],
+  props: ["data", "select", "title", "preicon"],
   methods: {
     selectItem(item) {
       this.setSelectItem(item.name);
