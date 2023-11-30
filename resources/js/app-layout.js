@@ -99,6 +99,13 @@ window.ProcessMaker.navbar = new Vue({
     MessageModal,
     NavbarProfile,
     newRequestModal,
+    GlobalSearch: (resolve) => {
+      if (window.ProcessMaker.globalSearchComponent) {
+        resolve(window.ProcessMaker.globalSearchComponent);
+      } else {
+        window.ProcessMaker.globalSearchComponentResolve = resolve;
+      }
+    },
   },
   data() {
     return {

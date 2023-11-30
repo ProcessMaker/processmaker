@@ -347,7 +347,7 @@ class ScriptExecutorController extends Controller
     {
         $languages = [];
         foreach (Script::scriptFormats() as $key => $config) {
-            if (!array_key_exists( 'system', $config) || (array_key_exists( 'system', $config) && !$config['system'])) {
+            if (!array_key_exists('system', $config) || (array_key_exists('system', $config) && !$config['system'])) {
                 $languages[] = [
                     'value' => $key,
                     'text' => $config['name'],

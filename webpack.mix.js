@@ -54,6 +54,7 @@ mix.extract([
   "@fortawesome/vue-fontawesome"
 ])
   .copy("resources/img/*", "public/img")
+  .copy("resources/img/script_lang/*", "public/img/script_lang")
   .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
   .copy("resources/js/components/CustomActions.vue", "public/js")
   .copy("resources/js/components/DetailRow.vue", "public/js")
@@ -115,6 +116,9 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/requests/preview.js", "public/js/requests")
 
   .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
+
+  .js("resources/js/processes-catalogue/index.js", "public/js/processes-catalogue/index.js")
+  .js("resources/js/processes-catalogue/open.js", "public/js/processes-catalogue/open.js")
 
   .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
   .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")

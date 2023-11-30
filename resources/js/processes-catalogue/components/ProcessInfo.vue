@@ -1,0 +1,41 @@
+<template>
+  <b-row>
+    <b-col cols="2">
+      <h4> {{ $t('Processes Browser') }} </h4>
+      <!--
+      Menu Catalogue FOUR-12111
+      <MenuCatologue
+        :data="listCategories"
+        :select="selectCategorie"
+        class="mt-3"
+      />
+      -->
+    </b-col>
+    <b-col cols="10">
+      <div class="d-flex">
+        <b-col cols="9">
+          Process Map
+        </b-col>
+        <b-col cols="3">
+          Process Options
+        </b-col>
+      </div>
+      <b-col cols="12">
+        Process Tab
+      </b-col>
+    </b-col>
+  </b-row>
+</template>
+
+<script>
+
+export default {
+  data() {
+    return {
+      fields: [],
+    };
+  },
+  methods: {
+  },
+};
+</script>
