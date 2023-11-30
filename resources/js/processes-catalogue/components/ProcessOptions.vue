@@ -82,7 +82,7 @@ export default {
      */
     goToNewRequest(event) {
       ProcessMaker.apiClient
-        .post(`/process_events/${this.processId}?event=${event}`)
+        .post(`/process_events/${this.process.id}?event=${event}`)
         .then((response) => {
           this.spin = 0;
           let instance = response.data;
