@@ -4,19 +4,19 @@
       <b-form-group>
         <b-button variant="light"
                   @click="onSortAscending"
-                  :pressed.sync="toggleAsc"
+                  :pressed.sync="viewToggleAsc"
                   squared
                   size="sm">
           <PMColumnFilterIconAsc></PMColumnFilterIconAsc>
-          {{$t('Sort Ascending')}}
+          {{$t("Sort Ascending")}}
         </b-button>
         <b-button variant="light"
                   @click="onSortDescending"
-                  :pressed.sync="toggleDesc"
+                  :pressed.sync="viewToggleDesc"
                   squared
                   size="sm">
           <PMColumnFilterIconDesc></PMColumnFilterIconDesc>
-          {{$t('Sort Descending')}}
+          {{$t("Sort Descending")}}
         </b-button>
       </b-form-group>
 
@@ -24,7 +24,7 @@
         <template v-for="(item, index) in items">
           <b-form-group :key="'buttonRemove' + index">
             <div class="d-flex justify-content-between align-items-center">
-              <p class="mb-0">{{$t('Filter the column')}}:</p>
+              <p class="mb-0">{{$t("Filter the column")}}:</p>
               <b-button variant="light"
                         size="sm"
                         class="pm-filter-form-button"
@@ -42,16 +42,24 @@
             </b-form-select>
           </b-form-group>
 
-          <b-form-group :key="'subject' + index">
-            <b-form-input v-model="item.subject" 
-                          placeholder="Type information"
+          <b-form-group :key="'value' + index">
+            <b-form-input v-if="switchOperator('BFormInput',item)"
+                          v-model="item.value" 
+                          placeholder="Type value"
                           size="sm">
             </b-form-input>
+            <PMColumnFilterOpBetween v-if="switchOperator('PMColumnFilterOpBetween',item)"
+                                     v-model="item.value">
+            </PMColumnFilterOpBetween>
+            <PMColumnFilterOpIn v-if="switchOperator('PMColumnFilterOpIn',item)"
+                                v-model="item.value">
+            </PMColumnFilterOpIn>
           </b-form-group>
 
-          <b-form-group :key="'logicalOp' + index">
-            <b-form-select v-model="item.logicalOp" 
-                           :options="getLogicalOps()"
+          <b-form-group :key="'logical' + index"
+                        v-if="switchLogical(index)">
+            <b-form-select v-model="item.logical" 
+                           :options="getLogicals()"
                            class="pm-filter-form-logical-operators"
                            @change="onChangeLogicalOp(item,index)"
                            size="sm">
@@ -73,13 +81,13 @@
         <b-button variant="outline-secondary"
                   size="sm"
                   @click="onCancel">
-          {{$t('Cancel')}}
+          {{$t("Cancel")}}
         </b-button>
         <span>&nbsp;</span>
         <b-button size="sm" 
                   @click="onApply">
-          {{$t('Apply')}}
-        </b-button>  
+          {{$t("Apply")}}
+        </b-button>
       </b-form-group>
     </b-form>
 
@@ -87,24 +95,29 @@
 </template>
 
 <script>
-  import PMColumnFilterIconAsc from './PMColumnFilterIconAsc'
-  import PMColumnFilterIconDesc from './PMColumnFilterIconDesc'
-  import PMColumnFilterIconMinus from './PMColumnFilterIconMinus'
-  import PMColumnFilterIconPlus from './PMColumnFilterIconPlus'
+  import PMColumnFilterIconAsc from "./PMColumnFilterIconAsc"
+  import PMColumnFilterIconDesc from "./PMColumnFilterIconDesc"
+  import PMColumnFilterIconMinus from "./PMColumnFilterIconMinus"
+  import PMColumnFilterIconPlus from "./PMColumnFilterIconPlus"
+  import PMColumnFilterOpBetween from "./PMColumnFilterOpBetween"
+  import PMColumnFilterOpIn from "./PMColumnFilterOpIn"
 
   export default {
     components: {
       PMColumnFilterIconAsc,
       PMColumnFilterIconDesc,
       PMColumnFilterIconMinus,
-      PMColumnFilterIconPlus
+      PMColumnFilterIconPlus,
+      PMColumnFilterOpBetween,
+      PMColumnFilterOpIn
     },
+    props: ["type", "value"],
     data() {
       return {
-        toggleAsc: true,
-        toggleDesc: false,
         items: [],
-        itemsChanged: false
+        viewToggleAsc: true,
+        viewToggleDesc: false,
+        viewItemsChanged: false
       };
     },
     created() {
@@ -117,24 +130,24 @@
     },
     watch: {
       items() {
-        this.itemsChanged = true;
+        this.viewItemsChanged = true;
       }
     },
     methods: {
       onSortAscending() {
-        this.toggleDesc = false;
-        this.$emit('onSortAscending', 'asc');
+        this.viewToggleDesc = false;
+        this.$emit("onSortAscending", "asc");
       },
       onSortDescending() {
-        this.toggleAsc = false;
-        this.$emit('onSortDescending', 'desc');
+        this.viewToggleAsc = false;
+        this.$emit("onSortDescending", "desc");
       },
       onApply() {
-        let json = JSON.parse(JSON.stringify(this.items));
-        this.$emit('onApply', json);
+        let json = this.getValues();
+        this.$emit("onApply", json);
       },
       onCancel() {
-        this.$emit('onCancel');
+        this.$emit("onCancel");
         this.items = [];
         this.addItem(0);
       },
@@ -151,39 +164,98 @@
       },
       onChangeLogicalOp() {
       },
+      setValues(json) {
+        console.log(json);
+      },
+      getValues() {
+        let json1 = JSON.parse(JSON.stringify(this.items));
+        console.log(json1);
+        let json = JSON.parse(JSON.stringify(this.items));
+        return this.transformToPmSyntax(json);
+      },
+      transformToPmSyntax(json) {
+        let result = [];
+        for (let i in json) {
+          if (json[i].logical === "or") {
+            delete json[i].logical;
+            json[i].or = [];
+          } else {
+            result.push(json[i]);
+          }
+        }
+        return result;
+      },
       addItem(index) {
         let item = {
-          operator: '',
-          subject: '',
-          logicalOp: ''
+          subject: {
+            type: this.type,
+            value: this.value
+          },
+          operator: "=",
+          value: "",
+          logical: "and"
         };
         this.items.splice(index, 0, item);
       },
       removeItem(index) {
         this.items.splice(index, 1);
       },
-      updatedScroll() {
-        if (this.itemsChanged === true) {
-          let myDiv = this.$refs.pmFilterFormArea;
-          myDiv.scrollTop = 185 * (this.items.length);
-          this.itemsChanged = false;
-        }
-      },
       getOperators() {
         return [
-          {value: '', text: 'Select an option'},
-          {value: 'contains', text: 'Contains'},
-          {value: 'matches', text: 'Matches'},
-          {value: 'is', text: 'Is'},
-          {value: 'isNot', text: 'Is Not'}
+          {value: "=", text: "="},
+          {value: "<", text: "<"},
+          {value: "<=", text: "<="},
+          {value: ">", text: ">"},
+          {value: ">=", text: ">="},
+          {value: "between", text: "between"},
+          {value: "in", text: "in"},
+          {value: "contains", text: "contains"},
+          {value: "regex", text: "regex"}
         ];
       },
-      getLogicalOps() {
+      getLogicals() {
         return [
-          {value: '', text: 'Select an option'},
-          {value: 'and', text: 'And'},
-          {value: 'or', text: 'Or'}
+          {value: "and", text: "and"},
+          {value: "or", text: "or"}
         ];
+      },
+      switchOperator(type, item) {
+        let sw;
+        switch (type) {
+          case "BFormInput":
+            sw = ["", "=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
+            if (sw && !this.isScalar(item.value)) {
+              item.value = "";
+            }
+            return sw;
+          case "PMColumnFilterOpBetween":
+            sw = ["between"].includes(item.operator);
+            if (sw && this.isScalar(item.value)) {
+              item.value = [];
+            }
+            return sw;
+          case "PMColumnFilterOpIn":
+            sw = ["in"].includes(item.operator);
+            if (sw && this.isScalar(item.value)) {
+              item.value = [];
+            }
+            return sw;
+        }
+        return false;
+      },
+      switchLogical(index) {
+        let sw = this.items.length > 1 && index + 1 !== this.items.length;
+        return sw;
+      },
+      isScalar(value) {
+        return ["string", "number", "boolean", "undefined", "symbol"].includes(typeof value);
+      },
+      updatedScroll() {
+        if (this.viewItemsChanged === true) {
+          let myDiv = this.$refs.pmFilterFormArea;
+          myDiv.scrollTop = 185 * (this.items.length);
+          this.viewItemsChanged = false;
+        }
       }
     }
   };

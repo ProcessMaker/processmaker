@@ -1,5 +1,6 @@
+import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
@@ -69,6 +70,7 @@ window.$ = window.jQuery = require("jquery");
 window.Vue = Vue;
 
 window.Vue.use(BootstrapVue);
+window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);

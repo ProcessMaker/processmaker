@@ -30,7 +30,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "id"],
+    props: ["id", "container", "type", "value"],
     data() {
       return {
         popoverShow: false
@@ -42,7 +42,7 @@
     },
     methods: {
       onShow() {
-        this.$root.$emit('bv::hide::popover')
+        this.$root.$emit("bv::hide::popover")
       },
       onSortAscending() {
         this.$emit("onSortAscending", "asc");
