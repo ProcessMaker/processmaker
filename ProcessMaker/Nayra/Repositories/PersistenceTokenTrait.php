@@ -31,10 +31,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityActivated($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityActivatedEvent($activity, $token);
         app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $event);
-        $bpmnSubscriber->onActivityActivated($event);
     }
 
     /**
@@ -65,13 +63,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityCompleted($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityCompletedEvent($activity, $token);
-        $bpmnSubscriber->onActivityCompleted($event);
-
-        // Comments
-        $subscriber = new CommentsSubscriber();
-        $subscriber->onActivityCompleted($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_COMPLETED, $event);
     }
 
     /**
