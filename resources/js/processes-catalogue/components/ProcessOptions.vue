@@ -61,6 +61,8 @@ export default {
       const startEvents = this.process.start_events;
       startEvents.forEach((event) => {
         if (event.eventDefinitions.length === 0) {
+          const webEntry = JSON.parse(event.config);
+          this.processEvents.webEntry = !!webEntry;
           this.processEvents.push(event);
         }
       });
