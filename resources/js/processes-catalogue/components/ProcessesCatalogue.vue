@@ -28,6 +28,7 @@
         >
           <CatalogueEmpty />
         </div>
+        <wizard-templates v-if="showWizardTemplates" />
       </b-col>
     </b-row>
   </div>
