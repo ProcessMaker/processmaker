@@ -42,7 +42,7 @@ import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
   components: { ProcessOptions, Breadcrumbs, ProcessMap },
-  props: ["process", "permission", "isDocumenterInstalled"],
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return {
       fields: [],
