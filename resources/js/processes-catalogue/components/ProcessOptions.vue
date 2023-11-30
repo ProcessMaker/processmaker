@@ -11,7 +11,7 @@
     </button>
     <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
       <p
-        class="font-weight-bold px-1"
+        class="font-weight-bold px-1 text-uppercase"
         style="font-size: 14px"
       >
         {{ $t('Starting events') }}
