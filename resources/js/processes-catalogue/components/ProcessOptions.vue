@@ -44,7 +44,7 @@
 <script>
 
 export default {
-  props: ["processId"],
+  props: ["process"],
   data() {
     return {
       processEvents: [],
@@ -58,16 +58,12 @@ export default {
      * get start events for dropdown Menu
      */
     getStartEvents() {
-      window.ProcessMaker.apiClient
-        .get(`processes/${this.processId}`)
-        .then((response) => {
-          const startEvents = response.data.start_events;
-          startEvents.forEach((event) => {
-            if (event.eventDefinitions.length === 0) {
-              this.processEvents.push(event);
-            }
-          });
-        });
+      const startEvents = this.process.start_events;
+      startEvents.forEach((event) => {
+        if (event.eventDefinitions.length === 0) {
+          this.processEvents.push(event);
+        }
+      });
     },
     /**
      * Start new request
