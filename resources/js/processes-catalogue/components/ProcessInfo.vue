@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <breadcrumbs />
   <b-row>
     <b-col cols="2">
       <h4>{{ $t("Processes Browser") }}</h4>
@@ -21,18 +23,24 @@
             </div>
           </template>
         </b-col>
-        <b-col cols="3"> Process Options </b-col>
+        <b-col cols="3">
+            <process-options :process-id="processId" />
+        </b-col>
       </div>
       <b-col cols="12"> Process Tab </b-col>
     </b-col>
   </b-row>
+</div>
 </template>
 
 <script>
 import ProcessesCarousel from "../components/ProcessesCarousel.vue";
+import ProcessOptions from "./ProcessOptions.vue";
+import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
-  components: { ProcessesCarousel },
+  components: { ProcessesCarousel, ProcessOptions, Breadcrumbs },
+  props: ["processId"],
   data() {
     return {
       fields: [],
