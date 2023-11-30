@@ -6,16 +6,10 @@
         class="d-flex justify-content-between mb-3"
       >
         <h4 class="d-flex align-items-center">
-          <i
-            class="fas fa-arrow-circle-left text-secondary mr-2"
-            style="font-size: 32px"
-          />
+          <i class="fas fa-arrow-circle-left text-secondary mr-2 title-font" />
           {{ process.name }}
         </h4>
-        <span
-          class="border bg-white rounded-circle d-flex align-items-center p-0"
-          style="border-color: #CDDDEE;"
-        >
+        <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
           <ellipsis-menu
             :actions="processLaunchpadActions"
             :permission="permission"
@@ -60,7 +54,6 @@ import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
-
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 
@@ -108,3 +101,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.title-font {
+  font-size: 32px
+}
+.ellipsis-border{
+  border-color: #CDDDEE;
+}
+</style>
