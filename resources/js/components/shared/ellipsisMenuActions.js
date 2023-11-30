@@ -12,32 +12,42 @@ export default {
           content: "Unpause Start Timer Events",
           icon: "fas fa-play",
           conditional: "if(has_timer_start_events and pause_timer_start, true, false)",
+          permission: "view-additional-asset-actions",
         },
         {
           value: "pause-start-timer",
           content: "Pause Start Timer Events",
           icon: "fas fa-pause",
           conditional: "if(has_timer_start_events and not(pause_timer_start), true, false)",
+          permission: "view-additional-asset-actions",
+        },
+        {
+          value: "open-launchpad",
+          content: "Open Launchpad",
+          link: true,
+          href: "/processes-catalogue/{{id}}",
+          permission: ["edit-processes", "create-projects", "view-projects"],
+          icon: "fas fa-file-export",
         },
         {
           value: "edit-designer",
           content: "Edit Process",
           link: true,
           href: "/modeler/{{id}}",
-          permission: ["edit-processes", "create-projects", "view-projects"],
+          permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
           conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
         },
         {
           value: "create-template",
           content: "Save as Template",
-          permission: "create-process-templates",
+          permission: ["create-process-templates", "view-additional-asset-actions"],
           icon: "fas fa-layer-group",
         },
         {
           value: "create-pm-block",
           content: "Save as PM Block",
-          permission: "create-pm-blocks",
+          permission: ["create-pm-blocks", "view-additional-asset-actions"],
           icon: "fas nav-icon fa-cube",
         },
         {
@@ -50,7 +60,7 @@ export default {
           content: "Configure",
           link: true,
           href: "/processes/{{id}}/edit",
-          permission: ["edit-processes", "create-projects", "view-projects"],
+          permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-cog",
           conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
         {
@@ -58,14 +68,14 @@ export default {
           content: "View Documentation",
           link: true,
           href: "/modeler/{{id}}/print",
-          permission: ["view-processes", "create-projects", "view-projects"],
+          permission: ["view-processes", "view-additional-asset-actions"],
           icon: "fas fa-sign",
           conditional: "isDocumenterInstalled",
         },
         {
           value: "archive-item",
           content: "Archive",
-          permission: ["archive-processes", "create-projects", "view-projects"],
+          permission: ["archive-processes", "view-additional-asset-actions"],
           icon: "fas fa-archive",
           conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
         },
@@ -75,20 +85,20 @@ export default {
           content: "Export",
           link: true,
           href: "/processes/{{id}}/export",
-          permission: ["export-processes", "create-projects", "view-projects"],
+          permission: ["export-processes", "view-additional-asset-actions"],
           icon: "fas fa-file-export",
         },
         {
           value: "restore-item",
           content: "Restore",
-          permission: ["archive-processes", "create-projects", "view-projects"],
+          permission: ["archive-processes", "view-additional-asset-actions"],
           icon: "fas fa-upload",
           conditional: "if(status == 'ARCHIVED', true, false)",
         },
         {
           value: "download-bpmn",
           content: "Download BPMN",
-          permission: ["view-processes", "create-projects", "view-projects"],
+          permission: ["view-processes", "view-additional-asset-actions"],
           icon: "fas fa-file-download",
         },
       ],
@@ -98,7 +108,7 @@ export default {
           content: "Edit Screen",
           link: true,
           href: "/designer/screen-builder/{{id}}/edit",
-          permission: ["edit-screens", "create-projects", "view-projects"],
+          permission: ["edit-screens", "view-additional-asset-actions"],
           icon: "fas fa-pen-square",
         },
         {
@@ -106,18 +116,19 @@ export default {
           content: "Configure",
           link: true,
           href: "/designer/screens/{{id}}/edit",
-          permission: ["edit-screens", "create-projects", "view-projects"],
+          permission: ["edit-screens", "view-additional-asset-actions"],
           icon: "fas fa-cog",
         },
         {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: "create-projects",
         },
         {
           value: "duplicate-item",
           content: "Copy",
-          permission: ["create-screens", "create-projects", "view-projects"],
+          permission: ["create-screens", "view-additional-asset-actions"],
           icon: "fas fa-copy",
         },
         {
@@ -125,13 +136,13 @@ export default {
           content: "Export",
           link: true,
           href: "/designer/screens/{{id}}/export",
-          permission: ["export-screens", "create-projects", "view-projects"],
+          permission: ["export-screens", "view-additional-asset-actions"],
           icon: "fas fa-file-export",
         },
         {
           value: "remove-screen",
           content: "Delete",
-          permission: ["delete-screens", "create-projects", "view-projects"],
+          permission: ["delete-screens", "view-additional-asset-actions"],
           icon: "fas fa-trash-alt",
         },
       ],
@@ -141,7 +152,7 @@ export default {
           content: "Edit Script",
           link: true,
           href: "/designer/scripts/{{id}}/builder",
-          permission: ["edit-scripts", "create-projects", "view-projects"],
+          permission: ["edit-scripts", "view-additional-asset-actions"],
           icon: "fas fa-pen-square",
         },
         {
@@ -149,24 +160,25 @@ export default {
           content: "Configure",
           link: true,
           href: "/designer/scripts/{{id}}/edit",
-          permission: ["edit-scripts", "create-projects", "view-projects"],
+          permission: ["edit-scripts", "view-additional-asset-actions"],
           icon: "fas fa-cog",
         },
         {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: "create-projects",
         },
         {
           value: "duplicate-item",
           content: "Copy",
-          permission: ["create-scripts", "create-projects", "view-projects"],
+          permission: ["create-scripts", "view-additional-asset-actions"],
           icon: "fas fa-copy",
         },
         {
           value: "remove-script",
           content: "Delete",
-          permission: ["delete-scripts", "create-projects", "view-projects"],
+          permission: ["delete-scripts", "view-additional-asset-actions"],
           icon: "fas fa-trash-alt",
         },
       ],
@@ -178,17 +190,20 @@ export default {
           permission: [
             "edit-data-sources",
             "view-data-sources",
+            "view-additional-asset-actions"
           ],
         },
         {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: "create-projects",
         },
         {
           value: "remove-item",
           content: "Delete",
           icon: "fas fa-trash",
+          permission: ["delete-data-sources", "view-additional-asset-actions"]
         },
       ],
       decisionTableActions: [
@@ -196,30 +211,37 @@ export default {
           value: "edit-item",
           content: "Edit",
           icon: "fas fa-pen-square",
-          permission: "edit-decision_tables",
+          permission: [
+            "edit-decision_tables",
+            "view-additional-asset-actions"
+          ]
         },
         {
           value: "configure-item",
           content: "Configure",
           icon: "fas fa-cog",
-          permission: "edit-decision_tables",
+          permission: [
+            "edit-decision_tables",
+            "view-additional-asset-actions"
+          ]
         },
         {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: "create-projects",
         },
         {
           value: "export-item",
           content: "Export",
           icon: "fas fa-file-export",
-          permission: "export-decision_tables",
+          permission: ["export-decision_tables", "view-additional-asset-actions"]
         },
         {
           value: "remove-item",
           content: "Delete",
           icon: "fas fa-trash",
-          permission: "delete-decision_tables",
+          permission: ["delete-decision_tables", "view-additional-asset-actions"]
         },
       ],
     };

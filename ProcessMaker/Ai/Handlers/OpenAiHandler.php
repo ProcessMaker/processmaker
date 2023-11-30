@@ -15,14 +15,14 @@ abstract class OpenAiHandler
     {
     }
 
-    public function getPromptsPath()
-    {
-        return app_path() . '/Ai/Prompts/';
-    }
-
     public function getConfig()
     {
         return $this->config;
+    }
+
+    public function getQuestion()
+    {
+        return $this->question;
     }
 
     public function setModel(String $model)
@@ -63,16 +63,6 @@ abstract class OpenAiHandler
     public function setPresencePenalty(float $presencePenalty)
     {
         $this->config['presence_penalty'] = $presencePenalty;
-    }
-
-    public function saveResponse(string $type, string $response)
-    {
-        $aiSearch = new AiSearch();
-        $aiSearch->type = $type;
-        $aiSearch->search = $this->question;
-        $aiSearch->response = $response;
-        $aiSearch->user_id = \Auth::user()->id;
-        $aiSearch->save();
     }
 
     abstract public function getPromptFile($type = null);
