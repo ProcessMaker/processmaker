@@ -554,6 +554,24 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
+     * Retrieves IDs of all instances collaborating with the given instance.
+     *
+     * This function compiles a list of IDs from execution instances associated 
+     * with the same process as the input instance, including the instance itself.
+     *
+     * @param ProcessRequest $instance The instance to find collaborators for.
+     * @return int[] Array of collaborating instance IDs.
+     */
+    protected function getCollaboratingInstanceIds($instance)
+    {
+        $ids = ProcessRequest::
+            where('process_collaboration_id', $instance->process_collaboration_id)
+            ->pluck('id')
+            ->toArray();
+        return $ids;
+    }
+
+    /**
      * Build a state object.
      *
      * @param ProcessRequest $instance
@@ -681,6 +699,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
                 $user->removeOldRunScriptTokens();
                 $token = new GenerateAccessToken($user);
+
                 return $token->getToken();
             });
             $environmentVariables['API_TOKEN'] = $accessToken;

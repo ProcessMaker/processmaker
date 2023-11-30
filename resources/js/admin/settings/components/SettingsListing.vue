@@ -66,7 +66,7 @@
                 variant="link" 
                 class="settings-listing-button"
                 >
-                <i class="fa-lg fas fa-edit settings-listing-button"></i>
+                <i class="fa-lg fas fa-edit settings-listing-button mr-1"></i>
               </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
@@ -80,7 +80,7 @@
                 @click="onCopy(row)"
                 class="settings-listing-button"
                 >
-                <i class="fa-lg fas fa-copy settings-listing-button" />
+                <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
               </b-button>
 
               <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
@@ -91,7 +91,7 @@
                   variant="link" 
                   class="settings-listing-button"
                   >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                  <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
                 </b-button>
               </span>
 

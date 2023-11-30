@@ -17,6 +17,9 @@
 @endsection
 
 @section('js')
+    @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
     <script src="{{mix('js/processes/screens/preview.js')}}"></script>
     <script>
         new Vue({

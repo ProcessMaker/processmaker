@@ -32,7 +32,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Repositories\DefinitionsRepository;
 
 class WorkflowManagerDefault implements WorkflowManagerInterface
 {
@@ -265,12 +264,28 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         }
 
         $excludeProcesses = [$token->getInstance()->getModel()->process_id];
-        $excludeRequests = [];
-        $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
-        foreach ($instances as $instance) {
-            $excludeRequests[] = $instance->getId();
-        }
+
+        $excludeRequests = $this->getCollaboratingInstanceIds($token->getInstance());
         ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
+    }
+
+    /**
+     * Retrieves IDs of all instances collaborating with the given instance.
+     *
+     * This function compiles a list of IDs from execution instances associated 
+     * with the same process as the input instance, including the instance itself.
+     *
+     * @param ProcessRequest $instance The instance to find collaborators for.
+     * @return int[] Array of collaborating instance IDs.
+     */
+    protected function getCollaboratingInstanceIds($instance)
+    {
+        $ids = [];
+        $instances = $instance->getProcess()->getEngine()->getExecutionInstances();
+        foreach ($instances as $instance) {
+            $ids[] = $instance->getId();
+        }
+        return $ids;
     }
 
     /**

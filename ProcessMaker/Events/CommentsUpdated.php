@@ -13,6 +13,7 @@ class CommentsUpdated implements ShouldBroadcastNow
     use Dispatchable;
     use InteractsWithSockets;
     use SerializesModels;
+
     public $users;
 
     /**
@@ -34,6 +35,7 @@ class CommentsUpdated implements ShouldBroadcastNow
         foreach ($this->users as $user) {
             $channels[] = new PrivateChannel("ProcessMaker.Models.User.{$user->id}");
         }
+
         return $channels;
     }
 

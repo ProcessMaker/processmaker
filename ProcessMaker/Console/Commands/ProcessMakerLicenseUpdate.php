@@ -42,7 +42,10 @@ class ProcessMakerLicenseUpdate extends Command
 
             Storage::disk('local')->put('license.json', $content);
 
+            $this->info('Calling package:discover to update the package cache with enabled packages');
             Artisan::call('package:discover');
+            $this->info(Artisan::output());
+
             $this->info('License updated successfully');
         } catch (Exception $e) {
             $this->error('An error occurred: ' . $e->getMessage());
@@ -77,6 +80,7 @@ class ProcessMakerLicenseUpdate extends Command
             Carbon::parse($data['expires_at']);
         } catch (Exception $e) {
             $this->error('The "expires_at" property is not a valid date.');
+
             return false;
         }
 

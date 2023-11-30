@@ -60,7 +60,6 @@ https://docs.processmaker.com/
 
 ## Testing
 All PRs for PM4 and it's packages should be accompanied by a test.
-Ideally both a PHPUnit test and a Cypress end-to-end test, but should have at least one.
 
 ## CI/CD
 
@@ -131,33 +130,6 @@ phpunit vendor/processmaker/package-name/tests/...
 
 *It is considered a best practice to write a failing test first.
 Then, modify the code until the test passes*
-
-### Cypress End-To-End Tests
-All cypress tests should go in the cypress/integration folder (or a subfolder).
-
-Package tests should go in cypress/integration inside the package repository.
-If the folder does not exist in the repository, please create it.
-
-To open the cypress ui, run
-```
-CYPRESS_BASE_URL=http://my-local-pm4 npm run e2e:open
-```
-To run in headless mode (same as the CI server), run
-```
-CYPRESS_BASE_URL=http://my-local-pm4 npm run e2e
-```
-To run a single test, run
-```
-CYPRESS_BASE_URL=http://my-local-pm4 npm run e2e -- --spec=cypress/integration/my-test.spec.js
-```
-Individual tests in packages must be run from core with
-```
-CYPRESS_BASE_URL=http://my-local-pm4 npm run e2e -- --spec=vendor/processmaker/package-name/cypress/integration/my-test.spec.js
-```
-
-Note
-- CYPRESS_BASE_URL should be the same as APP_URL in your .env file
-- Cypress tests should not depend on a clean database like PHPUnit has
 
 ## Development
 
