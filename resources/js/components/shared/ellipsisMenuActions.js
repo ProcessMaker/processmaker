@@ -28,8 +28,8 @@ export default {
           icon: "fas fa-file-export",
         },
         {
-          value: "edit-designer",
-          content: "Edit Process",
+          value: "open-in-modeler",
+          content: "Open in Modeler",
           link: true,
           href: "/modeler/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
