@@ -21,7 +21,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create();
         Auth::login($user);
         $this->assertEquals($user->id, Auth::id());
-        Auth::logout();
+        Auth::logoutCurrentDevice();
         $this->assertNull(Auth::user());
     }
 
