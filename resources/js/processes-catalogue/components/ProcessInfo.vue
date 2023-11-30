@@ -16,10 +16,15 @@
       <b-col cols="10">
         <div class="d-flex">
           <b-col cols="9">
-            Process Map
+            <process-map
+              :process="process"
+              :permission="permission"
+              :current-user-id="currentUserId"
+              :is-documenter-installed="isDocumenterInstalled"
+            />
           </b-col>
           <b-col cols="3">
-            <process-options :process-id="processId" />
+            <process-options :process="process" />
           </b-col>
         </div>
         <b-col cols="12">
@@ -31,12 +36,13 @@
 </template>
 
 <script>
+import ProcessMap from "./ProcessMap.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
-  components: { ProcessOptions, Breadcrumbs },
-  props: ["processId"],
+  components: { ProcessOptions, Breadcrumbs, ProcessMap },
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return {
       fields: [],
