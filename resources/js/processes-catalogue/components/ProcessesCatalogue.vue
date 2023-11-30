@@ -7,6 +7,8 @@
         <MenuCatologue
           :data="listCategories"
           :select="selectCategorie"
+          title="Avaible Processses"
+          preicon="fas fa-play-circle"
           class="mt-3"
         />
         <ul>
@@ -23,13 +25,16 @@
       </b-col>
       <b-col cols="10">
         <div
-          v-if="!showWizardTemplates && !fields.length"
+          v-if="!showWizardTemplates && !showCardProcesses"
           class="d-flex justify-content-center py-5"
         >
           <CatalogueEmpty />
         </div>
-        <CardProcess />
         <wizard-templates v-if="showWizardTemplates" />
+        <CardProcess
+          v-if="showCardProcesses"
+          :category="category"
+        />
       </b-col>
     </b-row>
   </div>
@@ -44,7 +49,7 @@ import WizardTemplates from "./WizardTemplates.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates,
   },
   data() {
     return {
@@ -52,6 +57,8 @@ export default {
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
+      showCardProcesses: false,
+      category: null,
     };
   },
   mounted() {
@@ -66,10 +73,13 @@ export default {
         });
     },
     selectCategorie(value) {
-      console.log(value);
+      this.category = value;
+      this.showCardProcesses = true;
+      this.showWizardTemplates = false;
     },
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
+      this.showCardProcesses = false;
     },
   },
 };
