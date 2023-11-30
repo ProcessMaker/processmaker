@@ -32,31 +32,11 @@ export default {
   props: ["process", "categoryRoute", "category"],
   data() {
     return {
-      list: [],
-      loading: false,
     };
   },
   mounted() {
-    this.list = this.transform(this.routes);
   },
   methods: {
-    isActive(index) {
-      return index == (this.list.length - 1);
-    },
-    updateRoutes(routes) {
-      this.list = routes;
-    },
-    transform(routes) {
-      let list = [];
-      Object.entries(routes).forEach(([title, link]) => {
-        list.push({
-          title: title,
-          link: link,
-          router: false
-        });
-      });
-      return list;
-    }
   },
 };
 </script>
