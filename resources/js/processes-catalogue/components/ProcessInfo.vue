@@ -24,7 +24,6 @@
             />
             <processes-carousel
               :process="process"
-              :interval="intervalValue"
             />
           </b-col>
           <b-col cols="3">
@@ -49,7 +48,6 @@ export default {
   data() {
     return {
       fields: [],
-      intervalValue: 2000,
     };
   },
 };

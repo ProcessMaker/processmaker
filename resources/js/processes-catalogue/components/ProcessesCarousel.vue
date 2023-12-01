@@ -40,7 +40,8 @@ export default {
         { url: "https://picsum.photos/200/100/?image=53" },
         { url: "https://picsum.photos/1024/800/?image=56" },
       ],
-      defaultImage: Array(4).fill({ url: "/img/launchpad-images/noImage.svg" }),
+      defaultImage: Array(4).fill({ url: "/img/launchpad-images/imageDefault.png" }),
+      interval: 2000
     };
   },
   methods: {
