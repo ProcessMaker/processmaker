@@ -10,6 +10,7 @@ class AddPasswordPoliciesSettings extends Upgrade
      */
     public function up(): void
     {
+        $helperFailed = 'Number of consecutive unsuccessful login attempts before block the login action momentarily.';
         $passwordPolicies = [
             [
                 [
@@ -131,8 +132,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'format' => 'text',
                     'config' => 5,
                     'name' => _('Login failed'),
-                    'helper' =>
-                        _('Number of consecutive unsuccessful login attempts before block the login action momentarily.'),
+                    'helper' => _($helperFailed),
                     'group' => Setting::PASSWORD_POLICIES_GROUP,
                     'hidden' => false,
                     'ui' => [
@@ -161,4 +161,4 @@ class AddPasswordPoliciesSettings extends Upgrade
     {
         Setting::where('group', Setting::PASSWORD_POLICIES_GROUP)->delete();
     }
-};
+}
