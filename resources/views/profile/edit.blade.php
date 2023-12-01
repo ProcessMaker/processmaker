@@ -151,12 +151,6 @@
                         delete this.formData.password;
                         return true
                     }
-					if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
-						this.errors.password = ['Password must be at least 8 characters']
-                        this.password = ''
-                        this.submitted = false
-                        return false
-					}
                     if (this.formData.password !== this.formData.confPassword) {
                         this.errors.password = ['Passwords must match']
                         this.password = ''
