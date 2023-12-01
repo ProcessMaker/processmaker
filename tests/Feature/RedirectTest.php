@@ -27,7 +27,7 @@ class RedirectTest extends TestCase
         $response = $this->get('/requests');
         $response->assertStatus(200);
         $response->assertViewIs('requests.index');
-        Auth::logout();
+        Auth::logoutCurrentDevice();
         $response = $this->get('/requests');
         //302 because we want to make sure they are being redirected
         $response->assertStatus(302);
