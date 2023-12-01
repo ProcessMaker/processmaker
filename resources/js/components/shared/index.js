@@ -14,6 +14,7 @@ import EllipsisMenu from "./EllipsisMenu";
 import EnterPasswordModal from "../../processes/import/components/EnterPasswordModal.vue";
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
+import AssetRedirectMixin from "./AssetRedirectMixin";
 import IconSelector from "./IconSelector";
 import Modal from "./Modal";
 import PmqlInput from "./PmqlInput";
@@ -65,6 +66,7 @@ export {
   EnterPasswordModal,
   FileUploadButton,
   FormErrorsMixin,
+  AssetRedirectMixin,
   IconSelector,
   Modal,
   PmqlInput,

@@ -17,6 +17,7 @@ class LicensedPackageManifest extends PackageManifest
     const DISCOVER_PACKAGES_LOCK_KEY = 'discover_package_lock_key';
 
     const DISCOVER_PACKAGES = 'package:discover';
+
     const LAST_PACKAGE_DISCOVERY = 0;
 
     protected function packagesToIgnore()
@@ -93,7 +94,14 @@ class LicensedPackageManifest extends PackageManifest
     {
         $composer = json_decode(file_get_contents(base_path('composer.json')), true);
 
-        return collect($composer['extra']['processmaker']['enterprise'])
+        // Add enterprise packages
+        $packages = $composer['extra']['processmaker']['enterprise'];
+        // Add custom packages
+        $packages = array_merge($packages, $composer['extra']['processmaker']['custom']);
+        // Add docker-executors packages
+        $packages = array_merge($packages, $composer['extra']['processmaker']['docker-executors']);
+
+        return collect($packages)
             ->map(fn ($k, $v) => "processmaker/{$v}")
             ->values();
     }

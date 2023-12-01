@@ -38,7 +38,7 @@
       class="form-text text-muted"
     >{{ $t(helper) }}</small>
     <modeler-asset-quick-create
-      v-if="!content.id"
+      v-if="!content?.id"
       :screen-select-id="uniqId"
       :screen-type="params.type"
       label="screen"
@@ -59,8 +59,6 @@
 import { uniqueId } from "lodash";
 import ModelerAssetQuickCreate from "./ModelerAssetQuickCreate.vue";
 import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-
-const channel = new BroadcastChannel("assetCreation");
 
 export default {
   components: {
@@ -116,10 +114,6 @@ export default {
       this.loadScreen(this.value);
     }
     this.setDefault();
-    channel.onmessage = ({ data }) => {
-      console.log("channel message", data);
-      this.processAssetCreation(data);
-    };
   },
   methods: {
     type() {
@@ -134,6 +128,10 @@ export default {
       }
       return false;
     },
+    /**
+     * Loads the screen
+     * @param {Object} value - Screen
+     */
     loadScreen(value) {
       this.loading = true;
       ProcessMaker.apiClient
@@ -198,7 +196,7 @@ export default {
      */
     processAssetCreation({ asset, assetType, screenSelectId }) {
       if (assetType === "screen" && this.uniqId === screenSelectId) {
-        this.content = asset;
+        this.loadScreen(asset.id);
       }
     },
     validate() {

@@ -108,6 +108,9 @@ class PersistenceHandler
                 case 'start_event_triggered':
                     $this->persistStartEventTriggered($transaction);
                     break;
+                case 'throw_global_signal_event':
+                    $this->throwGlobalSignalEvent($transaction);
+                    break;
                 case 'event_based_gateway_activated':
                     $this->persistEventBasedGatewayActivated($transaction);
                     break;

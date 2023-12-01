@@ -62,6 +62,7 @@ div.main {
     enabled: "{{ config('multiplayer.enabled') }}",
   };
   window.ProcessMaker.PMBlockList = @json($pmBlockList);
+  window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
   window.ProcessMaker.modeler = {
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
