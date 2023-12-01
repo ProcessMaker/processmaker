@@ -45,7 +45,7 @@
                                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
                                 </div>
                             </vue-password>
-                            <small v-if="errors && errors.password && errors.password.length" class="text-danger">@{{ errors.password[0] }}</small>
+                            <small v-for="(error, index) in errors.password" class="text-danger">@{{ error }}</small>
                         </div>
                         <div class="form-group">
                             {!!Form::label('confpassword', __('Confirm Password'))!!}<small class="ml-1">*</small>
@@ -94,22 +94,11 @@
                 });
             },
             validatePassword() {
-                if (this.$refs.passwordStrength.strength.score < 2) {
-                    this.errors.password = ['Password is too weak']
-                    return false
-                }
-
                 if (!this.formData.password && !this.formData.confpassword) {
                     return false;
                 }
 
                 if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
-                    return false
-                }
-
-                if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
-                    this.errors.password = ['Password must be at least 8 characters']
-                    this.formData.password = ''
                     return false
                 }
 
