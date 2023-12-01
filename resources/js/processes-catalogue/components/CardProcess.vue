@@ -71,7 +71,7 @@ export default {
 }
 .title-process {
   color: #556271;
-  font-family: Poppins;
+  font-family: Poppins, sans-serif;
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
