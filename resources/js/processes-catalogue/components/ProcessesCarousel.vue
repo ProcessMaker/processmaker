@@ -21,10 +21,6 @@
 <script>
 export default {
   props: {
-    interval: {
-      type: Number,
-      required: true,
-    },
     process: {
       type: Object,
       required: true,
@@ -41,7 +37,7 @@ export default {
         { url: "https://picsum.photos/1024/800/?image=56" },
       ],
       defaultImage: Array(4).fill({ url: "/img/launchpad-images/imageDefault.png" }),
-      interval: 2000
+      interval: 2000,
     };
   },
   methods: {
