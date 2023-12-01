@@ -102,7 +102,8 @@ return new class extends Migration
             'format' => 'text',
             'config' => 5,
             'name' => _('Login failed'),
-            'helper' => _('Number of consecutive unsuccessful login attempts before block the login action momentarily.'),
+            'helper' =>
+                _('Number of consecutive unsuccessful login attempts before block the login action momentarily.'),
             'group' => Setting::PASSWORD_POLICIES_GROUP,
             'hidden' => false,
             'ui' => [
