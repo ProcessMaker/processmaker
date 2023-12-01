@@ -76,9 +76,7 @@ export default {
         });
     },
     selectCategorie(value) {
-      this.category = value;
-      this.showCardProcesses = true;
-      this.showWizardTemplates = false;
+      // TODO Flow from processInfo to ProcessesCtalogue
     },
   },
 };
