@@ -2,7 +2,6 @@
   <div>
     <b-carousel
       id="carousel-1"
-      class="custom-carousel"
       v-model="slide"
       :interval="interval"
       indicators
@@ -12,6 +11,7 @@
       <b-carousel-slide
         v-for="(image, index) in images.length > 0 ? images : defaultImage"
         :key="index"
+        class="custom-style"
         :img-src="image.url"
       ></b-carousel-slide>
     </b-carousel>
@@ -36,7 +36,9 @@ export default {
       sliding: null,
       images: [
         { url: "https://picsum.photos/1024/480/?image=55" },
-        { url: "https://picsum.photos/800/400/?image=54" },
+        { url: "https://picsum.photos/100/100/?image=54" },
+        { url: "https://picsum.photos/200/100/?image=53" },
+        { url: "https://picsum.photos/1024/800/?image=56" },
       ],
       defaultImage: Array(4).fill({ url: "/img/launchpad-images/noImage.svg" }),
     };
@@ -66,11 +68,14 @@ export default {
 };
 </script>
 <style>
-.custom-carousel {
-  background: #e3e3e3;
-  width: 593px;
-  height: 394px;
-  text-shadow: 1px 1px 2px #333;
-  max-height: 394px;
+.carousel-inner {
+  overflow: hidden;
+}
+
+.custom-style {
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 400px;
 }
 </style>
