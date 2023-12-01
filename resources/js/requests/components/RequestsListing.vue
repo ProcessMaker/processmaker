@@ -197,7 +197,6 @@ export default {
           sortable: true,
           default: true,
           width: 190,
-          filterApplied: true,
         },
         {
           label: "Participants",

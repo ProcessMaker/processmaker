@@ -181,11 +181,14 @@ export default {
   overflow-x: auto;
   max-height: 400px;
   overflow-y: auto;
+  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 5px;
 }
 
 .pm-table-container th {
   position: relative;
-  padding: 8px;
   max-width: 800px;
 }
 
@@ -208,12 +211,10 @@ export default {
   width: 100%;
   max-height: 400px;
   border-collapse: collapse;
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
-  border-right: 1px solid rgba(0, 0, 0, 0.125);
   position: relative;
+  color: #566877;
 }
 .pm-table-filter td {
-  border-top: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
 }
