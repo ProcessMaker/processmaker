@@ -10,6 +10,7 @@ use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Repositories\TokenRepository;
 
 trait PersistenceTokenTrait
@@ -30,9 +31,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityActivated($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityActivatedEvent($activity, $token);
-        $bpmnSubscriber->onActivityActivated($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $event);
     }
 
     /**
@@ -63,13 +63,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityCompleted($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityCompletedEvent($activity, $token);
-        $bpmnSubscriber->onActivityCompleted($event);
-
-        // Comments
-        $subscriber = new CommentsSubscriber();
-        $subscriber->onActivityCompleted($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_COMPLETED, $event);
     }
 
     /**
