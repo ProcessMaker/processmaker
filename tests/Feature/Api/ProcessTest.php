@@ -570,10 +570,10 @@ class ProcessTest extends TestCase
         // Get process without category
         $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
-        // Get process without category
+        // Get process related categoryA
         $response = $this->apiCall('GET', route('api.processes.index', ['category' => $categoryA->id]));
         $response->assertJsonCount(0, 'data');
-        // The first page should have 5 items related to the category
+        // Get process related categoryB
         $response = $this->apiCall('GET', route('api.processes.index', ['category' => $categoryB->id]));
         $response->assertJsonCount(5, 'data');
     }

@@ -110,7 +110,7 @@ class ProcessController extends Controller
         // Filter by category
         $category = $request->input('category', null);
         if (!empty($category)) {
-            $processes->category($category);
+            $processes->processCategory($category);
         }
 
         if (!empty($pmql)) {
