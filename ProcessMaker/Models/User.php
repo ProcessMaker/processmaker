@@ -190,7 +190,7 @@ class User extends Authenticatable implements HasMedia
             $existing ? 'sometimes' : '',
         ];
         // Configurable policies
-        $passwordRules = Password::min(config('password-policies.minimum_length'));
+        $passwordRules = Password::min((int) config('password-policies.minimum_length'));
         if (config('password-policies.maximum_length')) {
             $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
         }
