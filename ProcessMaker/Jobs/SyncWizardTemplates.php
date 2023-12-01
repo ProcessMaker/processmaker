@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\WizardTemplate;
 
@@ -64,11 +65,11 @@ class SyncWizardTemplates implements ShouldQueue
 
         // Extract the json data from the response and iterate over the categories and templates to retrieve them.
         $data = $response->json();
-        foreach ($data as $templateCategory => $templates) {
+        foreach ($data as $templateCategory => $wizardTemplates) {
             if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                 continue;
             }
-            foreach ($templates as $template) {
+            foreach ($wizardTemplates as $template) {
                 $existingTemplate = WizardTemplate::where('uuid', $template['uuid'])->first();
                 // If the template already exists in the database with a user then skip it,
                 // since we don't want to overwrite their changes.
@@ -91,12 +92,19 @@ class SyncWizardTemplates implements ShouldQueue
 
                 $options = new Options([
                     'mode' => 'update',
-                    'isTemplate' => true,
+                    'asset_type' => 'WIZARD_TEMPLATE',
                     'saveAssetsMode' => 'saveAllAssets',
                 ]);
-
+                dd($payload);
+                dd($options);
                 $importer = new Importer($payload, $options);
                 $importer->doImport();
+
+                $template = Process::where('uuid', $template['uuid'])->first();
+
+                WizardTemplate::create([
+                    'process_id' => $template->id,
+                ]);
             }
         }
     }
