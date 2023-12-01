@@ -122,4 +122,4 @@ class AddPasswordPoliciesSettings extends Upgrade
     {
         Setting::where('group', Setting::PASSWORD_POLICIES_GROUP)->delete();
     }
-};
+}
