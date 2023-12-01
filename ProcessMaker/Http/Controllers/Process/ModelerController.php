@@ -77,6 +77,7 @@ class ModelerController extends Controller
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
+            'isAiGenerated' => request()->query('ai'),
         ]);
     }
 

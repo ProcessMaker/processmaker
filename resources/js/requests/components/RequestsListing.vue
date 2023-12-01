@@ -184,7 +184,13 @@ export default {
           width: 45,
         },
         {
-          label: "Name",
+          label: "Case Title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+        },
+        {
+          label: "Process Name",
           field: "name",
           sortable: true,
           default: true,
