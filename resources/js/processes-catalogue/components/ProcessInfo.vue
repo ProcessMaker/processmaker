@@ -3,7 +3,7 @@
     <breadcrumbs
       ref="breadcrumb"
       :category="selectCategory"
-      :process="process.id"
+      :process="process.name"
     />
     <b-row>
       <b-col cols="2">
