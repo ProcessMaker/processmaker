@@ -48,7 +48,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
-        $this->maxAttempts = (int) config('password-policies.login_attempts');
+        $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
     }
 
     /**

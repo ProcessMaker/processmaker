@@ -190,17 +190,17 @@ class User extends Authenticatable implements HasMedia
             $existing ? 'sometimes' : '',
         ];
         // Configurable policies
-        $passwordRules = Password::min((int) config('password-policies.minimum_length'));
-        if (config('password-policies.maximum_length')) {
+        $passwordRules = Password::min((int) config('password-policies.minimum_length', 8));
+        if (config('password-policies.maximum_length', false)) {
             $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
         }
-        if (config('password-policies.numbers')) {
+        if (config('password-policies.numbers', true)) {
             $passwordRules->numbers();
         }
-        if (config('password-policies.uppercase')) {
+        if (config('password-policies.uppercase', true)) {
             $passwordPolicies[] = new StringHasAtLeastOneUpperCaseCharacter();
         }
-        if (config('password-policies.special')) {
+        if (config('password-policies.special', true)) {
             $passwordRules->symbols();
         }
         $passwordPolicies[] = $passwordRules;

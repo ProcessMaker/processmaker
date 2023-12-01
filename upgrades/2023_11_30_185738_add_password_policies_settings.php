@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
-return new class extends Migration
+class AddPasswordPoliciesSettings extends Upgrade
 {
     /**
-     * Run the migrations.
+     * Run the upgrades.
      */
     public function up(): void
     {
@@ -116,7 +116,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the upgrades.
      */
     public function down(): void
     {

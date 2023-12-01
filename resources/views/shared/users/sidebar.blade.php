@@ -39,7 +39,7 @@
                     </small>
                 </div>
             @endcan
-            @if (config('password-policies.users_can_change'))
+            @if (config('password-policies.users_can_change', true))
             <div class="form-group">
                 {!! Form::label('password', __('New Password')) !!}
                 <vue-password v-model="formData.password" :disable-toggle=true>
