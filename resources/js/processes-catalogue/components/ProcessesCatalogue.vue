@@ -73,6 +73,9 @@ export default {
   methods: {
     addCategories() {
       this.page += 1;
+      this.getCategories();
+    },
+    getCategories() {
       ProcessMaker.apiClient
         .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
@@ -80,13 +83,6 @@ export default {
           newCategories.forEach((category) => {
             this.listCategories.push(category);
           });
-        });
-    },
-    getCategories() {
-      ProcessMaker.apiClient
-        .get(`process_categories?per_page=${this.numCategories}`)
-        .then((response) => {
-          this.listCategories = response.data.data;
         });
     },
     selectCategorie(value) {
