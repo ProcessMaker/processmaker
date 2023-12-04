@@ -13,6 +13,7 @@
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
+          @addCategories="addCategories"
         />
         <ul>
           <li>
@@ -62,17 +63,23 @@ export default {
       showWizardTemplates: false,
       showCardProcesses: false,
       category: null,
+      numCategories: 15,
+      page: 1,
     };
   },
   mounted() {
     this.getCategories();
   },
   methods: {
+    addCategories() {
+      this.page += 1;
+      this.getCategories();
+    },
     getCategories() {
       ProcessMaker.apiClient
-        .get("process_categories")
+        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
-          this.listCategories = response.data.data;
+          this.listCategories = [...this.listCategories, ...response.data.data];
         });
     },
     selectCategorie(value) {
