@@ -95,8 +95,6 @@ class SyncWizardTemplates implements ShouldQueue
                     'asset_type' => 'WIZARD_TEMPLATE',
                     'saveAssetsMode' => 'saveAllAssets',
                 ]);
-                dd($payload);
-                dd($options);
                 $importer = new Importer($payload, $options);
                 $importer->doImport();
 
