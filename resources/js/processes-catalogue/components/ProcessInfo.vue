@@ -7,7 +7,7 @@
     />
     <b-row>
       <b-col cols="2">
-        <h4> {{ $t('Processes Browser') }} </h4>
+        <h4>{{ $t("Processes Browser") }}</h4>
         <MenuCatologue
           :data="listCategories"
           :select="selectCategorie"
