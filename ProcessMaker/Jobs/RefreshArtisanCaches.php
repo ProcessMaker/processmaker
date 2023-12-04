@@ -43,7 +43,7 @@ class RefreshArtisanCaches implements ShouldQueue
 
             // We call this manually here since this job is dispatched
             // automatically when the config *is* cached
-            RestartKafkaConsumers::dispatchSync();
+            RestartMessageConsumers::dispatchSync();
         }
     }
 }

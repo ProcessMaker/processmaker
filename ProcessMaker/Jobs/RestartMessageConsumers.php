@@ -2,15 +2,15 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
-class RestartKafkaConsumers implements ShouldQueue
+class RestartMessageConsumers implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -33,6 +33,8 @@ class RestartKafkaConsumers implements ShouldQueue
      */
     public function handle(): void
     {
+        // For now, we;re only addressing the restart of the kafka consumer(s)
+        // and we will address the rabbitmq consumer(s) in another PR
         if (Str::lower(config('app.message_broker_driver')) !== 'kafka') {
             return;
         }

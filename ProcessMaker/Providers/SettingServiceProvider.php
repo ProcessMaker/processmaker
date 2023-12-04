@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Providers;
 
-use ProcessMaker\Jobs\RestartKafkaConsumers;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
+use ProcessMaker\Jobs\RestartMessageConsumers;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Repositories\ConfigRepository;
@@ -133,7 +133,7 @@ class SettingServiceProvider extends ServiceProvider
         // then we don't need to queue another. The job itself checks if
         // Kafka is set at the MESSAGE_BROKER_DRIVER, so no need to
         // check beforehand
-        if (!job_pending($job = RestartKafkaConsumers::class)) {
+        if (!job_pending($job = RestartMessageConsumers::class)) {
             $job::dispatch();
         }
     }
