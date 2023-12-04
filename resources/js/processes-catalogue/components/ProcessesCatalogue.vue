@@ -1,6 +1,9 @@
 <template>
   <div>
-    <breadcrumbs />
+    <breadcrumbs
+      ref="breadcrumb"
+      :category="category ? category.id : ''"
+    />
     <b-row>
       <b-col cols="2">
         <h4> {{ $t('Processes Browser') }} </h4>
@@ -80,6 +83,7 @@ export default {
     },
     selectCategorie(value) {
       this.category = value;
+      this.$refs.breadcrumb.getCategory(value.name);
       this.showCardProcesses = true;
       this.showWizardTemplates = false;
     },
