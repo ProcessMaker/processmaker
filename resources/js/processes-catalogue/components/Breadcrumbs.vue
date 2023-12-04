@@ -14,8 +14,8 @@
       </li>
 
       <li v-if="category" class="breadcrumb-item">
-        <a :href="categoryRoute" :aria-label="category">
-          {{ category }}
+        <a :aria-label="categoryName">
+          {{ categoryName }}
         </a>
       </li>
 
@@ -29,14 +29,27 @@
 <script>
 export default {
   router: window.ProcessMaker.Router,
-  props: ["process", "categoryRoute", "category"],
+  props: ["process", "category"],
   data() {
     return {
+      categoryName: "",
     };
   },
   mounted() {
+    this.getCategory();
   },
   methods: {
+    getCategory(value = "") {
+      if (value) {
+        this.categoryName = value;
+      } else if (this.category) {
+        ProcessMaker.apiClient
+          .get(`process_categories/${this.category}`)
+          .then((response) => {
+            this.categoryName = response.data.name;
+          });
+      }
+    },
   },
 };
 </script>

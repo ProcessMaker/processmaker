@@ -12,6 +12,7 @@
   <div id="open-process" class="px-3 page-content mb-0">
     <process-info
       :process="{{$process}}"
+      :category="{{$category}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
       is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
