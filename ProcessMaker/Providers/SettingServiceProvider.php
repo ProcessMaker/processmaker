@@ -58,7 +58,7 @@ class SettingServiceProvider extends ServiceProvider
         // latest version of the cached configuration
         $this->app['events']->listen(CommandFinished::class, function ($event) {
             if ($this->isCacheConfigCommand($event)) {
-                $this->restartKafkaConsumers();
+                $this->restartMessageConsumers();
                 $this->restartHorizon();
             }
         });
@@ -127,12 +127,12 @@ class SettingServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function restartKafkaConsumers(): void
+    public function restartMessageConsumers(): void
     {
-        // If there's already a job pending to restart the kafka consumers,
-        // then we don't need to queue another. The job itself checks if
-        // Kafka is set at the MESSAGE_BROKER_DRIVER, so no need to
-        // check beforehand
+        // If there's already a job pending to restart the message consumers,
+        // then we don't need to queue another. The job itself checks which
+        // messaging service is configured and will restart the consumer for
+        // it appropriately
         if (!job_pending($job = RestartMessageConsumers::class)) {
             $job::dispatch();
         }
