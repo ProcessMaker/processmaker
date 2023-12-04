@@ -3,7 +3,7 @@
         <b-tabs content-class="mt-3 text-style">
             <b-tab title="My Requests" active>
                 <div class="d-flex align-items-center justify-content-center flex-column">
-                    <img src="/img/launchpad-images/frame.png">
+                    <img src="/img/launchpad-images/frame.png" :alt="$t('No Image')">
                     <div class="text-center">
                         <strong>{{ $t('You have made no requests of this process') }}</strong>
                     </div>
@@ -14,7 +14,7 @@
             </b-tab>
             <b-tab title="My Tasks">
                 <div class="d-flex align-items-center justify-content-center flex-column">
-                    <img src="/img/launchpad-images/frame.png">
+                    <img src="/img/launchpad-images/frame.png" :alt="$t('No Image')">
                     <div class="text-center mt-3">
                         <strong>{{ $t('You have no tasks from this process') }}</strong>
                     </div>
