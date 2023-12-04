@@ -87,11 +87,14 @@ export default {
           event.webEntry = webEntry;
           this.processEvents.push(event);
         }
-        if (this.processEvents.length <= 1 && !this.processEvents[0].webEntry) {
-          this.havelessOneStartEvent = true;
-          this.startEvent = this.processEvents[0].id ?? 0;
-        }
       });
+      if (this.processEvents.length <= 1) {
+        const event = this.processEvents[0] ?? {};
+        if (!event.webEntry) {
+          this.havelessOneStartEvent = true;
+          this.startEvent = event.id ?? 0;
+        }
+      }
     },
     /**
      * Start new request
