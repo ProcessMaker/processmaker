@@ -1,6 +1,16 @@
 <template>
   <div id="start-events btn-group">
     <button
+      v-if="havelessOneStartEvent"
+      class="btn btn-success btn-lg start-button p-3"
+      type="button"
+      :disabled="processEvents.length === 0"
+      @click="goToNewRequest(startEvent)"
+    >
+      <span class="px-3"> {{ $t('Start this process') }} </span>
+    </button>
+    <button
+      v-else
       class="btn btn-success btn-lg dropdown-toggle start-button p-3"
       type="button"
       data-toggle="dropdown"
@@ -58,6 +68,8 @@ export default {
   data() {
     return {
       processEvents: [],
+      havelessOneStartEvent: false,
+      startEvent: "",
     };
   },
   mounted() {
@@ -74,6 +86,10 @@ export default {
           const webEntry = JSON.parse(event.config).web_entry;
           event.webEntry = webEntry;
           this.processEvents.push(event);
+        }
+        if (this.processEvents.length <= 1 && !this.processEvents[0].webEntry) {
+          this.havelessOneStartEvent = true;
+          this.startEvent = this.processEvents[0].id ?? 0;
         }
       });
     },
