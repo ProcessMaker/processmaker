@@ -76,7 +76,11 @@ class RequestController extends Controller
                 $definition = $startEvent->getDefinition();
                 $allowInterstitial = false;
                 if (isset($definition['allowInterstitial'])) {
-                    $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    $allowInterstitial = filter_var(
+                        $definition['allowInterstitial'],
+                        FILTER_VALIDATE_BOOLEAN,
+                        FILTER_NULL_ON_FAILURE
+                    );
                 }
                 if ($allowInterstitial && $request->user_id == Auth::id() && request()->has('fromTriggerStartEvent')) {
                     $active = $request->tokens()
@@ -85,7 +89,9 @@ class RequestController extends Controller
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
 
-                    return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
+                    return redirect(route('tasks.edit', [
+                        'task' => $active ? $active->getKey() : $startEvent->getKey()
+                    ]));
                 }
             }
         }
