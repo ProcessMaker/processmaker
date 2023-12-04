@@ -201,6 +201,12 @@ export default {
           default: true,
         },
         {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+        },
+        {
           label: "Case Title",
           field: "case_title",
           sortable: true,
