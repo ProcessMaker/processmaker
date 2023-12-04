@@ -452,6 +452,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return $query->where('processes.status', 'ARCHIVED');
     }
 
+    /**
+     * Scope a query to include a specific category
+     */
+    public function scopeProcessCategory($query, int $id)
+    {
+        return $query->where('processes.process_category_id', $id);
+    }
+
     public function getCollaborations()
     {
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);

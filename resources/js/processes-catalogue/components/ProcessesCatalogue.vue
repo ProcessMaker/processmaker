@@ -1,68 +1,97 @@
 <template>
-  <div class="d-flex w-100">
-    <div class="w-25">
-      <h4> {{ $t('Processes Browser') }} </h4>
-      <ul>
-        <li> 
-          <button
-            type="button"
-            class="btn btn-link"
-            @click="wizardTemplatesSelected"
-          >
-            {{ $t('Wizard Templates') }}
-          </button>
-        </li>
-      </ul>
-    </div>
-    <div class="w-100">
-      <div v-if="!showWizardTemplates && !fields.length" class="d-flex justify-content-center py-5 w-100">
-        <div>
-          <div class="d-flex justify-content-center my-5">
-            <img
-              class="image d-flex"
-              src="/img/processes-catalogue-empty.svg"
-              alt="recent projects"
-            >
-          </div>
-          <h4 class="text-center">
-            {{ $t('Currently you dont have processes created') }}
-          </h4>
-          <p class="text-center">
-            {{ $t('We encourage you to create new processes using our templates') }}
-          </p>
-          <p class="text-center my-4">
+  <div>
+    <breadcrumbs
+      ref="breadcrumb"
+      :category="category ? category.id : ''"
+    />
+    <b-row>
+      <b-col cols="2">
+        <h4> {{ $t('Processes Browser') }} </h4>
+        <MenuCatologue
+          :data="listCategories"
+          :select="selectCategorie"
+          title="Avaible Processses"
+          preicon="fas fa-play-circle"
+          class="mt-3"
+          @addCategories="addCategories"
+        />
+        <ul>
+          <li>
             <button
               type="button"
-              class="btn btn-primary text-capitalize"
+              class="btn btn-link"
+              @click="wizardTemplatesSelected"
             >
-              {{ $t("Show Me The Templates") }}
+              {{ $t('Wizard Templates') }}
             </button>
-          </p>
+          </li>
+        </ul>
+      </b-col>
+      <b-col cols="10">
+        <div
+          v-if="!showWizardTemplates && !showCardProcesses"
+          class="d-flex justify-content-center py-5"
+        >
+          <CatalogueEmpty />
         </div>
-      </div>
-      <wizard-templates v-if="showWizardTemplates"></wizard-templates>
-    </div>
+        <wizard-templates v-if="showWizardTemplates" />
+        <CardProcess
+          v-if="showCardProcesses"
+          :category="category"
+        />
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
-import WizardTemplates from './WizardTemplates.vue';
+import MenuCatologue from "./menuCatologue.vue";
+import CatalogueEmpty from "./CatalogueEmpty.vue";
+import CardProcess from "./CardProcess.vue";
+import Breadcrumbs from "./Breadcrumbs.vue";
+import WizardTemplates from "./WizardTemplates.vue";
+
 export default {
-  components: { WizardTemplates },
+  components: {
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates,
+  },
   data() {
     return {
+      listCategories: [],
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
+      showCardProcesses: false,
+      category: null,
+      numCategories: 15,
+      page: 1,
     };
   },
+  mounted() {
+    this.getCategories();
+  },
   methods: {
+    addCategories() {
+      this.page += 1;
+      this.getCategories();
+    },
+    getCategories() {
+      ProcessMaker.apiClient
+        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
+        .then((response) => {
+          this.listCategories = [...this.listCategories, ...response.data.data];
+        });
+    },
+    selectCategorie(value) {
+      this.category = value;
+      this.$refs.breadcrumb.getCategory(value.name);
+      this.showCardProcesses = true;
+      this.showWizardTemplates = false;
+    },
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
-    }
+      this.showCardProcesses = false;
+    },
   },
-  mounted() {
-  }
 };
 </script>
-
