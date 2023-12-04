@@ -64,6 +64,7 @@ export default {
       showCardProcesses: false,
       category: null,
       numCategories: 15,
+      page: 1,
     };
   },
   mounted() {
@@ -71,8 +72,15 @@ export default {
   },
   methods: {
     addCategories() {
-      this.numCategories += 15;
-      this.getCategories();
+      this.page += 1;
+      ProcessMaker.apiClient
+        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
+        .then((response) => {
+          const newCategories = response.data.data;
+          newCategories.forEach((category) => {
+            this.listCategories.push(category);
+          });
+        });
     },
     getCategories() {
       ProcessMaker.apiClient
