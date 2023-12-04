@@ -16,7 +16,7 @@ class WizardTemplate extends ProcessMakerModel
     protected $fillable = [
         'uuid',
         'process_template_id',
-        'process_id',
+        'helper_process_id',
         'media_collection',
     ];
 
@@ -25,7 +25,7 @@ class WizardTemplate extends ProcessMakerModel
      */
     public function process(): BelongsTo
     {
-        return $this->belongsTo(Process::class, 'process_id');
+        return $this->belongsTo(Process::class, 'helper_process_id');
     }
 
     /**

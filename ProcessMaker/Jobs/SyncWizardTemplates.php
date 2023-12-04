@@ -101,7 +101,7 @@ class SyncWizardTemplates implements ShouldQueue
                 $template = Process::where('uuid', $template['uuid'])->first();
 
                 WizardTemplate::create([
-                    'process_id' => $template->id,
+                    'helper_process_id' => $template->id,
                 ]);
             }
         }
