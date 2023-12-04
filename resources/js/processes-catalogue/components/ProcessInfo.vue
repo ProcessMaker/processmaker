@@ -30,7 +30,9 @@
             <process-options :process="process" />
           </b-col>
         </div>
-        <b-col cols="12"> Process Tab </b-col>
+        <b-col cols="12">
+          <process-tab></process-tab>
+        </b-col>
       </b-col>
     </b-row>
   </div>
@@ -41,9 +43,10 @@ import ProcessesCarousel from "../components/ProcessesCarousel.vue";
 import ProcessMap from "./ProcessMap.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
+import ProcessTab from './ProcessTab.vue';
 
 export default {
-  components: { ProcessOptions, Breadcrumbs, ProcessMap, ProcessesCarousel },
+  components: { ProcessOptions, Breadcrumbs, ProcessMap, ProcessesCarousel, ProcessTab },
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return {
