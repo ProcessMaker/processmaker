@@ -3,6 +3,7 @@
 namespace ProcessMaker\Nayra\MessageBrokers;
 
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -20,6 +21,8 @@ class ServiceRabbitMq
     private $connection;
 
     private $channel;
+
+    private $myStartTime;
 
     /**
      * Connect to the message broker service
@@ -123,8 +126,12 @@ class ServiceRabbitMq
         $this->channel->basic_consume(self::QUEUE_NAME_CONSUME, '', false, false, false, false, $callback);
 
         // Wait for incoming messages
+        $this->myStartTime = time();
         while ($this->channel->is_consuming()) {
             $this->channel->wait();
+            if ($this->checkForRestart()) {
+                break;
+            }
         }
 
         // Disconnect from service
@@ -166,5 +173,15 @@ class ServiceRabbitMq
         } catch (Exception $e) {
             Log::error('Error sending about message', ['error' => $e->getMessage()]);
         }
+    }
+
+    protected function checkForRestart(): bool
+    {
+        return $this->myStartTime < $this->getNextRestart();
+    }
+
+    protected function getNextRestart(): int
+    {
+        return Cache::get('processmaker-rabbitmq:consumer:restart', 0);
     }
 }
