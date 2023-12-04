@@ -30,7 +30,7 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="row[header.field]"></div>
+            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
                 <component
@@ -375,6 +375,15 @@ export default {
       if (content && typeof content === 'object') {
         return content.component && typeof content.props === 'object';
       }
+      return false;
+    },
+    sanitize(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
     },
   },
 };
