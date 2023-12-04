@@ -79,10 +79,7 @@ export default {
       ProcessMaker.apiClient
         .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
-          const newCategories = response.data.data;
-          newCategories.forEach((category) => {
-            this.listCategories.push(category);
-          });
+          this.listCategories = [...this.listCategories, ...response.data.data];
         });
     },
     selectCategorie(value) {
