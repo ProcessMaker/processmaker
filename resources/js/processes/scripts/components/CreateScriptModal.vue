@@ -269,6 +269,7 @@
 
 <script>
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
@@ -286,7 +287,7 @@ export default {
     ProjectSelect,
     LanguageScript,
   },
-  mixins: [FormErrorsMixin],
+  mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
     "countCategories",
     "scriptExecutors",
@@ -411,21 +412,9 @@ export default {
             hook.onsave(data);
           });
 
-          const url = `/designer/scripts/${data.id}/builder`;
-
-          if (this.callFromAiModeler) {
-            this.$emit("script-created-from-modeler", url, data.id, data.title);
-          } else if (this.copyAssetMode) {
-            this.close();
-          } else {
-            if (this.isQuickCreate === true) {
-              channel.postMessage({
-                assetType: "script",
-                asset: data,
-              });
-            }
-            window.location = url;
-          }
+          const url = new URL(`/designer/scripts/${data.id}/builder`, window.location.origin);
+          this.appendProjectIdToURL(url, this.projectId);
+          this.handleRedirection(url, data);
         })
         .catch((error) => {
           this.disabled = false;
@@ -435,6 +424,20 @@ export default {
             throw error;
           }
         });
+    },
+    handleRedirection(url, data) {
+      if (this.callFromAiModeler) {
+        this.$emit("script-created-from-modeler", url, data.id, data.title);
+      } else if (this.copyAssetMode) {
+        this.close();
+      } else if (this.isQuickCreate === true) {
+        channel.postMessage({
+          assetType: "script",
+          asset: data,
+        });
+      } else {
+        window.location.href = url;
+      }
     },
     /**
      * Set the ID of the language selected

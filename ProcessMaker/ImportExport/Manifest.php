@@ -204,7 +204,11 @@ class Manifest
                     break;
                 case 'object':
                     if (!is_object($model->$field)) {
-                        $model->$field = json_decode($model->$field);
+                        if (gettype($model->$field) !== 'array') {
+                            $model->$field = json_decode($model->$field);
+                        } else {
+                            $model->$field = (object)$model->$field;
+                        }
                     }
                     break;
             }

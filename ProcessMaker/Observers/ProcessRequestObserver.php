@@ -58,4 +58,13 @@ class ProcessRequestObserver
             $request->scheduledTasks()->delete();
         }
     }
+
+    public function saving(ProcessRequest $request)
+    {
+        // When data is updated we update the case_title
+        if ($request->isDirty('data')) {
+            $data = $request->data;
+            $request->case_title = $request->evaluateCaseTitle($data);
+        }
+    }
 }
