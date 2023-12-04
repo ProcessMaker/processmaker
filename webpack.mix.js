@@ -54,6 +54,7 @@ mix.extract([
   "@fortawesome/vue-fontawesome"
 ])
   .copy("resources/img/*", "public/img")
+  .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/script_lang/*", "public/img/script_lang")
   .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
   .copy("resources/js/components/CustomActions.vue", "public/js")

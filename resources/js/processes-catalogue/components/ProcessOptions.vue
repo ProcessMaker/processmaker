@@ -11,7 +11,7 @@
     </button>
     <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
       <p
-        class="font-weight-bold px-1"
+        class="font-weight-bold px-1 text-uppercase"
         style="font-size: 14px"
       >
         {{ $t('Starting events') }}
@@ -28,8 +28,18 @@
           {{ event.name }}
         </p>
         <button
+          v-if="event.webEntry"
           type="button"
-          class="btn btn-outline-success border-0 p-1"
+          class="btn btn-outline-primary border-0 p-1 text-capitalize"
+          @click="copyLink(event.webEntry)"
+        >
+          <i class="fas fa-link p-1" />
+          {{ $t('Copy Link') }}
+        </button>
+        <button
+          v-else
+          type="button"
+          class="btn btn-outline-success border-0 p-1 text-capitalize"
           @click="goToNewRequest(event.id)"
         >
           <i class="fas fa-play-circle p-1" />
@@ -61,6 +71,8 @@ export default {
       const startEvents = this.process.start_events;
       startEvents.forEach((event) => {
         if (event.eventDefinitions.length === 0) {
+          const webEntry = JSON.parse(event.config).web_entry;
+          event.webEntry = webEntry;
           this.processEvents.push(event);
         }
       });
@@ -70,7 +82,7 @@ export default {
      */
     goToNewRequest(event) {
       ProcessMaker.apiClient
-        .post(`/process_events/${this.processId}?event=${event}`)
+        .post(`/process_events/${this.process.id}?event=${event}`)
         .then((response) => {
           this.spin = 0;
           let instance = response.data;
@@ -82,6 +94,14 @@ export default {
             ProcessMaker.alert(data.message, "danger");
           }
         });
+    },
+    /**
+     * Copy WebEntry Link
+     */
+    copyLink(webEntry) {
+      const link = webEntry.webentryRouteConfig.entryUrl;
+      navigator.clipboard.writeText(link);
+      ProcessMaker.alert(this.$t("Link copied"), "success");
     },
   },
 };
