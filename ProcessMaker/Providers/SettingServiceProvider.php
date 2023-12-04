@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use ProcessMaker\Jobs\RestartKafkaConsumers;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\ServiceProvider;
@@ -19,14 +20,14 @@ class SettingServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    protected static $shouldCacheConfiguration = false;
+    protected static bool $shouldCacheConfiguration = false;
 
     /**
      * Eloquent events which trigger configuration-related updates
      *
      * @var array
      */
-    public static $listen = [
+    public static array $listen = [
         'eloquent.saved: ' . Setting::class,
         'eloquent.deleted: ' . Setting::class,
     ];
@@ -53,10 +54,11 @@ class SettingServiceProvider extends ServiceProvider
         });
 
         // When the config:cache command is run, we need to restart
-        // horizon to ensure they use the latest version of the
-        // cached configuration
+        // horizon and the kafka consumer to ensure they use the
+        // latest version of the cached configuration
         $this->app['events']->listen(CommandFinished::class, function ($event) {
             if ($this->isCacheConfigCommand($event)) {
+                $this->restartKafkaConsumers();
                 $this->restartHorizon();
             }
         });
@@ -117,6 +119,23 @@ class SettingServiceProvider extends ServiceProvider
             ?? 'default';
 
         return is_int(strpos($command, 'config:cache'));
+    }
+
+    /**
+     * Restart the `processmaker:consume` commands to
+     * pick up new config changes
+     *
+     * @return void
+     */
+    public function restartKafkaConsumers(): void
+    {
+        // If there's already a job pending to restart the kafka consumers,
+        // then we don't need to queue another. The job itself checks if
+        // Kafka is set at the MESSAGE_BROKER_DRIVER, so no need to
+        // check beforehand
+        if (!job_pending($job = RestartKafkaConsumers::class)) {
+            $job::dispatch();
+        }
     }
 
     /**
