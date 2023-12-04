@@ -54,8 +54,8 @@ class SettingServiceProvider extends ServiceProvider
         });
 
         // When the config:cache command is run, we need to restart
-        // horizon and the kafka consumer to ensure they use the
-        // latest version of the cached configuration
+        // horizon and the message consumer(s) to ensure they use
+        // the latest version of the cached configuration
         $this->app['events']->listen(CommandFinished::class, function ($event) {
             if ($this->isCacheConfigCommand($event)) {
                 $this->restartMessageConsumers();
