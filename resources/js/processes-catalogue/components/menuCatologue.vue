@@ -16,7 +16,7 @@
       id="collapse-3"
       visible
     >
-      <b-list-group>
+      <b-list-group id="infinite-list">
         <b-list-group-item
           v-for="item in data"
           :key="item.id"
@@ -33,8 +33,20 @@
 
 <script>
 export default {
-  props: ["data", "select", "title", "preicon"],
-  methods: {
+  props: ["data", "select", "title", "preicon", "numCategories"],
+  mounted() {
+    const listElm = document.querySelector('#infinite-list');
+    listElm.addEventListener("scroll", e => {
+      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+        this.loadMore();
+      }
+    });
+  },
+  methods: { 
+    /** Adding categories */
+    loadMore() {
+      this.$emit("addCategories");
+    },
     selectItem(item) {
       this.setSelectItem(item.name);
       this.select(item);
@@ -79,5 +91,11 @@ i {
   background: #E5EDF3;
   color: #1572C2;
   font-weight: 700;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0
 }
 </style>

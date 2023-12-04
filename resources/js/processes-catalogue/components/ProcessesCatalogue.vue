@@ -10,6 +10,7 @@
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
+          @addCategories="addCategories"
         />
         <ul>
           <li>
@@ -59,15 +60,20 @@ export default {
       showWizardTemplates: false,
       showCardProcesses: false,
       category: null,
+      numCategories: 15,
     };
   },
   mounted() {
     this.getCategories();
   },
   methods: {
+    addCategories() {
+      this.numCategories += 15;
+      this.getCategories();
+    },
     getCategories() {
       ProcessMaker.apiClient
-        .get("process_categories")
+        .get(`process_categories?per_page=${this.numCategories}`)
         .then((response) => {
           this.listCategories = response.data.data;
         });
