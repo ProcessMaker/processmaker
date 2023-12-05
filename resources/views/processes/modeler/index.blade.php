@@ -88,6 +88,7 @@ div.main {
     screenTypes: @json($screenTypes),
     scriptExecutors: @json($scriptExecutors),
     isProjectsInstalled: @json($isProjectsInstalled),
+    isAiGenerated: @json($isAiGenerated)
   }
   const warnings = @json($process->warnings);
 

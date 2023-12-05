@@ -108,6 +108,7 @@ import {
   screenSelectId,
 } from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -117,7 +118,7 @@ export default {
     Required,
     ProjectSelect,
   },
-  mixins: [FormErrorsMixin],
+  mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
     "countCategories",
     "types",
@@ -209,22 +210,9 @@ export default {
         .then(({ data }) => {
           ProcessMaker.alert(this.$t("The screen was created."), "success");
 
-          const url = `/designer/screen-builder/${data.id}/edit`;
-
-          if (this.callFromAiModeler) {
-            this.$emit("screen-created-from-modeler", url, data.id, data.title);
-          } else if (this.copyAssetMode) {
-            this.close();
-          } else {
-            if (this.isQuickCreate === true) {
-              channel.postMessage({
-                assetType: "screen",
-                asset: data,
-                screenSelectId: this.screenSelectId,
-              });
-            }
-            window.location = url;
-          }
+          const url = new URL(`/designer/screen-builder/${data.id}/edit`, window.location.origin);
+          this.appendProjectIdToURL(url, this.projectId);
+          this.handleRedirection(url, data);
         })
         .catch((error) => {
           this.disabled = false;
@@ -232,6 +220,21 @@ export default {
             this.errors = error.response.data.errors;
           }
         });
+    },
+    handleRedirection(url, data) {
+      if (this.callFromAiModeler) {
+        this.$emit("screen-created-from-modeler", url, data.id, data.title);
+      } else if (this.copyAssetMode) {
+        this.close();
+      } else if (this.isQuickCreate === true) {
+        channel.postMessage({
+          assetType: "screen",
+          asset: data,
+          screenSelectId: this.screenSelectId,
+        });
+      } else {
+        window.location = url;
+      }
     },
   },
 };

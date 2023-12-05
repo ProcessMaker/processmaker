@@ -1,5 +1,6 @@
 <template>
   <b-dropdown
+    v-if="filterActions.length > 0"
     :variant="variant ? variant : 'ellipsis'"
     no-caret
     no-flip
@@ -9,7 +10,6 @@
     class="ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
-    v-if="filterActions.length > 0"    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -19,6 +19,9 @@
       <span>
         {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
+    </template>
+    <template v-else-if="lauchpad" #button-content>
+      <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -74,21 +77,21 @@
       </div>
       <div v-for="action in filterActions">
         <b-dropdown-divider v-if="action.value == 'divider'"/>
-        <b-dropdown-item v-else
-            :key="action.value"
-            :href="action.link ? itemLink(action, data) : null"
-            class="ellipsis-dropdown-item mx-auto"
-            @click="!action.link ? onClick(action, data) : null"
+        <b-dropdown-item
+          v-else
+          :key="action.value"
+          :href="action.link ? itemLink(action, data) : null"
+          class="ellipsis-dropdown-item mx-auto"
+          @click="!action.link ? onClick(action, data) : null"
         >
           <div class="ellipsis-dropdown-content">
             <i
-                class="pr-1 fa-fw"
-                :class="action.icon"
+              class="pr-1 fa-fw"
+              :class="action.icon"
             />
             <span>{{ $t(action.content) }}</span>
           </div>
         </b-dropdown-item>
-
       </div>
     </div>
   </b-dropdown>
@@ -103,7 +106,7 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
   data() {
     return {
       active: false,
@@ -165,11 +168,17 @@ export default {
     filterActionsByPermissions() {
       return this.actions.filter(action => {
         // Check if the action has a 'permission' property and it's a non-empty string
-        if (!action.permission || typeof action.permission !== 'string' || action.permission.trim() === '') {
-            return true; // No specific permission required or invalid format, so allow the action.
+        if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
+          return true; // No specific permission required or invalid format, so allow the action.
+        }
+        let requiredPermissions;
+        // Check if this.permission is of type string
+        if (typeof action.permission === 'string') {
+          requiredPermissions = action.permission.split(',');
+        } else {
+          requiredPermissions = action.permission;
         }
 
-        const requiredPermissions = action.permission.split(',');
         // Check if this.permission is of type object
         if (typeof this.permission === 'object' && this.permission !== null) {
           const keys = Object.keys(this.permission);

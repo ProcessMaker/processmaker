@@ -58,6 +58,7 @@ use Throwable;
  * @property string $bpmn
  * @property string $description
  * @property string $name
+ * @property string $case_title
  * @property string $status
  * @property array $start_events
  * @property int $manager_id
@@ -68,6 +69,7 @@ use Throwable;
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="case_title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "ARCHIVED"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
@@ -448,6 +450,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function scopeArchived($query)
     {
         return $query->where('processes.status', 'ARCHIVED');
+    }
+
+    /**
+     * Scope a query to include a specific category
+     */
+    public function scopeProcessCategory($query, int $id)
+    {
+        return $query->where('processes.process_category_id', $id);
     }
 
     public function getCollaborations()
