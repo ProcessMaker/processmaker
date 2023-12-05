@@ -179,6 +179,3 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
-
-// SAML Metadata Route
-Route::resource('/saml/metadata', MetadataController::class)->only('index');
