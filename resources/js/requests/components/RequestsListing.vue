@@ -35,6 +35,17 @@
           </b-link>
         </template>
         <template
+          slot="case_number"
+          slot-scope="props"
+        >
+          <b-link
+            class="text-nowrap"
+            :href="openRequest(props.rowData, props.rowIndex)"
+          >
+            #{{ props.rowData.case_number }}
+          </b-link>
+        </template>
+        <template
           slot="name"
           slot-scope="props"
         >
@@ -157,7 +168,7 @@ export default {
             field.name = "__slot:name";
             break;
           default:
-            field.name = column.field;
+            field.name = column.name || column.field;
         }
 
         if (!field.field) {
@@ -203,6 +214,7 @@ export default {
         {
           label: "Case #",
           field: "case_number",
+          name: "__slot:case_number",
           sortable: true,
           default: true,
         },

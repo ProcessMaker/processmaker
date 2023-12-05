@@ -611,6 +611,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
             return [
                 'id' => $request->uuid,
+                'request_id' => $request->getKey(),
                 'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,

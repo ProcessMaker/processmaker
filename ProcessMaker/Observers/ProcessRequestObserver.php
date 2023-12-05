@@ -69,8 +69,10 @@ class ProcessRequestObserver
             if (!$request->parent_request_id) {
                 $request->case_title = $request->evaluateCaseTitle($data);
                 // Copy the case title to the child requests
-                ProcessRequest::where('parent_request_id', $request->id)
-                    ->update(['case_title' => $request->case_title]);
+                if (!empty($request->id)) {
+                    ProcessRequest::where('parent_request_id', $request->id)
+                        ->update(['case_title' => $request->case_title]);
+                }
             } else {
                 // If request is a subprocess, inherit the case title from the parent
                 $request->case_title = ProcessRequest::whereId($request->parent_request_id)

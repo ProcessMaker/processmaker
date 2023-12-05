@@ -939,8 +939,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function isSystem()
     {
-        $systemCategories = ProcessCategory::where('system', true)->pluck('id');
-        return CategoryAssignment::where('assignable_type', Process::class)
+        $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+        return DB::table('category_assignments')
+            ->where('assignable_type', Process::class)
             ->where('assignable_id', $this->process_id)
             ->where('category_type', ProcessCategory::class)
             ->whereIn('category_id', $systemCategories)
