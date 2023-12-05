@@ -23,7 +23,7 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
      * is returned
      *
      * @param string $template
-     * @param string $data
+     * @param array $data
      * @return string
      */
     public function render($template, $data)

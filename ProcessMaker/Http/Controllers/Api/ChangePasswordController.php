@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,10 @@ class ChangePasswordController extends Controller
 
         $user->setAttribute('password', Hash::make($request->json('password')));
         $user->setAttribute('force_change_password', 0);
+        $user->setAttribute('password_changed_at', Carbon::now()->toDateTimeString());
+
+        // Remove login error message related to password expired if exists
+        session()->forget('login-error');
 
         try {
             $user = $user->save();
