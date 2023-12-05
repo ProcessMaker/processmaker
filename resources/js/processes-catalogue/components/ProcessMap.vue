@@ -6,7 +6,11 @@
         class="d-flex justify-content-between mb-3"
       >
         <h4 class="d-flex align-items-center">
-          <i class="fas fa-arrow-circle-left text-secondary mr-2 title-font" @click="goBack" />
+          <i
+            class="fas fa-arrow-circle-left text-secondary mr-2 title-font"
+            @click="goBack"
+            style="cursor: pointer;"
+          />
           {{ process.name }}
         </h4>
         <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
