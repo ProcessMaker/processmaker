@@ -287,7 +287,7 @@ export default {
           },
         },
       )
-        .then(({ data }) => {
+        .then(response => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
@@ -298,9 +298,9 @@ export default {
             const url = `/package-ai/processes/create/${response.data.id}`;
             this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
           } else if (this.projectId) {
-            const url = new URL(`/modeler/${data.id}`, window.location.origin);
+            const url = new URL(`/modeler/${response.data.id}`, window.location.origin);
             this.appendProjectIdToURL(url, this.projectId);
-            this.handleRedirection(url, data);
+            this.handleRedirection(url, response.data);
           } else {
             window.location =
               this.isAiGenerated

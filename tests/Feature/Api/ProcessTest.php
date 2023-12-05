@@ -556,6 +556,29 @@ class ProcessTest extends TestCase
     }
 
     /**
+     * Test filter by Category
+     */
+    public function testFilterCategory()
+    {
+        // Create Category
+        $categoryA = ProcessCategory::factory()->create();
+        $categoryB = ProcessCategory::factory()->create();
+        // Now we create process related to this
+        Process::factory()->count(5)->create([
+            'process_category_id' => $categoryB->id,
+        ]);
+        // Get process without category
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
+        $response->assertJsonCount(5, 'data');
+        // Get process related categoryA
+        $response = $this->apiCall('GET', route('api.processes.index', ['category' => $categoryA->id]));
+        $response->assertJsonCount(0, 'data');
+        // Get process related categoryB
+        $response = $this->apiCall('GET', route('api.processes.index', ['category' => $categoryB->id]));
+        $response->assertJsonCount(5, 'data');
+    }
+
+    /**
      * Test pagination of process list
      */
     public function testPagination()

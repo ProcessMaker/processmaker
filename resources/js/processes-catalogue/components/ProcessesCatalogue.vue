@@ -1,6 +1,9 @@
 <template>
   <div>
-    <breadcrumbs />
+    <breadcrumbs
+      ref="breadcrumb"
+      :category="category ? category.id : ''"
+    />
     <b-row>
       <b-col cols="2">
         <h4> {{ $t('Processes Browser') }} </h4>
@@ -8,7 +11,10 @@
           :data="listCategories"
           :select="selectCategorie"
           @wizardLinkSelect="showWizardTemplates = 'true'"
+          title="Avaible Processses"
+          preicon="fas fa-play-circle"
           class="mt-3"
+          @addCategories="addCategories"
         />
         <!-- <ul>
           <li>
@@ -24,11 +30,17 @@
       </b-col>
       <b-col cols="10">
         <div
+          v-if="!showWizardTemplates && !showCardProcesses"
           class="d-flex justify-content-center py-5"
         >
           <wizard-templates v-if="showWizardTemplates" />
           <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
+        <wizard-templates v-if="showWizardTemplates" />
+        <CardProcess
+          v-if="showCardProcesses"
+          :category="category"
+        />
       </b-col>
     </b-row>
   </div>
@@ -37,12 +49,13 @@
 <script>
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
+import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 import WizardTemplates from "./WizardTemplates.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, WizardTemplates,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates,
   },
   data() {
     return {
@@ -50,21 +63,36 @@ export default {
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
+      showCardProcesses: false,
+      category: null,
+      numCategories: 15,
+      page: 1,
     };
   },
   mounted() {
     this.getCategories();
   },
   methods: {
+    addCategories() {
+      this.page += 1;
+      this.getCategories();
+    },
     getCategories() {
       ProcessMaker.apiClient
-        .get("process_categories")
+        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
-          this.listCategories = response.data.data;
+          this.listCategories = [...this.listCategories, ...response.data.data];
         });
     },
     selectCategorie(value) {
-      console.log(value);
+      this.category = value;
+      this.$refs.breadcrumb.getCategory(value.name);
+      this.showCardProcesses = true;
+      this.showWizardTemplates = false;
+    },
+    wizardTemplatesSelected() {
+      this.showWizardTemplates = true;
+      this.showCardProcesses = false;
     },
   },
 };
