@@ -86,10 +86,12 @@ export default {
     this.checkSelectedProcess();
   },
   methods: {
+    /** Add new page of categories */
     addCategories() {
       this.page += 1;
       this.getCategories();
     },
+    /** Get list of categories */
     getCategories() {
       ProcessMaker.apiClient
         .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
@@ -97,6 +99,7 @@ export default {
           this.listCategories = [...this.listCategories, ...response.data.data];
         });
     },
+    /** Check if there is a pre-selected process */
     checkSelectedProcess() {
       if (this.process) {
         this.openProcess(this.process);
@@ -109,6 +112,7 @@ export default {
           });
       }
     },
+    /** Select a category and show display */
     selectCategorie(value) {
       this.category = value;
       this.selectedProcess = null;
@@ -116,16 +120,19 @@ export default {
       this.showWizardTemplates = false;
       this.showProcess = false;
     },
+    /** Select a wizard templates and show display */
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
       this.showCardProcesses = false;
       this.showProcess = false;
     },
+    /** Select a process and show display */
     openProcess(process) {
       this.showCardProcesses = false;
       this.showProcess = true;
       this.selectedProcess = process;
     },
+    /** Rerun a process cards from process info */
     returnedFromInfo() {
       this.selectCategorie(this.category);
     },

@@ -7,6 +7,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 
+/**
+ * @param Request $request
+ * @param Process $process
+ *
+ * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+ */
 class ProcessesCatalogueController extends Controller
 {
     public function index(Request $request, Process $process = null)

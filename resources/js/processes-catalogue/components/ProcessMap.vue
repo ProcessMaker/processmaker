@@ -101,6 +101,7 @@ export default {
     getActions() {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
     },
+    /** Rerun a process cards from process info */
     goBack() {
       this.$emit("goBackCategory");
     },

@@ -46,6 +46,7 @@ export default {
     };
   },
   methods: {
+    /** Rerun a process cards */
     goBackCategory() {
       this.$emit("goBackCategory");
     },

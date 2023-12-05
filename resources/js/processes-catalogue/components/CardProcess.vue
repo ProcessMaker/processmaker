@@ -43,6 +43,7 @@ export default {
           this.processList = response.data.data;
         });
     },
+    /** go to process info */
     openProcessInfo(process) {
       this.$emit("openProcess", process);
     },
