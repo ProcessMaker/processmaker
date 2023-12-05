@@ -18,7 +18,7 @@ export default {
   props: {
     imageSrc: {
       type: String,
-      default: "/img/launchpad-images/frame.png",
+      default: "/img/launchpad-images/tasks-loading.svg",
     },
     altText: {
       type: String,
