@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-center justify-content-center flex-column">
+  <div class="d-flex align-items-center justify-content-center flex-column tab-container">
     <img
       :src="imageSrc"
       :alt="altText"
@@ -35,3 +35,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.tab-container {
+    width: auto;
+    height: 622px;
+    background-color: white;
+  }
+</style>
