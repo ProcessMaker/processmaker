@@ -15,7 +15,9 @@ import EnterPasswordModal from "../../processes/import/components/EnterPasswordM
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import IconSelector from "./IconSelector";
+import IconDropdown from "./IconDropdown";
 import Modal from "./Modal";
+import ModalSaveVersion from "./ModalSaveVersion.vue";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
@@ -65,7 +67,9 @@ export {
   FileUploadButton,
   FormErrorsMixin,
   IconSelector,
+  IconDropdown,
   Modal,
+  ModalSaveVersion,
   PmqlInput,
   ProjectSelect,
   PTab,

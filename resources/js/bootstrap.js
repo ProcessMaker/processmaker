@@ -27,6 +27,8 @@ import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
+import ModalSaveVersion from "./components/shared/ModalSaveVersion.vue";
+import IconDropdown from "./components/shared/IconDropdown.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -87,6 +89,8 @@ window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
+window.Vue.component("modal-save-version", ModalSaveVersion);
+window.Vue.component("icon-dropdown", IconDropdown);
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
