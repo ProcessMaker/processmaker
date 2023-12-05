@@ -9,7 +9,6 @@
           <i
             class="fas fa-arrow-circle-left text-secondary mr-2 title-font"
             @click="goBack"
-            style="cursor: pointer;"
           />
           {{ process.name }}
         </h4>
@@ -111,7 +110,8 @@ export default {
 
 <style scoped>
 .title-font {
-  font-size: 32px
+  font-size: 32px;
+  cursor: pointer;
 }
 .ellipsis-border{
   border-color: #CDDDEE;
