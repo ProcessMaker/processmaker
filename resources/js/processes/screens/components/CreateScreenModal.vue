@@ -78,7 +78,7 @@
           v-if="isProjectsInstalled"
           v-model="formData.projects"
           :errors="errors.projects"
-          :projectId="projectId"
+          :project-id="projectId"
           :label="$t('Project')"
           :required="isProjectSelectionRequired"
           api-get="projects"
@@ -161,13 +161,13 @@ export default {
     this.resetFormData();
     this.resetErrors();
     if (this.isQuickCreate === true) {
-      this.screenTypes = filterScreenType();
+      this.screenTypes = filterScreenType() ?? this.types;
       // in any case the screenType if the only one, default to the first value
       if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
     }
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
-    } 
+    }
   },
   methods: {
     show() {
@@ -193,10 +193,10 @@ export default {
       this.resetErrors();
     },
     close() {
-      this.$bvModal.hide('createScreen');
+      this.$bvModal.hide("createScreen");
       this.disabled = false;
-      this.$emit('reload');
-    },  
+      this.$emit("reload");
+    },
     onSubmit() {
       this.resetErrors();
       // single click
