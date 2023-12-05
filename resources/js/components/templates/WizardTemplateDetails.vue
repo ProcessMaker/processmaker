@@ -54,9 +54,6 @@ export default {
   },
   computed: {
   },
-  mounted() {
-    this.show();
-  },
   methods: {
     show() {
       this.$bvModal.show("wizardTemplateDetails");

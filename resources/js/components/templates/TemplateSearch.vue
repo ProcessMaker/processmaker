@@ -55,6 +55,7 @@
           </b-card-group>
         </template>
         <template-details v-if="component === 'template-details'" :template="template" :type="type"></template-details>
+        <wizard-template-details ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -91,9 +92,10 @@ import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 
 export default {
-  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
   props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
   data() {
@@ -133,14 +135,19 @@ export default {
   },
   methods: {
     showDetails($event) {
-      this.$emit('show-details', {
-        'id': $event.template.id, 
-        'name': $event.template.name, 
-        'description': $event.template.description,
-        'category_id': $event.template.process_category_id,
-        'version' : $event.template.version,
-      });
-      this.template = $event.template;
+      if ($event.type === "wizard") {
+        this.template = $event.template;
+        this.$refs.wizardTemplateDetails.show();
+      } else {
+        this.$emit('show-details', {
+          'id': $event.template.id, 
+          'name': $event.template.name, 
+          'description': $event.template.description,
+          'category_id': $event.template.process_category_id,
+          'version' : $event.template.version,
+        });
+        this.template = $event.template;
+      }
     },
     fetch() {
         this.loading = true;
