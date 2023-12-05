@@ -29,27 +29,34 @@ import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 
 window.__ = translator;
-window._ = require("lodash");
+import _ from "lodash";
+window._ = _;
 window.Popper = require("popper.js").default;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.ProcessmakerComponents = require("./processes/screen-builder/components");
+import ProcessmakerComponents from "./processes/screen-builder/components";
+window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+import SharedComponents from "./components/shared";
+window.SharedComponents = SharedComponents;
 
-window.ProcessesComponents = require("./processes/components");
-window.ScreensComponents = require("./processes/screens/components");
-window.ScriptsComponents = require("./processes/scripts/components");
+import ProcessesComponents from "./processes/components";
+window.ProcessesComponents = ProcessesComponents;
+import ScreensComponents from "./processes/screens/components";
+window.ScreensComponents = ScreensComponents;
+import ScriptsComponents from "./processes/scripts/components";
+window.ScriptsComponents = ScriptsComponents;
 
 /**
  * Exporting Modeler inspector components
  */
-window.ModelerInspector = require("./processes/modeler/components/inspector");
+import ModelerInspector from "./processes/modeler/components/inspector";
+window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
@@ -73,8 +80,10 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = require("vue-monaco");
-window.ScreenBuilder = require("@processmaker/screen-builder");
+import VueMonaco from "vue-monaco";
+window.VueMonaco = VueMonaco;
+import ScreenBuilder from "@processmaker/screen-builder";
+window.ScreenBuilder = ScreenBuilder;
 
 window.VueRouter = Router;
 
@@ -204,7 +213,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import ProcessMaker.apiClient from "axios";
+window.ProcessMaker.apiClient = ProcessMaker.apiClient;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 

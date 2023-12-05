@@ -30,7 +30,7 @@ import VueHtml2Canvas from 'vue-html2canvas';
  */
 import __ from "./modules/lang";
 
-require("bootstrap");
+import "bootstrap";
 
 const { Vue } = window;
 
