@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import Modal from "../../../components/shared/Modal";
+import Modal from "../../../components/shared/Modal.vue";
 
 export default {
   components: { Modal },

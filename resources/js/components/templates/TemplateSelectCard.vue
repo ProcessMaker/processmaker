@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import WizardTemplateCard from './WizardTemplateCard';
-import DefaultTemplateCard from './DefaultTemplateCard';
+import WizardTemplateCard from './WizardTemplateCard.vue';
+import DefaultTemplateCard from './DefaultTemplateCard.vue';
 
 export default {
   components: {WizardTemplateCard, DefaultTemplateCard},
