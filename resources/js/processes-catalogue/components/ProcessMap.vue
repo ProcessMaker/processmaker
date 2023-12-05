@@ -102,8 +102,8 @@ export default {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
     },
     goBack() {
-      window.location = "/processes-catalogue";
-    }
+      this.$emit("goBackCategory");
+    },
   },
 };
 </script>

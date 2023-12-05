@@ -4,7 +4,7 @@
       v-for="process in processList"
       :key="process.id"
       class="card-process"
-      @click="openProcessInfo(process.id)"
+      @click="openProcessInfo(process)"
     >
       <b-card-text>
         <img
@@ -44,7 +44,7 @@ export default {
         });
     },
     openProcessInfo(process) {
-      window.location = `/processes-catalogue/${process}`;
+      this.$emit("openProcess", process);
     },
   },
 };
