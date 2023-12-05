@@ -1871,6 +1871,7 @@
   "Your account has been timed out for security.": "Your account has been timed out for security.",
   "Your password has been reset!": "Your password has been reset!",
   "Your password has been updated.": "Your password has been updated.",
+  "Your password has expired.": "Your password has expired.",
   "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
   "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
   "Your profile was saved.": "Your profile was saved.",

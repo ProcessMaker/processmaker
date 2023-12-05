@@ -3,11 +3,14 @@
 namespace ProcessMaker\Nayra\Repositories;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Repositories\TokenRepository;
 
 trait PersistenceTokenTrait
@@ -28,9 +31,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityActivated($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityActivatedEvent($activity, $token);
-        $bpmnSubscriber->onActivityActivated($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $event);
     }
 
     /**
@@ -61,13 +63,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityCompleted($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityCompletedEvent($activity, $token);
-        $bpmnSubscriber->onActivityCompleted($event);
-
-        // Comments
-        $subscriber = new CommentsSubscriber();
-        $subscriber->onActivityCompleted($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_COMPLETED, $event);
     }
 
     /**
@@ -165,9 +162,17 @@ trait PersistenceTokenTrait
     public function persistGatewayTokenPassed(array $transaction)
     {
         $gateway = $this->deserializer->unserializeEntity($transaction['gateway']);
-        $transition = $this->deserializer->unserializeEntity($transaction['transition']);
+        if (!is_numeric($transaction['transition'])) {
+            Log::info('Invalid transition id for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
+        $transition = $gateway->getTransitions()[$transaction['transition']] ?? null;
+        if (empty($transition)) {
+            Log::info('Invalid transition for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
         $tokens = $this->deserializer->unserializeTokensCollection($transaction['tokens']);
-        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens[0]);
+        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens->item(0));
 
         // Comments
         $subscriber = new CommentsSubscriber();
@@ -297,5 +302,13 @@ trait PersistenceTokenTrait
         $version = $aboutInfo['version'];
         error_log("Microservice $name version $version is running.");
         Cache::put(self::$aboutCacheKey, $aboutInfo, 60);
+    }
+
+    public function throwGlobalSignalEvent(array $transaction)
+    {
+        $throwElement = $this->deserializer->unserializeEntity($transaction['throw_element']);
+        $token = $transaction['token'] ? $this->deserializer->unserializeToken($transaction['token']) : null;
+        $eventDefinition = $throwElement->getEventDefinitions()->item(0);
+        WorkflowManager::throwSignalEventDefinition($eventDefinition, $token);
     }
 }

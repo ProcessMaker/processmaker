@@ -97,6 +97,19 @@
                                 </select-user>
                                 <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
                             </div>
+                            <div class="form-group">
+                                {!! Form::label('case_title', __('Case Title')) !!}
+                                {!!Form::text('case_title', null,
+                                    [ 'id'=> 'case_title',
+                                        'class'=> 'form-control',
+                                        'v-model'=> 'formData.case_title',
+                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
+                                    ])
+                                !!}
+                                <small class="form-text text-muted" v-if="! errors.name">
+                                    {{ __('This field has a limit of 200 characters when calculated') }}
+                                </small>
+                            </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                                 <multiselect id="cancelRequest"

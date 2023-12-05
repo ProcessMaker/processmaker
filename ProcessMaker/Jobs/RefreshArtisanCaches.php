@@ -40,6 +40,10 @@ class RefreshArtisanCaches implements ShouldQueue
             Artisan::call('config:cache', $options);
         } else {
             Artisan::call('queue:restart', $options);
+
+            // We call this manually here since this job is dispatched
+            // automatically when the config *is* cached
+            RestartMessageConsumers::dispatchSync();
         }
     }
 }

@@ -43,7 +43,11 @@ class SecurityLoggerTest extends TestCase
         $this->assertDatabaseHas('security_logs', ['event' => 'login', 'user_id' => $user->id]);
 
         // Attempt to logout
-        Auth::logout();
+        if (in_array(Auth::getDefaultDriver(), config('samlidp.guards'))) {
+            return redirect('saml/logout');
+        } else {
+            Auth::logout();
+        }
         $this->assertDatabaseHas('security_logs', ['event' => 'logout', 'user_id' => $user->id]);
 
         // Disable security logging

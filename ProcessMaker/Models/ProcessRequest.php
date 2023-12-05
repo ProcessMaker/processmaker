@@ -39,8 +39,9 @@ use Throwable;
  * @property string $process_collaboration_id
  * @property string $participant_id
  * @property string $name
+ * @property string $case_title
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property string $collaboration_uuid
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
@@ -59,6 +60,7 @@ use Throwable;
  *   @OA\Property(property="data", type="object"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED", "ERROR", "CANCELED"}),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="case_title", type="string"),
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
  * ),
@@ -919,5 +921,17 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->limit(10)
             ->get()
             ->toArray();
+    }
+
+    public function evaluateCaseTitle(array $data): string
+    {
+        // check if $this->process relation is loaded
+        if ($this->process && $this->process instanceof Process) {
+            $mustacheTitle = $this->process->case_title;
+        } else {
+            $mustacheTitle = $this->process()->select('case_title')->first()->case_title;
+        }
+        $mustache = new MustacheExpressionEvaluator();
+        return $mustache->render($mustacheTitle, $data);
     }
 }
