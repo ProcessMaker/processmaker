@@ -206,12 +206,6 @@ export default {
       }
       return [
         {
-          label: "#",
-          field: "id",
-          sortable: true,
-          default: true,
-        },
-        {
           label: "Case #",
           field: "case_number",
           name: "__slot:case_number",
