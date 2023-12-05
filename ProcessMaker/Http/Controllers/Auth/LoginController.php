@@ -178,7 +178,7 @@ class LoginController extends Controller
         $user = User::where('username', $request->input('username'))->first();
         if (!$user || $user->status === 'INACTIVE') {
             $this->sendFailedLoginResponse($request);
-        } else if ($user->status === 'BLOCKED') {
+        } elseif ($user->status === 'BLOCKED') {
             $this->throwLockedLoginResponse();
         }
 
