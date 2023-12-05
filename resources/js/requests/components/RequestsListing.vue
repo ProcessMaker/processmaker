@@ -13,7 +13,6 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
-        @table-elipsis-click="handleElipsisClick"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -60,6 +59,10 @@
         </template>
       </filter-table>
     </div>
+    <pagination-table
+        :meta="data.meta"
+        @page-change="changePage"
+    />
   </div>
 </template>
 
@@ -68,12 +71,13 @@ import Vue from "vue";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -82,6 +86,7 @@ Vue.component("AvatarImage", AvatarImage);
 export default {
   components: {
     PMColumnFilterPopover,
+    paginationTable,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
@@ -188,6 +193,7 @@ export default {
           field: "case_title",
           sortable: true,
           default: true,
+          width: 140,
         },
         {
           label: "Process Name",
@@ -202,7 +208,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 190,
+          width: 140,
         },
         {
           label: "Participants",
@@ -210,6 +216,7 @@ export default {
           sortable: false,
           default: true,
           width: 160,
+          truncate: true,
         },
         {
           label: "Started",
@@ -361,9 +368,6 @@ export default {
           });
       });
     },
-    handleElipsisClick(event) {
-      console.log(event);
-    },
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);
     },
@@ -384,6 +388,10 @@ export default {
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
+    },
+    changePage(page) {
+      this.page = page;
+      this.fetch();
     },
   },
 };

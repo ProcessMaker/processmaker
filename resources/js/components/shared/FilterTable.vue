@@ -167,9 +167,6 @@ export default {
         return date === null ? "-" : moment(date).format(dateFormat);
       }
     },
-    handleEllipsisClick(event) {
-      this.$emit('table-elipsis-click', event);
-    },
     handleRowClick(row) {
       this.$emit('table-row-click', row);
     },
