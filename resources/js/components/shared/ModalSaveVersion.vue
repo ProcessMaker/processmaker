@@ -18,8 +18,7 @@
             <b-tabs card>
               <button
                 type="button"
-                class="btn btn-custom-button btn-sm position-absolute modeler-save-button"
-                style="right: 10px; top: 20px"
+                class="btn btn-custom-button btn-sm position-absolute modeler-save-button custom-button"
                 @click="showVersionInfo = !showVersionInfo"
               >
                 <i class="fas fa-save mr-1"></i>
@@ -286,7 +285,6 @@
       };
     },
     mounted() {
-      console.log('En mounted Modal Save Version CORE');
       ProcessMaker.EventBus.$on("open-modal-versions", (redirectUrl, nodeId) => {
         this.redirectUrl = redirectUrl;
         this.nodeId = nodeId;
@@ -627,6 +625,11 @@
   font-size: 14px;
   letter-spacing: -0.02em;
   line-height: 21px;
+}
+
+.custom-button {
+  right: 10px; 
+  top: 20px;
 }
   </style>
   
