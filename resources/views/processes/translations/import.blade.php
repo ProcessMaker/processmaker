@@ -71,7 +71,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/translations/import.js')}}"></script>
+    @vite('resources/js/processes/translations/import.js')
     <script>
       new Vue({
         el: '#importProcessTranslation',

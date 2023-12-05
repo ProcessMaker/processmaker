@@ -22,5 +22,5 @@
 @endsection
 
 @section('js')
-  <script src="{{mix('js/processes-catalogue/open.js')}}"></script>
+  @vite('resources/js/processes-catalogue/open.js')
 @endsection

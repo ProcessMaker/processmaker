@@ -154,7 +154,7 @@
     };
   </script>
 
-  <script src="{{ mix('js/requests/show.js') }}"></script>
+  @vite('resources/js/requests/show.js')
 
   <script>
     const main = new Vue({

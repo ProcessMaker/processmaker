@@ -65,7 +65,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/admin/groups/index.js')}}"></script>
+    @vite('resources/js/admin/groups/index.js')
     <script>
       new Vue({
         el: '#listGroups',
