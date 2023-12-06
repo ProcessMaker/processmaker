@@ -51,40 +51,54 @@
                 @endcan
             </counter-card-group>
 
-            <div class="card card-body">
-                <div id="search-bar" class="search advanced-search mb-2">
-                <div class="d-flex">
-                    <div class="flex-grow-1">
-                    <pmql-input
-                        ref="pmql_input"
-                        search-type="requests"
-                        :value="pmql"
-                        :url-pmql="urlPmql"
-                        :filters-value="pmql"
-                        :ai-enabled="false"
-                        :show-filters="true"
-                        :aria-label="$t('Advanced Search (PMQL)')"
-                        :param-status="status" 
-                        :param-requester="requester" 
-                        :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
-                        @submit="onNLQConversion"
-                        @filterspmqlchange="onFiltersPmqlChange">
+            <ul class="nav nav-tabs requests-nav" id="requestTab" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link requests-nav-link active" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab"
+                  aria-controls="inbox" aria-selected="true">
+                  {{ __('Inbox') }}
+                </a>
+              </li>
+            </ul>
+            <div class="tab-content" id="requests-tabContent">
+                <div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
 
-                        <template v-slot:left-buttons>
-                        <div class="d-flex">
-                            <div class="d-flex mr-1" v-for="addition in additions">
-                            <component class="d-flex" :is="addition" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"></component>
+                    <div class="card card-body requests-list-body">
+                        <div id="search-bar" class="search advanced-search mb-2">
+                            <div class="d-flex">
+                                <div class="flex-grow-1">
+                                <pmql-input
+                                    ref="pmql_input"
+                                    search-type="requests"
+                                    :value="pmql"
+                                    :url-pmql="urlPmql"
+                                    :filters-value="pmql"
+                                    :ai-enabled="false"
+                                    :show-filters="true"
+                                    :aria-label="$t('Advanced Search (PMQL)')"
+                                    :param-status="status" 
+                                    :param-requester="requester" 
+                                    :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" 
+                                    @submit="onNLQConversion"
+                                    @filterspmqlchange="onFiltersPmqlChange">
+
+                                    <template v-slot:left-buttons>
+                                    <div class="d-flex">
+                                        <div class="d-flex mr-1" v-for="addition in additions">
+                                        <component class="d-flex" :is="addition" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}"></component>
+                                        </div>
+                                    </div>
+                                    </template>
+
+                                </pmql-input>
+                                </div>
                             </div>
                         </div>
-                        </template>
-
-                    </pmql-input>
+                        <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
                     </div>
-                </div>
-                </div>
 
-                <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -138,6 +152,23 @@
         min-width:25px;
         min-height: 25px;
         border-radius: 50%;
+    }
+    .requests-nav {
+        border-bottom: 0 !important;
+    }
+    .requests-nav-link.active {
+        color: #1572C2 !important;
+        font-weight: 700;
+        font-size: 15px;
+    }
+    .requests-nav-link {
+        color: #556271;
+        font-weight: 400;
+        border-top-left-radius: 5px !important;
+        border-top-right-radius: 5px !important;
+    }
+    .requests-list-body {
+        border-radius: 5px;
     }
 </style>
 @endsection
