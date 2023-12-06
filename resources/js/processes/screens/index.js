@@ -1,7 +1,7 @@
 import Vue from "vue";
-import ScreenListing from "./components/ScreenListing";
-import CreateScreenModal from "./components/CreateScreenModal";
-import CategorySelect from "../categories/components/CategorySelect";
+import ScreenListing from "./components/ScreenListing.vue";
+import CreateScreenModal from "./components/CreateScreenModal.vue";
+import CategorySelect from "../categories/components/CategorySelect.vue";
 
 Vue.component("CategorySelect", CategorySelect);
 

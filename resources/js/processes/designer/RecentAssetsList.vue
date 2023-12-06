@@ -1,9 +1,12 @@
 <template>
-  <div v-if="data.data.length === 0" class="container">
+  <div
+    v-if="data.data.length === 0"
+    class="container"
+  >
     <div class="content">
       <img
         class="image"
-        src="/img/recent_assets.svg"
+        src="/resources/img/recent_assets.svg"
         alt="resent assets"
       >
       <div class="content-text">
@@ -14,7 +17,10 @@
       </div>
     </div>
   </div>
-  <div v-else class="data-table">
+  <div
+    v-else
+    class="data-table"
+  >
     <div class="data-table">
       <data-loading
         v-if="shouldShowLoader"
@@ -29,7 +35,7 @@
         data-cy="asset-listing-table"
       >
         <vuetable
-          :dataManager="dataManager"
+          :data-manager="dataManager"
           :sort-order="sortOrder"
           :api-mode="false"
           :css="css"
@@ -39,16 +45,23 @@
           pagination-path="meta"
           :no-data-template="$t('No Data Available')"
         >
-          <template slot="asset_type" slot-scope="props">
+          <template
+            slot="asset_type"
+            slot-scope="props"
+          >
             <span
               v-uni-id="props.rowData.id.toString()"
-              class="asset_title" :class="'asset_type_' + formatClassName(props.rowData.asset_type)"
+              class="asset_title"
+              :class="'asset_type_' + formatClassName(props.rowData.asset_type)"
             >
               {{ props.rowData.asset_type }}
             </span>
           </template>
 
-          <template slot="actions" slot-scope="props">
+          <template
+            slot="actions"
+            slot-scope="props"
+          >
             <ellipsis-menu
               :actions="getActions(props.rowData)"
               :data="props.rowData"
@@ -69,24 +82,24 @@
         <create-template-modal
           id="create-template-modal"
           ref="create-template-modal"
-          assetType="process"
-          :currentUserId="currentUserId"
-          :assetName="processTemplateName"
-          :assetId="assetId"
+          asset-type="process"
+          :current-user-id="currentUserId"
+          :asset-name="processTemplateName"
+          :asset-id="assetId"
         />
         <create-pm-block-modal
           id="create-pm-block-modal"
           ref="create-pm-block-modal"
-          :currentUserId="currentUserId"
-          :assetName="pmBlockName"
-          :assetId="assetId"
+          :current-user-id="currentUserId"
+          :asset-name="pmBlockName"
+          :asset-id="assetId"
         />
         <add-to-project-modal
           id="add-to-project-modal"
           ref="add-to-project-modal"
-          :assetType="assetType"
-          :assetId="assetId"
-          :assetName="assetName"
+          :asset-type="assetType"
+          :asset-id="assetId"
+          :asset-name="assetName"
         />
       </div>
     </div>
@@ -175,20 +188,20 @@ export default {
       if (this.project) {
         this.loading = true;
         this.apiDataLoading = true;
-        let url = "projects/assets/recent?";
+        const url = "projects/assets/recent?";
         // Load from our api client
         window.ProcessMaker.apiClient
           .get(
-              url +
-              "asset_types=" +
-              this.types +
-              "&pmql=" +
-              encodeURIComponent(pmql) +
-              "&order_by=" +
-              this.orderBy +
-              "&order_direction=" +
-              this.orderDirection,
-            )
+            `${url
+            }asset_types=${
+              this.types
+            }&pmql=${
+              encodeURIComponent(pmql)
+            }&order_by=${
+              this.orderBy
+            }&order_direction=${
+              this.orderDirection}`,
+          )
           .then((response) => {
             this.data = this.transform(response.data);
             this.apiDataLoading = false;
@@ -235,18 +248,18 @@ export default {
      */
     generateAssetLink(data) {
       switch (data.asset_type) {
-        case 'Process':
-            return `/modeler/${data.id}`;
-        case 'Screen':
-            return `/designer/screen-builder/${data.id}/edit`;
-        case 'Script':
-            return `/designer/scripts/${data.id}/builder`;
-        case 'Data Source':
-            return `/designer/data-sources/${data.id}/edit`;
-        case 'Decision Table':
-            return `/designer/decision-tables/table-builder/${data.id}/edit`;
+        case "Process":
+          return `/modeler/${data.id}`;
+        case "Screen":
+          return `/designer/screen-builder/${data.id}/edit`;
+        case "Script":
+          return `/designer/scripts/${data.id}/builder`;
+        case "Data Source":
+          return `/designer/data-sources/${data.id}/edit`;
+        case "Decision Table":
+          return `/designer/decision-tables/table-builder/${data.id}/edit`;
         default:
-            return ''; // Handle unknown asset types as needed
+          return ""; // Handle unknown asset types as needed
       }
     },
     /**

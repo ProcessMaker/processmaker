@@ -1,6 +1,6 @@
 import Vue from "vue";
-import CreateEnvironmentVariableModal from "./components/CreateEnvironmentVariableModal";
-import VariablesListing from "./components/VariablesListing";
+import CreateEnvironmentVariableModal from "./components/CreateEnvironmentVariableModal.vue";
+import VariablesListing from "./components/VariablesListing.vue";
 
 // Bootstrap our Variables listing
 new Vue({

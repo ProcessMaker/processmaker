@@ -7,7 +7,7 @@
 @section('content')
 <div class="error-container">
     <div class="error-404-icon">
-      <img src="/img/robot.png"/>
+      <img src="/resources/img/robot.png"/>
     </div>
     <div class="error-content">
       @yield('message')

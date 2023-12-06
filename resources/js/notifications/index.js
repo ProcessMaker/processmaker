@@ -1,5 +1,5 @@
 import Vue from "vue";
-import NotificationsList from "./components/NotificationsList";
+import NotificationsList from "./components/NotificationsList.vue";
 
 new Vue({
   el: "#notifications",
@@ -8,11 +8,11 @@ new Vue({
     return {
       filter: "",
       filterComments: null,
-    }
+    };
   },
   methods: {
     setFilterComments(filter) {
       this.filterComments = filter;
-    }
-  }
+    },
+  },
 });

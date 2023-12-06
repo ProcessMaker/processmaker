@@ -1,8 +1,8 @@
 import Vue from "vue";
-import CreateProcessModal from "./components/CreateProcessModal";
+import CreateProcessModal from "./components/CreateProcessModal.vue";
 import SelectTemplateModal from "../components/templates/SelectTemplateModal.vue";
-import ProcessesListing from "./components/ProcessesListing";
-import CategorySelect from "./categories/components/CategorySelect";
+import ProcessesListing from "./components/ProcessesListing.vue";
+import CategorySelect from "./categories/components/CategorySelect.vue";
 
 Vue.component("CategorySelect", CategorySelect);
 

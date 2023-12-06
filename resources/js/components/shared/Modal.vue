@@ -24,11 +24,20 @@
     @show="onEvent('show', $event)"
     @shown="onEvent('shown', $event)"
   >
-    <template #modal-header="{ close }" v-if="hasHeaderButtons || hasTitleButtons">
+    <template
+      v-if="hasHeaderButtons || hasTitleButtons"
+      #modal-header="{ close }"
+    >
       <div class="w-100 d-block">
         <div>
-          <div class="w-100 p-0" :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle align-items-center' : ''">
-            <b-button v-show="hasHeaderButtons" v-for="button in headerButtons" :key="button.content" 
+          <div
+            class="w-100 p-0"
+            :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle align-items-center' : ''"
+          >
+            <b-button
+              v-for="button in headerButtons"
+              v-show="hasHeaderButtons"
+              :key="button.content"
               :aria-label="button.ariaLabel"
               :variant="button.variant"
               :disabled="button.disabled"
@@ -39,33 +48,49 @@
             >
               <small> {{ $t(button.content) }}</small>
             </b-button>
-            <b-button variant="link" @click="close()" class="close">×</b-button>
+            <b-button
+              variant="link"
+              class="close"
+              @click="close()"
+            >
+              ×
+            </b-button>
           </div>
         </div>
         <div v-if="hasTitleButtons">
           <div class="d-flex justify-content-between align-middle align-items-center w-100 pt-3">
             <h5>
               {{ title }}
-              <small v-if="subtitle" class="text-muted subtitle d-block mt-1">{{subtitle}}</small>
+              <small
+                v-if="subtitle"
+                class="text-muted subtitle d-block mt-1"
+              >{{ subtitle }}</small>
             </h5>
-            <b-button v-for="(button, index) in titleButtons" 
-              :key="button.content" 
-              :aria-label="button.ariaLabel" 
+            <b-button
+              v-for="(button, index) in titleButtons"
+              :key="button.content"
+              :aria-label="button.ariaLabel"
               :hidden="button.hidden"
               :disabled="button.disabled"
-              :variant="button.variant" 
+              :variant="button.variant"
               :class="button.position"
               size="sm"
-              @click="executeFunction(button.action)" 
+              @click="executeFunction(button.action)"
             >
-              <i v-if="button.icon" :class="button.icon" /> {{ button.content }}
+              <i
+                v-if="button.icon"
+                :class="button.icon"
+              /> {{ button.content }}
             </b-button>
           </div>
         </div>
       </div>
     </template>
 
-    <template #modal-title v-else>
+    <template
+      v-else
+      #modal-title
+    >
       <div>
         <i
           v-if="titleIcon"
@@ -74,30 +99,42 @@
         />
         {{ title }}
       </div>
-      <small v-if="subtitle" class="text-muted subtitle mt-1">{{subtitle}}</small>
+      <small
+        v-if="subtitle"
+        class="text-muted subtitle mt-1"
+      >{{ subtitle }}</small>
     </template>
-    <slot></slot>
-    <template v-if="setCustomButtons" #modal-footer>
-      <div class="d-flex align-items-center w-100"
-        :class="{'justify-content-end': !showAiSlogan || !requiredInFooter, 'justify-content-between': showAiSlogan || requiredInFooter}">
+    <slot />
+    <template
+      v-if="setCustomButtons"
+      #modal-footer
+    >
+      <div
+        class="d-flex align-items-center w-100"
+        :class="{'justify-content-end': !showAiSlogan || !requiredInFooter, 'justify-content-between': showAiSlogan || requiredInFooter}"
+      >
         <div>
           <div v-if="requiredInFooter">
-            <required class="required-footer"></required>
+            <required class="required-footer" />
           </div>
-          <div v-if="showAiSlogan" class="slogan">
-            <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+          <div
+            v-if="showAiSlogan"
+            class="slogan"
+          >
+            <img src="/resources/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
           </div>
         </div>
         <div>
-          <b-button v-for="button in customButtons" 
-            :key="button.content" 
-            @click="executeFunction(button.action)" 
-            :variant="button.variant" 
+          <b-button
+            v-for="button in customButtons"
+            :key="button.content"
+            :variant="button.variant"
             :disabled="button.disabled"
             :hidden="button.hidden"
             :size="button.size"
             :data-test="button.dataTest"
             class="ml-2"
+            @click="executeFunction(button.action)"
           >
             {{ button.content }}
           </b-button>
@@ -108,51 +145,51 @@
 </template>
 
 <script>
-  export default {
-    props: [
-      "id",
-      "title", 
-      "okDisabled", 
-      "okOnly", 
-      "okTitle", 
-      "setCustomButtons",
-      "customButtons", 
-      "subtitle", 
-      "size", 
-      "hideFooter",
-      "hideHeader",
-      "hasHeaderButtons", 
-      "headerButtons", 
-      "hasTitleButtons", 
-      "titleButtons",
-      "showAiSlogan",
-      "requiredInFooter",
-      "titleIcon"
-    ],
-    methods: {
-      onEvent(name, event) {
-        this.$emit(name, event);
-      },
-      show() {
-        this.$refs.pmModal.show();
-      },
-      hide() {
-        this.$refs.pmModal.hide();
-      },
-      executeFunction(callback) {
-        if (typeof eval(`this.$refs.pmModal.${callback}`) === "function") {
-          eval(`this.$refs.pmModal.${callback}`)
-        } else {
-          this.$emit(callback);
-        }
-      },
+export default {
+  props: [
+    "id",
+    "title",
+    "okDisabled",
+    "okOnly",
+    "okTitle",
+    "setCustomButtons",
+    "customButtons",
+    "subtitle",
+    "size",
+    "hideFooter",
+    "hideHeader",
+    "hasHeaderButtons",
+    "headerButtons",
+    "hasTitleButtons",
+    "titleButtons",
+    "showAiSlogan",
+    "requiredInFooter",
+    "titleIcon",
+  ],
+  computed: {
+    okTitleWithDefault() {
+      return this.okTitle || this.$t("Save");
     },
-    computed: {
-      okTitleWithDefault() {
-        return this.okTitle || this.$t('Save');
+  },
+  methods: {
+    onEvent(name, event) {
+      this.$emit(name, event);
+    },
+    show() {
+      this.$refs.pmModal.show();
+    },
+    hide() {
+      this.$refs.pmModal.hide();
+    },
+    executeFunction(callback) {
+      if (typeof eval(`this.$refs.pmModal.${callback}`) === "function") {
+        eval(`this.$refs.pmModal.${callback}`);
+      } else {
+        this.$emit(callback);
       }
-    }
-  };
+    },
+  },
+};
 </script>
 
 <style>

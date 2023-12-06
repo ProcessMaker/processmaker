@@ -4,15 +4,16 @@
 // Font
 @import 'fonts';
 
-@import '../../public/css/precompiled/bootstrap/bootstrap.scss';
+@import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
 
 //// Font Awesome
-@import '../../public/css/precompiled/fontawesome-free/scss/brands.scss';
-@import '../../public/css/precompiled/fontawesome-free/scss/regular.scss';
-@import '../../public/css/precompiled/fontawesome-free/scss/solid.scss';
-@import '../../public/css/precompiled/fontawesome-free/scss/fontawesome.scss';
-@import '../../public/css/precompiled/vue-multiselect.min.css';
-@import '../../public/css/precompiled/npm-font-open-sans/open-sans.scss';
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/brands";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/regular";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+@import "../../node_modules/@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+@import "../../node_modules/npm-font-open-sans/open-sans";
 
 $form-control-border-color: #b6bfc6;
 $form-control-border-radius: 2px;

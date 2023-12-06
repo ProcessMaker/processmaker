@@ -5,8 +5,8 @@ import FilterMixin from "../Mobile/FilterMixin";
 
 new Vue({
   el: "#requests-mobile",
-  mixins: [FilterMixin],
   components: { MobileRequests, FilterMobile },
+  mixins: [FilterMixin],
   data: {
     filter: "",
     pmql: "",
@@ -14,6 +14,6 @@ new Vue({
     fullPmql: "",
   },
   methods: {
-    
+
   },
 });

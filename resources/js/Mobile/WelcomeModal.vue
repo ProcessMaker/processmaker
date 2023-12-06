@@ -20,7 +20,7 @@
           <p class="text-center">
             <img
               class="image"
-              src="/img/welcome_mobile.svg"
+              src="/resources/img/welcome_mobile.svg"
               alt="recent projects"
             >
           </p>

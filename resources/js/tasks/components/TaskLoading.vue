@@ -3,7 +3,7 @@
     <div class="content">
       <img
         class="image"
-        src="/img/tasks-loading.svg"
+        src="/resources/img/tasks-loading.svg"
       >
       <div class="content-text">
         <h1>{{ $t("The task is loading") }}</h1>

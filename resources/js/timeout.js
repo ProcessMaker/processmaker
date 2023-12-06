@@ -19,7 +19,7 @@ self.start = function (data) {
   const timeoutAt = timestampAtStart + (data.timeout * 60);
 
   clearInterval(self.interval);
-  self.interval = setInterval(function () {
+  self.interval = setInterval(() => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const timeRemaining = timeoutAt - currentTimestamp;
 

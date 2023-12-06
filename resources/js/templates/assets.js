@@ -2,7 +2,7 @@ import Vue from "vue";
 import TemplateAssetsView from "../components/templates/TemplateAssetsView.vue";
 
 new Vue({
-  el: '#template-asset-manager',
+  el: "#template-asset-manager",
   components: { TemplateAssetsView },
   props: [],
   data() {
@@ -19,8 +19,8 @@ new Vue({
     this.responseId = window.history.state.responseId;
     this.request = window.history.state.request;
 
-    window.addEventListener('popstate', function(event) {
-      window.location.href = '/processes';
+    window.addEventListener("popstate", (event) => {
+      window.location.href = "/processes";
     });
   },
 });

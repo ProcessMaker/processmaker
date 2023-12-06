@@ -2,10 +2,12 @@ import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue2";
 import ViteYaml from "@modyfi/vite-plugin-yaml";
+import svgLoader from "vite-svg-loader";
 
 export default defineConfig({
   plugins: [
     ViteYaml(),
+    svgLoader({ defaultImport: "url" }),
     laravel({
       input: [
         "resources/sass/admin/queues.scss",

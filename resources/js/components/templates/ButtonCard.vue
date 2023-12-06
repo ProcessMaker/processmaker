@@ -1,22 +1,60 @@
 <template>
   <div :class="{'d-flex': button.helperEnabled}">
-    <b-card no-body class="button-card" :class="{'col-6 p-0': button.helperEnabled}" @mouseenter="addHoverClass" @mouseleave="removeHoverClass" @click="$emit('card-button-clicked')">
+    <b-card
+      no-body
+      class="button-card"
+      :class="{'col-6 p-0': button.helperEnabled}"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+      @click="$emit('card-button-clicked')"
+    >
       <div class="card-body text-center d-flex justify-content-center flex-column">
-        <i v-if="button.icon" class="icon mb-2 text-primary" :class="button.icon" :style="button.iconStyle"></i>
-        <img v-if="button.svgIcon" :src="button.svgIcon" class="mb-2" :style="button.svgIconStyle" :alt="button.title">
-        <h5 class="m-0">{{ button.title }}</h5>
+        <i
+          v-if="button.icon"
+          class="icon mb-2 text-primary"
+          :class="button.icon"
+          :style="button.iconStyle"
+        />
+        <img
+          v-if="button.svgIcon"
+          :src="button.svgIcon"
+          class="mb-2"
+          :style="button.svgIconStyle"
+          :alt="button.title"
+        >
+        <h5 class="m-0">
+          {{ button.title }}
+        </h5>
       </div>
-      <div v-if="button.showAiSlogan" class="ai-slogan-container mb-2">
-        <div class="ai-slogan"><img src="/img/favicon.svg" :alt="$t('ProcessMaker')"> {{ $t("Powered by ProcessMaker AI") }}</div>
+      <div
+        v-if="button.showAiSlogan"
+        class="ai-slogan-container mb-2"
+      >
+        <div class="ai-slogan">
+          <img
+            src="/resources/img/favicon.svg"
+            :alt="$t('ProcessMaker')"
+          > {{ $t("Powered by ProcessMaker AI") }}
+        </div>
       </div>
     </b-card>
 
-    <div v-if="button.helperEnabled" class="helper-container col-6 p-0">
-      <div class="arrow-left"></div>
-      <b-card no-body class="button-card card-helper p-4">
+    <div
+      v-if="button.helperEnabled"
+      class="helper-container col-6 p-0"
+    >
+      <div class="arrow-left" />
+      <b-card
+        no-body
+        class="button-card card-helper p-4"
+      >
         <div class="card-body card-helper text-center d-flex justify-content-center flex-column">
-          <h4 class="m-0 text-left card-title">{{ button.helperTitle }}</h4>
-          <p class="m-0 text-left card-text">{{ button.helperDescription }}</p>
+          <h4 class="m-0 text-left card-title">
+            {{ button.helperTitle }}
+          </h4>
+          <p class="m-0 text-left card-text">
+            {{ button.helperDescription }}
+          </p>
         </div>
       </b-card>
     </div>

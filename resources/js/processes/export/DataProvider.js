@@ -4,69 +4,81 @@ let isImport;
 
 export default {
   doImport(file, options, password) {
-    let formData = new FormData();
+    const formData = new FormData();
     const optionsBlob = new Blob([JSON.stringify(options)], {
-        type: 'application/json'
+      type: "application/json",
     });
-  
-    formData.append('file', file);
-    formData.append('options', optionsBlob);
-    formData.append('password', password);
 
-    let timeout = ProcessMaker.apiClient.defaults.timeout > 90000 ? ProcessMaker.apiClient.defaults.timeout : 90000;// default 90 seconds
-    
-    return ProcessMaker.apiClient.post('/import/do-import', formData,
-    {
-        timeout: timeout,
+    formData.append("file", file);
+    formData.append("options", optionsBlob);
+    formData.append("password", password);
+
+    const timeout = ProcessMaker.apiClient.defaults.timeout > 90000 ? ProcessMaker.apiClient.defaults.timeout : 90000;// default 90 seconds
+
+    return ProcessMaker.apiClient.post(
+      "/import/do-import",
+      formData,
+      {
+        timeout,
         headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
   },
   doImportTemplate(file, options, type) {
-    let formData = new FormData();
+    const formData = new FormData();
     const optionsBlob = new Blob([JSON.stringify(options)], {
-        type: 'application/json'
-    });
-  
-    formData.append('file', file);
-    formData.append('options', optionsBlob);
-    
-    return ProcessMaker.apiClient.post(`/template/${type}/do-import`, formData,
-    {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    });
-  },
-  doImportProjectAssets(file, options, projectId, password) {
-    let formData = new FormData();
-    const optionsBlob = new Blob([JSON.stringify(options)], {
-      type: 'application/json'
+      type: "application/json",
     });
 
-    formData.append('file', file);
-    formData.append('options', optionsBlob);
-    formData.append('id', projectId);
-    formData.append('password', password);
-    
-    return ProcessMaker.apiClient.post('/projects/assets/import', formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+    formData.append("file", file);
+    formData.append("options", optionsBlob);
+
+    return ProcessMaker.apiClient.post(
+      `/template/${type}/do-import`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+  },
+  doImportProjectAssets(file, options, projectId, password) {
+    const formData = new FormData();
+    const optionsBlob = new Blob([JSON.stringify(options)], {
+      type: "application/json",
     });
+
+    formData.append("file", file);
+    formData.append("options", optionsBlob);
+    formData.append("id", projectId);
+    formData.append("password", password);
+
+    return ProcessMaker.apiClient.post(
+      "/projects/assets/import",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
   },
   importOlderVersion(file) {
-    let formData = new FormData();
-    formData.append('file', file);
-    
-    return ProcessMaker.apiClient.post('/processes/import?queue=1', formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return ProcessMaker.apiClient.post(
+      "/processes/import?queue=1",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
   },
   getManifest(processId) {
     return ProcessMaker.apiClient({
@@ -91,20 +103,20 @@ export default {
   },
   exportProcess(processId, password, options) {
     return ProcessMaker.apiClient({
-      method: 'POST',
-      url: `export/process/download/` + processId,
-      responseType: 'blob',
+      method: "POST",
+      url: `export/process/download/${processId}`,
+      responseType: "blob",
       data: {
         options,
-        password
-      }
-    }).then(response => {
-      let header = response.headers['export-info'];
-      let exportInfo = JSON.parse(header);
+        password,
+      },
+    }).then((response) => {
+      const header = response.headers["export-info"];
+      const exportInfo = JSON.parse(header);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", exportInfo.name.replace(/ /g, "_").toLowerCase() + ".json");
+      link.setAttribute("download", `${exportInfo.name.replace(/ /g, "_").toLowerCase()}.json`);
       document.body.appendChild(link);
       link.click();
       return exportInfo;
@@ -115,7 +127,7 @@ export default {
     let root = null;
     // for (const [uuid, asset] of Object.entries(assets)) {
     Object.entries(assets).forEach(([uuid, asset]) => {
-      const type = asset.type;
+      const { type } = asset;
 
       const info = {
         uuid,
@@ -130,7 +142,7 @@ export default {
         description: asset.description || null,
         createdAt: asset.attributes.created_at || "N/A",
         updatedAt: asset.attributes.updated_at || "N/A",
-         // TODO: Complete Changelog
+        // TODO: Complete Changelog
         // created_at: asset.attributes.created_at || "N/A",
         // updated_at: asset.attributes.updated_at || "N/A",
         processManager: asset.process_manager || "N/A",
@@ -161,19 +173,17 @@ export default {
       groups[type].push(info);
     });
 
-    const groupedInfo = Object.entries(groups).map(([key, value]) => {
-      return {
-        type: key, 
-        typePlural: value[0].typePlural,
-        typeHuman: value[0].typeHuman,
-        typeHumanPlural: value[0].typeHumanPlural,
-        icon: ImportExportIcons.ICONS[key] || 'fa-code',
-        items: value,
-        hidden: value.every(i => i.hidden),
-        discard: value.every(i => i.discard),
-      };
-    });
-    
+    const groupedInfo = Object.entries(groups).map(([key, value]) => ({
+      type: key,
+      typePlural: value[0].typePlural,
+      typeHuman: value[0].typeHuman,
+      typeHumanPlural: value[0].typeHumanPlural,
+      icon: ImportExportIcons.ICONS[key] || "fa-code",
+      items: value,
+      hidden: value.every((i) => i.hidden),
+      discard: value.every((i) => i.discard),
+    }));
+
     return {
       root,
       rootUuid,
@@ -202,7 +212,7 @@ export default {
   },
   getAssetLink(asset) {
     let route = "";
-    let id = asset.attributes.id;
+    let { id } = asset.attributes;
 
     if (isImport) {
       id = asset.existing_id;

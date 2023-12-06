@@ -106,10 +106,18 @@
             v-if="messages.length == 0"
             class="no-notifications-mobile"
           >
-            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
+            <img
+              :alt="$t('All Clear')"
+              src="/resources/img/all-cleared.svg"
+            >
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
-            <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
+            <b-button
+              variant="primary"
+              href="/notifications"
+            >
+              {{ $t('View All Notifications') }}
+            </b-button>
           </div>
           <template v-else>
             <notification-card
@@ -196,12 +204,23 @@
             class="no-notifications"
             data-cy="notification-popover-no-notifications"
           >
-            <img :alt="$t('All Clear')" src="/img/all-cleared.svg">
+            <img
+              :alt="$t('All Clear')"
+              src="/resources/img/all-cleared.svg"
+            >
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
-            <b-button variant="primary" href="/notifications">{{ $t('View All Notifications') }}</b-button>
+            <b-button
+              variant="primary"
+              href="/notifications"
+            >
+              {{ $t('View All Notifications') }}
+            </b-button>
           </div>
-          <div class="items" v-else>
+          <div
+            v-else
+            class="items"
+          >
             <notification-item
               v-for="(item, index) in filteredMessages"
               :key="index"
@@ -248,7 +267,7 @@ export default {
       const count = this.totalMessages;
       if (count === 0) {
         return this.$t("Notifications, No New Messages", { count });
-      } else if (count === 1) {
+      } if (count === 1) {
         return this.$t("Notifications, {{count}} New Messages", { count });
       }
       return this.$t("Notifications, {{count}} New Messages", { count });

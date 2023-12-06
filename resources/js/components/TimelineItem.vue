@@ -1,16 +1,41 @@
 <template>
   <div class="py-3 d-flex">
-    <div v-if="icon" class="badge timeline-badge mr-1 rounded d-flex justify-content-center align-items-center" :class="iconClass || 'timeline-icon'">
-      <slot v-if="hasIconSlot" name="icon"></slot>
-      <i v-else :class="icon"></i>
+    <div
+      v-if="icon"
+      :class="iconClass || 'timeline-icon'"
+      class="badge timeline-badge mr-1 rounded d-flex justify-content-center align-items-center"
+    >
+      <slot
+        v-if="hasIconSlot"
+        name="icon"
+      />
+      <i
+        v-else
+        :class="icon"
+      />
     </div>
-    <avatar-image v-if="value.user" class="mr-1" size="24" :input-data="value.user" hide-name="true"></avatar-image>
-    <img v-else class="default-user mr-1" src="/img/systemAvatar.png">
+    <avatar-image
+      v-if="value.user"
+      :input-data="value.user"
+      class="mr-1"
+      hide-name="true"
+      size="24"
+    />
+    <img
+      v-else
+      class="default-user mr-1"
+      src="/resources/img/systemAvatar.png"
+    >
     <div class="flex-grow-1">
-      <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
-      <slot v-if="hasBodySlot" name="body"></slot>
+      <strong :title="value.updated_at">{{
+        moment(value.updated_at).format()
+      }}</strong>
+      <slot
+        v-if="hasBodySlot"
+        name="body"
+      />
       <template v-else>
-        {{value.body}}
+        {{ value.body }}
       </template>
     </div>
   </div>
@@ -24,13 +49,13 @@ export default {
     icon: String,
   },
   computed: {
-    hasIconSlot () {
-      return !!this.$slots['icon'];
+    hasIconSlot() {
+      return !!this.$slots.icon;
     },
-    hasBodySlot () {
-      return !!this.$slots['body'];
+    hasBodySlot() {
+      return !!this.$slots.body;
     },
-  }
+  },
 };
 </script>
 

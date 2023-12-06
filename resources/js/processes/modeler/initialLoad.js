@@ -26,29 +26,29 @@ import {
   loopCharacteristicsHandler,
   loopCharacteristicsData,
   NodeIdentifierInput,
+  registerNodes,
 } from "@processmaker/modeler";
-import { registerNodes } from "@processmaker/modeler";
 import i18next from "i18next";
-import ModelerScreenSelect from "./components/inspector/ScreenSelect";
-import UserSelect from "./components/inspector/UserSelect";
-import GroupSelect from "./components/inspector/GroupSelect";
-import UserById from "./components/inspector/UserById";
-import TaskNotifications from "./components/inspector/TaskNotifications";
-import ExpressionEditor from "./components/inspector/ExpressionEditor";
-import TaskAssignment from "./components/inspector/TaskAssignment";
-import TaskDueIn from "./components/inspector/TaskDueIn";
-import GatewayFlowVariable from "./components/inspector/GatewayFlowVariable";
-import ConfigEditor from "./components/inspector/ConfigEditor";
-import SignalPayload from "./components/inspector/SignalPayload";
-import ScriptSelect from "./components/inspector/ScriptSelect";
-import StartPermission from "./components/inspector/StartPermission";
-import Interstitial from "./components/inspector/Interstitial";
-import SelectUserGroup from "../../components/SelectUserGroup";
+import ModelerScreenSelect from "./components/inspector/ScreenSelect.vue";
+import UserSelect from "./components/inspector/UserSelect.vue";
+import GroupSelect from "./components/inspector/GroupSelect.vue";
+import UserById from "./components/inspector/UserById.vue";
+import TaskNotifications from "./components/inspector/TaskNotifications.vue";
+import ExpressionEditor from "./components/inspector/ExpressionEditor.vue";
+import TaskAssignment from "./components/inspector/TaskAssignment.vue";
+import TaskDueIn from "./components/inspector/TaskDueIn.vue";
+import GatewayFlowVariable from "./components/inspector/GatewayFlowVariable.vue";
+import ConfigEditor from "./components/inspector/ConfigEditor.vue";
+import SignalPayload from "./components/inspector/SignalPayload.vue";
+import ScriptSelect from "./components/inspector/ScriptSelect.vue";
+import StartPermission from "./components/inspector/StartPermission.vue";
+import Interstitial from "./components/inspector/Interstitial.vue";
+import SelectUserGroup from "../../components/SelectUserGroup.vue";
 import validateScreenRef from "./validateScreenRef";
-import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout";
-import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts";
-import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime";
-import NotifyProcessManager from "./components/inspector/NotifyProcessManager";
+import ErrorHandlingTimeout from "./components/inspector/ErrorHandlingTimeout.vue";
+import ErrorHandlingRetryAttempts from "./components/inspector/ErrorHandlingRetryAttempts.vue";
+import ErrorHandlingRetryWaitTime from "./components/inspector/ErrorHandlingRetryWaitTime.vue";
+import NotifyProcessManager from "./components/inspector/NotifyProcessManager.vue";
 
 Vue.component("UserSelect", UserSelect);
 Vue.component("UserById", UserById);
@@ -469,23 +469,24 @@ ProcessMaker.EventBus.$on(
   "modeler-init",
   (event) => {
     event.registerPreview({
-      url: '/designer/screens/preview',
-      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
-      receivingParams: ['screenRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:Task',
+      url: "/designer/screens/preview",
+      assetUrl: (nodeData) => (nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null),
+      receivingParams: ["screenRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:Task",
     });
     event.registerPreview({
-      url: '/designer/screens/preview',
-      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
-      receivingParams: ['screenRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:ManualTask',
+      url: "/designer/screens/preview",
+      assetUrl: (nodeData) => (nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null),
+      receivingParams: ["screenRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:ManualTask",
     });
     event.registerPreview({
-      url: '/designer/scripts/preview',
-      assetUrl: (nodeData) => nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null,
-      receivingParams: ['scriptRef'],
-      matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
+      url: "/designer/scripts/preview",
+      assetUrl: (nodeData) => (nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null),
+      receivingParams: ["scriptRef"],
+      matcher: (nodeData) => nodeData?.$type === "bpmn:ScriptTask",
     });
-  });
+  },
+);
 
 validateScreenRef();

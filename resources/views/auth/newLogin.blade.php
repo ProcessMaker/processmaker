@@ -25,8 +25,8 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan.svg" alt="ProcessMaker" />
-              <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
+              <img src="/resources/img/slogan.svg" alt="ProcessMaker" />
+              <img class="sub_logo" src="/resources/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
           </div>

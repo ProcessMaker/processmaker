@@ -4,6 +4,7 @@
  *
  */
 import Vuetable from "vuetable-2";
+import { has, head, debounce } from "lodash";
 import Pagination from "../Pagination.vue";
 
 export default {
@@ -16,7 +17,7 @@ export default {
     this.fetch();
   },
   watch: {
-    filter: _.debounce(function () {
+    filter: debounce(function () {
       if (!this.loading) {
         this.fetch();
       }
@@ -85,7 +86,7 @@ export default {
     },
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
     jsonRows(rows) {
-      if (rows.length === 0 || !(_.has(_.head(rows), "_json"))) {
+      if (rows.length === 0 || !(has(head(rows), "_json"))) {
         return rows;
       }
       return rows.map((row) => JSON.parse(row._json));

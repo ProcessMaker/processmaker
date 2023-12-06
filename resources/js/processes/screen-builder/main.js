@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import ScreenBuilder from "./screen";
+import ScreenBuilder from "./screen.vue";
 
 Vue.use(Vuex);
 const store = new Vuex.Store({});

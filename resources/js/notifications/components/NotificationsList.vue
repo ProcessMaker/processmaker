@@ -101,11 +101,12 @@
 </template>
 
 <script>
+import Vue from "vue";
 import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage.vue";
-import NotificationMessage from "./notification-message";
-import NotificationUser from "./notification-user";
+import NotificationMessage from "./notification-message.vue";
+import NotificationUser from "./notification-user.vue";
 
 Vue.component("AvatarImage", AvatarImage);
 

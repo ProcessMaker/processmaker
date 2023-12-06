@@ -1,4 +1,4 @@
-import LdapLogs from "./components/LdapLogs";
+import LdapLogs from "./components/LdapLogs.vue";
 
 new Vue({
   el: "#ldap-logs",
