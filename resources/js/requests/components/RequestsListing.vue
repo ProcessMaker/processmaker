@@ -225,15 +225,15 @@ export default {
           default: true,
         },
         {
-          label: "Status",
-          field: "status",
-          sortable: true,
-          default: true,
-        },
-        {
           label: "Participants",
           field: "participants",
           sortable: false,
+          default: true,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
           default: true,
         },
         {
