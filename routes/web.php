@@ -30,6 +30,7 @@ use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
@@ -178,3 +179,6 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
+
+// SAML Metadata Route
+Route::resource('/saml/metadata', MetadataController::class)->only('index');
