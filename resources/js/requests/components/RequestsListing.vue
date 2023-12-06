@@ -52,16 +52,36 @@
           <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
         </template>
         <template
+          slot="active_tasks"
+          slot-scope="props"
+        >
+          <div
+            v-for="task in props.rowData.active_tasks"
+            :key="`active_task-${task.id}`"
+          >
+            <b-link
+              class="text-nowrap"
+              :href="openTask(task)"
+            >
+              {{ task.element_name }}
+            </b-link>
+          </div>
+        </template>
+        <template
           slot="participants"
           slot-scope="props"
         >
-          <avatar-image
+          <div
             v-for="participant in props.rowData.participants"
-            :key="participant.id"
-            size="25"
-            hide-name="true"
-            :input-data="participant"
-          />
+            :key="`participant-${participant.id}`"
+          >
+            <avatar-image
+              size="25"
+              hide-name="true"
+              :input-data="participant"
+            />
+            {{ participant.fullname }}
+          </div>
         </template>
         <template
           slot="actions"
@@ -225,15 +245,22 @@ export default {
           default: true,
         },
         {
-          label: "Status",
-          field: "status",
-          sortable: true,
+          label: "Task Name",
+          field: "active_tasks",
+          name: "__slot:active_tasks",
+          sortable: false,
           default: true,
         },
         {
           label: "Participants",
           field: "participants",
           sortable: false,
+          default: true,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
           default: true,
         },
         {
@@ -254,6 +281,9 @@ export default {
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
+    },
+    openTask(task) {
+      return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
       let color = "success",
@@ -339,7 +369,7 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
-            "&include=process,participants,data" +
+            "&include=process,participants,activeTasks,data" +
             "&pmql=" +
             encodeURIComponent(pmql) +
             "&filter=" +
