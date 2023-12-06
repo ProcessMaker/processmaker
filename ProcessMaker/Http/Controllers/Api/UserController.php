@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -167,6 +168,10 @@ class UserController extends Controller
 
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
 
         $user->fill($fields);
@@ -301,6 +306,10 @@ class UserController extends Controller
         $fields = $request->json()->all();
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
         $original = $user->getOriginal();
         $user->fill($fields);

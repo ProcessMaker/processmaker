@@ -4,6 +4,7 @@
       v-for="process in processList"
       :key="process.id"
       class="card-process"
+      @click="openProcessInfo(process.id)"
     >
       <b-card-text>
         <img
@@ -36,12 +37,14 @@ export default {
   methods: {
     loadCard() {
       /* TODO complete the new API */
-      console.log(this.category.name);
       ProcessMaker.apiClient
         .get("processes")
         .then((response) => {
           this.processList = response.data.data;
         });
+    },
+    openProcessInfo(process) {
+      window.location = `/processes-catalogue/${process}`;
     },
   },
 };

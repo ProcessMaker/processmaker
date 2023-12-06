@@ -6,7 +6,10 @@
         class="d-flex justify-content-between mb-3"
       >
         <h4 class="d-flex align-items-center">
-          <i class="fas fa-arrow-circle-left text-secondary mr-2 title-font" />
+          <i
+            class="fas fa-arrow-circle-left text-secondary mr-2 title-font"
+            @click="goBack"
+          />
           {{ process.name }}
         </h4>
         <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
@@ -98,13 +101,17 @@ export default {
     getActions() {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
     },
+    goBack() {
+      window.location = "/processes-catalogue";
+    }
   },
 };
 </script>
 
 <style scoped>
 .title-font {
-  font-size: 32px
+  font-size: 32px;
+  cursor: pointer;
 }
 .ellipsis-border{
   border-color: #CDDDEE;
