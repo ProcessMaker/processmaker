@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 
 class Bookmark extends ProcessMakerModel

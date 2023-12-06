@@ -3,9 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
@@ -16,8 +16,6 @@ class BookmarkController extends Controller
     {
         // Get the user
         $user = Auth::user();
-        // Get the order by to apply
-        $orderBy = $this->getRequestSortBy($request, 'name');
         // Get the processes  active
         $processes = Process::nonSystem()->active();
         // Filter pmql
@@ -34,7 +32,6 @@ class BookmarkController extends Controller
             ->select('processes.*')
             ->leftJoin('user_process_bookmarks as bookmark', 'bookmark.process_id', '=', 'processes.id')
             ->where('bookmark.user_id', $user->id)
-            ->orderBy(...$orderBy)
             ->get()
             ->collect();
 
@@ -53,11 +50,22 @@ class BookmarkController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
+
+        return new ApiResource($bookmark->refresh());
     }
 
     public function destroy(Request $request, Process $process)
     {
-        // Get the user
-        $user = Auth::user();
+        // Get the current user
+        if ($request->user_id !== Auth::user()->id) {
+            abort(403);
+        }
+
+        // Delete bookmark
+        Bookmark::where('process_id', $process->id)
+            ->where('user_id', $request->user_id)
+            ->delete();
+
+        return response([], 204);
     }
 }
