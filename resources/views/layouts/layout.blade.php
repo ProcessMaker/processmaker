@@ -20,7 +20,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -137,12 +137,12 @@
 @include('shared.monaco')
 
 @foreach(GlobalScripts::getScripts() as $script)
-  <script src="{{$script}}"></script>
+  @vite($script)
 @endforeach
 @isset($addons)
 @foreach ($addons as $addon)
   @if (!empty($addon['script_mix']))
-    <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+    @vite([$addon['script_mix'][0], $addon['script_mix'][1]])
   @endif
 @endforeach
 @endisset

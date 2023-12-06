@@ -9,6 +9,7 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Str;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -161,12 +162,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
             switch ($event->type) {
                 case 'FORM':
-                    $event->manager->addScript(mix('js/processes/screen-builder/typeForm.js'));
+                    $event->manager->addScript(Vite::asset('resources/js/processes/screen-builder/typeForm.js'));
 
                     break;
 
                 case 'DISPLAY':
-                    $event->manager->addScript(mix('js/processes/screen-builder/typeDisplay.js'));
+                    $event->manager->addScript(Vite::asset('resources/js/processes/screen-builder/typeDisplay.js'));
 
                     break;
             }

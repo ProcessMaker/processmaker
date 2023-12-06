@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Facades\Vite;
+
 class ModelerManager
 {
     private $javascriptRegistry;
@@ -14,7 +16,7 @@ class ModelerManager
     {
         $this->javascriptRegistry = [];
         // Include our default javascript for our core controls
-        $this->addScript(mix('js/processes/modeler/initialLoad.js'));
+        $this->addScript(Vite::asset('resources/js/processes/modeler/initialLoad.js'));
     }
 
     /**

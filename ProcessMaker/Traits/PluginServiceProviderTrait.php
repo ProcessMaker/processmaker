@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Vite;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Managers\IndexManager;
@@ -45,7 +46,7 @@ trait PluginServiceProviderTrait
     {
         foreach ($this->modelerScripts as $path => $public) {
             if (File::exists(public_path() . '/' . $public)) {
-                $event->manager->addScript(mix($path, $public));
+                $event->manager->addScript(Vite::asset($path, $public));
             }
         }
     }
@@ -162,7 +163,7 @@ trait PluginServiceProviderTrait
     {
         foreach ($this->scriptBuilderScripts as $path => $public) {
             if (File::exists(public_path() . '/' . $public)) {
-                $event->manager->addScript(mix($path, $public));
+                $event->manager->addScript(Vite::asset($path, $public));
             }
         }
     }

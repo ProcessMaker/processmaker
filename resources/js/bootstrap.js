@@ -17,6 +17,8 @@ import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
+import _ from "lodash";
+import VueMonaco from "vue-monaco";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import translator from "./modules/lang.js";
@@ -28,34 +30,34 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 
-window.__ = translator;
-import _ from "lodash";
-window._ = _;
-window.Popper = require("popper.js").default;
-
 /**
  * Give node plugins access to our custom screen builder components
  */
-import ProcessmakerComponents from "./processes/screen-builder/components";
-window.ProcessmakerComponents = ProcessmakerComponents;
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
 
 /**
  * Give node plugins access to additional components
  */
-import SharedComponents from "./components/shared";
-window.SharedComponents = SharedComponents;
+import * as SharedComponents from "./components/shared";
 
-import ProcessesComponents from "./processes/components";
-window.ProcessesComponents = ProcessesComponents;
-import ScreensComponents from "./processes/screens/components";
-window.ScreensComponents = ScreensComponents;
-import ScriptsComponents from "./processes/scripts/components";
-window.ScriptsComponents = ScriptsComponents;
+import * as ProcessesComponents from "./processes/components";
+import * as ScreensComponents from "./processes/screens/components";
+import * as ScriptsComponents from "./processes/scripts/components";
 
 /**
  * Exporting Modeler inspector components
  */
-import ModelerInspector from "./processes/modeler/components/inspector";
+import * as ModelerInspector from "./processes/modeler/components/inspector";
+
+window.__ = translator;
+window._ = _;
+window.Popper = require("popper.js").default;
+
+window.ProcessmakerComponents = ProcessmakerComponents;
+window.SharedComponents = SharedComponents;
+window.ProcessesComponents = ProcessesComponents;
+window.ScreensComponents = ScreensComponents;
+window.ScriptsComponents = ScriptsComponents;
 window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -63,7 +65,7 @@ window.ModelerInspector = ModelerInspector;
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = require("jquery");
+window.$ = window.jQuery = import("jquery");
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -80,9 +82,7 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-import VueMonaco from "vue-monaco";
 window.VueMonaco = VueMonaco;
-import ScreenBuilder from "@processmaker/screen-builder";
 window.ScreenBuilder = ScreenBuilder;
 
 window.VueRouter = Router;
@@ -213,8 +213,7 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-import ProcessMaker.apiClient from "axios";
-window.ProcessMaker.apiClient = ProcessMaker.apiClient;
+window.ProcessMaker.apiClient = import("axios");
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
@@ -243,7 +242,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };
