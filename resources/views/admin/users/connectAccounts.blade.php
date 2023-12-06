@@ -20,11 +20,15 @@
   <div class="container" id="connectedAccounts">
     <div class="card card-body">
       <h4 class="mt-2 pb-3 page-title">{{__('Connected Accounts')}}</h4>
-      <ul class="accounts-list w-100" id="color-list">
-        <li class="accounts-list-item" v-for="account in accounts">
-          <img :src="account.icon" :alt="account.name + 'icon'" width="45px"/>
-          <h5>@{{account.name}}</h5>
-          <p>@{{account.description}}</p>
+      <ul class="accounts-list w-100">
+        <li class="accounts-list-item d-flex align-items-center" v-for="account in accounts">
+          <div class="d-flex align-items-start mr-3">
+            <img :src="account.icon" :alt="account.name + 'icon'" width="45px"/>
+          </div>
+          <div>
+            <h5 class="account-name mb-0">@{{account.name}}</h5>
+            <p class="account-description">@{{account.description}}</p>
+          </div>
         </li>
       </ul>
     </div>
@@ -140,6 +144,16 @@
     .page-title {
       color: #556271;
       font-size: 21px;
+    }
+
+    .account-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .account-description {
+      font-size: 14px;
+      font-weight: 400;
     }
     </style>
 @endsection
