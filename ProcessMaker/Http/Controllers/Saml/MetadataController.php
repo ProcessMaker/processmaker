@@ -10,12 +10,12 @@ class MetadataController extends SamlIdpMetadataController
 {
     public function __construct()
     {
-        $valid_until = $this->getValidUntil();
-        $cache_duration = $this->getCacheDuration();
+        $validUntil = $this->getValidUntil();
+        $cacheDuration = $this->getCacheDuration();
 
         View::share([
-            'saml_valid_until' => $valid_until,
-            'saml_cache_duration' => $cache_duration,
+            'saml_valid_until' => $validUntil,
+            'saml_cache_duration' => $cacheDuration,
         ]);
     }
 
