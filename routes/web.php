@@ -49,6 +49,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
 
         Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('can:view-users');
         Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('can:edit-users,user');
+        Route::get('users/{user}/edit/connected-accounts', [UserController::class, 'connectAccounts'])->name('users.connectAccounts')->middleware('can:edit-users,user');
 
         Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.index')->middleware('can:view-auth_clients');
 
