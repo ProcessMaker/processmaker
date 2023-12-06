@@ -2,13 +2,13 @@ import Vue from "vue";
 import _ from "lodash";
 import axios from "axios";
 import moment from "moment";
-import App from "Horizon/components/App";
+import App from "~/vendor/laravel/horizon/resources/js/app.js";
 import router from "./router";
 
-window.$ = window.jQuery = require("jquery");
-window.Popper = require("popper.js").default;
-
 import "bootstrap";
+
+window.$ = window.jQuery = import("jquery");
+window.Popper = require("popper.js").default;
 
 $("body").tooltip({
   selector: "[data-toggle=tooltip]",

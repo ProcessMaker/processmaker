@@ -18,13 +18,12 @@ import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
 import _ from "lodash";
-import VueMonaco from "vue-monaco";
-import Pagination from "./components/common/Pagination";
+import Pagination from "./components/common/Pagination.vue";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import translator from "./modules/lang.js";
 import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
-import Modal from "./components/shared/Modal";
+import Modal from "./components/shared/Modal.vue";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
@@ -82,7 +81,7 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = VueMonaco;
+window.VueMonaco = MonacoEditor;
 window.ScreenBuilder = ScreenBuilder;
 
 window.VueRouter = Router;

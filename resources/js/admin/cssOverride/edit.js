@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Editor from "@tinymce/tinymce-vue";
-import SiteDesign from "./components/SiteDesign";
-import ColorPicker from "./components/ColorPicker";
+import SiteDesign from "./components/SiteDesign.vue";
+import ColorPicker from "./components/ColorPicker.vue";
 import "tinymce/themes/silver";
 import "tinymce/plugins/link";
 import "tinymce/plugins/lists";

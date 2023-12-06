@@ -1,4 +1,4 @@
-import DataLoading from "../../../components/common/DataLoading";
+import DataLoading from "../DataLoading.vue";
 
 export default {
   components: {

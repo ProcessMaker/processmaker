@@ -17,7 +17,7 @@ export default defineConfig({
         "resources/js/admin/groups/edit.js",
         "resources/js/admin/groups/index.js",
         "resources/js/admin/profile/edit.js",
-        "resources/js/admin/queues/index.js",
+        // "resources/js/admin/queues/index.js",
         "resources/js/admin/script-executors/index.js",
         "resources/js/admin/settings/index.js",
         "resources/js/admin/settings/ldaplogs.js",

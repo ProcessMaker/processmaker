@@ -6,17 +6,17 @@
       :subtitle="$t('Translate process screens to a desired language.')"
       :ok-disabled="disabled"
       :size="'lg'"
+      :has-title-buttons="hasTitleButtons"
+      :has-header-buttons="hasHeaderButtons"
+      :header-buttons="headerButtons"
+      :custom-buttons="customModalButtons"
+      :set-custom-buttons="true"
+      :show-ai-slogan="true"
       @ok.prevent="onSubmit"
       @hidden="onClose"
       @translate="translate"
       @showSelectTargetLanguage="showSelectTargetLanguage"
       @saveTranslations="saveTranslations"
-      :hasTitleButtons="hasTitleButtons"
-      :hasHeaderButtons="hasHeaderButtons"
-      :headerButtons="headerButtons"
-      :customButtons="customModalButtons"
-      :setCustomButtons="true"
-      :show-ai-slogan="true"
     >
       <!-- Select target language section -->
       <div v-if="step === 'selectTargetLanguage'">
@@ -36,14 +36,20 @@
         </div>
         <div class="mt-3">
           <div class="form-group">
-            <b-form-checkbox v-model="manualTranslation" data-test="translation-manual-option">
+            <b-form-checkbox
+              v-model="manualTranslation"
+              data-test="translation-manual-option"
+            >
               <div>{{ $t("Manual translation") }}</div>
               <small class="text-muted">{{ $t("Disables auto translate and manually translate screen content.") }}</small>
             </b-form-checkbox>
           </div>
         </div>
 
-        <div class="mt-3" v-if="showLanguageWarning">
+        <div
+          v-if="showLanguageWarning"
+          class="mt-3"
+        >
           <p class="alert alert-warning m-0">
             {{ $t("Since there is no interface translation for this language, translations for these screens will only render for anonymous users in web entries.") }}
           </p>
@@ -52,7 +58,10 @@
 
       <!-- Processing translations section -->
       <div v-if="step === 'translating'">
-        <div v-if="aiLoading" class="d-flex justify-content-center align-items-center flex-column my-3">
+        <div
+          v-if="aiLoading"
+          class="d-flex justify-content-center align-items-center flex-column my-3"
+        >
           <span class="power-loader mt-3 mb-2" />
           <span class="ml-2 text-muted small">
             {{ $t("Translation in progress ...") }}
@@ -76,15 +85,21 @@
         </div>
         <div
           v-if="stringsWithTranslations
-          && Object.keys(stringsWithTranslations).length !== 0
-          && (permission.includes('create-process-translations') || permission.includes('edit-process-translations'))">
-          <translate-options-popup  @retranslate="onReTranslate"/>
+            && Object.keys(stringsWithTranslations).length !== 0
+            && (permission.includes('create-process-translations') || permission.includes('edit-process-translations'))"
+        >
+          <translate-options-popup @retranslate="onReTranslate" />
         </div>
 
         <div class="mt-3 position-relative">
-          <div v-if="step === 'showTranslations'" class="d-flex justify-content-center align-items-center">
-            <div v-if="aiLoading"
-              class="d-flex justify-content-center align-items-center flex-column h-100 position-absolute preloader-container">
+          <div
+            v-if="step === 'showTranslations'"
+            class="d-flex justify-content-center align-items-center"
+          >
+            <div
+              v-if="aiLoading"
+              class="d-flex justify-content-center align-items-center flex-column h-100 position-absolute preloader-container"
+            >
               <span class="power-loader mt-3 mb-2" />
               <span class="ml-2 text-muted small">
                 {{ $t("Re Translation in progress ...") }}
@@ -92,33 +107,49 @@
             </div>
           </div>
 
-          <table v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0" 
+          <table
+            v-if="stringsWithTranslations && Object.keys(stringsWithTranslations).length !== 0"
             class="table table-responsive-lg mb-0"
-            data-test="translation-string-list">
+            data-test="translation-string-list"
+          >
             <thead>
               <tr>
-                  <th class="col-6">{{ $t('String') }}</th>
-                  <th class="">{{ selectedLanguage.humanLanguage + ' ' + $t('Translation') }}</th>
+                <th class="col-6">
+                  {{ $t('String') }}
+                </th>
+                <th class="">
+                  {{ selectedLanguage.humanLanguage + ' ' + $t('Translation') }}
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(value, key, index)  in stringsWithTranslations" :key="index">
-                <td class="bg-light">{{ key }}</td>
+              <tr
+                v-for="(value, key, index) in stringsWithTranslations"
+                :key="index"
+              >
+                <td class="bg-light">
+                  {{ key }}
+                </td>
                 <td class="py-1 px-2">
                   <b-form-textarea
                     v-model="stringsWithTranslations[key]"
                     :value="value"
                     class="form-control border-0"
                     :aria-label="$t('Add a translation for ') + key"
-                    @focus="$event.target.select()"
                     autocomplete="off"
+                    @focus="$event.target.select()"
                     @keyup="updateGlobalString(value, key)"
                   />
                 </td>
               </tr>
             </tbody>
           </table>
-          <div v-else class="text-muted small text-center py-5">{{ $t("Select a screen to show the translations.") }}</div>
+          <div
+            v-else
+            class="text-muted small text-center py-5"
+          >
+            {{ $t("Select a screen to show the translations.") }}
+          </div>
         </div>
       </div>
     </modal>
@@ -126,13 +157,13 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { FormErrorsMixin, Modal } from "SharedComponents";
-import SelectLanguage from "../../../components/SelectLanguage.vue"
-import SelectScreen from "../../../components/SelectScreen.vue"
-import TranslateOptionsPopup from './TranslateOptionsPopup.vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { FormErrorsMixin, Modal } from "../../../components/shared";
+import SelectLanguage from "../../../components/SelectLanguage.vue";
+import SelectScreen from "../../../components/SelectScreen.vue";
+import TranslateOptionsPopup from "./TranslateOptionsPopup.vue";
 
-Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("FontAwesomeIcon", FontAwesomeIcon);
 
 export default {
   components: {
@@ -163,12 +194,20 @@ export default {
       hasHeaderButtons: false,
       hasTitleButtons: false,
       headerButtons: [
-        {'content': '< Back', 'action': 'showSelectTargetLanguage', 'variant': 'link', 'disabled': false, 'hidden': true, 'ariaLabel': 'Back to select language'},
+        {
+          content: "< Back", action: "showSelectTargetLanguage", variant: "link", disabled: false, hidden: true, ariaLabel: "Back to select language",
+        },
       ],
       customModalButtons: [
-        {'content': 'Close', 'action': 'hide()', 'variant': 'outline-secondary', 'disabled': false, 'hidden': false},
-        {'content': 'Translate Process', 'action': 'translate', 'variant': 'secondary', 'disabled': true, 'hidden': false, 'dataTest': 'translation-translate-process'},
-        {'content': 'Save Translation', 'action': 'saveTranslations', 'variant': 'secondary', 'disabled': false, 'hidden': true, 'dataTest': 'translation-save-translation-button'},
+        {
+          content: "Close", action: "hide()", variant: "outline-secondary", disabled: false, hidden: false,
+        },
+        {
+          content: "Translate Process", action: "translate", variant: "secondary", disabled: true, hidden: false, dataTest: "translation-translate-process",
+        },
+        {
+          content: "Save Translation", action: "saveTranslations", variant: "secondary", disabled: false, hidden: true, dataTest: "translation-save-translation-button",
+        },
       ],
     };
   },
@@ -275,7 +314,7 @@ export default {
         this.screensTranslations[screenIndex].translations = { [this.selectedLanguage.language]: { strings: [] } };
       }
 
-      const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex(item => item.key === key);
+      const stringIndex = this.screensTranslations[screenIndex].translations[this.selectedLanguage.language].strings.findIndex((item) => item.key === key);
 
       if (stringIndex !== -1) {
         this.$nextTick(() => {
@@ -338,7 +377,7 @@ export default {
           }
           this.getAvailableLanguages();
         })
-        .catch(error => {
+        .catch((error) => {
           const $errorMsg = this.$t("An error ocurred while calling OpenAI endpoint.");
           window.ProcessMaker.alert($errorMsg, "danger");
           this.endpointErrors = $errorMsg;
@@ -429,11 +468,11 @@ export default {
           this.customModalButtons[2].disabled = false;
           this.$bvModal.hide("createProcessTranslation");
           this.$emit("language-saved");
-          ProcessMaker.alert(this.$t('The process translations were saved.'), 'success', 5, true);
+          ProcessMaker.alert(this.$t("The process translations were saved."), "success", 5, true);
         })
         .catch((error) => {
           if (error.response && error.response.data && error.response.data.error) {
-            let message = this.$t(error.response.data.error);
+            const message = this.$t(error.response.data.error);
             ProcessMaker.alert(message, "danger");
           }
           this.loading = false;

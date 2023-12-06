@@ -43,8 +43,7 @@
 </template>
 
 <script>
-// eslint-disable-next-line import/no-unresolved
-import { FormErrorsMixin } from "SharedComponents";
+import { FormErrorsMixin } from "../../../../components/shared";
 
 export default {
   mixins: [FormErrorsMixin],

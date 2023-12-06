@@ -2,102 +2,163 @@
   <div>
     <div class="">
       <div v-if="condensed">
-        <label>{{inputLabel ? inputLabel : "PMQL"}}</label>
-        <mustache-helper/>
-        <i v-if="aiLoading" class="fa fa-spinner fa-spin pmql-icons" :style="styles?.icons"></i>
+        <label>{{ inputLabel ? inputLabel : "PMQL" }}</label>
+        <mustache-helper />
+        <i
+          v-if="aiLoading"
+          class="fa fa-spinner fa-spin pmql-icons"
+          :style="styles?.icons"
+        />
       </div>
 
       <div class="d-flex align-items-start">
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
-          <slot name="left-buttons"></slot>
+          <slot name="left-buttons" />
 
-          <pmql-input-filters 
+          <pmql-input-filters
             v-if="showFilters"
             :type="searchType"
-            :param-process="this.urlPmql ? '' : paramProcess"
-            :param-status="this.urlPmql ? '' : paramStatus"
-            :param-requester="this.urlPmql ? '' : paramRequester"
-            :param-participants="this.urlPmql ? '' : paramParticipants"
-            :param-request="this.urlPmql ? '' : paramRequest"
-            :param-name="this.urlPmql ? '' : paramName"
-            :param-projects="this.urlPmql ? '' : paramProjects"
-            :param-project-members="this.urlPmql ? '' : paramProjectMembers"
-            :param-project-categories="this.urlPmql ? '' : paramProjectCategories"
+            :param-process="urlPmql ? '' : paramProcess"
+            :param-status="urlPmql ? '' : paramStatus"
+            :param-requester="urlPmql ? '' : paramRequester"
+            :param-participants="urlPmql ? '' : paramParticipants"
+            :param-request="urlPmql ? '' : paramRequest"
+            :param-name="urlPmql ? '' : paramName"
+            :param-projects="urlPmql ? '' : paramProjects"
+            :param-project-members="urlPmql ? '' : paramProjectMembers"
+            :param-project-categories="urlPmql ? '' : paramProjectCategories"
             :permission="permission"
-            @filterspmqlchange="onFiltersPmqlChange">
-          </pmql-input-filters>
-
+            @filterspmqlchange="onFiltersPmqlChange"
+          />
         </div>
 
-        <div class="search-bar flex-grow w-100"
-          :class="{'is-invalid': validations}"
-          :style="styles?.container">
-
+        <div
+          class="search-bar flex-grow w-100"
+          :class="{ 'is-invalid': validations }"
+          :style="styles?.container"
+        >
           <div class="search-bar-container d-flex align-items-center">
-            <i v-if="!aiLoading && !condensed" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
-            <i v-if="aiLoading && !condensed" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
+            <i
+              v-if="!aiLoading && !condensed"
+              class="fa fa-search ml-3 pmql-icons"
+              :style="styles?.icons"
+            />
+            <i
+              v-if="aiLoading && !condensed"
+              class="fa fa-spinner fa-spin ml-3 pmql-icons"
+              :style="styles?.icons"
+            />
 
-            <textarea ref="search_input" type="text" class="pmql-input"
-              :class="{'overflow-auto': showScrollbars}"
+            <textarea
+              :id="inputId"
+              ref="search_input"
+              v-model="query"
+              type="text"
+              class="pmql-input"
+              :class="{ 'overflow-auto': showScrollbars }"
               :aria-label="inputAriaLabel"
               :placeholder="placeholder"
-              :id="inputId"
-              v-model="query"
               rows="1"
               :style="styles?.input"
               @input="onInput()"
-              @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
+              @keydown.enter.prevent
+              @keyup.enter="runSearch()"
+            />
 
-            <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <code v-if="showPmqlSection && !condensed" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
+            <div
+              v-if="showPmqlSection && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <code
+              v-if="showPmqlSection && !condensed"
+              class="w-100 d-block input-right-section"
+              :style="styles?.pmql"
+            >{{ pmql }}</code>
 
-            <div v-if="showAiIndicator && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <span v-if="showAiIndicator && !condensed" class="badge badge-pill badge-success">AI</span>
+            <div
+              v-if="showAiIndicator && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <span
+              v-if="showAiIndicator && !condensed"
+              class="badge badge-pill badge-success"
+            >AI</span>
 
-            <div v-if="showUsage && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <label 
-              v-if="showUsage && !condensed" 
+            <div
+              v-if="showUsage && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <label
+              v-if="showUsage && !condensed"
               v-b-tooltip.hover
-              class="badge badge-primary badge-pill usage-label" 
-              :title="usageText">
+              class="badge badge-primary badge-pill usage-label"
+              :title="usageText"
+            >
               {{ usage.totalTokens }} tokens
               <i class="fa fa-info-circle ml-1 pmql-icons" />
             </label>
 
-            <div v-if="!condensed" class="separator align-items-center" :style="styles?.separators" />
-            <i v-if="!condensed" class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"/>
+            <div
+              v-if="!condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <i
+              v-if="!condensed"
+              class="fa fa-times pl-1 pr-3 pmql-icons"
+              role="button"
+              :style="styles?.icons"
+              @click="clearQuery"
+            />
           </div>
 
           <div v-if="showPmqlSection && condensed">
-            <div class="separator-horizontal align-items-center"></div>
+            <div class="separator-horizontal align-items-center" />
           </div>
-          <code v-if="showPmqlSection && condensed" class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2" :style="styles?.pmql">
+          <code
+            v-if="showPmqlSection && condensed"
+            class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2"
+            :style="styles?.pmql"
+          >
             {{ pmql }}
           </code>
         </div>
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
-          <slot name="right-buttons"></slot>
+          <slot name="right-buttons" />
         </div>
       </div>
 
-      <div v-if="showFilters && selectedFilters.length" class="selected-filters-bar d-flex pt-2">
-        <span v-for="filter in selectedFilters" class="selected-filter-item d-flex align-items-center">
+      <div
+        v-if="showFilters && selectedFilters.length"
+        class="selected-filters-bar d-flex pt-2"
+      >
+        <span
+          v-for="filter in selectedFilters"
+          class="selected-filter-item d-flex align-items-center"
+        >
           <span class="selected-filter-key mr-1">{{ filter[0] }}: </span>
-          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }} 
-          <span v-if="filter[1].length > 1" class="badge badge-pill ml-2 filter-counter">
-            +{{ filter[1].length -1 }}
+          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          <span
+            v-if="filter[1].length > 1"
+            class="badge badge-pill ml-2 filter-counter"
+          >
+            +{{ filter[1].length - 1 }}
           </span>
-          <i role="button" class="fa fa-times pl-2 pr-0" @click="removeFilter(filter)"></i>
+          <i
+            role="button"
+            class="fa fa-times pl-2 pr-0"
+            @click="removeFilter(filter)"
+          />
         </span>
       </div>
-
     </div>
   </div>
 </template>
 <script>
-
-import isPMQL from "../../modules/isPMQL";
-import MustacheHelper from '@processmaker/screen-builder/src/components/inspector/mustache-helper';
+import { MustacheHelper } from "@processmaker/screen-builder";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
 
 export default {
@@ -125,10 +186,10 @@ export default {
     "paramParticipants",
     "paramRequest",
     "paramProjects",
-    'paramProjectMembers',
-    'paramProjectCategories',
+    "paramProjectMembers",
+    "paramProjectCategories",
     "paramName",
-    "permission"
+    "permission",
   ],
   data() {
     return {
@@ -153,7 +214,12 @@ export default {
 
   computed: {
     showPmqlSection() {
-      return !this.hidePmqlSection && this.pmql && this.pmql.isPMQL() && !this.query.isPMQL();
+      return (
+        !this.hidePmqlSection
+        && this.pmql
+        && this.pmql.isPMQL()
+        && !this.query.isPMQL()
+      );
     },
     usageText() {
       const promptTokens = `Prompt tokens: ${this.usage.promptTokens}`;
@@ -162,7 +228,10 @@ export default {
       return promptTokens + completionTokens + totalTokens;
     },
     aiEnabledLocal() {
-      if (!window.ProcessMaker.openAi.enabled || window.ProcessMaker.openAi.enabled === "") {
+      if (
+        !window.ProcessMaker.openAi.enabled
+        || window.ProcessMaker.openAi.enabled === ""
+      ) {
         return false;
       }
       if (!this.searchType || this.searchType === "") {
@@ -217,12 +286,14 @@ export default {
 
       this.$refs.search_input.style.height = "auto";
       // Font size * line height in rems (1.5)
-      const fontSize = parseFloat(getComputedStyle(this.$refs.search_input).fontSize);
+      const fontSize = parseFloat(
+        getComputedStyle(this.$refs.search_input).fontSize,
+      );
       const lineHeight = fontSize * 1.5;
 
       // Padding top and bottom (0.4rem each)
       const padding = fontSize * 0.4 * 2;
-      const currentHeight = padding + (this.textAreaLines * lineHeight);
+      const currentHeight = padding + this.textAreaLines * lineHeight;
 
       this.showScrollbars = false;
       this.$nextTick(() => {
@@ -276,7 +347,8 @@ export default {
 
       this.aiLoading = true;
 
-      ProcessMaker.apiClient.post("/openai/nlq-to-pmql", params)
+      ProcessMaker.apiClient
+        .post("/openai/nlq-to-pmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;
@@ -285,8 +357,11 @@ export default {
           this.aiLoading = false;
           this.calcInputHeight();
         })
-        .catch(error => {
-          window.ProcessMaker.alert(this.$t("An error ocurred while calling OpenAI endpoint."), "danger");
+        .catch((error) => {
+          window.ProcessMaker.alert(
+            this.$t("An error ocurred while calling OpenAI endpoint."),
+            "danger",
+          );
           const fullTextSearch = `(fulltext LIKE "%${params.question}%")`;
           this.pmql = fullTextSearch;
           this.$emit("submit", fullTextSearch);
@@ -300,7 +375,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .search-bar {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 3px;
@@ -308,7 +382,7 @@ export default {
 }
 
 .search-bar.is-invalid {
-  border-color: #E50130;
+  border-color: #e50130;
 }
 
 .pmql-input {
@@ -328,25 +402,26 @@ export default {
   outline: none;
 }
 
-input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
+input.pmql-input:focus ~ label,
+input.pmql-input:valid ~ label {
   top: 3px;
   font-size: 12px;
-  color: #0872C2;
+  color: #0872c2;
 }
 
 .input-right-section {
-  color: #0872C2;
-  font-family: 'Open Sans';
+  color: #0872c2;
+  font-family: "Open Sans";
   font-weight: 600;
 }
 
 .pmql-icons {
-  color: #6C757D;
+  color: #6c757d;
 }
 
 .usage-label {
   background: #1c72c224;
-  color: #0872C2;
+  color: #0872c2;
   right: 29px;
   top: 0;
   margin-right: 0.5rem;
@@ -371,7 +446,7 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 
 .badge-success {
-  color: #00875A;
+  color: #00875a;
   background-color: #00875a26;
 }
 
@@ -389,9 +464,9 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 
 .selected-filter-item {
-  background: #DEEBFF;
+  background: #deebff;
   padding: 4px 9px 4px 9px;
-  color: #104A75;
+  color: #104a75;
   border: 0;
   border-radius: 4px;
   margin-right: 0.5em;
@@ -404,7 +479,7 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 }
 
 .filter-counter {
-  background: #EBEEF2 !important;
+  background: #ebeef2 !important;
   font-weight: 400;
 }
 </style>

@@ -307,17 +307,15 @@
 </template>
 
 <script>
-import { VueFormBuilder, VueFormRenderer } from "@processmaker/screen-builder";
-import WatchersPopup from "@processmaker/screen-builder/src/components/watchers-popup.vue";
-import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties.vue";
-import CustomCSS from "@processmaker/screen-builder/src/components/custom-css.vue";
+import {
+  VueFormBuilder, VueFormRenderer, WatchersPopup, ComputedProperties, CustomCSS,
+} from "@processmaker/screen-builder";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";

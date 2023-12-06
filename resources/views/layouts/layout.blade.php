@@ -36,8 +36,8 @@
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    @vite('resources/css/app.css')
-    @vite('resources/css/sidebar.css')
+    @vite('resources/sass/app.scss')
+    @vite('resources/sass/sidebar/sidebar.scss')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">

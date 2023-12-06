@@ -6,13 +6,15 @@
       size="md"
       class="proceed-modal"
       :title="title"
-      :setCustomButtons="true"
-      :customButtons="customModalButtons"
+      :set-custom-buttons="true"
+      :custom-buttons="customModalButtons"
       @onSubmit="onSubmit"
       @hidden="close"
     >
       <div>
-        <p class="mt-1">Are you sure you want to proceed with your selection?</p>
+        <p class="mt-1">
+          Are you sure you want to proceed with your selection?
+        </p>
       </div>
     </modal>
     <modal
@@ -25,31 +27,41 @@
       <div class="text-center py-3">
         <span class="d-block mb-4"><h4>Applying Changes</h4></span>
         <span class="d-block mb-4"><p>Some assets can take some time to be ready</p></span>
-        <b-spinner class="text-center" variant="primary" label="Loading..."></b-spinner>
+        <b-spinner
+          class="text-center"
+          variant="primary"
+          label="Loading..."
+        />
       </div>
     </modal>
   </div>
 </template>
 
 <script>
-import { Modal } from "SharedComponents";
+import { Modal } from "../shared";
 
 export default {
   components: { Modal },
   props: ["templateName"],
-  data: function() {
+  data() {
     return {
       loading: false,
       customModalButtons: [
-        {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-        {"content": "Yes", "action": "onSubmit", "variant": "primary", "disabled": false, "hidden": false},
+        {
+          content: "Cancel", action: "close", variant: "outline-secondary", disabled: false, hidden: false,
+        },
+        {
+          content: "Yes", action: "onSubmit", variant: "primary", disabled: false, hidden: false,
+        },
       ],
-    }
+    };
   },
   computed: {
     title() {
       return this.$t("Confirmation");
     },
+  },
+  mounted() {
   },
   methods: {
     show() {
@@ -63,8 +75,6 @@ export default {
       this.$emit("submitAssets");
     },
   },
-  mounted() {
-  }
 };
 </script>
 
