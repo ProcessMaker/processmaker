@@ -84,6 +84,12 @@
           {{$t("Cancel")}}
         </b-button>
         <span>&nbsp;</span>
+        <b-button variant="outline-secondary"
+                  size="sm"
+                  @click="onClear">
+          {{$t("Clear")}}
+        </b-button>
+        <span>&nbsp;</span>
         <b-button size="sm" 
                   @click="onApply">
           {{$t("Apply")}}
@@ -146,10 +152,13 @@
         let json = this.getValues();
         this.$emit("onApply", json);
       },
-      onCancel() {
-        this.$emit("onCancel");
+      onClear() {
+        this.$emit("onClear");
         this.items = [];
         this.addItem(0);
+      },
+      onCancel() {
+        this.$emit("onCancel");
       },
       onClickButtonAdd() {
         this.addItem(this.items.length);
@@ -168,22 +177,23 @@
         console.log(json);
       },
       getValues() {
-        let json1 = JSON.parse(JSON.stringify(this.items));
-        console.log(json1);
         let json = JSON.parse(JSON.stringify(this.items));
         return this.transformToPmSyntax(json);
       },
       transformToPmSyntax(json) {
-        let result = [];
+        //I did not modify the assignment of 'or' with the 'root' array; later on, 
+        //'or' will change its reference, so the values of 'root' will be retained.
+        let root = [];
+        let or = root;
         for (let i in json) {
+          or.push(json[i]);
           if (json[i].logical === "or") {
-            delete json[i].logical;
             json[i].or = [];
-          } else {
-            result.push(json[i]);
+            or = json[i].or;
           }
+          delete json[i].logical;
         }
-        return result;
+        return root;
       },
       addItem(index) {
         let item = {

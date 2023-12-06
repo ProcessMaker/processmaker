@@ -12,10 +12,13 @@
                :container="container"
                @show="onShow"
                custom-class="pm-filter-popover">
-      <PMColumnFilterForm @onSortAscending="onSortAscending"
-                           @onSortDescending="onSortDescending"
-                           @onCancel="onCancel"
-                           @onApply="onApply">
+      <PMColumnFilterForm :type="type"
+                          :value="value"
+                          @onSortAscending="onSortAscending"
+                          @onSortDescending="onSortDescending"
+                          @onApply="onApply"
+                          @onClear="onClear"
+                          @onCancel="onCancel">
       </PMColumnFilterForm>
     </b-popover>
   </div>
@@ -50,11 +53,16 @@
       onSortDescending() {
         this.$emit("onSortDescending", "desc");
       },
+      onApply(json) {
+        this.popoverShow = false;
+        this.$emit("onApply", json);
+      },
+      onClear() {
+        this.$emit("onClear");
+      },
       onCancel() {
         this.popoverShow = false;
-      },
-      onApply() {
-        this.popoverShow = false;
+        this.$emit("onCancel");
       },
     }
   };

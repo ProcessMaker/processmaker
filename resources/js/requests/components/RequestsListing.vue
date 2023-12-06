@@ -21,7 +21,15 @@
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-          <PMColumnFilterPopover v-if="column.sortable" :key="index" :id="'pm-table-column-'+index" :container="''"></PMColumnFilterPopover>
+            <PMColumnFilterPopover v-if="column.sortable" 
+                                   :key="index" 
+                                   :id="'pm-table-column-'+index" 
+                                   :type="'Field'"
+                                   :value="column.field"
+                                   :container="''"
+                                   @onApply="onApply"
+                                   @onClear="onClear">
+            </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
@@ -102,6 +110,7 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
+      advanced_filter: [],
       sortOrder: [
         {
           field: "id",
@@ -345,7 +354,8 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams,
+            this.additionalParams + 
+            (this.advanced_filter.length >= 0 ? "&advanced_filter=" + JSON.stringify(this.advanced_filter) : ""),
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -393,6 +403,14 @@ export default {
       this.page = page;
       this.fetch();
     },
+    onApply(json) {
+      this.advanced_filter = json;
+      this.fetch();
+    },
+    onClear(){
+      this.advanced_filter = [];
+      this.fetch();
+    }
   },
 };
 </script>
