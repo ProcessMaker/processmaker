@@ -71,13 +71,17 @@
           slot="participants"
           slot-scope="props"
         >
-          <avatar-image
+          <div
             v-for="participant in props.rowData.participants"
-            :key="participant.id"
-            size="25"
-            hide-name="true"
-            :input-data="participant"
-          />
+            :key="`participant-${participant.id}`"
+          >
+            <avatar-image
+              size="25"
+              hide-name="true"
+              :input-data="participant"
+            />
+            {{ participant.fullname }}
+          </div>
         </template>
         <template
           slot="actions"
