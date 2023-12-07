@@ -72,7 +72,6 @@ export default {
           + "&order_by=name&order_direction=asc",
         )
         .then((response) => {
-          debugger;
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
