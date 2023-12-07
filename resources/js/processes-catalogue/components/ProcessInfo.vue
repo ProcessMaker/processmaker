@@ -5,6 +5,7 @@
       :category="selectCategory"
       :process="process.name"
     />
+    <modal-save-version ref="modalSave" :options="dataOptions"></modal-save-version>
     <b-row>
       <b-col cols="2">
         <h4>{{ $t("Processes Browser") }}</h4>
@@ -46,6 +47,8 @@ import ProcessMap from "./ProcessMap.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 import ProcessTab from './ProcessTab.vue';
+import ModalSaveVersion from '../../components/shared/ModalSaveVersion.vue';
+import { Modeler, ValidationStatus } from "@processmaker/modeler";
 
 export default {
   components: {
@@ -55,12 +58,16 @@ export default {
     MenuCatologue,
     ProcessesCarousel,
     ProcessTab,
+    ModalSaveVersion,
+    Modeler,
+    ValidationStatus,
   },
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "category"],
   data() {
     return {
       listCategories: [],
       selectCategory: 0,
+      dataOptions: { "id" : 6, "type" : "Process"}
     };
   },
   created() {

@@ -82,11 +82,12 @@
   import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
   import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
   import processNavigationMixin from "../../components/shared/processNavigation";
+  import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
 
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal, AddToProjectModal},
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal, AddToProjectModal, ModalSaveVersion},
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, processNavigationMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
@@ -166,6 +167,12 @@
         this.assetType = "process";
         this.$refs["add-to-project-modal"].show();
       },
+      showAddToModalSaveVersion(name, id) {
+        this.processId = id;
+        this.assetName = name;
+        this.assetType = "process";
+        this.$refs["modal-save-version"].showModal();
+    },
       formatStatus(status) {
         status = status.toLowerCase();
         let bubbleColor = {

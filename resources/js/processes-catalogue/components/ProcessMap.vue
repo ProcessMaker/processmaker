@@ -49,6 +49,14 @@
       :asset-id="processId"
       :asset-name="assetName"
     />
+    <modal-save-version
+      id="modal-save-version"
+      ref="modal-save-version"
+      asset-type="process"
+      :options="optionsData"
+      :descriptionSettings="process.description"
+      origin="core"
+    />
   </div>
 </template>
 
@@ -59,6 +67,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
+import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue"
 
 export default {
   components: {
@@ -66,6 +75,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
     AddToProjectModal,
+    ModalSaveVersion,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
@@ -76,6 +86,7 @@ export default {
       pmBlockName: "",
       assetName: "",
       processLaunchpadActions: [],
+      optionsData: this.process,
     };
   },
   mounted() {
@@ -97,6 +108,12 @@ export default {
       this.assetName = name;
       this.assetType = "process";
       this.$refs["add-to-project-modal"].show();
+    },
+    showAddToModalSaveVersion(name, id) {
+      this.processId = id;
+      this.assetName = name;
+      this.assetType = "process";
+      this.$refs["modal-save-version"].showModal();
     },
     getActions() {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
