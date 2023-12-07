@@ -5,15 +5,18 @@
               size="sm">
       <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
-    <b-popover :target="'pm-cff-button-'+id"
-               triggers="click"
+    <b-popover :container="container"
+               :target="'pm-cff-button-'+id"
                :show.sync="popoverShow"
+               triggers="click"
                placement="bottom"
-               :container="container"
-               @show="onShow"
-               custom-class="pm-filter-popover">
+               custom-class="pm-filter-popover"
+               @show="onShow">
       <PMColumnFilterForm :type="type"
                           :value="value"
+                          :format="format"
+                          :formatRange="formatRange"
+                          :operators="operators"
                           @onSortAscending="onSortAscending"
                           @onSortDescending="onSortDescending"
                           @onApply="onApply"
@@ -33,7 +36,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["id", "container", "type", "value"],
+    props: ["container", "id", "type", "value", "format", "formatRange", "operators"],
     data() {
       return {
         popoverShow: false

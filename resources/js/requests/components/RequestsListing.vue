@@ -26,6 +26,9 @@
                                    :id="'pm-table-column-'+index" 
                                    :type="'Field'"
                                    :value="column.field"
+                                   :format="getFormat(column)"
+                                   :formatRange="getFormatRange(column)"
+                                   :operators="getOperators(column)"
                                    :container="''"
                                    @onApply="onApply"
                                    @onClear="onClear">
@@ -407,10 +410,37 @@ export default {
       this.advanced_filter = json;
       this.fetch();
     },
-    onClear(){
+    onClear() {
       this.advanced_filter = [];
       this.fetch();
-    }
+    },
+    getFormat(column) {
+      let format = "string";
+        if (column.format) {
+        format = column.format;
+      }
+        if (column.field === "status" || column.field === "participants") {
+        format = "stringSelect";
+      }
+      return format;
+    },
+    getFormatRange(column) {
+        let formatRange = [];
+        if (column.field === "status") {
+          formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+      }
+        if (column.field === "participants") {
+          formatRange = ["user1", "user2", "user3", "user4"];
+      }
+      return formatRange;
+    },
+    getOperators(column) {
+        let operators = [];
+        if (column.field === "status" || column.field === "participants") {
+          operators = ["=", "in"];
+      }
+      return operators;
+    },
   },
 };
 </script>
