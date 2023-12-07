@@ -40,7 +40,6 @@
           v-if="showCardProcesses"
           :category="category"
           @openProcess="openProcess"
-          @emptyCards="emptyCards"
         />
         <ProcessInfo
           v-if="showProcess"
