@@ -1,9 +1,15 @@
 <template>
   <div>
-    <div class="container processList">
+    <div
+      v-if="processList.length > 0"
+      class="container processList"
+    >
       <b-card
         v-for="process in processList"
         :key="process.id"
+        img-src="/img/launchpad-images/process_background.svg"
+        img-alt="Card Image"
+        overlay
         class="card-process"
         @click="openProcessInfo(process)"
       >
@@ -22,14 +28,17 @@
       :total-pages="totalPages"
       @onPageChanged="onPageChanged"
     />
+
+    <CatalogueEmpty v-if="processList.length === 0" />
   </div>
 </template>
 
 <script>
+import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
 
 export default {
-  components: { pagination },
+  components: { pagination, CatalogueEmpty },
   props: ["category"],
   data() {
     return {
@@ -63,6 +72,7 @@ export default {
           + "&order_by=name&order_direction=asc",
         )
         .then((response) => {
+          debugger;
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
