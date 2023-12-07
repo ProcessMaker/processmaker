@@ -225,7 +225,7 @@ export default {
         {
           label: "Participants",
           field: "participants",
-          sortable: false,
+          sortable: true,
           default: true,
           width: 160,
           truncate: true,
@@ -416,28 +416,28 @@ export default {
     },
     getFormat(column) {
       let format = "string";
-        if (column.format) {
+      if (column.format) {
         format = column.format;
       }
-        if (column.field === "status" || column.field === "participants") {
+      if (column.field === "status" || column.field === "participants") {
         format = "stringSelect";
       }
       return format;
     },
     getFormatRange(column) {
-        let formatRange = [];
-        if (column.field === "status") {
-          formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+      let formatRange = [];
+      if (column.field === "status") {
+        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
       }
-        if (column.field === "participants") {
-          formatRange = ["user1", "user2", "user3", "user4"];
+      if (column.field === "participants") {
+        formatRange = ["user1", "user2", "user3", "user4"];
       }
       return formatRange;
     },
     getOperators(column) {
-        let operators = [];
-        if (column.field === "status" || column.field === "participants") {
-          operators = ["=", "in"];
+      let operators = [];
+      if (column.field === "status" || column.field === "participants") {
+        operators = ["=", "in"];
       }
       return operators;
     },
