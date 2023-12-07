@@ -61,6 +61,7 @@
         this.$emit("onApply", json);
       },
       onClear() {
+        this.popoverShow = false;
         this.$emit("onClear");
       },
       onCancel() {
