@@ -29,9 +29,10 @@ class BookmarkController extends Controller
         }
         // Get the processes
         $processes = $processes
-            ->select('processes.*')
+            ->select('processes.*', 'bookmark.id as bookmark_id')
             ->leftJoin('user_process_bookmarks as bookmark', 'bookmark.process_id', '=', 'processes.id')
             ->where('bookmark.user_id', $user->id)
+            ->orderBy('processes.name', 'asc')
             ->get()
             ->collect();
 
@@ -41,12 +42,11 @@ class BookmarkController extends Controller
     public function store(Request $request, Process $process)
     {
         $bookmark = new Bookmark();
-        $bookmark->fill([
-            'process_id' => $process->id,
-            'user_id' => Auth::user()->id
-        ]);
         try {
-            $bookmark->saveOrFail();
+            $bookmark->updateOrCreate([
+                'process_id' => $process->id,
+                'user_id' => Auth::user()->id
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
@@ -54,17 +54,10 @@ class BookmarkController extends Controller
         return new ApiResource($bookmark->refresh());
     }
 
-    public function destroy(Request $request, Process $process)
+    public function destroy(Bookmark $bookmark)
     {
-        // Get the current user
-        if ($request->user_id !== Auth::user()->id) {
-            abort(403);
-        }
-
         // Delete bookmark
-        Bookmark::where('process_id', $process->id)
-            ->where('user_id', $request->user_id)
-            ->delete();
+        $bookmark->delete();
 
         return response([], 204);
     }
