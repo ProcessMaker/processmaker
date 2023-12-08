@@ -39,7 +39,7 @@ class VerifyChangePasswordNeeded
 
     public function checkPasswordExpiration()
     {
-        $validationRequired = config('password-policies.expiration_days') &&
+        $validationRequired = config('password-policies.expiration_days', false) &&
             Auth::user() && Auth::user()->password_changed_at;
 
         return $validationRequired &&

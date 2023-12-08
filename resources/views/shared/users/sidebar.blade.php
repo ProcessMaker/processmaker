@@ -39,6 +39,7 @@
                     </small>
                 </div>
             @endcan
+            @if (config('password-policies.users_can_change', true))
             <div class="form-group">
                 {!! Form::label('password', __('New Password')) !!}
                 <vue-password v-model="formData.password" :disable-toggle=true>
@@ -57,6 +58,7 @@
                 <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
                      v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
+            @endif
             @cannot('edit-user-and-password')
                 <div class="form-group">
                     <small class="form-text text-muted">

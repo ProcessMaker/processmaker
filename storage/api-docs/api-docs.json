@@ -6590,7 +6590,8 @@
                             "ACTIVE",
                             "INACTIVE",
                             "SCHEDULED",
-                            "OUT_OF_OFFICE"
+                            "OUT_OF_OFFICE",
+                            "BLOCKED"
                         ]
                     },
                     "fullname": {
