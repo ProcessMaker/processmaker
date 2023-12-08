@@ -9,9 +9,7 @@
   >
     <div class="form-group">
       <p>
-        {{
-          $t("Once published, all new requests will use the new process model.")
-        }}
+        {{ $t("Once published, all new requests will use the new process model.") }}
       </p>
       <div>
         <b-card no-body>
@@ -26,7 +24,7 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card-text v-if="showVersionInfo">
+              <b-card v-if="showVersionInfo">
                 <b-row>
                   <b-col>
                     <label class="label-text mt-2">
@@ -193,8 +191,8 @@
                     </b-row>
                   </b-col>
                 </b-row>
-              </b-card-text>
-              <b-card-text v-if="!showVersionInfo">
+              </b-card>
+              <b-card v-if="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   v-model="subject"
@@ -224,7 +222,7 @@
                   rows="8"
                   :aria-label="$t('Description')"
                 ></textarea>
-              </b-card-text>
+              </b-card>
             </b-tab>
           </b-tabs>
         </b-card>

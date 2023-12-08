@@ -95,7 +95,6 @@ export default {
       id: this.process.id.toString(),
       type: "Process",
     };
-    console.log('this.optionsData ProcesMap: ', this.optionsData);
   },
   methods: {
     showCreateTemplateModal(name, id) {
