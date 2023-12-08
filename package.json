@@ -34,12 +34,13 @@
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.69.5",
         "vite": "^3.0.2",
+        "vite-plugin-commonjs": "^0.10.1",
         "vite-svg-loader": "4.0",
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
         "@braintree/sanitize-url": "^6.0.2",
-        "@chantouchsek/validatorjs": "^2.0.0",
+        "@chantouchsek/validatorjs": "^1.4.5",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
         "@fortawesome/free-brands-svg-icons": "^5.15.1",

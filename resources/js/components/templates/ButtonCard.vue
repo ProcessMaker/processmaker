@@ -32,7 +32,7 @@
       >
         <div class="ai-slogan">
           <img
-            src="/resources/img/favicon.svg"
+            src="/img/favicon.svg"
             :alt="$t('ProcessMaker')"
           > {{ $t("Powered by ProcessMaker AI") }}
         </div>

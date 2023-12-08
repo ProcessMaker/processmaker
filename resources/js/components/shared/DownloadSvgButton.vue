@@ -56,7 +56,7 @@
         <div>
           <h5>
             <img
-              src="/resources/img/icon-pmlogo.png"
+              src="/img/icon-pmlogo.png"
               alt="ProcessMaker logo"
               style="height: 30px;"
               class="mr-1"

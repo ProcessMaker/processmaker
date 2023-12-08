@@ -6,7 +6,7 @@
     <div class="content">
       <img
         class="image"
-        src="/resources/img/recent_projects.svg"
+        src="/img/recent_projects.svg"
         alt="recent projects"
       >
       <div class="content-text">

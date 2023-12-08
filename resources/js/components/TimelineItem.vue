@@ -24,7 +24,7 @@
     <img
       v-else
       class="default-user mr-1"
-      src="/resources/img/systemAvatar.png"
+      src="/img/systemAvatar.png"
     >
     <div class="flex-grow-1">
       <strong :title="value.updated_at">{{

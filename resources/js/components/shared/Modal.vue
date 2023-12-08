@@ -121,7 +121,7 @@
             v-if="showAiSlogan"
             class="slogan"
           >
-            <img src="/resources/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
+            <img src="/img/favicon.svg"> {{ $t("Powered by ProcessMaker AI") }}
           </div>
         </div>
         <div>

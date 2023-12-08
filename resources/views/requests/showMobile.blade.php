@@ -145,7 +145,7 @@
 
 @section('js')
   @if (hasPackage('package-files'))
-    @vite('vendor/processmaker/packages/package-files/js/manager.js')
+    @vite('resources/js/manager.js', 'vendor/processmaker/packages/package-files')
   @endif
 
   <script>

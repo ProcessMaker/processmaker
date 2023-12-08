@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-center my-5">
       <img
         class="image d-flex"
-        src="/resources/img/processes-catalogue-empty.svg"
+        src="/img/processes-catalogue-empty.svg"
         alt="recent projects"
       >
     </div>

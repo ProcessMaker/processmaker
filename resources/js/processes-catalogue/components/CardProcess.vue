@@ -9,7 +9,7 @@
       <b-card-text>
         <img
           class="icon-process"
-          src="/resources/img/default-process.svg"
+          src="/img/default-process.svg"
           :alt="$t('Default Icon')"
         >
         <span class="title-process">{{ process.name }}</span>

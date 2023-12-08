@@ -108,7 +108,7 @@
           >
             <img
               :alt="$t('All Clear')"
-              src="/resources/img/all-cleared.svg"
+              src="/img/all-cleared.svg"
             >
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>
@@ -206,7 +206,7 @@
           >
             <img
               :alt="$t('All Clear')"
-              src="/resources/img/all-cleared.svg"
+              src="/img/all-cleared.svg"
             >
             <h2>{{ $t('All Clear') }}</h2>
             <h5>{{ $t('No new notifications at the moment.') }}</h5>

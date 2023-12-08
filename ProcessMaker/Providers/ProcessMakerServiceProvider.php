@@ -162,12 +162,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
             switch ($event->type) {
                 case 'FORM':
-                    $event->manager->addScript(Vite::asset('resources/js/processes/screen-builder/typeForm.js'));
+                    $event->manager->addScript(Vite::asset('/resources/js/processes/screen-builder/typeForm.js'));
 
                     break;
 
                 case 'DISPLAY':
-                    $event->manager->addScript(Vite::asset('resources/js/processes/screen-builder/typeDisplay.js'));
+                    $event->manager->addScript(Vite::asset('/resources/js/processes/screen-builder/typeDisplay.js'));
 
                     break;
             }

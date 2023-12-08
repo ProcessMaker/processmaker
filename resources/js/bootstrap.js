@@ -4,6 +4,7 @@ import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
+import "../sass/app.scss";
 
 /**
  * Setup Translations

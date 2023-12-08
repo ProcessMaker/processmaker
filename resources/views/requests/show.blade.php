@@ -384,12 +384,12 @@
 
 @section('js')
   @foreach ($manager->getScripts() as $script)
-    <script src="{{ $script }}"></script>
+    @vite($script)
   @endforeach
 
   @if (hasPackage('package-files'))
     <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
-    @vite('vendor/processmaker/packages/package-files/js/manager.js')
+    @vite('resources/js/manager.js', 'vendor/processmaker/packages/package-files')
   @endif
 
   <script>
