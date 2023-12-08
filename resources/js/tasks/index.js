@@ -1,5 +1,5 @@
 import Vue from "vue";
-import TasksList from "./components/TasksList";
+import TasksList from "./components/TasksList.vue";
 
 new Vue({
   el: "#tasks",
@@ -15,14 +15,14 @@ new Vue({
     additions: [],
   },
   mounted() {
-    ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
+    ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
       this.additions.push(component);
     });
   },
   created() {
     const params = new URL(document.location).searchParams;
     const statusParam = params.get("status");
-    this.urlPmql = params.get('pmql');
+    this.urlPmql = params.get("pmql");
 
     let status = "";
 
@@ -74,7 +74,7 @@ new Vue({
       }
     },
     setInOverdueMessage(inOverdue) {
-      let inOverdueMessage = '';
+      let inOverdueMessage = "";
       if (inOverdue) {
         const taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
         inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", { inOverDue: inOverdue, taskText });

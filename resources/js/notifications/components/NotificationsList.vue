@@ -103,9 +103,9 @@
 <script>
 import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
-import AvatarImage from "../../components/AvatarImage";
-import NotificationMessage from "./notification-message";
-import NotificationUser from "./notification-user";
+import AvatarImage from "../../components/AvatarImage.vue";
+import NotificationMessage from "./notification-message.vue";
+import NotificationUser from "./notification-user.vue";
 
 Vue.component("AvatarImage", AvatarImage);
 

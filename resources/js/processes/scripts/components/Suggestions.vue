@@ -1,34 +1,48 @@
 <template>
-  <div v-if="showSuggestions" class="d-flex suggestions-container flex-column h-100" :class="{'expanded': !showSuggestions}">
-    <div class="d-flex flex-column align-items-center mb-0 suggestions-cards-container" @mouseover="stopCarrousel()" @mouseleave="startCarrousel()">
+  <div
+    v-if="showSuggestions"
+    class="d-flex suggestions-container flex-column h-100"
+    :class="{'expanded': !showSuggestions}"
+  >
+    <div
+      class="d-flex flex-column align-items-center mb-0 suggestions-cards-container"
+      @mouseover="stopCarrousel()"
+      @mouseleave="startCarrousel()"
+    >
       <div v-if="loading">
-        <i class="fa fa-spin fa-spinner mr-1"></i>
+        <i class="fa fa-spin fa-spinner mr-1" />
       </div>
-      <div v-if="loading" class="text-secondary">
+      <div
+        v-if="loading"
+        class="text-secondary"
+      >
         <small>Loading suggestions ...</small>
       </div>
-      <div v-for="suggestion, index in currentSuggestions"
+      <div
+        v-for="suggestion, index in currentSuggestions"
         :key="index"
         class="suggestion-card d-flex flex-column align-items-center mb-2 text-center"
-        @click="applySuggestion(suggestion.suggestion)">
+        @click="applySuggestion(suggestion.suggestion)"
+      >
         <i class="text-primary"><small>If you want to {{ suggestion.title }} try:</small></i>
         <b class="">{{ suggestion.suggestion }}</b>
       </div>
     </div>
     <div class="mt-1 mb-1 w-100">
       <div class="d-flex justify-content-center">
-        <div v-for="suggestionsPage, index in suggestionsPages" 
-          class="navigation-dot ml-1 mr-1" 
-          :key="index" 
+        <div
+          v-for="suggestionsPage, index in suggestionsPages"
+          :key="index"
+          class="navigation-dot ml-1 mr-1"
           :class="{'active': index === currentSuggestionPageIndex}"
-          @click="navigateSuggestion(index)"></div>
+          @click="navigateSuggestion(index)"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import _, { debounce } from "lodash";
 
 export default {
   props: ["promptSessionId", "suggestionsPages", "loading", "parentSuggestionsHeight", "minParentSuggestionsHeight", "showSuggestions"],
@@ -51,16 +65,16 @@ export default {
       this.currentSuggestions = this.suggestionsPages[0];
     }
     this.timer = setInterval(() => {
-      this.navigateToNextSuggestions()
+      this.navigateToNextSuggestions();
     }, this.interval);
   },
   beforeDestroy() {
-    clearInterval(this.timer)
+    clearInterval(this.timer);
   },
   methods: {
     startCarrousel() {
       this.timer = setInterval(() => {
-        this.navigateToNextSuggestions()
+        this.navigateToNextSuggestions();
       }, this.interval);
     },
     stopCarrousel() {
@@ -73,13 +87,13 @@ export default {
       clearInterval(this.timer);
 
       this.timer = setInterval(() => {
-        this.navigateToNextSuggestions()
+        this.navigateToNextSuggestions();
       }, this.interval);
     },
     navigateToNextSuggestions() {
-      let pages = this.suggestionsPages.length;
-      
-      if (this.currentSuggestionPageIndex === pages -1) {
+      const pages = this.suggestionsPages.length;
+
+      if (this.currentSuggestionPageIndex === pages - 1) {
         this.currentSuggestionPageIndex = 0;
       } else {
         this.currentSuggestionPageIndex++;
@@ -88,7 +102,7 @@ export default {
       this.currentSuggestions = this.suggestionsPages[this.currentSuggestionPageIndex];
     },
     applySuggestion(suggestion) {
-      this.$emit('suggestion-applied', suggestion);
+      this.$emit("suggestion-applied", suggestion);
     },
   },
 };

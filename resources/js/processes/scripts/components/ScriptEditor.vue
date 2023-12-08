@@ -401,10 +401,8 @@
 
 <script>
 import MonacoEditor from "vue-monaco";
-import _ from "lodash";
+import { debounce } from "lodash";
 import TopMenu from "../../../components/Menu.vue";
-// eslint-disable-next-line no-unused-vars
-import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";
@@ -783,7 +781,7 @@ export default {
       domNode.style.height = `${clientHeight.toString()}px`;
     },
     // eslint-disable-next-line func-names
-    stopResizing: _.debounce(function () {
+    stopResizing: debounce(function () {
       this.resizing = false;
     }, 50),
     handleResize() {

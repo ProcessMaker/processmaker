@@ -1,15 +1,15 @@
 import Vue from "vue";
-import CounterCard from "./components/CounterCard";
-import CounterCardGroup from "./components/CounterCardGroup";
-import RequestsListing from "./components/RequestsListing";
-import AvatarImage from "../components/AvatarImage";
+import CounterCard from "./components/CounterCard.vue";
+import CounterCardGroup from "./components/CounterCardGroup.vue";
+import RequestsListing from "./components/RequestsListing.vue";
+import AvatarImage from "../components/AvatarImage.vue";
 
 Vue.component("AvatarImage", AvatarImage);
 
 new Vue({
   el: "#requests-listing",
   components: {
-    CounterCard, CounterCardGroup, RequestsListing
+    CounterCard, CounterCardGroup, RequestsListing,
   },
   data: {
     filter: "",
@@ -55,7 +55,7 @@ new Vue({
     this.urlPmql = urlParams.get("pmql");
   },
   mounted() {
-    ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
+    ProcessMaker.EventBus.$on("advanced-search-addition", (component) => {
       this.additions.push(component);
     });
   },

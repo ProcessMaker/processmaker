@@ -1,26 +1,39 @@
 <template>
   <div>
-    <modal id="addToProject" :title="title" @addToProject="addToProject" @close="close" :setCustomButtons="true"
-      :customButtons="customModalButtons" size="md">
+    <modal
+      id="addToProject"
+      :title="title"
+      :set-custom-buttons="true"
+      :custom-buttons="customModalButtons"
+      size="md"
+      @addToProject="addToProject"
+      @close="close"
+    >
       <template>
         <div class="d-flex justify-content-between pb-3">
           <h6>
             <span class="text-capitalize">{{ formatAssetType(assetType) }}:</span> {{ assetName }}
           </h6>
-          <required></required>
+          <required />
         </div>
-        <project-select 
-          required 
+        <project-select
+          v-model="projects"
+          required
           :label="$t('Select Project')"
-          v-model="projects" 
-          api-get="projects" 
+          api-get="projects"
           api-list="projects"
-          name="project" 
-          :errors="addError.project" 
+          name="project"
+          :errors="addError.project"
         />
         <b-form-group>
-          <b-form-checkbox v-model="copyAsset" class="pt-3">
-            <span v-b-tooltip.hover.bottom :title="$t('Use a copy if you are planning on making changes to this asset.')">
+          <b-form-checkbox
+            v-model="copyAsset"
+            class="pt-3"
+          >
+            <span
+              v-b-tooltip.hover.bottom
+              :title="$t('Use a copy if you are planning on making changes to this asset.')"
+            >
               Use a copy of this asset
             </span>
           </b-form-checkbox>
@@ -29,18 +42,18 @@
     </modal>
   </div>
 </template>
-  
+
 <script>
 
 import FormErrorsMixin from "./FormErrorsMixin";
-import Modal from "./Modal";
-import Required from "./Required";
-import ProjectSelect from "./ProjectSelect";
+import Modal from "./Modal.vue";
+import Required from "./Required.vue";
+import ProjectSelect from "./ProjectSelect.vue";
 
 export default {
   components: { Modal, ProjectSelect, Required },
   mixins: [FormErrorsMixin],
-  props: ["assetName", "currentUserId", 'assetType', 'assetId', 'assignedProjects'],
+  props: ["assetName", "currentUserId", "assetType", "assetId", "assignedProjects"],
   data() {
     return {
       errors: {},
@@ -51,19 +64,23 @@ export default {
       showModal: false,
       disabled: true,
       customModalButtons: [
-        { "content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false },
-        { "content": "Add", "action": "addToProject", "variant": "primary", "disabled": true, "hidden": false },
+        {
+          content: "Cancel", action: "close", variant: "outline-secondary", disabled: false, hidden: false,
+        },
+        {
+          content: "Add", action: "addToProject", variant: "primary", disabled: true, hidden: false,
+        },
       ],
-    }
+    };
   },
   computed: {
     title() {
-      return this.$t('Add to a Project');
+      return this.$t("Add to a Project");
     },
   },
   watch: {
     projects() {
-      this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
+      this.customModalButtons[1].disabled = !(this.projects.length > 0);
     },
     // assignedProjects() {
     //   this.projects = this.assignedProjects.map(project => project.id);
@@ -71,11 +88,11 @@ export default {
   },
   methods: {
     show() {
-      this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
-      this.$bvModal.show('addToProject');
+      this.customModalButtons[1].disabled = !(this.projects.length > 0);
+      this.$bvModal.show("addToProject");
     },
     close() {
-      this.$bvModal.hide('addToProject');
+      this.$bvModal.hide("addToProject");
       this.clear();
       this.errors = {};
     },
@@ -84,25 +101,25 @@ export default {
       this.copyAsset = false;
     },
     validateProject() {
-      //TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
+      // TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
     },
     addToProject() {
       // if (this.copyAsset) {
       //   //TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
       // }
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append("asset_type", this.assetType);
       formData.append("asset_id", this.assetId);
       formData.append("projects", this.projects);
       this.customModalButtons[1].disabled = true;
       ProcessMaker.apiClient.post("/projects/assets/assign", formData)
-        .then(response => {
+        .then((response) => {
           ProcessMaker.alert(response.data.message, "success");
           this.close();
-        }).catch(error => {
+        }).catch((error) => {
           this.errors = error.response.data;
           this.customModalButtons[1].disabled = false;
-          if (this.errors.hasOwnProperty('errors')) {
+          if (this.errors.hasOwnProperty("errors")) {
             this.errors = this.errors.errors;
           } else {
             const message = error.response.data.error;
@@ -116,11 +133,10 @@ export default {
   },
 };
 </script>
-  
+
 <style scoped>
 .overflow-modal {
   max-height: 30vh;
   overflow-y: auto;
 }
 </style>
-  

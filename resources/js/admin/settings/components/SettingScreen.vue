@@ -8,17 +8,48 @@
         class="preview-renderer"
       />
     </div>
-    <div v-else class="font-italic text-black-50">
+    <div
+      v-else
+      class="font-italic text-black-50"
+    >
       Empty
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
-      <template v-slot:modal-header class="d-block">
+    <b-modal
+      v-model="showModal"
+      class="setting-object-modal"
+      size="lg"
+      @hidden="onModalHidden"
+    >
+      <template
+        #modal-header
+        class="d-block"
+      >
         <div>
-          <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
-          <h5 class="mb-0" v-else>{{ setting.key }}</h5>
-          <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
+          <h5
+            v-if="setting.name"
+            class="mb-0"
+          >
+            {{ $t(setting.name) }}
+          </h5>
+          <h5
+            v-else
+            class="mb-0"
+          >
+            {{ setting.key }}
+          </h5>
+          <small
+            v-if="setting.helper"
+            class="form-text text-muted"
+          >{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
+        <button
+          type="button"
+          :aria-label="$t('Close')"
+          class="close"
+          @click="onCancel"
+        >
+          ×
+        </button>
       </template>
       <vue-form-renderer
         v-if="screen('config')"
@@ -27,13 +58,30 @@
         :custom-css="screen('custom_css')"
         :computed="screen('computed')"
       />
-      <div v-else class="alert alert-danger">{{ $t('Unable to display setting.') }}</div>
-      <div slot="modal-footer" class="w-100 m-0 d-flex">
-        <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
-            {{ $t('Cancel') }}
+      <div
+        v-else
+        class="alert alert-danger"
+      >
+        {{ $t('Unable to display setting.') }}
+      </div>
+      <div
+        slot="modal-footer"
+        class="w-100 m-0 d-flex"
+      >
+        <button
+          type="button"
+          class="btn btn-outline-secondary ml-auto"
+          @click="onCancel"
+        >
+          {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed">
-            {{ $t('Save')}}
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          :disabled="! changed"
+          @click="onSave"
+        >
+          {{ $t('Save') }}
         </button>
       </div>
     </b-modal>
@@ -42,11 +90,10 @@
 
 <script>
 import settingMixin from "../mixins/setting";
-import {VueFormRenderer} from "@processmaker/screen-builder";
 
 export default {
   mixins: [settingMixin],
-  props: ['value', 'setting'],
+  props: ["value", "setting"],
   data() {
     return {
       config: null,
@@ -60,10 +107,9 @@ export default {
   computed: {
     variant() {
       if (this.disabled) {
-        return 'secondary';
-      } else {
-        return 'success';
+        return "secondary";
       }
+      return "success";
     },
     changed() {
       return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
@@ -71,10 +117,15 @@ export default {
   },
   watch: {
     value: {
-      handler: function(value) {
+      handler(value) {
         this.input = value;
       },
-    }
+    },
+  },
+  mounted() {
+    this.input = this.copy(this.value);
+    this.preview = this.copy(this.value);
+    this.transformed = this.copy(this.input);
   },
   methods: {
     screen(property) {
@@ -99,11 +150,6 @@ export default {
       this.emitSaved(this.input);
     },
   },
-  mounted() {
-    this.input = this.copy(this.value);
-    this.preview = this.copy(this.value);
-    this.transformed = this.copy(this.input);
-  }
 };
 </script>
 

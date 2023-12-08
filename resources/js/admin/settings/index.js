@@ -1,4 +1,4 @@
-import SettingsGroups from "./components/SettingsGroups";
+import SettingsGroups from "./components/SettingsGroups.vue";
 
 new Vue({
   el: "#settings",

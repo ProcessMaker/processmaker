@@ -4,7 +4,10 @@
       <b-navbar-brand class="text-uppercase">
         {{ $t("Recent Assets from my Projects") }}
       </b-navbar-brand>
-      <div class="d-flex" align="end">
+      <div
+        class="d-flex"
+        align="end"
+      >
         <div class="dropdown">
           <button
             v-if="!showInput"
@@ -82,7 +85,8 @@
 </template>
 
 <script>
-import RecentAssetsList from './RecentAssetsList.vue';
+import Vue from "vue";
+import RecentAssetsList from "./RecentAssetsList.vue";
 
 Vue.component("RecentAssetsList", RecentAssetsList);
 

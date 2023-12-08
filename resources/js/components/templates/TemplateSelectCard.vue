@@ -1,5 +1,8 @@
 <template>
-  <div class="template-select-card-container" :class="type !== 'wizard' ? 'pb-2' : 'pb-4'">
+  <div
+    class="template-select-card-container"
+    :class="type !== 'wizard' ? 'pb-2' : 'pb-4'"
+  >
     <wizard-template-card
       v-if="type === 'wizard'"
       :template="template"
@@ -14,11 +17,11 @@
 </template>
 
 <script>
-import WizardTemplateCard from './WizardTemplateCard';
-import DefaultTemplateCard from './DefaultTemplateCard';
+import WizardTemplateCard from "./WizardTemplateCard.vue";
+import DefaultTemplateCard from "./DefaultTemplateCard.vue";
 
 export default {
-  components: {WizardTemplateCard, DefaultTemplateCard},
+  components: { WizardTemplateCard, DefaultTemplateCard },
   props: ["template", "type"],
   data() {
     return {

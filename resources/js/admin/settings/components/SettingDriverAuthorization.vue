@@ -172,8 +172,7 @@
 </template>
 
 <script>
-// eslint-disable-next-line import/no-unresolved
-import { FormErrorsMixin, Required } from "SharedComponents";
+import { FormErrorsMixin, Required } from "../../../components/shared";
 import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
 

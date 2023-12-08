@@ -1,5 +1,5 @@
 import Vue from "vue";
-import ProcessesCatalogue from "./components/ProcessesCatalogue";
+import ProcessesCatalogue from "./components/ProcessesCatalogue.vue";
 
 new Vue({
   el: "#processes-catalogue",

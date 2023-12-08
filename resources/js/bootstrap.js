@@ -17,12 +17,12 @@ import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
-import Pagination from "./components/common/Pagination";
+import Pagination from "./components/common/Pagination.vue";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
-import translator from "./modules/lang.js";
+import translator from "./modules/lang";
 import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
-import Modal from "./components/shared/Modal";
+import Modal from "./components/shared/Modal.vue";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
@@ -233,7 +233,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };

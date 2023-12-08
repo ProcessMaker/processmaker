@@ -1,15 +1,21 @@
 <template>
   <b-container class="h-100">
-    <b-card no-body class="h-100">
+    <b-card
+      no-body
+      class="h-100"
+    >
       <b-card-body class="overflow-hidden p-4">
         <b-row class="h-100">
-          <b-col cols="12" class="h-100">
+          <b-col
+            cols="12"
+            class="h-100"
+          >
             <monaco-editor
-                :options="monacoOptions"
-                v-model="code"
-                :language="language"
-                class="h-100"
-                :class="{hidden: resizing}"
+              v-model="code"
+              :options="monacoOptions"
+              :language="language"
+              class="h-100"
+              :class="{hidden: resizing}"
             />
           </b-col>
         </b-row>
@@ -29,9 +35,13 @@
 
 import { debounce } from "lodash";
 import MonacoEditor from "vue-monaco";
-import MenuScript from "../../../components/Menu";
+import MenuScript from "../../../components/Menu.vue";
 
 export default {
+  components: {
+    MenuScript,
+    MonacoEditor,
+  },
   props: ["process", "script", "scriptExecutor", "testData"],
   data() {
     return {
@@ -44,40 +54,36 @@ export default {
       code: this.script.code,
       preview: {
         error: {
-          exception: '',
-          message: ''
+          exception: "",
+          message: "",
         },
         executing: false,
         data: this.testData ? this.testData : "{}",
         config: "{}",
         output: "",
         success: false,
-        failure: false
+        failure: false,
       },
       outputOpen: true,
       optionsMenu: [],
     };
   },
-  components: {
-    MenuScript,
-    MonacoEditor,
-  },
   computed: {
     language() {
       return this.scriptExecutor.language;
-    }
+    },
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
     window.addEventListener("resize", this.resizeHandler);
-    let userID = document.head.querySelector('meta[name="user-id"]');
+    const userID = document.head.querySelector("meta[name=\"user-id\"]");
   },
-  beforeDestroy: function() {
+  beforeDestroy() {
     window.removeEventListener("resize", this.resizeHandler);
   },
 
   methods: {
-    stopResizing: debounce(function() {
+    stopResizing: debounce(function () {
       this.resizing = false;
     }, 50),
     resizeHandler() {
@@ -87,10 +93,9 @@ export default {
     onClose() {
       window.location.href = "/designer/scripts";
     },
-  }
+  },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .custom-alert {

@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import ProjectsLastModifiedListing from './ProjectsLastModifiedListing';
+import Vue from "vue";
+import ProjectsLastModifiedListing from "./ProjectsLastModifiedListing.vue";
 
 Vue.component("ProjectsLastModifiedListing", ProjectsLastModifiedListing);
 

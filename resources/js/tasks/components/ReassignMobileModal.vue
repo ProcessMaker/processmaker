@@ -52,7 +52,10 @@
               <template slot="noOptions">
                 {{ $t('No Data Available') }}
               </template>
-              <template slot="tag" slot-scope="props">
+              <template
+                slot="tag"
+                slot-scope="props"
+              >
                 <span
                   class="multiselect__tag  d-flex align-items-center"
                   style="width:max-content;"
@@ -108,6 +111,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import AvatarImage from "../../components/AvatarImage.vue";
 
 Vue.component("AvatarImage", AvatarImage);

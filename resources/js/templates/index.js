@@ -1,22 +1,22 @@
 import Vue from "vue";
-import ProcessTemplatesListing from "./components/ProcessTemplatesListing";
+import ProcessTemplatesListing from "./components/ProcessTemplatesListing.vue";
 
 new Vue({
   el: "#templatesIndex",
   components: {
-    ProcessTemplatesListing,    
+    ProcessTemplatesListing,
   },
   data: {
     filter: "",
   },
   methods: {
     show() {
-      console.log('SHOW');
+      console.log("SHOW");
       // this.processId = null;
       // this.processModal = true;
     },
     edit(id) {
-      console.log('EDIT', id);
+      console.log("EDIT", id);
       // this.processId = id;
       // this.processModal = true;
     },
@@ -24,7 +24,7 @@ new Vue({
       window.location = "/template/process/import";
     },
     reload() {
-      console.log('TEMPLATE INDEX.JS RELAOD');
+      console.log("TEMPLATE INDEX.JS RELAOD");
       this.$refs.templateListing.dataManager([{
         field: "updated_at",
         direction: "desc",

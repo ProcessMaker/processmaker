@@ -1,5 +1,5 @@
 import Vue from "vue";
-import ModelerApp from "./components/ModelerApp";
+import ModelerApp from "./components/ModelerApp.vue";
 
 window.ProcessMaker.i18nPromise.then(() => {
   new Vue({

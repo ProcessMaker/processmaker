@@ -1,8 +1,8 @@
 import Vue from "vue";
 import VuePassword from "vue-password";
-import UsersListing from "./components/UsersListing";
-import AddUserModal from "./components/AddUserModal";
-import DeletedUsersListing from "./components/DeletedUsersListing";
+import UsersListing from "./components/UsersListing.vue";
+import AddUserModal from "./components/AddUserModal.vue";
+import DeletedUsersListing from "./components/DeletedUsersListing.vue";
 
 Vue.component("VuePassword", VuePassword);
 
@@ -84,7 +84,7 @@ new Vue({
     downloadAllLogs() {
       ProcessMaker.apiClient
         .get("security-logs/download/all?format=csv")
-        .then(response => {
+        .then((response) => {
           window.ProcessMaker.alert(response.data.message, "success");
         });
     },

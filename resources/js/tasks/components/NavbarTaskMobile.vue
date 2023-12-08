@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import TaskDetailsMobile from "./TaskDetailsMobile.vue";
 
 Vue.component("TaskDetailsMobile", TaskDetailsMobile);
