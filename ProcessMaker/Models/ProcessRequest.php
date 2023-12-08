@@ -934,7 +934,10 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $mustacheTitle = $this->process()->select('case_title')->first()->case_title;
         }
         $mustache = new MustacheExpressionEvaluator();
-        return $mustache->render($mustacheTitle, $data);
+        // multi-byte 200 characters limit
+        $title = $mustache->render($mustacheTitle, $data);
+        $title = mb_substr($title, 0, 200);
+        return $title;
     }
 
     public function isSystem()

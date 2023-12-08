@@ -383,6 +383,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'status' => 'in:ACTIVE,INACTIVE,ARCHIVED',
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
+            'case_title' => 'nullable|max:200',
         ];
     }
 
