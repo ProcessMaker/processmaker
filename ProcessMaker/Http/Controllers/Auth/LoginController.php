@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
@@ -48,7 +49,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
-        $this->maxAttempts = (int) config('password-policies.login_attempts');
+        $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
     }
 
     /**
@@ -177,6 +178,8 @@ class LoginController extends Controller
         $user = User::where('username', $request->input('username'))->first();
         if (!$user || $user->status === 'INACTIVE') {
             $this->sendFailedLoginResponse($request);
+        } elseif ($user->status === 'BLOCKED') {
+            $this->throwLockedLoginResponse();
         }
 
         $addons = $this->getPluginAddons('command', []);
@@ -194,7 +197,7 @@ class LoginController extends Controller
             }
         }
 
-        return $this->login($request);
+        return $this->login($request, $user);
     }
 
     /**
@@ -236,5 +239,61 @@ class LoginController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Handle a login request to the application.
+     * Overrides the original login action.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \ProcessMaker\Models\User $user
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function login(Request $request, User $user)
+    {
+        $this->validateLogin($request);
+
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if (method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts($request)) {
+
+            // Block the user
+            $user->status = 'BLOCKED';
+            $user->save();
+
+            // Throw locked error message
+            $this->throwLockedLoginResponse();
+        }
+
+        if ($this->attemptLogin($request)) {
+            if ($request->hasSession()) {
+                $request->session()->put('auth.password_confirmed_at', time());
+            }
+
+            return $this->sendLoginResponse($request);
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Throws locked error message
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function throwLockedLoginResponse()
+    {
+        throw ValidationException::withMessages([
+            $this->username() => [_('Account locked after too many failed attempts. Contact administrator.')],
+        ]);
     }
 }

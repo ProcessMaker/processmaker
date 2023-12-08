@@ -27,7 +27,7 @@
           <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
         </template>
         <template slot="actions" slot-scope="props">
-          <ellipsis-menu 
+          <ellipsis-menu
             @navigate="onNavigate"
             :actions="actions"
             :permission="permission"
@@ -151,7 +151,8 @@ export default {
         active: "text-success",
         inactive: "text-danger",
         draft: "text-warning",
-        archived: "text-info"
+        archived: "text-info",
+        blocked: "text-danger"
       };
       return (
         '<i class="fas fa-circle ' +

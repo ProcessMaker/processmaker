@@ -1,0 +1,144 @@
+<template>
+  <div id="start-events btn-group">
+    <button
+      v-if="havelessOneStartEvent"
+      class="btn btn-success btn-lg start-button p-3"
+      type="button"
+      :disabled="processEvents.length === 0"
+      @click="goToNewRequest(startEvent)"
+    >
+      <span class="px-3"> {{ $t('Start this process') }} </span>
+    </button>
+    <button
+      v-else
+      class="btn btn-success btn-lg dropdown-toggle start-button p-3"
+      type="button"
+      data-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
+    </button>
+    <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
+      <p
+        class="font-weight-bold px-1 text-uppercase"
+        style="font-size: 14px"
+      >
+        {{ $t('Starting events') }}
+      </p>
+      <div
+        v-for="event in processEvents"
+        :key="event.id"
+        class="mt-2"
+      >
+        <p
+          class="text-capitalize mb-1"
+          style="font-weight: 600"
+        >
+          {{ event.name }}
+        </p>
+        <button
+          v-if="event.webEntry"
+          type="button"
+          class="btn btn-outline-primary border-0 p-1 text-capitalize"
+          @click="copyLink(event.webEntry)"
+        >
+          <i class="fas fa-link p-1" />
+          {{ $t('Copy Link') }}
+        </button>
+        <button
+          v-else
+          type="button"
+          class="btn btn-outline-success border-0 p-1 text-capitalize"
+          @click="goToNewRequest(event.id)"
+        >
+          <i class="fas fa-play-circle p-1" />
+          {{ $t('Start') }}
+        </button>
+        <hr class="mt-2 mb-0">
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+export default {
+  props: ["process"],
+  data() {
+    return {
+      processEvents: [],
+      havelessOneStartEvent: false,
+      startEvent: "",
+    };
+  },
+  mounted() {
+    this.getStartEvents();
+  },
+  methods: {
+    /**
+     * get start events for dropdown Menu
+     */
+    getStartEvents() {
+      const startEvents = this.process.start_events;
+      startEvents.forEach((event) => {
+        if (event.eventDefinitions.length === 0) {
+          const webEntry = JSON.parse(event.config).web_entry;
+          event.webEntry = webEntry;
+          this.processEvents.push(event);
+        }
+      });
+      if (this.processEvents.length <= 1) {
+        const event = this.processEvents[0] ?? {};
+        if (!event.webEntry) {
+          this.havelessOneStartEvent = true;
+          this.startEvent = event.id ?? 0;
+        }
+      }
+    },
+    /**
+     * Start new request
+     */
+    goToNewRequest(event) {
+      ProcessMaker.apiClient
+        .post(`/process_events/${this.process.id}?event=${event}`)
+        .then((response) => {
+          this.spin = 0;
+          let instance = response.data;
+          this.$cookies.set("fromTriggerStartEvent", true, "1min");
+          window.location = `/requests/${instance.id}`;
+        }).catch((err) => {
+          const data = err.response.data;
+          if (data.message) {
+            ProcessMaker.alert(data.message, "danger");
+          }
+        });
+    },
+    /**
+     * Copy WebEntry Link
+     */
+    copyLink(webEntry) {
+      const link = webEntry.webentryRouteConfig.entryUrl;
+      navigator.clipboard.writeText(link);
+      ProcessMaker.alert(this.$t("Link copied"), "success");
+    },
+  },
+};
+</script>
+
+<style scoped>
+.start-button {
+  background: #4EA075;
+  border: 0px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 280px;
+    overflow-x: hidden;
+    width: 248px;
+    border-radius: 5px;
+}
+</style>

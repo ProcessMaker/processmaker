@@ -140,7 +140,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
-        $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
@@ -152,7 +151,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'element_id' => $token->element_id,
                 'data' => $data,
             ],
-            'state' => $state,
+            'collaboration_uuid' => $instance->collaboration_uuid,
             'session' => [
                 'user_id' => $userId,
             ],
@@ -556,7 +555,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     /**
      * Retrieves IDs of all instances collaborating with the given instance.
      *
-     * This function compiles a list of IDs from execution instances associated 
+     * This function compiles a list of IDs from execution instances associated
      * with the same process as the input instance, including the instance itself.
      *
      * @param ProcessRequest $instance The instance to find collaborators for.

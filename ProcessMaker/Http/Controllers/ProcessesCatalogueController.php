@@ -20,11 +20,9 @@ class ProcessesCatalogueController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function open(Process $process, $id)
+    public function open(Process $process, Request $request)
     {
-        return view('processes-catalogue.open', [
-            'process' => $process,
-            'processId' => $id,
-        ]);
+        $category = $request->input('category') ?? 0;
+        return view('processes-catalogue.open', compact('process', 'category'));
     }
 }

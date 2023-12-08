@@ -30,6 +30,7 @@ use ProcessMaker\Http\Controllers\ProcessController;
 use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
@@ -92,6 +93,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
     Route::get('processes-catalogue', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
+    Route::get('processes-catalogue/{process}', [ProcessesCatalogueController::class, 'open'])->name('processes.catalogue.open');
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
@@ -178,3 +180,6 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
+
+// SAML Metadata Route
+Route::resource('/saml/metadata', MetadataController::class)->only('index');
