@@ -45,6 +45,19 @@ export default {
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return {
+      listCategories: [],
+      selectCategory: 0,
+      dataOptions: {},
+    };
+  },
+  created() {
+    this.selectCategory = this.selectedCategory();
+    this.getCategories();
+  },
+  mounted(){   
+    this.dataOptions = {
+      id: this.process.id.toString(),
+      type: "Process",
     };
   },
   methods: {
