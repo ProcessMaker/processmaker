@@ -13,10 +13,18 @@ class DeleteDuplicateEnvironmentVariables extends Upgrade
      */
     public function up()
     {
-        DB::statement('delete from environment_variables
-                        where id not in ( SELECT * FROM (select max(id)
-                        from environment_variables group by name) AS S);
-                    ');
+        // Temporary table to store the maximum id for each unique name
+        $envVariables = DB::table('environment_variables')
+            ->select(DB::raw('MAX(id) as max_id'))
+            ->groupBy('name')
+            ->get();
+
+        // Delete rows with non-maximum id for each unique name
+        DB::table('environment_variables')
+            ->whereNotIn('id', $envVariables->pluck('max_id'))
+            ->delete();
+
+        // Delete rows where name is 'ess'
         EnvironmentVariable::where('name', 'ess')->delete();
     }
 
