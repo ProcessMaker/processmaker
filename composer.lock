@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b841f0b22b24b3de469d7a53e28db07",
+    "content-hash": "19bf21b5204e025d8faebdead847f40f",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7002,16 +7002,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.12.0",
+            "version": "1.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "598ce3c959d625aa95f7dd7a0040d6f02c545536"
+                "reference": "3c16be4df42f53b64ec96d17e0ffc310752bf223"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/598ce3c959d625aa95f7dd7a0040d6f02c545536",
-                "reference": "598ce3c959d625aa95f7dd7a0040d6f02c545536",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/3c16be4df42f53b64ec96d17e0ffc310752bf223",
+                "reference": "3c16be4df42f53b64ec96d17e0ffc310752bf223",
                 "shasum": ""
             },
             "require": {
@@ -7042,9 +7042,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.12.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.12.1"
             },
-            "time": "2023-11-21T01:40:42+00:00"
+            "time": "2023-12-08T03:35:17+00:00"
         },
         {
             "name": "psr/cache",
@@ -14770,5 +14770,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
