@@ -10,12 +10,13 @@
         <MenuCatologue
           :data="listCategories"
           :select="selectCategorie"
+          @wizardLinkSelect="showWizardTemplates = 'true'"
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
           @addCategories="addCategories"
         />
-        <ul>
+        <!-- <ul>
           <li>
             <button
               type="button"
@@ -25,14 +26,15 @@
               {{ $t('Wizard Templates') }}
             </button>
           </li>
-        </ul>
+        </ul> -->
       </b-col>
       <b-col cols="10">
         <div
           v-if="!showWizardTemplates && !showCardProcesses"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <wizard-templates v-if="showWizardTemplates" />
+          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
         <wizard-templates v-if="showWizardTemplates" />
         <CardProcess

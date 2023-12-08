@@ -54,7 +54,8 @@
             />
           </b-card-group>
         </template>
-        <template-details v-if="component === 'template-details'" :template="template"></template-details>
+        <template-details v-if="component === 'template-details'" :template="template" :type="type"></template-details>
+        <wizard-template-details ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -91,9 +92,10 @@ import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 
 export default {
-  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
   props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
   data() {
@@ -133,14 +135,19 @@ export default {
   },
   methods: {
     showDetails($event) {
-      this.$emit('show-details', {
-        'id': $event.template.id, 
-        'name': $event.template.name, 
-        'description': $event.template.description,
-        'category_id': $event.template.process_category_id,
-        'version' : $event.template.version,
-      });
-      this.template = $event.template;
+      if ($event.type === "wizard") {
+        this.template = $event.template;
+        this.$refs.wizardTemplateDetails.show();
+      } else {
+        this.$emit('show-details', {
+          'id': $event.template.id, 
+          'name': $event.template.name, 
+          'description': $event.template.description,
+          'category_id': $event.template.process_category_id,
+          'version' : $event.template.version,
+        });
+        this.template = $event.template;
+      }
     },
     fetch() {
         this.loading = true;
@@ -163,7 +170,7 @@ export default {
               description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
               icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
               backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png', 'https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png'],
+              sliderImages: ['https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png', 'https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png'],
               helperProcessId: 1,
               categories:'1',
             },
