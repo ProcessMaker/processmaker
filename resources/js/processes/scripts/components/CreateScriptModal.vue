@@ -81,7 +81,6 @@
               :project-id="projectId"
             />
             <category-select
-              v-show="!projectAsset"
               v-model="script_category_id"
               :errors="addError.script_category_id"
               :label="$t('Category')"
