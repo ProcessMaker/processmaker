@@ -416,12 +416,13 @@ export default {
      * Method to retrieve data from process description field
      */
     getProcessDescription() {
-      if( this.origin === "") {
-        this.processDescription = ProcessMaker.modeler.process.description;
+      if( this.origin !== "core") {
+        if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
+          this.processDescription = ProcessMaker.modeler.process.description;
+        }
       } else {
         this.processDescription = this.descriptionSettings;
       }
-     
     },
     /**
      * Method to open a screen for image selection from hard drive
@@ -530,7 +531,7 @@ export default {
       } else {
         this.saveFromEditLaunchpad();
       }
-      
+
     },
     showModal() {
       this.subject = "";
@@ -544,23 +545,26 @@ export default {
     selectOption(option) {
       this.selectedSavedChart = option.title;
     },
+    /**
+     * Method to store version info from Launchpad Window
+     */
     saveFromEditLaunchpad() {
       ProcessMaker.apiClient
-          .post("/version_histories", {
-            subject: this.subject,
-            description: this.description,
-            versionable_id: this.options.id,
-            versionable_type: this.options.type,
-          })
-          .then((response) => {
-            ProcessMaker.alert(this.$t("The version was saved."), "success");
-            this.hideModal();
-          })
-          .catch((error) => {
-            if (error.response.status && error.response.status === 422) {
-              this.errors = error.response.data.errors;
-            }
-          });
+        .post("/version_histories", {
+          subject: this.subject,
+          description: this.description,
+          versionable_id: this.options.id,
+          versionable_type: this.options.type,
+        })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The version was saved."), "success");
+          this.hideModal();
+        })
+        .catch((error) => {
+          if (error.response.status && error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
+        });
     }
   },
 };

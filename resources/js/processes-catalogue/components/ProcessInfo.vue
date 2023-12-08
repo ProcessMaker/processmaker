@@ -67,12 +67,18 @@ export default {
     return {
       listCategories: [],
       selectCategory: 0,
-      dataOptions: { "id" : 6, "type" : "Process"}
+      dataOptions: {},
     };
   },
   created() {
     this.selectCategory = this.selectedCategory();
     this.getCategories();
+  },
+  mounted(){   
+    this.dataOptions = {
+      id: this.process.id.toString(),
+      type: "Process",
+    };
   },
   methods: {
     selectedCategory() {

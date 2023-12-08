@@ -86,11 +86,16 @@ export default {
       pmBlockName: "",
       assetName: "",
       processLaunchpadActions: [],
-      optionsData: this.process,
+      optionsData: {},
     };
   },
   mounted() {
     this.getActions();
+    this.optionsData = {
+      id: this.process.id.toString(),
+      type: "Process",
+    };
+    console.log('this.optionsData ProcesMap: ', this.optionsData);
   },
   methods: {
     showCreateTemplateModal(name, id) {
