@@ -2,25 +2,32 @@
   <div class="p-2 h-100 d-flex flex-column">
     <div class="p-2 d-flex justify-content-between">
       <div>{{ $t("Description:") }}</div>
-      <div class="text-muted" data-test="token-count">
+      <div
+        class="text-muted"
+        data-test="token-count"
+      >
         <span :class="{'text-danger': maxTokensExceeded}">{{ tokens }}</span>/{{ maxTokens }} {{ $t("tokens") }}
       </div>
     </div>
     <div class="p-2 h-100">
       <b-form-textarea
-        class="h-100"
         id="textarea"
         ref="textArea"
-        data-test="prompt-area"
         v-model="text"
+        class="h-100"
+        data-test="prompt-area"
         placeholder="Enter your prompt..."
         rows="4"
         max-rows="4"
-      ></b-form-textarea>
+      />
     </div>
     <div class="d-flex p-2 align-items-center">
-      <div role="button" class="text-primary" @click="toggleSuggestions()">
-        <i class="fa fa-lightbulb mr-2"></i>Give me inspiration!
+      <div
+        role="button"
+        class="text-primary"
+        @click="toggleSuggestions()"
+      >
+        <i class="fa fa-lightbulb mr-2" />Give me inspiration!
       </div>
       <b-btn
         class="p-1 ml-auto"
@@ -40,20 +47,21 @@
       :show-suggestions="showSuggestions"
       :parent-suggestions-height="parentSuggestionsHeight"
       :min-parent-suggestions-height="minParentSuggestionsHeight"
-      @suggestion-applied="onSuggestionApplied"></suggestions>
+      @suggestion-applied="onSuggestionApplied"
+    />
   </div>
 </template>
 
 <script>
-import _, { debounce } from "lodash";
-import Suggestions from "./Suggestions";
+import { debounce } from "lodash";
+import Suggestions from "./Suggestions.vue";
 
 export default {
-  props: ["promptSessionId", "defaultPrompt", "autofocus"],
   name: "GenerateScriptTextPrompt",
   components: {
     Suggestions,
   },
+  props: ["promptSessionId", "defaultPrompt", "autofocus"],
   data() {
     return {
       text: "",

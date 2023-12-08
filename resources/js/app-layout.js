@@ -1,30 +1,29 @@
 import { BNavbar } from "bootstrap-vue";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
-import moment from "moment";
-import moment_timezone from "moment-timezone";
+import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import newRequestModal from "./components/requests/requestModal";
-import requestModal from "./components/requests/modal";
-import requestModalMobile from "./components/requests/modalMobile";
-import notifications from "./notifications/components/notifications";
-import sessionModal from "./components/Session";
-import Sidebaricon from "./components/Sidebaricon";
-import ConfirmationModal from "./components/Confirm";
-import MessageModal from "./components/Message";
-import NavbarProfile from "./components/NavbarProfile";
-import SelectStatus from "./components/SelectStatus";
-import SelectUser from "./components/SelectUser";
-import SelectUserGroup from "./components/SelectUserGroup";
-import CategorySelect from "./processes/categories/components/CategorySelect";
-import ProjectSelect from "./components/shared/ProjectSelect";
-import SelectFromApi from "./components/SelectFromApi";
-import Breadcrumbs from "./components/Breadcrumbs";
-import TimelineItem from "./components/TimelineItem";
-import Required from "./components/shared/Required";
+import VueHtml2Canvas from "vue-html2canvas";
+import newRequestModal from "./components/requests/requestModal.vue";
+import requestModal from "./components/requests/modal.vue";
+import requestModalMobile from "./components/requests/modalMobile.vue";
+import notifications from "./notifications/components/notifications.vue";
+import sessionModal from "./components/Session.vue";
+import Sidebaricon from "./components/Sidebaricon.vue";
+import ConfirmationModal from "./components/Confirm.vue";
+import MessageModal from "./components/Message.vue";
+import NavbarProfile from "./components/NavbarProfile.vue";
+import SelectStatus from "./components/SelectStatus.vue";
+import SelectUser from "./components/SelectUser.vue";
+import SelectUserGroup from "./components/SelectUserGroup.vue";
+import CategorySelect from "./processes/categories/components/CategorySelect.vue";
+import ProjectSelect from "./components/shared/ProjectSelect.vue";
+import SelectFromApi from "./components/SelectFromApi.vue";
+import Breadcrumbs from "./components/Breadcrumbs.vue";
+import TimelineItem from "./components/TimelineItem.vue";
+import Required from "./components/shared/Required.vue";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
-import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
-import WelcomeModal from "./Mobile/WelcomeModal";
-import VueHtml2Canvas from 'vue-html2canvas';
+import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox.vue";
+import WelcomeModal from "./Mobile/WelcomeModal.vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -248,7 +247,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
-    showLoader: showLoader,
+    showLoader,
     stayNextScreen,
     timestamp: Date.now(),
   });

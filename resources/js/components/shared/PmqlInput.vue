@@ -2,102 +2,164 @@
   <div>
     <div class="">
       <div v-if="condensed">
-        <label>{{inputLabel ? inputLabel : "PMQL"}}</label>
-        <mustache-helper/>
-        <i v-if="aiLoading" class="fa fa-spinner fa-spin pmql-icons" :style="styles?.icons"></i>
+        <label>{{ inputLabel ? inputLabel : "PMQL" }}</label>
+        <mustache-helper />
+        <i
+          v-if="aiLoading"
+          class="fa fa-spinner fa-spin pmql-icons"
+          :style="styles?.icons"
+        />
       </div>
 
       <div class="d-flex align-items-start">
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
-          <slot name="left-buttons"></slot>
+          <slot name="left-buttons" />
 
-          <pmql-input-filters 
+          <pmql-input-filters
             v-if="showFilters"
             :type="searchType"
-            :param-process="this.urlPmql ? '' : paramProcess"
-            :param-status="this.urlPmql ? '' : paramStatus"
-            :param-requester="this.urlPmql ? '' : paramRequester"
-            :param-participants="this.urlPmql ? '' : paramParticipants"
-            :param-request="this.urlPmql ? '' : paramRequest"
-            :param-name="this.urlPmql ? '' : paramName"
-            :param-projects="this.urlPmql ? '' : paramProjects"
-            :param-project-members="this.urlPmql ? '' : paramProjectMembers"
-            :param-project-categories="this.urlPmql ? '' : paramProjectCategories"
+            :param-process="urlPmql ? '' : paramProcess"
+            :param-status="urlPmql ? '' : paramStatus"
+            :param-requester="urlPmql ? '' : paramRequester"
+            :param-participants="urlPmql ? '' : paramParticipants"
+            :param-request="urlPmql ? '' : paramRequest"
+            :param-name="urlPmql ? '' : paramName"
+            :param-projects="urlPmql ? '' : paramProjects"
+            :param-project-members="urlPmql ? '' : paramProjectMembers"
+            :param-project-categories="urlPmql ? '' : paramProjectCategories"
             :permission="permission"
-            @filterspmqlchange="onFiltersPmqlChange">
-          </pmql-input-filters>
-
+            @filterspmqlchange="onFiltersPmqlChange"
+          />
         </div>
 
-        <div class="search-bar flex-grow w-100"
+        <div
+          class="search-bar flex-grow w-100"
           :class="{'is-invalid': validations}"
-          :style="styles?.container">
-
+          :style="styles?.container"
+        >
           <div class="search-bar-container d-flex align-items-center">
-            <i v-if="!aiLoading && !condensed" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
-            <i v-if="aiLoading && !condensed" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
+            <i
+              v-if="!aiLoading && !condensed"
+              class="fa fa-search ml-3 pmql-icons"
+              :style="styles?.icons"
+            />
+            <i
+              v-if="aiLoading && !condensed"
+              class="fa fa-spinner fa-spin ml-3 pmql-icons"
+              :style="styles?.icons"
+            />
 
-            <textarea ref="search_input" type="text" class="pmql-input"
+            <textarea
+              :id="inputId"
+              ref="search_input"
+              v-model="query"
+              type="text"
+              class="pmql-input"
               :class="{'overflow-auto': showScrollbars}"
               :aria-label="inputAriaLabel"
               :placeholder="placeholder"
-              :id="inputId"
-              v-model="query"
               rows="1"
               :style="styles?.input"
               @input="onInput()"
-              @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
+              @keydown.enter.prevent
+              @keyup.enter="runSearch()"
+            />
 
-            <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <code v-if="showPmqlSection && !condensed" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
+            <div
+              v-if="showPmqlSection && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <code
+              v-if="showPmqlSection && !condensed"
+              class="w-100 d-block input-right-section"
+              :style="styles?.pmql"
+            >{{ pmql }}</code>
 
-            <div v-if="showAiIndicator && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <span v-if="showAiIndicator && !condensed" class="badge badge-pill badge-success">AI</span>
+            <div
+              v-if="showAiIndicator && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <span
+              v-if="showAiIndicator && !condensed"
+              class="badge badge-pill badge-success"
+            >AI</span>
 
-            <div v-if="showUsage && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <label 
-              v-if="showUsage && !condensed" 
+            <div
+              v-if="showUsage && !condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <label
+              v-if="showUsage && !condensed"
               v-b-tooltip.hover
-              class="badge badge-primary badge-pill usage-label" 
-              :title="usageText">
+              class="badge badge-primary badge-pill usage-label"
+              :title="usageText"
+            >
               {{ usage.totalTokens }} tokens
               <i class="fa fa-info-circle ml-1 pmql-icons" />
             </label>
 
-            <div v-if="!condensed" class="separator align-items-center" :style="styles?.separators" />
-            <i v-if="!condensed" class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"/>
+            <div
+              v-if="!condensed"
+              class="separator align-items-center"
+              :style="styles?.separators"
+            />
+            <i
+              v-if="!condensed"
+              class="fa fa-times pl-1 pr-3 pmql-icons"
+              role="button"
+              :style="styles?.icons"
+              @click="clearQuery"
+            />
           </div>
 
           <div v-if="showPmqlSection && condensed">
-            <div class="separator-horizontal align-items-center"></div>
+            <div class="separator-horizontal align-items-center" />
           </div>
-          <code v-if="showPmqlSection && condensed" class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2" :style="styles?.pmql">
+          <code
+            v-if="showPmqlSection && condensed"
+            class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2"
+            :style="styles?.pmql"
+          >
             {{ pmql }}
           </code>
         </div>
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
-          <slot name="right-buttons"></slot>
+          <slot name="right-buttons" />
         </div>
       </div>
 
-      <div v-if="showFilters && selectedFilters.length" class="selected-filters-bar d-flex pt-2">
-        <span v-for="filter in selectedFilters" class="selected-filter-item d-flex align-items-center">
+      <div
+        v-if="showFilters && selectedFilters.length"
+        class="selected-filters-bar d-flex pt-2"
+      >
+        <span
+          v-for="filter in selectedFilters"
+          class="selected-filter-item d-flex align-items-center"
+        >
           <span class="selected-filter-key mr-1">{{ filter[0] }}: </span>
-          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }} 
-          <span v-if="filter[1].length > 1" class="badge badge-pill ml-2 filter-counter">
+          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          <span
+            v-if="filter[1].length > 1"
+            class="badge badge-pill ml-2 filter-counter"
+          >
             +{{ filter[1].length -1 }}
           </span>
-          <i role="button" class="fa fa-times pl-2 pr-0" @click="removeFilter(filter)"></i>
+          <i
+            role="button"
+            class="fa fa-times pl-2 pr-0"
+            @click="removeFilter(filter)"
+          />
         </span>
       </div>
-
     </div>
   </div>
 </template>
 <script>
 
-import isPMQL from "../../modules/isPMQL";
-import MustacheHelper from '@processmaker/screen-builder/src/components/inspector/mustache-helper';
+import MustacheHelper from "@processmaker/screen-builder/src/components/inspector/mustache-helper.vue";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
 
 export default {
@@ -125,10 +187,10 @@ export default {
     "paramParticipants",
     "paramRequest",
     "paramProjects",
-    'paramProjectMembers',
-    'paramProjectCategories',
+    "paramProjectMembers",
+    "paramProjectCategories",
     "paramName",
-    "permission"
+    "permission",
   ],
   data() {
     return {
@@ -285,7 +347,7 @@ export default {
           this.aiLoading = false;
           this.calcInputHeight();
         })
-        .catch(error => {
+        .catch((error) => {
           window.ProcessMaker.alert(this.$t("An error ocurred while calling OpenAI endpoint."), "danger");
           const fullTextSearch = `(fulltext LIKE "%${params.question}%")`;
           this.pmql = fullTextSearch;

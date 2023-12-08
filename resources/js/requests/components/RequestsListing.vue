@@ -12,10 +12,10 @@
       class="card card-body table-card"
     >
       <vuetable
+        ref="vuetable"
         :data-manager="dataManager"
         :sort-order="sortOrder"
         :css="css"
-        ref="vuetable"
         :api-mode="false"
         :fields="fields"
         :data="data"
@@ -116,12 +116,10 @@
 
 <script>
 import Vue from "vue";
-import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
-import AvatarImage from "../../components/AvatarImage";
-import isPMQL from "../../modules/isPMQL";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import AvatarImage from "../../components/AvatarImage.vue";
 import ListMixin from "./ListMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -286,8 +284,8 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
-      let color = "success",
-        label = "In Progress";
+      let color = "success";
+      let label = "In Progress";
       switch (status) {
         case "DRAFT":
           color = "danger";
@@ -307,11 +305,11 @@ export default {
           break;
       }
       return (
-        '<i class="fas fa-circle text-' +
-        color +
-        '"></i> <span>' +
-        this.$t(label) +
-        "</span>"
+        `<i class="fas fa-circle text-${
+          color
+        }"></i> <span>${
+          this.$t(label)
+        }</span>`
       );
     },
     transform(data) {
@@ -320,9 +318,9 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
-      for (let record of data.data) {
-        //format Status
-        record["status"] = this.formatStatus(record["status"]);
+      for (const record of data.data) {
+        // format Status
+        record.status = this.formatStatus(record.status);
       }
       return data;
     },
@@ -333,20 +331,20 @@ export default {
           this.cancelToken = null;
         }
 
-        const CancelToken = ProcessMaker.apiClient.CancelToken;
+        const { CancelToken } = ProcessMaker.apiClient;
 
-        let pmql = '';
+        let pmql = "";
 
         if (this.pmql !== undefined) {
           pmql = this.pmql;
         }
 
-        let filter = this.filter;
+        let { filter } = this;
 
         if (filter && filter.length) {
           if (filter.isPMQL()) {
             pmql = `(${pmql}) and (${filter})`;
-            filter = '';
+            filter = "";
           }
         }
 
@@ -365,20 +363,20 @@ export default {
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            `${this.endpoint}?page=` +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&include=process,participants,activeTasks,data" +
-            "&pmql=" +
-            encodeURIComponent(pmql) +
-            "&filter=" +
-            filter +
-            "&order_by=" +
-            (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
-            "&order_direction=" +
-            this.orderDirection +
-            this.additionalParams,
+            `${this.endpoint}?page=${
+              this.page
+            }&per_page=${
+              this.perPage
+            }&include=process,participants,activeTasks,data`
+            + `&pmql=${
+              encodeURIComponent(pmql)
+            }&filter=${
+              filter
+            }&order_by=${
+              this.orderBy === "__slot:ids" ? "id" : this.orderBy
+            }&order_direction=${
+              this.orderDirection
+            }${this.additionalParams}`,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -391,10 +389,10 @@ export default {
             if (error.code === "ERR_CANCELED") {
               return;
             }
-            if (_.has(error, 'response.data.message')) {
-              ProcessMaker.alert(error.response.data.message, 'danger');
-            } else if (_.has(error, 'response.data.error')) {
-              return;
+            if (_.has(error, "response.data.message")) {
+              ProcessMaker.alert(error.response.data.message, "danger");
+            } else if (_.has(error, "response.data.error")) {
+
             } else {
               throw error;
             }

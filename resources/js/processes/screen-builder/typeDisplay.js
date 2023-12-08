@@ -1,4 +1,3 @@
-import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
 import { renderer, FormBuilderControls } from "@processmaker/screen-builder";
 import formTypes from "./formTypes";

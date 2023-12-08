@@ -1,46 +1,86 @@
 <template>
   <div>
     <modal
-      id="set-password-modal" 
-      :title="$t('Set Password')" 
-      :subtitle="$t('This password will be required when importing the exported package/process.')"
+      id="set-password-modal"
+      :title="$t('Set Password')"
+      :subtitle="
+        $t(
+          'This password will be required when importing the exported package/process.'
+        )
+      "
       :ok-title="$t('Export')"
-      :ok-disabled="disabled" 
-      @ok.prevent="verifyPassword" 
+      :ok-disabled="disabled"
+      @ok.prevent="verifyPassword"
       @hidden="onClose"
     >
       <template>
         <b-form-group>
           <div v-if="ask">
-            <b-form-checkbox class="pt-2" v-model="passwordProtect" switch :disabled="$root.forcePasswordProtect">
+            <b-form-checkbox
+              v-model="passwordProtect"
+              class="pt-2"
+              switch
+              :disabled="$root.forcePasswordProtect"
+            >
               Password Protect Export
             </b-form-checkbox>
-            <small v-if="$root.forcePasswordProtect" class="text-danger">
-              Password protect is required because some assets may have sensitive data.
+            <small
+              v-if="$root.forcePasswordProtect"
+              class="text-danger"
+            >
+              Password protect is required because some assets may have
+              sensitive data.
             </small>
           </div>
-            <template v-if="passwordProtect === true">
-              <div class="pt-3">
-                <label for="set-password">Password</label>
-                <vue-password v-model="password" id="set-password" :disable-strength=true />
-                <small v-if="errors.length === true" class="text-danger">{{ 'Password must have at least 8 characters.' }}</small>
-              </div>
-              <div class="pt-3">
-                <label for="confirm-set-password">Verify Password</label>
-                <vue-password v-model="confirmPassword" id="confirm-password" :disable-strength=true :class="errors.password ? 'invalid' : ''" />
-                <small v-if="errors && errors.password" class="text-danger">{{ 'Must match password entered above.' }}</small>
-              </div>
-            </template>
-            <template v-else>
-              <div class="pt-3">
-                <label for="set-password">Password</label>
-                <vue-password :disable-strength=true :disable-toggle=true disabled />
-              </div>
-              <div class="pt-3">
-                <label for="confirm-set-password">Verify Password</label>
-                <vue-password :disable-strength=true :disable-toggle=true disabled />
-              </div>
-            </template>
+          <template v-if="passwordProtect === true">
+            <div class="pt-3">
+              <label for="set-password">Password</label>
+              <vue-password
+                id="set-password"
+                v-model="password"
+                :disable-strength="true"
+              />
+              <small
+                v-if="errors.length === true"
+                class="text-danger"
+              >{{
+                "Password must have at least 8 characters."
+              }}</small>
+            </div>
+            <div class="pt-3">
+              <label for="confirm-set-password">Verify Password</label>
+              <vue-password
+                id="confirm-password"
+                v-model="confirmPassword"
+                :disable-strength="true"
+                :class="errors.password ? 'invalid' : ''"
+              />
+              <small
+                v-if="errors && errors.password"
+                class="text-danger"
+              >{{
+                "Must match password entered above."
+              }}</small>
+            </div>
+          </template>
+          <template v-else>
+            <div class="pt-3">
+              <label for="set-password">Password</label>
+              <vue-password
+                :disable-strength="true"
+                :disable-toggle="true"
+                disabled
+              />
+            </div>
+            <div class="pt-3">
+              <label for="confirm-set-password">Verify Password</label>
+              <vue-password
+                :disable-strength="true"
+                :disable-toggle="true"
+                disabled
+              />
+            </div>
+          </template>
         </b-form-group>
       </template>
     </modal>
@@ -48,25 +88,24 @@
 </template>
 
 <script>
-import Modal from "../../../components/shared/Modal";
-import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import { Modal, FormErrorsMixin } from "../../../components/shared";
 
 export default {
   components: {
     Modal,
   },
+  mixins: [FormErrorsMixin],
   props: ["processId", "processName", "ask"],
-  mixins: [ FormErrorsMixin ],
   data() {
     return {
       passwordProtect: true,
       disabled: true,
-      password: '',
-      confirmPassword: '',
-      type: 'password',
+      password: "",
+      confirmPassword: "",
+      type: "password",
       errors: {
-        'password': null,
-        'length': null,
+        password: null,
+        length: null,
       },
     };
   },
@@ -94,7 +133,7 @@ export default {
         this.confirmPassword = "";
         this.errors.password = "";
       } else {
-        this.disabled = this.password ? false : true;
+        this.disabled = !this.password;
       }
     },
     password() {
@@ -107,10 +146,10 @@ export default {
   },
   methods: {
     show() {
-      this.$bvModal.show('set-password-modal');
+      this.$bvModal.show("set-password-modal");
     },
     hide() {
-      this.$bvModal.hide('set-password-modal');
+      this.$bvModal.hide("set-password-modal");
     },
     onClose() {
       this.password = "";
@@ -121,16 +160,14 @@ export default {
       if (this.passwordProtect && !this.validatePassword()) {
         return false;
       }
-      else {
-        this.$emit("verifyPassword", this.password);
-        this.hide();
-      }
+      this.$emit("verifyPassword", this.password);
+      this.hide();
     },
     togglePassword(reference) {
-      if (this.$refs[reference].type == 'text') {
-        this.$refs[reference].type = 'password';
+      if (this.$refs[reference].type == "text") {
+        this.$refs[reference].type = "password";
       } else {
-        this.$refs[reference].type = 'text';
+        this.$refs[reference].type = "text";
       }
     },
     validatePassword() {
@@ -138,7 +175,7 @@ export default {
         return false;
       }
 
-      if (this.password.trim() === '' && this.confirmPassword.trim() === '') {
+      if (this.password.trim() === "" && this.confirmPassword.trim() === "") {
         return false;
       }
 
@@ -147,7 +184,7 @@ export default {
       }
 
       if (this.password !== this.confirmPassword) {
-        this.errors.password = ['Passwords must match'];
+        this.errors.password = ["Passwords must match"];
         this.disabled = true;
         return false;
       }
@@ -157,15 +194,14 @@ export default {
     },
   },
 };
-
 </script>
 
 <style>
-  vue-password {
-    width: 90%;
-  }
+vue-password {
+  width: 90%;
+}
 
-  .invalid {
-    border-color: #E50130;
-  }
+.invalid {
+  border-color: #e50130;
+}
 </style>

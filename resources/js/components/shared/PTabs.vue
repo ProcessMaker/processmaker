@@ -1,94 +1,104 @@
 <template>
   <div class="container card p-3">
     <div class="row">
-      <div class="col-sm-3 col-lg-3 border-right" ref="sidebar">
-        <sidebar-nav @navigate="onNavigate" :sidenav="sidenav" :active="activeIndex"></sidebar-nav>
+      <div
+        ref="sidebar"
+        class="col-sm-3 col-lg-3 border-right"
+      >
+        <sidebar-nav
+          :sidenav="sidenav"
+          :active="activeIndex"
+          @navigate="onNavigate"
+        />
       </div>
-      <div class="col-sm-9 col-lg-9" ref="content">
-        <slot v-bind:activeIndex="activeIndex"></slot>
-      </div>    
+      <div
+        ref="content"
+        class="col-sm-9 col-lg-9"
+      >
+        <slot :activeIndex="activeIndex" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import PTab from "./PTab";
-  import SidebarNav from "./SidebarNav";
-  
-  export default {
-    components: { PTab, SidebarNav },
-    props: {
-      header: {
-        type: String,
-        default: "Header",
-      },
-      subheader: {
-        type: String,
-        default: "Subheader",
-      },
-      linkText: {
-        type: String,
-        default: null,
-      },
+import PTab from "./PTab.vue";
+import SidebarNav from "./SidebarNav.vue";
 
-      sidenav: {
-        type: Array,
-        default: [],
-      },
+export default {
+  components: { PTab, SidebarNav },
+  props: {
+    header: {
+      type: String,
+      default: "Header",
     },
-    data() {
-      return {
-        activeIndex: 0,
-        // pages: [],
-      };
+    subheader: {
+      type: String,
+      default: "Subheader",
     },
-    methods: {
-      // linkButtonToPage() {
-      //   console.log('okay');
-      // },
-      onNavigate(i) {
-        this.activeIndex = i;
-      },
-      // goTo(pageIndex) {
-      //   this.active.setToInactive();
-      //   this.active = this.pages[pageIndex];
-      //   this.active.setToActive();
-      // },
+    linkText: {
+      type: String,
+      default: null,
     },
-    computed: {
-      // pages() {
-      //   const pages = [];
-      //   this.$children.forEach(child => {
-      //     if (child.$options._componentTag == 'container-page') {
-      //       this.pages.push(child);
-      //       if (child.active) {
-      //         this.active = child;
-      //       }
-      //     }
-      //   });
-      //   return pages;
-      // },
+
+    sidenav: {
+      type: Array,
+      default: [],
     },
-    watch: {
-      children() {
-        console.log("Children changed", this.$children);
+  },
+  data() {
+    return {
+      activeIndex: 0,
+      // pages: [],
+    };
+  },
+  computed: {
+    // pages() {
+    //   const pages = [];
+    //   this.$children.forEach(child => {
+    //     if (child.$options._componentTag == 'container-page') {
+    //       this.pages.push(child);
+    //       if (child.active) {
+    //         this.active = child;
+    //       }
+    //     }
+    //   });
+    //   return pages;
+    // },
+  },
+  watch: {
+    children() {
+      console.log("Children changed", this.$children);
+    },
+  },
+  mounted() {
+    window.ProcessMaker.EventBus.$on("return-to-summary-click", () => {
+      this.onNavigate(0);
+    });
+
+    window.ProcessMaker.EventBus.$on("group-details-click", (groupTypePlural) => {
+      const index = this.sidenav.findIndex((element) => element.title === groupTypePlural);
+      if (index) {
+        this.onNavigate(index);
       }
+    });
+  },
+  methods: {
+    // linkButtonToPage() {
+    //   console.log('okay');
+    // },
+    onNavigate(i) {
+      this.activeIndex = i;
     },
-    mounted() {
-        window.ProcessMaker.EventBus.$on("return-to-summary-click", () => {
-            this.onNavigate(0);
-        });
-
-        window.ProcessMaker.EventBus.$on("group-details-click", (groupTypePlural) => {
-            const index = this.sidenav.findIndex((element) => element.title === groupTypePlural);
-            if (index) {
-                this.onNavigate(index);
-            }
-        });
-    }
-  };
+    // goTo(pageIndex) {
+    //   this.active.setToInactive();
+    //   this.active = this.pages[pageIndex];
+    //   this.active.setToActive();
+    // },
+  },
+};
 </script>
 
 <style>
-  
+
 </style>

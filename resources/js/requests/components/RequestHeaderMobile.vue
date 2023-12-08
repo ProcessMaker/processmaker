@@ -1,5 +1,8 @@
 <template>
-  <div v-if="statusLabel" class="card border-0">
+  <div
+    v-if="statusLabel"
+    class="card border-0"
+  >
     <table
       class="table b-table m-0 border-0"
       aria-label="fileDetails"
@@ -29,10 +32,17 @@
       </thead>
       <tbody>
         <tr v-if="request.user_id">
-          <td aria-colindex="1" role="cell" class="pl-3">
+          <td
+            aria-colindex="1"
+            role="cell"
+            class="pl-3"
+          >
             <span class="font-weight-normal"> {{ $t("Requested By") }}: </span>
           </td>
-          <td aria-colindex="2" role="cell">
+          <td
+            aria-colindex="2"
+            role="cell"
+          >
             <avatar-image
               v-if="userRequested"
               size="25"
@@ -44,10 +54,17 @@
           </td>
         </tr>
         <tr v-if="request.participants.length">
-          <td aria-colindex="1" role="cell" class="pl-3">
+          <td
+            aria-colindex="1"
+            role="cell"
+            class="pl-3"
+          >
             <span class="font-weight-normal"> {{ $t("Participants") }}: </span>
           </td>
-          <td aria-colindex="2" role="cell">
+          <td
+            aria-colindex="2"
+            role="cell"
+          >
             <avatar-image
               size="25"
               class="d-inline-flex pull-left align-items-center"
@@ -96,7 +113,8 @@
           class="btn btn-outline-info btn-block"
           data-toggle="modal"
           :disabled="retryDisabled"
-          @click="retryRequest">
+          @click="retryRequest"
+        >
           <i class="fas fa-sync" />
           {{ $t('Retry') }}
         </button>
@@ -121,6 +139,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import AvatarImage from "../../components/AvatarImage.vue";
 
 Vue.component("AvatarImage", AvatarImage);
@@ -238,11 +257,11 @@ export default {
       }
       this.disabled = true;
       ProcessMaker.apiClient.put(`requests/${this.request.id}`, {
-        status: 'CANCELED',
-      }).then(response => {
-        ProcessMaker.alert(this.$t('The request was canceled.'), 'success');
+        status: "CANCELED",
+      }).then((response) => {
+        ProcessMaker.alert(this.$t("The request was canceled."), "success");
         window.location.reload();
-      }).catch(error => {
+      }).catch((error) => {
         this.disabled = false;
       });
     },
@@ -285,12 +304,12 @@ export default {
         this.retryDisabled = true;
         let success = true;
 
-        ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then(response => {
+        ProcessMaker.apiClient.put(`requests/${this.requestId}/retry`).then((response) => {
           if (response.status !== 200) {
             return;
           }
 
-          const message = response.data.message;
+          const { message } = response.data;
           success = response.data.success || false;
 
           if (success) {
@@ -300,9 +319,9 @@ export default {
               });
             }
           } else {
-            ProcessMaker.alert(this.$t("Request could not be retried"), "danger")
+            ProcessMaker.alert(this.$t("Request could not be retried"), "danger");
           }
-        }).finally(() => setTimeout(() => window.location.reload(), success ? 3000 : 1000))
+        }).finally(() => setTimeout(() => window.location.reload(), success ? 3000 : 1000));
       };
 
       ProcessMaker.confirmModal(

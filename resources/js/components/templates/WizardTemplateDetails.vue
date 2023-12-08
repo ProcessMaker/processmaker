@@ -22,8 +22,12 @@
               <h5 class="text-uppercase mb-1 d-inline-block font-weight-bold template-name">{{ template.name | str_limit(30) }}</h5>
             </span>
             <div class="wizard-details-text">
-              <h2 class="wizard-details-headline">{{ template.headline | str_limit(150) }}</h2>
-              <p class="wizard-details-description">{{ template.description | str_limit(150) }}</p>
+              <h2 class="wizard-details-headline">
+                {{ template.headline | str_limit(150) }}
+              </h2>
+              <p class="wizard-details-description">
+                {{ template.description | str_limit(150) }}
+              </p>
               <button class="wizard-details-button text-uppercase">
                 <i class="fas fa-play-circle" />
                 {{ $t('Call to Action') }}
@@ -33,7 +37,11 @@
         </b-col>
         <b-col>
           <b-carousel :interval="0">
-            <b-carousel-slide v-for="(image, index) in template.sliderImages" :key="index" :img-src="image"/>
+            <b-carousel-slide
+              v-for="(image, index) in template.sliderImages"
+              :key="index"
+              :img-src="image"
+            />
           </b-carousel>
         </b-col>
       </b-row>
@@ -42,7 +50,7 @@
 </template>
 
 <script>
-import Modal from "../shared/Modal.vue";
+import { Modal } from "../shared";
 
 export default {
   components: { Modal },

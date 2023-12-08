@@ -1,10 +1,20 @@
 <template>
   <div>
-    <b-button :aria-label="$t('Create Environment Variable')" v-b-modal.createEnvironmentVariable class="mb-3 mb-md-0 ml-md-2">
-      <i class="fas fa-plus"></i> {{ $t('Environment Variable') }}
+    <b-button
+      v-b-modal.createEnvironmentVariable
+      :aria-label="$t('Create Environment Variable')"
+      class="mb-3 mb-md-0 ml-md-2"
+    >
+      <i class="fas fa-plus" /> {{ $t('Environment Variable') }}
     </b-button>
-    <modal id="createEnvironmentVariable" :title="$t('Create Environment Variable')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
-      <required></required>
+    <modal
+      id="createEnvironmentVariable"
+      :title="$t('Create Environment Variable')"
+      :ok-disabled="disabled"
+      @ok.prevent="onSubmit"
+      @hidden="onClose"
+    >
+      <required />
       <b-form-group
         required
         :label="$t('Name')"
@@ -13,13 +23,13 @@
         :state="errorState('name', errors)"
       >
         <b-form-input
+          v-model="name"
           required
           autofocus
-          v-model="name"
           autocomplete="off"
           :state="errorState('name', errors)"
           name="name"
-        ></b-form-input>
+        />
       </b-form-group>
       <b-form-group
         required
@@ -28,13 +38,13 @@
         :state="errorState('description', errors)"
       >
         <b-form-textarea
-          required
           v-model="description"
+          required
           autocomplete="off"
           rows="3"
           :state="errorState('description', errors)"
           name="description"
-        ></b-form-textarea>
+        />
       </b-form-group>
       <b-form-group
         :label="$t('Value')"
@@ -47,57 +57,57 @@
           rows="10"
           :state="errorState('value', errors)"
           name="value"
-        ></b-form-textarea>
+        />
       </b-form-group>
     </modal>
   </div>
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import { FormErrorsMixin, Modal, Required } from "../../../components/shared";
 
-  export default {
-    components: { Modal, Required },
-    mixins: [ FormErrorsMixin ],
-    data: function() {
-      return {
-        errors: {},
-        name: '',
-        description: '',
-        value: '',
-        disabled: false,
-      }
+export default {
+  components: { Modal, Required },
+  mixins: [FormErrorsMixin],
+  data() {
+    return {
+      errors: {},
+      name: "",
+      description: "",
+      value: "",
+      disabled: false,
+    };
+  },
+  methods: {
+    onClose() {
+      this.name = "";
+      this.description = "";
+      this.value = "";
+      this.errors = {};
     },
-    methods: {
-      onClose() {
-        this.name = '';
-        this.description = '';
-        this.value = '';
-        this.errors = {};
-      },
-      onSubmit() {
-        this.errors = {};
-        //single click
-        if (this.disabled) {
-          return
-        }
-        this.disabled = true;
-        ProcessMaker.apiClient.post('environment_variables', {
-          name: this.name,
-          description: this.description,
-          value: this.value
-        })
-          .then(response => {
-            ProcessMaker.alert(this.$t('The environment variable was created.'), 'success');
-            window.location = '/designer/environment-variables';
-          })
-          .catch(error => {
-            this.disabled = false;
-            if (error.response.status === 422) {
-              this.errors = error.response.data.errors
-            }
-          });
+    onSubmit() {
+      this.errors = {};
+      // single click
+      if (this.disabled) {
+        return;
       }
-    }
-  };
+      this.disabled = true;
+      ProcessMaker.apiClient.post("environment_variables", {
+        name: this.name,
+        description: this.description,
+        value: this.value,
+      })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The environment variable was created."), "success");
+          window.location = "/designer/environment-variables";
+        })
+        .catch((error) => {
+          this.disabled = false;
+          if (error.response.status === 422) {
+            this.errors = error.response.data.errors;
+          }
+        });
+    },
+  },
+};
 </script>
