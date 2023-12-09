@@ -4,6 +4,8 @@ namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
+use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Models\Script;
 
 class Importer
@@ -16,10 +18,13 @@ class Importer
 
     public $newScriptId;
 
-    public function __construct(array $payload, Options $options)
+    public $logger;
+
+    public function __construct(array $payload, Options $options, $logger = null)
     {
         $this->payload = $payload;
         $this->options = $options;
+        $this->logger = $logger;
         $this->manifest = $this->loadManifest();
     }
 
@@ -30,11 +35,12 @@ class Importer
 
     public function loadManifest()
     {
-        return Manifest::fromArray($this->payload['export'], $this->options);
+        return Manifest::fromArray($this->payload['export'], $this->options, $this->logger);
     }
 
     public function doImport($existingAssetInDatabase = null)
     {
+        $this->logger->log('Starting Transaction');
         DB::transaction(function () use ($existingAssetInDatabase) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
@@ -84,6 +90,48 @@ class Importer
             $this->manifest->runAfterImport();
         });
 
-        return $this->manifest->all();
+        $manifest = $this->manifest->all();
+        $newProcessId = $manifest[$this->payload['root']]->log['newId'];
+
+        sleep(5);
+        $this->logger->log('Done Importing', ['processId' => $newProcessId, 'message' => self::getMessages()]);
+
+        return $manifest;
+    }
+
+    public static function getMessages()
+    {
+        $message = null;
+        if (Session::get('_alert')) {
+            $message = Session::get('_alert');
+        }
+
+        return $message;
+    }
+
+    public static function handlePasswordDecrypt(array $payload, string|null $password)
+    {
+        if (isset($payload['encrypted']) && $payload['encrypted']) {
+            if (!$password) {
+                throw new ImportPasswordException('password required');
+            }
+
+            $payload = (new ExportEncrypted($password))->decrypt($payload);
+
+            if ($payload['export'] === null) {
+                throw new ImportPasswordException('incorrect password');
+            }
+        }
+
+        return $payload;
+    }
+
+    public static function cleanOldFiles()
+    {
+        collect(Storage::listContents('import', true))->each(function ($file) {
+            if ($file['type'] == 'file' && $file['timestamp'] < now()->subDays(15)->getTimestamp()) {
+                Storage::disk('public')->delete($file['path']);
+            }
+        });
     }
 }

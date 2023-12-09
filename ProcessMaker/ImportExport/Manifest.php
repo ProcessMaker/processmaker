@@ -77,14 +77,19 @@ class Manifest
         return $manifest;
     }
 
-    public static function fromArray(array $array, Options $options)
+    public static function fromArray(array $array, Options $options, $logger)
     {
         self::buildParentModeMap($array, $options);
 
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
-            self::checkClass($exporterClass);
+            try {
+                self::checkClass($exporterClass);
+            } catch (PackageNotInstalledException $e) {
+                $logger->warn($e->getMessage());
+                continue;
+            }
             $modeOption = $options->get('mode', $uuid);
             $saveAssetsModeOption = $options->get('saveAssetsMode', $uuid);
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
@@ -207,7 +212,7 @@ class Manifest
                         if (gettype($model->$field) !== 'array') {
                             $model->$field = json_decode($model->$field);
                         } else {
-                            $model->$field = (object)$model->$field;
+                            $model->$field = (object) $model->$field;
                         }
                     }
                     break;

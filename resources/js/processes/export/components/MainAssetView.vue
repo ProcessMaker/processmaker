@@ -224,11 +224,11 @@ export default {
         },
         handleImport() {
             this.loading = true;
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
+            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password, this.$root.queue)
             .then((response) => {
                 const message = this.$t('Process was successfully imported');
                 ProcessMaker.alert(message, 'success');
-                if (response?.data?.processId) {
+                if (response?.data?.processId && !this.$root.queue) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
             }).catch(error => {
