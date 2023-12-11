@@ -106,23 +106,22 @@ import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import ProjectSelect from "../../components/shared/ProjectSelect.vue";
 
 export default {
-  components: {
-    Modal, Required, ProjectSelect,
-  },
-  mixins: [FormErrorsMixin, AssetRedirectMixin],
+  components: { Modal, Required, ProjectSelect },
+  mixins: [ FormErrorsMixin, AssetRedirectMixin ],
   props: [
-    "countCategories",
-    "blankTemplate",
-    "selectedTemplate",
-    "templateData",
-    "generativeProcessData",
-    "isProjectsInstalled",
-    "categoryType",
+    "countCategories", 
+    "blankTemplate", 
+    "selectedTemplate", 
+    "templateData", 
+    "generativeProcessData", 
+    "isProjectsInstalled", 
+    "categoryType", 
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
+    "isAiGenerated"
   ],
-  data() {
+  data: function() {
     return {
       showModal: false,
       name: "",
@@ -139,12 +138,8 @@ export default {
       bpmn: "",
       disabled: false,
       customModalButtons: [
-        {
-          content: "Cancel", action: "hide()", variant: "outline-secondary", disabled: false, hidden: false,
-        },
-        {
-          content: "Create", action: "createTemplate", variant: "primary", disabled: false, hidden: false,
-        },
+          {"content": "Cancel", "action": "hide()", "variant": "outline-secondary", "disabled": false, "hidden": false},
+          {"content": "Create", "action": "createTemplate", "variant": "primary", "disabled": false, "hidden": false},
       ],
       manager: "",
     };
@@ -292,16 +287,26 @@ export default {
           },
         },
       )
-        .then(({ data }) => {
+        .then(response => {
           if (this.generativeProcessData) {
             this.$emit("clear-ai-history");
           }
 
           ProcessMaker.alert(this.$t("The process was created."), "success");
 
-          const url = new URL(`/modeler/${data.id}`, window.location.origin);
-          this.appendProjectIdToURL(url, this.projectId);
-          this.handleRedirection(url, data);
+          if (this.callFromAiModeler) {
+            const url = `/package-ai/processes/create/${response.data.id}`;
+            this.$emit("process-created-from-modeler", url, response.data.id, response.data.name);
+          } else if (this.projectId) {
+            const url = new URL(`/modeler/${response.data.id}`, window.location.origin);
+            this.appendProjectIdToURL(url, this.projectId);
+            this.handleRedirection(url, response.data);
+          } else {
+            window.location =
+              this.isAiGenerated
+                ? "/modeler/" + response.data.id + "?ai=true"
+                : "/modeler/" + response.data.id;
+          }
         })
         .catch((error) => {
           this.disabled = false;

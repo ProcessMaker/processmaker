@@ -22,8 +22,8 @@
         </div>
     </div>
     <div class="card card-body mt-3">
-        <fieldset :disabled="{{ \Auth::user()->hasPermission('edit-user-and-password') || \Auth::user()->is_administrator ? 'false' : 'true' }}">  
-            <legend> 
+        <fieldset :disabled="{{ \Auth::user()->hasPermission('edit-user-and-password') || \Auth::user()->is_administrator ? 'false' : 'true' }}">
+            <legend>
                 <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
             </legend>
             <div class="form-group">
@@ -39,6 +39,7 @@
                     </small>
                 </div>
             @endcan
+            @if (config('password-policies.users_can_change', true))
             <div class="form-group">
                 {!! Form::label('password', __('New Password')) !!}
                 <vue-password v-model="formData.password" :disable-toggle=true>
@@ -54,8 +55,10 @@
                 {!! Form::label('confPassword', __('Confirm Password')) !!}
                 {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                 => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-                <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-if="errors.password">@{{errors.password[0]}}</div>
+                <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
+                     v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
+            @endif
             @cannot('edit-user-and-password')
                 <div class="form-group">
                     <small class="form-text text-muted">

@@ -7,6 +7,7 @@ export default {
       showAddProjectModal: false,
       showTemplateModal: false,
       showCreatePmBlockModal: false,
+      showModalSaveVersion: false,
     }
   },
   methods: {
@@ -106,6 +107,9 @@ export default {
             break;
             case 'add-to-project':
               this.showAddToProjectModal(data.name, data.id);
+            break;
+            case 'edit-launchpad':
+              this.showAddToModalSaveVersion(data.name, data.id);
             break;
         }
       },

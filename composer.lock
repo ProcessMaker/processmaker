@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8155b4e65835b2a1178b71cc5124aa92",
+    "content-hash": "cf55fee9d2d57ecac0924f24b0496add",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7124,16 +7124,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.12.0",
+            "version": "1.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "598ce3c959d625aa95f7dd7a0040d6f02c545536"
+                "reference": "3c16be4df42f53b64ec96d17e0ffc310752bf223"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/598ce3c959d625aa95f7dd7a0040d6f02c545536",
-                "reference": "598ce3c959d625aa95f7dd7a0040d6f02c545536",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/3c16be4df42f53b64ec96d17e0ffc310752bf223",
+                "reference": "3c16be4df42f53b64ec96d17e0ffc310752bf223",
                 "shasum": ""
             },
             "require": {
@@ -7164,9 +7164,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.12.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.12.1"
             },
-            "time": "2023-11-21T01:40:42+00:00"
+            "time": "2023-12-08T03:35:17+00:00"
         },
         {
             "name": "psr/cache",
@@ -14753,12 +14753,12 @@
             "version": "3.7.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
+                "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
                 "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/ed8e00df0a83aa96acf703f8c2979ff33341f879",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/ed8e00df0a83aa96acf703f8c2979ff33341f879",
                 "reference": "ed8e00df0a83aa96acf703f8c2979ff33341f879",
                 "shasum": ""
             },
@@ -14803,6 +14803,20 @@
                 "source": "https://github.com/squizlabs/PHP_CodeSniffer",
                 "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
             },
+            "funding": [
+                {
+                    "url": "https://github.com/PHPCSStandards",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/jrfnl",
+                    "type": "github"
+                },
+                {
+                    "url": "https://opencollective.com/php_codesniffer",
+                    "type": "open_collective"
+                }
+            ],
             "time": "2023-02-22T23:07:41+00:00"
         },
         {

@@ -48,6 +48,9 @@ class ProcessController extends Controller
         'bpmn',
         'svg',
     ];
+    public $doNotSanitizeMustache = [
+        'case_title',
+    ];
 
     /**
      * Get list Process
@@ -106,6 +109,11 @@ class ProcessController extends Controller
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
+        }
+        // Filter by category
+        $category = $request->input('category', null);
+        if (!empty($category)) {
+            $processes->processCategory($category);
         }
 
         if (!empty($pmql)) {
