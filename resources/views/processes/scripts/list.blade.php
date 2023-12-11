@@ -16,7 +16,7 @@
                         :count-categories='@json($config->countCategories)'
                         :script-executors='@json($config->scriptExecutors)'
                         is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
-                        :run-as-user-default="@json($runAsUserDefault)"
+                        :run-as-user-default="{{$runAsUserDefault}}"
                     ></create-script-modal>
                 @endcan
             </div>
