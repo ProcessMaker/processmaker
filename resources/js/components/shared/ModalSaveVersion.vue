@@ -326,24 +326,7 @@ export default {
      * Generic Method to manage drag and drop and selected images
      */
     handleImages(files) {
-      Array.from(files).forEach((file) => {
-        if (this.images.length < this.maxImages) {
-          if (this.isValidFileExtension(file.name)) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              this.images.push({ file, url: event.target.result });
-              this.showDeleteIcons.push(false);
-            };
-            reader.readAsDataURL(file);
-          } else {
-            ProcessMaker.alert(
-              this.$t("Only PNG and JPG extensions are allowed."),
-              "danger"
-            );
-            return;
-          }
-        }
-      });
+      this.validateImage(files);
     },
     /**
      * This method handles dragged image files and adds each image to list
@@ -365,7 +348,12 @@ export default {
             return;
           }
 
-          Array.from(files).forEach((file) => {
+        this.validateImage(files);  
+        }
+      }
+    },
+    validateImage(files) {
+      Array.from(files).forEach((file) => {
             if (this.images.length < this.maxImages) {
               if (this.isValidFileExtension(file.name)) {
                 const reader = new FileReader();
@@ -383,8 +371,6 @@ export default {
               }
             }
           });
-        }
-      }
     },
     /**
      * Adds an image from drag and drop to image container
