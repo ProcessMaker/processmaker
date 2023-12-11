@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SearchCards
+      v-if="processList.length > 0"
+      :filter-pmql="onFilter"
+    />
     <div
       v-if="processList.length > 0"
       class="container processList"
@@ -36,9 +40,10 @@
 <script>
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
+import SearchCards from "./utils/SearchCards.vue";
 
 export default {
-  components: { pagination, CatalogueEmpty },
+  components: { pagination, CatalogueEmpty, SearchCards },
   props: ["category"],
   data() {
     return {
@@ -52,10 +57,12 @@ export default {
       dir: "asc",
       data: null,
       totalPages: 1,
+      pmql: "",
     };
   },
   watch: {
     category() {
+      this.pmql = "";
       this.loadCard();
     },
   },
@@ -69,6 +76,7 @@ export default {
           `processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&category=${this.category.id}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&order_by=name&order_direction=asc",
         )
         .then((response) => {
@@ -88,6 +96,13 @@ export default {
      */
     onPageChanged(page) {
       this.currentPage = page;
+      this.loadCard();
+    },
+    /**
+     * Build the PMQL
+     */
+    onFilter(value) {
+      this.pmql = `(fulltext LIKE "%${value}%")`;
       this.loadCard();
     },
   },
