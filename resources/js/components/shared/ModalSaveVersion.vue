@@ -256,6 +256,10 @@ export default {
     descriptionSettings: {
       type: String,
       default: "",
+    },
+    process: {
+      type: Object,
+      default: () => ({}),
     }
   },
   data() {
@@ -491,8 +495,11 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
+      let dataProcess = {}
       //if method is called from package-version PUBLISH button
       if(this.origin !== "core") {
+        dataProcess = ProcessMaker.modeler.process;
+        dataProcess.description = this.processDescription;
         let promise = new Promise((resolve, reject) => {
         //emit save types
         window.ProcessMaker.EventBus.$emit(
@@ -528,7 +535,19 @@ export default {
         });
       } else {
         this.saveFromEditLaunchpad();
+        dataProcess = this.process;
+        dataProcess.description = this.processDescription;
       }
+
+      //Save only process description field using Process API
+      this.process.description = this.processDescription;
+      ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
+        })
+        .catch(error => {
+          console.log('Error: ', error);
+        });
 
     },
     showModal() {
