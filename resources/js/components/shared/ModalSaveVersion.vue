@@ -103,6 +103,7 @@
                       ref="thumbnailsContainer"
                       @drop="handleDrop"
                       @dragover.prevent
+                      @dragstart.prevent="handleDragStart"
                     >
                       <b-col
                         v-for="(image, index) in images"
@@ -384,6 +385,7 @@ export default {
      */
     handleDragStart(event, index) {
       event.dataTransfer.setData("text/plain", index);
+      event.preventDefault();
     },
     /**
      * Validate image extensions
