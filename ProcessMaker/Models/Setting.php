@@ -68,6 +68,8 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     public const PASSWORD_POLICIES_GROUP = 'Password Policies';
 
+    public const SESSION_CONTROL_GROUP = 'Session Control';
+
     /**
      * The attributes that aren't mass assignable.
      *
