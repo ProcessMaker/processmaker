@@ -39,6 +39,11 @@ export default {
           conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
         },
         {
+          value: "edit-launchpad",
+          content: "Edit in Launchpad",
+          icon: "fas fa-edit",
+        },
+        {
           value: "create-template",
           content: "Save as Template",
           permission: ["create-process-templates", "view-additional-asset-actions"],
@@ -54,6 +59,7 @@ export default {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: 'create-projects',
         },
         {
           value: "edit-item",

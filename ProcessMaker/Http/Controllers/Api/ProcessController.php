@@ -47,6 +47,8 @@ class ProcessController extends Controller
     public $doNotSanitize = [
         'bpmn',
         'svg',
+    ];
+    public $doNotSanitizeMustache = [
         'case_title',
     ];
 

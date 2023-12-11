@@ -5,6 +5,7 @@
       v-model="slide"
       :interval="interval"
       indicators
+      img-height="400px"
       @sliding-start="onSlideStart"
       @sliding-end="onSlideEnd"
     >

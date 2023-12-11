@@ -404,7 +404,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $faker->password(8) . 'A' . '1' . '.',
             'force_change_password' => 0,
         ]);
 

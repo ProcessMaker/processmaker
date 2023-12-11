@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-use DB;
 use Faker\Factory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -59,7 +58,7 @@ class ExtendedPMQLTest extends TestCase
         // Instantiate Faker
         $faker = Factory::create();
 
-        //Generate fake data
+        // Generate fake data
         $data = [
             'first_name' => $faker->firstName(),
             'last_name' => $faker->lastName(),
@@ -151,5 +150,22 @@ class ExtendedPMQLTest extends TestCase
         $result = $this->apiCall('GET', $url);
         $requesterId = $result->json()['data'][0]['user_id'];
         $this->assertEquals($requesterId, $user->id);
+    }
+
+    public function testLowerFunction()
+    {
+        ProcessRequest::factory()->create([
+            'data' => ['YQP_CLIENT_NAME' => 'Teresa Roldan HC'],
+        ]);
+
+        $pmqlSearch = 'lower(data.YQP_CLIENT_NAME) LIKE "%teresa roldan hc%"';
+        $route = route('api.requests.index', [
+            'include' => 'data',
+            'pmql' => $pmqlSearch,
+        ]);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json()['data']);
     }
 }

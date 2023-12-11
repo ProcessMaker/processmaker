@@ -86,7 +86,7 @@
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal, AddToProjectModal},
+    components: { TemplateExistsModal, CreateTemplateModal, EllipsisMenu, CreatePmBlockModal, AddToProjectModal },
     mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, processNavigationMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
     data() {
