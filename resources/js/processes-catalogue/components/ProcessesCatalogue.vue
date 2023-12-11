@@ -9,12 +9,13 @@
       <b-col cols="2">
         <h4> {{ $t('Processes Browser') }} </h4>
         <MenuCatologue
-          :data="listCategories"
-          :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          ref="category-list"
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
+          :data="listCategories"
+          :select="selectCategorie"
+          @wizardLinkSelect="showWizardTemplates = 'true'"
           @addCategories="addCategories"
         />
         <!-- <ul>
@@ -78,7 +79,7 @@ export default {
       showCardProcesses: false,
       showProcess: false,
       category: null,
-      selectedProcess:null,
+      selectedProcess: null,
       numCategories: 15,
       page: 1,
     };
