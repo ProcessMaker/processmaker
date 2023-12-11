@@ -546,7 +546,7 @@ export default {
           ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
         })
         .catch(error => {
-          console.log('Error: ', error);
+          console.error("Error: ", error);
         });
 
     },
