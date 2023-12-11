@@ -9,7 +9,9 @@
   >
     <div class="form-group">
       <p>
-        {{ $t("Once published, all new requests will use the new process model.") }}
+        {{
+          $t("Once published, all new requests will use the new process model.")
+        }}
       </p>
       <div>
         <b-card no-body>
@@ -135,7 +137,11 @@
                             >
                               <div class="p-3">
                                 <p class="text-center">
-                                  {{ $t("Do you really want to delete this image?") }}
+                                  {{
+                                    $t(
+                                      "Do you really want to delete this image?"
+                                    )
+                                  }}
                                 </p>
                                 <div class="d-flex justify-content-around">
                                   <button
@@ -256,7 +262,7 @@ export default {
     descriptionSettings: {
       type: String,
       default: "",
-    }
+    },
   },
   data() {
     return {
@@ -289,8 +295,8 @@ export default {
   computed: {
     btnStyle() {
       return this.isSecondaryColor
-        ? { backgroundColor: "#6a7888", color: 'white' }
-        : { backgroundColor: "white", color: '#6a7888' };
+        ? { backgroundColor: "#6a7888", color: "white" }
+        : { backgroundColor: "white", color: "#6a7888" };
     },
   },
   mounted() {
@@ -328,12 +334,20 @@ export default {
     handleImages(files) {
       Array.from(files).forEach((file) => {
         if (this.images.length < this.maxImages) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            this.images.push({ file, url: event.target.result });
-            this.showDeleteIcons.push(false);
-          };
-          reader.readAsDataURL(file);
+          if (this.isValidFileExtension(file.name)) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              this.images.push({ file, url: event.target.result });
+              this.showDeleteIcons.push(false);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            ProcessMaker.alert(
+              this.$t("Only PNG and JPG extensions are allowed."),
+              "danger"
+            );
+            return;
+          }
         }
       });
     },
@@ -359,12 +373,20 @@ export default {
 
           Array.from(files).forEach((file) => {
             if (this.images.length < this.maxImages) {
-              const reader = new FileReader();
-              reader.onload = (event) => {
-                this.images.push({ file, url: event.target.result });
-                this.showDeleteIcons.push(false);
-              };
-              reader.readAsDataURL(file);
+              if (this.isValidFileExtension(file.name)) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  this.images.push({ file, url: event.target.result });
+                  this.showDeleteIcons.push(false);
+                };
+                reader.readAsDataURL(file);
+              } else {
+                ProcessMaker.alert(
+                  this.$t("Only PNG and JPG extensions are allowed."),
+                  "danger"
+                );
+                return;
+              }
             }
           });
         }
@@ -382,6 +404,16 @@ export default {
      */
     handleDragStart(event, index) {
       event.dataTransfer.setData("text/plain", index);
+    },
+    /**
+     * Validate image extensions
+     */
+    isValidFileExtension(fileName) {
+      const allowedExtensions = [".jpg", ".png"];
+      const fileExtension = fileName.slice(
+        ((fileName.lastIndexOf(".") - 1) >>> 0) + 2
+      );
+      return allowedExtensions.includes("." + fileExtension.toLowerCase());
     },
     /**
      * Initial method to retrieve Saved Search Charts and populate dropdown
@@ -414,7 +446,7 @@ export default {
      * Method to retrieve data from process description field
      */
     getProcessDescription() {
-      if( this.origin !== "core") {
+      if (this.origin !== "core") {
         if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
         }
@@ -492,44 +524,46 @@ export default {
     },
     saveModal() {
       //if method is called from package-version PUBLISH button
-      if(this.origin !== "core") {
+      if (this.origin !== "core") {
         let promise = new Promise((resolve, reject) => {
-        //emit save types
-        window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
-          this.redirectUrl,
-          this.nodeId,
-          this.options.type === "Screen" ? (false, resolve) : resolve,
-          reject
-        );
-      });
-
-      promise
-        .then((response) => {
-          ProcessMaker.apiClient
-            .post("/version_histories", {
-              subject: this.subject,
-              description: this.description,
-              versionable_id: this.options.id,
-              versionable_type: this.options.type,
-            })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
-              this.hideModal();
-            })
-            .catch((error) => {
-              if (error.response.status && error.response.status === 422) {
-                this.errors = error.response.data.errors;
-              }
-            });
-        })
-        .catch((err) => {
-          console.log(err);
+          //emit save types
+          window.ProcessMaker.EventBus.$emit(
+            this.types[this.options.type],
+            this.redirectUrl,
+            this.nodeId,
+            this.options.type === "Screen" ? (false, resolve) : resolve,
+            reject
+          );
         });
+
+        promise
+          .then((response) => {
+            ProcessMaker.apiClient
+              .post("/version_histories", {
+                subject: this.subject,
+                description: this.description,
+                versionable_id: this.options.id,
+                versionable_type: this.options.type,
+              })
+              .then((response) => {
+                ProcessMaker.alert(
+                  this.$t("The version was saved."),
+                  "success"
+                );
+                this.hideModal();
+              })
+              .catch((error) => {
+                if (error.response.status && error.response.status === 422) {
+                  this.errors = error.response.data.errors;
+                }
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } else {
         this.saveFromEditLaunchpad();
       }
-
     },
     showModal() {
       this.subject = "";
@@ -563,7 +597,7 @@ export default {
             this.errors = error.response.data.errors;
           }
         });
-    }
+    },
   },
 };
 </script>
