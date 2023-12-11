@@ -32,6 +32,7 @@
                => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
                <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
             </div>
+            @if (config('password-policies.users_can_change', true) || !Request::is('profile/edit'))
             @can('edit-user-and-password')
                 <div class="form-group">
                     <small class="form-text text-muted">
@@ -39,7 +40,6 @@
                     </small>
                 </div>
             @endcan
-            @if (config('password-policies.users_can_change', true))
             <div class="form-group">
                 {!! Form::label('password', __('New Password')) !!}
                 <vue-password v-model="formData.password" :disable-toggle=true>
