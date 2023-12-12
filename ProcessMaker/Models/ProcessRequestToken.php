@@ -21,6 +21,7 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\TracksUserViewed;
 use Throwable;
 
 /**
@@ -85,6 +86,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     use Searchable;
     use SerializeToIso8601;
     use TokenTrait;
+    use TracksUserViewed;
 
     protected $connection = 'processmaker';
 
@@ -611,6 +613,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function fieldAliasCompleted()
     {
         return 'completed_at';
+    }
+
+    public function fieldAliasUser_Id()
+    {
+        return 'process_request_tokens.user_id';
     }
 
     /**

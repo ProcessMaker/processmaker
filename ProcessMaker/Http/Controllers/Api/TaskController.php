@@ -104,6 +104,7 @@ class TaskController extends Controller
 
         $query = ProcessRequestToken::with(['processRequest', 'user']);
         $query->select('process_request_tokens.*');
+        $query->withUserViewed($user->id);
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         if (in_array('data', $include)) {
@@ -208,7 +209,6 @@ class TaskController extends Controller
                 abort('Your PMQL contains invalid syntax.', 400);
             }
         }
-
         if ($advancedFilter = $request->input('advanced_filter', '')) {
             Filter::filter($query, $advancedFilter);
         }
