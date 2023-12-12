@@ -15,7 +15,8 @@ class CreateSamlCertificate extends CreateCertificate
                             {--days=7300 : Number of days to add from today as the expiration date}
                             {--keyname=key.pem : Full name of the certificate key file}
                             {--certname=cert.pem : Full name to the certificate file}
-                            {--subject= : Set subject of request or cert}';
+                            {--subject= : Set subject of request or cert '
+                                . '(e.g. /C=US/ST=New York/L=New York City/O=Example Inc/CN=example.com)}';
 
     /**
      * The console command description.
