@@ -129,7 +129,7 @@
                 "connector-docusign": "1.6.0",
                 "connector-idp": "1.6.0",
                 "connector-pdf-print": "1.15.3",
-                "connector-send-email": "1.23.6",
+                "connector-send-email": "1.23.8",
                 "connector-slack": "1.7.0",
                 "docker-executor-cdata": "1.1.0",
                 "docker-executor-node-ssr": "1.5.0",
@@ -166,7 +166,7 @@
             "docker-executors": {
                 "docker-executor-java": "1.0.3",
                 "docker-executor-python": "1.0.1",
-                "docker-executor-csharp": "1.0.1"
+                "docker-executor-csharp": "1.0.2"
             },
             "microservices": {
                 "pmai": "fall-2023"
