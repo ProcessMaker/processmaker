@@ -46,7 +46,11 @@ class ServiceKafka
     public function sendMessage(string $subject, string $collaborationId, mixed $body)
     {
         $producer = Kafka::publishOn($subject)
-            ->withHeaders(['collaborationId' => $collaborationId])
+        ->withConfigOptions([
+            'message.max.bytes' => config('kafka.message_max_bytes', 10000000),
+            'compression.codec' => config('kafka.compression_codec', 'gzip'),
+        ])
+        ->withHeaders(['collaborationId' => $collaborationId])
             ->withBodyKey('body', $body);
 
         // SASL Configuration
@@ -77,6 +81,8 @@ class ServiceKafka
         $heartbeat = config('kafka.heartbeat_interval_ms', 3000);
         $prefix = config('kafka.prefix', '');
         $consumer = Kafka::createConsumer([$prefix . self::QUEUE_NAME])
+            ->withOption('fetch.message.max.bytes', config('kafka.message_max_bytes', 10000000))
+            ->withOption('compression.codec', config('kafka.compression_codec', 'gzip'))
             ->withOption('heartbeat.interval.ms', $heartbeat)
             ->withOption('session.timeout.ms', $heartbeat * 10);
 

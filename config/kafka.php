@@ -73,4 +73,10 @@ return [
     'sasl_username' => env('KAFKA_SASL_USERNAME'),
     'sasl_mechanisms' => env('KAFKA_SASL_MECHANISMS', 'SCRAM-SHA-256'),
     'security_protocol' => env('KAFKA_SECURITY_PROTOCOL', 'SASL_PLAINTEXT'),
+
+    /*
+     | Message max bytes and max message bytes
+     */
+    'message_max_bytes' => env('KAFKA_MESSAGE_MAX_BYTES', 10000000),
+    'compression_codec' => env('KAFKA_COMPRESSION_CODEC', 'gzip'),
 ];

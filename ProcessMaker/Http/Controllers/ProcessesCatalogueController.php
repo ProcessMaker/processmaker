@@ -7,22 +7,16 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 
+/**
+ * @param Request $request
+ * @param Process $process
+ *
+ * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+ */
 class ProcessesCatalogueController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, Process $process = null)
     {
-        return view('processes-catalogue.index');
-    }
-
-    /**
-     * @param Process $process
-     * @param string $id
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function open(Process $process, Request $request)
-    {
-        $category = $request->input('category') ?? 0;
-        return view('processes-catalogue.open', compact('process', 'category'));
+        return view('processes-catalogue.index', compact('process'));
     }
 }
