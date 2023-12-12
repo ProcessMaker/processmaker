@@ -357,7 +357,6 @@ export default {
       }
     },
     /**
-     *
      *  Validates images with png and jpg extensions.
      */
     validateImageExtension(files) {
