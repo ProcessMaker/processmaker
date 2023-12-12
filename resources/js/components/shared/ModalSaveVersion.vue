@@ -9,7 +9,9 @@
   >
     <div class="form-group">
       <p>
-        {{ $t("Once published, all new requests will use the new process model.") }}
+        {{
+          $t("Once published, all new requests will use the new process model.")
+        }}
       </p>
       <div>
         <b-card no-body>
@@ -136,7 +138,11 @@
                             >
                               <div class="p-3">
                                 <p class="text-center">
-                                  {{ $t("Do you really want to delete this image?") }}
+                                  {{
+                                    $t(
+                                      "Do you really want to delete this image?"
+                                    )
+                                  }}
                                 </p>
                                 <div class="d-flex justify-content-around">
                                   <button
@@ -327,7 +333,7 @@ export default {
      * Generic Method to manage drag and drop and selected images
      */
     handleImages(files) {
-      this.validateImage(files);
+      this.validateImageExtension(files);
     },
     /**
      * This method handles dragged image files and adds each image to list
@@ -348,30 +354,33 @@ export default {
             );
             return;
           }
-
-        this.validateImage(files);  
+          this.validateImageExtension(files);
         }
       }
     },
-    validateImage(files) {
+    /**
+     *
+     *  Validates images with png and jpg extensions.
+     */
+    validateImageExtension(files) {
       Array.from(files).forEach((file) => {
-            if (this.images.length < this.maxImages) {
-              if (this.isValidFileExtension(file.name)) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  this.images.push({ file, url: event.target.result });
-                  this.showDeleteIcons.push(false);
-                };
-                reader.readAsDataURL(file);
-              } else {
-                ProcessMaker.alert(
-                  this.$t("Only PNG and JPG extensions are allowed."),
-                  "danger"
-                );
-                return;
-              }
-            }
-          });
+        if (this.images.length < this.maxImages) {
+          if (this.isValidFileExtension(file.name)) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              this.images.push({ file, url: event.target.result });
+              this.showDeleteIcons.push(false);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            ProcessMaker.alert(
+              this.$t("Only PNG and JPG extensions are allowed."),
+              "danger"
+            );
+            return;
+          }
+        }
+      });
     },
     /**
      * Adds an image from drag and drop to image container
@@ -392,10 +401,9 @@ export default {
      */
     isValidFileExtension(fileName) {
       const allowedExtensions = [".jpg", ".png"];
-      const fileExtension = fileName.slice(
-        ((fileName.lastIndexOf(".") - 1) >>> 0) + 2
+      return allowedExtensions.includes(
+        fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
       );
-      return allowedExtensions.includes("." + fileExtension.toLowerCase());
     },
     /**
      * Initial method to retrieve Saved Search Charts and populate dropdown
@@ -505,47 +513,44 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
-      //if method is called from package-version PUBLISH button
-      if (this.origin !== "core") {
-        let promise = new Promise((resolve, reject) => {
-          //emit save types
-          window.ProcessMaker.EventBus.$emit(
-            this.types[this.options.type],
-            this.redirectUrl,
-            this.nodeId,
-            this.options.type === "Screen" ? (false, resolve) : resolve,
-            reject
-          );
-        });
-
-        promise
-          .then((response) => {
-            ProcessMaker.apiClient
-              .post("/version_histories", {
-                subject: this.subject,
-                description: this.description,
-                versionable_id: this.options.id,
-                versionable_type: this.options.type,
-              })
-              .then((response) => {
-                ProcessMaker.alert(
-                  this.$t("The version was saved."),
-                  "success"
-                );
-                this.hideModal();
-              })
-              .catch((error) => {
-                if (error.response.status && error.response.status === 422) {
-                  this.errors = error.response.data.errors;
-                }
-              });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
+      //if method is called from ProcessMaker core
+      if (this.origin === "core") {
         this.saveFromEditLaunchpad();
+        return;
       }
+      let promise = new Promise((resolve, reject) => {
+        //emit save types
+        window.ProcessMaker.EventBus.$emit(
+          this.types[this.options.type],
+          this.redirectUrl,
+          this.nodeId,
+          this.options.type === "Screen" ? (false, resolve) : resolve,
+          reject
+        );
+      });
+
+      promise
+        .then((response) => {
+          ProcessMaker.apiClient
+            .post("/version_histories", {
+              subject: this.subject,
+              description: this.description,
+              versionable_id: this.options.id,
+              versionable_type: this.options.type,
+            })
+            .then((response) => {
+              ProcessMaker.alert(this.$t("The version was saved."), "success");
+              this.hideModal();
+            })
+            .catch((error) => {
+              if (error.response.status && error.response.status === 422) {
+                this.errors = error.response.data.errors;
+              }
+            });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     showModal() {
       this.subject = "";
