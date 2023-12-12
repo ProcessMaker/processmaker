@@ -13,6 +13,7 @@
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
+          show-bookmark="true"
           :data="listCategories"
           :select="selectCategorie"
           @wizardLinkSelect="showWizardTemplates = 'true'"
@@ -72,7 +73,11 @@ export default {
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
   data() {
     return {
-      listCategories: [],
+      listCategories: [{
+        id: 0,
+        name: "Bookmarked Processes",
+        status: "ACTIVE",
+      }],
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
