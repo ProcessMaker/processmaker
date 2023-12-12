@@ -398,7 +398,7 @@ export default {
      * Validate image extensions
      */
     isValidFileExtension(fileName) {
-      const allowedExtensions = [".jpg", ".png"];
+      const allowedExtensions = [".jpg", ".jpeg", ".png"];
       return allowedExtensions.includes(
         fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
       );
