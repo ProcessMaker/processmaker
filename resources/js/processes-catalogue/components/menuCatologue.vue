@@ -67,9 +67,9 @@
 
 <script>
 export default {
-  props: ["data", "select", "title", "preicon", "numCategories"],
+  props: ["data", "select", "title", "preicon"],
   mounted() {
-    const listElm = document.querySelector('#infinite-list');
+    const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         this.loadMore();
@@ -84,7 +84,7 @@ export default {
       this.$emit("addCategories");
     },
     selectItem(item) {
-      this.setSelectItem(item.name);
+      this.setSelectItem(item.name || item);
       this.select(item);
     },
     setSelectItem(item) {
