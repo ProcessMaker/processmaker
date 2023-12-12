@@ -9,9 +9,7 @@
   >
     <div class="form-group">
       <p>
-        {{
-          $t("Once published, all new requests will use the new process model.")
-        }}
+        {{ $t("Once published, all new requests will use the new process model.") }}
       </p>
       <div>
         <b-card no-body>
@@ -138,11 +136,7 @@
                             >
                               <div class="p-3">
                                 <p class="text-center">
-                                  {{
-                                    $t(
-                                      "Do you really want to delete this image?"
-                                    )
-                                  }}
+                                  {{ $t("Do you really want to delete this image?") }}
                                 </p>
                                 <div class="d-flex justify-content-around">
                                   <button
