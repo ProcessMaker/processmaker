@@ -48,7 +48,7 @@ trait ProjectAssetTrait
             $projectIds = $this->convertStringToArray($projectIds);
         }
 
-        return array_map('intval', array_filter($projectIds));
+        return $projectIds;
     }
 
     /**
