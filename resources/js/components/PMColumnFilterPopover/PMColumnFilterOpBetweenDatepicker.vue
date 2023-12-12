@@ -1,24 +1,19 @@
 <template>
   <div>
-    <b-form-datepicker v-model="value1" 
-                       size="sm"
-                       label-help=""
-                       boundary="window"
-                       :hide-header="true"
-                       :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }">
-    </b-form-datepicker>
-    <b-form-datepicker v-model="value2" 
-                       size="sm"
-                       label-help=""
-                       boundary="window"
-                       :hide-header="true"
-                       :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }">
-    </b-form-datepicker>
+    <PMColumnFilterOpDatetime v-model="value1">
+    </PMColumnFilterOpDatetime>
+    <PMColumnFilterOpDatetime v-model="value2">
+    </PMColumnFilterOpDatetime>
   </div>
 </template>
 
 <script>
+  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
+
   export default {
+    components: {
+      PMColumnFilterOpDatetime
+    },
     props: [
       "value"
     ],
