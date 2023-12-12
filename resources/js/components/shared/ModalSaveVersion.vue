@@ -264,6 +264,10 @@ export default {
       type: String,
       default: "",
     },
+    process: {
+      type: Object,
+      default: () => ({}),
+    }
   },
   data() {
     return {
@@ -513,11 +517,17 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
+      let dataProcess = {};
       //if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
+        dataProcess = this.process;
+        dataProcess.description = this.processDescription;
+        this.saveProcessDescription(dataProcess);
         return;
       }
+      dataProcess = ProcessMaker.modeler.process;
+      dataProcess.description = this.processDescription;
       let promise = new Promise((resolve, reject) => {
         //emit save types
         window.ProcessMaker.EventBus.$emit(
@@ -550,6 +560,23 @@ export default {
         })
         .catch((err) => {
           console.error(err);
+        });
+
+      //Save only process description field using Process API
+      this.saveProcessDescription(dataProcess);
+
+    },
+    /**
+     * Save description field in Process
+     */
+    saveProcessDescription(dataProcess) {
+      this.process.description = this.processDescription;
+      ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
+        })
+        .catch(error => {
+          console.error("Error: ", error);
         });
     },
     showModal() {
