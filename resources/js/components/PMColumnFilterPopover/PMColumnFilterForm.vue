@@ -54,6 +54,31 @@
             <PMColumnFilterOpIn v-if="switchOperator('PMColumnFilterOpIn',item)"
                                 v-model="item.value">
             </PMColumnFilterOpIn>
+            <b-form-datepicker v-if="switchOperator('BFormDatepicker',item)"
+                               v-model="item.value"
+                               size="sm"
+                               label-help=""
+                               boundary="window"
+                               :hide-header="true"
+                               :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }">
+            </b-form-datepicker>
+            <PMColumnFilterOpBetweenDatepicker v-if="switchOperator('PMColumnFilterOpBetweenDatepicker',item)"
+                                               v-model="item.value">
+            </PMColumnFilterOpBetweenDatepicker>
+            <PMColumnFilterOpInDatepicker v-if="switchOperator('PMColumnFilterOpInDatepicker',item)"
+                                          v-model="item.value">
+            </PMColumnFilterOpInDatepicker>
+            <b-form-select v-if="switchOperator('BFormSelect',item)"
+                           v-model="item.value" 
+                           :options="formatRange"
+                           size="sm">
+            </b-form-select>
+            <b-form-select v-if="switchOperator('BFormSelectMultiple',item)" 
+                           v-model="item.value"
+                           :options="formatRange"
+                           multiple
+                           size="sm">
+            </b-form-select>
           </b-form-group>
 
           <b-form-group :key="'logical' + index"
@@ -107,6 +132,8 @@
   import PMColumnFilterIconPlus from "./PMColumnFilterIconPlus"
   import PMColumnFilterOpBetween from "./PMColumnFilterOpBetween"
   import PMColumnFilterOpIn from "./PMColumnFilterOpIn"
+  import PMColumnFilterOpBetweenDatepicker from "./PMColumnFilterOpBetweenDatepicker"
+  import PMColumnFilterOpInDatepicker from "./PMColumnFilterOpInDatepicker"
 
   export default {
     components: {
@@ -115,9 +142,11 @@
       PMColumnFilterIconMinus,
       PMColumnFilterIconPlus,
       PMColumnFilterOpBetween,
-      PMColumnFilterOpIn
+      PMColumnFilterOpIn,
+      PMColumnFilterOpBetweenDatepicker,
+      PMColumnFilterOpInDatepicker
     },
-    props: ["type", "value"],
+    props: ["type", "value", "format", "formatRange", "operators"],
     data() {
       return {
         items: [],
@@ -211,7 +240,7 @@
         this.items.splice(index, 1);
       },
       getOperators() {
-        return [
+        let operators = [
           {value: "=", text: "="},
           {value: "<", text: "<"},
           {value: "<=", text: "<="},
@@ -222,6 +251,10 @@
           {value: "contains", text: "contains"},
           {value: "regex", text: "regex"}
         ];
+        if (this.operators && this.operators.length > 0) {
+          operators = this.operators;
+        }
+        return operators;
       },
       getLogicals() {
         return [
@@ -231,25 +264,65 @@
       },
       switchOperator(type, item) {
         let sw;
-        switch (type) {
-          case "BFormInput":
-            sw = ["", "=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
-            if (sw && !this.isScalar(item.value)) {
-              item.value = "";
-            }
-            return sw;
-          case "PMColumnFilterOpBetween":
-            sw = ["between"].includes(item.operator);
-            if (sw && this.isScalar(item.value)) {
-              item.value = [];
-            }
-            return sw;
-          case "PMColumnFilterOpIn":
-            sw = ["in"].includes(item.operator);
-            if (sw && this.isScalar(item.value)) {
-              item.value = [];
-            }
-            return sw;
+        if (this.format === "string") {
+          switch (type) {
+            case "BFormInput":
+              sw = ["=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
+              if (sw && this.isNotScalar(item.value)) {
+                item.value = "";
+              }
+              return sw;
+            case "PMColumnFilterOpBetween":
+              sw = ["between"].includes(item.operator);
+              if (sw && this.isScalar(item.value)) {
+                item.value = [];
+              }
+              return sw;
+            case "PMColumnFilterOpIn":
+              sw = ["in"].includes(item.operator);
+              if (sw && this.isScalar(item.value)) {
+                item.value = [];
+              }
+              return sw;
+          }
+        }
+        if (this.format === "date" || this.format === "datetime") {
+          switch (type) {
+            case "BFormDatepicker":
+              sw = ["=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
+              if (sw && this.isNotScalar(item.value)) {
+                item.value = "";
+              }
+              return sw;
+            case "PMColumnFilterOpBetweenDatepicker":
+              sw = ["between"].includes(item.operator);
+              if (sw && this.isScalar(item.value)) {
+                item.value = [];
+              }
+              return sw;
+            case "PMColumnFilterOpInDatepicker":
+              sw = ["in"].includes(item.operator);
+              if (sw && this.isScalar(item.value)) {
+                item.value = [];
+              }
+              return sw;
+          }
+        }
+        if (this.format === "stringSelect") {
+          switch (type) {
+            case "BFormSelect":
+              sw = ["="].includes(item.operator);
+              if (sw && this.isNotScalar(item.value)) {
+                item.value = "";
+              }
+              return sw;
+            case "BFormSelectMultiple":
+              sw = ["in"].includes(item.operator);
+              if (sw && this.isScalar(item.value)) {
+                item.value = [];
+              }
+              return sw;
+          }
         }
         return false;
       },
@@ -259,6 +332,9 @@
       },
       isScalar(value) {
         return ["string", "number", "boolean", "undefined", "symbol"].includes(typeof value);
+      },
+      isNotScalar(value) {
+        return !this.isScalar(value);
       },
       updatedScroll() {
         if (this.viewItemsChanged === true) {
