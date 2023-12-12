@@ -95,6 +95,7 @@ class Manifest
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $model = self::updateBPMNDefinitions($model, $saveAssetsModeOption);
             $exporter = new $exporterClass($model, $manifest, $options, false);
+            $exporter->logger = $logger;
             $exporter->importing = true;
             $exporter->mode = $mode;
             $exporter->matchedBy = $matchedBy;

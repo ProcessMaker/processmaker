@@ -22,5 +22,9 @@
 @endsection
 
 @section('js')
+  <script>
+    window.ProcessMaker.importIsRunning = {{ $importIsRunning ? 'true' : 'false' }};
+    window.ProcessMaker.queue = true;
+  </script>
   <script src="{{ mix('js/processes/import/index.js') }}"></script>
 @endsection

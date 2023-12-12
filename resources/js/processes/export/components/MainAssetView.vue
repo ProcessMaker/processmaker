@@ -97,6 +97,7 @@
             />
             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" :info="groups"/>
+            <import-log :log-entries="$root.queueLog" :allow-download-debug="$root.allowDownloadDebug"></import-log>
         </div>
     </div>
 </template>
@@ -110,6 +111,7 @@ import ImportProcessModal from '../../import/components/ImportProcessModal';
 import SetPasswordModal from "./SetPasswordModal.vue";
 import DataProvider from "../DataProvider";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
+import ImportLog from "../../import/components/ImportLog.vue";
 
 export default {
   props: [
@@ -125,6 +127,7 @@ export default {
         AssetDependentTreeModal,
         AssetTreeModal,
         ImportProcessModal,
+        ImportLog,
     },
     mixins: [],
     data() {
@@ -224,8 +227,13 @@ export default {
         },
         handleImport() {
             this.loading = true;
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password, this.$root.queue)
-            .then((response) => {
+            let request = null;
+            if (this.$root.queue) {
+                request = DataProvider.doImportQueued(this.$root.exportOptions(), this.$root.password, this.$root.hash);
+            } else {
+                request = DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password, this.$root.hash)
+            }
+            request.then((response) => {
                 const message = this.$t('Process was successfully imported');
                 ProcessMaker.alert(message, 'success');
                 if (response?.data?.processId && !this.$root.queue) {

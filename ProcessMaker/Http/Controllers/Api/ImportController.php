@@ -4,12 +4,10 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Exception\ImportPasswordException;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\ImportExport\ExportEncrypted;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ImportV2;
@@ -22,14 +20,15 @@ class ImportController extends Controller
     public function preview(Request $request, $version = null): JsonResponse
     {
         if ($request->has('queue')) {
-            $filePath = Storage::putFile('import', $request->file('file'));
+            Storage::putFileAs('import', $request->file('file'), 'payload.json');
+            $hash = md5_file(Storage::path(ImportV2::FILE_PATH));
             $password = $request->input('password');
 
-            ImportV2::dispatch($request->user()->id, $filePath, null, $password, true);
+            ImportV2::dispatch($request->user()->id, $password, $hash, true);
 
             return response()->json([
                 'queued' => true,
-                'filePath' => $filePath,
+                'hash' => $hash,
             ], 200);
         }
 
@@ -53,24 +52,21 @@ class ImportController extends Controller
         ], 200);
     }
 
-    public function getImportManifest($request)
+    public function getImportManifest(Request $request)
     {
-        $path = $request->get('path');
-        $content = Storage::get($path);
-        if (str_starts_with($path, 'import/') && $content) {
-            return response($content, 200)->header('Content-Type', 'application/json');
-        }
+        $content = Storage::get(ImportV2::MANIFEST_PATH);
 
-        return response(null, 404);
+        return response($content, 200)->header('Content-Type', 'application/json');
     }
 
     public function import(Request $request): JsonResponse
     {
+        \Log::info('Import Controller', $request->all());
         if ($request->has('queue')) {
-            $filePath = $request->get('filePath');
-            $optionsPath = Storage::putFile('import', $request->file('options'));
+            Storage::put(ImportV2::OPTIONS_PATH, json_encode($request->get('options')));
             $password = $request->get('password');
-            ImportV2::dispatch($request->user()->id, $filePath, $optionsPath, $password, false);
+            $hash = $request->get('hash');
+            ImportV2::dispatch($request->user()->id, $password, $hash, false);
 
             return response()->json(['queued' => true], 200);
         }

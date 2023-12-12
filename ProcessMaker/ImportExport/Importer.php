@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ImportExport;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
@@ -24,7 +25,7 @@ class Importer
     {
         $this->payload = $payload;
         $this->options = $options;
-        $this->logger = $logger;
+        $this->logger = $logger ?? new Logger();
         $this->manifest = $this->loadManifest();
     }
 
@@ -44,8 +45,13 @@ class Importer
         DB::transaction(function () use ($existingAssetInDatabase) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
+
+            $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
+            $this->logger->log("Importing $count assets");
+
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
+                    $this->logger->log('Importing ' . get_class($exporter->model));
                     if ($exporter->disableEventsWhenImporting) {
                         $exporter->model->saveQuietly();
                     } else {
@@ -83,6 +89,7 @@ class Importer
             // Now, run the import method in each Exporter class
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
+                    $this->logger->log('Associating ' . get_class($exporter->model));
                     $exporter->runImport($existingAssetInDatabase);
                 }
             }
@@ -93,7 +100,6 @@ class Importer
         $manifest = $this->manifest->all();
         $newProcessId = $manifest[$this->payload['root']]->log['newId'];
 
-        sleep(5);
         $this->logger->log('Done Importing', ['processId' => $newProcessId, 'message' => self::getMessages()]);
 
         return $manifest;

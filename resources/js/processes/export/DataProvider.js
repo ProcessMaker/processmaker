@@ -3,7 +3,7 @@ import ImportExportIcons from "../../components/shared/ImportExportIcons";
 let isImport;
 
 export default {
-  doImport(file, options, password, queue = false) {
+  doImport(file, options, password) {
     let formData = new FormData();
     const optionsBlob = new Blob([JSON.stringify(options)], {
         type: 'application/json'
@@ -12,9 +12,6 @@ export default {
     formData.append('file', file);
     formData.append('options', optionsBlob);
     formData.append('password', password);
-    if (queue) {
-      formData.append('queue', true);
-    }
 
     let timeout = ProcessMaker.apiClient.defaults.timeout > 90000 ? ProcessMaker.apiClient.defaults.timeout : 90000;// default 90 seconds
     
@@ -26,9 +23,17 @@ export default {
         }
     });
   },
-  getImportManifest(path) {
-    const params = { path };
-    return ProcessMaker.apiClient.get('/import/get-manifest', { params });
+  doImportQueued(options, password, hash) {
+    const params = {
+      queue: 1,
+      options,
+      password,
+      hash,
+    };
+    return ProcessMaker.apiClient.post('/import/do-import', params);
+  },
+  getImportManifest() {
+    return ProcessMaker.apiClient.get('/import/get-manifest');
   },
   doImportTemplate(file, options, type) {
     let formData = new FormData();

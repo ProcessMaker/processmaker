@@ -7,8 +7,9 @@
                         <h5 class="mb-0">{{ title() }}</h5>
                         <small class="text-muted">{{ subtitle() }}</small>
                     </div>
+                    <b-alert v-if="importIsRunning" show variant="warning">{{ $t('An import is currently in progress. Only one import can run at a time.') }}</b-alert>
                     <div class="card-body">
-                        <div id="pre-import" v-if="! importing && ! imported">
+                        <div id="pre-import" v-if="! importing && ! imported && ! importIsRunning">
                             <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
                             <div v-else class="text-left">
                                <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
@@ -64,9 +65,7 @@
                                 <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
                                 <span v-if="loading">{{$t('Importing')}}</span>
                         </button>
-                    </div>
-                    <div class=" log card text-left">
-                        <pre v-for="(line, i) in log" :key="i">{{line.message}}</pre>
+                        <import-log :log-entries="$root.queueLog" :allow-download-debug="$root.allowDownloadDebug"></import-log>
                     </div>
                 </div>
             </div>
@@ -82,12 +81,12 @@ import ImportProcessModal from '../components/ImportProcessModal.vue';
 import OldProcessImporter from '../components/OldProcessImporter';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import DataProvider from '../../export/DataProvider';
-import { has } from 'lodash';
+import ImportLog from '../components/ImportLog';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
     props: [''],
-    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal, OldProcessImporter},
+    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal, OldProcessImporter, ImportLog},
     mixins: [uniqIdsMixin],
     data() {
         return {
@@ -125,9 +124,7 @@ export default {
             showWarning:false,
             showTemplateWarning: false,
             showOldImporter: false,
-            queue: true,
-            filePath: null,
-            log: [],
+            importIsRunning: false,
         }
     },
     filters: {
@@ -281,8 +278,8 @@ export default {
             if (this.password) {
                 formData.append('password', this.password);
             }
-            if (this.queue) {
-                formData.append('queue', this.queue);
+            if (this.$root.queue) {
+                formData.append('queue', 1);
             }
 
 
@@ -305,8 +302,10 @@ export default {
                     }
                 }
             )
-            .then(response => {   
-                if (!_.get(response, 'data.queued', false)) {
+            .then(response => {
+                if (_.get(response, 'data.queued', false)) {
+                    this.$root.hash = response.data.hash;
+                } else {
                     this.handleValidationResponse(response);
                 }
             }).catch(error => {
@@ -413,10 +412,15 @@ export default {
 
         },
         handleProcessImport() {
-            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password, this.queue)
-            .then((response) => {
+            let request;
+            if (this.$root.queue) {
+                request = DataProvider.doImportQueued(this.$root.exportOptions(), this.password, this.$root.hash);
+            } else {
+                request = DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+            }
+            request.then((response) => {
                 if (response?.data) {
-                    if (!this.queue) {
+                    if (!this.$root.queue) {
                         this.handleOnComplete(response.data)
                     }
                 } else {
@@ -429,7 +433,6 @@ export default {
             });
         },
         handleOnComplete(data) {
-            console.log("handleOnComplete");
             const { processId } = data;
             const successMessage = this.$t('Process was successfully imported');
 
@@ -455,8 +458,7 @@ export default {
                     });
             } else {
                 ProcessMaker.alert(successMessage, 'success');
-                console.log("REDIRECTING TO PROCESS", processId);
-                // window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                window.location.href = processId ? `/modeler/${processId}` : '/processes/';
                 this.submitted = false; // the form was successfully submitted
             }
         },
@@ -517,32 +519,39 @@ export default {
             });
         }
 
+        this.$root.queue = window.ProcessMaker.queue;
+        this.importIsRunning = window.ProcessMaker.importIsRunning;
+
         const userId = window.ProcessMaker.user.id;
+        this.$root.log({type: 'init', message: 'Ready for import'});
         window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
             '.ImportLog',
             (response) => {
-                console.log("WS", response);
-                this.log.push({type: response.type, message: response.message});
+                this.$root.log({type: response.type, message: response.message});
 
-                if (has(response, 'additionalParams.processId')) {
+                if (_.has(response, 'additionalParams.processId')) {
                     this.handleOnComplete(response.additionalParams);
                 }
 
-                if (response.type === 'error') {
-                    ProcessMaker.alert(response.message, 'danger');
-                }
-
                 if (response.message === 'preview') {
-                    this.filePath = response.additionalParams.filePath;
-                    DataProvider.getImportManifest(response.additionalParams.manifestPath).then((manifestResponse) => {
+                    DataProvider.getImportManifest().then((manifestResponse) => {
                         this.handleValidationResponse({
                             data: {
                                 manifest: manifestResponse.data,
-                                rootUuid: response.rootUuid,
-                                processVersion: response.processVersion,
+                                rootUuid: response.additionalParams.rootUuid,
+                                processVersion: response.additionalParams.processVersion,
                             },
                         });
                     });
+                }
+
+                if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: password required') {
+                    this.showEnterPasswordModal();
+                } else if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: incorrect password') {
+                    this.passwordError = "Incorrect password";
+                } else if (response.type === 'error') {
+                    this.$root.allowDownloadDebug = true;
+                    ProcessMaker.alert(response.message, 'danger');
                 }
             }
         );
@@ -569,15 +578,5 @@ export default {
 
     .fw-medium {
         font-weight:500;
-    }
-
-    .log {
-        max-height: 300px;
-        overflow: scroll;
-        margin: 10px
-    }
-    .log pre {
-        text-align: left;
-        font-size: 10px;
     }
 </style>
