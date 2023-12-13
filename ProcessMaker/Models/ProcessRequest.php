@@ -41,11 +41,8 @@ use Throwable;
  * @property string $participant_id
  * @property string $name
  * @property string $case_title
-<<<<<<< HEAD
  * @property string $user_viewed_at
-=======
  * @property int $case_number
->>>>>>> 59786044848cd5958f94e6878e5dc6470b8bb58b
  * @property string $status
  * @property array $data
  * @property string $collaboration_uuid
@@ -67,11 +64,8 @@ use Throwable;
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED", "ERROR", "CANCELED"}),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="case_title", type="string"),
-<<<<<<< HEAD
  *   @OA\Property(property="user_viewed_at", type="string"),
-=======
  *   @OA\Property(property="case_number", type="integer"),
->>>>>>> 59786044848cd5958f94e6878e5dc6470b8bb58b
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
  * ),
