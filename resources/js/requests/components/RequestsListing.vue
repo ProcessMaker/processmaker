@@ -50,20 +50,37 @@
                 </component>
               </template>
               <template v-else>
-                <div
-                  :id="`element-${rowIndex}-${colIndex}`"
-                  :class="{ 'pm-table-truncate': header.truncate }"
-                  :style="{ maxWidth: header.width + 'px' }"
+                <template
+                  v-if="row[active_tasks]"
                 >
-                  {{ row[header.field] }}
-                  <b-tooltip
-                    v-if="header.truncate"
-                    :target="`element-${rowIndex}-${colIndex}`"
-                    custom-class="pm-table-tooltip"
+                  <div
+                    v-for="task in row[active_tasks]"
+                    :key="`active_task-${task.id}`"
+                  >
+                    <b-link
+                      class="text-nowrap"
+                      :href="openTask(task)"
+                    >
+                      {{ task.element_name }}
+                    </b-link>
+                  </div>
+                </template>
+                <template v-else>
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
-                  </b-tooltip>
-                </div>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
+                </template>
               </template>
             </template>
           </td>
@@ -161,7 +178,7 @@ export default {
             field.name = "__slot:name";
             break;
           default:
-            field.name = column.field;
+            field.name = column.name || column.field;
         }
 
         if (!field.field) {
@@ -194,8 +211,9 @@ export default {
       }
       return [
         {
-          label: "#",
-          field: "id",
+          label: "CASE #",
+          field: "case_number",
+          name: "__slot:case_number",
           sortable: true,
           default: true,
           width: 45,
@@ -216,11 +234,12 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
-          field: "status",
-          sortable: true,
+          label: "TASK NAME",
+          field: "active_tasks",
+          sortable: false,
           default: true,
           width: 140,
+          truncate: true,
         },
         {
           label: "PARTICIPANTS",
@@ -250,6 +269,9 @@ export default {
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
+    },
+    openTask(task) {
+      return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
       let color = "success",
@@ -348,7 +370,7 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
-            "&include=process,participants,data" +
+            "&include=process,participants,activeTasks,data" +
             "&pmql=" +
             encodeURIComponent(pmql) +
             "&filter=" +

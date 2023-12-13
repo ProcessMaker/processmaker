@@ -29,17 +29,17 @@ class GenerateMenus
                     )->active('home/*');
                 });
             }
-            $menu->group(['prefix' => 'requests'], function ($request_items) {
-                $request_items->add(
-                    __('Requests'),
-                    ['route' => 'requests.index', 'id' => 'requests']
-                )->active('requests/*');
-            });
             $menu->group(['prefix' => 'processes'], function ($request_items) {
                 $request_items->add(
                     __('Processes'),
                     ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
                 )->active('processes-catalogue/*');
+            });
+            $menu->group(['prefix' => 'requests'], function ($request_items) {
+                $request_items->add(
+                    __('Requests'),
+                    ['route' => 'requests.index', 'id' => 'requests']
+                )->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function ($request_items) {

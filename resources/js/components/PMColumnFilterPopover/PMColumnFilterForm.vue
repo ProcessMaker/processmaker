@@ -54,14 +54,9 @@
             <PMColumnFilterOpIn v-if="switchOperator('PMColumnFilterOpIn',item)"
                                 v-model="item.value">
             </PMColumnFilterOpIn>
-            <b-form-datepicker v-if="switchOperator('BFormDatepicker',item)"
-                               v-model="item.value"
-                               size="sm"
-                               label-help=""
-                               boundary="window"
-                               :hide-header="true"
-                               :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }">
-            </b-form-datepicker>
+            <PMColumnFilterOpDatetime v-if="switchOperator('BFormDatepicker',item)"
+                                      v-model="item.value">
+            </PMColumnFilterOpDatetime>
             <PMColumnFilterOpBetweenDatepicker v-if="switchOperator('PMColumnFilterOpBetweenDatepicker',item)"
                                                v-model="item.value">
             </PMColumnFilterOpBetweenDatepicker>
@@ -134,6 +129,7 @@
   import PMColumnFilterOpIn from "./PMColumnFilterOpIn"
   import PMColumnFilterOpBetweenDatepicker from "./PMColumnFilterOpBetweenDatepicker"
   import PMColumnFilterOpInDatepicker from "./PMColumnFilterOpInDatepicker"
+  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
 
   export default {
     components: {
@@ -144,7 +140,8 @@
       PMColumnFilterOpBetween,
       PMColumnFilterOpIn,
       PMColumnFilterOpBetweenDatepicker,
-      PMColumnFilterOpInDatepicker
+      PMColumnFilterOpInDatepicker,
+      PMColumnFilterOpDatetime
     },
     props: ["type", "value", "format", "formatRange", "operators"],
     data() {

@@ -250,7 +250,7 @@ class ProcessController extends Controller
         $apiRequest = new ApiProcessController();
         $response = $apiRequest->triggerStartEvent($process, $request);
 
-        return redirect('/requests/' . $response->id)->cookie('fromTriggerStartEvent', true, 1);
+        return redirect('/requests/' . $response->id . '?fromTriggerStartEvent=');
     }
 
     private function checkAuth()

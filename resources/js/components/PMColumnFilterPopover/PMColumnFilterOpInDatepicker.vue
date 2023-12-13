@@ -3,15 +3,9 @@
     <div v-for="(item, index) in input" 
          :key="index"
          class="pm-column-filter-op-in">
-      <b-form-datepicker v-model="input[index]"
-                         class="pm-column-filter-op-in-input"
-                         @input="onInput"
-                         size="sm"
-                         label-help=""
-                         boundary="window"
-                         :hide-header="true"
-                         :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }">
-      </b-form-datepicker>
+      <PMColumnFilterOpDatetime v-model="input[index]"
+                                @input="onInput">
+      </PMColumnFilterOpDatetime>
       <b-icon icon="plus-square-dotted"
               @click="onPlusIcon(index)"
               class="pm-column-filter-op-in-plus-square">
@@ -25,8 +19,10 @@
 </template>
 
 <script>
+  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
   export default {
     components: {
+      PMColumnFilterOpDatetime
     },
     props: [
       "value"
@@ -80,8 +76,5 @@
   .pm-column-filter-op-in-plus-square{
     cursor: pointer;
     user-select: none;
-  }
-  .pm-column-filter-op-in-input{
-    width: auto;
   }
 </style>

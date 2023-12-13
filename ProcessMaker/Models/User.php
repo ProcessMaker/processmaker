@@ -73,7 +73,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="expires_at", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="remember_token", type="string"),
-     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "SCHEDULED", "OUT_OF_OFFICE"}),
+     *   @OA\Property(property="status",type="string",enum={"ACTIVE","INACTIVE","SCHEDULED","OUT_OF_OFFICE","BLOCKED"}),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
@@ -170,7 +170,7 @@ class User extends Authenticatable implements HasMedia
             'phone' /*******/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' /********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
+            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED,BLOCKED'],
             'password' /****/ => static::passwordRules($existing),
         ];
     }
@@ -190,17 +190,17 @@ class User extends Authenticatable implements HasMedia
             $existing ? 'sometimes' : '',
         ];
         // Configurable policies
-        $passwordRules = Password::min(config('password-policies.minimum_length'));
-        if (config('password-policies.maximum_length')) {
+        $passwordRules = Password::min((int) config('password-policies.minimum_length', 8));
+        if (config('password-policies.maximum_length', false)) {
             $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
         }
-        if (config('password-policies.numbers')) {
+        if (config('password-policies.numbers', true)) {
             $passwordRules->numbers();
         }
-        if (config('password-policies.uppercase')) {
+        if (config('password-policies.uppercase', true)) {
             $passwordPolicies[] = new StringHasAtLeastOneUpperCaseCharacter();
         }
-        if (config('password-policies.special')) {
+        if (config('password-policies.special', true)) {
             $passwordRules->symbols();
         }
         $passwordPolicies[] = $passwordRules;
