@@ -201,14 +201,14 @@ export default {
           width: 45,
         },
         {
-          label: "Case Title",
+          label: "CASE TITLE",
           field: "case_title",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "Process Name",
+          label: "PROCESS NAME",
           field: "name",
           sortable: true,
           default: true,
@@ -216,14 +216,14 @@ export default {
           truncate: true,
         },
         {
-          label: "Status",
+          label: "STATUS",
           field: "status",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "Participants",
+          label: "PARTICIPANTS",
           field: "participants",
           sortable: true,
           default: true,
@@ -231,7 +231,7 @@ export default {
           truncate: true,
         },
         {
-          label: "Started",
+          label: "STARTED",
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -239,7 +239,7 @@ export default {
           width: 220,
         },
         {
-          label: "Completed",
+          label: "COMPLETED",
           field: "completed_at",
           format: "datetime",
           sortable: true,
