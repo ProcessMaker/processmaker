@@ -159,6 +159,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'participants',
     ];
 
+    const DEFAULT_CASE_TITLE = 'Case #{{_request.case_number}}';
+
     /**
      * Determine whether the item should be indexed.
      *
@@ -940,7 +942,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         } else {
             $caseTitle = $this->process()->select('case_title')->first()->case_title;
         }
-        return $caseTitle ?: 'Case #{{_request.case_number}}';
+        return $caseTitle ?: self::DEFAULT_CASE_TITLE;
     }
 
     /**
