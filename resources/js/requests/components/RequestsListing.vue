@@ -50,37 +50,20 @@
                 </component>
               </template>
               <template v-else>
-                <template
-                  v-if="row[active_tasks]"
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
                 >
-                  <div
-                    v-for="task in row[active_tasks]"
-                    :key="`active_task-${task.id}`"
-                  >
-                    <b-link
-                      class="text-nowrap"
-                      :href="openTask(task)"
-                    >
-                      {{ task.element_name }}
-                    </b-link>
-                  </div>
-                </template>
-                <template v-else>
-                  <div
-                    :id="`element-${rowIndex}-${colIndex}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
+                  {{ row[header.field] }}
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${rowIndex}-${colIndex}`"
+                    custom-class="pm-table-tooltip"
                   >
                     {{ row[header.field] }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
-                      custom-class="pm-table-tooltip"
-                    >
-                      {{ row[header.field] }}
-                    </b-tooltip>
-                  </div>
-                </template>
+                  </b-tooltip>
+                </div>
               </template>
             </template>
           </td>
@@ -213,24 +196,23 @@ export default {
         {
           label: "CASE #",
           field: "case_number",
-          name: "__slot:case_number",
           sortable: true,
           default: true,
-          width: 45,
+          width: 55,
         },
         {
           label: "CASE TITLE",
           field: "case_title",
           sortable: true,
           default: true,
-          width: 140,
+          width: 220,
         },
         {
           label: "PROCESS NAME",
           field: "name",
           sortable: true,
           default: true,
-          width: 140,
+          width: 220,
           truncate: true,
         },
         {
@@ -255,7 +237,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 220,
+          width: 160,
         },
         {
           label: "COMPLETED",
@@ -263,7 +245,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 220,
+          width: 160,
         },
       ];
     },
@@ -304,6 +286,26 @@ export default {
         "</span>"
       );
     },
+    formatActiveTasks(value) {
+      let htmlString = '';
+      for (const task of value) {
+        htmlString += `
+          <div>
+            <a class="text-nowrap" href="${this.openTask(task)}">
+              ${task.element_name}
+            </a>
+          </div>
+        `;
+      }
+      return htmlString;
+    },
+    formatCaseNumber(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         # ${value.case_number}
+      </a>`;
+    },
     formatParticipants(participants) {
       return {
         component: "AvatarImage",
@@ -322,6 +324,8 @@ export default {
       data.data = this.jsonRows(data.data);
       for (let record of data.data) {
         //format Status
+        record["case_number"] = this.formatCaseNumber(record);
+        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
       }
@@ -419,7 +423,7 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
