@@ -563,7 +563,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription(dataProcess) {
-      this.process.description = this.processDescription;
+      dataProcess.imagesCarousel =  this.images;
       ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
         .then(response => {
           ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);

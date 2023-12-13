@@ -388,6 +388,13 @@ class ProcessController extends Controller
             }
         }
 
+        //Saving Carousel Images into Media table related to process_id
+        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
+            foreach ($request->imagesCarousel as $image) {
+                $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
+            }
+        }
+        
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
