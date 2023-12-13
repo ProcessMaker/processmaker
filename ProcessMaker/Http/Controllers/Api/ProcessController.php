@@ -388,13 +388,7 @@ class ProcessController extends Controller
             }
         }
 
-        //Saving Carousel Images into Media table related to process_id
-        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
-            foreach ($request->imagesCarousel as $image) {
-                $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
-            }
-        }
-        
+        $this->saveImagesIntoMedia($request, $process);        
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -1547,5 +1541,14 @@ class ProcessController extends Controller
         }
 
         return new ApiResource($newProcess);
+    }
+
+    public function saveImagesIntoMedia(Request $request, Process $process) {
+        //Saving Carousel Images into Media table related to process_id
+        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
+            foreach ($request->imagesCarousel as $image) {
+                $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
+            }
+        }
     }
 }
