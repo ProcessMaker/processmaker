@@ -61,7 +61,6 @@ class ImportController extends Controller
 
     public function import(Request $request): JsonResponse
     {
-        \Log::info('Import Controller', $request->all());
         if ($request->has('queue')) {
             Storage::put(ImportV2::OPTIONS_PATH, json_encode($request->get('options')));
             $password = $request->get('password');

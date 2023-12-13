@@ -84,12 +84,7 @@ class Manifest
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
             $exporterClass = $assetInfo['exporter'];
-            try {
-                self::checkClass($exporterClass);
-            } catch (PackageNotInstalledException $e) {
-                $logger->warn($e->getMessage());
-                continue;
-            }
+            self::checkClass($exporterClass);
             $modeOption = $options->get('mode', $uuid);
             $saveAssetsModeOption = $options->get('saveAssetsMode', $uuid);
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);

@@ -519,7 +519,7 @@ export default {
             });
         }
 
-        this.$root.queue = window.ProcessMaker.queue;
+        this.$root.queue = window.ProcessMaker.queueImports;
         this.importIsRunning = window.ProcessMaker.importIsRunning;
 
         const userId = window.ProcessMaker.user.id;

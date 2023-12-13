@@ -24,7 +24,7 @@
 @section('js')
   <script>
     window.ProcessMaker.importIsRunning = {{ $importIsRunning ? 'true' : 'false' }};
-    window.ProcessMaker.queue = true;
+    window.ProcessMaker.queueImports = {{ config('app.queue_imports') ? 'true' : 'false' }};
   </script>
   <script src="{{ mix('js/processes/import/index.js') }}"></script>
 @endsection

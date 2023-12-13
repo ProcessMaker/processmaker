@@ -7,6 +7,7 @@ use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
@@ -146,7 +147,7 @@ class ManifestTest extends TestCase
                 'dependents' => [],
             ],
         ];
-        Manifest::fromArray($payload, new Options([]));
+        Manifest::fromArray($payload, new Options([]), new Logger());
     }
 
     public function exporterClassProvider(): array
@@ -169,6 +170,6 @@ class ManifestTest extends TestCase
                 'dependents' => [],
             ],
         ];
-        Manifest::fromArray($payload, new Options([]));
+        Manifest::fromArray($payload, new Options([]), new Logger());
     }
 }
