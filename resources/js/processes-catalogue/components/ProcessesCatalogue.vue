@@ -106,7 +106,7 @@ export default {
      */
     getCategories() {
       ProcessMaker.apiClient
-        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
+        .get(`process_categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
           this.listCategories = [...this.listCategories, ...response.data.data];
         });
