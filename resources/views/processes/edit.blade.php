@@ -106,6 +106,7 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
                                     ])
                                 !!}
+                                <div class="invalid-feedback" role="alert" v-if="errors.case_title">@{{errors.case_title[0]}}</div>
                                 <small class="form-text text-muted" v-if="! errors.name">
                                     {{ __('This field has a limit of 200 characters when calculated') }}
                                 </small>
