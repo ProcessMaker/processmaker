@@ -40,7 +40,7 @@ class VerifyChangePasswordNeeded
     public function checkPasswordExpiration()
     {
         $validationRequired = config('password-policies.expiration_days', false) &&
-            Auth::user() && Auth::user()->password_changed_at;
+            Auth::user() && !empty(Auth::user()->password_changed_at);
 
         return $validationRequired &&
             (Carbon::now()->diffInDays(Auth::user()->password_changed_at) >=
