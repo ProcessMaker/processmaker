@@ -219,5 +219,5 @@ return [
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
     ],
 
-    'queue_imports' => env('QUEUE_IMPORTS', true),
+    'queue_imports' => env('QUEUE_IMPORTS', false),
 ];
