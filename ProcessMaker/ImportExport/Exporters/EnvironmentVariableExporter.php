@@ -10,6 +10,8 @@ class EnvironmentVariableExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
+    public $handleDuplicatesByIncrementing = ['name'];
+
     public function export() : void
     {
         $this->addReference(DependentType::ENVIRONMENT_VARIABLE_VALUE, $this->model->value);

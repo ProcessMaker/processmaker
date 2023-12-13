@@ -30,13 +30,18 @@ export default {
           icon: "fas fa-file-export",
         },
         {
-          value: "edit-designer",
-          content: "Edit Process",
+          value: "open-in-modeler",
+          content: "Open in Modeler",
           link: true,
           href: "/modeler/{{id}}",
           permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
           conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
+        },
+        {
+          value: "edit-launchpad",
+          content: "Edit in Launchpad",
+          icon: "fas fa-edit",
         },
         {
           value: "create-template",
@@ -54,6 +59,7 @@ export default {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
+          permission: 'create-projects',
         },
         {
           value: "edit-item",

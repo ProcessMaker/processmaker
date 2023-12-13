@@ -161,7 +161,7 @@ export default {
             field.name = "__slot:name";
             break;
           default:
-            field.name = column.field;
+            field.name = column.name || column.field;
         }
 
         if (!field.field) {
@@ -194,8 +194,9 @@ export default {
       }
       return [
         {
-          label: "#",
-          field: "id",
+          label: "Case #",
+          field: "case_number",
+          name: "__slot:case_number",
           sortable: true,
           default: true,
           width: 45,
@@ -216,9 +217,10 @@ export default {
           truncate: true,
         },
         {
-          label: "Status",
-          field: "status",
-          sortable: true,
+          label: "Task Name",
+          field: "active_tasks",
+          name: "__slot:active_tasks",
+          sortable: false,
           default: true,
           width: 140,
         },
@@ -229,6 +231,12 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
         },
         {
           label: "Started",
@@ -250,6 +258,9 @@ export default {
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
+    },
+    openTask(task) {
+      return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
       let color = "success",
@@ -348,7 +359,7 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
-            "&include=process,participants,data" +
+            "&include=process,participants,activeTasks,data" +
             "&pmql=" +
             encodeURIComponent(pmql) +
             "&filter=" +

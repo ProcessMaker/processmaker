@@ -40,6 +40,7 @@ use Throwable;
  * @property string $participant_id
  * @property string $name
  * @property string $case_title
+ * @property int $case_number
  * @property string $status
  * @property array $data
  * @property string $collaboration_uuid
@@ -61,6 +62,7 @@ use Throwable;
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED", "ERROR", "CANCELED"}),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="case_title", type="string"),
+ *   @OA\Property(property="case_number", type="integer"),
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
  * ),
@@ -933,5 +935,16 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         }
         $mustache = new MustacheExpressionEvaluator();
         return $mustache->render($mustacheTitle, $data);
+    }
+
+    public function isSystem()
+    {
+        $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+        return DB::table('category_assignments')
+            ->where('assignable_type', Process::class)
+            ->where('assignable_id', $this->process_id)
+            ->where('category_type', ProcessCategory::class)
+            ->whereIn('category_id', $systemCategories)
+            ->exists();
     }
 }

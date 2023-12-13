@@ -25,7 +25,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 ul.tree, ul.tree ul {
   list-style: none;
    margin: 0;

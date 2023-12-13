@@ -16,6 +16,7 @@
                         :count-categories='@json($config->countCategories)'
                         :script-executors='@json($config->scriptExecutors)'
                         is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
+                        :run-as-user-default="{{$runAsUserDefault}}"
                     ></create-script-modal>
                 @endcan
             </div>
@@ -24,7 +25,7 @@
         <div class="container-fluid">
             <script-listing :filter="filter"
                             :script-executors='@json($config->scriptExecutors)'
-                            :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}"
+                            :permission="{{ \Auth::user()->hasPermissionsFor('scripts', 'projects') }}"
                             ref="listScript"
                             @delete="deleteScript">
             </script-listing>

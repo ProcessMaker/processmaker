@@ -90,6 +90,7 @@ window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
 window.Vue.component("filter-table", FilterTable);
+
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,

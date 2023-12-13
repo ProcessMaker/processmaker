@@ -3,12 +3,12 @@
     <wizard-template-card
       v-if="type === 'wizard'"
       :template="template"
-      @show-details="showDetails()" 
+      @show-details="showDetails()"
     />
     <default-template-card
       v-else
       :template="template"
-      @show-details="showDetails()" 
+      @show-details="showDetails()"
     />
   </div>
 </template>
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     showDetails() {
-      this.$emit("show-details", { template: this.template });
+      this.$emit("show-details", { template: this.template, type: this.type });
     },
   },
 };
