@@ -40,6 +40,7 @@ use Throwable;
  * @property string $participant_id
  * @property string $name
  * @property string $case_title
+ * @property int $case_title_formatted
  * @property int $case_number
  * @property string $status
  * @property array $data
@@ -62,6 +63,7 @@ use Throwable;
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED", "ERROR", "CANCELED"}),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="case_title", type="string"),
+ *   @OA\Property(property="case_title_formatted", type="string"),
  *   @OA\Property(property="case_number", type="integer"),
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
@@ -925,18 +927,69 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->toArray();
     }
 
-    public function evaluateCaseTitle(array $data): string
+    /**
+     * Get the case title from the process
+     *
+     * @return string
+     */
+    public function getCaseTitleFromProcess(): string
     {
         // check if $this->process relation is loaded
         if ($this->process && $this->process instanceof Process) {
-            $mustacheTitle = $this->process->case_title;
+            $caseTitle = $this->process->case_title;
         } else {
-            $mustacheTitle = $this->process()->select('case_title')->first()->case_title;
+            $caseTitle = $this->process()->select('case_title')->first()->case_title;
         }
-        $mustache = new MustacheExpressionEvaluator();
-        // multi-byte 200 characters limit
-        $title = $mustache->render($mustacheTitle, $data);
-        $title = mb_substr($title, 0, 200);
+        return $caseTitle ?: 'Case #{{_request.case_number}}';
+    }
+
+    /**
+     * Evaluate the case title mustache expression
+     *
+     * @param string $mustacheTitle 
+     * @param array $data 
+     * @param bool $formatted 
+     * @return string 
+     */
+    public function evaluateCaseTitle(string $mustacheTitle, array $data, bool $formatted = false): string
+    {
+        if ($formatted) {
+            $mustache = new MustacheExpressionEvaluator([
+                'escape' => function ($value) use (&$extra){
+                    return '<b>'. 
+                        htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
+                        '</b>';
+                },
+            ]);
+            $title = $mustache->render($mustacheTitle, $data);
+            // multi-byte 200 characters limit
+            $titleParts = preg_split('/(<b>|<\/b>)/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $title = '';
+            $size = 200;
+            $len = 0;
+            foreach ($titleParts as $i => $part) {
+                if ($part === '<b>' || $part === '</b>') {
+                    $title .= $part;
+                    continue;
+                }
+                if ($len + mb_strlen($part) >= $size) {
+                    $part = mb_substr($part, 0, $size - $len);
+                    $title .= $part;
+                    $nextPart = $titleParts[$i + 1] ?? '';
+                    if ($nextPart === '</b>') {
+                        $title .= $nextPart;
+                    }
+                    break;
+                }
+                $title .= $part;
+                $len += mb_strlen($part);
+            }
+        } else {
+            $mustache = new MustacheExpressionEvaluator();
+            $title = $mustache->render($mustacheTitle, $data);
+            // multi-byte 200 characters limit
+            $title = mb_substr($title, 0, 200);
+        }
         return $title;
     }
 
