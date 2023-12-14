@@ -158,11 +158,36 @@
       onChangeLogicalOp() {
       },
       setValues(json) {
-        console.log(json);
+        this.transformToFilterSyntax(json);
       },
       getValues() {
         let json = JSON.parse(JSON.stringify(this.items));
         return this.transformToPmSyntax(json);
+      },
+      transformToFilterSyntax(json) {
+        let items = JSON.parse(JSON.stringify(json));
+        let n = items.length;
+        let or = [];
+        for (let i = 0; i < n; i++) {
+          items[i].logical = "and";
+          items[i].viewControl = "";
+          if ("or" in items[i]) {
+            //save and delete the 'or' property.
+            items[i].logical = "or";
+            or = items[i].or;
+            delete items[i].or;
+
+            //add the elements from the 'or' variable into 'items'.
+            n = n + or.length;
+            for (let j in or) {
+              or[j].logical = "and";
+              or[j].viewControl = "";
+              items.splice(i + 1, 0, or[j]);
+            }
+          }
+        }
+        this.items = items;
+        return items;
       },
       /**
        * I did not modify the assignment of 'or' with the 'root' array; later on, 
