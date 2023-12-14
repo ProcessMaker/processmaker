@@ -53,9 +53,10 @@
       id="modal-save-version"
       ref="modal-save-version"
       asset-type="process"
+      origin="core"
       :options="optionsData"
       :descriptionSettings="process.description"
-      origin="core"
+      :process="process"
     />
   </div>
 </template>

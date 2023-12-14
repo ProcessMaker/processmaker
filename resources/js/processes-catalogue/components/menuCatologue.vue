@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      v-b-toggle.collapse-3
+      v-b-toggle.category-menu
       block
       variant="light"
       class="m-1"
@@ -13,7 +13,7 @@
       </div>
     </div>
     <b-collapse
-      id="collapse-3"
+      id="category-menu"
       visible
     >
       <b-list-group id="infinite-list">
@@ -67,22 +67,24 @@
 
 <script>
 export default {
-  props: ["data", "select", "title", "preicon", "numCategories"],
+  props: ["data", "select", "title", "preicon"],
   mounted() {
-    const listElm = document.querySelector('#infinite-list');
-    listElm.addEventListener("scroll", e => {
+    const listElm = document.querySelector("#infinite-list");
+    listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
   },
-  methods: { 
-    /** Adding categories */
+  methods: {
+    /**
+     * Adding categories
+     */
     loadMore() {
       this.$emit("addCategories");
     },
     selectItem(item) {
-      this.setSelectItem(item.name);
+      this.setSelectItem(item.name || item);
       this.select(item);
     },
     setSelectItem(item) {
@@ -104,7 +106,8 @@ i {
   color: #6A7888;
 }
 .list-group {
-  max-height: 40vh;
+  max-height: 37vh;
+  min-height: 37vh;
   overflow-y: auto;
 }
 .list-group-item {

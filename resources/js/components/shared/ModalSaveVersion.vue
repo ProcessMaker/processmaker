@@ -103,6 +103,7 @@
                       ref="thumbnailsContainer"
                       @drop="handleDrop"
                       @dragover.prevent
+                      @dragstart.prevent="handleDragStart"
                     >
                       <b-col
                         v-for="(image, index) in images"
@@ -256,6 +257,10 @@ export default {
     descriptionSettings: {
       type: String,
       default: "",
+    },
+    process: {
+      type: Object,
+      default: () => ({}),
     }
   },
   data() {
@@ -289,8 +294,8 @@ export default {
   computed: {
     btnStyle() {
       return this.isSecondaryColor
-        ? { backgroundColor: "#6a7888", color: 'white' }
-        : { backgroundColor: "white", color: '#6a7888' };
+        ? { backgroundColor: "#6a7888", color: "white" }
+        : { backgroundColor: "white", color: "#6a7888" };
     },
   },
   mounted() {
@@ -326,16 +331,7 @@ export default {
      * Generic Method to manage drag and drop and selected images
      */
     handleImages(files) {
-      Array.from(files).forEach((file) => {
-        if (this.images.length < this.maxImages) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            this.images.push({ file, url: event.target.result });
-            this.showDeleteIcons.push(false);
-          };
-          reader.readAsDataURL(file);
-        }
-      });
+      this.validateImageExtension(files);
     },
     /**
      * This method handles dragged image files and adds each image to list
@@ -356,19 +352,32 @@ export default {
             );
             return;
           }
-
-          Array.from(files).forEach((file) => {
-            if (this.images.length < this.maxImages) {
-              const reader = new FileReader();
-              reader.onload = (event) => {
-                this.images.push({ file, url: event.target.result });
-                this.showDeleteIcons.push(false);
-              };
-              reader.readAsDataURL(file);
-            }
-          });
+          this.validateImageExtension(files);
         }
       }
+    },
+    /**
+     *  Validates images with png and jpg extensions.
+     */
+    validateImageExtension(files) {
+      Array.from(files).forEach((file) => {
+        if (this.images.length < this.maxImages) {
+          if (this.isValidFileExtension(file.name)) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              this.images.push({ file, url: event.target.result });
+              this.showDeleteIcons.push(false);
+            };
+            reader.readAsDataURL(file);
+          } else {
+            ProcessMaker.alert(
+              this.$t("Only PNG and JPG extensions are allowed."),
+              "danger"
+            );
+            return;
+          }
+        }
+      });
     },
     /**
      * Adds an image from drag and drop to image container
@@ -382,6 +391,16 @@ export default {
      */
     handleDragStart(event, index) {
       event.dataTransfer.setData("text/plain", index);
+      event.preventDefault();
+    },
+    /**
+     * Validate image extensions
+     */
+    isValidFileExtension(fileName) {
+      const allowedExtensions = [".jpg", ".jpeg", ".png"];
+      return allowedExtensions.includes(
+        fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
+      );
     },
     /**
      * Initial method to retrieve Saved Search Charts and populate dropdown
@@ -414,7 +433,7 @@ export default {
      * Method to retrieve data from process description field
      */
     getProcessDescription() {
-      if( this.origin !== "core") {
+      if (this.origin !== "core") {
         if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
         }
@@ -491,9 +510,18 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
-      //if method is called from package-version PUBLISH button
-      if(this.origin !== "core") {
-        let promise = new Promise((resolve, reject) => {
+      let dataProcess = {};
+      //if method is called from ProcessMaker core
+      if (this.origin === "core") {
+        this.saveFromEditLaunchpad();
+        dataProcess = this.process;
+        dataProcess.description = this.processDescription;
+        this.saveProcessDescription(dataProcess);
+        return;
+      }
+      dataProcess = ProcessMaker.modeler.process;
+      dataProcess.description = this.processDescription;
+      let promise = new Promise((resolve, reject) => {
         //emit save types
         window.ProcessMaker.EventBus.$emit(
           this.types[this.options.type],
@@ -524,12 +552,25 @@ export default {
             });
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
-      } else {
-        this.saveFromEditLaunchpad();
-      }
 
+      //Save only process description field using Process API
+      this.saveProcessDescription(dataProcess);
+
+    },
+    /**
+     * Save description field in Process
+     */
+    saveProcessDescription(dataProcess) {
+      this.process.description = this.processDescription;
+      ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
+        .then(response => {
+          ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
+        })
+        .catch(error => {
+          console.error("Error: ", error);
+        });
     },
     showModal() {
       this.subject = "";
@@ -563,7 +604,7 @@ export default {
             this.errors = error.response.data.errors;
           }
         });
-    }
+    },
   },
 };
 </script>
