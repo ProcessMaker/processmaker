@@ -43,7 +43,7 @@ export default {
           value: "edit-launchpad",
           content: "Edit in Launchpad",
           icon: "fas fa-edit",
-          conditional: "if(false, true, false)"
+          conditional: "if(status == 'ACTIVE', true, false)"
         },
         {
           value: "create-template",
