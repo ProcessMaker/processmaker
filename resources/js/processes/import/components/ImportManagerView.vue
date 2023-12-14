@@ -7,8 +7,9 @@
                         <h5 class="mb-0">{{ title() }}</h5>
                         <small class="text-muted">{{ subtitle() }}</small>
                     </div>
+                    <b-alert v-if="importIsRunning" show variant="warning">{{ $t('An import is currently in progress. Only one import can run at a time.') }}</b-alert>
                     <div class="card-body">
-                        <div id="pre-import" v-if="! importing && ! imported">
+                        <div id="pre-import" v-if="! importing && ! imported && ! importIsRunning">
                             <draggable-file-upload v-if="!file || file && !fileIsValid" ref="file" v-model="file" :options="{singleFile: true}" :displayUploaderList="false" :accept="['.spark', 'application/json']"></draggable-file-upload>
                             <div v-else class="text-left">
                                <h5> {{ $t("You are about to import") }} <strong>{{processName}}</strong></h5>
@@ -64,6 +65,7 @@
                                 <i v-if="loading" class="fas fa-spinner fa-spin p-0" />
                                 <span v-if="loading">{{$t('Importing')}}</span>
                         </button>
+                        <import-log :log-entries="$root.queueLog" :allow-download-debug="$root.allowDownloadDebug"></import-log>
                     </div>
                 </div>
             </div>
@@ -79,11 +81,12 @@ import ImportProcessModal from '../components/ImportProcessModal.vue';
 import OldProcessImporter from '../components/OldProcessImporter';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import DataProvider from '../../export/DataProvider';
+import ImportLog from '../components/ImportLog';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
     props: [''],
-    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal, OldProcessImporter},
+    components: {DraggableFileUpload, EnterPasswordModal, ImportProcessModal, OldProcessImporter, ImportLog},
     mixins: [uniqIdsMixin],
     data() {
         return {
@@ -121,6 +124,7 @@ export default {
             showWarning:false,
             showTemplateWarning: false,
             showOldImporter: false,
+            importIsRunning: false,
         }
     },
     filters: {
@@ -274,6 +278,9 @@ export default {
             if (this.password) {
                 formData.append('password', this.password);
             }
+            if (this.$root.queue) {
+                formData.append('queue', 1);
+            }
 
 
             switch (this.importType) {
@@ -295,23 +302,12 @@ export default {
                     }
                 }
             )
-            .then(response => {   
-                if (typeof response.data === 'object') {
-                    this.$root.manifest = response.data.manifest;
-                    this.$root.rootUuid = response.data.rootUuid;
-                    this.processVersion = response.data.processVersion;
-                }  
-               
-                if (this.processVersion === null) {
-                    // disable 'custom' import type for older process versions
-                    this.importTypeOptions[1].disabled = true;
-                    this.showWarning = true;
+            .then(response => {
+                if (_.get(response, 'data.queued', false)) {
+                    this.$root.hash = response.data.hash;
+                } else {
+                    this.handleValidationResponse(response);
                 }
-               
-                this.fileIsValid = true;
-                this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
-                this.$refs['enter-password-modal'].hide();
-
             }).catch(error => {
                 if (error.response?.data?.error === 'password required') {
                     this.showEnterPasswordModal();
@@ -322,6 +318,23 @@ export default {
                     ProcessMaker.alert(message, 'danger');
                 }
             });
+        },
+        handleValidationResponse(response) {
+            if (typeof response.data === 'object') {
+                this.$root.manifest = response.data.manifest;
+                this.$root.rootUuid = response.data.rootUuid;
+                this.processVersion = response.data.processVersion;
+            }  
+            
+            if (this.processVersion === null) {
+                // disable 'custom' import type for older process versions
+                this.importTypeOptions[1].disabled = true;
+                this.showWarning = true;
+            }
+            
+            this.fileIsValid = true;
+            this.$root.setInitialState(this.$root.manifest, this.$root.rootUuid);
+            this.$refs['enter-password-modal'].hide();
         },
         validateProcessTemplateFile(formData) {
             ProcessMaker.apiClient.post('/templates/process/import/validation', formData,
@@ -399,36 +412,16 @@ export default {
 
         },
         handleProcessImport() {
-            DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
-            .then((response) => {
+            let request;
+            if (this.$root.queue) {
+                request = DataProvider.doImportQueued(this.$root.exportOptions(), this.password, this.$root.hash);
+            } else {
+                request = DataProvider.doImport(this.file, this.$root.exportOptions(), this.password)
+            }
+            request.then((response) => {
                 if (response?.data) {
-                    const { processId } = response.data;
-                    const successMessage = this.$t('Process was successfully imported');
-
-                    if (response.data.message && response.data.message.type === "warning" && response.data.message.serviceTasksNames.length) {
-                        const message = response.data.message;
-                        let taskList = "";
-
-                        message.serviceTasksNames.forEach(taskName => {
-                            taskList = taskList + `<p><b>${taskName}<b></p>`;
-                        });
-
-                        let messageHtml = "<p>The following tasks in the process are configured to an email server that does not exist in this environment. The tasks have been <b>reconfigured to use the default server.</b></p>";
-                        messageHtml = messageHtml + taskList;
-
-                        ProcessMaker.messageModal(
-                            this.$t("Warning"),
-                            messageHtml,
-                            "",
-                            () => {
-                                ProcessMaker.alert(successMessage, 'success');
-                                window.location.href = processId ? `/modeler/${processId}` : '/processes/';
-                                this.submitted = false; // the form was successfully submitted
-                            });
-                    } else {
-                        ProcessMaker.alert(successMessage, 'success');
-                        window.location.href = processId ? `/modeler/${processId}` : '/processes/';
-                        this.submitted = false; // the form was successfully submitted
+                    if (!this.$root.queue) {
+                        this.handleOnComplete(response.data)
                     }
                 } else {
                     // the request was successful but did not return expected data
@@ -438,6 +431,36 @@ export default {
             .catch((error) => {
                 this.handleError(error); // a shared method that displays the error message and resets loading/submitted
             });
+        },
+        handleOnComplete(data) {
+            const { processId } = data;
+            const successMessage = this.$t('Process was successfully imported');
+
+            if (data.message && data.message.type === "warning" && data.message.serviceTasksNames.length) {
+                const message = data.message;
+                let taskList = "";
+
+                message.serviceTasksNames.forEach(taskName => {
+                    taskList = taskList + `<p><b>${taskName}<b></p>`;
+                });
+
+                let messageHtml = "<p>The following tasks in the process are configured to an email server that does not exist in this environment. The tasks have been <b>reconfigured to use the default server.</b></p>";
+                messageHtml = messageHtml + taskList;
+
+                ProcessMaker.messageModal(
+                    this.$t("Warning"),
+                    messageHtml,
+                    "",
+                    () => {
+                        ProcessMaker.alert(successMessage, 'success');
+                        window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                        this.submitted = false; // the form was successfully submitted
+                    });
+            } else {
+                ProcessMaker.alert(successMessage, 'success');
+                window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                this.submitted = false; // the form was successfully submitted
+            }
         },
         handleProcessTemplateImport() {
             DataProvider.doImportTemplate(this.file, this.$root.exportOptions(), 'process')
@@ -495,6 +518,43 @@ export default {
                 }
             });
         }
+
+        this.$root.queue = window.ProcessMaker.queueImports;
+        this.importIsRunning = window.ProcessMaker.importIsRunning;
+
+        const userId = window.ProcessMaker.user.id;
+        this.$root.log({type: 'init', message: 'Ready for import'});
+        window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
+            '.ImportLog',
+            (response) => {
+                this.$root.log({type: response.type, message: response.message});
+
+                if (_.has(response, 'additionalParams.processId')) {
+                    this.handleOnComplete(response.additionalParams);
+                }
+
+                if (response.message === 'preview') {
+                    DataProvider.getImportManifest().then((manifestResponse) => {
+                        this.handleValidationResponse({
+                            data: {
+                                manifest: manifestResponse.data,
+                                rootUuid: response.additionalParams.rootUuid,
+                                processVersion: response.additionalParams.processVersion,
+                            },
+                        });
+                    });
+                }
+
+                if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: password required') {
+                    this.showEnterPasswordModal();
+                } else if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: incorrect password') {
+                    this.passwordError = "Incorrect password";
+                } else if (response.type === 'error') {
+                    this.$root.allowDownloadDebug = true;
+                    ProcessMaker.alert(response.message, 'danger');
+                }
+            }
+        );
     },
 }
 </script>
