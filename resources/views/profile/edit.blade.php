@@ -11,20 +11,47 @@
     ]])
 @endsection
 @section('content')
-    <div class="container px-3" id="profileForm" v-cloak>
-        <div class="d-flex flex-column flex-lg-row">
-            <div class="flex-grow-1">
-                @include('shared.users.profile')
+  <div class="container" id="editProfile">
+    <div class="row">
+      <div class="col-12">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
+            role="tab"
+            aria-controls="nav-home" aria-selected="true">{{__('User Info')}}</a>
+          <a class="nav-item nav-link" id="nav-accounts-tab" data-toggle="tab" href="#nav-accounts" role="tab"
+            aria-controls="nav-accounts" aria-selected="true">{{__('Connected Accounts')}}</a>
+          </div>
+        </nav>
+        <div class="container mt-0 border-top-0 p-3 card card-body">
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane show active" id="nav-home" role="tabpanel"
+              aria-labelledby="nav-home-tab">
+              {{-- <div id="profileForm" v-cloak> --}}
+                <div class="d-flex flex-column flex-lg-row">
+                    <div class="flex-grow-1">
+                        @include('shared.users.profile')
+                    </div>
+                    <div class="ml-lg-3 mt-3 mt-lg-0">
+                        @include('shared.users.sidebar')
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+                </div>
+              {{-- </div> --}}
             </div>
-            <div class="ml-lg-3 mt-3 mt-lg-0">
-                @include('shared.users.sidebar')
+            <div class="tab-pane" id="nav-accounts" role="tabpanel" aria-labelledby="nav-accounts-tab">
+              <div class="flex-grow-1">
+                @include('profile.connectedAccounts')
+              </div>
             </div>
+          </div>
         </div>
-        <div class="d-flex justify-content-end mt-3">
-            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
-        </div>
+      </div>
     </div>
+  </div>
 
     <pm-modal ref="updateAvatarModal" id="updateAvatarModal" title="{{__('Upload Avatar')}}" @hidden="hiddenModal" @ok.prevent="saveAvatar" style="display: none;">
         <div>
