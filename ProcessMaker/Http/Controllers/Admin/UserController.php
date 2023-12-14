@@ -97,16 +97,6 @@ class UserController extends Controller
     }
 
     /**
-     * Get the list of Connected Accounts.
-     *
-     * @return Factory|View
-     */
-    public function connectAccounts(User $user)
-    {
-        return view('admin.users.connectAccounts', compact(['user']));
-    }
-
-    /**
      * Get all groups actives.
      *
      * @return mixed
