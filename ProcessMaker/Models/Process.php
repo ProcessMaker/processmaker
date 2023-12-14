@@ -4,10 +4,13 @@ namespace ProcessMaker\Models;
 
 use DOMElement;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
@@ -55,6 +58,7 @@ use Throwable;
  * @property string $bpmn
  * @property string $description
  * @property string $name
+ * @property string $case_title
  * @property string $status
  * @property array $start_events
  * @property int $manager_id
@@ -65,6 +69,7 @@ use Throwable;
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="case_title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "ARCHIVED"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
@@ -201,6 +206,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         'canceled',
         'completed',
         'error',
+        'comment',
     ];
 
     public $taskNotifiableTypes = [
@@ -218,6 +224,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
     protected $appends = [
         'has_timer_start_events',
+        'projects',
     ];
 
     protected $casts = [
@@ -244,12 +251,36 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function projects()
     {
-        return $this->belongsTo('ProcessMaker\Package\Projects\Models\Projects',
+        if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
+            // return an empty collection
+            return new HasMany($this->newQuery(), $this, '', '');
+        }
+
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
             'project_assets',
+            'asset_id',
             'project_id',
-            'asset_id'
-        )->wherePivot('asset_type', static::class)
-            ->withTimestamps();
+            'id',
+            'id'
+        )->wherePivot('asset_type', static::class);
+    }
+
+    // Define the relationship with the ProjectAsset model
+    public function projectAssets()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets', 'asset_id', 'project_id')
+            ->withPivot('asset_type')
+            ->wherePivot('asset_type', static::class)->withTimestamps();
+    }
+
+    public function projectAsset()
+    {
+        return $this->belongsToMany('ProcessMaker\Package\Projects\Models\ProjectAsset',
+            'project_assets',
+            'asset_id',
+            'project_id',
+        )->withTimeStamps();
     }
 
     /**
@@ -419,6 +450,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function scopeArchived($query)
     {
         return $query->where('processes.status', 'ARCHIVED');
+    }
+
+    /**
+     * Scope a query to include a specific category
+     */
+    public function scopeProcessCategory($query, int $id)
+    {
+        return $query->where('processes.process_category_id', $id);
     }
 
     public function getCollaborations()
@@ -662,8 +701,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
 
-        $assignedUsers = $usersVariable ? $instanceData[$usersVariable] : [];
-        $assignedGroups = $groupsVariable ? $instanceData[$groupsVariable] : [];
+        $assignedUsers = $usersVariable ? Arr::get($instanceData, $usersVariable) : [];
+        $assignedGroups = $groupsVariable ? Arr::get($instanceData, $groupsVariable) : [];
 
         if (!is_array($assignedUsers)) {
             $assignedUsers = [$assignedUsers];

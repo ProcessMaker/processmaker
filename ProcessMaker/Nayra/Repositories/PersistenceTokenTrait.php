@@ -2,15 +2,22 @@
 
 namespace ProcessMaker\Nayra\Repositories;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Listeners\BpmnSubscriber;
+use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Repositories\TokenRepository;
 
 trait PersistenceTokenTrait
 {
     protected TokenRepository $tokenRepository;
+
+    private static $aboutCacheKey = 'nayra.about';
 
     /**
      * Persists instance and token data when a token arrives to an activity
@@ -24,9 +31,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityActivated($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityActivatedEvent($activity, $token);
-        $bpmnSubscriber->onActivityActivated($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $event);
     }
 
     /**
@@ -39,6 +45,10 @@ trait PersistenceTokenTrait
         $activity = $this->deserializer->unserializeEntity($transaction['activity']);
         $token = $this->deserializer->unserializeToken($transaction['token']);
         $this->tokenRepository->persistActivityException($activity, $token);
+
+        // Event
+        $bpmnSubscriber = new BpmnSubscriber();
+        $bpmnSubscriber->onActivityException($activity, $token);
     }
 
     /**
@@ -53,9 +63,8 @@ trait PersistenceTokenTrait
         $this->tokenRepository->persistActivityCompleted($activity, $token);
 
         // Event
-        $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityCompletedEvent($activity, $token);
-        $bpmnSubscriber->onActivityCompleted($event);
+        app('events')->dispatch(ActivityInterface::EVENT_ACTIVITY_COMPLETED, $event);
     }
 
     /**
@@ -73,6 +82,16 @@ trait PersistenceTokenTrait
         $bpmnSubscriber = new BpmnSubscriber();
         $event = new ActivityClosedEvent($activity, $token);
         $bpmnSubscriber->onActivityClosed($event);
+    }
+
+    public function persistActivitySkipped(array $transaction)
+    {
+        $activity = $this->deserializer->unserializeEntity($transaction['activity']);
+        $token = $this->deserializer->unserializeToken($transaction['token']);
+
+        // Comments
+        $subscriber = new CommentsSubscriber();
+        $subscriber->onActivitySkipped($activity, $token);
     }
 
     /**
@@ -143,8 +162,21 @@ trait PersistenceTokenTrait
     public function persistGatewayTokenPassed(array $transaction)
     {
         $gateway = $this->deserializer->unserializeEntity($transaction['gateway']);
-        $token = $this->deserializer->unserializeToken($transaction['token']);
-        $this->tokenRepository->persistGatewayTokenPassed($gateway, $token);
+        if (!is_numeric($transaction['transition'])) {
+            Log::info('Invalid transition id for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
+        $transition = $gateway->getTransitions()[$transaction['transition']] ?? null;
+        if (empty($transition)) {
+            Log::info('Invalid transition for gateway token passed. ' . json_encode($transaction));
+            return;
+        }
+        $tokens = $this->deserializer->unserializeTokensCollection($transaction['tokens']);
+        $this->tokenRepository->persistGatewayTokenPassed($gateway, $tokens->item(0));
+
+        // Comments
+        $subscriber = new CommentsSubscriber();
+        $subscriber->onGatewayPassed($gateway, $transition, $tokens);
     }
 
     /**
@@ -247,5 +279,36 @@ trait PersistenceTokenTrait
         $subprocessInstance = $this->deserializer->unserializeInstance($transaction['subprocess']);
         $startId = $transaction['start_id'];
         $this->tokenRepository->persistCallActivityActivated($token, $subprocessInstance, $startId);
+    }
+
+    /**
+     * Store the about information into cache
+     *
+     * @param array $transaction
+     * @return void
+     */
+    public function persistAbout(array $aboutInfo)
+    {
+        if (!array_key_exists('name', $aboutInfo) ||
+            !array_key_exists('description', $aboutInfo) ||
+            !array_key_exists('version', $aboutInfo)
+        ) {
+            error_log('Invalid about message received. ' . json_encode($aboutInfo));
+
+            return;
+        }
+
+        $name = $aboutInfo['name'];
+        $version = $aboutInfo['version'];
+        error_log("Microservice $name version $version is running.");
+        Cache::put(self::$aboutCacheKey, $aboutInfo, 60);
+    }
+
+    public function throwGlobalSignalEvent(array $transaction)
+    {
+        $throwElement = $this->deserializer->unserializeEntity($transaction['throw_element']);
+        $token = $transaction['token'] ? $this->deserializer->unserializeToken($transaction['token']) : null;
+        $eventDefinition = $throwElement->getEventDefinitions()->item(0);
+        WorkflowManager::throwSignalEventDefinition($eventDefinition, $token);
     }
 }

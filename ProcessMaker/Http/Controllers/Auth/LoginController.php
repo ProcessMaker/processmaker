@@ -7,10 +7,13 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Events\Logout;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\LoginManager;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Auth\Database\Seeds\AuthDefaultSeeder;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
@@ -36,6 +39,8 @@ class LoginController extends Controller
      */
     protected $redirectTo = '/';
 
+    protected $maxAttempts;
+
     /**
      * Create a new controller instance.
      *
@@ -44,6 +49,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
+        $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
     }
 
     /**
@@ -55,15 +61,101 @@ class LoginController extends Controller
     {
         $manager = App::make(LoginManager::class);
         $addons = $manager->list();
+        // Review if we need to redirect the default SSO
+        if (config('app.enable_default_sso')) {
+            $arrayAddons = $addons->toArray();
+            $driver = $this->getDefaultSSO($arrayAddons);
+            // If a default SSO was defined we will to redirect
+            if (!empty($driver)) {
+                return redirect()->route('sso.redirect', ['driver' => $driver]);
+            }
+        }
         $block = $manager->getBlock();
         // clear cookie to avoid an issue when logout SLO and then try to login with simple PM login form
         \Cookie::queue(\Cookie::forget(config('session.cookie')));
         // cookie required here because SSO redirect resets the session
-        $cookie = cookie('processmaker_intended', redirect()->intended()->getTargetUrl(), 10, null, null, true, true, false, 'none');
-        $response = response(view('auth.login', compact('addons', 'block')));
+        $cookie = cookie(
+            'processmaker_intended',
+            redirect()->intended()->getTargetUrl(),
+            10,
+            null,
+            null,
+            true,
+            true,
+            false,
+            'none'
+        );
+        $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
+        $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
 
         return $response;
+    }
+
+    protected function getDefaultSSO(array $addons): string
+    {
+        $addonsData = !empty($addons) ? head($addons)->data : [];
+        $defaultSSO = $this->getLoginDefaultSSO();
+        $pmLogin = $this->getPmLogin();
+        if (!empty($defaultSSO) && !empty($addonsData)) {
+            // Get the config selected
+            $position = $this->getColumnAttribute($defaultSSO, 'config', 'config');
+            // Get the ui defined
+            $elements = $this->getColumnAttribute($defaultSSO, 'ui', 'elements');
+            $options = $this->getColumnAttribute($defaultSSO, 'ui', 'options');
+            // Get the sso drivers configured
+            $drivers = !empty($addonsData['drivers']) ? $addonsData['drivers'] : [];
+            if (
+                is_int($position)
+                && $options[$position] !== $pmLogin
+                && !empty($elements)
+                && !empty($drivers)
+            ) {
+                // Get the specific element defined with the default SSO
+                $element = !empty($elements[$position]->name) ? strtolower($elements[$position]->name) : '';
+                if (!empty($element) && array_key_exists($element, $drivers)) {
+                    return $element;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    protected function getLoginDefaultSSO()
+    {
+        $defaultSSO = '';
+        // Check if the package-auth is installed and has a const SSO_DEFAULT_LOGIN was defined
+        if (class_exists(AuthDefaultSeeder::class)) {
+            $defaultSSO = Setting::byKey('sso.default.login');
+        }
+
+        return $defaultSSO;
+    }
+
+    protected function getPmLogin()
+    {
+        return 'ProcessMaker';
+    }
+
+    protected function getColumnAttribute(object $setting, string $attribute, string $key = '')
+    {
+        $config = $setting->getAttribute($attribute);
+        switch ($key) {
+            case 'config':
+                $result = !is_null($config) ? (int) $config : null;
+                break;
+            case 'elements':
+                $result = !empty($config->elements) ? $config->elements : [];
+                break;
+            case 'options':
+                $result = !empty($config->options) ? $config->options : [];
+                break;
+            default:
+                $result = null;
+        }
+
+        return $result;
     }
 
     public function loginWithIntendedCheck(Request $request)
@@ -86,6 +178,8 @@ class LoginController extends Controller
         $user = User::where('username', $request->input('username'))->first();
         if (!$user || $user->status === 'INACTIVE') {
             $this->sendFailedLoginResponse($request);
+        } elseif ($user->status === 'BLOCKED') {
+            $this->throwLockedLoginResponse();
         }
 
         $addons = $this->getPluginAddons('command', []);
@@ -96,7 +190,14 @@ class LoginController extends Controller
             }
         }
 
-        return $this->login($request);
+        if (class_exists(\ProcessMaker\Package\Auth\Auth\LDAPLogin::class)) {
+            $redirect = \ProcessMaker\Package\Auth\Auth\LDAPLogin::auth($user, $request->input('password'));
+            if ($redirect !== false) {
+                return $redirect;
+            }
+        }
+
+        return $this->login($request, $user);
     }
 
     /**
@@ -138,5 +239,61 @@ class LoginController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Handle a login request to the application.
+     * Overrides the original login action.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \ProcessMaker\Models\User $user
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function login(Request $request, User $user)
+    {
+        $this->validateLogin($request);
+
+        // If the class is using the ThrottlesLogins trait, we can automatically throttle
+        // the login attempts for this application. We'll key this by the username and
+        // the IP address of the client making these requests into this application.
+        if (method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts($request)) {
+
+            // Block the user
+            $user->status = 'BLOCKED';
+            $user->save();
+
+            // Throw locked error message
+            $this->throwLockedLoginResponse();
+        }
+
+        if ($this->attemptLogin($request)) {
+            if ($request->hasSession()) {
+                $request->session()->put('auth.password_confirmed_at', time());
+            }
+
+            return $this->sendLoginResponse($request);
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Throws locked error message
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function throwLockedLoginResponse()
+    {
+        throw ValidationException::withMessages([
+            $this->username() => [_('Account locked after too many failed attempts. Contact administrator.')],
+        ]);
     }
 }

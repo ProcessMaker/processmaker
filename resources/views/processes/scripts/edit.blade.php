@@ -55,19 +55,24 @@
                           :label="$t('Project')"
                           api-get="projects"
                           api-list="projects"
-                          v-model="formData.projects"
+                          v-model="selectedProjects"
                           :errors="errors.projects">
                         </project-select>
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
+                            <label class="typo__label">{{__('Run Script As')}}<small class="ml-1">*</small></label>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
                             </select-user>
                             <div class="invalid-feedback" role="alert" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                         </div>
-
+                        @php
+                            $scriptExecutorsLang = [];
+                            foreach ($scriptExecutors as $key => $value) {
+                                $scriptExecutorsLang[$key] = $value["language"] . " - " . $value["title"];
+                            }
+                        @endphp
                         <div class="form-group">
                             {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
-                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
+                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutorsLang, null, ['class'=>
                             'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
                             \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
                             <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
@@ -148,6 +153,8 @@
           return {
             formData: @json($script),
             selectedUser: @json($selectedUser),
+            assignedProjects: @json($assignedProjects),
+            selectedProjects: '',
             errors: {
               'title': null,
               'language': null,
@@ -158,6 +165,13 @@
               'status': null
             },
             editScriptHooks: [],
+          }
+        },
+        watch: {
+          selectedProjects: {
+            handler() {
+              this.formData.projects = this.selectedProjects;
+            }
           }
         },
         methods: {
@@ -180,6 +194,7 @@
               script_category_id: this.formData.script_category_id,
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
+              projects: this.formData.projects,
               timeout: this.formData.timeout,
               retry_attempts: this.formData.retry_attempts,
               retry_wait_time: this.formData.retry_wait_time,
@@ -200,6 +215,9 @@
                 }
               });
           }
+        },
+        mounted() {
+          this.selectedProjects = this.assignedProjects.length > 0 ?this.assignedProjects.map(project => project.id) : null;
         }
       });
     </script>

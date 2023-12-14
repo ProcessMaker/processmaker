@@ -32,7 +32,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Repositories\DefinitionsRepository;
 
 class WorkflowManagerDefault implements WorkflowManagerInterface
 {
@@ -265,12 +264,28 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         }
 
         $excludeProcesses = [$token->getInstance()->getModel()->process_id];
-        $excludeRequests = [];
-        $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
-        foreach ($instances as $instance) {
-            $excludeRequests[] = $instance->getId();
-        }
+
+        $excludeRequests = $this->getCollaboratingInstanceIds($token->getInstance());
         ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
+    }
+
+    /**
+     * Retrieves IDs of all instances collaborating with the given instance.
+     *
+     * This function compiles a list of IDs from execution instances associated 
+     * with the same process as the input instance, including the instance itself.
+     *
+     * @param ProcessRequest $instance The instance to find collaborators for.
+     * @return int[] Array of collaborating instance IDs.
+     */
+    protected function getCollaboratingInstanceIds($instance)
+    {
+        $ids = [];
+        $instances = $instance->getProcess()->getEngine()->getExecutionInstances();
+        foreach ($instances as $instance) {
+            $ids[] = $instance->getId();
+        }
+        return $ids;
     }
 
     /**
@@ -412,11 +427,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
     /**
      * Run the service task implementation
+     *
      * @param string $implementation
-     * @param array $dat
+     * @param array $data
      * @param array $config
      * @param string $tokenId
-     *
      * @return mixed
      */
     public function runServiceImplementation($implementation, array $data, array $config, $tokenId = '', $timeout = 0)
@@ -425,5 +440,18 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         $service = new $class();
 
         return $service->run($data, $config, $tokenId, $timeout);
+    }
+
+    /**
+     * Get the service task class implementation
+     *
+     * @param string $implementation
+     * @return string
+     */
+    public function getServiceClassImplementation($implementation)
+    {
+        $class = $this->serviceTaskImplementations[$implementation];
+
+        return $class;
     }
 }

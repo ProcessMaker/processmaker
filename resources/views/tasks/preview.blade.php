@@ -107,6 +107,7 @@
                           @@error="error"
                           @closed="closed"
                           @redirect="redirectToTask"
+                          :task-preview="true"
                         ></task>
                     </div>
                 </div>
@@ -201,14 +202,6 @@
               return JSON.parse(this.task.definition.config);
             }
             return {};
-          },
-          taskHasComments() {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            let config = {};
-            if (commentsPackage && this.task.definition && this.task.definition.config) {
-              config = JSON.parse(this.task.definition.config);
-            }
-            return config;
           },
           dueLabel() {
             const dueLabels = {

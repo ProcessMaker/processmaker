@@ -6,53 +6,49 @@
       :aria-label="$t(label)"
       track-by="id"
       label="title"
-      :class="{'border border-danger':error}"
+      :class="{ 'border border-danger': error }"
       :loading="!!loading"
       :placeholder="$t('type here to search')"
       :options="options"
       :multiple="true"
       :show-labels="false"
       :searchable="true"
-      :internal-search="false"
+      :internal-search="true"
       @open="load()"
       @search-change="load"
-      @select="(selected) => lastSelectedId = selected.id"
+      @select="(selected) => (this.lastSelectedId = selected.id)"
     >
       <template slot="noResult">
-        {{ $t('No elements found. Consider changing the search query.') }}
+        {{ $t("No elements found. Consider changing the search query.") }}
       </template>
       <template slot="noOptions">
-        {{ $t('No Data Available') }}
+        {{ $t("No Data Available") }}
       </template>
     </multiselect>
     <div
+      class="invalid-feedback d-block"
       v-for="(error, index) in errors"
       :key="index"
-      class="invalid-feedback d-block"
     >
-      <small
-        v-if="error"
-        role="alert"
-        class="text-danger"
-      >{{ error }}</small>
+      <small v-if="error" class="text-danger" role="alert">{{ error }}</small>
     </div>
-    <small
-      v-if="error"
-      role="alert"
-      class="text-danger"
-    >{{ error }}</small>
-    <small
-      v-if="helper"
-      class="form-text text-muted"
-    >{{ $t(helper) }}</small>
+    <small v-if="error" class="text-danger" role="alert">{{ error }}</small>
+    <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
   </div>
 </template>
 
 <script>
-import "@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
-
 export default {
-  props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList"],
+  props: [
+    "value",
+    "errors",
+    "label",
+    "helper",
+    "params",
+    "apiGet",
+    "apiList",
+    "projectId",
+  ],
   data() {
     return {
       content: [],
@@ -60,10 +56,9 @@ export default {
       options: [],
       error: "",
       lastSelectedId: null,
+      currentProject: null,
+      initialLoadExecuted: false,
     };
-  },
-  computed: {
-
   },
   watch: {
     content: {
@@ -78,71 +73,81 @@ export default {
       },
     },
     value: {
-      handler() {
-        this.setUpOptions();
+      handler(newValue, oldValue) {
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
+        }
+      },
+    },
+    projectId: {
+      handler(newValue, oldValue) {
+        if (!_.isEqual(newValue, oldValue)) {
+          this.loadSelectedOptions();
+        }
       },
     },
   },
-  mounted() {
-    this.setUpOptions();
-  },
   methods: {
-    setUpOptions() {
-      if (this.value) {
-        const content = [];
-        const selected = String(this.value).split(",");
-        this.loading = selected.length;
-        selected.forEach((project) => {
-          this.getOptionData(project, content);
-        });
-      } else {
-        this.content.splice(0);
+    loadSelectedOptions() {
+      let selectedIds = this.value || [];
+      if (!Array.isArray(selectedIds)) {
+        selectedIds = this.value.split(",");
       }
-    },
-    completeSelectedLoading(content) {
-      this.loading = false;
-      this.content.splice(0);
-      this.content.push(...content);
-    },
-    getOptionData(id, content) {
-      const option = this.options.concat(this.content).find((item) => item.id == id);
-      if (option) {
-        this.loading--;
-        content.push(option);
-        this.handleCompleteSelectedLoading(content);
+
+      if (this.projectId && !selectedIds.includes(this.projectId)) {
+        selectedIds.push(this.projectId);
+      }
+
+      let idsToLoad = [];
+      selectedIds.forEach((id) => {
+        if (!this.options.find((item) => item.id == id)) {
+          idsToLoad.push(id);
+        }
+      });
+
+      if (idsToLoad.length == 0) {
         return;
       }
-      ProcessMaker.apiClient
-        .get(this.apiGet)
-        .then((response) => {
-          this.loading--;
-          content.push(response.data.data);
-          this.handleCompleteSelectedLoading(content);
-        })
-        .catch((error) => {
-          this.loading--;
-          if (error.response.status === 404) {
-            this.error = this.$t("Selected not found");
+
+      const params = { only_ids: idsToLoad.join(",") };
+      ProcessMaker.apiClient.get(this.apiList, { params }).then((response) => {
+        this.content = response.data.data;
+        response.data.data.forEach((project) => {
+          if (!this.options.find((item) => item.id == project.id)) {
+            this.options.push(project);
           }
-          this.handleCompleteSelectedLoading(content);
         });
+      });
     },
-    load(filter) {
+    load: _.debounce(function (filter) {
       ProcessMaker.apiClient
-        .get(`${this.apiList}?order_direction=asc&status=active${typeof filter === "string" ? `&filter=${filter}` : ""}`)
+        .get(
+          this.apiList +
+            "?order_direction=asc&status=active&per_page=10" +
+            (typeof filter === "string" ? "&filter=" + filter : "")
+        )
         .then((response) => {
           this.loading = false;
-          this.options = response.data.data;
+          response.data.data.forEach((project) => {
+            if (!this.options.find((item) => item.id == project.id)) {
+              this.options.push(project);
+            }
+          });
         })
         .catch((err) => {
           this.loading = false;
         });
-    },
-    handleCompleteSelectedLoading(content) {
-      if (!this.loading) {
-        this.completeSelectedLoading(content);
-      }
-    },
+    }, 300),
+  },
+  mounted() {
+    this.load();
+    if (this.projectId || this.value) {
+      this.loadSelectedOptions();
+    }
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+</style>

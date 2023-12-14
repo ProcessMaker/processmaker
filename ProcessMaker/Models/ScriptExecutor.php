@@ -8,6 +8,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasVersioning;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Script Executor
@@ -27,6 +28,7 @@ use ProcessMaker\Traits\HasVersioning;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="config", type="string"),
+ *   @OA\Property(property="is_system", type="boolean"),
  * ),
  * @OA\Schema(
  *   schema="scriptExecutors",
@@ -51,9 +53,10 @@ class ScriptExecutor extends ProcessMakerModel
 {
     use HasVersioning;
     use Exportable;
+    use HideSystemResources;
 
     protected $fillable = [
-        'title', 'description', 'language', 'config',
+        'title', 'description', 'language', 'config', 'is_system',
     ];
 
     public static function install($params)
@@ -143,7 +146,7 @@ class ScriptExecutor extends ProcessMakerModel
     {
         $list = [];
         $executors =
-            self::orderBy('language', 'asc')
+            self::where('is_system', false)->orderBy('language', 'asc')
             ->orderBy('created_at', 'asc');
 
         if ($language) {
@@ -151,7 +154,10 @@ class ScriptExecutor extends ProcessMakerModel
         }
 
         foreach ($executors->get() as $executor) {
-            $list[$executor->id] = $executor->language . ' - ' . $executor->title;
+            $list[$executor->id] = [
+                'language' => $executor->language,
+                'title' => $executor->title,
+            ];
         }
 
         return $list;

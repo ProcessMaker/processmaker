@@ -67,6 +67,9 @@ return [
     // tcp/other protocol uri to the docker host
     'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
 
+    // Default parameters for docker run command
+    'processmaker_scripts_docker_params' => env('PROCESSMAKER_SCRIPTS_DOCKER_PARAMS', ''),
+
     // Default timeout for scripts
     'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
 
@@ -118,6 +121,9 @@ return [
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
 
+    // Enable default SSO
+    'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
+
     // Message broker driver to use in Workflow Manager
     'message_broker_driver' => env('MESSAGE_BROKER_DRIVER', 'default'),
 
@@ -140,6 +146,9 @@ return [
         'favicon_path' => env('FAVICON_PATH', '/img/favicon.svg'),
 
     ],
+
+    // Define the view of the Login
+    'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
     'providers' => ServiceProvider::defaultProviders()->merge([
         /**
@@ -165,6 +174,7 @@ return [
         ProcessMaker\Providers\UpgradeServiceProvider::class,
         ProcessMaker\Providers\OauthMailServiceProvider::class,
         ProcessMaker\Providers\OpenAiServiceProvider::class,
+        ProcessMaker\Providers\LicenseServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
@@ -208,4 +218,6 @@ return [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
     ],
+
+    'queue_imports' => env('QUEUE_IMPORTS', true),
 ];

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { Modal } from "SharedComponents";
+import Modal from "../../../components/shared/Modal";
 
 export default {
   components: { Modal },
@@ -94,7 +94,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
   ul {
     list-style: none;

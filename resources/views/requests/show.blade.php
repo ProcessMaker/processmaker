@@ -236,14 +236,26 @@
                   <h4>
                     {{ __(':name In-Flight Map', ['name' => $request->process->name]) }}
                   </h4>
-                  <div v-if="iframeLoading" class="d-flex justify-content-center">
+                  <div v-if="isObjectLoading" class="d-flex justify-content-center">
                     <div class="spinner-border text-primary" role="status"></div>
                   </div>
-                  <div v-show="!iframeLoading">
-                    <iframe class="card"
-                      src="{{ route('modeler.inflight', ['process' => $request->process->id, 'request' => $request->id]) }}"
-                      width="100%" height="640px" frameborder="0" style="border-radius: 4px;"
-                      @load="onLoadIframe"></iframe>
+                  <div :class="{ 'hidden': isObjectLoading }">
+                    <object ref="processMap" class="card"
+                      data="{{ route('modeler.inflight', [
+                        'process' => $request->process->id,
+                        'request' => $request->id
+                      ]) }}"
+                      width="100%"
+                      :height="isObjectLoading ? 'auto' : '640px'"
+                      frameborder="0"
+                      type="text/html"
+                      style="border-radius: 4px;"
+                      @load="onLoadedObject">
+                      <!-- Accessible Alternative Content -->
+                      <p>
+                        {{ __('Content not available. Check settings or try a different device.') }}
+                      </p>
+                    </object>
                   </div>
                 </div>
               </div>
@@ -259,12 +271,9 @@
             @endisset
           </div>
         </div>
-        @can('view-comments')
           <timeline commentable_id="{{ $request->getKey() }}" commentable_type="{{ get_class($request) }}"
-            :reactions="configurationComments.reactions" :voting="configurationComments.voting"
-            :edit="configurationComments.edit" :remove="configurationComments.remove"
-            :adding="configurationComments.comments" :readonly="request.status === 'COMPLETED'" />
-        @endcan
+            :adding="false" :readonly="request.status === 'COMPLETED'" 
+            :timeline="false" />
       </div>
       @if (shouldShow('requestStatusContainer'))
         <div class="ml-md-3 mt-md-0 mt-3">
@@ -361,6 +370,13 @@
           </template>
         </div>
       @endif
+      <div v-if="panCommentInVueOptionsComponents">
+          <pan-comment commentable_id="{{ $request->getKey() }}"
+                       commentable_type="{{ get_class($request) }}"
+                       :readonly="request.status === 'COMPLETED'"
+                       name="{{ $request->name }}"
+                       />
+      </div>
     </div>
   </div>
 
@@ -415,14 +431,7 @@
           packages: [],
           processId: @json($request->process->id),
           canViewComments: @json($canViewComments),
-          configurationComments: {
-            comments: false,
-            reactions: false,
-            edit: false,
-            voting: false,
-            remove: false,
-          },
-          iframeLoading: false,
+          isObjectLoading: false,
           showTree: false,
         };
       },
@@ -538,17 +547,20 @@
         requestBy() {
           return [this.request.user];
         },
+        panCommentInVueOptionsComponents() {
+            return 'pan-comment' in Vue.options.components;
+        },
       },
       methods: {
         switchTab(tab) {
           this.activeTab = tab;
           if (tab === 'overview') {
-            this.iframeLoading = true;
+            this.isObjectLoading = true;
           }
           ProcessMaker.EventBus.$emit('tab-switched', tab);
         },
-        onLoadIframe() {
-          this.iframeLoading = false;
+        onLoadedObject() {
+          this.isObjectLoading = false;
         },
         requestStatusClass(status) {
           status = status.toLowerCase();
@@ -725,28 +737,8 @@
             } 
           )
         },
-        getConfigurationComments() {
-          if (this.canViewComments) {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            if (commentsPackage) {
-              ProcessMaker.apiClient.get(`comments/configuration`, {
-                params: {
-                  id: this.processId,
-                  type: 'Process',
-                },
-              }).then(response => {
-                this.configurationComments.comments = !!response.data.comments;
-                this.configurationComments.reactions = !!response.data.reactions;
-                this.configurationComments.voting = !!response.data.voting;
-                this.configurationComments.edit = !!response.data.edit;
-                this.configurationComments.remove = !!response.data.remove;
-              });
-            }
-          }
-        },
       },
       mounted() {
-        this.getConfigurationComments();
         this.packages = window.ProcessMaker.requestShowPackages;
         this.listenRequestUpdates();
         this.cleanScreenButtons();
@@ -754,4 +746,14 @@
       },
     });
   </script>
+@endsection
+
+@section('css')
+<style>
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
 @endsection

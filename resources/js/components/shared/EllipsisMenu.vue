@@ -1,5 +1,6 @@
 <template>
   <b-dropdown
+    v-if="filterActions.length > 0"
     :variant="variant ? variant : 'ellipsis'"
     no-caret
     no-flip
@@ -9,7 +10,6 @@
     class="ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
-    v-if="filterActions.length > 0"    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -19,6 +19,9 @@
       <span>
         {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
+    </template>
+    <template v-else-if="lauchpad" #button-content>
+      <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -74,21 +77,21 @@
       </div>
       <div v-for="action in filterActions">
         <b-dropdown-divider v-if="action.value == 'divider'"/>
-        <b-dropdown-item v-else
-            :key="action.value"
-            :href="action.link ? itemLink(action, data) : null"
-            class="ellipsis-dropdown-item mx-auto"
-            @click="!action.link ? onClick(action, data) : null"
+        <b-dropdown-item
+          v-else
+          :key="action.value"
+          :href="action.link ? itemLink(action, data) : null"
+          class="ellipsis-dropdown-item mx-auto"
+          @click="!action.link ? onClick(action, data) : null"
         >
           <div class="ellipsis-dropdown-content">
             <i
-                class="pr-1 fa-fw"
-                :class="action.icon"
+              class="pr-1 fa-fw"
+              :class="action.icon"
             />
             <span>{{ $t(action.content) }}</span>
           </div>
         </b-dropdown-item>
-
       </div>
     </div>
   </b-dropdown>
@@ -103,7 +106,7 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
   data() {
     return {
       active: false,
@@ -112,32 +115,9 @@ export default {
   },
   computed: {
     filterActions() {
-      let btns = this.actions.filter(action => {
-        if (!action.hasOwnProperty('permission')
-            || action.hasOwnProperty('permission') && this.permission[action.permission]
-            || Array.isArray(this.permission) && action.hasOwnProperty('permission') && this.permission.includes(action.permission)) {
-          return action;
-        }
-      });
-
-      btns = btns.filter(btn => {
-        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
-          if (this.isDocumenterInstalled) {
-            return btn;
-          }
-        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
-          if (this.isPackageInstalled) {
-            return btn;
-          }
-        } else if (btn.hasOwnProperty('conditional')  ) {
-          const result = Parser.evaluate(btn.conditional, this.data);
-          if (result) {
-            return btn;
-          }
-        } else {
-          return btn;
-        }
-      });
+      let btns = this.filterActionsByPermissions();
+      btns = this.filterActionsByConditionals(btns);
+      
       return btns;
     },
     filterAboveDivider() {
@@ -184,6 +164,61 @@ export default {
       }
 
       return Math.trunc(totalProgress);
+    },
+    filterActionsByPermissions() {
+      return this.actions.filter(action => {
+        // Check if the action has a 'permission' property and it's a non-empty string
+        if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
+          return true; // No specific permission required or invalid format, so allow the action.
+        }
+        let requiredPermissions;
+        // Check if this.permission is of type string
+        if (typeof action.permission === 'string') {
+          requiredPermissions = action.permission.split(',');
+        } else {
+          requiredPermissions = action.permission;
+        }
+
+        // Check if this.permission is of type object
+        if (typeof this.permission === 'object' && this.permission !== null) {
+          const keys = Object.keys(this.permission);
+          if (keys[0] === "0") {
+            return requiredPermissions.some(permission => Object.values(this.permission).includes(permission));
+          } else {
+            return requiredPermissions.some(permission => this.permission.hasOwnProperty(permission) && this.permission[permission]);
+          }
+        }
+
+        // Check if this.permission is a string or an array
+        if (typeof this.permission === 'string') {
+            return requiredPermissions.some(permission => this.permission.split(',').includes(permission));
+        } else if (Array.isArray(this.permission)) {
+            return requiredPermissions.some(permission => this.permission.includes(permission));
+        }
+
+        // Invalid permission format, exclude the action
+        return false;
+      });
+    },
+    filterActionsByConditionals(btns) {
+      return btns.filter(btn => {
+        if (btn.hasOwnProperty('conditional') && btn.conditional === "isDocumenterInstalled") {
+          if (this.isDocumenterInstalled) {
+            return true;
+          }
+        } else if (btn.hasOwnProperty('conditional') && btn.conditional === 'isPackageInstalled') {
+          if (this.isPackageInstalled) {
+            return true;
+          }
+        } else if (btn.hasOwnProperty('conditional')) {
+          const result = Parser.evaluate(btn.conditional, this.data);
+          if (result) {
+            return true;
+          }
+        } else {
+          return true;
+        }
+      });
     },
   },
 };

@@ -19,6 +19,7 @@ class ScriptExecutorFactory extends Factory
             'description' => $this->faker->sentence(),
             'config' => '',
             'language' => 'php',
+            'is_system' => false,
         ];
     }
 }

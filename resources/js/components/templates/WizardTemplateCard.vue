@@ -1,0 +1,62 @@
+<template>
+  <div>
+    <b-card 
+      no-body 
+      class="wizard-template-select-card p-0"
+      :style="{ backgroundImage: 'url(' + template?.backgroundImage + ')' }"
+      @click="showDetails()"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    >
+      <b-card-body class="p-2">
+        <div class="wizard-icon-container text-right mb-3">
+          <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
+        </div>
+        <b-card-text class="mx-4">
+          <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3"/>
+          <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
+          {{ template.shortDescription | str_limit(150) }}
+        </b-card-text>
+      </b-card-body>
+    </b-card>
+  </div>
+</template>
+
+<script>
+import templateMixin from './mixins/template.js';
+
+export default {
+  components: { },
+  mixins: [templateMixin],
+  props: ["template"],
+};
+</script>
+
+<style lang="scss" scoped>
+.wizard-template-select-card {
+  border-radius: 16px;
+  border: 1px solid #CDDDEE;
+  background-size: cover;
+  height: 243px;
+  overflow: hidden;
+  &.hover {
+    box-shadow: 0px 10px 20px 4px #00000021;
+    cursor: pointer;
+  }
+  .card-text {
+    font-size: 15px;
+    color: #556271;
+    h5 {
+        font-weight: 700;
+    }
+  }
+}
+
+@media (min-width: 576px) {
+  .card-deck .card {
+    margin-left: 9px;
+    margin-right: 9px;
+  }
+}
+
+</style>

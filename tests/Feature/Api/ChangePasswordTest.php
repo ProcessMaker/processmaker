@@ -28,7 +28,7 @@ class ChangePasswordTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-                 ->assertSeeText('The password field must be at least 8 characters');
+                 ->assertSeeText('The Password field must be at least 8 characters');
 
         // Password must contain one or more uppercase characters
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
@@ -45,8 +45,9 @@ class ChangePasswordTest extends TestCase
             'confpassword' => 'ProcessMaker',
         ]);
 
-        $response->assertStatus(422)
-                 ->assertSeeText('The password must contain either a number or a special character');
+        $response->assertStatus(422);
+        $json = $response->json();
+        $this->assertTrue(in_array('The Password field must contain at least one symbol.', $json['errors']['password']));
 
         // Validate updated user password changed
         $updatedUser = User::where('id', $user->id)->first();
@@ -72,8 +73,8 @@ class ChangePasswordTest extends TestCase
 
         // Post data with new password
         $response = $this->apiCall('PUT', self::API_TEST_URL, [
-            'password' => 'ProcessMaker1',
-            'confpassword' => 'ProcessMaker1',
+            'password' => 'ProcessMaker1_',
+            'confpassword' => 'ProcessMaker1_',
         ]);
 
         // Validate the header status code

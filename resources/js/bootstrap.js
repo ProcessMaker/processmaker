@@ -25,7 +25,6 @@ import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
-import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 
@@ -44,6 +43,8 @@ window.ProcessmakerComponents = require("./processes/screen-builder/components")
 window.SharedComponents = require("./components/shared");
 
 window.ProcessesComponents = require("./processes/components");
+window.ScreensComponents = require("./processes/screens/components");
+window.ScriptsComponents = require("./processes/scripts/components");
 
 /**
  * Exporting Modeler inspector components
@@ -85,9 +86,9 @@ window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
-window.Vue.component("global-search", GlobalSearch);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
+
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
@@ -234,7 +235,9 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  window.alert(`${variant}: ${text}`);
+  if ('string' === typeof text) {
+    window.alert(text);
+  }
 };
 
 const openAiEnabled = document.head.querySelector("meta[name=\"open-ai-nlq-to-pmql\"]");
@@ -250,6 +253,8 @@ if (openAiEnabled) {
 }
 
 const userID = document.head.querySelector("meta[name=\"user-id\"]");
+const userFullName = document.head.querySelector("meta[name=\"user-full-name\"]");
+const userAvatar = document.head.querySelector("meta[name=\"user-avatar\"]");
 const formatDate = document.head.querySelector("meta[name=\"datetime-format\"]");
 const timezone = document.head.querySelector("meta[name=\"timezone\"]");
 const appUrl = document.head.querySelector("meta[name=\"app-url\"]");
@@ -266,6 +271,8 @@ if (userID) {
     datetime_format: formatDate.content,
     calendar_format: formatDate.content,
     timezone: timezone.content,
+    fullName: userFullName?.content,
+    avatar: userAvatar?.content,
   };
   datetime_format.forEach((value) => {
     if (formatDate.content === value.format) {
@@ -338,7 +345,9 @@ if (userID) {
             enabled: window.ProcessMaker.AccountTimeoutEnabled,
           },
         });
-        window.ProcessMaker.closeSessionModal();
+        if (window.ProcessMaker.closeSessionModal) {
+          window.ProcessMaker.closeSessionModal();
+        }
       }
     })
     .listen(".Logout", (e) => {

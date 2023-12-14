@@ -11,6 +11,7 @@ use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
@@ -58,12 +59,21 @@ abstract class ExporterBase implements ExporterInterface
 
     public $incrementStringSeparator = ' ';
 
+    public $logger = null;
+
+    public $saveAssetsMode = null;
+
     public static function modelFinder($uuid, $assetInfo)
     {
         $class = $assetInfo['model'];
         $column = 'uuid';
         $matchedBy = null;
         $baseQuery = $class::query();
+
+        // If table does not exists for model, continue.
+        if (!Schema::hasTable($baseQuery->getModel()->getTable())) {
+            return [null, null];
+        }
 
         // Check if the model has soft deletes
         if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($class))) {
@@ -115,6 +125,7 @@ abstract class ExporterBase implements ExporterInterface
     ) {
         $this->mode = $options->get('mode', $this->model->uuid);
         $this->saveAssetsMode = $options->get('saveAssetsMode', $this->model->uuid);
+        $this->logger = new Logger();
     }
 
     public function uuid() : string
@@ -194,9 +205,9 @@ abstract class ExporterBase implements ExporterInterface
     {
         try {
             $extensions = app()->make(Extension::class);
-            $extensions->runExtensions($this, 'preExport');
+            $extensions->runExtensions($this, 'preExport', $this->logger);
             $this->export();
-            $extensions->runExtensions($this, 'postExport');
+            $extensions->runExtensions($this, 'postExport', $this->logger);
         } catch (ModelNotFoundException $e) {
             \Log::error($e->getMessage());
         }
@@ -205,9 +216,10 @@ abstract class ExporterBase implements ExporterInterface
     public function runImport($existingAssetInDatabase = null)
     {
         $extensions = app()->make(Extension::class);
-        $extensions->runExtensions($this, 'preImport');
+        $extensions->runExtensions($this, 'preImport', $this->logger);
+        $this->logger->log('Running Import ' . static::class);
         $this->import($existingAssetInDatabase);
-        $extensions->runExtensions($this, 'postImport');
+        $extensions->runExtensions($this, 'postImport', $this->logger);
     }
 
     public function addReference($type, $attributes)
@@ -392,8 +404,8 @@ abstract class ExporterBase implements ExporterInterface
             $value = $this->model->$attribute;
             $i = 0;
             while ($this->duplicateExists($attribute, $value)) {
-                if ($i > 100) {
-                    throw new \Exception('Can not fix duplicate attribute after 100 iterations');
+                if ($i > 1000) {
+                    throw new \Exception('Can not fix duplicate attribute after 1000 iterations');
                 }
                 $i++;
                 $value = $handler($value);
@@ -500,7 +512,16 @@ abstract class ExporterBase implements ExporterInterface
         // If a template is being used and an associated category is present, add that category to the collection.
         // Otherwise, if the collection is empty and there's an uncategorized reference, add the uncategorized category.
         if ($isTemplate && isset($this->model->process_category_id)) {
-            $categories->push($categoryClass::findOrFail($this->model->process_category_id));
+            if ($this->getReference('uncategorized-category')) {
+                $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
+            } else {
+                $categorFind = $categoryClass::find($this->model->process_category_id);
+                if (!$categorFind) {
+                    $categorFind = $categoryClass::where('name', 'Uncategorized')->firstOrFail();
+                    \Log::debug($categoryClass . ' ID: ' . $this->model->process_category_id . ' not found. Changing category toUncategorize.');
+                }
+                $categories->push($categorFind);
+            }
         } elseif ($categories->empty() && $this->getReference('uncategorized-category')) {
             $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
         }

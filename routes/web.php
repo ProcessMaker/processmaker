@@ -16,6 +16,7 @@ use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
+use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
@@ -26,14 +27,16 @@ use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
 use ProcessMaker\Http\Controllers\Process\SignalController;
 use ProcessMaker\Http\Controllers\ProcessController;
+use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
-Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_password')->group(function () {
+Route::middleware('auth', 'sanitize', 'force_change_password')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
@@ -70,11 +73,13 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
         Route::get('screens/{screen}/export', [ScreenController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
         Route::get('screens/import', [ScreenController::class, 'import'])->name('screens.import')->middleware('can:import-screens');
         Route::get('screens/{screen}/download/{key}', [ScreenController::class, 'download'])->name('screens.download')->middleware('can:export-screens');
-        Route::get('screen-builder/{screen}/edit', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        Route::get('screen-builder/{screen}/edit/{processId?}', [ScreenBuilderController::class, 'edit'])->name('screen-builder.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens/preview', [ScreenController::class, 'preview'])->name('screens.preview')->middleware('can:view-screens');
 
         Route::get('scripts', [ScriptController::class, 'index'])->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', [ScriptController::class, 'edit'])->name('scripts.edit')->middleware('can:edit-scripts,script');
-        Route::get('scripts/{script}/builder', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts/{script}/builder/{processId?}', [ScriptController::class, 'builder'])->name('scripts.builder')->middleware('can:edit-scripts,script');
+        Route::get('scripts/preview', [ScriptController::class, 'preview'])->name('scripts.preview')->middleware('can:view-screens');
 
         Route::get('signals', [SignalController::class, 'index'])->name('signals.index')->middleware('can:view-signals');
         Route::get('signals/{signalId}/edit', [SignalController::class, 'edit'])->name('signals.edit')->middleware('can:edit-signals');
@@ -85,11 +90,15 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('designer/screens/categories', [ScreenController::class, 'index'])->name('screen-categories.index')->middleware('can:view-screen-categories');
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
+    Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
+    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
+    
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
     Route::get('processes/import/{page?}', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
+    Route::get('import/download-debug', [ProcessController::class, 'downloadImportDebug'])->name('import.download-debug')->middleware('can:import-processes');
     Route::get('processes/{process}/download/{key}', [ProcessController::class, 'download'])->name('processes.download')->middleware('can:export-processes');
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');
@@ -120,6 +129,7 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
     Route::get('requests', [RequestController::class, 'index'])->name('requests.index');
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
+    Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
     Route::get('tasks/search', [TaskController::class, 'search'])->name('tasks.search');
@@ -127,10 +137,11 @@ Route::middleware('auth', 'sanitize', 'external.connection', 'force_change_passw
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 
-    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index')->middleware('can:view-notifications,notification');
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
     Route::get('template/{type}/import', [TemplateController::class, 'import'])->name('templates.import')->middleware('template-authorization');
     Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
+    Route::get('template/assets', [TemplateController::class, 'chooseTemplateAssets'])->name('templates.assets');
     Route::get('modeler/templates/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization', 'can:edit-process-templates');
 
     // Allows for a logged in user to see navigation on a 404 page
@@ -169,3 +180,6 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
+
+// SAML Metadata Route
+Route::resource('/saml/metadata', MetadataController::class)->only('index');

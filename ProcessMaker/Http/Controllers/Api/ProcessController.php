@@ -18,6 +18,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
@@ -46,6 +47,9 @@ class ProcessController extends Controller
     public $doNotSanitize = [
         'bpmn',
         'svg',
+    ];
+    public $doNotSanitizeMustache = [
+        'case_title',
     ];
 
     /**
@@ -105,6 +109,11 @@ class ProcessController extends Controller
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
+        }
+        // Filter by category
+        $category = $request->input('category', null);
+        if (!empty($category)) {
+            $processes->processCategory($category);
         }
 
         if (!empty($pmql)) {
@@ -265,7 +274,7 @@ class ProcessController extends Controller
         }
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (ElementNotFoundException $error) {
             return response(
                 ['message' => __('The bpm definition is not valid'),
@@ -382,7 +391,7 @@ class ProcessController extends Controller
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
-            $process->assignAssetsToProjects($request, Process::class);
+            $process->syncProjectAsset($request, Process::class);
         } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
@@ -397,6 +406,50 @@ class ProcessController extends Controller
         ProcessPublished::dispatch($process->refresh(), $changes, $original);
 
         return new Resource($process->refresh());
+    }
+
+    public function updateBpmn(Request $request, Process $process)
+    {
+        $request->validate(Process::rules($process));
+
+        // bpmn validation
+        if ($schemaErrors = $this->validateBpmn($request)) {
+            $warnings = [];
+            foreach ($schemaErrors as $error) {
+                if (is_string($error)) {
+                    $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                    $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                } else {
+                    $warnings[] = $error;
+                }
+            }
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
+        }
+
+        $process->bpmn = $request->input('bpmn');
+        $process->name = $request->input('name');
+        $process->description = $request->input('description');
+        $process->saveOrFail();
+
+        // If is a subprocess, we need to update the name in the BPMN too
+        if ($request->input('parentProcessId') && $request->input('nodeId')) {
+            $parentProcess = Process::findOrFail($request->input('parentProcessId'));
+            $definitions = $parentProcess->getDefinitions();
+            $elements = $definitions->getElementsByTagName('callActivity');
+            foreach ($elements as $element) {
+                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                    $element->setAttribute('name', $request->input('name'));
+                }
+            }
+            $parentProcess->bpmn = $definitions->saveXML();
+            $parentProcess->saveOrFail();
+        }
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 
     /**
@@ -1459,5 +1512,33 @@ class ProcessController extends Controller
         $process->deleteDraft();
 
         return new Resource($process);
+    }
+
+    public function duplicate(Process $process, Request $request)
+    {
+        $request->validate(Process::rules());
+        $newProcess = new Process();
+
+        $exclude = ['id', 'uuid', 'created_at', 'updated_at'];
+        foreach ($process->getAttributes() as $attribute => $value) {
+            if (!in_array($attribute, $exclude)) {
+                $newProcess->{$attribute} = $process->{$attribute};
+            }
+        }
+        if ($request->has('name')) {
+            $newProcess->name = $request->input('name');
+        }
+        if ($request->has('description')) {
+            $newProcess->description = $request->input('description');
+        }
+        if ($request->has('process_category_id')) {
+            $newProcess->process_category_id = $request->input('process_category_id');
+        }
+        $newProcess->saveOrFail();
+        if ($request->has('projects')) {
+            $newProcess->syncProjectAsset($request, Process::class);
+        }
+
+        return new ApiResource($newProcess);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Events\MarkArtisanCachesAsInvalid;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
+use ProcessMaker\Jobs\RestartMessageConsumers;
 use ProcessMaker\Jobs\TerminateHorizon;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Repositories\ConfigRepository;
@@ -19,14 +20,14 @@ class SettingServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    protected static $shouldCacheConfiguration = false;
+    protected static bool $shouldCacheConfiguration = false;
 
     /**
      * Eloquent events which trigger configuration-related updates
      *
      * @var array
      */
-    public static $listen = [
+    public static array $listen = [
         'eloquent.saved: ' . Setting::class,
         'eloquent.deleted: ' . Setting::class,
     ];
@@ -53,10 +54,11 @@ class SettingServiceProvider extends ServiceProvider
         });
 
         // When the config:cache command is run, we need to restart
-        // horizon to ensure they use the latest version of the
-        // cached configuration
+        // horizon and the message consumer(s) to ensure they use
+        // the latest version of the cached configuration
         $this->app['events']->listen(CommandFinished::class, function ($event) {
             if ($this->isCacheConfigCommand($event)) {
+                $this->restartMessageConsumers();
                 $this->restartHorizon();
             }
         });
@@ -117,6 +119,23 @@ class SettingServiceProvider extends ServiceProvider
             ?? 'default';
 
         return is_int(strpos($command, 'config:cache'));
+    }
+
+    /**
+     * Restart the `processmaker:consume` commands to
+     * pick up new config changes
+     *
+     * @return void
+     */
+    public function restartMessageConsumers(): void
+    {
+        // If there's already a job pending to restart the message consumers,
+        // then we don't need to queue another. The job itself checks which
+        // messaging service is configured and will restart the consumer for
+        // it appropriately
+        if (!job_pending($job = RestartMessageConsumers::class)) {
+            $job::dispatch();
+        }
     }
 
     /**

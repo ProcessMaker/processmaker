@@ -21,10 +21,11 @@
             __('Categories'),
         ],
         'listConfig' => $listConfig,
-        'catConfig' => $catConfig
+        'catConfig' => $catConfig,
+        'runAsUserDefault' => $runAsUserDefault,
     ])
         @slot('itemList')
-            @component('processes.scripts.list', ['config' => $listConfig])
+            @component('processes.scripts.list', ['config' => $listConfig, 'runAsUserDefault' => $runAsUserDefault])
             @endcomponent
         @endslot
 

@@ -54,6 +54,9 @@ class PersistenceHandler
         try {
             // Save data according to the type
             switch ($transaction['type']) {
+                case 'about':
+                    $this->persistAbout($transaction['data']);
+                    break;
                 case 'activity_activated':
                     $this->persistActivityActivated($transaction);
                     break;
@@ -65,6 +68,9 @@ class PersistenceHandler
                     break;
                 case 'activity_closed':
                     $this->persistActivityClosed($transaction);
+                    break;
+                case 'activity_skipped':
+                    $this->persistActivitySkipped($transaction);
                     break;
                 case 'throw_event_token_arrives':
                     $this->persistThrowEventTokenArrives($transaction);
@@ -101,6 +107,9 @@ class PersistenceHandler
                     break;
                 case 'start_event_triggered':
                     $this->persistStartEventTriggered($transaction);
+                    break;
+                case 'throw_global_signal_event':
+                    $this->throwGlobalSignalEvent($transaction);
                     break;
                 case 'event_based_gateway_activated':
                     $this->persistEventBasedGatewayActivated($transaction);

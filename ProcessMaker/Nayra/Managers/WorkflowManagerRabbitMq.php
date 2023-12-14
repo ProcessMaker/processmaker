@@ -4,6 +4,7 @@ namespace ProcessMaker\Nayra\Managers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Contracts\WorkflowManagerInterface;
 use ProcessMaker\Exception\ConfigurationException;
@@ -47,6 +48,10 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     const ACTION_TRIGGER_SIGNAL_EVENT = 'TRIGGER_SIGNAL_EVENT';
 
     const ACTION_TASK_FAILED = 'TASK_FAILED';
+
+    protected $TOPIC_SCRIPTS = 'scripts';
+
+    protected $TOPIC_REQUESTS = 'requests';
 
     /**
      * Trigger a start event and return the process request instance.
@@ -135,7 +140,6 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         // Get complementary information
         $version = $instance->process_version_id;
         $userId = $this->getCurrentUserId();
-        $state = $this->serializeState($instance);
 
         // Dispatch complete task action
         $this->dispatchAction([
@@ -147,7 +151,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'element_id' => $token->element_id,
                 'data' => $data,
             ],
-            'state' => $state,
+            'collaboration_uuid' => $instance->collaboration_uuid,
             'session' => [
                 'user_id' => $userId,
             ],
@@ -257,7 +261,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
                 'user_id' => $userId,
             ],
             'collaboration_id' => $instance->collaboration_uuid,
-        ], 'scripts');
+        ], $this->TOPIC_SCRIPTS);
     }
 
     /**
@@ -549,6 +553,24 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
     }
 
     /**
+     * Retrieves IDs of all instances collaborating with the given instance.
+     *
+     * This function compiles a list of IDs from execution instances associated
+     * with the same process as the input instance, including the instance itself.
+     *
+     * @param ProcessRequest $instance The instance to find collaborators for.
+     * @return int[] Array of collaborating instance IDs.
+     */
+    protected function getCollaboratingInstanceIds($instance)
+    {
+        $ids = ProcessRequest::
+            where('process_collaboration_id', $instance->process_collaboration_id)
+            ->pluck('id')
+            ->toArray();
+        return $ids;
+    }
+
+    /**
      * Build a state object.
      *
      * @param ProcessRequest $instance
@@ -588,6 +610,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
             return [
                 'id' => $request->uuid,
+                'request_id' => $request->getKey(),
                 'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
@@ -641,8 +664,11 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
      * @param string $subject
      * @return void
      */
-    private function dispatchAction(array $action, $subject = 'requests'): void
+    private function dispatchAction(array $action, $subject = null): void
     {
+        if ($subject === null) {
+            $subject = $this->TOPIC_REQUESTS;
+        }
         // add environment variables to session
         $environmentVariables = $this->getEnvironmentVariables();
         $action['session']['env'] = $environmentVariables;
@@ -669,8 +695,14 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
         $user = $this->getAdminUser();
         if ($user) {
-            $token = new GenerateAccessToken($user);
-            $environmentVariables['API_TOKEN'] = $token->getToken();
+            $expires = Carbon::now()->addWeek();
+            $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
+                $user->removeOldRunScriptTokens();
+                $token = new GenerateAccessToken($user);
+
+                return $token->getToken();
+            });
+            $environmentVariables['API_TOKEN'] = $accessToken;
             $environmentVariables['API_HOST'] = config('app.docker_host_url') . '/api/1.0';
             $environmentVariables['APP_URL'] = config('app.docker_host_url');
             $environmentVariables['API_SSL_VERIFY'] = (config('app.api_ssl_verify') ? '1' : '0');

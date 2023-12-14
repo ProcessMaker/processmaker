@@ -87,15 +87,6 @@ class SyncDefaultTemplates implements ShouldQueue
                 ]);
                 $importer = new Importer($payload, $options);
                 $manifest = $importer->doImport();
-
-                $template = ProcessTemplates::where('uuid', $template['uuid'])->first();
-                $template->setRawAttributes([
-                    'key' => 'default_templates',
-                    'process_id' => null,
-                    'user_id' => null,
-                    'process_category_id' => $processCategoryId,
-                ]);
-                $template->save();
             }
         }
     }

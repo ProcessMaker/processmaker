@@ -16,12 +16,14 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   initialControls.forEach((config) => {
     config.control.inspector.push(...globalProperties[0].inspector);
 
-    manager.addControl(
-      config.control,
-      config.rendererComponent,
-      config.rendererBinding,
-      config.builderComponent,
-      config.builderBinding,
-    );
+    if (config.control.component !== "FormListTable" && config.control.component !== "FormAnalyticsChart") {
+      manager.addControl(
+        config.control,
+        config.rendererComponent,
+        config.rendererBinding,
+        config.builderComponent,
+        config.builderBinding,
+      );
+    }
   });
 });

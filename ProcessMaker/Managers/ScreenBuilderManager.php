@@ -2,8 +2,7 @@
 
 namespace ProcessMaker\Managers;
 
-use Illuminate\Support\Facades\Storage;
-use ProcessMaker\Models\ScreenType;
+use Illuminate\Foundation\PackageManifest;
 
 class ScreenBuilderManager
 {
@@ -57,6 +56,11 @@ class ScreenBuilderManager
         $extensionsFile = 'screen-builder-' . strtolower($type) . '-components.js';
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
+        $installed = app(PackageManifest::class)->list();
+        $directories = array_values(array_filter($directories, function ($directory) use ($installed) {
+            $package = 'processmaker/' . basename($directory);
+            return in_array($package, $installed);
+        }));
         foreach ($directories as $directory) {
             $extensionsFullName = $directory . '/js/' . $extensionsFile;
             $files = glob($extensionsFullName);

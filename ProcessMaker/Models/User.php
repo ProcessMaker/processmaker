@@ -2,16 +2,18 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
+use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
-use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
@@ -71,7 +73,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="expires_at", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="remember_token", type="string"),
-     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "SCHEDULED", "OUT_OF_OFFICE"}),
+     *   @OA\Property(property="status",type="string",enum={"ACTIVE","INACTIVE","SCHEDULED","OUT_OF_OFFICE","BLOCKED"}),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
@@ -120,6 +122,7 @@ class User extends Authenticatable implements HasMedia
         'manager_id',
         'schedule',
         'force_change_password',
+        'password_changed_at',
     ];
 
     protected $appends = [
@@ -167,7 +170,7 @@ class User extends Authenticatable implements HasMedia
             'phone' /*******/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' /********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
+            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED,BLOCKED'],
             'password' /****/ => static::passwordRules($existing),
         ];
     }
@@ -181,13 +184,28 @@ class User extends Authenticatable implements HasMedia
      */
     public static function passwordRules(self $existing = null)
     {
-        return array_filter([
+        // Mandatory policies
+        $passwordPolicies = [
             'required',
             $existing ? 'sometimes' : '',
-            'min:8',
-            new StringHasNumberOrSpecialCharacter(),
-            new StringHasAtLeastOneUpperCaseCharacter(),
-        ]);
+        ];
+        // Configurable policies
+        $passwordRules = Password::min((int) config('password-policies.minimum_length', 8));
+        if (config('password-policies.maximum_length', false)) {
+            $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
+        }
+        if (config('password-policies.numbers', true)) {
+            $passwordRules->numbers();
+        }
+        if (config('password-policies.uppercase', true)) {
+            $passwordPolicies[] = new StringHasAtLeastOneUpperCaseCharacter();
+        }
+        if (config('password-policies.special', true)) {
+            $passwordRules->symbols();
+        }
+        $passwordPolicies[] = $passwordRules;
+
+        return $passwordPolicies;
     }
 
     /**
@@ -253,6 +271,16 @@ class User extends Authenticatable implements HasMedia
     public function groups()
     {
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
+    }
+
+    public function projectMembers()
+    {
+        if (class_exists('ProcessMaker\Package\Projects\Models\ProjectMember')) {
+            return $this->hasMany('ProcessMaker\Package\Projects\Models\ProjectMember', 'member_id', 'id')->where('member_type', self::class);
+        } else {
+            // Handle the case where the ProjectMember class doesn't exist.
+            return $this->hasMany(EmptyModel::class);
+        }
     }
 
     public function permissions()
@@ -469,5 +497,19 @@ class User extends Authenticatable implements HasMedia
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public static function whereFullname($value)
+    {
+        return self::whereRaw("CONCAT(firstname, ' ', lastname) LIKE ?", ["%$value%"]);
+    }
+
+    public function removeOldRunScriptTokens()
+    {
+        // Remove old tokens more that one week old
+        return $this->tokens()
+            ->where('name', 'script-runner')
+            ->where('created_at', '<', now()->subWeek())
+            ->delete();
     }
 }

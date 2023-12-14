@@ -55,6 +55,14 @@ div.main {
       'url':''
     },
   ]
+
+  window.ProcessMaker.multiplayer = {
+    broadcaster: "{{config('multiplayer.default')}}",
+    host: "{{config('multiplayer.url')}}",
+    enabled: "{{ config('multiplayer.enabled') }}",
+  };
+  window.ProcessMaker.PMBlockList = @json($pmBlockList);
+  window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
   window.ProcessMaker.modeler = {
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
@@ -74,6 +82,13 @@ div.main {
       { value: "rule_expression", label: "Rule Expression" },
       { value: "process_manager", label: "Process Manager" },
     ],
+    countProcessCategories: @json($countProcessCategories),
+    countScreenCategories: @json($countScreenCategories),
+    countScriptCategories: @json($countScriptCategories),
+    screenTypes: @json($screenTypes),
+    scriptExecutors: @json($scriptExecutors),
+    isProjectsInstalled: @json($isProjectsInstalled),
+    isAiGenerated: @json($isAiGenerated)
   }
   const warnings = @json($process->warnings);
 

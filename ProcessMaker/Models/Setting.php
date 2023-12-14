@@ -66,6 +66,8 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
+    public const PASSWORD_POLICIES_GROUP = 'Password Policies';
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -86,6 +88,11 @@ class Setting extends ProcessMakerModel implements HasMedia
         'key',
         'config',
         'format',
+        'name',
+        'helper',
+        'group',
+        'hidden',
+        'ui',
     ];
 
     /**
@@ -244,7 +251,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param $filter string
      */
-    public function scopeFilterGroups($query, $filter)
+    public function notHiddenGroups($query, $filter)
     {
         $filter = '%' . mb_strtolower($filter) . '%';
 

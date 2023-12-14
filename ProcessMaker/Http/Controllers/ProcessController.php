@@ -2,11 +2,14 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use Cache;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
+use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -100,13 +103,14 @@ class ProcessController extends Controller
         $list = $this->listUsersAndGroups();
 
         $process->append('notifications', 'task_notifications');
+        $assignedProjects = json_decode($process->projects, true);
 
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
         $canEditData = $this->listCan('EditData', $process);
         $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
+        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons', 'assignedProjects']));
     }
 
     /**
@@ -199,9 +203,37 @@ class ProcessController extends Controller
         return view('processes.export', compact('process'));
     }
 
-    public function import(Process $process)
+    public function import(Request $request, Process $process)
     {
-        return view('processes.import');
+        if ($request->get('forceUnlock')) {
+            $result = Cache::lock(ImportV2::CACHE_LOCK_KEY)->forceRelease();
+            Session::flash('_alert', json_encode(['success', 'unlocked ' . $result]));
+
+            return redirect()->route('processes.import');
+        }
+        $importIsRunning = ImportV2::isRunning();
+
+        return view('processes.import', compact('importIsRunning'));
+    }
+
+    public function downloadImportDebug(Request $request)
+    {
+        $hash = $request->get('hash');
+        if ($hash !== md5_file(Storage::path(ImportV2::FILE_PATH))) {
+            throw new \Exception('File hash does not match');
+        }
+
+        $zip = new \ZipArchive();
+        $debugFilePath = Storage::path(ImportV2::DEBUG_ZIP_PATH);
+        if (true === ($zip->open($debugFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE))) {
+            $zip->addFile(Storage::path(ImportV2::FILE_PATH), 'payload.json');
+            $zip->addFile(Storage::path(ImportV2::MANIFEST_PATH), 'manifest.json');
+            $zip->addFile(Storage::path(ImportV2::OPTIONS_PATH), 'options.json');
+            $zip->addFile(Storage::path(ImportV2::LOG_PATH), 'log.txt');
+            $zip->close();
+        }
+
+        return response()->download($debugFilePath);
     }
 
     /**
@@ -249,7 +281,7 @@ class ProcessController extends Controller
         $apiRequest = new ApiProcessController();
         $response = $apiRequest->triggerStartEvent($process, $request);
 
-        return redirect('/requests/' . $response->id);
+        return redirect('/requests/' . $response->id . '?fromTriggerStartEvent=');
     }
 
     private function checkAuth()

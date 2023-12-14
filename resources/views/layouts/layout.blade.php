@@ -14,6 +14,8 @@
     <meta name="screen-cache-timeout" content="{{ config('app.screen.cache_timeout') }}">
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
+    <meta name="user-full-name" content="{{ Auth::user()->fullname }}">
+    <meta name="user-avatar" content="{{ Auth::user()->avatar }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
@@ -137,6 +139,13 @@
 @foreach(GlobalScripts::getScripts() as $script)
   <script src="{{$script}}"></script>
 @endforeach
+@isset($addons)
+@foreach ($addons as $addon)
+  @if (!empty($addon['script_mix']))
+    <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+  @endif
+@endforeach
+@endisset
     <!--javascript!-->
     @yield('js')
 </body>

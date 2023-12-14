@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,7 +82,9 @@ class UserController extends Controller
     {
         if (!(Auth::user()->can('view-users') ||
             Auth::user()->can('create-processes') ||
-            Auth::user()->can('edit-processes'))) {
+            Auth::user()->can('edit-processes') ||
+            Auth::user()->can('create-projects') ||
+            Auth::user()->can('view-projects'))) {
             throw new AuthorizationException(__('Not authorized to view users.'));
         }
         $query = User::nonSystem();
@@ -106,6 +109,10 @@ class UserController extends Controller
 
         if ($request->has('status')) {
             $query->where('status', $request->input('status'));
+        }
+
+        if ($request->has('mention_username')) {
+            $query->where('username', 'like', $request->input('mention_username') . '%');
         }
 
         $order_by = 'username';
@@ -161,6 +168,10 @@ class UserController extends Controller
 
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
 
         $user->fill($fields);
@@ -295,6 +306,10 @@ class UserController extends Controller
         $fields = $request->json()->all();
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
         $original = $user->getOriginal();
         $user->fill($fields);

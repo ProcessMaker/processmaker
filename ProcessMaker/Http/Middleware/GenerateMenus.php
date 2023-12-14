@@ -19,6 +19,22 @@ class GenerateMenus
     public function handle(Request $request, Closure $next)
     {
         Menu::make('topnav', function ($menu) {
+            // The home will display the dynamic ui view
+            // @todo home will replace the request and task
+            if (hasPackage('package-dynamic-ui')) {
+                $menu->group(['prefix' => 'home'], function ($request_items) {
+                    $request_items->add(
+                        __('Home'),
+                        ['route' => 'home', 'id' => 'home']
+                    )->active('home/*');
+                });
+            }
+            $menu->group(['prefix' => 'processes'], function ($request_items) {
+                $request_items->add(
+                    __('Processes'),
+                    ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
+                )->active('processes-catalogue/*');
+            });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
                     __('Requests'),
@@ -32,12 +48,12 @@ class GenerateMenus
                     ['route' => 'tasks.index', 'id' => 'tasks']
                 )->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
-                $menu->group(['prefix' => 'processes'], function ($request_items) {
+            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-projects')) {
+                $menu->group(['prefix' => 'designer'], function ($request_items) {
                     $request_items->add(
                         __('Designer'),
-                        ['route' => 'processes.index', 'id' => 'designer']
-                    )->active('processes/*');
+                        ['route' => 'designer.index', 'id' => 'designer']
+                    )->active('designer/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients|view-settings')) {
@@ -119,6 +135,9 @@ class GenerateMenus
                 'id' => 'homeid',
             ]);
         });
+        Menu::make('sidebar_processes_catalogue', function ($menu) {
+            $submenu = $menu->add(__('Processes'));
+        });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));
             $submenu->add(__('My Requests'), [
@@ -143,35 +162,35 @@ class GenerateMenus
 
         Menu::make('sidebar_processes', function ($menu) {
             $submenu = $menu->add(__('Designer'));
-            if (\Auth::check() && \Auth::user()->can('view-processes')) {
+            if ($this->userHasPermission('view-processes')) {
                 $submenu->add(__('Processes'), [
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes',
                 ])->data('order', 0);
             }
-            if (\Auth::check() && \Auth::user()->can('view-scripts')) {
+            if ($this->userHasPermission('view-scripts')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',
                     'icon' => 'fa-code',
                     'id' => 'process-scripts',
                 ])->data('order', 2);
             }
-            if (\Auth::check() && \Auth::user()->can('view-screens')) {
+            if ($this->userHasPermission('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens',
                 ])->data('order', 3);
             }
-            if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {
+            if ($this->userHasPermission('view-environment_variables')) {
                 $submenu->add(__('Environment Variables'), [
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment',
                 ])->data('order', 4);
             }
-            if (\Auth::check() && \Auth::user()->can('edit-processes')) {
+            if ($this->userHasPermission('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
                     'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
@@ -261,5 +280,26 @@ class GenerateMenus
         });
 
         return $next($request);
+    }
+
+    private function userHasPermission($permission)
+    {
+        $user = \Auth::user();
+
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->is_administrator) {
+            return true;
+        }
+
+        // Fetch the user's permissions and check if the user has the specific permission
+        $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
+        if ($user->can($permission) && count($userPermissions) === 1 && $userPermissions[0] === 'Projects') {
+            return false; // Deny UI access if the user has only the 'Projects' permission
+        }
+
+        return $user->can($permission);
     }
 }

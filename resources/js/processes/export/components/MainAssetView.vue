@@ -97,6 +97,7 @@
             />
             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
             <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" :info="groups"/>
+            <import-log :log-entries="$root.queueLog" :allow-download-debug="$root.allowDownloadDebug"></import-log>
         </div>
     </div>
 </template>
@@ -110,6 +111,7 @@ import ImportProcessModal from '../../import/components/ImportProcessModal';
 import SetPasswordModal from "./SetPasswordModal.vue";
 import DataProvider from "../DataProvider";
 import ExportSuccessModal from "./ExportSuccessModal.vue";
+import ImportLog from "../../import/components/ImportLog.vue";
 
 export default {
   props: [
@@ -125,6 +127,7 @@ export default {
         AssetDependentTreeModal,
         AssetTreeModal,
         ImportProcessModal,
+        ImportLog,
     },
     mixins: [],
     data() {
@@ -140,7 +143,7 @@ export default {
         existingAssets() {
             if (this.$root.manifest) {
                 return Object.entries(this.$root.ioState).filter(([uuid, settings]) => {
-                    const asset = this.$root.manifest[uuid];           
+                    const asset = this.$root.manifest[uuid];        
                     return asset && asset.existing_id !== null && settings.mode !== 'discard' && !settings.discardedByParent;
                 }).map(([uuid, _]) => {
                     const asset = this.$root.manifest[uuid];  
@@ -175,7 +178,12 @@ export default {
             this.$refs["set-password-modal"].show();
         },
         onCancel() {
-            window.location = "/processes";
+            const projectId = this.$route.params.id;
+            if (this.$route.name === "projectCustomAssetImport") {
+                window.location.href = `/designer/projects/${projectId}`;
+            } else {
+                window.location.href = '/processes';
+            }
         },
         onExport() {
             if (this.passwordProtect) {
@@ -189,7 +197,7 @@ export default {
             if (this.assetsExist) {
                 this.$refs['import-process-modal'].show();
             } else {
-                this.handleImport();
+                this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
             }
         },
         exportProcess(password = null) {
@@ -209,20 +217,26 @@ export default {
         setCopyAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('copy');           
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
         },
         setUpdateAll() {
             this.assetsExist = false;
             this.$root.setModeForAll('update');
-            this.handleImport();
+            this.$route.name === "projectCustomAssetImport" ? this.handleProjectAssetsImport(this.$route.params.id) : this.handleImport();
+
         },
         handleImport() {
             this.loading = true;
-            DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password)
-            .then((response) => {
+            let request = null;
+            if (this.$root.queue) {
+                request = DataProvider.doImportQueued(this.$root.exportOptions(), this.$root.password, this.$root.hash);
+            } else {
+                request = DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password, this.$root.hash)
+            }
+            request.then((response) => {
                 const message = this.$t('Process was successfully imported');
                 ProcessMaker.alert(message, 'success');
-                if (response?.data?.processId) {
+                if (response?.data?.processId && !this.$root.queue) {
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
             }).catch(error => {
@@ -232,7 +246,33 @@ export default {
                 ProcessMaker.alert(message, 'danger');
                 this.loading = false;
             });
-        }
+        },
+        handleProjectAssetsImport(projectId) {
+            this.loading = true;
+            DataProvider.doImportProjectAssets(this.$root.file, this.$root.exportOptions(), projectId, this.$root.password)
+            .then((response) => {
+                if (response?.data) {
+                    const projectId = response.data.projectId;
+                    const successMessage = this.$t('Asset was successfully imported');
+
+                    ProcessMaker.alert(successMessage, 'success');
+                    window.location.href = projectId ? `/designer/projects/${projectId}` : '/designer/projects/';
+                    this.submitted = false; // the form was successfully submitted
+                } else {
+                    // the request was successful but did not return expected data
+                    throw new Error(this.$t('Unknown error while importing the Asset.'));
+                }
+            })
+            .catch((error) => {
+                this.handleError(error); // a shared method that displays the error message and resets loading/submitted
+            });  
+        },
+        handleError(error) {
+            const message = error.response?.data?.message || this.$t('Unable to import the Asset.');
+            ProcessMaker.alert(`${message}.`, 'danger');
+            this.submitted = false;
+            this.loading = false;
+        },
     },
     mounted() {
     },

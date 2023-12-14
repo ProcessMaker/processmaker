@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-button :aria-label="createProcess" v-b-modal.selectTemplate class="mb-3 mb-md-0 ml-md-2">
+    <b-button v-if="!hideAddBtn" :aria-label="createProcess" v-b-modal.selectTemplate class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"/> {{ process }}
     </b-button>
     <modal
@@ -22,6 +22,7 @@
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)" 
         @blank-process-button-clicked="createBlankProcess()"
         @ai-process-button-clicked="createAiProcess()"
+        :showTemplateOptionsActionBar="true"
         :package-ai="packageAi" />
     </modal>
     <create-process-modal ref="create-process-modal" 
@@ -31,18 +32,19 @@
       :template-data="templateData" 
       :isProjectsInstalled="isProjectsInstalled"
       @resetModal="resetModal()"
+      :projectId="projectId"
       />
   </div>
 </template>
 
 <script>
-  import { Modal } from "SharedComponents";
+  import Modal from "../shared/Modal.vue";
   import TemplateSearch from "./TemplateSearch.vue";
   import CreateProcessModal from "../../processes/components/CreateProcessModal.vue";
 
   export default {
     components: { Modal, TemplateSearch, CreateProcessModal },
-    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled'],
+    props: ['type', 'countCategories', 'packageAi', 'isProjectsInstalled', 'hideAddBtn', 'projectId'],
     data: function() {
       return {
         title: '',
@@ -111,10 +113,17 @@
       resetModal() {
         this.selectedTemplate = false;
         this.templateData = {};
+      },
+      show() {
+        this.$bvModal.show('selectTemplate');
       }
     },
     mounted() {
       this.title = this.$t(`New ${this.type}`);
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.size > 0 && searchParams.get("new") === "true") {
+          this.show();
+      };
     }
   };
 </script>

@@ -95,7 +95,9 @@
 </template>
 
 <script>
-import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+import Required from "../shared/Required.vue";
+import Modal from "../shared/Modal.vue";
+import FormErrorsMixin from "../shared/FormErrorsMixin";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
 
 export default {
@@ -202,7 +204,7 @@ export default {
         let putData = {
           name: this.name,
           description: this.description,
-          description: this.version,
+          version: this.version,
           user_id: this.currentUserId,
           mode: this.saveAssetsMode,
           process_id: this.assetId,

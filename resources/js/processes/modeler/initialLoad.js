@@ -137,6 +137,7 @@ ProcessMaker.EventBus.$on(
         label: "Display Next Assigned Task to Task Assignee",
         helper: "Directs Task assignee to the next assigned Task",
         name: "interstitial",
+        enabledByDefault: true,
       },
     });
 
@@ -149,7 +150,7 @@ ProcessMaker.EventBus.$on(
         name: "screenRef",
         required: true,
         params: {
-          type: "FORM",
+          type: "FORM,CONVERSATIONAL",
           interactive: true,
         },
       },
@@ -463,5 +464,28 @@ ProcessMaker.EventBus.$on(
     });
   },
 );
+
+ProcessMaker.EventBus.$on(
+  "modeler-init",
+  (event) => {
+    event.registerPreview({
+      url: '/designer/screens/preview',
+      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
+      receivingParams: ['screenRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:Task',
+    });
+    event.registerPreview({
+      url: '/designer/screens/preview',
+      assetUrl: (nodeData) => nodeData.screenRef ? `/designer/screen-builder/${nodeData.screenRef}/edit` : null,
+      receivingParams: ['screenRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:ManualTask',
+    });
+    event.registerPreview({
+      url: '/designer/scripts/preview',
+      assetUrl: (nodeData) => nodeData.scriptRef ? `/designer/scripts/${nodeData.scriptRef}/builder` : null,
+      receivingParams: ['scriptRef'],
+      matcher: (nodeData) => nodeData?.$type === 'bpmn:ScriptTask',
+    });
+  });
 
 validateScreenRef();

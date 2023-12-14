@@ -60,4 +60,23 @@ return [
      | heartbeat interval in milliseconds
      */
     'heartbeat_interval_ms' => intval(env('KAFKA_HEARTBEAT_INTERVAL_MS') ?: 3000),
+
+    /*
+     | The prefix that will be used in the topic names
+     */
+    'prefix' => env('KAFKA_PREFIX', ''),
+
+    /*
+     | SASL configuration
+     */
+    'sasl_password' => env('KAFKA_SASL_PASSWORD'),
+    'sasl_username' => env('KAFKA_SASL_USERNAME'),
+    'sasl_mechanisms' => env('KAFKA_SASL_MECHANISMS', 'SCRAM-SHA-256'),
+    'security_protocol' => env('KAFKA_SECURITY_PROTOCOL', 'SASL_PLAINTEXT'),
+
+    /*
+     | Message max bytes and max message bytes
+     */
+    'message_max_bytes' => env('KAFKA_MESSAGE_MAX_BYTES', 10000000),
+    'compression_codec' => env('KAFKA_COMPRESSION_CODEC', 'gzip'),
 ];

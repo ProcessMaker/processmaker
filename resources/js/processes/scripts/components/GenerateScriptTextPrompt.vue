@@ -13,7 +13,7 @@
         ref="textArea"
         data-test="prompt-area"
         v-model="text"
-        placeholder="Enter your prompt!..."
+        placeholder="Enter your prompt..."
         rows="4"
         max-rows="4"
       ></b-form-textarea>
@@ -49,7 +49,7 @@ import _, { debounce } from "lodash";
 import Suggestions from "./Suggestions";
 
 export default {
-  props: ["promptSessionId", "defaultPrompt"],
+  props: ["promptSessionId", "defaultPrompt", "autofocus"],
   name: "GenerateScriptTextPrompt",
   components: {
     Suggestions,
@@ -84,6 +84,9 @@ export default {
   mounted() {
     this.fetchSuggestions();
     this.text = this.defaultPrompt;
+    if (this.autofocus) {
+      this.$refs.textArea.focus();
+    }
   },
   methods: {
     toggleSuggestions() {
@@ -135,11 +138,13 @@ export default {
           this.suggestionsPages = response.data.suggestions;
           this.loadingSuggestions = false;
         }).catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
+          if (error.response.status !== 404) {
+            const errorMsg = error.response?.data?.message || error.message;
+            window.ProcessMaker.alert(errorMsg, "danger");
+          }
           this.loadingSuggestions = false;
         });
     },
   },
 };
-  </script>
+</script>

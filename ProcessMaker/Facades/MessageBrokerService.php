@@ -12,6 +12,7 @@ use ProcessMaker\Nayra\MessageBrokers\ServiceInterface;
  * @method static void connect()
  * @method static void disconnect()
  * @method static void sendMessage(string $subject, string $collaborationId, mixed $body)
+ * @method static void sendAboutMessage()
  * @method static string receiveMessage(string $queueName)
  * @method static void worker()
  */

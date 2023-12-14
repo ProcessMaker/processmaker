@@ -141,4 +141,16 @@ class ProcessPolicy
 
         return class_exists($className) && $process->pmBlock?->is_imported_locked;
     }
+
+    /**
+     * This determine if user can view processes.
+     *
+     * @param User $user
+     * @param Process $process
+     * @return bool
+     */
+    public function view(User $user, Process $process)
+    {
+        return $user->can('view-processes');
+    }
 }

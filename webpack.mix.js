@@ -35,25 +35,28 @@ mix.options({
   },
 });
 
-mix.extract([
-  "vue",
-  "vue-router",
-  "jquery",
-  "bootstrap-vue",
-  "axios",
-  "popper.js",
-  "lodash",
-  "bootstrap",
-  "jointjs",
-  "luxon",
-  "bpmn-moddle",
-  "@fortawesome/fontawesome-free",
-  "@fortawesome/fontawesome-svg-core",
-  "@fortawesome/free-brands-svg-icons",
-  "@fortawesome/free-solid-svg-icons",
-  "@fortawesome/vue-fontawesome",
-])
+mix
+  .extract([
+    "vue",
+    "vue-router",
+    "jquery",
+    "bootstrap-vue",
+    "axios",
+    "popper.js",
+    "lodash",
+    "bootstrap",
+    "jointjs",
+    "luxon",
+    "bpmn-moddle",
+    "@fortawesome/fontawesome-free",
+    "@fortawesome/fontawesome-svg-core",
+    "@fortawesome/free-brands-svg-icons",
+    "@fortawesome/free-solid-svg-icons",
+    "@fortawesome/vue-fontawesome",
+  ])
   .copy("resources/img/*", "public/img")
+  .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
+  .copy("resources/img/script_lang/*", "public/img/script_lang")
   .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
   .copy("resources/js/components/CustomActions.vue", "public/js")
   .copy("resources/js/components/DetailRow.vue", "public/js")
@@ -66,52 +69,109 @@ mix.extract([
   .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
-mix.js("resources/js/app-layout.js", "public/js")
+mix
+  .js("resources/js/app-layout.js", "public/js")
   .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
-  .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
-  .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
-  .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
+  .js(
+    "resources/js/processes/modeler/process-map.js",
+    "public/js/processes/modeler"
+  )
+  .js(
+    "resources/js/processes/modeler/initialLoad.js",
+    "public/js/processes/modeler"
+  )
+  .js(
+    "resources/js/admin/auth/passwords/change.js",
+    "public/js/admin/auth/passwords/change.js"
+  )
   .js("resources/js/admin/settings/index.js", "public/js/admin/settings")
   .js("resources/js/admin/settings/ldaplogs.js", "public/js/admin/settings")
   .js("resources/js/admin/users/index.js", "public/js/admin/users")
   .js("resources/js/admin/users/edit.js", "public/js/admin/users/edit.js")
   .js("resources/js/admin/groups/index.js", "public/js/admin/groups")
   .js("resources/js/admin/groups/edit.js", "public/js/admin/groups/edit.js")
-  .js("resources/js/admin/auth-clients/index.js", "public/js/admin/auth-clients/index.js")
+  .js(
+    "resources/js/admin/auth-clients/index.js",
+    "public/js/admin/auth-clients/index.js"
+  )
   // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
-  .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")
-  .js("resources/js/admin/script-executors/index.js", "public/js/admin/script-executors/index.js")
+  .js(
+    "resources/js/admin/cssOverride/edit.js",
+    "public/js/admin/cssOverride/edit.js"
+  )
+  .js(
+    "resources/js/admin/script-executors/index.js",
+    "public/js/admin/script-executors/index.js"
+  )
 
   .js("resources/js/processes/index.js", "public/js/processes")
   .js("resources/js/processes/edit.js", "public/js/processes")
   .js("resources/js/processes/archived.js", "public/js/processes")
+  .js("resources/js/processes/newDesigner.js", "public/js/processes")
   .js("resources/js/templates/index.js", "public/js/templates")
   .js("resources/js/templates/import/index.js", "public/js/templates/import")
   .js("resources/js/templates/configure.js", "public/js/templates")
-  .js("resources/js/processes/categories/index.js", "public/js/processes/categories")
+  .js("resources/js/templates/assets.js", "public/js/templates")
+  .js(
+    "resources/js/processes/categories/index.js",
+    "public/js/processes/categories"
+  )
   .js("resources/js/processes/scripts/index.js", "public/js/processes/scripts")
   .js("resources/js/processes/scripts/edit.js", "public/js/processes/scripts")
-  .js("resources/js/processes/scripts/editConfig.js", "public/js/processes/scripts")
+  .js(
+    "resources/js/processes/scripts/editConfig.js",
+    "public/js/processes/scripts"
+  )
+  .js(
+    "resources/js/processes/scripts/preview.js",
+    "public/js/processes/scripts"
+  )
   .js("resources/js/processes/export/index.js", "public/js/processes/export")
-  .js("resources/js/processes/environment-variables/index.js", "public/js/processes/environment-variables")
+  .js(
+    "resources/js/processes/environment-variables/index.js",
+    "public/js/processes/environment-variables"
+  )
   .js("resources/js/processes/import/index.js", "public/js/processes/import")
   .js("resources/js/processes/screens/index.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/edit.js", "public/js/processes/screens")
+  .js(
+    "resources/js/processes/screens/preview.js",
+    "public/js/processes/screens"
+  )
   .js("resources/js/processes/signals/index.js", "public/js/processes/signals")
   .js("resources/js/processes/signals/edit.js", "public/js/processes/signals")
-  .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
-  .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
-  .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
+  .js(
+    "resources/js/processes/screen-builder/main.js",
+    "public/js/processes/screen-builder"
+  )
+  .js(
+    "resources/js/processes/screen-builder/typeForm.js",
+    "public/js/processes/screen-builder"
+  )
+  .js(
+    "resources/js/processes/screen-builder/typeDisplay.js",
+    "public/js/processes/screen-builder"
+  )
   .js("resources/js/leave-warning.js", "public/js")
   .js("resources/js/requests/index.js", "public/js/requests")
+  .js("resources/js/requests/mobile.js", "public/js/requests/mobile.js")
   .js("resources/js/requests/show.js", "public/js/requests")
   .js("resources/js/requests/preview.js", "public/js/requests")
 
-  .js("resources/js/processes/translations/import.js", "public/js/processes/translations")
+  .js(
+    "resources/js/processes/translations/import.js",
+    "public/js/processes/translations"
+  )
+
+  .js(
+    "resources/js/processes-catalogue/index.js",
+    "public/js/processes-catalogue/index.js"
+  )
 
   .js("resources/js/tasks/index.js", "public/js/tasks/index.js")
+  .js("resources/js/tasks/mobile.js", "public/js/tasks/mobile.js")
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
@@ -123,7 +183,20 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = "node_modules/monaco-editor/min/vs/";
 const monacoDestination = "public/vendor/monaco-editor/min/vs/";
-const monacoLanguages = ["php", "css", "lua", "javascript", "csharp", "java", "python", "r", "html", "xml", "typescript"];
+const monacoLanguages = [
+  "php",
+  "css",
+  "lua",
+  "javascript",
+  "csharp",
+  "java",
+  "python",
+  "r",
+  "html",
+  "xml",
+  "typescript",
+  "sql",
+];
 const monacoFiles = [
   "loader.js",
   "editor/editor.main.js",
