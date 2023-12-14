@@ -1,5 +1,5 @@
 <div class="container h-100" id="connectedAccounts">
-  <div class="card card-body h-100">
+  <div class="card card-body h-100 border-0">
     <h4 class="mt-2 pb-3 page-title">{{__('Connected Accounts')}}</h4>
     <ul class="accounts-list w-100 pl-0">
       <li class="accounts-list-item d-flex align-items-start py-3 mt-3" v-for="account in accounts">
