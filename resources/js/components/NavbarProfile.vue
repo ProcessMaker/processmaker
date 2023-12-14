@@ -46,16 +46,6 @@
             {{ editProfileText }}
           </a>
         </li>
-        <li class="list-group-item px-2">
-          <a
-            :href="connectedAccountsLink"
-            role="menuitem"
-            :aria-label="$t('Connected Accounts')"
-          >
-            <i class="fas fa-puzzle-piece fa-fw fa-lg mr-1" />
-            {{ $t('Connected Accounts') }}
-          </a>
-        </li>
         <li
           v-if="displayMyFilesLink"
           class="list-group-item px-2"
@@ -134,7 +124,6 @@ export default {
       fullName: null,
       username: null,
       user_id: null,
-      user: null,
       popoverShow: true,
       information: [],
     };
@@ -148,9 +137,6 @@ export default {
     },
     editProfileText() {
       return this.$t("Edit {{user}} Profile", { user: this.username });
-    },
-    connectedAccountsLink() {
-      return `/admin/users/${this.user}/edit/connected-accounts`;
     },
   },
   mounted() {
@@ -177,7 +163,6 @@ export default {
         this.sourceImage = true;
       }
       this.fullName = user.fullname;
-      this.user = user.id;
       this.user_id = `/profile/${user.id}`;
       this.username = user.username;
       this.information = [
