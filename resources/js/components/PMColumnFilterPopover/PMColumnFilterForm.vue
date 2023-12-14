@@ -43,37 +43,10 @@
           </b-form-group>
 
           <b-form-group :key="'value' + index">
-            <b-form-input v-if="switchOperator('BFormInput',item)"
-                          v-model="item.value" 
-                          placeholder="Type value"
-                          size="sm">
-            </b-form-input>
-            <PMColumnFilterOpBetween v-if="switchOperator('PMColumnFilterOpBetween',item)"
-                                     v-model="item.value">
-            </PMColumnFilterOpBetween>
-            <PMColumnFilterOpIn v-if="switchOperator('PMColumnFilterOpIn',item)"
-                                v-model="item.value">
-            </PMColumnFilterOpIn>
-            <PMColumnFilterOpDatetime v-if="switchOperator('BFormDatepicker',item)"
-                                      v-model="item.value">
-            </PMColumnFilterOpDatetime>
-            <PMColumnFilterOpBetweenDatepicker v-if="switchOperator('PMColumnFilterOpBetweenDatepicker',item)"
-                                               v-model="item.value">
-            </PMColumnFilterOpBetweenDatepicker>
-            <PMColumnFilterOpInDatepicker v-if="switchOperator('PMColumnFilterOpInDatepicker',item)"
-                                          v-model="item.value">
-            </PMColumnFilterOpInDatepicker>
-            <b-form-select v-if="switchOperator('BFormSelect',item)"
-                           v-model="item.value" 
-                           :options="formatRange"
-                           size="sm">
-            </b-form-select>
-            <b-form-select v-if="switchOperator('BFormSelectMultiple',item)" 
-                           v-model="item.value"
-                           :options="formatRange"
-                           multiple
-                           size="sm">
-            </b-form-select>
+            <component :is="item.viewControl"
+                       :formatRange="formatRange"
+                       v-model="item.value">
+            </component>
           </b-form-group>
 
           <b-form-group :key="'logical' + index"
@@ -121,29 +94,13 @@
 </template>
 
 <script>
-  import PMColumnFilterIconAsc from "./PMColumnFilterIconAsc"
-  import PMColumnFilterIconDesc from "./PMColumnFilterIconDesc"
-  import PMColumnFilterIconMinus from "./PMColumnFilterIconMinus"
-  import PMColumnFilterIconPlus from "./PMColumnFilterIconPlus"
-  import PMColumnFilterOpBetween from "./PMColumnFilterOpBetween"
-  import PMColumnFilterOpIn from "./PMColumnFilterOpIn"
-  import PMColumnFilterOpBetweenDatepicker from "./PMColumnFilterOpBetweenDatepicker"
-  import PMColumnFilterOpInDatepicker from "./PMColumnFilterOpInDatepicker"
-  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
+  import * as Components from "./PMColumnFilterOp.js";
 
   export default {
     components: {
-      PMColumnFilterIconAsc,
-      PMColumnFilterIconDesc,
-      PMColumnFilterIconMinus,
-      PMColumnFilterIconPlus,
-      PMColumnFilterOpBetween,
-      PMColumnFilterOpIn,
-      PMColumnFilterOpBetweenDatepicker,
-      PMColumnFilterOpInDatepicker,
-      PMColumnFilterOpDatetime
+      ...Components
     },
-    props: ["type", "value", "format", "formatRange", "operators"],
+    props: ["type", "value", "format", "formatRange", "operators", "viewConfig"],
     data() {
       return {
         items: [],
@@ -195,7 +152,8 @@
         }
         this.removeItem(index);
       },
-      onChangeOperator() {
+      onChangeOperator(item) {
+        this.switchViewControl(item);
       },
       onChangeLogicalOp() {
       },
@@ -206,9 +164,13 @@
         let json = JSON.parse(JSON.stringify(this.items));
         return this.transformToPmSyntax(json);
       },
+      /**
+       * I did not modify the assignment of 'or' with the 'root' array; later on, 
+       * 'or' will change its reference, so the values of 'root' will be retained.
+       * @param {JSON} json
+       * @returns {Array}
+       */
       transformToPmSyntax(json) {
-        //I did not modify the assignment of 'or' with the 'root' array; later on, 
-        //'or' will change its reference, so the values of 'root' will be retained.
         let root = [];
         let or = root;
         for (let i in json) {
@@ -218,6 +180,7 @@
             or = json[i].or;
           }
           delete json[i].logical;
+          delete json[i].viewControl;
         }
         return root;
       },
@@ -229,9 +192,11 @@
           },
           operator: "=",
           value: "",
-          logical: "and"
+          logical: "and",
+          viewControl: "PMColumnFilterOpInput"
         };
         this.items.splice(index, 0, item);
+        this.switchViewControl(item);
       },
       removeItem(index) {
         this.items.splice(index, 1);
@@ -259,79 +224,20 @@
           {value: "or", text: "or"}
         ];
       },
-      switchOperator(type, item) {
-        let sw;
-        if (this.format === "string") {
-          switch (type) {
-            case "BFormInput":
-              sw = ["=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
-              if (sw && this.isNotScalar(item.value)) {
-                item.value = "";
-              }
-              return sw;
-            case "PMColumnFilterOpBetween":
-              sw = ["between"].includes(item.operator);
-              if (sw && this.isScalar(item.value)) {
-                item.value = [];
-              }
-              return sw;
-            case "PMColumnFilterOpIn":
-              sw = ["in"].includes(item.operator);
-              if (sw && this.isScalar(item.value)) {
-                item.value = [];
-              }
-              return sw;
-          }
-        }
-        if (this.format === "date" || this.format === "datetime") {
-          switch (type) {
-            case "BFormDatepicker":
-              sw = ["=", "<", "<=", ">", ">=", "contains", "regex"].includes(item.operator);
-              if (sw && this.isNotScalar(item.value)) {
-                item.value = "";
-              }
-              return sw;
-            case "PMColumnFilterOpBetweenDatepicker":
-              sw = ["between"].includes(item.operator);
-              if (sw && this.isScalar(item.value)) {
-                item.value = [];
-              }
-              return sw;
-            case "PMColumnFilterOpInDatepicker":
-              sw = ["in"].includes(item.operator);
-              if (sw && this.isScalar(item.value)) {
-                item.value = [];
-              }
-              return sw;
-          }
-        }
-        if (this.format === "stringSelect") {
-          switch (type) {
-            case "BFormSelect":
-              sw = ["="].includes(item.operator);
-              if (sw && this.isNotScalar(item.value)) {
-                item.value = "";
-              }
-              return sw;
-            case "BFormSelectMultiple":
-              sw = ["in"].includes(item.operator);
-              if (sw && this.isScalar(item.value)) {
-                item.value = [];
-              }
-              return sw;
-          }
-        }
-        return false;
-      },
       switchLogical(index) {
         let sw = this.items.length > 1 && index + 1 !== this.items.length;
         return sw;
       },
-      isScalar(value) {
-        return ["string", "number", "boolean", "undefined", "symbol"].includes(typeof value);
-      },
-      isNotScalar(value) {
-        return !this.isScalar(value);
+      switchViewControl(item) {
+        let sw1, sw2;
+        for (let i in this.viewConfig) {
+          sw1 = this.viewConfig[i].type === this.format;
+          sw2 = this.viewConfig[i].includes.includes(item.operator);
+          if (sw1 && sw2) {
+            item.viewControl = this.viewConfig[i].control;
+            item.value = this.viewConfig[i].input;
+          }
+        }
       },
       updatedScroll() {
         if (this.viewItemsChanged === true) {

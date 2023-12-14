@@ -4,7 +4,7 @@
          :key="index"
          class="pm-column-filter-op-in">
       <b-form-input v-model="input[index]"
-                    :placeholder="'input ' + (index + 1)"
+                    :placeholder="$t('input ') + (index + 1)"
                     size="sm"
                     class="pm-column-filter-op-in-input"
                     @input="onInput">
