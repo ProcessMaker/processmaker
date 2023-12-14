@@ -279,7 +279,7 @@ export default {
       },
       redirectUrl: null,
       nodeId: null,
-      selectedSavedChart: "",
+      selectedSavedChart: {},
       dropdownSavedCharts: [],
       maxImages: 4,
       processDescription: "",
@@ -289,6 +289,7 @@ export default {
       labelTab: "Launchpad Settings",
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
+      selectedSavedChartId: "",
     };
   },
   computed: {
@@ -308,6 +309,8 @@ export default {
     this.getProcessDescription();
     //Receives selected Option from launchpad Icons multiselect
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
+    this.selectedSavedChart = "";
+    this.selectedSavedChartid = "";
   },
   methods: {
     swapLabel() {
@@ -319,7 +322,7 @@ export default {
       this.isSecondaryColor = !this.isSecondaryColor;
     },
     launchpadIconSelected(iconData) {
-      this.selectedLaunchpadIcon = iconData;
+      this.selectedLaunchpadIcon = iconData.value;
     },
     /**
      * Method that allows drag elements to the container
@@ -415,6 +418,7 @@ export default {
             const resultArray = response.data.data.flatMap((item) => {
               if (item.charts && Array.isArray(item.charts)) {
                 return item.charts.map((chartItem) => ({
+                  id: chartItem.id,
                   title: chartItem.title,
                 }));
               }
@@ -422,7 +426,7 @@ export default {
             });
 
             this.dropdownSavedCharts = resultArray;
-            this.selectedSavedChart = resultArray[0].title;
+            this.selectedSavedChart = "";
           }
         })
         .catch((error) => {
@@ -564,6 +568,12 @@ export default {
      */
     saveProcessDescription(dataProcess) {
       dataProcess.imagesCarousel =  this.images;
+      dataProcess.launchpad_properties = JSON.stringify({
+        saved_chart_id: this.selectedSavedChartId,
+        saved_chart_title: this.selectedSavedChart,
+        icon: this.selectedLaunchpadIcon,
+      });
+      
       ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
         .then(response => {
           ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
@@ -583,6 +593,7 @@ export default {
      */
     selectOption(option) {
       this.selectedSavedChart = option.title;
+      this.selectedSavedChartId = option.id;
     },
     /**
      * Method to store version info from Launchpad Window
