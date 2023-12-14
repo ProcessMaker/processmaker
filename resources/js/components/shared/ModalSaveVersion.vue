@@ -614,8 +614,8 @@ export default {
           if (error.response.status && error.response.status === 422) {
             this.errors = error.response.data.errors;
           }
+          //version_histories route not found because package-versions is not installed
           if (error.response.status === 404) {
-            //version_histories route not found because package-versions is not installed
             this.hideModal();
           }
         });
