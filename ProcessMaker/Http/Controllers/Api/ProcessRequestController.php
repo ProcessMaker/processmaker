@@ -187,6 +187,14 @@ class ProcessRequestController extends Controller
         return new ApiCollection($response, $total);
     }
 
+    public function getCount(Request $request, $process)
+    {
+        $query = ProcessRequest::select();
+        $query->where('process_id', $process);
+
+        return ['meta' => ['total' => $query->count()]];
+    }
+
     /**
      * Display the specified resource.
      *
