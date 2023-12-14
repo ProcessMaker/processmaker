@@ -50,7 +50,9 @@ class ScriptController extends Controller
             'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
 
-        return view('processes.scripts.index', compact('listConfig', 'catConfig'));
+        $runAsUserDefault = User::where('username', 'admin')->first();
+
+        return view('processes.scripts.index', compact('listConfig', 'catConfig', 'runAsUserDefault'));
     }
 
     public function edit(Script $script, User $users)

@@ -299,6 +299,7 @@ export default {
     "isProjectSelectionRequired",
     "projectId",
     "assetData",
+    "runAsUserDefault"
   ],
   data() {
     return {
@@ -320,7 +321,6 @@ export default {
       script: null,
       projects: [],
       isQuickCreate: isQuickCreateFunc(),
-      userRunScript: 1,
     };
   },
   computed: {
@@ -345,18 +345,11 @@ export default {
     },
   },
   mounted() {
-    this.getAdminUser();
+    this.selectedUser = this.runAsUserDefault ? this.runAsUserDefault : null;
   },
   methods: {
     show() {
       this.$bvModal.show("createScript");
-    },
-    getAdminUser() {
-      ProcessMaker.apiClient
-        .get(`/users/${this.userRunScript}`)
-        .then((response) => {
-          this.selectedUser = response.data;
-        });
     },
     onClose() {
       this.title = "";
