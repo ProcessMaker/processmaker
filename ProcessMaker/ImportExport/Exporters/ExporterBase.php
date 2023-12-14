@@ -11,6 +11,7 @@ use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
+use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
@@ -57,6 +58,10 @@ abstract class ExporterBase implements ExporterInterface
     public $matchedBy = null;
 
     public $incrementStringSeparator = ' ';
+
+    public $logger = null;
+
+    public $saveAssetsMode = null;
 
     public static function modelFinder($uuid, $assetInfo)
     {
@@ -120,6 +125,7 @@ abstract class ExporterBase implements ExporterInterface
     ) {
         $this->mode = $options->get('mode', $this->model->uuid);
         $this->saveAssetsMode = $options->get('saveAssetsMode', $this->model->uuid);
+        $this->logger = new Logger();
     }
 
     public function uuid() : string
@@ -199,9 +205,9 @@ abstract class ExporterBase implements ExporterInterface
     {
         try {
             $extensions = app()->make(Extension::class);
-            $extensions->runExtensions($this, 'preExport');
+            $extensions->runExtensions($this, 'preExport', $this->logger);
             $this->export();
-            $extensions->runExtensions($this, 'postExport');
+            $extensions->runExtensions($this, 'postExport', $this->logger);
         } catch (ModelNotFoundException $e) {
             \Log::error($e->getMessage());
         }
@@ -210,9 +216,10 @@ abstract class ExporterBase implements ExporterInterface
     public function runImport($existingAssetInDatabase = null)
     {
         $extensions = app()->make(Extension::class);
-        $extensions->runExtensions($this, 'preImport');
+        $extensions->runExtensions($this, 'preImport', $this->logger);
+        $this->logger->log('Running Import ' . static::class);
         $this->import($existingAssetInDatabase);
-        $extensions->runExtensions($this, 'postImport');
+        $extensions->runExtensions($this, 'postImport', $this->logger);
     }
 
     public function addReference($type, $attributes)
