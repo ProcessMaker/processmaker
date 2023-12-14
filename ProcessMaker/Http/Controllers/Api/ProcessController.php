@@ -24,6 +24,7 @@ use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
@@ -92,6 +93,9 @@ class ProcessController extends Controller
      */
     public function index(Request $request)
     {
+        // Get the user
+        $user = Auth::user();
+
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
@@ -124,6 +128,9 @@ class ProcessController extends Controller
             }
         }
 
+        // Get with bookmark
+        $bookmark = $request->input('bookmark', false);
+
         $processes = $processes->with('events')
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
@@ -153,6 +160,12 @@ class ProcessController extends Controller
 
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
+
+            // Get if the process is a bookmark
+            $process->bookmark = 0;
+            if ($bookmark) {
+                $process->bookmark = Bookmark::isBookmarked($process->id, $user->id);
+            }
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {

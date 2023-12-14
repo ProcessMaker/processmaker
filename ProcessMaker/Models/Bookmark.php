@@ -36,4 +36,12 @@ class Bookmark extends ProcessMakerModel
     {
         return $this->hasMany(User::class, 'id');
     }
+
+    /**
+     * Scope check if the process was bookmarked
+     */
+    public function scopeIsBookmarked($query, $proId, $userId)
+    {
+        return $query->where('process_id', $proId)->where('user_id', $userId)->count();
+    }
 }
