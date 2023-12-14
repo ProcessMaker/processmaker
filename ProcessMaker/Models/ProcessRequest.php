@@ -934,12 +934,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $mustacheTitle = $this->process()->select('case_title')->first()->case_title;
         }
         $mustache = new MustacheExpressionEvaluator();
+
         return $mustache->render($mustacheTitle, $data);
     }
 
     public function isSystem()
     {
         $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+
         return DB::table('category_assignments')
             ->where('assignable_type', Process::class)
             ->where('assignable_id', $this->process_id)

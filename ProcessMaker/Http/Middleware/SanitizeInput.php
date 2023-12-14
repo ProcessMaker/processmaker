@@ -18,6 +18,7 @@ class SanitizeInput extends TransformsRequest
     public $except = [
         //
     ];
+
     public $allowExpressions = [];
 
     /**

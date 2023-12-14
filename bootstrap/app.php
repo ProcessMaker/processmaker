@@ -3,12 +3,12 @@
 use Illuminate\Contracts\Console\Kernel as ConsoleKernelContract;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Http\Kernel as HttpKernelContract;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
 use ProcessMaker\Application;
 use ProcessMaker\Console\Kernel as ConsoleKernel;
 use ProcessMaker\Exception\Handler;
 use ProcessMaker\Http\Kernel as HttpKernel;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\RotatingFileHandler;
 
 /*
 |--------------------------------------------------------------------------

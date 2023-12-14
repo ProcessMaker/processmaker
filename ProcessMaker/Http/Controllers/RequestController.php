@@ -90,7 +90,7 @@ class RequestController extends Controller
                         ->orderBy('id')->first();
 
                     return redirect(route('tasks.edit', [
-                        'task' => $active ? $active->getKey() : $startEvent->getKey()
+                        'task' => $active ? $active->getKey() : $startEvent->getKey(),
                     ]));
                 }
             }

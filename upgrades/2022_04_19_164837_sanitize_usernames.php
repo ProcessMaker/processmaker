@@ -39,13 +39,12 @@ class SanitizeUsernames extends Upgrade
      */
     public function up()
     {
-        DB::table('users')->select(['id','username'])->orderBy('id')->chunk(250,
+        DB::table('users')->select(['id', 'username'])->orderBy('id')->chunk(250,
             static function ($users) {
                 dispatch(new SanitizeUsernamesJob($users))->onQueue('high');
             }
         );
     }
-
 
     /**
      * Reverse the upgrade migrations.
@@ -57,4 +56,3 @@ class SanitizeUsernames extends Upgrade
         //
     }
 }
-

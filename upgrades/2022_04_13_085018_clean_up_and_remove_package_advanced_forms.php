@@ -1,10 +1,10 @@
 <?php
 
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenVersion;
-use ProcessMaker\Models\ScreenType;
-use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenType;
+use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class CleanUpAndRemovePackageAdvancedForms extends Upgrade
 {
@@ -89,7 +89,7 @@ class CleanUpAndRemovePackageAdvancedForms extends Upgrade
             throw new RuntimeException("Unknown error while running: {$command}");
         }
 
-        if (!is_string(system($command = PHP_BINARY.' '. base_path('artisan') .' package-advancedforms:install > /dev/null 2>&1'))) {
+        if (!is_string(system($command = PHP_BINARY . ' ' . base_path('artisan') . ' package-advancedforms:install > /dev/null 2>&1'))) {
             throw new RuntimeException("Unknown error while running: {$command}");
         }
     }
@@ -147,4 +147,3 @@ class CleanUpAndRemovePackageAdvancedForms extends Upgrade
         return File::exists(base_path('vendor/processmaker/package-advancedforms'));
     }
 }
-
