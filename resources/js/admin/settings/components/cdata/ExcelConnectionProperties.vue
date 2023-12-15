@@ -15,6 +15,7 @@
       <b-form-select
         v-model="config.connection_type"
         name="connection_type"
+        data-cy="connection_type"
         :options="connectionOptions.oauth"
         :state="errorState('connection_type', errors)"
       />
@@ -35,8 +36,9 @@
       <b-form-input
         v-model="config.uri"
         autocomplete="off"
-        :state="errorState('uri', errors)"
         name="uri"
+        data-cy="uri"
+        :state="errorState('uri', errors)"
       />
     </b-form-group>
   </div>
