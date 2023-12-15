@@ -158,7 +158,8 @@
       onChangeLogicalOp() {
       },
       setValues(json) {
-        this.transformToFilterSyntax(json);
+        let items = this.transformToFilterSyntax(json);
+        this.items = items;
       },
       getValues() {
         let json = JSON.parse(JSON.stringify(this.items));
@@ -170,23 +171,24 @@
         let or = [];
         for (let i = 0; i < n; i++) {
           items[i].logical = "and";
-          items[i].viewControl = "";
+          items[i].viewControl = items[i].viewControl ?? "";
           if ("or" in items[i]) {
             //save and delete the 'or' property.
             items[i].logical = "or";
             or = items[i].or;
             delete items[i].or;
+            this.switchViewControl(items[i], false);
 
             //add the elements from the 'or' variable into 'items'.
             n = n + or.length;
             for (let j in or) {
               or[j].logical = "and";
               or[j].viewControl = "";
+              this.switchViewControl(or[j], false);
               items.splice(i + 1, 0, or[j]);
             }
           }
         }
-        this.items = items;
         return items;
       },
       /**
@@ -253,13 +255,19 @@
         let sw = this.items.length > 1 && index + 1 !== this.items.length;
         return sw;
       },
-      switchViewControl(item) {
+      switchViewControl(item, defaultValue) {
+        let sw3 = true;
+        if (defaultValue === false) {
+          sw3 = false;
+        }
         let sw1, sw2;
         for (let i in this.viewConfig) {
           sw1 = this.viewConfig[i].type === this.format;
           sw2 = this.viewConfig[i].includes.includes(item.operator);
           if (sw1 && sw2) {
             item.viewControl = this.viewConfig[i].control;
+          }
+          if (sw1 && sw2 && sw3) {
             item.value = this.viewConfig[i].input;
           }
         }
