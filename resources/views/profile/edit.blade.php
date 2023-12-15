@@ -20,14 +20,14 @@
             role="tab"
             aria-controls="nav-home" aria-selected="true">{{__('User Info')}}</a>
           <a class="nav-item nav-link" id="nav-accounts-tab" data-toggle="tab" href="#nav-accounts" role="tab"
-            aria-controls="nav-accounts" aria-selected="true">{{__('Connected Accounts')}}</a>
+            aria-controls="nav-accounts" aria-selected="false">{{__('Connected Accounts')}}</a>
           </div>
         </nav>
         <div class="container mt-0 border-top-0 p-3 card card-body">
           <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane show active" id="nav-home" role="tabpanel"
               aria-labelledby="nav-home-tab">
-              {{-- <div id="profileForm" v-cloak> --}}
+              <div id="profileForm" v-cloak>
                 <div class="d-flex flex-column flex-lg-row">
                     <div class="flex-grow-1">
                         @include('shared.users.profile')
@@ -40,7 +40,7 @@
                     {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                     {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
                 </div>
-              {{-- </div> --}}
+              </div>
             </div>
             <div class="tab-pane" id="nav-accounts" role="tabpanel" aria-labelledby="nav-accounts-tab">
               <div class="flex-grow-1">
@@ -72,6 +72,47 @@
         </div>
         <input id="customFile" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('select file')}}">
     </pm-modal>
+
+    <pm-modal
+        ref="editConnectionModal"
+        id="editConnectionModal"
+        title="{{__('Edit Connection')}}"
+        style="display: none;"
+        :ok-title="$t('OK')"
+        ok-variant="primary"
+        @hidden="onCloseModal"
+        @close="onCloseModal"
+        @onSubmit="onSubmit"
+    >
+      <div class="form-group">
+        {!! Form::label('url', __('URL')) !!}
+        {!! Form::text('url', null, ['id' => 'url','class'=> 'form-control', 'v-model' =>
+        'formData.url', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.url}',
+        'v-bind:placeholder' => '$t("Placeholder")',
+        'required', 'aria-required' => 'true']) !!}
+        <div class="invalid-feedback" role="alert" v-for="url in errors.url">@{{url}}</div>
+      </div>
+      <div class="form-group">
+        {!! Form::label('user', __('User')) !!}
+        {!! Form::text('user', null, ['id' => 'user', 'rows' => 4, 'class'=>
+        'form-control', 'v-model' => 'formData.user',
+        'v-bind:placeholder' => '$t("Placeholder")',
+        'v-bind:class' => '{\'form-control\':true,\'is-invalid\':errors.user}']) !!}
+        <div class="invalid-feedback" role="alert" v-for="user in errors.user">
+          @{{user}}
+        </div>
+      </div>
+      <div class="form-group">
+        {!! Form::label('accessKey', __('Access Key')) !!}
+        {!! Form::text('accessKey', null, ['id' => 'accessKey', 'rows' => 4, 'class'=>
+        'form-control', 'v-model' => 'formData.accessKey',
+        'v-bind:placeholder' => '$t("Placeholder")',
+        'v-bind:class' => '{\'form-control\':true,\'is-invalid\':errors.accessKey}']) !!}
+        <div class="invalid-feedback" role="alert" v-for="accessKey in errors.accessKey">
+          @{{accessKey}}
+        </div>
+      </div>
+    </pm-modal>
 @endsection
 
 @section('sidebar')
@@ -83,7 +124,7 @@
 
 <script>
         let formVueInstance = new Vue({
-            el: '#profileForm',
+            el: '#editProfile',
             mixins:addons,
             data: {
                 meta: @json(config('users.properties')),
@@ -102,16 +143,30 @@
                     password: null,
                     status: null
                 },
-				confPassword: '',
+				        confPassword: '',
                 image: '',
                 options: [
                     {
                         src: @json($currentUser['avatar']),
                         title: @json($currentUser['fullname']),
                         initials: "{{mb_substr($currentUser['firstname'],0,1, "utf-8")}}" + "{{mb_substr($currentUser['lastname'],0,1, "utf-8")}}"
-        }
+                    }
                 ],
                 focusErrors: 'errors',
+                accounts:[
+                  {
+                    id: 1,
+                    name: 'Gmail',
+                    description: 'Provide automated responses, generate drafts, and assist with email composition.',
+                    icon: 'https://img.icons8.com/color/48/gmail--v1.png',
+                  },
+                  {
+                    id: 2,
+                    name: 'Slack',
+                    description: 'Assist with task management, scheduling, and provide intelligent message responses.',
+                    icon: 'https://img.icons8.com/color/48/slack-new.png',
+                  },
+                ],
             },
             created() {
               if (this.meta) {
@@ -148,9 +203,6 @@
                             this.errors = error.response.data.errors;
                         });
                 },
-                onClose() {
-
-                },
                 deleteAvatar() {
                     let optionValues = formVueInstance.$data.options[0];
                     optionValues.src = null;
@@ -185,6 +237,12 @@
                         return false
                     }
                     return true
+                },
+                showAccountsModal() {
+                  accountsModalInstance.$refs.editConnectionModal.show();
+                },
+                onClose() {
+                  window.location.href = '/admin/users';
                 },
             }
         });
@@ -249,5 +307,61 @@
                 }
             }
         });
+    </script>
+
+    <script>
+      var accountsModalInstance = new Vue({
+        el: '#editConnectionModal',
+        data() {
+          return {
+            customModalButtons: [
+              {"content": "Cancel", "action": "close", "variant": "secondary", "size": "md"},
+              {"content": "OK", "action": "onSubmit", "variant": "primary", "size": "md"},
+            ],
+            formData: {},
+            errors: {
+              'url': null,
+              'user': null,
+              'accessKey': null
+            },
+            disabled: false
+          }
+        },
+        methods: {
+          hideModal() {
+            accountsModalInstance.$refs.editConnectionModal.hide();
+          },
+          onCloseModal() {
+            this.hideModal();
+            this.resetFormData();
+            this.resetModalErrors();
+          },
+          resetFormData() {
+            this.formData = Object.assign({}, {
+              url: null,
+              user: null,
+              accessKey: null
+            });
+          },
+          resetModalErrors() {
+            this.errors = Object.assign({}, {
+              url: null,
+              user: null,
+              accessKey: null
+            });
+          },
+          onSubmit() {
+            this.resetModalErrors();
+            //single click
+            if (this.disabled) {
+              return
+            }
+            this.disabled = true;
+
+            //TODO: HANDLE CONNECTION UPDATE
+            this.onCloseModal;
+          }
+        }
+      });
     </script>
 @endsection
