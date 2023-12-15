@@ -234,9 +234,9 @@ export default {
                 request = DataProvider.doImport(this.$root.file, this.$root.exportOptions(), this.$root.password, this.$root.hash)
             }
             request.then((response) => {
-                const message = this.$t('Process was successfully imported');
-                ProcessMaker.alert(message, 'success');
                 if (response?.data?.processId && !this.$root.queue) {
+                    const message = this.$t('Process was successfully imported');
+                    ProcessMaker.alert(message, 'success');
                     window.location.href = `/modeler/${response.data.processId}`;
                 }
             }).catch(error => {
