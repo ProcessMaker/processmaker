@@ -17,6 +17,7 @@
                           :format="format"
                           :formatRange="formatRange"
                           :operators="operators"
+                          :viewConfig="viewConfig"
                           @onSortAscending="onSortAscending"
                           @onSortDescending="onSortDescending"
                           @onApply="onApply"
@@ -36,7 +37,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "id", "type", "value", "format", "formatRange", "operators"],
+    props: ["container", "id", "type", "value", "format", "formatRange", "operators", "viewConfig"],
     data() {
       return {
         popoverShow: false
