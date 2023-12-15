@@ -546,10 +546,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
-                    ->orWhere('id', 'like', $filter)
-                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.id', 'like', $filter)
+                    ->orWhere('process_request_tokens.created_at', 'like', $filter)
                     ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter)
+                    ->orWhere('process_request_tokens.updated_at', 'like', $filter)
                     ->orWhereHas('processRequest', function ($query) use ($filter) {
                         $query->where(DB::raw('LOWER(name)'), 'like', $filter);
                     })
