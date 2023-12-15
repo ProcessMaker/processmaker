@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e38eb28f4136191c847147b8e30c6db",
+    "content-hash": "98ff6e31230b1561a3d8603306ed8a7f",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6798,16 +6798,16 @@
         },
         {
             "name": "processmaker/docker-executor-lua",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
-                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+                "reference": "15b50b089380a45a6634f0c43edd9ef38104f553"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
-                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/15b50b089380a45a6634f0c43edd9ef38104f553",
+                "reference": "15b50b089380a45a6634f0c43edd9ef38104f553",
                 "shasum": ""
             },
             "type": "library",
@@ -6825,12 +6825,15 @@
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GAGPL-3.0-or-later"
+            ],
             "description": "Lua script executor for processmaker 4",
             "support": {
                 "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues",
-                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/v1.0.0"
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/v1.0.1"
             },
-            "time": "2020-03-31T21:45:44+00:00"
+            "time": "2023-12-15T22:19:22+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
@@ -14784,5 +14787,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
