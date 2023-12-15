@@ -30,9 +30,9 @@
           <span v-if="props.option">
             <i
               class="fas fa-fw"
-              :class="'fa-' + props.option.value"
+              :class="'fa-' + (props.option.value === 'search' ? customValue : props.option.value)"
             ></i>
-            {{ props.option.label }}
+            {{ props.option.label === 'Search' ? customLabel : props.option.label }}
           </span>
         </template>
         <template
@@ -45,7 +45,7 @@
           >
             <i
               class="fas fa-fw"
-              :class="'fa-' + props.option.value"
+              :class="'fa-' + (props.option.value === 'search' ? customValue : props.option.value)"
             ></i>
           </div>
         </template>
@@ -65,6 +65,14 @@ export default {
       type: String,
       default: "search",
     },
+    customValue: {
+      type: String,
+      default: "search",
+    },
+    customLabel: {
+      type: String,
+      default: "Search",
+    }
   },
   data() {
     return {
@@ -91,6 +99,7 @@ export default {
   },
   mounted() {
     this.icon = this.value ? this.find(this.value) : this.find(this.default);
+    console.log('mounted in icon: ', this.customValue);
   },
   methods: {
     onSearch(query) {

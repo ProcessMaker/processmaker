@@ -41,7 +41,10 @@
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
-                    <icon-dropdown></icon-dropdown>
+                    <icon-dropdown 
+                      :custom-value="selectedLaunchpadIcon"
+                      :custom-label="selectedLaunchpadIconLabel">
+                    </icon-dropdown>
                     <label class="label-text mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
@@ -284,6 +287,7 @@ export default {
       maxImages: 4,
       processDescription: "",
       selectedLaunchpadIcon: "",
+      selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
       labelButton: "Version Info",
       labelTab: "Launchpad Settings",
@@ -307,12 +311,30 @@ export default {
     });
     this.retrieveSavedSearchCharts();
     this.getProcessDescription();
+    
     //Receives selected Option from launchpad Icons multiselect
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
-    this.selectedSavedChart = "";
-    this.selectedSavedChartid = "";
+    this.getLaunchpadSettings();
   },
   methods: {
+    getLaunchpadSettings() {
+      ProcessMaker.apiClient
+        .get("processes/"+this.process.id+"/media_images")
+        .then(response => {
+          const launchpadProperties = JSON.parse(response.data.data[0].launchpad_properties);
+          if(Object.keys(launchpadProperties).length > 0){
+            console.log('saved chart: ', launchpadProperties.saved_chart_title);
+            console.log('saved chart id: ', launchpadProperties.saved_chart_id);
+            this.selectedSavedChart = launchpadProperties.saved_chart_title;
+            this.selectedSavedChartId = launchpadProperties.saved_chart_id;
+            this.selectedLaunchpadIcon = launchpadProperties.icon;
+            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+          } else {
+            this.selectedSavedChart = "";
+            this.selectedSavedChartid = "";
+          }
+        });
+    },
     swapLabel() {
       const tempLabel = this.labelButton;
       this.showVersionInfo = !this.showVersionInfo;
@@ -323,6 +345,7 @@ export default {
     },
     launchpadIconSelected(iconData) {
       this.selectedLaunchpadIcon = iconData.value;
+      this.selectedLaunchpadIconLabel = iconData.label;
     },
     /**
      * Method that allows drag elements to the container
@@ -450,302 +473,5 @@ export default {
      */
     openFileInput() {
       this.$refs.fileInput.click();
-    },
-    /**
-     * Method to add image files to thumbnails container
-     */
-    handleImageUpload(event) {
-      if (this.images.length >= this.maxImages) {
-        // The amount of images allowed was reached.
-        ProcessMaker.alert(
-          this.$t("It is not possible to include more than four images."),
-          "danger"
-        );
-        return;
-      }
-      const files = event.target.files;
-      this.handleImages(files);
-      event.target.value = "";
-    },
-    /**
-     * Method to show trash image
-     */
-    showDeleteIcon(index) {
-      return this.$set(this.showDeleteIcons, index, true);
-    },
-    /**
-     * Method to hide trash image
-     */
-    hideDeleteIcon(index) {
-      return this.$set(this.showDeleteIcons, index, false);
-    },
-    /**
-     * Method to focus trash image
-     */
-    focusIcon(index) {
-      this.focusIcons = Array(4).fill(false);
-      this.$set(this.focusIcons, index, true);
-    },
-    /**
-     * Method to unfocus trash image
-     */
-    unfocusIcon(index) {
-      this.$set(this.focusIcons, index, false);
-    },
-    /**
-     * Method to delete image from carousel container
-     */
-    deleteImage(index) {
-      this.images.splice(index, 1);
-      this.$set(this.showDeleteIcons, index, false);
-      this.$set(this.focusIcons, index, false);
-    },
-    hideModal() {
-      this.$refs["my-modal-save"].hide();
-      this.cleanTabLaunchpad();
-    },
-    cleanTabLaunchpad() {
-      this.getProcessDescription();
-      this.images = [];
-      this.retrieveSavedSearchCharts();
-      this.labelTab = "Launchpad Settings";
-      this.labelButton = "Version Info";
-      this.showVersionInfo = true;
-      this.isSecondaryColor = false;
-    },
-    saveModal() {
-      let dataProcess = {};
-      //if method is called from ProcessMaker core
-      if (this.origin === "core") {
-        this.saveFromEditLaunchpad();
-        dataProcess = this.process;
-        dataProcess.description = this.processDescription;
-        this.saveProcessDescription(dataProcess);
-        return;
-      }
-      dataProcess = ProcessMaker.modeler.process;
-      dataProcess.description = this.processDescription;
-      let promise = new Promise((resolve, reject) => {
-        //emit save types
-        window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
-          this.redirectUrl,
-          this.nodeId,
-          this.options.type === "Screen" ? (false, resolve) : resolve,
-          reject
-        );
-      });
-
-      promise
-        .then((response) => {
-          ProcessMaker.apiClient
-            .post("/version_histories", {
-              subject: this.subject,
-              description: this.description,
-              versionable_id: this.options.id,
-              versionable_type: this.options.type,
-            })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
-              this.hideModal();
-            })
-            .catch((error) => {
-              if (error.response.status && error.response.status === 422) {
-                this.errors = error.response.data.errors;
-              }
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-
-      //Save only process description field using Process API
-      this.saveProcessDescription(dataProcess);
-
-    },
-    /**
-     * Save description field in Process
-     */
-    saveProcessDescription(dataProcess) {
-      dataProcess.imagesCarousel =  this.images;
-      dataProcess.launchpad_properties = JSON.stringify({
-        saved_chart_id: this.selectedSavedChartId,
-        saved_chart_title: this.selectedSavedChart,
-        icon: this.selectedLaunchpadIcon,
-      });
-      
-      ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
-        .then(response => {
-          ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
-        })
-        .catch(error => {
-          console.error("Error: ", error);
-        });
-    },
-    showModal() {
-      this.subject = "";
-      this.description = "";
-      this.errors = "";
-      this.$refs["my-modal-save"].show();
-    },
-    /**
-     * Method to set selected option to custom dropdown
-     */
-    selectOption(option) {
-      this.selectedSavedChart = option.title;
-      this.selectedSavedChartId = option.id;
-    },
-    /**
-     * Method to store version info from Launchpad Window
-     */
-    saveFromEditLaunchpad() {
-      ProcessMaker.apiClient
-        .post("/version_histories", {
-          subject: this.subject,
-          description: this.description,
-          versionable_id: this.options.id,
-          versionable_type: this.options.type,
-        })
-        .then((response) => {
-          ProcessMaker.alert(this.$t("The version was saved."), "success");
-          this.hideModal();
-        })
-        .catch((error) => {
-          if (error.response.status && error.response.status === 422) {
-            this.errors = error.response.data.errors;
-          }
-          //version_histories route not found because package-versions is not installed
-          if (error.response.status === 404) {
-            this.hideModal();
-          }
-        });
-    },
-  },
-};
-</script>
-
-<style lang="scss">
-$iconSize: 29px;
-$multiselect-height: 38px;
-.no-padding {
-  padding: 0;
-}
-
-.expanded .dropdown {
-  display: none;
-}
-
-.dropdown-toggle {
-  font-size: 12px;
-  padding: 5px 10px;
-}
-
-.dropdown-item {
-  font-size: 12px;
-}
-
-.dropdown-style {
-  background-color: white;
-  color: black;
-}
-
-.image-thumbnails {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.thumbnail {
-  margin-bottom: 10px;
-}
-
-.label-text {
-  font-size: 12px;
-}
-
-.image-thumbnails-container {
-  border: 1px solid #ccc;
-  padding: 5px;
-  max-height: 300px;
-  overflow-y: auto;
-  height: 100vh;
-}
-
-.delete-icon {
-  position: absolute;
-}
-
-.delete-icon i {
-  font-size: 18px;
-  color: darkgray;
-}
-
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
-}
-
-.btn-custom {
-  text-transform: none;
-}
-
-.drag-and-drop-container {
-  border: 1px dashed #ccc;
-  padding: 20px;
-  border-radius: 5px;
-  margin-top: 20px;
-  color: #2381c8;
-}
-
-.drag-and-drop-container i {
-  font-size: 36px;
-  margin-bottom: 10px;
-  color: rgba(35, 118, 200, 0.33);
-}
-
-.drag-and-drop-container div {
-  margin-bottom: 10px;
-  color: #2381c8;
-}
-
-.drag-and-drop-container b-button {
-  background-color: #2381c8;
-  text-transform: none;
-}
-
-.btn-custom-button {
-  text-transform: none;
-  border-color: rgba(35, 118, 200, 0.33);
-  background-color: white;
-  color: black;
-}
-
-.text-black {
-  color: #000000;
-}
-
-.cursor-default {
-  cursor: default;
-}
-
-.toolbar-item {
-  font-style: normal;
-  font-size: 14px;
-  letter-spacing: -0.02em;
-  line-height: 21px;
-}
-
-.custom-button {
-  right: 10px;
-  top: 20px;
-}
-
-.custom-color {
-  color: #6a7888;
-}
-
-.custom-dropdown {
-  width: 100%;
-}
-</style>
+    }
+  }

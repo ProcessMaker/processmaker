@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-block">
     <b-carousel
       id="carousel-1"
       v-model="slide"
@@ -36,6 +36,9 @@ export default {
       interval: 2000,
     };
   },
+  mounted() {
+    this.getLaunchpadImages();
+  },
   methods: {
     onSlideStart(slide) {
       this.sliding = true;
@@ -44,18 +47,18 @@ export default {
       this.sliding = false;
     },
     /**
-     * TO DO: This method gets information related to processes Launchpad Settings
+     * Get images from Media library related to process
      */
-    getLaunchpadSettings() {
-      //Here call API to retrieve information
-      // ProcessMaker.apiClient
-      //   .get("query here")
-      //   .then((response) => {
-      //     this.carouselImages = response.data;
-      //   })
-      //   .catch((err) => {
-      //     console.log("Error", err);
-      //   });
+    getLaunchpadImages() {
+      ProcessMaker.apiClient
+        .get("processes/"+this.process.id+"/media_images")
+        .then(response => {
+            console.log("getLaunchpadImages:", response.data.data);
+            const mediaArray = response.data.data[0].media;
+            mediaArray.forEach((media) => {
+            this.images.push({ url: media.original_url });
+          });
+        });
     },
   },
 };
