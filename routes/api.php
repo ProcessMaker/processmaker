@@ -149,7 +149,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('process_categories/{process_category}', [ProcessCategoryController::class, 'update'])->name('process_categories.update')->middleware('can:edit-process-categories');
     Route::delete('process_categories/{process_category}', [ProcessCategoryController::class, 'destroy'])->name('process_categories.destroy')->middleware('can:delete-process-categories');
 
+    //Process Launchpad
     Route::get('processes/{process}/media_images', [ProcessController::class, 'getMediaImages'])->name('processes.get_media_images')->middleware('can:view-processes');
+    Route::delete('processes/{process}/media_images', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete_media_images')->middleware('can:view-processes');
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
