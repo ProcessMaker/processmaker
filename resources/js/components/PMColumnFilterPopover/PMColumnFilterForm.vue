@@ -109,8 +109,6 @@
         viewItemsChanged: false
       };
     },
-    created() {
-    },
     mounted() {
       this.addItem(0);
     },
