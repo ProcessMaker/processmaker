@@ -28,19 +28,20 @@ class SamlRequest
                 'RelayState' => $relayState,
             ]);
 
-            // Build the query string and set it
-            $queryString = http_build_query($request->query());
-            $request->server->set('QUERY_STRING', $queryString);
-
-            $allowedUrls = env('APP_URL');
-            $url = $request->url();
+            // Check if the current URL is allowed
+            $allowedUrls = [env('APP_URL')];
+            $url = $request->getSchemeAndHttpHost();
 
             if (in_array($url, $allowedUrls)) {
                 // Remove saml_request cookie
                 Cookie::queue(Cookie::forget('saml_request'));
 
+                // Build the query string and set it
+                $queryString = http_build_query($request->query());
+                $request->server->set('QUERY_STRING', $queryString);
+
                 // To redirect with the new query string, you can use the following:
-                return redirect($url . '?' . $queryString);
+                return redirect($request->url() . '?' . $queryString);
             }
         }
 
