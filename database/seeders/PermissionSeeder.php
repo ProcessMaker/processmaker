@@ -20,6 +20,9 @@ class PermissionSeeder extends Seeder
             'edit-process-categories',
             'view-process-categories',
         ],
+        'Process Catalog' => [
+            'view-process-catalog',
+        ],
         'Process Templates' => [
             'delete-process-templates',
             'create-process-templates',
