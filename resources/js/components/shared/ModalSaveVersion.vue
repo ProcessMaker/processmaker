@@ -316,6 +316,9 @@ export default {
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
+    /**
+     * Get all information related to Launchpad Settings Modal
+     */
     getLaunchpadSettings() {
       this.images = [];
       ProcessMaker.apiClient
@@ -324,7 +327,7 @@ export default {
           const launchpadProperties = JSON.parse(
             response.data.data[0]?.launchpad_properties
           );
-          console.log("launchpadProperties: ", launchpadProperties);
+
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title
               ? launchpadProperties.saved_chart_title
@@ -337,29 +340,16 @@ export default {
             this.selectedSavedChartId = "";
           }
 
-
           //Load Images into Carousel Container
           const mediaArray = response.data.data[0].media;
-          console.log('mediaArray: ', mediaArray);
-              mediaArray.forEach((media) => {
-              
+              mediaArray.forEach((media) => {   
                this.convertImageUrlToBase64(media);
-
             });
         });
-
-        
-
-        // ProcessMaker.apiClient
-        //   .get("processes/"+this.processId+"/media_images")
-        //   .then(response => {
-        //       console.log("getLaunchpadImages:", response.data.data);
-        //       const mediaArray = response.data.data[0].media;
-        //       mediaArray.forEach((media) => {
-        //       this.images.push({ url: media.original_url });
-        //     });
-        //   });
     },
+    /**
+     * Converts Image from URL to Base64
+     */
     convertImageUrlToBase64(media) {
       fetch(media.original_url)
         .then(response => response.blob())
@@ -367,14 +357,11 @@ export default {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64Data = reader.result;
-
               this.images.push({ url: base64Data, uuid: media.uuid });
-              console.log('this.images ConvertBase64 foreach: ', this.images);
           };
           reader.readAsDataURL(blob);
         })
         .catch(error => {
-          // Manejar el error al cargar la imagen
           console.error('Error loading image:', error);
         });
     },
@@ -434,20 +421,11 @@ export default {
           if (this.isValidFileExtension(file.name)) {
             const reader = new FileReader();
             reader.onload = (event) => {
-              //this.images.push({ file, url: event.target.result });
-              //this.imagesMedia.push({ file, url: event.target.result });
               this.images.push({ 
                 file, 
                 url: event.target.result,
                 uuid: "", 
               });
-              // this.imagesMedia.push({ 
-              //   url: event.target.result, 
-              //   id: "",
-              //   file_name: "",
-              //   uuid: "", 
-              // });
-              //console.log('this.images.push ValidateImage: ',this.images);
               this.showDeleteIcons.push(false);
             };
             reader.readAsDataURL(file);
@@ -577,16 +555,16 @@ export default {
      * Method to delete image from carousel container
      */
     deleteImage(index) {
+      const uuid = this.images[index].uuid;
       this.images.splice(index, 1);
       this.$set(this.showDeleteIcons, index, false);
       this.$set(this.focusIcons, index, false);
-
+      
       //Call API to delete
-      const mediaID = 2;
       ProcessMaker.apiClient
-          .delete("processes/"+this.processId+"/media_images", { data: { mediaID } })
+          .delete("processes/"+this.processId+"/media_images", { data: { uuid } })
           .then(response => {
-            console.log("deleteLaunchpadImages OK");
+            ProcessMaker.alert(this.$t("The image was deleted"), "success");
           })
           .catch(error => {
             console.error("Error", error);
@@ -604,11 +582,8 @@ export default {
       this.labelButton = "Version Info";
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
-      //this.getLaunchpadSettings();
     },
     saveModal() {
-      console.log('Llamada a save modal');
-      //let dataProcess = {};
       //if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
@@ -641,7 +616,6 @@ export default {
             })
             .then((response) => {
               ProcessMaker.alert(this.$t("The version was saved."), "success");
-              //this.hideModal();
             })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
@@ -660,18 +634,14 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
-      //dataProcess.imagesCarousel = this.images;
-      console.log('IMAGES MEDIA PARA MANDAR POR BODY EN API: ',this.images);
       this.dataProcess.imagesCarousel = this.images;
-      //this.dataProcess.imagesCarouselJson = JSON.stringify({jsonImages: this.images});
-      console.log('SAVEDATACAROUSEL: ',this.dataProcess);
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
         saved_chart_title: this.selectedSavedChart,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
       });
-      //console.log('SAVEDATACAROUSELCOMPLETO: ',this.dataProcess);
+
       ProcessMaker.apiClient
         .put("processes/" + this.options.id, this.dataProcess)
         .then((response) => {
@@ -700,6 +670,7 @@ export default {
      */
     selectOption(option) {
       this.selectedSavedChart = option.title;
+      this.selectedSavedChartId = option.id;
     },
     /**
      * Method to store version info from Launchpad Window
@@ -714,7 +685,6 @@ export default {
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The version was saved."), "success");
-          //this.hideModal();
         })
         .catch((error) => {
           if (error.response.status && error.response.status === 422) {

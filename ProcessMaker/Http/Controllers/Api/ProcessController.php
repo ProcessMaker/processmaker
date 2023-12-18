@@ -1549,85 +1549,43 @@ class ProcessController extends Controller
         return new ApiResource($newProcess);
     }
 
-    // public function saveImagesIntoMedia(Request $request, Process $process) {
-    //     //var_dump("recibiendo body dataCarousel: ", $request->input('dataCarousel'));
-    //     //dd("ANTES ejecuta process adMEdiaFromBase64: ",$request);
-    //     if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
-    //         foreach ($request->imagesCarousel as $image) {
-    //             //dd("ejecuta process adMEdiaFromBase64: ",$request);
-    //             // $existingMedia = $process->getMedia('images_carousel');
-    //             // $mediaExists = $existingMedia->contains(function ($media) use ($image) {
-    //             //     return $media->getUrl() === $image['url'];
-    //             // });
-    //             // if (!$mediaExists) {
-    //             //     $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
-    //             // }
-    //             // Verificar si la imagen ya existe en la colección 'images_carousel'
-    //                 $mediaExists = $process->getMedia('images_carousel')
-    //                 ->filter(function ($media) use ($image) {
-    //                     var_dump("getCustomProperty('uuid'):", $media->getCustomProperty('uuid'));
-    //                     var_dump("image", $image['uuid']);
-    //                     return $media->getCustomProperty('uuid') === $image['uuid'];
-    //                     // Ajusta la condición según la lógica que necesites
-    //                 })
-    //                 ->isNotEmpty();
-
-    //             if (!$mediaExists) {
-    //                 // La imagen no existe, agregarla a la colección
-    //                 $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
-    //             }
-                
-    //         }
-    //     }
-    // }
-
     public function saveImagesIntoMedia(Request $request, Process $process)
-{ 
-    // Saving Carousel Images into Media table related to process_id
-    if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
-        foreach ($request->imagesCarousel as $image) {
-            // Verificar si $image['url'] es un string no vacío
-            if (is_string($image['url']) && !empty($image['url'])) {
- 
-                    if (!$process->media()->where('collection_name', 'images_carousel')->where('uuid', $image['uuid'])->exists()) {
+    { 
+        // Saving Carousel Images into Media table related to process_id
+        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
+            foreach ($request->imagesCarousel as $image) {
+                if (is_string($image['url']) && !empty($image['url'])) {
+                    if (!$process->media()->where('collection_name', 'images_carousel')
+                        ->where('uuid', $image['uuid'])->exists()) {
                         $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
                     }
-            } else {
-                return response()->json(['error' => 'No valid URL image'], 400);
+                } 
             }
         }
-
-        // Si todas las imágenes son válidas, puedes devolver una respuesta de éxito
-        return response()->json(['mensaje' => 'Imágenes almacenadas con éxito.']);
     }
-
-    // Si no hay imágenes para procesar, puedes devolver una respuesta adecuada
-    return response()->json(['mensaje' => 'No hay imágenes para procesar.']);
-}
-
 
     public function getMediaImages(Request $request, Process $process) {
         $media = Process::with(['media'])
             ->where('id', $process->id)
             ->get();
-        //$dataMedia = $media->getUrl();
-        //dd($dataMedia);
         return new ProcessCollection($media);
     }
 
     public function deleteMediaImages(Request $request, Process $process) {
-        // Obtén la instancia del modelo Process
         $process = Process::find($process->id);
 
-        // Obtén la instancia de la imagen que deseas eliminar (puedes usar el ID de la imagen)
-        $mediaImagen = $process->getMedia('images_carousel')->find($request->input('mediaID'));
+        // Get UUID image in media table
+        $uuid = $request->input('uuid');
 
-        // Verifica si la imagen existe antes de intentar eliminarla
+        $mediaImagen = $process->getMedia('images_carousel')
+            ->where('uuid', $uuid)
+            ->first();
+
+        // Check if image exists before delete
         if ($mediaImagen) {
-            // Borra la imagen
             $mediaImagen->delete();
-            // Opcional: También puedes borrar la imagen física del disco si lo deseas
-            unlink(public_path($mediaImagen->getPath()));
+            // Optional: If storage/public is not linked and we want to delete image from that directory
+            // unlink(public_path($mediaImagen->getPath()));
         }
     }
 }
