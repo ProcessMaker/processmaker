@@ -457,7 +457,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function scopeProcessCategory($query, int $id)
     {
-        return $query->where('processes.process_category_id', $id);
+        return $query->whereHas('categories', function ($query) use ($id) {
+            $query->where('process_categories.id', $id);
+        });
     }
 
     public function getCollaborations()
