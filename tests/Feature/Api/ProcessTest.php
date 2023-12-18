@@ -1230,4 +1230,13 @@ class ProcessTest extends TestCase
         // Assert redirect status.
         $response->assertStatus(302);
     }
+
+    public function testGetMediaImagesRoute()
+    {
+        $process = Process::factory()->create();
+
+        $response = $this->get(route('processes.media', ['process' => $process->id]));
+
+        $response->assertStatus(200);
+    }
 }

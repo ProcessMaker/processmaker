@@ -322,7 +322,7 @@ export default {
     getLaunchpadSettings() {
       this.images = [];
       ProcessMaker.apiClient
-        .get("processes/" + this.processId + "/media_images")
+        .get("processes/" + this.processId + "/media")
         .then((response) => {
           const launchpadProperties = JSON.parse(
             response.data.data[0]?.launchpad_properties
@@ -562,7 +562,7 @@ export default {
       
       //Call API to delete
       ProcessMaker.apiClient
-          .delete("processes/"+this.processId+"/media_images", { data: { uuid } })
+          .delete("processes/"+this.processId+"/media", { data: { uuid } })
           .then(response => {
             ProcessMaker.alert(this.$t("The image was deleted"), "success");
           })

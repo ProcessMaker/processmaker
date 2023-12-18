@@ -51,7 +51,7 @@ export default {
      */
     getLaunchpadImages() {
       ProcessMaker.apiClient
-        .get("processes/"+this.process.id+"/media_images")
+        .get("processes/"+this.process.id+"/media")
         .then(response => {
             console.log("getLaunchpadImages:", response.data.data);
             const mediaArray = response.data.data[0].media;
