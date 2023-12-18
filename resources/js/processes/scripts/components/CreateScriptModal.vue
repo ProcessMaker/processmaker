@@ -351,6 +351,13 @@ export default {
     show() {
       this.$bvModal.show("createScript");
     },
+    getAdminUser() {
+      ProcessMaker.apiClient
+        .get(`/users/${this.userRunScript}`)
+        .then((response) => {
+          this.selectedUser = response.data;
+        });
+    },
     onClose() {
       this.title = "";
       this.language = "";
