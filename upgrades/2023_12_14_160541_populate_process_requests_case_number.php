@@ -105,6 +105,11 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
      */
     public function down()
     {
-        //
+        // Truncate the table case_numbers
+        DB::table('case_numbers')->truncate();
+        // Update the auto increment value of table case_numbers to 1
+        DB::statement('ALTER TABLE case_numbers AUTO_INCREMENT = 1;');
+        // Set the case_number of all the process requests to null
+        DB::table('process_requests')->update(['case_number' => null]);
     }
 }
