@@ -47,7 +47,7 @@ export default {
       this.sliding = false;
     },
     /**
-     * Get images from Media library related to process
+     * Get images from Media library related to process.
      */
     getLaunchpadImages() {
       ProcessMaker.apiClient
