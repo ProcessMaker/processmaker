@@ -12,12 +12,14 @@
 import ExcelConnectionProperties from "./cdata/ExcelConnectionProperties.vue";
 import GithubConnectionProperties from "./cdata/GithubConnectionProperties.vue";
 import DocusignConnectionProperties from "./cdata/DocusignConnectionProperties.vue";
+import GmailConnectionProperties from "./cdata/GmailConnectionProperties.vue";
 
 export default {
   components: {
     ExcelConnectionProperties,
     GithubConnectionProperties,
     DocusignConnectionProperties,
+    GmailConnectionProperties,
   },
   props: {
     formData: {
@@ -35,6 +37,7 @@ export default {
         "cdata.excel": "excel-connection-properties",
         "cdata.github": "github-connection-properties",
         "cdata.docusign": "docusign-connection-properties",
+        "cdata.gmail": "gmail-connection-properties",
       },
     };
   },

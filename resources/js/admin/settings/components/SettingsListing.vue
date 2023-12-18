@@ -10,17 +10,18 @@
       <template v-slot:right-buttons>
         <div v-if="topButtons" class="d-flex">
           <b-button
-            v-for="(btn,index) in topButtons"
-            :ref="formatGroupName(btn.group)"
-            :key="`btn-${index}`"
-            class="ml-2 nowrap"
+            v-for="(btn, index) in topButtons"
             v-bind="btn.ui.props"
-            @click="handler(btn)"
+            :key="`btn-${index}`"
+            :ref="formatGroupName(btn.group)"
+            :data-cy="btn.key"
             :disabled="false"
-            >
-            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-            {{btn.name}}
+            class="ml-2 nowrap"
+            @click="handler(btn)"
+          >
+            <b-spinner ref="b-spinner" small :hidden="true" />
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon" />
+            {{ btn.name }}
           </b-button>
         </div>
       </template>
@@ -58,15 +59,16 @@
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button 
-                :aria-label="$t('Edit')" 
+              <b-button
                 v-uni-aria-describedby="row.item.id.toString()"
-                :disabled="row.item.readonly" 
-                @click="onEdit(row)" 
-                variant="link" 
+                variant="link"
                 class="settings-listing-button"
-                >
-                <i class="fa-lg fas fa-edit settings-listing-button mr-1"></i>
+                :data-cy="`edit-${row.item.key}`"
+                :aria-label="$t('Edit')"
+                :disabled="row.item.readonly"
+                @click="onEdit(row)"
+              >
+                <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
               </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
@@ -74,23 +76,25 @@
                 v-uni-aria-describedby="row.item.id.toString()"
                 v-b-tooltip.hover
                 variant="link"
+                class="settings-listing-button"
+                :data-cy="`copy-${row.item.key}`"
                 :aria-label="$t('Copy to Clipboard')"
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-                class="settings-listing-button"
-                >
+              >
                 <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
               </b-button>
 
               <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
-                <b-button 
-                  :aria-label="$t('Delete')"
+                <b-button
                   v-uni-aria-describedby="row.item.id.toString()"
-                  @click="onDelete(row)" 
-                  variant="link" 
+                  variant="link"
                   class="settings-listing-button"
-                  >
+                  :data-cy="`delete-${row.item.key}`"
+                  :aria-label="$t('Delete')"
+                  @click="onDelete(row)"
+                >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
                 </b-button>
               </span>
@@ -476,8 +480,8 @@ export default {
       this.$refs.table.refresh();
       this.$emit('refresh');
     },
-    formatGroupName(name)  {
-      return name.toLowerCase().replaceAll(" ", '-');
+    formatGroupName(name) {
+      return name.toLowerCase().replaceAll(" ", "-");
     },
     filterTopButtons(buttons) {
       if (!this.settings) {
