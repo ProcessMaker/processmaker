@@ -1,41 +1,62 @@
 <template>
-  <b-row>
-    <b-col cols="2">
-      <h4> {{ $t('Processes Browser') }} </h4>
-      <!--
-      Menu Catalogue FOUR-12111
-      <MenuCatologue
-        :data="listCategories"
-        :select="selectCategorie"
-        class="mt-3"
-      />
-      -->
-    </b-col>
-    <b-col cols="10">
+  <div>
+    <b-row>
       <div class="d-flex">
         <b-col cols="9">
-          Process Map
+          <process-map
+            :process="process"
+            :permission="permission"
+            :current-user-id="currentUserId"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="goBackCategory"
+          />
+          <processes-carousel
+            :process="process"
+          />
         </b-col>
         <b-col cols="3">
-          Process Options
+          <process-options :process="process" />
         </b-col>
       </div>
       <b-col cols="12">
-        Process Tab
+        <process-tab />
       </b-col>
-    </b-col>
-  </b-row>
+    </b-row>
+  </div>
 </template>
 
 <script>
+import ProcessesCarousel from "./ProcessesCarousel.vue";
+import ProcessMap from "./ProcessMap.vue";
+import ProcessOptions from "./ProcessOptions.vue";
+import ProcessTab from "./ProcessTab.vue";
 
 export default {
+  components: {
+    ProcessOptions,
+    ProcessMap,
+    ProcessesCarousel,
+    ProcessTab,
+  },
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   data() {
     return {
-      fields: [],
+      listCategories: [],
+      selectCategory: 0,
+      dataOptions: {},
+    };
+  },
+  mounted() {
+    this.dataOptions = {
+      id: this.process.id.toString(),
+      type: "Process",
     };
   },
   methods: {
+    /** Rerun a process cards */
+    goBackCategory() {
+      this.$emit("goBackCategory");
+    },
   },
 };
 </script>

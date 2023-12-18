@@ -61,7 +61,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury()->format('Y-m-d'),
-            'password' => $faker->sentence(10),
+            'password' => $faker->sentence(8) . 'A_' . '1',
         ];
     }
 
@@ -100,7 +100,7 @@ class UsersTest extends TestCase
             'lastname' => 'name',
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->sentence(10),
+            'password' => $faker->password(8) . 'A_' . '1',
         ]);
 
         // Validate the header status code
@@ -404,7 +404,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName(),
             'lastname' => $faker->lastName(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $faker->password(8) . 'A' . '1' . '.',
             'force_change_password' => 0,
         ]);
 
@@ -602,9 +602,9 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password field must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertTrue(in_array('The Password field must be at least 8 characters.', $json['errors']['password']));
 
-        $payload['password'] = 'Abc12345';
+        $payload['password'] = 'Abc12345_';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(201);
         $json = $response->json();
@@ -616,9 +616,9 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password field must be at least 8 characters.', $json['errors']['password'][0]);
+        $this->assertTrue(in_array('The Password field must be at least 8 characters.', $json['errors']['password']));
 
-        $payload['password'] = 'Abc12345';
+        $payload['password'] = 'Abc12345_';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(204);
 
@@ -673,7 +673,7 @@ class UsersTest extends TestCase
                 'lastname' => $faker->lastName(),
                 'email' => $faker->email(),
                 'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-                'password' => $faker->sentence(10),
+                'password' => $faker->sentence(8) . 'A_' . '1',
             ]);
             // Validate the header status code
             $response->assertStatus(201);

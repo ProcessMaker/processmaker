@@ -56,6 +56,7 @@ class UserController extends Controller
         $status = [
             ['value' => 'ACTIVE', 'text' => __('Active')],
             ['value' => 'INACTIVE', 'text' => __('Inactive')],
+            ['value' => 'BLOCKED', 'text' => __('Blocked')],
         ];
 
         $timezones = array_reduce(

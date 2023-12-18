@@ -66,6 +66,8 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
+    public const PASSWORD_POLICIES_GROUP = 'Password Policies';
+
     /**
      * The attributes that aren't mass assignable.
      *

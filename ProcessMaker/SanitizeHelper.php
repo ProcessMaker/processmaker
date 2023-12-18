@@ -35,12 +35,14 @@ class SanitizeHelper
      * @param  bool $strip_tags
      * @return mixed
      */
-    public static function sanitize($value, $strip_tags = true)
+    public static function sanitize($value, $strip_tags = true, $sanitizeExpressions = true)
     {
         if (is_string($value) && $strip_tags) {
             // Remove most injectable code
             $value = self::strip_tags($value);
-            $value = self::sanitizeVueExp($value);
+            if ($sanitizeExpressions) {
+                $value = self::sanitizeVueExp($value);
+            }
 
             // Return the sanitized string
             return $value;

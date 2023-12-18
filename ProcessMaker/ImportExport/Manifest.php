@@ -77,7 +77,7 @@ class Manifest
         return $manifest;
     }
 
-    public static function fromArray(array $array, Options $options)
+    public static function fromArray(array $array, Options $options, $logger)
     {
         self::buildParentModeMap($array, $options);
 
@@ -90,6 +90,7 @@ class Manifest
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $model = self::updateBPMNDefinitions($model, $saveAssetsModeOption);
             $exporter = new $exporterClass($model, $manifest, $options, false);
+            $exporter->logger = $logger;
             $exporter->importing = true;
             $exporter->mode = $mode;
             $exporter->matchedBy = $matchedBy;
@@ -204,7 +205,11 @@ class Manifest
                     break;
                 case 'object':
                     if (!is_object($model->$field)) {
-                        $model->$field = json_decode($model->$field);
+                        if (gettype($model->$field) !== 'array') {
+                            $model->$field = json_decode($model->$field);
+                        } else {
+                            $model->$field = (object) $model->$field;
+                        }
                     }
                     break;
             }

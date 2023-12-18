@@ -1,35 +1,35 @@
 <template>
-    <div>
-        <b-card 
-            no-body 
-            class="wizard-template-select-card p-0" 
-            :style="{ backgroundImage: 'url(' + template?.backgroundImage + ')' }" 
-            @click="showDetails()" 
-            @mouseenter="addHoverClass" 
-            @mouseleave="removeHoverClass"
-        >
-    
-            <b-card-body class="p-2">
-                <div class="wizard-icon-container text-right mb-3">
-                    <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
-                </div>
-                <b-card-text class="mx-4">
-                    <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3"/>
-                    <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
-                    {{ template.shortDescription | str_limit(150) }}
-                </b-card-text>
-            </b-card-body>
-        </b-card>
-    </div>
+  <div>
+    <b-card 
+      no-body 
+      class="wizard-template-select-card p-0"
+      :style="{ backgroundImage: 'url(' + template?.backgroundImage + ')' }"
+      @click="showDetails()"
+      @mouseenter="addHoverClass"
+      @mouseleave="removeHoverClass"
+    >
+      <b-card-body class="p-2">
+        <div class="wizard-icon-container text-right mb-3">
+          <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
+        </div>
+        <b-card-text class="mx-4">
+          <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3"/>
+          <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
+          {{ template.shortDescription | str_limit(150) }}
+        </b-card-text>
+      </b-card-body>
+    </b-card>
+  </div>
 </template>
 
 <script>
 import templateMixin from './mixins/template.js';
 
 export default {
-    mixins: [templateMixin],
-    props: ['template'],
-}
+  components: { },
+  mixins: [templateMixin],
+  props: ["template"],
+};
 </script>
 
 <style lang="scss" scoped>

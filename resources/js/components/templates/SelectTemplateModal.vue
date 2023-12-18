@@ -22,6 +22,7 @@
       <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)" 
         @blank-process-button-clicked="createBlankProcess()"
         @ai-process-button-clicked="createAiProcess()"
+        :showTemplateOptionsActionBar="true"
         :package-ai="packageAi" />
     </modal>
     <create-process-modal ref="create-process-modal" 
