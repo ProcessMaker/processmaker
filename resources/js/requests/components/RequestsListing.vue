@@ -29,6 +29,7 @@
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
                                    :container="''"
                                    @onApply="onApply"
                                    @onClear="onClear">
@@ -467,6 +468,64 @@ export default {
       }
       return operators;
     },
+    getViewConfigFilter() {
+      return [
+        {
+          "type": "string",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpInput",
+          "input": ""
+        },
+        {
+          "type": "string",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetween",
+          "input": []
+        },
+        {
+          "type": "string",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpIn",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpDatetime",
+          "input": ""
+        },
+        {
+          "type": "datetime",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetweenDatepicker",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpInDatepicker",
+          "input": []
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["="],
+          "control": "PMColumnFilterOpSelect",
+          "input": ""
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpSelectMultiple",
+          "input": []
+        },
+        {
+          "type": "boolean",
+          "includes": ["="],
+          "control": "PMColumnFilterOpBoolean",
+          "input": false
+        }
+      ];
+    }
   },
 };
 </script>
