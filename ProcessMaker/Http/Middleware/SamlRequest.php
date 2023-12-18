@@ -29,10 +29,11 @@ class SamlRequest
             ]);
 
             // Check if the current URL is allowed
-            $allowedUrls = [env('APP_URL')];
-            $url = $request->getSchemeAndHttpHost();
+            $appUrl = config('app.url');
+            $allowedRedirectUrls = [$appUrl . '/login'];
+            $url = $request->url();
 
-            if (in_array($url, $allowedUrls)) {
+            if (in_array($url, $allowedRedirectUrls)) {
                 // Remove saml_request cookie
                 Cookie::queue(Cookie::forget('saml_request'));
 
@@ -41,7 +42,7 @@ class SamlRequest
                 $request->server->set('QUERY_STRING', $queryString);
 
                 // To redirect with the new query string, you can use the following:
-                return redirect($request->url() . '?' . $queryString);
+                return redirect($url . '?' . $queryString);
             }
         }
 
