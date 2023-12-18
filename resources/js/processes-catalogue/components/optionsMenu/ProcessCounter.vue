@@ -11,21 +11,18 @@
     props: ["process"],
     data() {
       return {
-        //
-      };
+        count: 0
+      }
     },
     mounted() {
-      this.getTotalCount();
+      this.fetch();
     },
     methods: {
-      /**
-      * Get total per process
-      */
-      getTotalCount() {
+      fetch() {
         ProcessMaker.apiClient
           .get(`requests/${this.process.id}/count`)
           .then((response) => {
-            this.count = response.meta.total;
+            this.count = response.data.meta.total;
           })
           .catch(() => {
             this.count = 0;
@@ -48,7 +45,6 @@
 }
 .process-counter-text {
   color: #556271;
-  font-family: 'Open Sans';
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -57,7 +53,6 @@
 }
 .process-counter-total {
   color: #556271;
-  font-family: 'Open Sans';
   font-size: 21px;
   font-style: normal;
   font-weight: 700;
