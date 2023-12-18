@@ -46,6 +46,16 @@
           </b-link>
         </template>
         <template
+          slot="case_title"
+          slot-scope="props"
+        >
+          <b-link
+            class="text-nowrap"
+            :href="openRequest(props.rowData, props.rowIndex)"
+            v-html="props.rowData.case_title_formatted"
+          />
+        </template>
+        <template
           slot="name"
           slot-scope="props"
         >
@@ -187,6 +197,9 @@ export default {
           case "name":
             field.name = "__slot:name";
             break;
+          case "case_title":
+            field.name = "__slot:case_title";
+            break;
           default:
             field.name = column.name || column.field;
         }
@@ -235,6 +248,7 @@ export default {
         {
           label: "Case Title",
           field: "case_title",
+          name: "__slot:case_number",
           sortable: true,
           default: true,
         },
