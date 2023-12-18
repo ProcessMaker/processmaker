@@ -6,12 +6,16 @@ trait TracksUserViewed
 {
     public function scopeWithUserViewed($query, $user_id)
     {
-        $query->addSelect('user_resource_views.created_at as user_viewed_at')
-            ->leftJoin('user_resource_views', function ($join) use ($user_id) {
-                $table = $this->getTable();
-                $join->on('user_resource_views.viewable_id', '=', $table . '.id')
-                    ->where('user_resource_views.user_id', $user_id)
-                    ->where('user_resource_views.viewable_type', '=', get_class($this));
-            });
+        $class = get_class($this);
+        $table = $this->getTable();
+
+        $query->selectSub(function ($q) use ($user_id, $class, $table) {
+            $q->select('created_at')
+                ->from('user_resource_views')
+                ->whereRaw("viewable_id = {$table}.id")
+                ->where('user_id', $user_id)
+                ->where('viewable_type', $class)
+                ->limit(1);
+        }, 'user_viewed_at');
     }
 }
