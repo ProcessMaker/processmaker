@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -1234,9 +1235,12 @@ class ProcessTest extends TestCase
     public function testGetMediaImagesRoute()
     {
         $process = Process::factory()->create();
-
-        $response = $this->get(route('processes.media', ['process' => $process->id]));
-
+        $url = route('api.processes.media', $process);
+        $params = [
+            'id' => $process->id,
+        ];
+        $response = $this->apiCall('GET', $url, $params);
         $response->assertStatus(200);
+        
     }
 }
