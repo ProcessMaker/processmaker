@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SearchCards
+      v-if="processList.length > 0"
+      :filter-pmql="onFilter"
+    />
     <div
       v-if="processList.length > 0"
       class="container processList"
@@ -11,15 +15,26 @@
         img-alt="Card Image"
         overlay
         class="card-process"
-        @click="openProcessInfo(process)"
       >
         <b-card-text>
-          <img
-            class="icon-process"
-            src="/img/default-process.svg"
-            :alt="$t('Default Icon')"
+          <div class="card-bookmark">
+            <i
+              :ref="`bookmark-${process.id}`"
+              :class="bookmarkIcon"
+              @click="checkBookmark(process)"
+            />
+          </div>
+          <div
+            class="card-info"
+            @click="openProcessInfo(process)"
           >
-          <span class="title-process">{{ process.name }}</span>
+            <img
+              class="icon-process"
+              src="/img/default-process.svg"
+              :alt="$t('Default Icon')"
+            >
+            <span class="title-process">{{ process.name }}</span>
+          </div>
         </b-card-text>
       </b-card>
     </div>
@@ -36,9 +51,10 @@
 <script>
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
+import SearchCards from "./utils/SearchCards.vue";
 
 export default {
-  components: { pagination, CatalogueEmpty },
+  components: { pagination, CatalogueEmpty, SearchCards },
   props: ["category"],
   data() {
     return {
@@ -52,10 +68,13 @@ export default {
       dir: "asc",
       data: null,
       totalPages: 1,
+      pmql: "",
+      bookmarkIcon: "far fa-bookmark",
     };
   },
   watch: {
     category() {
+      this.pmql = "";
       this.loadCard();
     },
   },
@@ -64,18 +83,30 @@ export default {
   },
   methods: {
     loadCard() {
+      const url = this.buildURL();
       ProcessMaker.apiClient
-        .get(
-          `processes?page=${this.currentPage}`
-          + `&per_page=${this.perPage}`
-          + `&category=${this.category.id}`
-          + "&order_by=name&order_direction=asc",
-        )
+        .get(url)
         .then((response) => {
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
         });
+    },
+    /**
+     * Build URL for Process Cards
+     */
+    buildURL() {
+      if (this.category.id === 0) {
+        return `process_bookmarks?page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&order_by=name&order_direction=asc";
+      }
+      return `processes?page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&category=${this.category.id}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&order_by=name&order_direction=asc";
     },
     /**
      * Go to process info
@@ -89,6 +120,32 @@ export default {
     onPageChanged(page) {
       this.currentPage = page;
       this.loadCard();
+    },
+    /**
+     * Build the PMQL
+     */
+    onFilter(value) {
+      this.pmql = `(fulltext LIKE "%${value}%")`;
+      this.loadCard();
+    },
+    /**
+     * Check the card to BookedMarked List
+     */
+    checkBookmark(process) {
+      if (process.bookmark_id) {
+        ProcessMaker.apiClient
+          .delete(`process_bookmarks/${process.bookmark_id}`)
+          .then(() => {
+            ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
+            this.loadCard();
+          });
+        return;
+      }
+      ProcessMaker.apiClient
+        .post(`process_bookmarks/${process.id}`)
+        .then(() => {
+          ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
+        });
     },
   },
 };
@@ -106,7 +163,17 @@ export default {
   margin-right: 1rem;
   border-radius: 16px;
 }
-.card-text {
+.card-img {
+  border-radius: 16px;
+}
+.card-bookmark {
+  float: right;
+  font-size: 20px;
+}
+.card-bookmark:hover {
+  cursor: pointer;
+}
+.card-info {
   display: flex;
   flex-direction: column;
   align-items: baseline;

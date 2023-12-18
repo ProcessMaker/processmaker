@@ -246,6 +246,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('export/manifest/{type}/{id}/', [ExportController::class, 'manifest'])->name('export.manifest')->middleware('can:export-processes,type');
     Route::post('export/{type}/download/{id}', [ExportController::class, 'download'])->name('export.download')->middleware('template-authorization');
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
+    Route::get('import/get-manifest', [ImportController::class, 'getImportManifest'])->name('import.get-import-manifest')->middleware('can:import-processes');
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:import-processes');
 
     // Templates

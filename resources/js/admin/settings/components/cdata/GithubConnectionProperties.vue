@@ -7,11 +7,12 @@
             :state="errorState('repository_name', errors)"
         >
             <b-form-input
-                autofocus
                 v-model="config.repository_name"
+                autofocus
                 autocomplete="off"
-                :state="errorState('repository_name', errors)"
                 name="repository_name"
+                data-cy="repository_name"
+                :state="errorState('repository_name', errors)"
             ></b-form-input>
         </b-form-group>
 
@@ -22,11 +23,12 @@
             :state="errorState('user_login', errors)"
         >
             <b-form-input
-                autofocus
                 v-model="config.user_login"
+                autofocus
                 autocomplete="off"
-                :state="errorState('user_login', errors)"
                 name="user_login"
+                data-cy="user_login"
+                :state="errorState('user_login', errors)"
             ></b-form-input>
         </b-form-group>
     </div>
