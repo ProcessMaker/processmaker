@@ -42,6 +42,6 @@ class Bookmark extends ProcessMakerModel
      */
     public function scopeIsBookmarked($query, $proId, $userId)
     {
-        return $query->where('process_id', $proId)->where('user_id', $userId)->count();
+        return $query->where('process_id', $proId)->where('user_id', $userId)->first();
     }
 }
