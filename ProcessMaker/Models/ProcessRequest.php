@@ -948,17 +948,17 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Evaluate the case title mustache expression
      *
-     * @param string $mustacheTitle 
-     * @param array $data 
-     * @param bool $formatted 
-     * @return string 
+     * @param string $mustacheTitle
+     * @param array $data
+     * @param bool $formatted
+     * @return string
      */
     public function evaluateCaseTitle(string $mustacheTitle, array $data, bool $formatted = false): string
     {
         if ($formatted) {
             $mustache = new MustacheExpressionEvaluator([
-                'escape' => function ($value) use (&$extra){
-                    return '<b>'. 
+                'escape' => function ($value) {
+                    return '<b>'.
                         htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
                         '</b>';
                 },

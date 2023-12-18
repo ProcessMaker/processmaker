@@ -6,6 +6,8 @@ use ProcessMaker\Models\ProcessRequest;
 
 class CaseTitleTest extends TestCase
 {
+    const MUSTACHE_VARIABLE = '{{name}}';
+
     public function testEvaluateCaseTitleWithoutFormatting()
     {
         $processRequest = new ProcessRequest();
@@ -34,7 +36,7 @@ class CaseTitleTest extends TestCase
     public function testEvaluateCaseTitleWithHtmlTagsNotCountedInCharacterLimit()
     {
         $processRequest = new ProcessRequest();
-        $longString = str_repeat('a', 195) . '{{name}}';
+        $longString = str_repeat('a', 195) . self::MUSTACHE_VARIABLE;
         $title = $processRequest->evaluateCaseTitle($longString, ['name' => 'World'], true);
 
         $this->assertEquals(200 + 7, mb_strlen($title)); // 7 is the length of '<b></b>'
@@ -44,7 +46,7 @@ class CaseTitleTest extends TestCase
     public function testEvaluateCaseTitleWithHtmlTagsNotCountedTwoCharactersMoreThanLimit()
     {
         $processRequest = new ProcessRequest();
-        $longString = str_repeat('a', 197) . '{{name}}';
+        $longString = str_repeat('a', 197) . self::MUSTACHE_VARIABLE;
         $title = $processRequest->evaluateCaseTitle($longString, ['name' => 'World'], true);
 
         $this->assertEquals(200 + 7, mb_strlen($title)); // 7 is the length of '<b></b>'
@@ -54,7 +56,7 @@ class CaseTitleTest extends TestCase
     public function testEvaluateCaseTitleWithoutHtmlTagsThatExceededTheLimit()
     {
         $processRequest = new ProcessRequest();
-        $longString = str_repeat('a', 200) . '{{name}}';
+        $longString = str_repeat('a', 200) . self::MUSTACHE_VARIABLE;
         $title = $processRequest->evaluateCaseTitle($longString, ['name' => 'World'], true);
 
         $this->assertEquals(200, mb_strlen($title));
