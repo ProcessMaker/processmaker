@@ -19,24 +19,29 @@ class SamlRequest
         if ($request->hasCookie('saml_request') && !$request->filled(['SAMLRequest', 'RelayState'])) {
             // Get the SAMLRequest and RelayState from the cookie
             $samlRequestCookie = json_decode($request->cookie('saml_request'), true);
-            $saml_Request = $samlRequestCookie['SAMLRequest'];
-            $relay_state = $samlRequestCookie['RelayState'];
+            $samlRequest = $samlRequestCookie['SAMLRequest'];
+            $relayState = $samlRequestCookie['RelayState'];
 
             // Add SAMLRequest and RelayState to the query string
             $request->query->add([
-                'SAMLRequest' => $saml_Request,
-                'RelayState' => $relay_state,
+                'SAMLRequest' => $samlRequest,
+                'RelayState' => $relayState,
             ]);
 
             // Build the query string and set it
             $queryString = http_build_query($request->query());
             $request->server->set('QUERY_STRING', $queryString);
 
-            // Remove saml_request cookie
-            Cookie::queue(Cookie::forget('saml_request'));
+            $allowedUrls = env('APP_URL');
+            $url = $request->url();
 
-            // To redirect with the new query string, you can use the following:
-            return redirect($request->url() . '?' . $queryString);
+            if (in_array($url, $allowedUrls)) {
+                // Remove saml_request cookie
+                Cookie::queue(Cookie::forget('saml_request'));
+
+                // To redirect with the new query string, you can use the following:
+                return redirect($url . '?' . $queryString);
+            }
         }
 
         return $next($request);
