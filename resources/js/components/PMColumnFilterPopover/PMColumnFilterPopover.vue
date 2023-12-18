@@ -12,7 +12,8 @@
                placement="bottom"
                custom-class="pm-filter-popover"
                @show="onShow">
-      <PMColumnFilterForm :type="type"
+      <PMColumnFilterForm ref="pmColumnFilterForm"
+                          :type="type"
                           :value="value"
                           :format="format"
                           :formatRange="formatRange"
@@ -43,13 +44,12 @@
         popoverShow: false
       };
     },
-    created() {
-    },
-    mounted() {
+    updated() {
+      this.$emit("onUpdate", this);
     },
     methods: {
       onShow() {
-        this.$root.$emit("bv::hide::popover")
+        this.$root.$emit("bv::hide::popover");
       },
       onSortAscending() {
         this.$emit("onSortAscending", "asc");
@@ -68,7 +68,7 @@
       onCancel() {
         this.popoverShow = false;
         this.$emit("onCancel");
-      },
+      }
     }
   };
 </script>
