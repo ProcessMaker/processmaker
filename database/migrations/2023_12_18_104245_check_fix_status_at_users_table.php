@@ -16,7 +16,8 @@ return new class extends Migration {
         // check if the column status is of type enum
         $column = DB::selectOne('SHOW COLUMNS FROM users WHERE Field = "status"');
         $isEnum = substr($column->Type, 0, 4) === 'enum';
-        if (!$isEnum) {
+        $isDefaultActive = $column->Default === 'ACTIVE';
+        if (!$isEnum && $isDefaultActive) {
             return;
         }
         // change the column status to varchar
