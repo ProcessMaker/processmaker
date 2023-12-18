@@ -69,7 +69,7 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
         // ALTER TABLE case_numbers AUTO_INCREMENT = {$caseNumber};
         DB::statement("ALTER TABLE case_numbers AUTO_INCREMENT = {$caseNumber};");
 
-        echo "\n";
+        echo PHP_EOL;
     }
 
     private function getParentNonSystemRequests()
