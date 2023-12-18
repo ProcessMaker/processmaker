@@ -10,7 +10,7 @@
         <h4> {{ $t('Processes Browser') }} </h4>
         <MenuCatologue
           ref="category-list"
-          title="Avaible Processses"
+          title="Available Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
           show-bookmark="true"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <buttons-start :process="process" />
-    <process-counter />
+    <process-counter :process="process" />
     <!--
       TODO WIZARD SECTION AS COMPONENT IF IS POSSIBLE
     -->
