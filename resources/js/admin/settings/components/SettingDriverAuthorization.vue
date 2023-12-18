@@ -62,6 +62,7 @@
             autocomplete="off"
             :state="errorState('client_id', errors)"
             name="client_id"
+            data-cy="client_id"
           />
         </b-form-group>
 
@@ -82,6 +83,7 @@
               :type="type"
               :state="errorState('client_secret', errors)"
               name="client_secret"
+              data-cy="client_secret"
             />
             <b-input-group-append>
               <b-button
@@ -113,6 +115,7 @@
               autocomplete="off"
               :state="errorState('callback_url', errors)"
               name="callback_url"
+              data-cy="callback_url"
             />
             <b-input-group-append>
               <b-button
@@ -139,6 +142,7 @@
         <button
           type="button"
           class="btn btn-outline-secondary ml-auto"
+          data-cy="cancel-button"
           @click="onCancel"
         >
           {{ $t('Cancel') }}
@@ -146,6 +150,7 @@
         <button
           type="button"
           class="btn btn-secondary ml-3"
+          data-cy="authorize-button"
           :disabled="isButtonDisabled"
           @click="onSave"
         >

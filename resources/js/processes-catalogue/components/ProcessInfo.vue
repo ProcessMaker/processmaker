@@ -19,26 +19,22 @@
         </b-col>
       </div>
       <b-col cols="12">
-        <process-tab></process-tab>
+        <process-tab />
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script>
-import MenuCatologue from "./menuCatologue.vue";
-import ProcessesCarousel from "../components/ProcessesCarousel.vue";
+import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessMap from "./ProcessMap.vue";
 import ProcessOptions from "./ProcessOptions.vue";
-import Breadcrumbs from "./Breadcrumbs.vue";
-import ProcessTab from './ProcessTab.vue';
+import ProcessTab from "./ProcessTab.vue";
 
 export default {
   components: {
     ProcessOptions,
-    Breadcrumbs,
     ProcessMap,
-    MenuCatologue,
     ProcessesCarousel,
     ProcessTab,
   },
@@ -50,11 +46,7 @@ export default {
       dataOptions: {},
     };
   },
-  created() {
-    this.selectCategory = this.selectedCategory();
-    this.getCategories();
-  },
-  mounted(){   
+  mounted() {
     this.dataOptions = {
       id: this.process.id.toString(),
       type: "Process",

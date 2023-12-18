@@ -9,12 +9,14 @@
       <b-col cols="2">
         <h4> {{ $t('Processes Browser') }} </h4>
         <MenuCatologue
-          :data="listCategories"
-          :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          ref="category-list"
           title="Avaible Processses"
           preicon="fas fa-play-circle"
           class="mt-3"
+          show-bookmark="true"
+          :data="listCategories"
+          :select="selectCategorie"
+          @wizardLinkSelect="showWizardTemplates = 'true'"
           @addCategories="addCategories"
         />
         <!-- <ul>
@@ -71,14 +73,18 @@ export default {
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
   data() {
     return {
-      listCategories: [],
+      listCategories: [{
+        id: 0,
+        name: "Bookmarked Processes",
+        status: "ACTIVE",
+      }],
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
       showCardProcesses: false,
       showProcess: false,
       category: null,
-      selectedProcess:null,
+      selectedProcess: null,
       numCategories: 15,
       page: 1,
     };
@@ -100,7 +106,7 @@ export default {
      */
     getCategories() {
       ProcessMaker.apiClient
-        .get(`process_categories?page=${this.page}&per_page=${this.numCategories}`)
+        .get(`process_categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
           this.listCategories = [...this.listCategories, ...response.data.data];
         });
