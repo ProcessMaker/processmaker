@@ -6,7 +6,10 @@
         class="d-flex justify-content-between mb-3"
       >
         <h4 class="d-flex align-items-center">
-          <i class="fas fa-arrow-circle-left text-secondary mr-2 title-font" />
+          <i
+            class="fas fa-arrow-circle-left text-secondary mr-2 title-font"
+            @click="goBack"
+          />
           {{ process.name }}
         </h4>
         <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
@@ -46,6 +49,15 @@
       :asset-id="processId"
       :asset-name="assetName"
     />
+    <modal-save-version
+      id="modal-save-version"
+      ref="modal-save-version"
+      asset-type="process"
+      origin="core"
+      :options="optionsData"
+      :descriptionSettings="process.description"
+      :process="process"
+    />
   </div>
 </template>
 
@@ -56,6 +68,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
+import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue"
 
 export default {
   components: {
@@ -63,6 +76,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
     AddToProjectModal,
+    ModalSaveVersion,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
@@ -73,10 +87,15 @@ export default {
       pmBlockName: "",
       assetName: "",
       processLaunchpadActions: [],
+      optionsData: {},
     };
   },
   mounted() {
     this.getActions();
+    this.optionsData = {
+      id: this.process.id.toString(),
+      type: "Process",
+    };
   },
   methods: {
     showCreateTemplateModal(name, id) {
@@ -95,8 +114,18 @@ export default {
       this.assetType = "process";
       this.$refs["add-to-project-modal"].show();
     },
+    showAddToModalSaveVersion(name, id) {
+      this.processId = id;
+      this.assetName = name;
+      this.assetType = "process";
+      this.$refs["modal-save-version"].showModal();
+    },
     getActions() {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
+    },
+    /** Rerun a process cards from process info */
+    goBack() {
+      this.$emit("goBackCategory");
     },
   },
 };
@@ -104,7 +133,8 @@ export default {
 
 <style scoped>
 .title-font {
-  font-size: 32px
+  font-size: 32px;
+  cursor: pointer;
 }
 .ellipsis-border{
   border-color: #CDDDEE;

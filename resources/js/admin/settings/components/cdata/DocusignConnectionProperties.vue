@@ -15,6 +15,7 @@
       <b-form-checkbox
         v-model="config.use_sandbox"
         name="use_sandbox"
+        data-cy="use_sandbox"
         switch
         :state="errorState('use_sandbox', errors)"
       />

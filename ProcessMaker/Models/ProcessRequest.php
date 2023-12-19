@@ -26,6 +26,7 @@ use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
+use ProcessMaker\Traits\TracksUserViewed;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
@@ -41,6 +42,7 @@ use Throwable;
  * @property string $name
  * @property string $case_title
  * @property int $case_title_formatted
+ * @property string $user_viewed_at
  * @property int $case_number
  * @property string $status
  * @property array $data
@@ -64,6 +66,7 @@ use Throwable;
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="case_title", type="string"),
  *   @OA\Property(property="case_title_formatted", type="string"),
+ *   @OA\Property(property="user_viewed_at", type="string"),
  *   @OA\Property(property="case_number", type="integer"),
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
@@ -98,6 +101,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use Searchable;
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
+    use TracksUserViewed;
 
     /**
      * The attributes that aren't mass assignable.
@@ -436,11 +440,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
-                    ->orWhere(DB::raw('id'), 'like', $filter)
+                    ->orWhere(DB::raw('process_requests.id'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
                     ->orWhere('initiated_at', 'like', $filter)
-                    ->orWhere('created_at', 'like', $filter)
-                    ->orWhere('updated_at', 'like', $filter);
+                    ->orWhere('process_requests.created_at', 'like', $filter)
+                    ->orWhere('process_requests.updated_at', 'like', $filter);
             });
         }
 
@@ -692,7 +696,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
         if ($user) {
             return function ($query) use ($user, $expression) {
-                $query->where('user_id', $expression->operator, $user->id);
+                $query->where('process_requests.user_id', $expression->operator, $user->id);
             };
         } else {
             throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
@@ -706,7 +710,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return callable
      */
-    private function valueAliasParticipant($value, $expression)
+    public function valueAliasParticipant($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
 

@@ -16,7 +16,9 @@ import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
 import AssetRedirectMixin from "./AssetRedirectMixin";
 import IconSelector from "./IconSelector";
+import IconDropdown from "./IconDropdown";
 import Modal from "./Modal";
+import ModalSaveVersion from "./ModalSaveVersion.vue";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
@@ -43,6 +45,7 @@ import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
 import RequestsListing from "../../requests/components/RequestsListing.vue";
+import FilterTable from "./FilterTable.vue";
 
 export {
   AddToProjectModal,
@@ -68,7 +71,9 @@ export {
   FormErrorsMixin,
   AssetRedirectMixin,
   IconSelector,
+  IconDropdown,
   Modal,
+  ModalSaveVersion,
   PmqlInput,
   ProjectSelect,
   PTab,
@@ -90,4 +95,5 @@ export {
   ScriptNavigationMixin,
   TasksHome,
   RequestsListing,
+  FilterTable,
 };

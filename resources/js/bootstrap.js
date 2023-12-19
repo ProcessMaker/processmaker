@@ -1,5 +1,5 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
@@ -27,6 +27,7 @@ import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
+import FilterTable from "./components/shared/FilterTable.vue";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -67,6 +68,7 @@ window.$ = window.jQuery = require("jquery");
 window.Vue = Vue;
 
 window.Vue.use(BootstrapVue);
+window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
@@ -87,6 +89,8 @@ window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
+window.Vue.component("filter-table", FilterTable);
+
 let translationsLoaded = false;
 const mdates = JSON.parse(
   document.head.querySelector("meta[name=\"i18n-mdate\"]").content,

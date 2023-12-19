@@ -92,13 +92,13 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-    Route::get('processes-catalogue', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
-    Route::get('processes-catalogue/{process}', [ProcessesCatalogueController::class, 'open'])->name('processes.catalogue.open');
-
+    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
+    
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
     Route::get('processes/import/{page?}', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
+    Route::get('import/download-debug', [ProcessController::class, 'downloadImportDebug'])->name('import.download-debug')->middleware('can:import-processes');
     Route::get('processes/{process}/download/{key}', [ProcessController::class, 'download'])->name('processes.download')->middleware('can:export-processes');
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');

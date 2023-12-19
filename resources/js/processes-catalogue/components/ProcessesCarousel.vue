@@ -5,6 +5,7 @@
       v-model="slide"
       :interval="interval"
       indicators
+      img-height="400px"
       @sliding-start="onSlideStart"
       @sliding-end="onSlideEnd"
     >
@@ -30,13 +31,8 @@ export default {
     return {
       slide: 0,
       sliding: null,
-      images: [
-        { url: "https://picsum.photos/1024/480/?image=55" },
-        { url: "https://picsum.photos/100/100/?image=54" },
-        { url: "https://picsum.photos/200/100/?image=53" },
-        { url: "https://picsum.photos/1024/800/?image=56" },
-      ],
-      defaultImage: Array(4).fill({ url: "/img/launchpad-images/imageDefault.png" }),
+      images: [],
+      defaultImage: Array(4).fill({ url: "/img/launchpad-images/defaultImage.svg" }),
       interval: 2000,
     };
   },
@@ -64,7 +60,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .carousel-inner {
   overflow: hidden;
 }
