@@ -62,7 +62,7 @@ export default {
      * Verify if the process is marked
      */
     bookmarkIcon() {
-      if (this.process.bookmark_id || this.process.bookmark) {
+      if (this.process.bookmark_id !== 0) {
         return "fas fa-bookmark marked";
       }
       return "far fa-bookmark";
