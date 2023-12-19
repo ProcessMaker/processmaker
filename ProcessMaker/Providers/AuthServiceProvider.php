@@ -78,8 +78,6 @@ class AuthServiceProvider extends ServiceProvider
                     // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
                     $isAllowedEndpoint = $this->checkAllowedEndpoints(request()->path());
 
-                    // dd($isAllowedEndpoint);
-
                     if ($user->hasPermission('create-projects') && $isAllowedEndpoint) {
                         return $this->isProjectAsset($permission, $params);
                     }
