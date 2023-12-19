@@ -126,8 +126,8 @@ class ProcessController extends Controller
 
         $processes = $processes->with('events')
             ->select('processes.*')
-            ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
-            ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
+            ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
+            ->leftJoin(\DB::raw('(select id, uuid, username, lastname, firstname from users) as user'), 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
             ->get()
             ->collect();
