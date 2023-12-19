@@ -6,7 +6,7 @@
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
     :cancel-title="$t('Cancel')"
-    ok-variant="secondary"
+    :ok-variant="okVariant ? okVariant : 'secondary'"
     :ok-title="okTitleWithDefault"
     :ok-disabled="okDisabled"
     :hide-footer="hideFooter"
@@ -114,7 +114,8 @@
       "title", 
       "okDisabled", 
       "okOnly", 
-      "okTitle", 
+      "okTitle",
+      "okVariant", 
       "setCustomButtons",
       "customButtons", 
       "subtitle", 

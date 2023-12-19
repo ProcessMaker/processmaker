@@ -1,10 +1,6 @@
 <template>
   <div>
     <div class="position-relative">
-      <button ref="filterButton" class="btn btn-outline-secondary mr-1 d-flex align-items-center" @click="toggleFiltersPopup">
-        <i class="fa fa-sliders-h mr-1"></i>
-        <span class="text-capitalize">Filter</span>
-      </button>
       <div v-if="showFilterPopup" class="filter-dropdown-panel-container card" v-click-outside="closeFiltersPopup">
         <div v-if="type == 'requests'" class="card-body">
           <label for="process_name_filter">{{$t('Process')}}</label>
