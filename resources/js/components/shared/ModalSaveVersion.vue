@@ -42,8 +42,7 @@
                     <icon-dropdown
                       :custom-value="selectedLaunchpadIcon"
                       :custom-label="selectedLaunchpadIconLabel"
-                    >
-                    </icon-dropdown>
+                    />
                     <label class="label-text mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
@@ -133,11 +132,7 @@
                             >
                               <div class="p-3">
                                 <p class="text-center">
-                                  {{
-                                    $t(
-                                      "Do you really want to delete this image?"
-                                    )
-                                  }}
+                                  {{ $t("Do you really want to delete this image?") }}
                                 </p>
                                 <div class="d-flex justify-content-around">
                                   <button
@@ -275,7 +270,7 @@ export default {
       },
       redirectUrl: null,
       nodeId: null,
-      selectedSavedChart: {},
+      selectedSavedChart: "",
       dropdownSavedCharts: [],
       maxImages: 4,
       processDescription: "",
@@ -318,7 +313,7 @@ export default {
     getLaunchpadSettings() {
       this.images = [];
       ProcessMaker.apiClient
-        .get("processes/" + this.processId + "/media")
+        .get(`processes/${this.processId}/media`)
         .then((response) => {
           const launchpadProperties = JSON.parse(
             response.data.data[0]?.launchpad_properties
@@ -558,7 +553,9 @@ export default {
       
       //Call API to delete
       ProcessMaker.apiClient
-          .delete("processes/"+this.processId+"/media", { data: { uuid } })
+          .delete(`processes/${this.processId}/media`, { 
+            data: { uuid } 
+          })
           .then(response => {
             ProcessMaker.alert(this.$t("The image was deleted"), "success");
           })
@@ -639,14 +636,9 @@ export default {
       });
 
       ProcessMaker.apiClient
-        .put("processes/" + this.options.id, this.dataProcess)
+        .put(`processes/${this.options.id}`, this.dataProcess)
         .then((response) => {
-          ProcessMaker.alert(
-            this.$t("The process was saved."),
-            "success",
-            5,
-            true
-          );
+          ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
           this.hideModal();
         })
         .catch((error) => {

@@ -1268,7 +1268,6 @@ class ProcessTest extends TestCase
         ];
         $response = $this->apiCall('GET', $url, $params);
         $response->assertStatus(200);
-        
     }
 
     public function testDeleteMediaImages()

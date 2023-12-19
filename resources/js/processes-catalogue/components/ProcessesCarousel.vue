@@ -51,13 +51,15 @@ export default {
      */
     getLaunchpadImages() {
       ProcessMaker.apiClient
-        .get("processes/"+this.process.id+"/media")
-        .then(response => {
-            console.log("getLaunchpadImages:", response.data.data);
+        .get(`processes/${this.process.id}/media`)
+        .then((response) => {
             const mediaArray = response.data.data[0].media;
             mediaArray.forEach((media) => {
             this.images.push({ url: media.original_url });
           });
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
   },
