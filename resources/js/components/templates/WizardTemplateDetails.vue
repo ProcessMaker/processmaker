@@ -13,7 +13,7 @@
             <span>
               <img
                 :src="template.icon"
-                :alt="template.name + 'icon'"
+                :alt="template.name + ' icon'"
                 width="45px"
                 class="mb-3 d-block"
               >
@@ -22,8 +22,8 @@
               <h5 class="text-uppercase mb-1 d-inline-block font-weight-bold template-name">{{ template.name | str_limit(30) }}</h5>
             </span>
             <div class="wizard-details-text">
-              <h2 class="wizard-details-headline">{{ template.headline | str_limit(150) }}</h2>
-              <p class="wizard-details-description">{{ template.description | str_limit(150) }}</p>
+              <h2 class="wizard-details-headline">{{ templateDetails.modalExcerpt | str_limit(150) }}</h2>
+              <p class="wizard-details-description">{{ templateDetails.modalDescription | str_limit(150) }}</p>
               <button class="wizard-details-button text-uppercase"  @click.prevent="triggerHelperProcessStartEvent">
                 <i class="fas fa-play-circle mr-1" />
                 {{ $t('Use Now') }}
@@ -72,6 +72,9 @@ export default {
     };
   },
   computed: {
+    templateDetails() {
+      return JSON.parse(this.template.template_details);
+    }
   },
   methods: {
     show() {

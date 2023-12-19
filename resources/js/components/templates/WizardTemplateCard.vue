@@ -15,7 +15,7 @@
         <b-card-text class="mx-4">
           <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3"/>
           <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
-          {{ template.shortDescription | str_limit(150) }}
+          {{ template.description | str_limit(150) }}
         </b-card-text>
       </b-card-body>
     </b-card>
