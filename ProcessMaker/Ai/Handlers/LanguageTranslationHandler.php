@@ -56,6 +56,7 @@ class LanguageTranslationHandler extends OpenAiHandler
             'role' => 'user',
             'content' => $prompt,
         ]];
+
         return $this;
     }
 
