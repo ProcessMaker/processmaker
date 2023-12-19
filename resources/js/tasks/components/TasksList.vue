@@ -9,118 +9,85 @@
     />
     <div
       v-show="!shouldShowLoader"
-      class="card card-body tasks-table-card"
       data-cy="tasks-table"
     >
-      <vuetable
-        ref="vuetable"
-        :data-manager="dataManager"
-        :sort-order="sortOrder"
-        :css="css"
-        :api-mode="false"
-        :fields="fields"
+      <filter-table
+        :headers="tableHeaders"
         :data="data"
-        data-path="data"
-        pagination-path="meta"
-        @vuetable:pagination-data="onPaginationData"
+        @table-row-click="handleRowClick"
       >
-        <template
-          slot="name"
-          slot-scope="props"
-        >
-          <b-link
-            v-uni-id="props.rowData.id.toString()"
-            :href="onAction('edit', props.rowData, props.rowIndex)"
+        <!-- Slot Table Header -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+          <div :key="index">{{ column.label }}</div>
+        </template>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
+            <PMColumnFilterPopover v-if="column.sortable" 
+                                   :key="index" 
+                                   :id="'pm-table-column-'+index" 
+                                   :type="'Field'"
+                                   :value="column.field"
+                                   :format="getFormat(column)"
+                                   :formatRange="getFormatRange(column)"
+                                   :operators="getOperators(column)"
+                                   :container="''"
+                                   @onApply="onApply"
+                                   @onClear="onClear">
+            </PMColumnFilterPopover>
+        </template>
+        <!-- Slot Table Body -->
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in tableHeaders"
+            :key="colIndex"
           >
-            {{ props.rowData.element_name }}
-          </b-link>
+            <template v-if="containsHTML(row[header.field])">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+                  >
+                <div v-html="sanitize(row[header.field])"></div>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+              >
+                {{ sanitizeTooltip(row[header.field]) }}
+              </b-tooltip>
+            </template>
+            <template v-else>
+              <template v-if="isComponent(row[header.field])">
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template v-else>
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  {{ row[header.field] }}
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${rowIndex}-${colIndex}`"
+                    custom-class="pm-table-tooltip"
+                  >
+                    {{ row[header.field] }}
+                  </b-tooltip>
+                </div>
+              </template>
+            </template>
+          </td>
         </template>
-
-        <template
-          slot="requestName"
-          slot-scope="props"
-        >
-          <b-link
-            :href="
-              onAction('showRequestSummary', props.rowData, props.rowIndex)
-            "
-          >
-            #{{ props.rowData.process_request.id }}
-            {{ props.rowData.process.name }}
-          </b-link>
-        </template>
-
-        <template
-          slot="status"
-          slot-scope="props"
-        >
-          <i
-            class="fas fa-circle small"
-            :class="statusColor(props.rowData)"
-          />
-          {{ $t(statusLabel(props.rowData)) }}
-        </template>
-
-        <template
-          slot="assignee"
-          slot-scope="props"
-        >
-          <avatar-image
-            v-if="props.rowData.user"
-            size="25"
-            :input-data="props.rowData.user"
-            hide-name="true"
-          />
-        </template>
-
-        <template
-          slot="dueDate"
-          slot-scope="props"
-        >
-          <span :class="classDueDate(props.rowData.due_at)">
-            {{ formatDate(props.rowData.due_at) }}
-          </span>
-        </template>
-
-        <template
-          slot="completedDate"
-          slot-scope="props"
-        >
-          <span class="text-dark">
-            {{ formatDate(props.rowData.completed_at) }}
-          </span>
-        </template>
-
-        <template
-          slot="preview"
-          slot-scope="props"
-        >
-          <span>
-            <i
-              class="fa fa-eye py-2"
-              @click="previewTasks(props.rowData)"
-            />
-          </span>
-        </template>
-
-        <template
-          slot="actions"
-          slot-scope="props"
-        >
-          <ellipsis-menu
-            :actions="actions"
-            :data="props.rowData"
-            :divider="false"
-          />
-        </template>
-      </vuetable>
-      <pagination
-        ref="pagination"
-        :single="$t('Task')"
-        :plural="$t('Tasks')"
-        :per-page-select-enabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
+      </filter-table>
+      <pagination-table
+        :meta="data.meta"
+        @page-change="changePage"
       />
     </div>
     <tasks-preview ref="preview" />
@@ -135,8 +102,11 @@ import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
+import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -144,7 +114,11 @@ Vue.component("AvatarImage", AvatarImage);
 Vue.component("TasksPreview", TasksPreview);
 
 export default {
-  components: { EllipsisMenu },
+  components: {
+    EllipsisMenu,
+    PMColumnFilterPopover,
+    paginationTable,
+  },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},
@@ -185,6 +159,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      tableHeaders: [],
     };
   },
   computed: {
@@ -194,6 +169,19 @@ export default {
       }
 
       return "tasks";
+    },
+  },
+  watch: {
+    data(newData) {
+      console.log(newData);
+      if (Array.isArray(newData.data) && newData.data.length > 0) {
+        for (let record of newData.data) {
+          //format Status
+          record["status"] = this.formatStatus(record);
+          record["assignee"] = this.formatAsignee(record["user"]);
+          record["request"] = this.formatRequest(record);
+        }
+      }
     },
   },
   mounted: function mounted() {
@@ -207,69 +195,7 @@ export default {
   methods: {
     setupColumns() {
       const columns = this.getColumns();
-
-      columns.forEach((column) => {
-        const field = {
-          title: () => this.$t(column.label),
-        };
-
-        switch (column.field) {
-          case "task":
-            field.name = "__slot:name";
-            field.field = "element_name";
-            field.sortField = "element_name";
-            break;
-          case "status":
-            field.name = "__slot:status";
-            field.sortField = "status";
-            break;
-          case "request":
-            field.name = "__slot:requestName";
-            field.sortField = "process_requests.id,process_requests.name";
-            break;
-          case "assignee":
-            field.name = "__slot:assignee";
-            field.field = "user";
-            break;
-          case "due_at":
-            field.name = "__slot:dueDate";
-            break;
-          case "completed_at":
-            field.name = "__slot:completedDate";
-            break;
-          default:
-            field.name = column.field;
-        }
-
-        if (!field.field) {
-          field.field = column.field;
-        }
-
-        if (column.format === "datetime" || column.format === "date") {
-          field.callback = "formatDate";
-        }
-
-        if (column.sortable && !field.sortField) {
-          field.sortField = column.field;
-        }
-
-        this.fields.push(field);
-      });
-
-      this.fields.push({
-        name: "__slot:preview",
-        title: "",
-      });
-
-      this.fields.push({
-        name: "__slot:actions",
-        title: "",
-      });
-
-      // this is needed because fields in vuetable2 are not reactive
-      this.$nextTick(() => {
-        this.$refs.vuetable.normalizeFields();
-      });
+      this.tableHeaders = this.getColumns();
     },
     getColumns() {
       if (this.$props.columns) {
@@ -277,46 +203,59 @@ export default {
       }
       const columns = [
         {
-          label: "Task",
-          field: "task",
+          label: "#",
+          field: "id",
           sortable: true,
           default: true,
+          width: 45,
         },
         {
-          label: "Status",
-          field: "status",
+          label: "NAME",
+          field: "element_name",
           sortable: true,
           default: true,
+          width: 140,
+          truncate: true,
         },
         {
-          label: "Request",
+          label: "REQUEST",
           field: "request",
           sortable: true,
           default: true,
+          width: 140,
+          truncate: true,
         },
         {
-          label: "Assignee",
+          label: "STATUS",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 100,
+        },
+        {
+          label: "DUE DATE",
+          field: "due_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 140,
+        },
+        {
+          label: "ASSIGNEE",
           field: "assignee",
           sortable: false,
           default: true,
+          width: 140,
+        },
+        {
+          label: "COMPLETED",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 140,
         },
       ];
-
-      if (this.status === "CLOSED") {
-        columns.push({
-          label: "Completed",
-          field: "completed_at",
-          sortable: true,
-          default: true,
-        });
-      } else {
-        columns.push({
-          label: "Due",
-          field: "due_at",
-          sortable: true,
-          default: true,
-        });
-      }
       return columns;
     },
     onAction(action, rowData, index) {
@@ -330,47 +269,116 @@ export default {
       }
       return link;
     },
-    statusColor(props) {
-      const { status } = props;
-      const isSelfService = props.is_self_service;
-      if (status == "ACTIVE" && isSelfService) {
-        return "text-warning";
-      } if (status == "ACTIVE") {
-        return "text-success";
-      } if (status == "CLOSED") {
-        return "text-primary";
-      }
-      return "text-secondary";
-    },
-    statusLabel(props) {
-      const { status } = props;
-      const isSelfService = props.is_self_service;
-      if (status == "ACTIVE" && isSelfService) {
-        return "Self Service";
-      } if (status == "ACTIVE") {
-        return "In Progress";
-      } if (status == "CLOSED") {
-        return "Completed";
-      }
-      return status;
-    },
-    classDueDate(value) {
-      const dueDate = moment(value);
-      const now = moment();
-      const diff = dueDate.diff(now, "hours");
-      return diff < 0
-        ? "text-danger"
-        : diff <= 1
-          ? "text-warning"
-          : "text-dark";
-    },
-    getTaskStatus() {
-      const path = new URL(location.href);
-      const status = path.searchParams.get("status");
-      return status === null ? "ACTIVE" : status;
-    },
     previewTasks(info) {
       this.$refs.preview.showSideBar(info, this.data.data, true);
+    },
+    formatStatus(props) {
+      let color;
+      let label;
+
+      if (props.status === "ACTIVE" && props.isSelfService) {
+        color = "danger";
+        label = "Self Service";
+      } if (props.status === "ACTIVE") {
+        color = "success";
+        label = "In Progress";
+      } if (props.status === "CLOSED") {
+        color = "primary";
+        label = "Completed";
+      }
+      return `
+        <span class="badge badge-${color} status-${color}">
+          ${label}
+        </span>`;
+    },
+    formatAsignee(participants) {
+      return {
+        component: "AvatarImage",
+        props: {
+          size: "25",
+          "input-data": participants,
+          "hide-name": false,
+        },
+      };
+    },
+    formatRequest(request) {
+      return `
+          <a 
+            href="${this.onAction('showRequestSummary', request, 1)}" 
+            class="text-nowrap">#${request.process_request.id}
+              ${request.process.name}
+          </a>`;
+    },
+    openTask(task) {
+      return `/tasks/${task.id}/edit`;
+    },
+    handleRowClick(row) {
+      window.location.href = this.openTask(row, 1);
+    },
+    containsHTML(text) {
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+    },
+    isComponent(content) {
+      if (content && typeof content === 'object') {
+        return content.component && typeof content.props === 'object';
+      }
+      return false;
+    },
+    sanitize(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|a|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    changePage(page) {
+      this.page = page;
+      this.fetch();
+    },
+    onApply(json) {
+      this.advanced_filter = json;
+      this.fetch();
+    },
+    onClear() {
+      this.advanced_filter = [];
+      this.fetch();
+    },
+    getFormat(column) {
+      let format = "string";
+      if (column.format) {
+        format = column.format;
+      }
+      if (column.field === "status" || column.field === "participants") {
+        format = "stringSelect";
+      }
+      return format;
+    },
+    getFormatRange(column) {
+      let formatRange = [];
+      if (column.field === "status") {
+        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+      }
+      if (column.field === "participants") {
+        formatRange = ["user1", "user2", "user3", "user4"];
+      }
+      return formatRange;
+    },
+    getOperators(column) {
+      let operators = [];
+      if (column.field === "status" || column.field === "participants") {
+        operators = ["=", "in"];
+      }
+      return operators;
     },
   },
 };

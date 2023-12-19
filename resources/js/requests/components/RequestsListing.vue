@@ -1,116 +1,80 @@
 <template>
-  <div class="data-table">
+  <div>
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
+      :empty="$t('¡ Whoops ! No results')"
+      :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
       empty-icon="noData"
     />
     <div
       v-show="!shouldShowLoader"
-      class="card card-body table-card"
     >
-      <vuetable
-        :data-manager="dataManager"
-        :sort-order="sortOrder"
-        :css="css"
-        ref="vuetable"
-        :api-mode="false"
-        :fields="fields"
+      <filter-table
+        :headers="tableHeaders"
         :data="data"
-        data-path="data"
-        pagination-path="meta"
-        @vuetable:pagination-data="onPaginationData"
+        @table-row-click="handleRowClick"
       >
-        <template
-          slot="ids"
-          slot-scope="props"
-        >
-          <b-link
-            class="text-nowrap"
-            :href="openRequest(props.rowData, props.rowIndex)"
+        <!-- Slot Table Header -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+          <div :key="index">{{ column.label }}</div>
+        </template>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
+            <PMColumnFilterPopover v-if="column.sortable" 
+                                   :key="index" 
+                                   :id="'pm-table-column-'+index" 
+                                   :type="'Field'"
+                                   :value="column.field"
+                                   :format="getFormat(column)"
+                                   :formatRange="getFormatRange(column)"
+                                   :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
+                                   :container="''"
+                                   @onApply="onApply"
+                                   @onClear="onClear">
+            </PMColumnFilterPopover>
+        </template>
+        <!-- Slot Table Body -->
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in tableHeaders"
+            :key="colIndex"
           >
-            #{{ props.rowData.id }}
-          </b-link>
+            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <template v-else>
+              <template v-if="isComponent(row[header.field])">
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template v-else>
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  {{ row[header.field] }}
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${rowIndex}-${colIndex}`"
+                    custom-class="pm-table-tooltip"
+                  >
+                    {{ row[header.field] }}
+                  </b-tooltip>
+                </div>
+              </template>
+            </template>
+          </td>
         </template>
-        <template
-          slot="case_number"
-          slot-scope="props"
-        >
-          <b-link
-            class="text-nowrap"
-            :href="openRequest(props.rowData, props.rowIndex)"
-          >
-            #{{ props.rowData.case_number }}
-          </b-link>
-        </template>
-        <template
-          slot="name"
-          slot-scope="props"
-        >
-          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
-        </template>
-        <template
-          slot="active_tasks"
-          slot-scope="props"
-        >
-          <div
-            v-for="task in props.rowData.active_tasks"
-            :key="`active_task-${task.id}`"
-          >
-            <b-link
-              class="text-nowrap"
-              :href="openTask(task)"
-            >
-              {{ task.element_name }}
-            </b-link>
-          </div>
-        </template>
-        <template
-          slot="participants"
-          slot-scope="props"
-        >
-          <div
-            v-for="participant in props.rowData.participants"
-            :key="`participant-${participant.id}`"
-          >
-            <avatar-image
-              size="25"
-              hide-name="true"
-              :input-data="participant"
-            />
-            {{ participant.fullname }}
-          </div>
-        </template>
-        <template
-          slot="actions"
-          slot-scope="props"
-        >
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                v-b-tooltip.hover
-                v-uni-aria-describedby="props.rowData.id.toString()"
-                variant="link"
-                :href="openRequest(props.rowData, props.rowIndex)"
-                :title="$t('Open Request')"
-              >
-                <i class="fas fa-caret-square-right fa-lg fa-fw" />
-              </b-btn>
-            </div>
-          </div>
-        </template>
-      </vuetable>
-      <pagination
-        ref="pagination"
-        :single="$t('Request')"
-        :plural="$t('Requests')"
-        :per-page-select-enabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-      />
+      </filter-table>
     </div>
+    <pagination-table
+        :meta="data.meta"
+        @page-change="changePage"
+    />
   </div>
 </template>
 
@@ -119,16 +83,23 @@ import Vue from "vue";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
+import { FilterTable } from "../../components/shared";
+import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 
 export default {
+  components: {
+    PMColumnFilterPopover,
+    paginationTable,
+  },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},
@@ -143,6 +114,7 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
+      advanced_filter: [],
       sortOrder: [
         {
           field: "id",
@@ -153,6 +125,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      tableHeaders: [],
     };
   },
   computed: {
@@ -170,6 +143,7 @@ export default {
   methods: {
     setupColumns() {
       const columns = this.getColumns();
+      this.tableHeaders = this.getColumns();
 
       columns.forEach((column) => {
         const field = {
@@ -214,11 +188,6 @@ export default {
         name: "__slot:actions",
         title: "",
       });
-
-      // this is needed because fields in vuetable2 are not reactive
-      this.$nextTick(() => {
-        this.$refs.vuetable.normalizeFields();
-      });
     },
     getColumns() {
       if (this.$props.columns) {
@@ -226,56 +195,58 @@ export default {
       }
       return [
         {
-          label: "Case #",
+          label: "CASE #",
           field: "case_number",
-          name: "__slot:case_number",
           sortable: true,
           default: true,
+          width: 55,
         },
         {
-          label: "Case Title",
+          label: "CASE TITLE",
           field: "case_title",
           sortable: true,
           default: true,
+          width: 220,
         },
         {
-          label: "Process Name",
+          label: "PROCESS NAME",
           field: "name",
           sortable: true,
           default: true,
+          width: 220,
+          truncate: true,
         },
         {
-          label: "Task Name",
+          label: "TASK NAME",
           field: "active_tasks",
-          name: "__slot:active_tasks",
           sortable: false,
           default: true,
+          width: 140,
+          truncate: true,
         },
         {
-          label: "Participants",
+          label: "PARTICIPANTS",
           field: "participants",
-          sortable: false,
-          default: true,
-        },
-        {
-          label: "Status",
-          field: "status",
           sortable: true,
           default: true,
+          width: 160,
+          truncate: true,
         },
         {
-          label: "Started",
+          label: "STARTED",
           field: "initiated_at",
           format: "datetime",
           sortable: true,
           default: true,
+          width: 160,
         },
         {
-          label: "Completed",
+          label: "COMPLETED",
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
+          width: 160,
         },
       ];
     },
@@ -307,12 +278,44 @@ export default {
           break;
       }
       return (
-        '<i class="fas fa-circle text-' +
+        '<span class="badge badge-' +
         color +
-        '"></i> <span>' +
+        ' status-' +
+        color +
+        '">' +
         this.$t(label) +
         "</span>"
       );
+    },
+    formatActiveTasks(value) {
+      let htmlString = '';
+      for (const task of value) {
+        htmlString += `
+          <div>
+            <a class="text-nowrap" href="${this.openTask(task)}">
+              ${task.element_name}
+            </a>
+          </div>
+        `;
+      }
+      return htmlString;
+    },
+    formatCaseNumber(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         # ${value.case_number}
+      </a>`;
+    },
+    formatParticipants(participants) {
+      return {
+        component: "AvatarImage",
+        props: {
+          size: "25",
+          "input-data": participants,
+          "hide-name": false,
+        },
+      };
     },
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
@@ -322,7 +325,10 @@ export default {
       data.data = this.jsonRows(data.data);
       for (let record of data.data) {
         //format Status
+        record["case_number"] = this.formatCaseNumber(record);
+        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
         record["status"] = this.formatStatus(record["status"]);
+        record["participants"] = this.formatParticipants(record["participants"]);
       }
       return data;
     },
@@ -378,7 +384,8 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams,
+            this.additionalParams + 
+            (this.advanced_filter.length >= 0 ? "&advanced_filter=" + JSON.stringify(this.advanced_filter) : ""),
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -401,6 +408,127 @@ export default {
           });
       });
     },
+    handleRowClick(row) {
+      window.location.href = this.openRequest(row, 1);
+    },
+    containsHTML(text) {
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+    },
+    isComponent(content) {
+      if (content && typeof content === 'object') {
+        return content.component && typeof content.props === 'object';
+      }
+      return false;
+    },
+    sanitize(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    changePage(page) {
+      this.page = page;
+      this.fetch();
+    },
+    onApply(json) {
+      this.advanced_filter = json;
+      this.fetch();
+    },
+    onClear() {
+      this.advanced_filter = [];
+      this.fetch();
+    },
+    getFormat(column) {
+      let format = "string";
+      if (column.format) {
+        format = column.format;
+      }
+      if (column.field === "status" || column.field === "participants") {
+        format = "stringSelect";
+      }
+      return format;
+    },
+    getFormatRange(column) {
+      let formatRange = [];
+      if (column.field === "status") {
+        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+      }
+      if (column.field === "participants") {
+        formatRange = ["user1", "user2", "user3", "user4"];
+      }
+      return formatRange;
+    },
+    getOperators(column) {
+      let operators = [];
+      if (column.field === "status" || column.field === "participants") {
+        operators = ["=", "in"];
+      }
+      return operators;
+    },
+    getViewConfigFilter() {
+      return [
+        {
+          "type": "string",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpInput",
+          "input": ""
+        },
+        {
+          "type": "string",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetween",
+          "input": []
+        },
+        {
+          "type": "string",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpIn",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpDatetime",
+          "input": ""
+        },
+        {
+          "type": "datetime",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetweenDatepicker",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpInDatepicker",
+          "input": []
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["="],
+          "control": "PMColumnFilterOpSelect",
+          "input": ""
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpSelectMultiple",
+          "input": []
+        },
+        {
+          "type": "boolean",
+          "includes": ["="],
+          "control": "PMColumnFilterOpBoolean",
+          "input": false
+        }
+      ];
+    }
   },
 };
 </script>
+<style>
+
+</style>
