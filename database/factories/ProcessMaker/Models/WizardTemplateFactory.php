@@ -15,7 +15,7 @@ class WizardTemplateFactory extends Factory
         return [
             'uuid' => $this->faker->uuid,
             'process_template_id' => null,
-            'process_id' => Process::factory()->create()->id,
+            'helper_process_id' => Process::factory()->create()->id,
         ];
     }
 }
