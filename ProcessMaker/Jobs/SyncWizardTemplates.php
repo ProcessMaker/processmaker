@@ -64,45 +64,58 @@ class SyncWizardTemplates implements ShouldQueue
         }
 
         // Extract the json data from the response and iterate over the categories and templates to retrieve them.
+
         $data = $response->json();
+
         foreach ($data as $templateCategory => $wizardTemplates) {
             if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                 continue;
             }
+            // dd($wizardTemplates);
             foreach ($wizardTemplates as $template) {
-                $existingTemplate = WizardTemplate::where('uuid', $template['uuid'])->first();
-                // If the template already exists in the database with a user then skip it,
-                // since we don't want to overwrite their changes.
-                if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
-                    continue;
+                // $existingTemplate = WizardTemplate::where('uuid', $template['uuid'])->first();
+                // // If the template already exists in the database with a user then skip it,
+                // // since we don't want to overwrite their changes.
+                // if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
+                //     continue;
+                // }
+                dd($template);
+                foreach ($template as $wizard) {
+                    if (pathinfo($wizard, PATHINFO_EXTENSION) != 'json') {
+                        continue;
+                    }
+                    $url = $config['base_url'] .
+                            $config['wizard_repo'] . '/' .
+                            $config['wizard_branch'] . '/' .
+
+                    // Note: loop through the templates/processes and save them to the database.
+                    $response = Http::get($url);
+                    // dd($response);
+
+                    if (!$response->successful()) {
+                        throw new Exception("Unable to fetch wizard template {$wizard['name']}.");
+                    }
+
+                    $payload = $response->json();
+                    // dd($payload);
+                    $dataKey = "export.{$payload['root']}.attributes.process_category_id";
+                    data_set($payload, $dataKey, $wizardTemplateCategoryId);
+
+                    $options = new Options([
+                        'mode' => 'update',
+                        'asset_type' => 'WIZARD_TEMPLATE',
+                        'saveAssetsMode' => 'saveAllAssets',
+                    ]);
+
+                    $importer = new Importer($payload, $options);
+                    $importer->doImport();
+
+                    $template = Process::where('uuid', $template['uuid'])->first();
+                    // dd($template->id);
+                    // WizardTemplate::updateOrCreate([
+                    //     'helper_process_id' => $template->id,
+                    // ]);
                 }
-
-                $url = $config['base_url'] .
-                        $config['wizard_repo'] . '/' .
-                        $config['wizard_branch'] . '/' .
-                        $template['relative_path'];
-
-                $response = Http::get($url);
-                if (!$response->successful()) {
-                    throw new Exception("Unable to fetch wizard template {$template['name']}.");
-                }
-                $payload = $response->json();
-                $dataKey = "export.{$payload['root']}.attributes.process_category_id";
-                data_set($payload, $dataKey, $wizardTemplateCategoryId);
-
-                $options = new Options([
-                    'mode' => 'update',
-                    'asset_type' => 'WIZARD_TEMPLATE',
-                    'saveAssetsMode' => 'saveAllAssets',
-                ]);
-                $importer = new Importer($payload, $options);
-                $importer->doImport();
-
-                $template = Process::where('uuid', $template['uuid'])->first();
-
-                WizardTemplate::create([
-                    'helper_process_id' => $template->id,
-                ]);
             }
         }
     }
