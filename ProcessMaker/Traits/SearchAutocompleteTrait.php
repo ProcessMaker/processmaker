@@ -193,7 +193,7 @@ trait SearchAutocompleteTrait
         $projectMemberModalClass = 'ProcessMaker\Package\Projects\Models\ProjectMember';
         $projectMember = new $projectMemberModalClass;
         $user = Auth::user();
-        $ids = $projectMember->getProjectWhereTheUserIsMember($user);
+        $ids = $user->is_administrator ? null : $projectMember->getProjectWhereTheUserIsMember($user);
 
         $results = empty($query)
             ? $this->searchProjectsNoQuery($project, $user, $ids)
@@ -207,7 +207,9 @@ trait SearchAutocompleteTrait
     private function searchProjectsNoQuery($project, $user, $ids)
     {
         return $project->where(function ($query) use ($user, $ids) {
-            $query->owner($user->id)->orWhereIn('id', $ids);
+            if (!is_null($ids)) {
+                $query->owner($user->id)->orWhereIn('id', $ids);
+            }
         })->get();
     }
 
@@ -215,9 +217,13 @@ trait SearchAutocompleteTrait
     {
         return $project->pmql('title = "' . $query . '"', function ($expression) use ($user, $ids) {
             return function ($query) use ($expression, $user, $ids) {
-                $query->owner($user->id)
-                    ->orWhereIn('id', $ids)
-                    ->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                if (!is_null($ids)) {
+                    $query->owner($user->id)
+                        ->orWhereIn('id', $ids)
+                        ->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                } else {
+                    $query->where($expression->field->field(), 'LIKE', '%' . $expression->value->value() . '%');
+                }
             };
         })->get();
     }
