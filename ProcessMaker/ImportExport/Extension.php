@@ -14,7 +14,7 @@ class Extension
         $this->extensions[$exporterClass][] = $class;
     }
 
-    public function runExtensions($exporter, $method)
+    public function runExtensions($exporter, $method, $logger)
     {
         $exporterClass = get_class($exporter);
 
@@ -23,6 +23,7 @@ class Extension
         }
 
         foreach ($this->extensions[$exporterClass] as $class) {
+            $logger->log("Running extension {$method} in {$class}");
             $extension = new $class();
             if (method_exists($extension, $method)) {
                 $extension->$method()->call($exporter);

@@ -40,6 +40,24 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
     }
 
     /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where('wizard_templates.name', 'like', $filter)
+                ->orWhere('wizard_templates.description', 'like', $filter);
+        });
+
+        return $query;
+    }
+    
+    /**
      * Add files to media collection
      */
     public function addFilesToMediaCollection(string $directoryPath)

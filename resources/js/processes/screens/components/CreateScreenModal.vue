@@ -162,7 +162,7 @@ export default {
     this.resetFormData();
     this.resetErrors();
     if (this.isQuickCreate === true) {
-      this.screenTypes = filterScreenType();
+      this.screenTypes = filterScreenType() ?? this.types;
       // in any case the screenType if the only one, default to the first value
       if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
     }
