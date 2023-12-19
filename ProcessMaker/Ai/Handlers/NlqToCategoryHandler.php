@@ -10,7 +10,7 @@ class NlqToCategoryHandler extends OpenAiHandler
     {
         parent::__construct();
         $this->config = [
-            'model' => 'text-davinci-003',
+            'model' => 'gpt-3.5-turbo',
             'max_tokens' => 20,
             'temperature' => 0,
             'top_p' => 1,
@@ -34,7 +34,10 @@ class NlqToCategoryHandler extends OpenAiHandler
         $prompt = $this->replaceStopSequence($prompt);
         $prompt = $this->replaceDefaultType($prompt, $type);
 
-        $this->config['prompt'] = $prompt;
+        $this->config['messages'] = [[
+            'role' => 'user',
+            'content' => $prompt,
+        ]];
 
         return $this;
     }
@@ -43,15 +46,17 @@ class NlqToCategoryHandler extends OpenAiHandler
     {
         $client = app(Client::class);
         $response = $client
-            ->completions()
-            ->create(array_merge($this->getConfig()));
-
+            ->chat()
+            ->create(
+                array_merge($this->getConfig()
+                )
+            );
         return $this->formatResponse($response);
     }
 
     private function formatResponse($response)
     {
-        $result = ltrim($response->choices[0]->text);
+        $result = ltrim($response->choices[0]->message->content);
 
         return [strtolower($result), $response->usage, $this->question];
     }
