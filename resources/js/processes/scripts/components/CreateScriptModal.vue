@@ -434,6 +434,8 @@ export default {
           assetType: "script",
           asset: data,
         });
+        const urlScripts = new URL(`/designer/scripts/`, window.location.origin);
+        window.location.href = urlScripts;
       } else {
         window.location.href = url;
       }
