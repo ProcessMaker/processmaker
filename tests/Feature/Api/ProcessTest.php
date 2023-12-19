@@ -6,7 +6,9 @@ use Database\Seeders\PermissionSeeder;
 use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -555,6 +557,30 @@ class ProcessTest extends TestCase
         $this->assertModelSorting('?order_by=description&order_direction=desc', [
             'description' => 'yyyyy',
         ]);
+    }
+
+    /**
+     * Test filter by bookmark
+     */
+    public function testFilterBookmarked()
+    {
+        // This not will return the bookmark
+        Process::factory()->count(5)->create();
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
+        $response->assertJsonCount(5, 'data');
+        $this->assertEquals(0, $response->json()['data'][0]['bookmark']);
+
+        // This will return with bookmark
+        $user = Auth::user();
+        $process = Process::factory()->create();
+        Bookmark::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id
+        ]);
+        $response = $this->apiCall('GET',
+            route('api.processes.index',['per_page' => 5, 'page' => 1, 'bookmark' => true])
+        );
+        $response->assertJsonCount(5, 'data');
     }
 
     /**

@@ -69,6 +69,31 @@ class ProcessRequestsTest extends TestCase
     }
 
     /**
+     * Count the total of request per process
+     */
+    public function testCountRequest()
+    {
+        ProcessRequest::query()->delete();
+        $process = Process::factory()->create();
+        ProcessRequest::factory()->count(10)->create([
+            'process_id' => $process->id
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/'. $process->id . '/count');
+
+        // Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure([
+            'meta',
+        ]);
+
+        // Verify count
+        $this->assertEquals(10, $response->json()['meta']['total']);
+    }
+
+    /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
     public function testScreenListDates()
