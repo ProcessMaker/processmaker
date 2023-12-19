@@ -8,35 +8,12 @@
       v-if="processList.length > 0"
       class="container processList"
     >
-      <b-card
-        v-for="process in processList"
-        :key="process.id"
-        img-src="/img/launchpad-images/process_background.svg"
-        img-alt="Card Image"
-        overlay
-        class="card-process"
-      >
-        <b-card-text>
-          <div class="card-bookmark">
-            <i
-              :ref="`bookmark-${process.id}`"
-              :class="bookmarkIcon"
-              @click="checkBookmark(process)"
-            />
-          </div>
-          <div
-            class="card-info"
-            @click="openProcessInfo(process)"
-          >
-            <img
-              class="icon-process"
-              src="/img/default-process.svg"
-              :alt="$t('Default Icon')"
-            >
-            <span class="title-process">{{ process.name }}</span>
-          </div>
-        </b-card-text>
-      </b-card>
+      <Card
+        v-for="(process, index) in processList"
+        :key="index"
+        :process="process"
+        @openProcessInfo="openProcessInfo"
+      />
     </div>
     <pagination
       :total-row="totalRow"
@@ -52,9 +29,12 @@
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
+import Card from "./utils/Card.vue";
 
 export default {
-  components: { pagination, CatalogueEmpty, SearchCards },
+  components: {
+    pagination, CatalogueEmpty, SearchCards, Card,
+  },
   props: ["category"],
   data() {
     return {
@@ -100,12 +80,14 @@ export default {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&bookmark=true"
           + "&order_by=name&order_direction=asc";
       }
       return `processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&category=${this.category.id}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&bookmark=true"
           + "&order_by=name&order_direction=asc";
     },
     /**
@@ -128,25 +110,6 @@ export default {
       this.pmql = `(fulltext LIKE "%${value}%")`;
       this.loadCard();
     },
-    /**
-     * Check the card to BookedMarked List
-     */
-    checkBookmark(process) {
-      if (process.bookmark_id) {
-        ProcessMaker.apiClient
-          .delete(`process_bookmarks/${process.bookmark_id}`)
-          .then(() => {
-            ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
-            this.loadCard();
-          });
-        return;
-      }
-      ProcessMaker.apiClient
-        .post(`process_bookmarks/${process.id}`)
-        .then(() => {
-          ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
-        });
-    },
   },
 };
 </script>
@@ -155,42 +118,5 @@ export default {
 .processList {
   display: flex;
   flex-wrap: wrap;
-}
-.card-process {
-  width: 350px;
-  height: 240px;
-  margin-top: 1rem;
-  margin-right: 1rem;
-  border-radius: 16px;
-}
-.card-img {
-  border-radius: 16px;
-}
-.card-bookmark {
-  float: right;
-  font-size: 20px;
-}
-.card-bookmark:hover {
-  cursor: pointer;
-}
-.card-info {
-  display: flex;
-  flex-direction: column;
-  align-items: baseline;
-  padding-top: 15%;
-}
-.icon-process {
-  font-size: 68px;
-  margin-bottom: 1rem;
-}
-.title-process {
-  color: #556271;
-  font-family: Poppins, sans-serif;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  letter-spacing: -0.4px;
-  text-transform: uppercase;
 }
 </style>
