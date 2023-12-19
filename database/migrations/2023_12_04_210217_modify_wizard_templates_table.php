@@ -11,6 +11,10 @@ class ModifyWizardTemplatesTable extends Migration
         // Change the process_id column to helper_process_id
         Schema::table('wizard_templates', function (Blueprint $table) {
             $table->renameColumn('process_id', 'helper_process_id');
+            $table->string('name')->after('uuid');
+            $table->string('description')->after('name');
+            $table->json('template_details')->after('description');
+            $table->unsignedInteger('config_collection_id')->after('template_details');
         });
 
         // Change the foreign key reference to helper_process_id
@@ -41,6 +45,11 @@ class ModifyWizardTemplatesTable extends Migration
             // Reverse the foreign key changes
             $table->dropForeign(['helper_process_id']);
             $table->dropForeign(['process_template_id']);
+
+            $table->dropColumn('name');
+            $table->dropColumn('description');
+            $table->dropColumn('template_details');
+            $table->dropColumn('config_collection_id');
         });
     }
 }
