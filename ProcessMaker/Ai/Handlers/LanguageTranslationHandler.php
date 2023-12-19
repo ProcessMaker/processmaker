@@ -18,8 +18,8 @@ class LanguageTranslationHandler extends OpenAiHandler
     {
         parent::__construct();
         $this->config = [
-            'model' => 'text-davinci-003',
-            'max_tokens' => 2200,
+            'model' => 'gpt-3.5-turbo-16k',
+            'max_tokens' => 6000,
             'temperature' => 0,
             'top_p' => 1,
             'n' => 1,
@@ -52,7 +52,10 @@ class LanguageTranslationHandler extends OpenAiHandler
         $prompt = $this->replaceLanguage($prompt, $this->targetLanguage['humanLanguage']);
         $prompt = $this->replaceStopSequence($prompt);
         $this->config['prompt'] = $prompt;
-
+        $this->config['messages'] = [[
+            'role' => 'user',
+            'content' => $prompt,
+        ]];
         return $this;
     }
 
@@ -61,17 +64,25 @@ class LanguageTranslationHandler extends OpenAiHandler
         $listCharCount = strlen($this->json_list);
         $totalChars = $listCharCount * 3;
         $currentChunkCount = 0;
+        $config = $this->getConfig();
+        unset($config['prompt']);
 
         $client = app(Client::class);
         $stream = $client
-            ->completions()
-            ->createStreamed(array_merge($this->getConfig()));
+            ->chat()
+            ->createStreamed(array_merge($config));
 
         $fullResponse = '';
         foreach ($stream as $response) {
-            $currentChunkCount += strlen($response->choices[0]->text);
-            self::sendResponse($response->choices[0]->text, $currentChunkCount, $totalChars);
-            $fullResponse .= $response->choices[0]->text;
+            if (array_key_exists('content', $response->choices[0]->toArray()['delta'])) {
+                $currentChunkCount += strlen($response->choices[0]->toArray()['delta']['content']);
+                self::sendResponse(
+                    $response->choices[0]->toArray()['delta']['content'],
+                    $currentChunkCount,
+                    $totalChars
+                );
+                $fullResponse .= $response->choices[0]->toArray()['delta']['content'];
+            }
         }
 
         return $this->formatResponse($fullResponse);
