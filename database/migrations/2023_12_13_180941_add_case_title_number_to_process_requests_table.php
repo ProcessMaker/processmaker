@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('process_requests', function (Blueprint $table) {
+            $table->unsignedInteger('case_number')->nullable();
+            $table->string('case_title', 200)->nullable();
             $table->text('case_title_formatted')->nullable();
         });
     }
@@ -22,6 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('process_requests', function (Blueprint $table) {
+            $table->dropColumn('case_number');
+            $table->dropColumn('case_title');
             $table->dropColumn('case_title_formatted');
         });
     }
