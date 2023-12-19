@@ -78,6 +78,8 @@ class AuthServiceProvider extends ServiceProvider
                     // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
                     $isAllowedEndpoint = $this->checkAllowedEndpoints(request()->path());
 
+                    // dd($isAllowedEndpoint);
+
                     if ($user->hasPermission('create-projects') && $isAllowedEndpoint) {
                         return $this->isProjectAsset($permission, $params);
                     }
@@ -156,7 +158,7 @@ class AuthServiceProvider extends ServiceProvider
 
     private function checkForListCreateOperations($permission)
     {
-        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table'];
+        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
 
         foreach ($projectAssetTypes as $asset) {
             if (Str::contains($permission->name, $asset)) {
