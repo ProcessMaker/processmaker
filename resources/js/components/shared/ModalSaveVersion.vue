@@ -8,11 +8,7 @@
     @hidden="hideModal()"
   >
     <div class="form-group">
-      <p>
-        {{
-          $t("Once published, all new requests will use the new process model.")
-        }}
-      </p>
+      <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <b-card no-body>
           <b-tabs card>
