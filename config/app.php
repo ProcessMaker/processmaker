@@ -158,6 +158,7 @@ return [
         Laravel\Scout\ScoutServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
 
         /**
          * ProcessMaker Service Providers
@@ -189,6 +190,7 @@ return [
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
     ])->toArray(),
 
     'debug_blacklist' => [
