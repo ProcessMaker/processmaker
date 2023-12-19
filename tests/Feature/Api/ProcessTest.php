@@ -566,7 +566,7 @@ class ProcessTest extends TestCase
         Process::factory()->count(5)->create();
         $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
         $response->assertJsonCount(5, 'data');
-        $this->assertEquals(0, $response->json()['data'][0]['bookmark']);
+        $this->assertEquals(0, $response->json()['data'][0]['bookmark_id']);
 
         // This will return with bookmark
         $user = Auth::user();
