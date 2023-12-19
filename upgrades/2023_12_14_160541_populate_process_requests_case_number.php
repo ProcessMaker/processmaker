@@ -76,13 +76,15 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
     {
         return DB::table('process_requests')
             ->select('process_requests.id')
-            ->leftJoin('category_assignments', function ($join) {
-                $join->on('process_requests.process_id', '=', 'category_assignments.assignable_id')
-                    ->where('category_assignments.assignable_type', '=', 'ProcessMaker\Models\Process');
-            })
-            ->leftJoin('process_categories', 'category_assignments.category_id', '=', 'process_categories.id')
             ->whereNull('parent_request_id')
-            ->where('process_categories.is_system', 0);
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('category_assignments')
+                    ->leftJoin('process_categories', 'category_assignments.category_id', '=', 'process_categories.id')
+                    ->whereColumn('process_requests.process_id', 'category_assignments.assignable_id')
+                    ->where('category_assignments.assignable_type', 'ProcessMaker\\Models\\Process')
+                    ->where('process_categories.is_system', 1);
+            });
     }
 
     protected function displayRate($processed, $startTime, $count)
