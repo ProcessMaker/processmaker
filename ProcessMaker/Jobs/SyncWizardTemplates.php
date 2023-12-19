@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
@@ -71,7 +72,7 @@ class SyncWizardTemplates implements ShouldQueue
             if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                 continue;
             }
-            // dd($wizardTemplates);
+
             foreach ($wizardTemplates as $template) {
                 // $existingTemplate = WizardTemplate::where('uuid', $template['uuid'])->first();
                 // // If the template already exists in the database with a user then skip it,
@@ -79,26 +80,29 @@ class SyncWizardTemplates implements ShouldQueue
                 // if (!is_null($existingTemplate) && !is_null($existingTemplate->user_id)) {
                 //     continue;
                 // }
-                dd($template);
+                // dd($template);
                 foreach ($template as $wizard) {
                     if (pathinfo($wizard, PATHINFO_EXTENSION) != 'json') {
                         continue;
                     }
+
                     $url = $config['base_url'] .
-                            $config['wizard_repo'] . '/' .
-                            $config['wizard_branch'] . '/' .
+                        $config['wizard_repo'] . '/' .
+                        $config['wizard_branch'] . '/' .
+                        Str::replace('./', '', $wizard);
 
                     // Note: loop through the templates/processes and save them to the database.
+
                     $response = Http::get($url);
-                    // dd($response);
 
                     if (!$response->successful()) {
                         throw new Exception("Unable to fetch wizard template {$wizard['name']}.");
                     }
 
                     $payload = $response->json();
-                    // dd($payload);
+
                     $dataKey = "export.{$payload['root']}.attributes.process_category_id";
+
                     data_set($payload, $dataKey, $wizardTemplateCategoryId);
 
                     $options = new Options([
@@ -108,13 +112,21 @@ class SyncWizardTemplates implements ShouldQueue
                     ]);
 
                     $importer = new Importer($payload, $options);
-                    $importer->doImport();
+                    $manifest = $importer->doImport();
+                    $rootLog = $manifest[$payload['root']]->log;
+                    $processId = $rootLog['newId'];
+                    // dd($processId);
 
-                    $template = Process::where('uuid', $template['uuid'])->first();
+                    $helper_process = Process::find($processId);
+                    // dd($helper_process->id);
                     // dd($template->id);
-                    // WizardTemplate::updateOrCreate([
-                    //     'helper_process_id' => $template->id,
-                    // ]);
+                    // dd($template);
+                    // dd($template);
+                    WizardTemplate::updateOrCreate([
+                        'helper_process_id' => $helper_process->id,
+                        'name' => $helper_process->name,
+                        'description' => $helper_process->description,
+                    ]);
                 }
             }
         }
