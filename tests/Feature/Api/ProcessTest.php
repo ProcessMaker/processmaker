@@ -3,8 +3,9 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
@@ -1242,5 +1243,30 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('GET', $url, $params);
         $response->assertStatus(200);
         
+    }
+
+    public function testDeleteMediaImages()
+    {
+        $process = Process::factory()->create();
+        $faker = app(Faker::class);
+        $imageContent = file_get_contents($faker->imageUrl());
+        $imagePath = storage_path('app/test-image.jpg');
+        file_put_contents($imagePath, $imageContent);
+        
+        $uploadedFile = new UploadedFile($imagePath, 'test-image.jpg', 'image/jpeg', null, true);
+
+        $process->addMedia($uploadedFile)->toMediaCollection('images_carousel');
+
+        $mediaImagen = $process->getFirstMedia('images_carousel');
+        $uuid = $mediaImagen->uuid;
+        $url = route('api.processes.delete-media', $process);
+        $params = [
+            'id' => $process->id,
+            'uuid' => $uuid,
+        ];
+        $response = $this->apiCall('DELETE', $url, $params);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('media', ['id' => $mediaImagen->id]);
     }
 }
