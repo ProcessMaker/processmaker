@@ -18,6 +18,7 @@ use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Filters\Filter;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -115,6 +116,7 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
+        
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
@@ -136,6 +138,10 @@ class ProcessRequestController extends Controller
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
+        }
+
+        if ($advancedFilter = $request->input('advanced_filter', '')) {
+            Filter::filter($query, $advancedFilter);
         }
 
         $query->nonSystem();
@@ -160,7 +166,8 @@ class ProcessRequestController extends Controller
                 $response = $query->orderBy(
                     str_ireplace('.', '->', $request->input('order_by', 'name')),
                     $request->input('order_direction', 'ASC')
-                )->paginate($request->input('per_page', 10));
+                )->select('process_requests.*')->WithUserViewed($user)
+                ->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
         } catch (QueryException $e) {
