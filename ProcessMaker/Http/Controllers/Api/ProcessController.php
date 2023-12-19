@@ -401,13 +401,7 @@ class ProcessController extends Controller
             }
         }
 
-//         foreach ($request->imagesCarousel as $image) {
-//            var_dump('UUID:', $image['uuid']);
-//         }
-
-
         $this->saveImagesIntoMedia($request, $process);     
-        //dd('super STOP');   
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -1597,8 +1591,6 @@ class ProcessController extends Controller
         // Check if image exists before delete
         if ($mediaImagen) {
             $mediaImagen->delete();
-            // Optional: If storage/public is not linked and we want to delete image from that directory
-            // unlink(public_path($mediaImagen->getPath()));
         }
     }
 }

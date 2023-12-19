@@ -99,7 +99,6 @@ export default {
   },
   mounted() {
     this.icon = this.value ? this.find(this.value) : this.find(this.default);
-    console.log('mounted in icon: ', this.customValue);
   },
   methods: {
     onSearch(query) {
