@@ -15,7 +15,7 @@
                 :src="template.icon"
                 :alt="template.name + 'icon'"
                 width="45px"
-                class="mb-3 d-inline-block"
+                class="mb-3 d-block"
               >
             </span>
             <span>
@@ -25,7 +25,7 @@
               <h2 class="wizard-details-headline">{{ template.headline | str_limit(150) }}</h2>
               <p class="wizard-details-description">{{ template.description | str_limit(150) }}</p>
               <button class="wizard-details-button text-uppercase"  @click.prevent="triggerHelperProcessStartEvent">
-                <i class="fas fa-play-circle" />
+                <i class="fas fa-play-circle mr-1" />
                 {{ $t('Use Now') }}
               </button>
             </div>
