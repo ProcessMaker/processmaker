@@ -51,6 +51,7 @@ class NlqToCategoryHandler extends OpenAiHandler
                 array_merge($this->getConfig()
                 )
             );
+
         return $this->formatResponse($response);
     }
 
