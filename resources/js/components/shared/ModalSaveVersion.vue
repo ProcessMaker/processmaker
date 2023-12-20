@@ -415,7 +415,7 @@ export default {
               this.images.push({ 
                 file, 
                 url: event.target.result,
-                uuid: "", 
+                uuid: "",
               });
               this.showDeleteIcons.push(false);
             };
@@ -562,6 +562,11 @@ export default {
           .catch(error => {
             console.error("Error", error);
           });
+      const params = {
+        indexImage: index,
+        type: "delete",
+      };    
+      ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
@@ -639,11 +644,19 @@ export default {
         .put(`processes/${this.options.id}`, this.dataProcess)
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
+          const params = {
+            indexImage: null,
+            type: "add",
+          };
+          ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
           this.hideModal();
         })
         .catch((error) => {
           console.error("Error: ", error);
         });
+
+      
+
     },
     showModal() {
       this.subject = "";

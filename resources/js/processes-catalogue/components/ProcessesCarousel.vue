@@ -20,7 +20,10 @@
 </template>
 
 <script>
+import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
+  mixins: [datatableMixin, dataLoadingMixin],
   props: {
     process: {
       type: Object,
@@ -36,8 +39,19 @@ export default {
       interval: 2000,
     };
   },
+  created() {
+    
+  },
   mounted() {
     this.getLaunchpadImages();
+    ProcessMaker.EventBus.$on('getLaunchpadImagesEvent', ({ indexImage, type }) => {
+      if(type === 'delete') {
+        this.images.splice(indexImage,1);
+      } else {
+        this.images = [];
+        this.getLaunchpadImages();
+      }
+    }); 
   },
   methods: {
     onSlideStart(slide) {
