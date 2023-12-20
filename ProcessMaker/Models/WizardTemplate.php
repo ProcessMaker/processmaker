@@ -21,6 +21,10 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         'uuid',
         'process_template_id',
         'helper_process_id',
+        'name',
+        'description',
+        'template_details',
+        'config_collection_id',
     ];
 
     /**
@@ -56,7 +60,7 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
 
         return $query;
     }
-    
+
     /**
      * Add files to media collection
      */
