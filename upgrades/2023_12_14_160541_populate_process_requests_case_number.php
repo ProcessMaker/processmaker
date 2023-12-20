@@ -51,7 +51,11 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
                 // UPDATE process_requests SET case_number = {$caseNumber} WHERE id = {$record->id};
                 DB::table('process_requests')
                     ->where('id', $record->id)
-                    ->update(['case_number' => $caseNumber]);
+                    ->update([
+                        'case_number' => $caseNumber,
+                        'case_title' => 'Case #' . $caseNumber,
+                        'case_title_formatted' => 'Case #<b>' . $caseNumber . '</b>',
+                    ]);
                 $inserts[] = [
                     'id' => $caseNumber,
                     'process_request_id' => $record->id,
@@ -68,6 +72,28 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
         // Update the auto increment value of table case_numbers to the next case number
         // ALTER TABLE case_numbers AUTO_INCREMENT = {$caseNumber};
         DB::statement("ALTER TABLE case_numbers AUTO_INCREMENT = {$caseNumber};");
+
+        echo PHP_EOL;
+
+        // Copy case_number case_title and case_title_formatted from parent request to child requests
+        echo '    Populating case_number, case_title and case_title_formatted from parent request to child requests...';
+        DB::update('
+            UPDATE process_requests
+            JOIN process_requests AS parent_requests ON parent_requests.id = process_requests.parent_request_id
+            SET process_requests.case_number = parent_requests.case_number,
+                process_requests.case_title = parent_requests.case_title,
+                process_requests.case_title_formatted = parent_requests.case_title_formatted
+            WHERE
+                process_requests.parent_request_id IS NOT NULL
+                and not exists (
+                    select 1 from category_assignments
+                        left join process_categories on category_assignments.category_id = process_categories.id
+                    where process_requests.process_id = category_assignments.assignable_id
+                        and process_requests.process_id = category_assignments.assignable_id
+                        and category_assignments.assignable_type = \'ProcessMaker\\\\Models\\\\Process\'
+                        and process_categories.is_system = 1
+                )
+        ');
 
         echo PHP_EOL;
     }
