@@ -54,8 +54,8 @@
             />
           </b-card-group>
         </template>
-        <template-details v-if="component === 'template-details'" :template="template" :type="type"></template-details>
-        <wizard-template-details ref="wizardTemplateDetails" :template="template"></wizard-template-details>
+        <template-details v-if="component === 'template-details'" :template="template"></template-details>
+        <wizard-template-details v-if="showWizardTemplateDetails" ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -123,6 +123,7 @@ export default {
         svgIconStyle: "height: 2em;",
         showAiSlogan: true,
       },
+      showWizardTemplateDetails: false,
     };
   },
   watch: {
@@ -137,7 +138,10 @@ export default {
     showDetails($event) {
       if ($event.type === "wizard") {
         this.template = $event.template;
-        this.$refs.wizardTemplateDetails.show();
+        this.showWizardTemplateDetails = true;
+        this.$nextTick(() => {
+          this.$refs.wizardTemplateDetails.show();
+        });
       } else {
         this.$emit('show-details', {
           'id': $event.template.id, 
