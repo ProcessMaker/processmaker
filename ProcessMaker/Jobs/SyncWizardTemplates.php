@@ -101,18 +101,17 @@ class SyncWizardTemplates implements ShouldQueue
                     }
 
                     $payload = $response->json();
+                    $dataKey = "export.{$payload['root']}.attributes.process_category_id";
+                    data_set($payload, $dataKey, $wizardTemplateCategoryId);
+
+                    $options = new Options([
+                        'mode' => 'update',
+                        'asset_type' => 'WIZARD_TEMPLATE',
+                        'saveAssetsMode' => 'saveAllAssets',
+                    ]);
 
                     // dd($payload['type']);
                     if ($payload['type'] == 'process_package' || $payload['type'] == 'process_templates_package') {
-                        $dataKey = "export.{$payload['root']}.attributes.process_category_id";
-                        data_set($payload, $dataKey, $wizardTemplateCategoryId);
-
-                        $options = new Options([
-                            'mode' => 'update',
-                            'asset_type' => 'WIZARD_TEMPLATE',
-                            'saveAssetsMode' => 'saveAllAssets',
-                        ]);
-
                         $importer = new Importer($payload, $options);
                         $manifest = $importer->doImport();
                         $rootLog = $manifest[$payload['root']]->log;
