@@ -183,23 +183,29 @@ class SyncWizardTemplates implements ShouldQueue
     private function importProcess($payload, $assetType)
     {
         // Import a process and return the new ID
-        // TODO: Ensure the asset_type is being properly updated in the database
         $postOptions = [];
         foreach ($payload['export'] as $key => $asset) {
             $postOptions[$key] = [
                 'mode' => 'update',
+                'is_template' => true,
                 'asset_type' => $assetType,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
+            if (in_array($asset['type'], ['Process', 'Screen', 'Script', 'Collections', 'DataConnector', 'ProcessTemplates'])) {
+                $payload['export'][$key]['attributes']['asset_type'] = $assetType;
+            }
         }
 
         $options = new Options($postOptions);
+        try {
+            $importer = new Importer($payload, $options);
+            $manifest = $importer->doImport();
+            $rootLog = $manifest[$payload['root']]->log;
 
-        $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
-        $rootLog = $manifest[$payload['root']]->log;
-
-        return $rootLog['newId'];
+            return $rootLog['newId'];
+        } catch (Exception $e) {
+            throw new Exception('Error:', $e->getMessage());
+        }
     }
 
     private function updateOrCreateWizardTemplate($template, $newHelperProcessId, $newProcessTemplateId)
@@ -329,7 +335,7 @@ class SyncWizardTemplates implements ShouldQueue
                 foreach ($value['uuids'] as $uuid) {
                     if ($element === 'collections') {
                         $this->updateCollectionAssetType($uuid);
-                    } elseif ($element === 'screeens') {
+                    } elseif ($element === 'screens') {
                         $this->updateScreenAssetType($uuid);
                     }
                 }
