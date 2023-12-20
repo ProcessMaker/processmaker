@@ -67,7 +67,8 @@ export default {
       ProcessMaker.apiClient
         .get(`processes/${this.process.id}/media`)
         .then((response) => {
-            const mediaArray = response.data.data[0].media;
+            let firstResponse = response.data.data.shift();
+            const mediaArray = firstResponse.media;
             mediaArray.forEach((media) => {
             this.images.push({ url: media.original_url });
           });

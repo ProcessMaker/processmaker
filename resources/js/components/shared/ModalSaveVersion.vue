@@ -315,8 +315,9 @@ export default {
       ProcessMaker.apiClient
         .get(`processes/${this.processId}/media`)
         .then((response) => {
+          let firstResponse = response.data.data.shift();
           const launchpadProperties = JSON.parse(
-            response.data.data[0]?.launchpad_properties
+            firstResponse?.launchpad_properties
           );
 
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
@@ -332,7 +333,7 @@ export default {
           }
 
           //Load Images into Carousel Container
-          const mediaArray = response.data.data[0].media;
+          const mediaArray = firstResponse.media;
               mediaArray.forEach((media) => {   
                this.convertImageUrlToBase64(media);
             });
