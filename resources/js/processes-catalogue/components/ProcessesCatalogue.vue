@@ -106,7 +106,7 @@ export default {
      */
     getCategories() {
       ProcessMaker.apiClient
-        .get(`process_categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
           this.listCategories = [...this.listCategories, ...response.data.data];
         });
@@ -120,7 +120,7 @@ export default {
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
-          .get(`process_categories/${categoryId}`)
+          .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
           });
