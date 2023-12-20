@@ -112,6 +112,7 @@
                 "package-csi": "dev-fall",
                 "package-jxchange": "dev-fall",
                 "package-zjukumari-logs": "dev-fall",
+                "package-zj-adps": "dev-fall",
                 "package-zj-wingate": "dev-fall",
                 "package-banner-sync": "dev-fall",
                 "package-service-task": "dev-fall",
