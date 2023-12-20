@@ -83,7 +83,7 @@ export default {
           + "&bookmark=true"
           + "&order_by=name&order_direction=asc";
       }
-      return `processes?page=${this.currentPage}`
+      return `process_bookmarks/processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&category=${this.category.id}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
