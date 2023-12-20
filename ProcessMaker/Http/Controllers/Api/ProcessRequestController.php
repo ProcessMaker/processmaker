@@ -28,6 +28,7 @@ use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TracksUserViewed;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -166,7 +167,7 @@ class ProcessRequestController extends Controller
                 $response = $query->orderBy(
                     str_ireplace('.', '->', $request->input('order_by', 'name')),
                     $request->input('order_direction', 'ASC')
-                )->select('process_requests.*')->WithUserViewed($user)
+                )->select('process_requests.*')->WithUserViewed($user->id)
                 ->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }

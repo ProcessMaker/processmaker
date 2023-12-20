@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
@@ -11,6 +12,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -104,6 +106,20 @@ class TaskController extends Controller
                 ]);
             }
 
+            $existingView = UserResourceView::where('user_id',Auth::user()->id)
+                ->where('viewable_type', ProcessRequest::class)
+                ->where('viewable_id', $task->id)
+                ->first();
+
+            if (!$existingView) {
+                $userResourceView = new UserResourceView();
+                $userResourceView->user_id = Auth::user()->id;
+                $userResourceView->viewable_type = ProcessRequestToken::class;
+                $userResourceView->viewable_id = $task->id;
+                $userResourceView->save();
+
+            }
+            
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,

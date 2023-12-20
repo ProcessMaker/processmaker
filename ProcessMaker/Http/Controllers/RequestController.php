@@ -18,6 +18,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -171,6 +172,21 @@ class RequestController extends Controller
                 'eligibleRollbackTask',
                 'errorTask',
             ));
+        }
+
+        $existingView = UserResourceView::where('user_id',Auth::id())
+            ->where('viewable_type', ProcessRequest::class)
+            ->where('viewable_id', $request->id)
+            ->first();
+
+        if (!$existingView) {
+
+            $userResourceView = new UserResourceView();
+            $userResourceView->user_id = Auth::id();
+            $userResourceView->viewable_type = ProcessRequest::class;
+            $userResourceView->viewable_id = $request->id;
+            $userResourceView->save();
+
         }
 
         return view('requests.show', compact(
