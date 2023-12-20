@@ -40,7 +40,7 @@ class SyncWizardTemplates implements ShouldQueue
     /**
      * Execute the job.
      * Function to handle the execution of this job when it is run.
-     * Here the function fetches wizard templates list from Github and saves them to the database.
+     * Here the function fetches guided templates list from Github and saves them to the database.
      * @return void
      */
     public function handle()
@@ -57,12 +57,12 @@ class SyncWizardTemplates implements ShouldQueue
                 ? explode(',', $config['wizard_categories'])
                 : [$config['wizard_categories']];
 
-            // Create or get the ID of the 'Wizard Templates' category
+            // Create or get the ID of the 'Guided Templates' category
             $wizardTemplateCategoryId = ProcessCategory::firstOrCreate([
-                'name' => 'Wizard Templates',
+                'name' => 'Guided Templates',
             ], [
                 'status' => 'ACTIVE',
-                'is_system' => 0,
+                'is_system' => 1,
             ])->getKey();
 
             // Fetch the default template list from Github
@@ -70,7 +70,7 @@ class SyncWizardTemplates implements ShouldQueue
 
             // Check if the request was successful
             if (!$response->successful()) {
-                throw new Exception('Unable to fetch wizard template list.');
+                throw new Exception('Unable to fetch guided template list.');
             }
 
             // Extract the JSON data from the response
@@ -87,7 +87,7 @@ class SyncWizardTemplates implements ShouldQueue
                 }
             }
         } catch (Exception $e) {
-            Log::error("Error Syncing Wizard Templates: {$e->getMessage()}");
+            Log::error("Error Syncing Guided Templates: {$e->getMessage()}");
         }
     }
 
@@ -271,7 +271,7 @@ class SyncWizardTemplates implements ShouldQueue
             // Process the imported data and update asset types and associations
             $this->processImportedData($importedData);
         } else {
-            Log::debug('Error Syncing Wizard Templates: The Collection package is not installed. Please install the Collection package to enable full functionality for Wizard Templates.');
+            Log::debug('Error Syncing Guided Templates: The Collection package is not installed. Please install the Collection package to enable full functionality for Guided Templates.');
         }
     }
 

@@ -163,7 +163,7 @@ export default {
                 ? "templates/" + this.type.toLowerCase() +"?"
                 : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
 
-        // If the type is 'wizard', override the URL to fetch wizard templates
+        // If the type is 'wizard', override the URL to fetch guided templates
         if (this.type === 'wizard') {
           url = 'wizard-templates?';
         }

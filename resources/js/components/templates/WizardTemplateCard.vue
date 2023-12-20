@@ -10,7 +10,7 @@
     >
       <b-card-body class="p-2">
         <div class="wizard-icon-container text-right mb-3">
-          <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
+          <img src="../../../img/wizard-template-icon.svg" alt="Guided Template Icon">
         </div>
         <b-card-text class="mx-4">
           <img :src="templateIcon" :alt="template.name + ' icon'" width="45px" class="mb-3"/>
