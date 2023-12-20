@@ -227,6 +227,8 @@ class SyncWizardTemplates implements ShouldQueue
 
     private function importTemplateAssets($template, $config, $mediaCollectionName, $wizardTemplate)
     {
+        // Clear the collection to prevent duplicate images
+        $wizardTemplate->clearMediaCollection($mediaCollectionName);
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
         $templateCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['card-background']);

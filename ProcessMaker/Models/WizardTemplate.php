@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\File;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Traits\HasUuids;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -26,6 +27,10 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         'media_collection',
         'template_details',
         'config_collection_id',
+    ];
+
+    protected $appends = [
+        'template_media',
     ];
 
     /**
@@ -60,6 +65,23 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         });
 
         return $query;
+    }
+
+    public function getTemplateMediaAttribute()
+    {
+        $mediaCollectionName = 'wt-' . $this->uuid . '-media';
+        $slides = $this->getMedia($mediaCollectionName, ['media_type' => 'slide']);
+        $slideUrls = $slides->map(function ($slide) {
+            return $slide->getFullUrl();
+        });
+
+        return [
+            'icon' => $this->getMedia($mediaCollectionName, ['media_type' => 'icon'])->first()->getFullUrl(),
+            'cardBackground' => $this->getMedia($mediaCollectionName, ['media_type' => 'cardBackground'])->first()->getFullUrl(),
+            'slides' => $slideUrls,
+        ];
+
+        // return $this->morphMany(Media::class, 'model');
     }
 
     /**

@@ -12,7 +12,7 @@
           <div class="wizard-details-container text-left mb-3">
             <span>
               <img
-                :src="template.icon"
+                :src="templateIcon"
                 :alt="template.name + ' icon'"
                 width="45px"
                 class="mb-3 d-block"
@@ -22,8 +22,8 @@
               <h5 class="text-uppercase mb-1 d-inline-block font-weight-bold template-name">{{ template.name | str_limit(30) }}</h5>
             </span>
             <div class="wizard-details-text">
-              <h2 class="wizard-details-headline">{{ templateDetails.modalExcerpt | str_limit(150) }}</h2>
-              <p class="wizard-details-description">{{ templateDetails.modalDescription | str_limit(150) }}</p>
+              <h2 class="wizard-details-headline">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h2>
+              <p class="wizard-details-description">{{ templateDetails['modal-description'] | str_limit(150) }}</p>
               <button class="wizard-details-button text-uppercase"  @click.prevent="triggerHelperProcessStartEvent">
                 <i class="fas fa-play-circle mr-1" />
                 {{ $t('Use Now') }}
@@ -32,8 +32,8 @@
           </div>
         </b-col>
         <b-col>
-          <b-carousel :interval="0">
-            <b-carousel-slide v-for="(image, index) in template.sliderImages" :key="index" :img-src="image"/>
+          <b-carousel fade :interval="slideInterval">
+            <b-carousel-slide v-for="(image, index) in templateSlides" :key="index" :img-src="image"/>
           </b-carousel>
         </b-col>
       </b-row>
@@ -73,7 +73,16 @@ export default {
   },
   computed: {
     templateDetails() {
-      return JSON.parse(this.template.template_details);
+      return JSON.parse(this.template?.template_details);
+    },
+    templateIcon() {
+      return this.template?.template_media?.icon;
+    },
+    templateSlides() {
+      return this.template?.template_media?.slides;
+    },
+    slideInterval() {
+      return Object.keys(this.template?.template_media?.slides).length > 1 ? 3000 : 0;
     }
   },
   methods: {
@@ -159,7 +168,7 @@ export default {
       this.close();
     },
     error(processRequestId) {
-      console.log("TASK ERROR", processRequestId);
+      console.error('error', processRequestId);
     },
     async cancelHelperProcessRequest() {
       const {process_request_id: processRequestId } = this.task;

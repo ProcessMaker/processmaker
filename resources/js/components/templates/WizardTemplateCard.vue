@@ -3,7 +3,7 @@
     <b-card 
       no-body 
       class="wizard-template-select-card p-0"
-      :style="{ backgroundImage: 'url(' + template?.backgroundImage + ')' }"
+      :style="{ backgroundImage: 'url(' + cardBackgroundImage + ')' }"
       @click="showDetails()"
       @mouseenter="addHoverClass"
       @mouseleave="removeHoverClass"
@@ -13,7 +13,7 @@
           <img src="../../../img/wizard-template-icon.svg" alt="Wizard Icon">
         </div>
         <b-card-text class="mx-4">
-          <img :src="template.icon" :alt="template.name + 'icon'" width="45px" class="mb-3"/>
+          <img :src="templateIcon" :alt="template.name + ' icon'" width="45px" class="mb-3"/>
           <h5 class="text-uppercase">{{ template.name | str_limit(30) }}</h5>
           {{ template.description | str_limit(150) }}
         </b-card-text>
@@ -29,6 +29,14 @@ export default {
   components: { },
   mixins: [templateMixin],
   props: ["template"],
+  computed: {
+    cardBackgroundImage() {
+      return this.template?.template_media?.cardBackground;
+    },
+    templateIcon() {
+      return this.template?.template_media?.icon;
+    }
+  },
 };
 </script>
 
