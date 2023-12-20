@@ -38,10 +38,18 @@ class Bookmark extends ProcessMakerModel
     }
 
     /**
-     * Scope check if the process was bookmarked
+     * Scope get the bookmaked_id related
      */
-    public function scopeIsBookmarked($query, $proId, $userId)
+    public function scopeGetBookmarked($bookmark, $proId, $userId)
     {
-        return $query->where('process_id', $proId)->where('user_id', $userId)->count();
+        $id = 0;
+        if ($bookmark) {
+            $response = self::where('process_id', $proId)->where('user_id', $userId)->first();
+            if (!is_null($response)) {
+                $id = $response->id;
+            }
+        }
+
+        return $id;
     }
 }

@@ -161,11 +161,8 @@ class ProcessController extends Controller
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
 
-            // Get if the process is a bookmark
-            $process->bookmark = 0;
-            if ($bookmark) {
-                $process->bookmark = Bookmark::isBookmarked($process->id, $user->id);
-            }
+            // Get the id bookmark related
+            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
