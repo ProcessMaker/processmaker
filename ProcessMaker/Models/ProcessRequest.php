@@ -436,11 +436,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
-                    ->orWhere(DB::raw('process_requests.id'), 'like', $filter)
+                    ->orWhere(DB::raw('id'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
                     ->orWhere('initiated_at', 'like', $filter)
-                    ->orWhere('process_requests.created_at', 'like', $filter)
-                    ->orWhere('process_requests.updated_at', 'like', $filter);
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
             });
         }
 
@@ -692,7 +692,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
         if ($user) {
             return function ($query) use ($user, $expression) {
-                $query->where('process_requests.user_id', $expression->operator, $user->id);
+                $query->where('user_id', $expression->operator, $user->id);
             };
         } else {
             throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
