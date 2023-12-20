@@ -16,6 +16,7 @@ use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
@@ -36,7 +37,7 @@ use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
-Route::middleware('auth', 'sanitize', 'force_change_password')->group(function () {
+Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
@@ -93,7 +94,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
     Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
-    
+
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
@@ -160,6 +161,9 @@ Broadcast::routes();
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);
 Route::get('logout', [LoginController::class, 'beforeLogout'])->name('logout');
+Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])->name('2fa');
+Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
+Route::get('2fa/send_again', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.send_again');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

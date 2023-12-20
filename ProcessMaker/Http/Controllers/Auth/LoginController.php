@@ -226,6 +226,9 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             event(new Logout(Auth::user()));
+
+            // Always destroy 2fa flag
+            session()->remove('2fa-validated');
         }
 
         return $this->logout($request);
