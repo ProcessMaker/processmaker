@@ -4,6 +4,7 @@ namespace ProcessMaker\Observers;
 
 use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Events\RequestError;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -64,7 +65,8 @@ class ProcessRequestObserver
     {
         // When data is updated we update the case_title
         if ($request->isDirty('data')) {
-            $data = $request->data;
+            $dm = new DataManager();
+            $data = $dm->getRequestData($request);
             // If request is a parent process, inherit the case title to the child requests
             if (!$request->parent_request_id) {
                 $mustacheTitle = $request->getCaseTitleFromProcess();
