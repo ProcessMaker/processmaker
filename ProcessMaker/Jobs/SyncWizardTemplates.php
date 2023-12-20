@@ -10,11 +10,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use ProcessMaker\Client\Model\ProcessImport;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\WizardTemplate;
+use ProcessMaker\Templates\ProcessTemplate;
 
 class SyncWizardTemplates implements ShouldQueue
 {
@@ -92,7 +94,6 @@ class SyncWizardTemplates implements ShouldQueue
                         Str::replace('./', '', $wizard);
 
                     // Note: loop through the templates/processes and save them to the database.
-
                     $response = Http::get($url);
 
                     if (!$response->successful()) {
@@ -101,32 +102,34 @@ class SyncWizardTemplates implements ShouldQueue
 
                     $payload = $response->json();
 
-                    $dataKey = "export.{$payload['root']}.attributes.process_category_id";
+                    // dd($payload['type']);
+                    if ($payload['type'] == 'process_package' || $payload['type'] == 'process_templates_package') {
+                        $dataKey = "export.{$payload['root']}.attributes.process_category_id";
+                        data_set($payload, $dataKey, $wizardTemplateCategoryId);
 
-                    data_set($payload, $dataKey, $wizardTemplateCategoryId);
+                        $options = new Options([
+                            'mode' => 'update',
+                            'asset_type' => 'WIZARD_TEMPLATE',
+                            'saveAssetsMode' => 'saveAllAssets',
+                        ]);
 
-                    $options = new Options([
-                        'mode' => 'update',
-                        'asset_type' => 'WIZARD_TEMPLATE',
-                        'saveAssetsMode' => 'saveAllAssets',
-                    ]);
+                        $importer = new Importer($payload, $options);
+                        $manifest = $importer->doImport();
+                        $rootLog = $manifest[$payload['root']]->log;
+                        $processId = $rootLog['newId'];
+                    } elseif ($payload['type'] === 'process_templates_package') {
+                        dd($payload);
+                    }
 
-                    $importer = new Importer($payload, $options);
-                    $manifest = $importer->doImport();
-                    $rootLog = $manifest[$payload['root']]->log;
-                    $processId = $rootLog['newId'];
-                    // dd($processId);
+                    // $helper_process = Process::find($processId);
 
-                    $helper_process = Process::find($processId);
-                    // dd($helper_process->id);
-                    // dd($template->id);
                     // dd($template);
-                    // dd($template);
-                    WizardTemplate::updateOrCreate([
-                        'helper_process_id' => $helper_process->id,
-                        'name' => $helper_process->name,
-                        'description' => $helper_process->description,
-                    ]);
+                    // WizardTemplate::updateOrCreate([
+                    //     'helper_process_id' => $helper_process->id,
+                    //     'name' => $template['template_details']['card-title'],
+                    //     'description' => $template['template_details']['card-excerpt'],
+                    //     'template_details' => $template['template_details']
+                    // ]);
                 }
             }
         }
