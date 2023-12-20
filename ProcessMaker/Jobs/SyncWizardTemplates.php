@@ -184,13 +184,18 @@ class SyncWizardTemplates implements ShouldQueue
     {
         // Import a process and return the new ID
         // TODO: Ensure the asset_type is being properly updated in the database
-        $importOptions = new Options([
-            'mode' => 'update',
-            'asset_type' => $assetType,
-            'saveAssetsMode' => 'saveAllAssets',
-        ]);
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'update',
+                'asset_type' => $assetType,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+        }
 
-        $importer = new Importer($payload, $importOptions);
+        $options = new Options($postOptions);
+
+        $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
         $rootLog = $manifest[$payload['root']]->log;
 
