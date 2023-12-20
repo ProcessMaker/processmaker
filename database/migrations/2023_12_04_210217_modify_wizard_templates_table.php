@@ -14,7 +14,7 @@ class ModifyWizardTemplatesTable extends Migration
             $table->string('name')->after('uuid');
             $table->string('description')->after('name');
             $table->json('template_details')->after('description');
-            $table->unsignedInteger('config_collection_id')->after('template_details');
+            $table->unsignedInteger('config_collection_id')->nullable()->after('template_details');
         });
 
         // Change the foreign key reference to helper_process_id
