@@ -1,18 +1,16 @@
 <template>
-  <div class="h-100 d-flex align-items-center justify-content-center ml-4 mt-4 mb-4 mr-4">
+  <div class="h-100">
     <b-card
       id="app"
-      style="max-width: 100%;"
-      shadow="lg"
-      class="h-100 w-100"
+      no-body
+      class="h-100 bg-white border-top-0"
     >
-      <b-card-header class="bg-white p-2">
-        <top-menu
-          ref="menuScreen"
-          :options="optionsMenu"
-          :environment="self"
-        />
-      </b-card-header>
+      <!-- Card Header -->
+      <top-menu
+        ref="menuScreen"
+        :options="optionsMenu"
+        :environment="self"
+      />
 
       <!-- Card Body -->
       <b-card-body
@@ -37,6 +35,7 @@
             :is-loaded="false"
           />
         </vue-form-builder>
+
         <!-- Preview -->
         <b-row
           v-show="displayPreview"
@@ -81,6 +80,7 @@
               />
             </div>
           </b-col>
+
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
             <b-card
               no-body
@@ -97,6 +97,7 @@
                     @input="previewData = $event"
                   />
                 </div>
+
                 <b-button
                   variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
@@ -109,6 +110,7 @@
                     :class="showDataInput ? 'fa-angle-right' : 'fa-angle-down'"
                   />
                 </b-button>
+
                 <b-collapse
                   id="showDataInput"
                   v-model="showDataInput"
@@ -120,6 +122,7 @@
                     language="json"
                     @change="updateDataInput"
                   />
+
                   <div
                     v-if="!previewInputValid"
                     class="pl-3"
@@ -128,6 +131,7 @@
                     <small class="text-muted text-capitalize">{{ $t('Invalid JSON Data Object') }}</small>
                   </div>
                 </b-collapse>
+
                 <b-button
                   variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
@@ -150,6 +154,7 @@
                     :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"
                   />
                 </b-button>
+
                 <b-collapse
                   id="showDataPreview"
                   v-model="showDataPreview"
@@ -169,8 +174,8 @@
         </b-row>
       </b-card-body>
 
-       <!-- Card Footer -->
-       <b-card-footer class="d-flex d-flex justify-content-end align-items-center">
+      <!-- Card Footer -->
+      <b-card-footer class="d-flex d-flex justify-content-end align-items-center">
         <b-form-checkbox
           v-model="toggleValidation"
           name="check-button"
@@ -178,6 +183,7 @@
         >
           {{ $t('Screen Validation') }}
         </b-form-checkbox>
+
         <div
           class="ml-3"
           @click="showValidationErrors = !showValidationErrors"
@@ -194,6 +200,7 @@
             >
               <i class="fas fa-check-circle " />
             </span>
+
             <span
               v-if="allErrors > 0"
               class="badge badge-danger"
@@ -210,6 +217,7 @@
             </span>
           </button>
         </div>
+
         <div
           v-if="showValidationErrors"
           class="validation-panel position-absolute border-top border-left overflow-auto"
@@ -273,9 +281,10 @@
         <b-col cols="6">
           <tree-view
             v-model="previewDataStringify"
-            :iframe-height="iframeHeight"
+            :iframeHeight="iframeHeight"
             style="border:1px; solid gray;"
-          />
+          >
+          </tree-view>
         </b-col>
       </b-row>
     </b-modal>
