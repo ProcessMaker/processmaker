@@ -7,6 +7,7 @@ use OTPHP\TOTP;
 use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
+use Twilio\Rest\Client;
 
 class TwoFactorAuthentication
 {
@@ -28,7 +29,7 @@ class TwoFactorAuthentication
                 Notification::send($user, new TwoFactorAuthNotification($user, $code));
             }
             if (in_array(self::SMS, $methods)) {
-                // TO DO: Send SMS
+                $this->sendSms($user, $code);
             }
         } elseif (in_array(self::AUTH_APP, $methods)) {
             session()->put('2fa-auth-app', true);
@@ -52,7 +53,7 @@ class TwoFactorAuthentication
         $otp->setDigest('sha512');
         $otp->setIssuer('ProcessMaker');
         $otp->setLabel($user->username);
-        $otp->setDigits(10);
+        $otp->setDigits(8);
         $otp->setPeriod(300);
 
         return $otp;
@@ -74,5 +75,31 @@ class TwoFactorAuthentication
 
         // Validate code
         return $otp->verify($code);
+    }
+
+    private function sendSms(User $user, string $code)
+    {
+        // Get config parameters for Twilio
+        $sid = config('twilio.sid');
+        $token = config('twilio.token');
+        $from = config('twilio.active_phone_number');
+
+        // Format the number to send the code
+        $to = '+' . ltrim($user->cell, '+');
+
+        // Build body
+        $body = $user->username . PHP_EOL . PHP_EOL;
+        $body .= __('This is your security code: :code', ['code' => $code]) . PHP_EOL . PHP_EOL;
+        $body .= _('Regards') . PHP_EOL;
+        $body .= 'ProcessMaker';
+
+        // Send SMS using Twilio SDK
+        $twilio = new Client($sid, $token);
+        $twilio->messages->create($to,
+            [
+                'from' => $from,
+                'body' => $body
+            ]
+        );
     }
 }

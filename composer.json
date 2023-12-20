@@ -52,6 +52,7 @@
         "spatie/laravel-fractal": "^6.0",
         "spatie/laravel-medialibrary": "^10.7",
         "spomky-labs/otphp": "^11.2",
+        "twilio/sdk": "^7.13",
         "symfony/expression-language": "^6.2",
         "teamtnt/laravel-scout-tntsearch-driver": "^12.2",
         "typo3/class-alias-loader": "^1.0",
