@@ -23,6 +23,7 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         'helper_process_id',
         'name',
         'description',
+        'media_collection',
         'template_details',
         'config_collection_id',
     ];
