@@ -130,15 +130,19 @@ export default {
         });
 
         const taskData = response.data.data;
+
         if (taskData.length > 0) {
           this.task = taskData[0];
           this.currentUserId = parseInt(document.head.querySelector('meta[name="user-id"]').content);
           this.showHelperProcess = true;
+        } else {
+          // Process is completed hide the helper process and close the modal
+          this.showHelperProcess = false;
+          this.close();
         }
-      } catch (err) {
-        const data = err.response?.data;
-        if (data && data.message) {
-          ProcessMaker.alert(data.message, 'danger');
+      } catch (error) {
+        if (error && error.message) {
+          ProcessMaker.alert(error.message, 'danger');
         }
       }
     },
@@ -157,12 +161,13 @@ export default {
         // Successfully completed task, get the next one
         await this.getNextTask(processRequestId);
       } catch (error) {
-        if (data && data.message) {
-          ProcessMaker.alert(data.message, 'danger');
+        if (error && error.message) {
+          ProcessMaker.alert(error.message, 'danger');
         }
       }
     },
     completed(processRequestId) {
+      console.log("task completed", processRequestId);
       // TODO: Redirect the user to the created process launchpad page
       this.showHelperProcess = false;
       this.close();
