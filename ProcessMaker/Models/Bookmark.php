@@ -40,7 +40,7 @@ class Bookmark extends ProcessMakerModel
     /**
      * Scope get the bookmaked_id related
      */
-    public function getBookmarked($bookmark, $proId, $userId)
+    public static function getBookmarked($bookmark, $proId, $userId)
     {
         $id = 0;
         if ($bookmark) {
