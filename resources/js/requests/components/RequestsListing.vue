@@ -436,7 +436,10 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(
+        /<(?!b|i|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
+        "",
+      );
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
