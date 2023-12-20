@@ -14,6 +14,7 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -66,20 +67,28 @@
                 </component>
               </template>
               <template v-else>
-                <div
-                  :id="`element-${rowIndex}-${colIndex}`"
-                  :class="{ 'pm-table-truncate': header.truncate }"
-                  :style="{ maxWidth: header.width + 'px' }"
-                >
-                  {{ row[header.field] }}
-                  <b-tooltip
-                    v-if="header.truncate"
-                    :target="`element-${rowIndex}-${colIndex}`"
-                    custom-class="pm-table-tooltip"
+                <template v-if="header.field === 'due_at'">
+                  <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
+                    {{ formatRemainingTime(row[header.field]) }}
+                  </span>
+                  <span>{{ row["due_date"] }}</span>
+                </template>
+                <template v-else>
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
-                  </b-tooltip>
-                </div>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
+                </template>
               </template>
             </template>
           </td>
@@ -160,6 +169,7 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -173,13 +183,14 @@ export default {
   },
   watch: {
     data(newData) {
-      console.log(newData);
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAsignee(record["user"]);
           record["request"] = this.formatRequest(record);
+          record["due_date"] = this.formatDueDate(record["due_at"]);
+          record["color_badge"] = this.formatColorBadge(record["due_at"]);
         }
       }
     },
@@ -235,7 +246,6 @@ export default {
         {
           label: "DUE DATE",
           field: "due_at",
-          format: "datetime",
           sortable: true,
           default: true,
           width: 140,
@@ -243,7 +253,7 @@ export default {
         {
           label: "ASSIGNEE",
           field: "assignee",
-          sortable: false,
+          sortable: true,
           default: true,
           width: 140,
         },
@@ -301,6 +311,13 @@ export default {
         },
       };
     },
+    formatDueDate(date) {
+      return moment(date).format("MM/DD/YY HH:mm");
+    },
+    formatColorBadge(date) {
+      const days = this.remainingTime(date);
+      return days >= 0 ? "primary" : "danger";
+    },
     formatRequest(request) {
       return `
           <a 
@@ -308,6 +325,23 @@ export default {
             class="text-nowrap">#${request.process_request.id}
               ${request.process.name}
           </a>`;
+    },
+    formatRemainingTime(date) {
+      const millisecondsPerDay = 1000 * 60 * 60 * 24;
+      const remaining = this.remainingTime(date);
+      const daysRemaining = Math.ceil(remaining / millisecondsPerDay);
+      if (daysRemaining <= 1 && daysRemaining >= -1) {
+        const hoursRemaining = Math.ceil(remaining / (1000 * 60 * 60));
+        return `${hoursRemaining}H`;
+      }
+
+      return `${daysRemaining}D`;
+    },
+    remainingTime(date) {
+      const currentDate = new Date();
+      const formatDate = moment(date).format("YYYY-MM-DD");
+      const endDate = new Date(formatDate);
+      return endDate - currentDate;
     },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
@@ -328,7 +362,7 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|a|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|a|div|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
@@ -387,5 +421,17 @@ export default {
 <style>
 .tasks-table-card {
   padding: 0;
+}
+.due-danger {
+  background-color:rgba(237, 72, 88, 0.2);
+  color: rgba(237, 72, 88, 1);
+  font-weight: 600;
+  border-radius: 5px;
+}
+.due-primary {
+  background: rgba(205, 221, 238, 1);
+  color: rgba(86, 104, 119, 1);
+  font-weight: 600;
+  border-radius: 5px;
 }
 </style>

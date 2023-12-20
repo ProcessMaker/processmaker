@@ -45,6 +45,7 @@
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
+          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row)"
         >
           <slot :name="`row-${rowIndex}`">
@@ -52,7 +53,22 @@
               v-for="(header, index) in headers"
               :key="index"
             >
-              <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+              <template v-if="containsHTML(row[header.field])">
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  <div v-html="sanitize(row[header.field])"></div>
+                </div>
+                <b-tooltip
+                  v-if="header.truncate"
+                  :target="`element-${rowIndex}-${colIndex}`"
+                  custom-class="pm-table-tooltip"
+                >
+                  {{ sanitizeTooltip(row[header.field]) }}
+                </b-tooltip>
+              </template>
               <template v-else>
                 <template v-if="isComponent(row[header.field])">
                   <component
@@ -88,6 +104,12 @@ export default {
       }
     },
     data: [],
+    unread: {
+      type: String,
+      default: function () {
+        return "";
+      }
+    },
   },
   data() {
     return {
@@ -177,6 +199,17 @@ export default {
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
+    },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    isUnread(row, unreadColumnName) {
+      return row[unreadColumnName] === null;
     },
   },
 };
@@ -291,6 +324,9 @@ export default {
 }
 .pm-table-filter-applied {
   color: #1572C2;
+}
+.pm-table-unread-row {
+  font-weight: bold;
 }
 .status-success {
   background-color: rgba(78, 160, 117, 0.2);
