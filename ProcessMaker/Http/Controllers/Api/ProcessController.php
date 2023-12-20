@@ -398,6 +398,7 @@ class ProcessController extends Controller
             }
         }
 
+        $this->saveImagesIntoMedia($request, $process);     
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -1550,5 +1551,43 @@ class ProcessController extends Controller
         }
 
         return new ApiResource($newProcess);
+    }
+
+    public function saveImagesIntoMedia(Request $request, Process $process)
+    { 
+        // Saving Carousel Images into Media table related to process_id
+        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
+            foreach ($request->imagesCarousel as $image) {
+                if (is_string($image['url']) && !empty($image['url'])) {
+                    if (!$process->media()->where('collection_name', 'images_carousel')
+                        ->where('uuid', $image['uuid'])->exists()) {
+                        $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
+                    }
+                } 
+            }
+        }
+    }
+
+    public function getMediaImages(Request $request, Process $process) {
+        $media = Process::with(['media'])
+            ->where('id', $process->id)
+            ->get();
+        return new ProcessCollection($media);
+    }
+
+    public function deleteMediaImages(Request $request, Process $process) {
+        $process = Process::find($process->id);
+
+        // Get UUID image in media table
+        $uuid = $request->input('uuid');
+
+        $mediaImagen = $process->getMedia('images_carousel')
+            ->where('uuid', $uuid)
+            ->first();
+
+        // Check if image exists before delete
+        if ($mediaImagen) {
+            $mediaImagen->delete();
+        }
     }
 }

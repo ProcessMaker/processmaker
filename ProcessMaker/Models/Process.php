@@ -47,6 +47,7 @@ use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Throwable;
 
 /**
@@ -1703,5 +1704,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function pmBlock()
     {
         return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
+    }
+
+    /**
+     * This function copies original image and converts into a thumbnail
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+              ->width(1024)
+              ->height(480)
+              ->sharpen(10);
     }
 }
