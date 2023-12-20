@@ -51,7 +51,7 @@
         if (this.input && this.input !== "" && !/\d{2}:\d{2}:\d{2}/.test(this.input)) {
           this.input = this.input + " 00:00:00";
         }
-      },
+      }
     }
   };
 </script>

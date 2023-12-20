@@ -1,14 +1,7 @@
 <template>
   <div>
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/requests\?page|results\?page/"
-      :empty="$t('¡ Whoops ! No results')"
-      :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
-      empty-icon="noData"
-    />
     <div
-      v-show="!shouldShowLoader"
+      v-show="true"
     >
       <filter-table
         :headers="tableHeaders"
@@ -30,9 +23,12 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
+                                   :sort="orderDirection"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   @onChangeSort="onChangeSort"
+                                   @onApply="onApply($event, index)"
+                                   @onClear="onClear(index)"
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -71,6 +67,13 @@
         </template>
       </filter-table>
     </div>
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/requests\?page|results\?page/"
+      :empty="$t('¡ Whoops ! No results')"
+      :empty-desc="$t('Sorry but nothing matched your search. Try a new search.')"
+      empty-icon="noData"
+    />
     <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -114,7 +117,7 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
-      advanced_filter: [],
+      advancedFilter: [],
       sortOrder: [
         {
           field: "id",
@@ -219,7 +222,7 @@ export default {
         {
           label: "TASK NAME",
           field: "active_tasks",
-          sortable: false,
+          sortable: true,
           default: true,
           width: 140,
           truncate: true,
@@ -385,7 +388,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            (this.advanced_filter.length >= 0 ? "&advanced_filter=" + JSON.stringify(this.advanced_filter) : ""),
+            this.getAdvancedFilter(),
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -433,13 +436,28 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onApply(json) {
-      this.advanced_filter = json;
+    onChangeSort(value) {
+      this.orderDirection = value;
+    },
+    onApply(json, index) {
+      this.advancedFilter[index] = json;
       this.fetch();
     },
-    onClear() {
-      this.advanced_filter = [];
+    onClear(index) {
+      this.advancedFilter[index] = [];
       this.fetch();
+    },
+    onUpdate(object, index) {
+      if (object.$refs.pmColumnFilterForm && 
+        this.advancedFilter.length > 0 &&
+        this.advancedFilter[index] && 
+        this.advancedFilter[index].length > 0) {
+        object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
+      }
+    },
+    getAdvancedFilter() {
+      let flat = this.advancedFilter.flat(1);
+      return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
     },
     getFormat(column) {
       let format = "string";

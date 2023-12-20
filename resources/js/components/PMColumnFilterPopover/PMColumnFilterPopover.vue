@@ -19,8 +19,8 @@
                           :formatRange="formatRange"
                           :operators="operators"
                           :viewConfig="viewConfig"
-                          @onSortAscending="onSortAscending"
-                          @onSortDescending="onSortDescending"
+                          :sort="sort"
+                          @onChangeSort="onChangeSort"
                           @onApply="onApply"
                           @onClear="onClear"
                           @onCancel="onCancel">
@@ -38,7 +38,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "id", "type", "value", "format", "formatRange", "operators", "viewConfig"],
+    props: ["container", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
     data() {
       return {
         popoverShow: false
@@ -51,11 +51,8 @@
       onShow() {
         this.$root.$emit("bv::hide::popover");
       },
-      onSortAscending() {
-        this.$emit("onSortAscending", "asc");
-      },
-      onSortDescending() {
-        this.$emit("onSortDescending", "desc");
+      onChangeSort(value) {
+        this.$emit("onChangeSort", value);
       },
       onApply(json) {
         this.popoverShow = false;

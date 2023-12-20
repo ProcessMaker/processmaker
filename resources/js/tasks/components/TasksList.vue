@@ -30,9 +30,13 @@
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
+                                   :sort="order_direction"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   @onChangeSort="onChangeSort"
+                                   @onApply="onApply($event, index)"
+                                   @onClear="onClear(index)"
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -148,6 +152,7 @@ export default {
       ],
       orderBy: "ID",
       order_direction: "DESC",
+      advancedFilter: [],
       status: "",
       sortOrder: [
         {
@@ -173,7 +178,6 @@ export default {
   },
   watch: {
     data(newData) {
-      console.log(newData);
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
@@ -243,7 +247,7 @@ export default {
         {
           label: "ASSIGNEE",
           field: "assignee",
-          sortable: false,
+          sortable: true,
           default: true,
           width: 140,
         },
@@ -345,20 +349,36 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onApply(json) {
-      this.advanced_filter = json;
+    onChangeSort(value) {
+      this.order_direction = value;
+    },
+    onApply(json, index) {
+      this.advancedFilter[index] = json;
+      console.log(this.advancedFilter, index);
       this.fetch();
     },
-    onClear() {
-      this.advanced_filter = [];
+    onClear(index) {
+      this.advancedFilter[index] = [];
       this.fetch();
+    },
+    onUpdate(object, index) {
+      if (object.$refs.pmColumnFilterForm && 
+        this.advancedFilter.length > 0 &&
+        this.advancedFilter[index] && 
+        this.advancedFilter[index].length > 0) {
+        object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
+      }
+    },
+    getAdvancedFilter() {
+      let flat = this.advancedFilter.flat(1);
+      return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
     },
     getFormat(column) {
       let format = "string";
       if (column.format) {
         format = column.format;
       }
-      if (column.field === "status" || column.field === "participants") {
+      if (column.field === "status" || column.field === "assignee") {
         format = "stringSelect";
       }
       return format;
@@ -368,18 +388,76 @@ export default {
       if (column.field === "status") {
         formatRange = ["In Progress", "Completed", "Error", "Canceled"];
       }
-      if (column.field === "participants") {
+      if (column.field === "assignee") {
         formatRange = ["user1", "user2", "user3", "user4"];
       }
       return formatRange;
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "status" || column.field === "participants") {
+      if (column.field === "status" || column.field === "assignee") {
         operators = ["=", "in"];
       }
       return operators;
     },
+    getViewConfigFilter() {
+      return [
+        {
+          "type": "string",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpInput",
+          "input": ""
+        },
+        {
+          "type": "string",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetween",
+          "input": []
+        },
+        {
+          "type": "string",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpIn",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "control": "PMColumnFilterOpDatetime",
+          "input": ""
+        },
+        {
+          "type": "datetime",
+          "includes": ["between"],
+          "control": "PMColumnFilterOpBetweenDatepicker",
+          "input": []
+        },
+        {
+          "type": "datetime",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpInDatepicker",
+          "input": []
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["="],
+          "control": "PMColumnFilterOpSelect",
+          "input": ""
+        },
+        {
+          "type": "stringSelect",
+          "includes": ["in"],
+          "control": "PMColumnFilterOpSelectMultiple",
+          "input": []
+        },
+        {
+          "type": "boolean",
+          "includes": ["="],
+          "control": "PMColumnFilterOpBoolean",
+          "input": false
+        }
+      ];
+    }
   },
 };
 </script>
