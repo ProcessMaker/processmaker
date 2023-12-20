@@ -89,6 +89,10 @@ class LoginController extends Controller
         $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
 
+        // Remove 'password_hash_web' from session
+        $request = request();
+        $request->session()->forget('password_hash_' . app('auth')->getDefaultDriver());
+
         return $response;
     }
 
