@@ -39,9 +39,6 @@ export default {
       interval: 2000,
     };
   },
-  created() {
-    
-  },
   mounted() {
     this.getLaunchpadImages();
     ProcessMaker.EventBus.$on('getLaunchpadImagesEvent', ({ indexImage, type }) => {

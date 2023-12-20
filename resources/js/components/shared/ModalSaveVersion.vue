@@ -55,7 +55,7 @@
                       >
                         <div class="d-flex align-items-center">
                           <i class="far fa-chart-bar" />
-                          <span class="ml-2">{{ selectedSavedChart }}</span>
+                          <span class="ml-2">{{ selectedSavedChart || 'Select Chart' }}</span>
                         </div>
                       </button>
                       <div
@@ -69,7 +69,7 @@
                           @click="selectOption(item)"
                         >
                           <i class="far fa-chart-bar" />
-                          {{ item.title }}
+                          {{ item.title || 'Select Chart' }}
                         </a>
                       </div>
                     </div>
@@ -619,6 +619,10 @@ export default {
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
+              }
+              if (error.response.status === 404) {
+                //version_histories route not found because package-versions is not installed
+                console.error(err);
               }
             });
         })
