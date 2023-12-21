@@ -19,9 +19,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'boolean',
                     'config' => true,
-                    'name' => _('Password set by user'),
-                    'helper' => _('Allow to users to change their own password.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Password set by user',
+                    'helper' => 'Allow to users to change their own password.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10001,
@@ -35,9 +35,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'boolean',
                     'config' => true,
-                    'name' => _('Numeric characters'),
-                    'helper' => _('Passwords must contain minimum one numeric character.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Numeric characters',
+                    'helper' => 'Passwords must contain minimum one numeric character.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10002,
@@ -51,9 +51,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'boolean',
                     'config' => true,
-                    'name' => _('Uppercase characters'),
-                    'helper' => _('Passwords must contain minimum one uppercase character.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Uppercase characters',
+                    'helper' => 'Passwords must contain minimum one uppercase character.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10003,
@@ -67,9 +67,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'boolean',
                     'config' => true,
-                    'name' => _('Special characters'),
-                    'helper' => _('Passwords must contain minimum one special character.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Special characters',
+                    'helper' => 'Passwords must contain minimum one special character.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10004,
@@ -83,9 +83,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'text',
                     'config' => null,
-                    'name' => _('Maximum length'),
-                    'helper' => _('Maximum password length allowed.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Maximum length',
+                    'helper' => 'Maximum password length allowed.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10005,
@@ -99,9 +99,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'text',
                     'config' => 8,
-                    'name' => _('Minimum length'),
-                    'helper' => _('Minimum password length allowed.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Minimum length',
+                    'helper' => 'Minimum password length allowed.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10006,
@@ -115,9 +115,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'text',
                     'config' => null,
-                    'name' => _('Password expiration'),
-                    'helper' => _('Password will expire in the days configured here.'),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Password expiration',
+                    'helper' => 'Password will expire in the days configured here.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10007,
@@ -131,9 +131,9 @@ class AddPasswordPoliciesSettings extends Upgrade
                 [
                     'format' => 'text',
                     'config' => 5,
-                    'name' => _('Login failed'),
-                    'helper' => _($helperFailed),
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'name' => 'Login failed',
+                    'helper' => $helperFailed,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10008,
@@ -159,6 +159,6 @@ class AddPasswordPoliciesSettings extends Upgrade
      */
     public function down(): void
     {
-        Setting::where('group', Setting::PASSWORD_POLICIES_GROUP)->delete();
+        Setting::where('group', Setting::LOGIN_OPTIONS_GROUP)->delete();
     }
 }
