@@ -28,6 +28,7 @@ export default {
           href: "/processes-catalogue/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
           icon: "fas fa-file-export",
+          conditional: "if(status == 'ACTIVE', true, false)"
         },
         {
           value: "open-in-modeler",
@@ -41,18 +42,20 @@ export default {
         {
           value: "edit-launchpad",
           content: "Edit in Launchpad",
+          permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
+          conditional: "if(status == 'ACTIVE', true, false)"
         },
         {
           value: "create-template",
           content: "Save as Template",
-          permission: ["create-process-templates", "view-additional-asset-actions"],
+          permission: ["create-process-templates"],
           icon: "fas fa-layer-group",
         },
         {
           value: "create-pm-block",
           content: "Save as PM Block",
-          permission: ["create-pm-blocks", "view-additional-asset-actions"],
+          permission: ["create-pm-blocks"],
           icon: "fas nav-icon fa-cube",
         },
         {

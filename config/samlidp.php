@@ -60,8 +60,8 @@ return [
     'events' => [
         'CodeGreenCreative\SamlIdp\Events\Assertion' => [],
         'Illuminate\Auth\Events\Logout' => ['CodeGreenCreative\SamlIdp\Listeners\SamlLogout'],
-        'Illuminate\Auth\Events\Authenticated' => ['CodeGreenCreative\SamlIdp\Listeners\SamlAuthenticated'],
-        'Illuminate\Auth\Events\Login' => ['CodeGreenCreative\SamlIdp\Listeners\SamlLogin'],
+        'Illuminate\Auth\Events\Authenticated' => ['ProcessMaker\Listeners\SamlAuthenticated'],
+        'Illuminate\Auth\Events\Login' => ['ProcessMaker\Listeners\SamlLogin'],
     ],
 
     // List of guards saml idp will catch Authenticated, Login and Logout events

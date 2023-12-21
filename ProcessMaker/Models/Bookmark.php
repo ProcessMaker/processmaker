@@ -36,4 +36,20 @@ class Bookmark extends ProcessMakerModel
     {
         return $this->hasMany(User::class, 'id');
     }
+
+    /**
+     * Scope get the bookmaked_id related
+     */
+    public static function getBookmarked($bookmark, $proId, $userId)
+    {
+        $id = 0;
+        if ($bookmark) {
+            $response = self::where('process_id', $proId)->where('user_id', $userId)->first();
+            if (!is_null($response)) {
+                $id = $response->id;
+            }
+        }
+
+        return $id;
+    }
 }

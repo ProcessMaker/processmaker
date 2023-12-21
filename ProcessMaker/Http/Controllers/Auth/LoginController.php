@@ -49,6 +49,7 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
+        $this->middleware('saml_request')->only('showLoginForm');
         $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
     }
 
@@ -88,6 +89,10 @@ class LoginController extends Controller
         $loginView = empty(config('app.login_view')) ? 'auth.login' : config('app.login_view');
         $response = response(view($loginView, compact('addons', 'block')));
         $response->withCookie($cookie);
+
+        // Remove 'password_hash_web' from session
+        $request = request();
+        $request->session()->forget('password_hash_' . app('auth')->getDefaultDriver());
 
         return $response;
     }
@@ -275,6 +280,27 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             if ($request->hasSession()) {
                 $request->session()->put('auth.password_confirmed_at', time());
+            }
+
+            // Check if the user needs to change the password
+            if ($request->filled(['SAMLRequest', 'RelayState']) && $user->force_change_password === 1) {
+                // Store the SAMLRequest and RelayState in a cookie
+                Cookie::queue(
+                    'saml_request',
+                    json_encode([
+                        'SAMLRequest' => $request->get('SAMLRequest'),
+                        'RelayState' => $request->get('RelayState'),
+                    ]),
+                    10,
+                    null,
+                    null,
+                    true,
+                    true,
+                    false,
+                    'none',
+                );
+
+                return redirect()->route('password.change');
             }
 
             return $this->sendLoginResponse($request);
