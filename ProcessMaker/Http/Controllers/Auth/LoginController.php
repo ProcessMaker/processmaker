@@ -48,6 +48,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        $this->middleware('session_block')->only('loginWithIntendedCheck');
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
         $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
     }
