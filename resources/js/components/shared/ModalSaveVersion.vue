@@ -649,6 +649,7 @@ export default {
         .put(`processes/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
+          launchpad_properties: this.dataProcess.launchpad_properties,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
@@ -662,9 +663,6 @@ export default {
         .catch((error) => {
           console.error("Error: ", error);
         });
-
-      
-
     },
     showModal() {
       this.subject = "";
