@@ -9,7 +9,7 @@
           <filter-table
             :headers="tableHeadersRequests"
             :data="dataRequests"
-            @table-row-click="handleRowClick"
+            @table-row-click="handleRowClickRequest"
           />
           <pagination-table
             :meta="dataRequests.meta"
@@ -29,7 +29,7 @@
           <filter-table
             :headers="tableHeadersTasks"
             :data="dataTasks"
-            @table-row-click="handleRowClick"
+            @table-row-click="handleRowClickTask"
           />
           <pagination-table
             :meta="dataTasks.meta"
@@ -168,7 +168,7 @@ export default {
       savedSearch: false,
       queryTask: "",
       queryRequest: "",
-      perPage: 1,
+      perPage: 10,
     };
   },
   computed: {
@@ -181,83 +181,9 @@ export default {
     },
   },
   mounted() {
-    this.setupColumns();
     this.queryBuilder();
   },
   methods: {
-    getColumns() {
-      return [
-        {
-          label: "CASE #",
-          field: "case_number",
-          sortable: true,
-          default: true,
-          width: 55,
-        },
-        {
-          label: "CASE TITLE",
-          field: "case_title",
-          sortable: true,
-          default: true,
-          width: 220,
-        },
-        {
-          label: "PROCESS NAME",
-          field: "name",
-          sortable: true,
-          default: true,
-          width: 220,
-          truncate: true,
-        },
-      ];
-    },
-    setupColumns() {
-      const columns = this.getColumns();
-      this.tableHeaders = this.getColumns();
-      columns.forEach((column) => {
-        const field = {
-          title: () => this.$t(column.label),
-        };
-
-        switch (column.field) {
-          case "id":
-            field.name = "__slot:ids";
-            field.title = "#";
-            break;
-          case "participants":
-            field.name = "__slot:participants";
-            break;
-          case "name":
-            field.name = "__slot:name";
-            break;
-          default:
-            field.name = column.name || column.field;
-        }
-
-        if (!field.field) {
-          field.field = column.field;
-        }
-
-        if (column.format === "datetime") {
-          field.callback = "formatDateUser|datetime";
-        }
-
-        if (column.format === "date") {
-          field.callback = "formatDateUser|date";
-        }
-
-        if (column.sortable === true && !field.sortField) {
-          field.sortField = column.field;
-        }
-
-        this.fields.push(field);
-      });
-
-      this.fields.push({
-        name: "__slot:actions",
-        title: "",
-      });
-    },
     jsonRows(rows) {
       if (rows.length === 0 || !_.has(_.head(rows), "_json")) {
         return rows;
@@ -266,13 +192,19 @@ export default {
     },
     changePage(page) {
       this.page = page;
-      this.fetch();
+      this.queryBuilder();
     },
-    handleRowClick(row) {
+    handleRowClickRequest(row) {
       window.location.href = this.openRequest(row, 1);
+    },
+    handleRowClickTask(row) {
+      window.location.href = this.openTask(row, 1);
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
+    },
+    openTask(data, index) {
+      return `/tasks/${data.id}`;
     },
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
