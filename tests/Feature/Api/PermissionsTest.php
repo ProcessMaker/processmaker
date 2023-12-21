@@ -102,6 +102,22 @@ class PermissionsTest extends TestCase
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
     }
 
+    public function testSetPermissionsViewProcessCatalogForUser()
+    {
+        $testUser = User::updateOrCreate([
+            'username' => 'will',
+            'is_administrator' => true,
+        ], [
+            'username' => 'will',
+            'password' => 'Sample123+',
+            'email' => 'will@gmail.com',
+            'firstname' => 'will',
+            'lastname' => 'will',
+        ]);
+        // Assert that the permissions has been set
+        $this->assertTrue($testUser->hasPermission('view-process-catalog'));
+    }
+
     public function testCategoryPermission()
     {
         $context = function ($type, $class) {
