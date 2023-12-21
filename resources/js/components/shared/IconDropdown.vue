@@ -28,11 +28,12 @@
           slot-scope="props"
         >
           <span v-if="props.option">
-            <i
-              class="fas fa-fw"
-              :class="'fa-' + (props.option.value === 'search' ? customValue : props.option.value)"
-            ></i>
-            {{ props.option.label === 'Search' ? customLabel : props.option.label }}
+            <img
+              class="icon-selected"
+              :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
+              :alt="props.option.value"
+            >
+            {{ props.option.label }}
           </span>
         </template>
         <template
@@ -43,10 +44,11 @@
             class="icon-square"
             @mouseover="onHover(props.option)"
           >
-            <i
-              class="fas fa-fw"
-              :class="'fa-' + (props.option.value === 'search' ? customValue : props.option.value)"
-            ></i>
+            <img
+              class="icon-select"
+              :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
+              :alt="props.option.value"
+            >
           </div>
         </template>
       </multiselect>
@@ -56,6 +58,7 @@
 
 <script>
 import Icons from "./Icons";
+
 export default {
   props: {
     value: {
@@ -65,14 +68,6 @@ export default {
       type: String,
       default: "search",
     },
-    customValue: {
-      type: String,
-      default: "search",
-    },
-    customLabel: {
-      type: String,
-      default: "Search",
-    }
   },
   data() {
     return {
@@ -105,9 +100,7 @@ export default {
       this.query = query.length ? query.toLowerCase() : this.isOpen ? "" : this.query;
 
       if (this.query.length) {
-        this.list = this.all.filter((icon) => {
-          return icon.search.includes(this.query);
-        });
+        this.list = this.all.filter((icon) => icon.search.includes(this.query));
       } else {
         this.list = this.all;
       }
@@ -132,7 +125,7 @@ export default {
 </script>
 
 <style lang="scss">
-$iconSize: 29px;
+$iconSize: 20px;
 $multiselect-height: 38px;
 
 .multiselect-icons {
@@ -176,7 +169,15 @@ $multiselect-height: 38px;
     padding: 0;
     width: auto;
   }
-
+  .icon-select {
+    width: 70px;
+    height: 70px;
+  }
+  .icon-selected {
+    width: 25px;
+    height: 25px;
+    margin-top: -4px;
+  }
   .icon-square {
     color: #788793;
     font-size: $iconSize;
