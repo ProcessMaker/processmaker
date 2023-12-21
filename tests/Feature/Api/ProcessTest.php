@@ -3,8 +3,12 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Generator as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -553,6 +557,30 @@ class ProcessTest extends TestCase
         $this->assertModelSorting('?order_by=description&order_direction=desc', [
             'description' => 'yyyyy',
         ]);
+    }
+
+    /**
+     * Test filter by bookmark
+     */
+    public function testFilterBookmarked()
+    {
+        // This not will return the bookmark
+        Process::factory()->count(5)->create();
+        $response = $this->apiCall('GET', route('api.processes.index', ['per_page' => 5, 'page' => 1]));
+        $response->assertJsonCount(5, 'data');
+        $this->assertEquals(0, $response->json()['data'][0]['bookmark_id']);
+
+        // This will return with bookmark
+        $user = Auth::user();
+        $process = Process::factory()->create();
+        Bookmark::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id
+        ]);
+        $response = $this->apiCall('GET',
+            route('api.processes.index',['per_page' => 5, 'page' => 1, 'bookmark' => true])
+        );
+        $response->assertJsonCount(5, 'data');
     }
 
     /**
@@ -1229,5 +1257,41 @@ class ProcessTest extends TestCase
 
         // Assert redirect status.
         $response->assertStatus(302);
+    }
+
+    public function testGetMediaImagesRoute()
+    {
+        $process = Process::factory()->create();
+        $url = route('api.processes.media', $process);
+        $params = [
+            'id' => $process->id,
+        ];
+        $response = $this->apiCall('GET', $url, $params);
+        $response->assertStatus(200);
+    }
+
+    public function testDeleteMediaImages()
+    {
+        $process = Process::factory()->create();
+        $faker = app(Faker::class);
+        $imageContent = file_get_contents($faker->imageUrl());
+        $imagePath = storage_path('app/test-image.jpg');
+        file_put_contents($imagePath, $imageContent);
+        
+        $uploadedFile = new UploadedFile($imagePath, 'test-image.jpg', 'image/jpeg', null, true);
+
+        $process->addMedia($uploadedFile)->toMediaCollection('images_carousel');
+
+        $mediaImagen = $process->getFirstMedia('images_carousel');
+        $uuid = $mediaImagen->uuid;
+        $url = route('api.processes.delete-media', $process);
+        $params = [
+            'id' => $process->id,
+            'uuid' => $uuid,
+        ];
+        $response = $this->apiCall('DELETE', $url, $params);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('media', ['id' => $mediaImagen->id]);
     }
 }

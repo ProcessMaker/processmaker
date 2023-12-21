@@ -47,6 +47,7 @@ use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Throwable;
 
 /**
@@ -458,7 +459,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function scopeProcessCategory($query, int $id)
     {
-        return $query->where('processes.process_category_id', $id);
+        return $query->whereHas('categories', function ($query) use ($id) {
+            $query->where('process_categories.id', $id);
+        });
     }
 
     public function getCollaborations()
@@ -1586,6 +1589,26 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * PMQL value alias for owner field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    private function valueAliasOwner($value, $expression)
+    {
+        $user = User::where('username', $value)->get()->first();
+
+        if ($user) {
+            return function ($query) use ($user, $expression) {
+                $query->where('processes.user_id', $expression->operator, $user->id);
+            };
+        } else {
+            throw new PmqlMethodException('owner', 'The specified owner username does not exist.');
+        }
+    }
+
+    /**
      * PMQL value alias for process field
      *
      * @param string $value
@@ -1702,5 +1725,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function pmBlock()
     {
         return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
+    }
+
+    /**
+     * This function copies original image and converts into a thumbnail
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+              ->width(1024)
+              ->height(480)
+              ->sharpen(10);
     }
 }
