@@ -4,6 +4,7 @@ namespace ProcessMaker\Observers;
 
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 
@@ -27,5 +28,15 @@ class UserObserver
         Comment::query()
             ->where('user_id', $user->id)
             ->delete();
+    }
+
+    /**
+     * Handle the user "created" event.
+     */
+    public function created(User $user): void
+    {
+        if ($permission = Permission::where('name', 'view-process-catalog')->first()) {
+            $user->permissions()->attach($permission->id);
+        }
     }
 }
