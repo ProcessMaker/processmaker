@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.8.2",
+    "version": "4.8.3+nightly-20231220",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -96,7 +96,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "6ddfe95a",
+            "build": "08a2860b",
             "custom": {
                 "package-ellucian-ethos": "1.14.2",
                 "package-plaid": "1.3.1",
@@ -172,7 +172,7 @@
             "microservices": {
                 "pmai": "fall-2023"
             },
-            "release": "Fall 2023"
+            "release": "Fall 2023 Pre-Release"
         }
     },
     "scripts": {
