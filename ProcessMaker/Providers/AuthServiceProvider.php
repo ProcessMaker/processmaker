@@ -156,7 +156,7 @@ class AuthServiceProvider extends ServiceProvider
 
     private function checkForListCreateOperations($permission)
     {
-        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table'];
+        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
 
         foreach ($projectAssetTypes as $asset) {
             if (Str::contains($permission->name, $asset)) {

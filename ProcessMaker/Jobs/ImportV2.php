@@ -95,8 +95,6 @@ class ImportV2 implements ShouldQueue
             ], 200);
         } else {
             $importer->doImport();
-
-            // throw new \Exception('foooo');
         }
 
         $logger->log('Done');

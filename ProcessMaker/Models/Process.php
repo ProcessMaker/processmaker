@@ -1588,6 +1588,26 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * PMQL value alias for owner field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    private function valueAliasOwner($value, $expression)
+    {
+        $user = User::where('username', $value)->get()->first();
+
+        if ($user) {
+            return function ($query) use ($user, $expression) {
+                $query->where('processes.user_id', $expression->operator, $user->id);
+            };
+        } else {
+            throw new PmqlMethodException('owner', 'The specified owner username does not exist.');
+        }
+    }
+
+    /**
      * PMQL value alias for process field
      *
      * @param string $value

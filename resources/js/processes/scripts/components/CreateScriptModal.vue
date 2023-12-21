@@ -351,6 +351,13 @@ export default {
     show() {
       this.$bvModal.show("createScript");
     },
+    getAdminUser() {
+      ProcessMaker.apiClient
+        .get(`/users/${this.userRunScript}`)
+        .then((response) => {
+          this.selectedUser = response.data;
+        });
+    },
     onClose() {
       this.title = "";
       this.language = "";
@@ -427,6 +434,8 @@ export default {
           assetType: "script",
           asset: data,
         });
+        const urlScripts = new URL(`/designer/scripts/`, window.location.origin);
+        window.location.href = urlScripts;
       } else {
         window.location.href = url;
       }
