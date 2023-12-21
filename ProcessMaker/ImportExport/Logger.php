@@ -60,7 +60,7 @@ class Logger
             return;
         }
 
-        ImportLog::dispatch($this->userId, $type, $message, $additionalParams);
+        ImportLog::dispatch($this->userId, $type, substr($message, 0, 1000), $additionalParams);
         $this->logToFile($type, $message, $additionalParams);
     }
 

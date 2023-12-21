@@ -753,4 +753,35 @@ class TasksTest extends TestCase
         $this->assertEquals('CLOSED', $newTask->refresh()->status);
         $this->assertEquals('COMPLETED', $request->refresh()->status);
     }
+
+    public function testAdvancedFilter()
+    {
+        $hitProcess = Process::factory()->create(['name' => 'foo']);
+        $missProcess = Process::factory()->create(['name' => 'bar']);
+        $hitRequest = ProcessRequest::factory()->create([
+            'process_id' => $hitProcess->id,
+        ]);
+        $missRequest = ProcessRequest::factory()->create([
+            'process_id' => $missProcess->id,
+        ]);
+        $hitTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $hitRequest->id,
+        ]);
+        $missTask = ProcessRequestToken::factory()->create([
+            'process_request_id' => $missRequest->id,
+        ]);
+
+        $filterString = json_encode([
+            [
+                'subject' => ['type' => 'Process'],
+                'operator' => '=',
+                'value' => $hitProcess->id,
+            ],
+        ]);
+
+        $response = $this->apiCall('GET', '/tasks', ['advanced_filter' => $filterString]);
+        $json = $response->json();
+
+        $this->assertEquals($hitTask->id, $json['data'][0]['id']);
+    }
 }

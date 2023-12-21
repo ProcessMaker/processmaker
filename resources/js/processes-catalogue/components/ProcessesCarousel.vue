@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-block">
     <b-carousel
       id="carousel-1"
       v-model="slide"
@@ -20,7 +20,10 @@
 </template>
 
 <script>
+import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
+  mixins: [datatableMixin, dataLoadingMixin],
   props: {
     process: {
       type: Object,
@@ -36,6 +39,17 @@ export default {
       interval: 2000,
     };
   },
+  mounted() {
+    this.getLaunchpadImages();
+    ProcessMaker.EventBus.$on('getLaunchpadImagesEvent', ({ indexImage, type }) => {
+      if(type === 'delete') {
+        this.images.splice(indexImage,1);
+      } else {
+        this.images = [];
+        this.getLaunchpadImages();
+      }
+    }); 
+  },
   methods: {
     onSlideStart(slide) {
       this.sliding = true;
@@ -44,18 +58,21 @@ export default {
       this.sliding = false;
     },
     /**
-     * TO DO: This method gets information related to processes Launchpad Settings
+     * Get images from Media library related to process.
      */
-    getLaunchpadSettings() {
-      //Here call API to retrieve information
-      // ProcessMaker.apiClient
-      //   .get("query here")
-      //   .then((response) => {
-      //     this.carouselImages = response.data;
-      //   })
-      //   .catch((err) => {
-      //     console.log("Error", err);
-      //   });
+    getLaunchpadImages() {
+      ProcessMaker.apiClient
+        .get(`processes/${this.process.id}/media`)
+        .then((response) => {
+            let firstResponse = response.data.data.shift();
+            const mediaArray = firstResponse.media;
+            mediaArray.forEach((media) => {
+            this.images.push({ url: media.original_url });
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
   },
 };

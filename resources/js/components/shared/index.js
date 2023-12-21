@@ -44,6 +44,7 @@ import DecisionTableNavigationMixin from "./decisionTableNavigation";
 import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
+import FilterTable from "./FilterTable.vue";
 
 export {
   AddToProjectModal,
@@ -92,4 +93,5 @@ export {
   ScreenNavigationMixin,
   ScriptNavigationMixin,
   TasksHome,
+  FilterTable,
 };
