@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-md-6 col-lg-3">
                     <div class="card card-body p-3">
-                        <div align="center" class="p-5">
+                        <div style="text-align:center;" class="p-5">
                             @component('components.logo')
                             @endcomponent
                         </div>
@@ -69,7 +69,8 @@
                                             {{ __('Send Again') }}
                                         </a>
                                     </div>
-                                    @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, config('password-policies.2fa_method', [])))
+                                    @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP,
+                                        config('password-policies.2fa_method', [])))
                                     <div class="form-group">
                                         <a href="{{ route('2fa.auth_app_qr') }}">
                                             {{ __('Authenticator app') }}

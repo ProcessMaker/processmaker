@@ -83,14 +83,16 @@ class TwoFactorAuthController extends Controller
             session()->remove(self::TFA_AUTH_APP);
 
             // Success
-            return redirect()->route('login');
+            $route = 'login';
         } else {
             // Set error message
             session()->put(self::TFA_ERROR, _('Invalid code.'));
 
             // Return to 2fa page
-            return redirect()->route('2fa');
+            $route = '2fa';
         }
+
+        return redirect()->route($route);
     }
 
     public function sendCode(Request $request)

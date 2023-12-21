@@ -125,8 +125,6 @@ class TwoFactorAuthentication
             )
         );
 
-        $qrCode = base64_encode($writer->writeString($g2faUrl));
-
-        return $qrCode;
+        return base64_encode($writer->writeString($g2faUrl));
     }
 }

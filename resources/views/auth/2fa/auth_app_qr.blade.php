@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="card card-body p-3">
-                        <div align="center" class="p-5">
+                        <div style="text-align:center;" class="p-5">
                             @component('components.logo')
                             @endcomponent
                             <p />
@@ -53,7 +53,8 @@
                             <img src="data:image/svg+xml;base64,{{$qrCode}}" alt="QR" />
                         </div>
                         <div class="row justify-content-between mb-3">
-                            <button type="button" name="back" class="btn btn-primary btn-block text-uppercase" dusk="back" onclick="back()">{{ __('Back') }}</button>
+                            <button type="button" name="back" class="btn btn-primary btn-block text-uppercase"
+                                    dusk="back" onclick="back()">{{ __('Back') }}</button>
                         </div>
                     </div>
                 </div>
