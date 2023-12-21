@@ -92,6 +92,7 @@
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
               <b-button
+                v-if="!disabledCopySetting(row)"
                 v-uni-aria-describedby="row.item.id.toString()"
                 v-b-tooltip.hover
                 variant="link"
@@ -118,7 +119,7 @@
                 </b-button>
               </span>
 
-              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
                 <b-button 
                   :aria-label="$t('Clear')"
                   v-uni-aria-describedby="row.item.id.toString()"
@@ -571,6 +572,12 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
+    },
+    disabledCopySetting(row) {
+      return row.item.ui?.copySettingEnabled === false;
+    },
+    disabledDeleteSetting(row) {
+      return row.item.ui?.deleteSettingEnabled === false;
     },
     enableDeleteSetting(row) {
       return row.item.ui?.deleteSettingEnabled || false;
