@@ -190,6 +190,7 @@ export default {
   },
   mounted: function mounted() {
     this.setupColumns();
+    this.getAssignee("");
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {

@@ -142,6 +142,7 @@ export default {
   },
   mounted() {
     this.setupColumns();
+    this.getParticipants("");
   },
   methods: {
     setupColumns() {
