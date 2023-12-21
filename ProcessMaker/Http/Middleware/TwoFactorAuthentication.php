@@ -15,14 +15,13 @@ class TwoFactorAuthentication
      */
     public function handle($request, Closure $next)
     {
-        // Only validate if 2FA is enabled and one send method was defined
+        // Check if 2FA is enabled, a method is set, and the current session is not yet validated
         if (config('password-policies.2fa_enabled', false) &&
-            !empty(config('password-policies.2fa_method', []))) {
-            // Check if current session have the 2FA validated
-            if (!session()->get('2fa-validated', false)) {
-                // If not validated display the 2FA code screen
-                return redirect()->route('2fa');
-            }
+            !empty(config('password-policies.2fa_method', [])) &&
+            !session()->get('2fa-validated', false)
+        ) {
+            // If not validated display the 2FA code screen
+            return redirect()->route('2fa');
         }
 
         return $next($request);
