@@ -11,6 +11,8 @@ class TwoFactorAuthController extends Controller
 {
     private $twoFactorAuthentication;
 
+    const TFA_ERROR = '2fa-error';
+
     public function __construct()
     {
         $this->twoFactorAuthentication = new TwoFactorAuthentication();
@@ -28,14 +30,14 @@ class TwoFactorAuthController extends Controller
             }
 
             // Send code
-            if (!session()->has('2fa-error')) {
+            if (!session()->has(self::TFA_ERROR)) {
                 $this->twoFactorAuthentication->sendCode($user);
             }
 
             // Set informative message
             session()->put('2fa-message', _('Enter the security code we sent you.'));
         } catch (Exception $error) {
-            session()->put('2fa-error', $error->getMessage());
+            session()->put(self::TFA_ERROR, $error->getMessage());
         }
 
         // Display view
@@ -56,7 +58,7 @@ class TwoFactorAuthController extends Controller
         // If empty code return error message
         if (empty($code)) {
             // Set error message
-            session()->put('2fa-error', _('Invalid code.'));
+            session()->put(self::TFA_ERROR, _('Invalid code.'));
 
             // Return to 2fa page
             return redirect()->route('2fa');
@@ -71,14 +73,14 @@ class TwoFactorAuthController extends Controller
         if ($validated) {
             // Remove 2fa values in session
             session()->remove('2fa-message');
-            session()->remove('2fa-error');
+            session()->remove(self::TFA_ERROR);
             session()->remove('2fa-auth-app');
 
             // Success
             return redirect()->route('login');
         } else {
             // Set error message
-            session()->put('2fa-error', _('Invalid code.'));
+            session()->put(self::TFA_ERROR, _('Invalid code.'));
 
             // Return to 2fa page
             return redirect()->route('2fa');
