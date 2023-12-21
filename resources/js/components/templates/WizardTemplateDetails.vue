@@ -178,7 +178,7 @@ export default {
       }
     },
     async importProcessTemplate() {
-      const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.id}`, {
+      const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
         name: this.template.name,
         description: this.template.description,
         version: '1.0.0', // TODO: Wizards should have a versions property 
