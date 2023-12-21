@@ -36,7 +36,6 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <wizard-templates v-if="showWizardTemplates" />
           <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
         <wizard-templates v-if="showWizardTemplates" />

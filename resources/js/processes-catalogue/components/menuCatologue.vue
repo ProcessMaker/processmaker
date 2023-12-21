@@ -58,7 +58,7 @@
           class="list-item"
           @click="wizardLinkSelected"
         >
-          {{ $t("Wizard Templates") }}
+          {{ $t("Guided Templates") }}
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
