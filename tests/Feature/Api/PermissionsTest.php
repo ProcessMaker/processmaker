@@ -104,6 +104,13 @@ class PermissionsTest extends TestCase
 
     public function testSetPermissionsViewProcessCatalogForUser()
     {
+        Permission::updateOrCreate([
+            'name' => 'view-process-catalog',
+        ], [
+            'title' => 'View Process Catalog',
+            'name' => 'view-process-catalog',
+            'group' => 'Process Catalog',
+        ]);
         $testUser = User::updateOrCreate([
             'username' => 'will',
             'is_administrator' => true,
@@ -116,6 +123,8 @@ class PermissionsTest extends TestCase
         ]);
         // Assert that the permissions has been set
         $this->assertTrue($testUser->hasPermission('view-process-catalog'));
+        // Clean
+        session(['permissions' => null]);
     }
 
     public function testCategoryPermission()
