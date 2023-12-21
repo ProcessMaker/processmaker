@@ -39,8 +39,7 @@ class TwoFactorAuthentication
     private function generateSecret(User $user): string
     {
         $base = $user->uuid . '_' . $user->username;
-        $secret = trim(Base32::encodeUpper($base), '=');
-        return $secret;
+        return trim(Base32::encodeUpper($base), '=');
     }
 
     private function createOtpInstance(User $user)
