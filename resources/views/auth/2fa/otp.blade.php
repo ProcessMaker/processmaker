@@ -47,7 +47,14 @@
                                 <div class="form-group">
                                     <label for="code">{{ __('Enter Security Code') }}</label>
                                     <div class="code-container">
-                                        <input id="code" type="password" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" placeholder="{{__('Enter your security code')}}" required>
+                                        <input
+                                            id="code"
+                                            type="password"
+                                            class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}"
+                                            name="code"
+                                            placeholder="{{__('Enter your security code')}}"
+                                            required
+                                        >
                                         <i class="fa fa-eye" id="toggleCode"></i>
                                         @if ($errors->has('code'))
                                             <span class="invalid-feedback" role="alert">
@@ -71,7 +78,14 @@
                                     @endif
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" name="continue" class="btn btn-primary btn-block text-uppercase" dusk="continue">{{ __('Continue') }}</button>
+                                    <button
+                                        type="submit"
+                                        name="continue"
+                                        class="btn btn-primary btn-block text-uppercase"
+                                        dusk="continue"
+                                    >
+                                        {{ __('Continue') }}
+                                    </button>
                                 </div>
                             </form>
                     </div>
@@ -134,7 +148,7 @@
         position: fixed;
         margin-left: 10%;
         width: 700px;
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
         display: inline-flex;
         flex-direction: column;
         align-items: flex-start;
@@ -156,7 +170,7 @@
         color: #FFF;
         font-size: 46.067px;
         font-weight: 600;
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
     }
     .display {
         color: #FFC107;
@@ -168,13 +182,13 @@
         position: relative;
         top: -1.5em;
         font-weight: 600;
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
     }
     .subtext {
         width: 60%;
         color: #FFF;
         font-size: 24.017px;
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
     }
     .sub_logo {
         margin-top: 7%;

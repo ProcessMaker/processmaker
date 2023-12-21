@@ -111,6 +111,9 @@ class PermissionSeeder extends Seeder
             'edit-signals',
             'delete-signals',
         ],
+        'Process Catalog' => [
+            'view-process-catalog',
+        ],
     ];
 
     public function run($seedUser = null)

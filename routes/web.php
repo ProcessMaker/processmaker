@@ -52,7 +52,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(fun
         Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('can:view-users');
         Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('can:edit-users,user');
 
-        Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.index')->middleware('can:view-auth_clients');
+        Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.Log-In Optioindex')->middleware('can:view-auth_clients');
 
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
@@ -93,8 +93,8 @@ Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(fun
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index');
-
+    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index')->middleware('can:view-process-catalog');
+    
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');

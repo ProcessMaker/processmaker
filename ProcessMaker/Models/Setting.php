@@ -66,7 +66,7 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     public const COLLECTION_CSS_FAVICON = 'favicon';
 
-    public const LOGIN_OPTION_GROUP = 'Log-In Options';
+    public const LOGIN_OPTIONS_GROUP = 'Log-In Options';
 
     public const SESSION_CONTROL_GROUP = 'Session Control';
 

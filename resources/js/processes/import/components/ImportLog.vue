@@ -3,7 +3,7 @@
     <a href="#" class="link" v-if="!visible" @click.stop="visible = !visible">Show debugging info</a>
     <div v-if="visible">
       <div ref="log" class="log card text-left">
-        <div class="entry" v-for="(line, i) in logEntries" :key="i">{{ line.message }}</div>
+        <div class="entry" :class="{ warn: line.type === 'warn' }" v-for="(line, i) in logEntries" :key="i">{{ line.message }}</div>
       </div>
       <div v-if="allowDownloadDebug">
         <a :href="'/import/download-debug?hash=' + $root.hash">Download Debug Data</a>
@@ -63,5 +63,9 @@ export default {
 }
 .link {
   font-size: 12px;
+}
+.warn {
+  background-color: #FFAB00;
+  font-weight: bold;
 }
 </style>
