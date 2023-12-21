@@ -92,6 +92,7 @@ import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverRequestMixin from "./PMColumnFilterPopoverRequestMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -103,7 +104,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverRequestMixin],
   props: {
     filter: {},
     columns: {},
@@ -117,7 +118,6 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
-      advancedFilter: [],
       sortOrder: [
         {
           field: "id",
@@ -398,6 +398,7 @@ export default {
           .then((response) => {
             this.data = this.transform(response.data);
           }).catch((error) => {
+            this.data = [];
             if (error.code === "ERR_CANCELED") {
               return;
             }
@@ -436,114 +437,6 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onChangeSort(value) {
-      this.orderDirection = value;
-    },
-    onApply(json, index) {
-      this.advancedFilter[index] = json;
-      this.fetch();
-    },
-    onClear(index) {
-      this.advancedFilter[index] = [];
-      this.fetch();
-    },
-    onUpdate(object, index) {
-      if (object.$refs.pmColumnFilterForm && 
-        this.advancedFilter.length > 0 &&
-        this.advancedFilter[index] && 
-        this.advancedFilter[index].length > 0) {
-        object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
-      }
-    },
-    getAdvancedFilter() {
-      let flat = this.advancedFilter.flat(1);
-      return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
-    },
-    getFormat(column) {
-      let format = "string";
-      if (column.format) {
-        format = column.format;
-      }
-      if (column.field === "status" || column.field === "participants") {
-        format = "stringSelect";
-      }
-      return format;
-    },
-    getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
-      }
-      if (column.field === "participants") {
-        formatRange = ["user1", "user2", "user3", "user4"];
-      }
-      return formatRange;
-    },
-    getOperators(column) {
-      let operators = [];
-      if (column.field === "status" || column.field === "participants") {
-        operators = ["=", "in"];
-      }
-      return operators;
-    },
-    getViewConfigFilter() {
-      return [
-        {
-          "type": "string",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpInput",
-          "input": ""
-        },
-        {
-          "type": "string",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetween",
-          "input": []
-        },
-        {
-          "type": "string",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpIn",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpDatetime",
-          "input": ""
-        },
-        {
-          "type": "datetime",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetweenDatepicker",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpInDatepicker",
-          "input": []
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["="],
-          "control": "PMColumnFilterOpSelect",
-          "input": ""
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpSelectMultiple",
-          "input": []
-        },
-        {
-          "type": "boolean",
-          "includes": ["="],
-          "control": "PMColumnFilterOpBoolean",
-          "input": false
-        }
-      ];
-    }
   },
 };
 </script>
