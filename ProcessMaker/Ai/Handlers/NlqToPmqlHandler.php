@@ -10,7 +10,7 @@ class NlqToPmqlHandler extends OpenAiHandler
     {
         parent::__construct();
         $this->config = [
-            'model' => 'text-davinci-003',
+            'model' => 'gpt-3.5-turbo',
             'max_tokens' => 1900,
             'temperature' => 0,
             'top_p' => 1,
@@ -34,7 +34,10 @@ class NlqToPmqlHandler extends OpenAiHandler
         $prompt = $this->replaceStopSequence($prompt);
         $prompt = $this->replaceWithCurrentYear($prompt);
 
-        $this->config['prompt'] = $prompt;
+        $this->config['messages'] = [[
+            'role' => 'user',
+            'content' => $prompt,
+        ]];
 
         return $this;
     }
@@ -43,15 +46,18 @@ class NlqToPmqlHandler extends OpenAiHandler
     {
         $client = app(Client::class);
         $response = $client
-            ->completions()
-            ->create(array_merge($this->getConfig()));
+            ->chat()
+            ->create(
+                array_merge($this->getConfig()
+                )
+            );
 
         return $this->formatResponse($response);
     }
 
     private function formatResponse($response)
     {
-        $result = ltrim($response->choices[0]->text);
+        $result = ltrim($response->choices[0]->message->content);
         $result = explode('Question:', $result)[0];
         $result = rtrim(rtrim(str_replace("\n", '', $result)));
         $result = str_replace('\'', '', $result);
