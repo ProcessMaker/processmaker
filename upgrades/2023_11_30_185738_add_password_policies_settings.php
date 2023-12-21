@@ -165,7 +165,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => false,
                     'name' => 'Require Two Step Authentication',
                     'helper' => 'Enhance security with an additional authentication step for user verification.',
-                    'group' => Setting::LOGIN_OPTION_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10009,
@@ -181,7 +181,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => [],
                     'name' => 'Two Step Authentication Method',
                     'helper' => 'A security code will be sent to all selected methods.',
-                    'group' => Setting::LOGIN_OPTION_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10010,
