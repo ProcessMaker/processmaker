@@ -16,7 +16,6 @@ class WizardTemplateController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $column = $request->input('order_by', 'id');
-        // dd($request->all());
         $filter = $request->input('filter', '');
 
         $direction = $request->input('order_direction', 'asc');
