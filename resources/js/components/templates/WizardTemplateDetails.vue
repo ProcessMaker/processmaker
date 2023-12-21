@@ -47,8 +47,6 @@
           :user-id="currentUserId"
           @task-updated="taskUpdated"
           @submit="submit"
-          @completed="completed"
-          @@error="error"
       ></task>
     </modal>
   </div>
@@ -136,9 +134,8 @@ export default {
           this.currentUserId = parseInt(document.head.querySelector('meta[name="user-id"]').content);
           this.showHelperProcess = true;
         } else {
-          // Process is completed hide the helper process and close the modal
-          this.showHelperProcess = false;
-          this.close();
+          // Process is completed import the process template
+          this.importProcessTemplate();
         }
       } catch (error) {
         if (error && error.message) {
@@ -166,15 +163,6 @@ export default {
         }
       }
     },
-    completed(processRequestId) {
-      console.log("task completed", processRequestId);
-      // TODO: Redirect the user to the created process launchpad page
-      this.showHelperProcess = false;
-      this.close();
-    },
-    error(processRequestId) {
-      console.error('error', processRequestId);
-    },
     async cancelHelperProcessRequest() {
       const {process_request_id: processRequestId } = this.task;
 
@@ -188,6 +176,41 @@ export default {
           ProcessMaker.alert(data.message, 'danger');
         }
       }
+    },
+    async importProcessTemplate() {
+      const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.id}`, {
+        name: this.template.name,
+        description: this.template.description,
+        version: '1.0.0', // TODO: Wizards should have a versions property 
+        process_category_id: this.template.process.process_category_id,
+        projects: null,
+        wizardTemplateUuid: this.template.uuid,
+      });
+
+      if (response.data?.existingAssets) {
+        this.handleExistingAssets(response.data);
+      } else {
+        // redirect to the new process launchpad
+        window.location = `/processes-catalogue/${response.data.processId}`;
+      }
+    },
+    handleExistingAssets(data) {
+      const assets = JSON.stringify(data.existingAssets);
+      const responseId = data.id;
+      const request = JSON.stringify(data.request);
+      window.history.pushState(
+        {
+          assets,
+          name: this.template.name,
+          responseId,
+          request,
+          redirectTo: 'process-launchpad',
+          wizardTemplateUuid: this.template.uuid,
+        },
+        "",
+        "/template/assets",
+      );
+      window.location = "/template/assets";
     }
   },
 };
