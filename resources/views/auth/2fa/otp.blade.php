@@ -47,7 +47,14 @@
                                 <div class="form-group">
                                     <label for="code">{{ __('Enter Security Code') }}</label>
                                     <div class="code-container">
-                                        <input id="code" type="password" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" placeholder="{{__('Enter your security code')}}" required>
+                                        <input
+                                            id="code"
+                                            type="password"
+                                            class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}"
+                                            name="code"
+                                            placeholder="{{__('Enter your security code')}}"
+                                            required
+                                        >
                                         <i class="fa fa-eye" id="toggleCode"></i>
                                         @if ($errors->has('code'))
                                             <span class="invalid-feedback" role="alert">
