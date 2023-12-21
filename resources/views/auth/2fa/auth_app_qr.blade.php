@@ -50,7 +50,7 @@
                                     {{__('3.- Select "Scan QR code" option')}}
                                 </div>
                             </div>
-                            <img src="data:image/svg+xml;base64,{{$qrCode}}"/>
+                            <img src="data:image/svg+xml;base64,{{$qrCode}}" alt="QR" />
                         </div>
                         <div class="row justify-content-between mb-3">
                             <button type="button" name="back" class="btn btn-primary btn-block text-uppercase" dusk="back" onclick="back()">{{ __('Back') }}</button>
@@ -95,7 +95,7 @@
         position: fixed;
         margin-left: 10%;
         width: 700px;
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
         display: inline-flex;
         flex-direction: column;
         align-items: flex-start;

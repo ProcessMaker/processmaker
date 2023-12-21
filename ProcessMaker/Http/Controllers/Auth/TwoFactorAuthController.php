@@ -32,10 +32,8 @@ class TwoFactorAuthController extends Controller
             }
 
             // Send code
-            if (!session()->has(self::TFA_ERROR)) {
-                if (!session()->has(self::TFA_MESSAGE)) {
-                    $this->twoFactorAuthentication->sendCode($user);
-                }
+            if (!session()->has(self::TFA_ERROR) && !session()->has(self::TFA_MESSAGE)) {
+                $this->twoFactorAuthentication->sendCode($user);
             } else {
                 if (!session()->has(self::TFA_MESSAGE)) {
                     $this->twoFactorAuthentication->sendCode($user);
