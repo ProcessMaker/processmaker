@@ -773,6 +773,7 @@ $multiselect-height: 38px;
 
 .btn-custom {
   text-transform: none;
+  border-color: #6C757D;
 }
 
 .drag-and-drop-container {
