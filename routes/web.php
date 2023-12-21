@@ -52,7 +52,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(fun
         Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware('can:view-users');
         Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit')->middleware('can:edit-users,user');
 
-        Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.Log-In Optioindex')->middleware('can:view-auth_clients');
+        Route::get('auth-clients', [AuthClientController::class, 'index'])->name('auth-clients.index')->middleware('can:view-auth_clients');
 
         Route::get('customize-ui/{tab?}', [CssOverrideController::class, 'edit'])->name('customize-ui.edit');
 
