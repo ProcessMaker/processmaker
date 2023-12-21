@@ -163,7 +163,8 @@ Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);
 Route::get('logout', [LoginController::class, 'beforeLogout'])->name('logout');
 Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])->name('2fa');
 Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
-Route::get('2fa/send_again', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.send_again');
+Route::get('2fa/send_again', [TwoFactorAuthController::class, 'sendCode'])->name('2fa.send_again');
+Route::get('2fa/auth_app_qr', [TwoFactorAuthController::class, 'displayAuthAppQr'])->name('2fa.auth_app_qr');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

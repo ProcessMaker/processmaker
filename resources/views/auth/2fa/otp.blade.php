@@ -62,6 +62,13 @@
                                             {{ __('Send Again') }}
                                         </a>
                                     </div>
+                                    @if (in_array(\ProcessMaker\TwoFactorAuthentication::AUTH_APP, config('password-policies.2fa_method', [])))
+                                    <div class="form-group">
+                                        <a href="{{ route('2fa.auth_app_qr') }}">
+                                            {{ __('Authenticator app') }}
+                                        </a>
+                                    </div>
+                                    @endif
                                 </div>
                                 <div class="form-group">
                                     <button type="submit" name="continue" class="btn btn-primary btn-block text-uppercase" dusk="continue">{{ __('Continue') }}</button>

@@ -29,7 +29,13 @@ class TwoFactorAuthController extends Controller
 
             // Send code
             if (!session()->has('2fa-error')) {
-                $this->twoFactorAuthentication->sendCode($user);
+                if (!session()->has('2fa-message')) {
+                    $this->twoFactorAuthentication->sendCode($user);
+                }
+            } else {
+                if (!session()->has('2fa-message')) {
+                    $this->twoFactorAuthentication->sendCode($user);
+                }
             }
 
             // Set informative message
@@ -83,5 +89,34 @@ class TwoFactorAuthController extends Controller
             // Return to 2fa page
             return redirect()->route('2fa');
         }
+    }
+
+    public function sendCode(Request $request)
+    {
+        // Get current user
+        $user = $request->user();
+
+        // Send the code
+        $this->twoFactorAuthentication->sendCode($user);
+
+        // Return to 2fa page
+        return redirect()->route('2fa');
+    }
+
+    public function displayAuthAppQr(Request $request)
+    {
+        // Get current user
+        $user = $request->user();
+
+        // If not user not authenticated, redirect to login page
+        if (empty($user)) {
+            return redirect()->route('login');
+        }
+
+        // Generate QR code
+        $qrCode = $this->twoFactorAuthentication->generateQr($user);
+
+        // Display view
+        return view('auth.2fa.auth_app_qr', compact('qrCode'));
     }
 }

@@ -2,6 +2,10 @@
 
 namespace ProcessMaker;
 
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Notification;
 use OTPHP\TOTP;
 use ParagonIE\ConstantTime\Base32;
@@ -43,18 +47,21 @@ class TwoFactorAuthentication
         return $secret;
     }
 
-    private function createOtpInstance(User $user)
+    private function createOtpInstance(User $user, bool $forGoogleAuthApp = false)
     {
         // Get secret
         $secret = $this->generateSecret($user);
 
         // Config OTP
         $otp = TOTP::createFromSecret($secret);
-        $otp->setDigest('sha512');
         $otp->setIssuer('ProcessMaker');
         $otp->setLabel($user->username);
-        $otp->setDigits(8);
-        $otp->setPeriod(300);
+
+        if (!$forGoogleAuthApp) {
+            $otp->setDigest('sha512');
+            $otp->setDigits(8);
+            $otp->setPeriod(300);
+        }
 
         return $otp;
     }
@@ -70,8 +77,11 @@ class TwoFactorAuthentication
 
     public function validateCode(User $user, string $code)
     {
+        // The code is for Google Authenticator app?
+        $forGoogleAuthApp = strlen($code) === 6;
+
         // Create OTP instance
-        $otp = $this->createOtpInstance($user);
+        $otp = $this->createOtpInstance($user, $forGoogleAuthApp);
 
         // Validate code
         return $otp->verify($code);
@@ -101,5 +111,23 @@ class TwoFactorAuthentication
                 'body' => $body
             ]
         );
+    }
+
+    public function generateQr(User $user)
+    {
+        $otp = $this->createOtpInstance($user, true);
+
+        $g2faUrl = $otp->getProvisioningUri();
+
+        $writer = new Writer(
+            new ImageRenderer(
+                new RendererStyle(250),
+                new SvgImageBackEnd()
+            )
+        );
+
+        $qrCode = base64_encode($writer->writeString($g2faUrl));
+
+        return $qrCode;
     }
 }
