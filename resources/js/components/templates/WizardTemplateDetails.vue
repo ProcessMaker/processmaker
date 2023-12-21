@@ -32,8 +32,12 @@
           </div>
         </b-col>
         <b-col>
-          <b-carousel fade :interval="slideInterval">
-            <b-carousel-slide v-for="(image, index) in templateSlides" :key="index" :img-src="image"/>
+          <b-carousel class="d-flex align-items-center justify-content-center h-100 w-100" fade :interval="slideInterval">
+            <b-carousel-slide
+              v-for="(image, index) in templateSlides"
+              :key="index"
+              :img-src="image"
+            />
           </b-carousel>
         </b-col>
       </b-row>
