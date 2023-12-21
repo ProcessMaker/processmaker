@@ -25,6 +25,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10001,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -41,6 +43,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10002,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -57,6 +61,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10003,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -73,6 +79,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10004,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -89,6 +97,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10005,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -105,6 +115,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10006,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -121,6 +133,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10007,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
@@ -137,6 +151,8 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10008,
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
                     ],
                 ],
             ],
