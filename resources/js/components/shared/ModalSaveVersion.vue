@@ -654,7 +654,11 @@ export default {
       });
 
       ProcessMaker.apiClient
-        .put(`processes/${this.options.id}`, this.dataProcess)
+        .put(`processes/${this.options.id}`, {
+          imagesCarousel: this.dataProcess.imagesCarousel,
+          description: this.dataProcess.description,
+          launchpad_properties: this.dataProcess.launchpad_properties,
+        })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
           const params = {
@@ -667,9 +671,6 @@ export default {
         .catch((error) => {
           console.error("Error: ", error);
         });
-
-      
-
     },
     showModal() {
       this.subject = "";
