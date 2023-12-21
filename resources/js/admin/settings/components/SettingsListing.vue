@@ -53,10 +53,29 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+            <component
+              :is="component(row.item)"
+              v-if="row.item && !isSwitch(row.item)"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
           </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
+          <keep-alive>
+            <component
+              :is="component(row.item)"
+              v-if="isSwitch(row.item)"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
+          </keep-alive>
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
               <b-button
@@ -278,6 +297,9 @@ export default {
     },
     apiPut(setting) {
       return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
+    },
+    isSwitch(setting) {
+      return setting.format === "boolean";
     },
     component(setting) {
       switch (setting.format) {

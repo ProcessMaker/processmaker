@@ -21,7 +21,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => true,
                     'name' => 'Password set by user',
                     'helper' => 'Allow to users to change their own password.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10001,
@@ -39,7 +39,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => true,
                     'name' => 'Numeric characters',
                     'helper' => 'Passwords must contain minimum one numeric character.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10002,
@@ -57,7 +57,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => true,
                     'name' => 'Uppercase characters',
                     'helper' => 'Passwords must contain minimum one uppercase character.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10003,
@@ -75,7 +75,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => true,
                     'name' => 'Special characters',
                     'helper' => 'Passwords must contain minimum one special character.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10004,
@@ -93,7 +93,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => null,
                     'name' => 'Maximum length',
                     'helper' => 'Maximum password length allowed.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10005,
@@ -111,7 +111,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => 8,
                     'name' => 'Minimum length',
                     'helper' => 'Minimum password length allowed.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10006,
@@ -129,7 +129,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => null,
                     'name' => 'Password expiration',
                     'helper' => 'Password will expire in the days configured here.',
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10007,
@@ -147,7 +147,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'config' => 5,
                     'name' => 'Login failed',
                     'helper' => $helperFailed,
-                    'group' => Setting::PASSWORD_POLICIES_GROUP,
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
                     'hidden' => false,
                     'ui' => [
                         'order' => 10008,
@@ -175,6 +175,6 @@ class AddPasswordPoliciesSettings extends Upgrade
      */
     public function down(): void
     {
-        Setting::where('group', Setting::PASSWORD_POLICIES_GROUP)->delete();
+        Setting::where('group', Setting::LOGIN_OPTIONS_GROUP)->delete();
     }
 }
