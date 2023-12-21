@@ -24,6 +24,7 @@ use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
@@ -92,6 +93,9 @@ class ProcessController extends Controller
      */
     public function index(Request $request)
     {
+        // Get the user
+        $user = Auth::user();
+
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
@@ -124,6 +128,9 @@ class ProcessController extends Controller
             }
         }
 
+        // Get with bookmark
+        $bookmark = $request->input('bookmark', false);
+
         $processes = $processes->with('events')
             ->select('processes.*')
             ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
@@ -153,6 +160,9 @@ class ProcessController extends Controller
 
                 return !$eventIsTimerStart && !$eventIsWebEntry;
             })->values();
+
+            // Get the id bookmark related
+            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
@@ -388,6 +398,7 @@ class ProcessController extends Controller
             }
         }
 
+        $this->saveImagesIntoMedia($request, $process);     
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -1540,5 +1551,43 @@ class ProcessController extends Controller
         }
 
         return new ApiResource($newProcess);
+    }
+
+    public function saveImagesIntoMedia(Request $request, Process $process)
+    { 
+        // Saving Carousel Images into Media table related to process_id
+        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
+            foreach ($request->imagesCarousel as $image) {
+                if (is_string($image['url']) && !empty($image['url'])) {
+                    if (!$process->media()->where('collection_name', 'images_carousel')
+                        ->where('uuid', $image['uuid'])->exists()) {
+                        $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
+                    }
+                } 
+            }
+        }
+    }
+
+    public function getMediaImages(Request $request, Process $process) {
+        $media = Process::with(['media'])
+            ->where('id', $process->id)
+            ->get();
+        return new ProcessCollection($media);
+    }
+
+    public function deleteMediaImages(Request $request, Process $process) {
+        $process = Process::find($process->id);
+
+        // Get UUID image in media table
+        $uuid = $request->input('uuid');
+
+        $mediaImagen = $process->getMedia('images_carousel')
+            ->where('uuid', $uuid)
+            ->first();
+
+        // Check if image exists before delete
+        if ($mediaImagen) {
+            $mediaImagen->delete();
+        }
     }
 }
