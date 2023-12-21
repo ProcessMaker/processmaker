@@ -2,7 +2,8 @@
 
 namespace Tests\Feature\ImportExport;
 
-use ProcessMaker\Exception\PackageNotInstalledException;
+use Illuminate\Support\Facades\Event;
+use ProcessMaker\Events\ImportLog;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenExporter;
@@ -133,43 +134,68 @@ class ManifestTest extends TestCase
         $this->assertEquals('John Doe', $processManager);
     }
 
-    /**
-     * @dataProvider exporterClassProvider
-     */
-    public function testExceptionThrownIfPackageNotInstalled(string $exporterClass)
+    public function testWarningIfExporterClassMissing()
     {
-        $this->expectException(PackageNotInstalledException::class);
-        $this->expectExceptionMessage('Can not import because My Foo Package is not installed.');
+        $user = User::factory()->create();
+        Event::fake(ImportLog::class);
 
         $payload = [
             '123abc' => [
-                'exporter' => $exporterClass,
+                'exporter' => 'My\Test\Package',
+                'model' => Screen::class,
                 'dependents' => [],
             ],
         ];
-        Manifest::fromArray($payload, new Options([]), new Logger());
+
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+
+        Event::assertDispatched(ImportLog::class, function ($event) {
+            return $event->message === 'Class My\Test\Package does not exist.';
+        });
     }
 
-    public function exporterClassProvider(): array
+    public function testWarningIfModelClassMissing()
     {
-        return [
-            ['ProcessMaker\Packages\Connectors\MyFooPackage\ImportExport\SomeExporter'],
-            ['ProcessMaker\Package\MyFooPackage\ImportExport\SomeExporter'],
-            ['ProcessMaker\Plugins\MyFooPackage\ImportExport\SomeExporter'],
-        ];
-    }
-
-    public function testExceptionThrownIfUnknownPackageMatch()
-    {
-        $this->expectException(PackageNotInstalledException::class);
-        $this->expectExceptionMessage('Some\Other\Class not found');
+        $user = User::factory()->create();
+        Event::fake(ImportLog::class);
 
         $payload = [
             '123abc' => [
-                'exporter' => 'Some\Other\Class',
+                'exporter' => ScreenExporter::class,
+                'model' => 'Some\Other\Class',
                 'dependents' => [],
+                'references' => [],
             ],
         ];
-        Manifest::fromArray($payload, new Options([]), new Logger());
+
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+
+        Event::assertDispatched(ImportLog::class, function ($event) {
+            return $event->message === 'Class Some\Other\Class does not exist.';
+        });
+    }
+
+    public function testWarningIfUnknownColumn()
+    {
+        $user = User::factory()->create();
+        Event::fake(ImportLog::class);
+
+        $payload = [
+            '123abc' => [
+                'exporter' => ScreenExporter::class,
+                'model' => Screen::class,
+                'dependents' => [],
+                'references' => [],
+                'attributes' => [
+                    'a_missing_column' => 'test',
+                ],
+            ],
+        ];
+
+        Manifest::fromArray($payload, new Options([]), new Logger($user->id));
+
+        Event::assertDispatched(ImportLog::class, function ($event) {
+            return $event->message === "Attribute 'a_missing_column' does not exist in the table 'screens'";
+        });
     }
 }
