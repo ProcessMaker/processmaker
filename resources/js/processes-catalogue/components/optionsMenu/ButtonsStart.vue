@@ -132,6 +132,7 @@ export default {
 .start-button {
   background: #4EA075;
   border: 0px;
+  width: 294px;
   font-size: 16px;
   font-weight: 600;
 }
@@ -141,6 +142,6 @@ export default {
     max-height: 280px;
     overflow-x: hidden;
     width: 248px;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 </style>
