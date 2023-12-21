@@ -646,7 +646,10 @@ export default {
       });
 
       ProcessMaker.apiClient
-        .put(`processes/${this.options.id}`, this.dataProcess)
+        .put(`processes/${this.options.id}`, {
+          imagesCarousel: this.dataProcess.imagesCarousel,
+          description: this.dataProcess.description,
+        })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
           const params = {
