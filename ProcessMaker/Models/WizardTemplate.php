@@ -74,14 +74,14 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         $slideUrls = $slides->map(function ($slide) {
             return $slide->getFullUrl();
         });
+        $iconMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'icon'])->first();
+        $cardBackgroundMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'cardBackground'])->first();
 
         return [
-            'icon' => $this->getMedia($mediaCollectionName, ['media_type' => 'icon'])->first()->getFullUrl(),
-            'cardBackground' => $this->getMedia($mediaCollectionName, ['media_type' => 'cardBackground'])->first()->getFullUrl(),
+            'icon' => !is_null($iconMedia) ? $iconMedia->getFullUrl() : '',
+            'cardBackground' => !is_null($cardBackgroundMedia) ? $cardBackgroundMedia->getFullUrl() : '',
             'slides' => $slideUrls,
         ];
-
-        // return $this->morphMany(Media::class, 'model');
     }
 
     /**
