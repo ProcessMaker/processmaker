@@ -3,7 +3,7 @@
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
-      :empty="$t('¡ Whoops ! No results')"
+      :empty="$t('Whoops No results')"
       :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
       empty-icon="noData"
     />
@@ -227,6 +227,7 @@ export default {
           name: "__slot:case_number",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
@@ -252,6 +253,13 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+        },
+        {
+          label: "STATUS",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -329,11 +337,7 @@ export default {
       </a>`;
     },
     formatCaseTitle(value) {
-      return `
-      <a href="${this.openRequest(value, 1)}"
-         class="text-nowrap">
-         ${value.case_title_formatted || ""}
-      </a>`;
+      return `${value.case_title_formatted || ""}`;
     },
     formatParticipants(participants) {
       return {
