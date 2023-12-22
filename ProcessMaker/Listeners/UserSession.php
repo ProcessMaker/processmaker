@@ -2,8 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Models\UserSession as Session;
 use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
@@ -30,9 +29,33 @@ class UserSession
         $configIP = Setting::configByKey('session-control.ip_restriction');
         $configDevice = Setting::configByKey('session-control.device_restriction');
 
+        // if block session by IP or Device is enabled, then mark all active sessions as inactive
+        if ($configDevice === '1') {
+            $user->sessions()
+                ->where('is_active', true)
+                ->where([
+                    ['device_name', $agent->device()],
+                    ['device_type', $agent->deviceType()],
+                    ['device_platform', $agent->platform()],
+                ])
+                ->update(['is_active' => false]);
+        }
         // if kill session by IP or Device is enabled, then kill all active sessions
-        if ($configIP === '2' || $configDevice === '2') {
-            $user->sessions()->where('is_active', true)->update(['expired_date' => now()]);
+        if ($configIP === '2') {
+            $user->sessions()
+                ->where('is_active', true)
+                ->update(['expired_date' => now()]);
+        }
+
+        if ($configDevice === '2') {
+            $user->sessions()
+                ->where('is_active', true)
+                ->where(function (Builder $query) use ($agent) {
+                    $query->where('device_name', '!=', $agent->device())
+                        ->orWhere('device_type', '!=', $agent->deviceType())
+                        ->orWhere('device_platform', '!=', $agent->platform());
+                })
+                ->update(['expired_date' => now()]);
         }
 
         $session = new Session([
