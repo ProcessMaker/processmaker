@@ -25,22 +25,26 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
+          <CatalogueEmpty />
         </div>
-        <wizard-templates v-if="showWizardTemplates" />
-        <CardProcess
-          v-if="showCardProcesses"
-          :category="category"
-          @openProcess="openProcess"
-        />
-        <ProcessInfo
-          v-if="showProcess"
-          :process="selectedProcess"
-          :current-user-id="currentUserId"
-          :permission="permission"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="returnedFromInfo"
-        />
+        <div v-else>
+          <CardProcess
+            v-if="showCardProcesses && !showWizardTemplates"
+            :category="category"
+            @openProcess="openProcess"
+          />
+          <ProcessInfo
+            v-if="showProcess && !showWizardTemplates"
+            :process="selectedProcess"
+            :current-user-id="currentUserId"
+            :permission="permission"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="returnedFromInfo"
+          />
+          <wizard-templates
+            v-if="showWizardTemplates"
+          />
+        </div>
       </b-col>
     </b-row>
   </div>
