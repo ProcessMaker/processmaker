@@ -138,9 +138,19 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
 
     // Process Bookmark
-    Route::get('process_bookmarks', [BookmarkController::class, 'index'])->name('process_bookmarks.index')->middleware('can:view-processes');
-    Route::post('process_bookmarks/{process}', [BookmarkController::class, 'store'])->name('process_bookmarks.store')->middleware('can:edit-processes');
-    Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])->name('process_bookmarks.destroy')->middleware('can:edit-processes');
+    $middlewareCatalog = 'can:view-process-catalog';
+    Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
+    ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
+    ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/{process_category}', [ProcessCategoryController::class, 'show'])
+    ->name('bookmarks.categories.show')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks', [BookmarkController::class, 'index'])
+    ->name('bookmarks.index')->middleware($middlewareCatalog);
+    Route::post('process_bookmarks/{process}', [BookmarkController::class, 'store'])
+    ->name('bookmarks.store')->middleware($middlewareCatalog);
+    Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])
+    ->name('bookmarks.destroy')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -149,6 +159,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('process_categories/{process_category}', [ProcessCategoryController::class, 'update'])->name('process_categories.update')->middleware('can:edit-process-categories');
     Route::delete('process_categories/{process_category}', [ProcessCategoryController::class, 'destroy'])->name('process_categories.destroy')->middleware('can:delete-process-categories');
 
+    //Process Launchpad
+    Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
+    Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
+    
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
@@ -162,6 +176,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
+    Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');

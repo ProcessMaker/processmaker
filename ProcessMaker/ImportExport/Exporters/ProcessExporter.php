@@ -27,8 +27,6 @@ class ProcessExporter extends ExporterBase
 
     public ExportManager $manager;
 
-    public $discard = false;
-
     public function export() : void
     {
         $process = $this->model;

@@ -16,9 +16,11 @@ class WizardTemplateController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $column = $request->input('order_by', 'id');
+        $filter = $request->input('filter', '');
+
         $direction = $request->input('order_direction', 'asc');
 
-        $query = WizardTemplate::query()
+        $query = WizardTemplate::with('process', 'process_template')->filter($filter)
             ->orderBy($column, $direction);
 
         $data = $query->paginate($perPage);

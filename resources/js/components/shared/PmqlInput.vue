@@ -36,20 +36,28 @@
           <div class="search-bar-container d-flex align-items-center">
             <i v-if="!aiLoading && !condensed" class="fa fa-search ml-3 pmql-icons" :style="styles?.icons"></i>
             <i v-if="aiLoading && !condensed" class="fa fa-spinner fa-spin ml-3 pmql-icons" :style="styles?.icons"></i> 
-
+            <b-tooltip
+              v-if="showPmqlSection && !condensed"
+              custom-class="pmql-tooltip"
+              target="pmql-pill"
+              triggers="hover"
+              placement="bottom"
+            >
+              <div class="d-inline align-middle copy-container">
+                <p id="textToCopy" class="d-inline">{{ pmql }}</p>
+                <i class="copy-icon fa fa-copy" @click="copyToClipboard" style="cursor: pointer;"></i>
+              </div>
+            </b-tooltip>
             <textarea ref="search_input" type="text" class="pmql-input"
               :class="{'overflow-auto': showScrollbars}"
               :aria-label="inputAriaLabel"
-              :placeholder="placeholder"
+              :placeholder="placeholder || $t('Search here')"
               :id="inputId"
               v-model="query"
               rows="1"
               :style="styles?.input"
               @input="onInput()"
               @keydown.enter.prevent @keyup.enter="runSearch()"></textarea>
-
-            <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
-            <code v-if="showPmqlSection && !condensed" class="w-100 d-block input-right-section" :style="styles?.pmql">{{ pmql }}</code>
 
             <div v-if="showAiIndicator && !condensed" class="separator align-items-center" :style="styles?.separators"></div>
             <span v-if="showAiIndicator && !condensed" class="badge badge-pill badge-success">AI</span>
@@ -64,16 +72,18 @@
               <i class="fa fa-info-circle ml-1 pmql-icons" />
             </label>
 
-            <div v-if="!condensed" class="separator align-items-center" :style="styles?.separators" />
+            <div v-if="!condensed" class="separator-transparent align-items-center" :style="styles?.separators" />
             <i v-if="!condensed" class="fa fa-times pl-1 pr-3 pmql-icons" role="button" @click="clearQuery" :style="styles?.icons"/>
+            <div v-if="showPmqlSection && !condensed" class="separator align-items-center" :style="styles?.separators" />
+            <b-badge
+              v-if="showPmqlSection && !condensed"
+              data-bs-toggle="tooltip"
+              class="pmql-badge"
+              id="pmql-pill"
+            >
+              PMQL
+            </b-badge>
           </div>
-
-          <div v-if="showPmqlSection && condensed">
-            <div class="separator-horizontal align-items-center"></div>
-          </div>
-          <code v-if="showPmqlSection && condensed" class="w-100 d-block input-right-section mb-1 mt-1 pr-2 pl-2" :style="styles?.pmql">
-            {{ pmql }}
-          </code>
         </div>
         <div class="search-bar-buttons d-flex ml-md-0 flex-column flex-md-row">
           <slot name="right-buttons"></slot>
@@ -295,16 +305,32 @@ export default {
           this.calcInputHeight();
         });
     },
+    copyToClipboard() {
+      const textToCopy = document.getElementById("textToCopy").textContent;
+      const textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      window.ProcessMaker.alert(this.$t("Text copied to the clipboard"), "success", 5, true);
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 .search-bar {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 3px;
   background: #ffffff;
+
+  &:hover {
+    background-color: #FAFBFC;
+    border-color: #CDDDEE;
+  }
 }
 
 .search-bar.is-invalid {
@@ -362,7 +388,14 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
   right: 0;
   top: 15%;
 }
-
+.separator-transparent {
+  border-right: 1px solid rgba(227, 231, 236, 0);
+  height: 1.6rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  right: 0;
+  top: 15%;
+}
 .separator-horizontal {
   border: 0;
   border-bottom: 1px dashed rgb(227, 231, 236);
@@ -406,5 +439,28 @@ input.pmql-input:focus ~ label, input.pmql-input:valid ~ label {
 .filter-counter {
   background: #EBEEF2 !important;
   font-weight: 400;
+}
+.pmql-badge {
+  background-color: #F2F8FE;
+  color: #6A7888;
+  margin-right: 10px;
+}
+.pmql-tooltip {
+  opacity: 1 !important;
+}
+.pmql-tooltip .tooltip-inner {
+  background-color: #F2F8FE;
+  color: #6A7888;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  max-width: none;
+  padding: 14px;
+  border-radius: 7px;
+}
+.pmql-tooltip .arrow::before {
+  border-bottom-color: #F2F8FE !important;
+  border-top-color: #F2F8FE !important;
+}
+.copy-icon {
+  margin-left: 14px;
 }
 </style>
