@@ -34,7 +34,6 @@ class Kernel extends ConsoleKernel
             ->weekly();
 
         $schedule->command('processmaker:sync-default-templates --queue')->daily();
-        $schedule->command('processmaker:sync-wizard-templates --queue')->daily();
     }
 
     /**
