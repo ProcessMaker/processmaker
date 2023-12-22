@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -638,5 +639,110 @@ class UserController extends Controller
 
         // return $deletedUsers;
         return new ApiCollection($response);
+    }
+
+    /**
+     * Get filter configuration.
+     * 
+     * @param User $user
+     * @param String $name
+     * @return \Illuminate\Http\Response
+     *
+     *     @OA\Get(
+     *     path="/users/{user_id}/get_filter_configuration/{name}",
+     *     summary="",
+     *     operationId="getFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function getFilterConfiguration(User $user, String $name) 
+    {
+        $key = $this->getKeyFilterConfiguration($user, $name);
+
+        $valueInCache = $this->getCacheRememberFilter($key, []);
+
+        return response(["data" => $valueInCache], 200);
+    }
+
+    /**
+     * Store filter configuration.
+     * 
+     * @param User $user
+     * @param String $name
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     *
+     *     @OA\Get(
+     *     path="/users/{user_id}/store_filter_configuration/{name}",
+     *     summary="",
+     *     operationId="storeFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function storeFilterConfiguration(User $user, String $name, Request $request) 
+    {
+        $key = $this->getKeyFilterConfiguration($user, $name);
+        Cache::pull($key);
+
+        $valueInCache = $this->getCacheRememberFilter($key, $request->json()->all());
+
+        return response(["data" => $valueInCache], 200);
+    }
+
+    /**
+     * Get cache remember filter.
+     * 
+     * @param Array $json
+     * @return Array
+     */
+    private function getCacheRememberFilter($key, $json) 
+    {
+        $valueInCache = Cache::remember($key, now()->addWeek(), function () use($json) {
+            return $json;
+        });
+        return $valueInCache;
+    }
+
+    /**
+     * Get key filter configuration.
+     * 
+     * @param User $user
+     * @param string $name
+     * @return string
+     */
+    private function getKeyFilterConfiguration($user, $name)
+    {
+        $key = str_replace("-", "_", "user-{$user->id}-{$user->uuid}-{$name}");
+        return $key;
     }
 }

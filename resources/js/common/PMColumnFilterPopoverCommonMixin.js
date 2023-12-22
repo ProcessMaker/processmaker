@@ -1,20 +1,11 @@
 const PMColumnFilterCommonMixin = {
   data() {
     return {
-      advancedFilter: []
+      advancedFilter: [],
+      userId: window.Processmaker.userId
     };
   },
   methods: {
-    onApply(json, index) {
-      this.advancedFilter[index] = json;
-      this.tableHeaders[index].filterApplied = true;
-      this.fetch();
-    },
-    onClear(index) {
-      this.advancedFilter[index] = [];
-      this.tableHeaders[index].filterApplied = false;
-      this.fetch();
-    },
     onUpdate(object, index) {
       if (object.$refs.pmColumnFilterForm &&
               this.advancedFilter.length > 0 &&
@@ -101,6 +92,31 @@ const PMColumnFilterCommonMixin = {
               "&order_by=" + orderBy +
               "&order_direction=" + orderDirection;
       return url;
+    },
+    getFilterConfiguration(user_id, filterName) {
+      let url = "users/" + user_id + "/get_filter_configuration/" + filterName;
+      ProcessMaker.apiClient.get(url).then(response => {
+        this.advancedFilter = response.data.data;
+        this.verifyIfHeaderContainFilter();
+      });
+    },
+    storeFilterConfiguration(user_id, filterName) {
+      let url = "users/" + user_id + "/store_filter_configuration/" + filterName;
+      ProcessMaker.apiClient.put(url, this.advancedFilter);
+    },
+    advancedFilterInit(size) {
+      for (let i = 0; i < size; i++) {
+        if (!(i in this.advancedFilter)) {
+          this.advancedFilter[i] = [];
+        }
+      }
+    },
+    verifyIfHeaderContainFilter() {
+      for (let i in this.advancedFilter) {
+        if (i in this.tableHeaders && this.advancedFilter[i].length > 0) {
+          this.tableHeaders[i].filterApplied = true;
+        }
+      }
     }
   }
 };

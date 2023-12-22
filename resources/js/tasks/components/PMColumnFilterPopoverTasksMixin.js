@@ -8,6 +8,19 @@ const PMColumnFilterPopoverTasksMixin = {
     };
   },
   methods: {
+    onApply(json, index) {
+      this.advancedFilterInit(this.tableHeaders.length);
+      this.advancedFilter[index] = json;
+      this.tableHeaders[index].filterApplied = true;
+      this.storeFilterConfiguration(this.userId, "task");
+      this.fetch();
+    },
+    onClear(index) {
+      this.advancedFilter[index] = [];
+      this.tableHeaders[index].filterApplied = false;
+      this.storeFilterConfiguration(this.userId, "task");
+      this.fetch();
+    },
     onChangeSort(value) {
       this.order_direction = value;
     },
@@ -39,8 +52,6 @@ const PMColumnFilterPopoverTasksMixin = {
       return operators;
     },
     getAssignee(filter) {
-      //todo: Users can be numerous; therefore, the control should be a search 
-      //field with a suggestion list type.
       ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
         for (let i in response.data.data) {
           this.viewAssignee.push(response.data.data[i].username);
