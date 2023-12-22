@@ -29,6 +29,7 @@
       </b-list-group>
     </b-collapse>
     <div
+      v-if="wizardTemplates.length > 0"
       v-b-toggle.collapse-3
       block
       variant="light"
@@ -41,19 +42,11 @@
       </div>
     </div>
     <b-collapse
+      v-if="wizardTemplates.length > 0"
       id="collapse-3"
       visible
     >
       <b-list-group>
-        <!-- <b-list-group-item
-          v-for="item in data"
-          :key="item.id"
-          :ref="item.name"
-          class="list-item"
-          @click="selectItem(item)"
-        >
-          {{ item.name }}
-        </b-list-group-item> -->
         <b-list-group-item
           class="list-item"
           @click="wizardLinkSelected"
@@ -67,7 +60,7 @@
 
 <script>
 export default {
-  props: ["data", "select", "title", "preicon"],
+  props: ["data", "select", "title", "preicon", "wizardTemplates"],
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
