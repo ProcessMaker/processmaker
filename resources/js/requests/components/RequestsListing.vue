@@ -237,6 +237,14 @@ export default {
           truncate: true,
         },
         {
+          label: "STATUS",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 160,
+          truncate: true,
+        },
+        {
           label: "STARTED",
           field: "initiated_at",
           format: "datetime",
