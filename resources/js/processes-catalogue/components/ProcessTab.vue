@@ -201,9 +201,6 @@ export default {
     openRequest(data, index) {
       return `/requests/${data.id}`;
     },
-    openTask(data, index) {
-      return `/tasks/${data.id}`;
-    },
     transform(data) {
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;
@@ -213,7 +210,6 @@ export default {
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
-        record["active_tasks"] = record["active_tasks"];
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(
           record["participants"]
