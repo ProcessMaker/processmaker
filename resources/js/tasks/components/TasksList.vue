@@ -95,6 +95,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
