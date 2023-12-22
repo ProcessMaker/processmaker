@@ -220,6 +220,37 @@ export default {
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
+    formatStatus(status) {
+      let color = "success",
+        label = "In Progress";
+      switch (status) {
+        case "DRAFT":
+          color = "danger";
+          label = "Draft";
+          break;
+        case "CANCELED":
+          color = "danger";
+          label = "Canceled";
+          break;
+        case "COMPLETED":
+          color = "primary";
+          label = "Completed";
+          break;
+        case "ERROR":
+          color = "danger";
+          label = "Error";
+          break;
+      }
+      return (
+        '<span class="badge badge-' +
+        color +
+        ' status-' +
+        color +
+        '">' +
+        this.$t(label) +
+        "</span>"
+      );
+    },
     formatCaseNumber(value) {
       return `
       <a href="${this.openRequest(value, 1)}"
