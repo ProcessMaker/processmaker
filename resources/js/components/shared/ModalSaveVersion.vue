@@ -39,10 +39,7 @@
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
-                    <icon-dropdown
-                      :custom-value="selectedLaunchpadIcon"
-                      :custom-label="selectedLaunchpadIconLabel"
-                    />
+                    <icon-dropdown ref="icon-dropdown" />
                     <label class="label-text mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
@@ -338,6 +335,7 @@ export default {
             this.selectedSavedChartId = launchpadProperties.saved_chart_id;
             this.selectedLaunchpadIcon = launchpadProperties.icon;
             this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
           } else {
             this.selectedSavedChart = "";
             this.selectedSavedChartId = "";

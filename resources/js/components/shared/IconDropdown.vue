@@ -120,6 +120,12 @@ export default {
     onSelect(value) {
       this.$root.$emit("launchpadIcon", value);
     },
+    setIcon(icon) {
+      this.icon = {
+        value: icon,
+        label: icon,
+      };
+    },
   },
 };
 </script>
