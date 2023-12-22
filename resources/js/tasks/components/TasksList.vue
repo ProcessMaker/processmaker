@@ -228,7 +228,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 45,
+          width: 55,
         },
         {
           label: "CASE TITLE",
