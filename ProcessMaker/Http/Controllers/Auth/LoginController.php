@@ -241,9 +241,9 @@ class LoginController extends Controller
     }
 
     private function forgetUserSession() {
-        $user_session = session()->get('user_session');
+        $userSession = session()->get('user_session');
         $user = Auth::user();
-        $user->sessions()->where('token', $user_session)->update(['is_active' => false]);
+        $user->sessions()->where('token', $userSession)->update(['is_active' => false]);
         session()->forget('user_session');
     }
 
