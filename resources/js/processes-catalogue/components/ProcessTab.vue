@@ -9,7 +9,7 @@
           <filter-table
             :headers="tableHeadersRequests"
             :data="dataRequests"
-            @table-row-click="(row) => handleRowClick('request', row)"
+            @table-row-click="(row) => openRequest(row)"
           />
           <pagination-table
             :meta="dataRequests.meta"
@@ -29,7 +29,7 @@
           <filter-table
             :headers="tableHeadersTasks"
             :data="dataTasks"
-            @table-row-click="(row) => handleRowClick('task', row)"
+            @table-row-click="(row) => openTask(row)"
           />
           <pagination-table
             :meta="dataTasks.meta"
@@ -199,10 +199,6 @@ export default {
     changePage(page) {
       this.page = page;
       this.queryBuilder();
-    },
-    handleRowClick(type, row) {
-      const openFunction = type === 'request' ? this.openRequest : this.openTask;
-      window.location.href = openFunction(row, 1);
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
