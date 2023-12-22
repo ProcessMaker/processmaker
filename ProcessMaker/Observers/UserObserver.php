@@ -35,8 +35,10 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        if ($permission = Permission::where('name', 'view-process-catalog')->first()) {
-            $user->permissions()->attach($permission->id);
-        }
+        $perList = [
+            'view-process-catalog'
+        ];
+        $permissionIds = Permission::whereIn('name', $perList)->pluck('id')->toArray();
+        $user->permissions()->attach($permissionIds);
     }
 }
