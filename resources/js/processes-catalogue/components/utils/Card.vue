@@ -19,8 +19,8 @@
       >
         <img
           class="icon-process"
-          src="/img/default-process.svg"
-          :alt="$t('Default Icon')"
+          :src="getIconProcess()"
+          :alt="$t(labelIcon)"
         >
         <span class="title-process">{{ process.name }}</span>
       </div>
@@ -33,8 +33,7 @@ export default {
   props: ["process"],
   data() {
     return {
-      bookmarkIcon_: "far fa-bookmark",
-      bookmarkedIcon_: "fas fa-bookmark",
+      labelIcon: "Default Icon",
     };
   },
   methods: {
@@ -73,6 +72,13 @@ export default {
     openInfo(process) {
       this.$emit("openProcessInfo", process);
     },
+    getIconProcess() {
+      let icon = "default-icon";
+      if (this.process.launchpad_properties) {
+        icon = JSON.parse(this.process.launchpad_properties).icon;
+      }
+      return `/img/launchpad-images/icons/${icon}.svg`;
+    },
   },
 };
 </script>
@@ -103,7 +109,9 @@ export default {
   padding-top: 15%;
 }
 .icon-process {
-  font-size: 68px;
+  width: 75px;
+  height: 75px;;
+  padding-left: 0.5rem;
   margin-bottom: 1rem;
 }
 .marked {

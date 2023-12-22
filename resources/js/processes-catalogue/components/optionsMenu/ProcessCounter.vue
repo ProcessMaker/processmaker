@@ -33,10 +33,6 @@
 </script>
 <style scoped>
 .process-counter {
-  margin-left:10px;
-  padding-bottom: 2px;
-  padding-left: 5px;
-  padding-top: 0;
   width: 294px;
   height: 52px;
   border-radius: 8px;

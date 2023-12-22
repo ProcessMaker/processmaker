@@ -18,7 +18,7 @@
               :style="btnStyle"
               @click="swapLabel"
             >
-              <i class="fas fa-book mr-1"></i>
+              <i class="fas fa-book mr-1" />
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
@@ -29,25 +29,22 @@
                       {{ $t("Description of Process") }}
                     </label>
                     <textarea
-                      v-model="processDescription"
                       id="additional-details"
+                      v-model="processDescription"
                       class="form-control"
                       type="text"
                       rows="5"
                       :aria-label="$t('Description')"
-                    ></textarea>
+                    />
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
-                    <icon-dropdown
-                      :custom-value="selectedLaunchpadIcon"
-                      :custom-label="selectedLaunchpadIconLabel"
-                    />
+                    <icon-dropdown ref="icon-dropdown" />
                     <label class="label-text mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
                         id="statusDropdown"
-                        class="btn btn-secondary dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
+                        class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
                         type="button"
                         data-toggle="dropdown"
                         aria-haspopup="true"
@@ -75,18 +72,23 @@
                     </div>
                   </b-col>
                   <b-col>
-                    <div md="12" class="no-padding">
+                    <div
+                      md="12"
+                      class="no-padding"
+                    >
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label class="label-text" for="name"
-                          >{{ $t("Images for carousel") }}
+                        <label
+                          class="label-text"
+                          for="name"
+                        >{{ $t("Images for carousel") }}
                         </label>
                         <input
+                          ref="fileInput"
                           type="file"
                           style="display: none"
-                          ref="fileInput"
                           accept="image/*"
                           @change="handleImageUpload"
-                        />
+                        >
                         <i
                           class="fas fa-plus-square ml-auto"
                           style="cursor: pointer"
@@ -95,8 +97,8 @@
                       </div>
                     </div>
                     <b-row
-                      class="image-thumbnails-container"
                       ref="thumbnailsContainer"
+                      class="image-thumbnails-container"
                       @drop="handleDrop"
                       @dragover.prevent
                       @dragstart.prevent="handleDragStart"
@@ -158,7 +160,7 @@
                             :src="image.url"
                             :alt="$t('No Image')"
                             class="img-fluid"
-                          />
+                          >
                         </div>
                       </b-col>
                       <b-col
@@ -166,8 +168,11 @@
                         md="12"
                         class="text-center"
                       >
-                        <div class="drag-and-drop-container" @dragover.prevent>
-                          <i class="fas fa-cloud-upload-alt"></i>
+                        <div
+                          class="drag-and-drop-container"
+                          @dragover.prevent
+                        >
+                          <i class="fas fa-cloud-upload-alt" />
                           <div>
                             <strong>{{ $t("Drop your images here") }}</strong>
                           </div>
@@ -189,12 +194,12 @@
               <b-card v-if="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
-                  v-model="subject"
                   id="name"
+                  v-model="subject"
                   class="form-control mt-2"
                   type="text"
                   name="name"
-                />
+                >
                 <div
                   v-if="errors.subject"
                   class="invalid-feedback d-block"
@@ -202,17 +207,20 @@
                 >
                   {{ errors.subject[0] }}
                 </div>
-                <label class="mt-2" for="additional-details">
+                <label
+                  class="mt-2"
+                  for="additional-details"
+                >
                   {{ $t("Description") }}
                 </label>
                 <textarea
-                  v-model="description"
                   id="additional-details"
+                  v-model="description"
                   class="form-control mt-2"
                   type="text"
                   rows="8"
                   :aria-label="$t('Description')"
-                ></textarea>
+                />
               </b-card>
             </b-tab>
           </b-tabs>
@@ -303,7 +311,7 @@ export default {
     this.retrieveSavedSearchCharts();
     this.getProcessDescription();
 
-    //Receives selected Option from launchpad Icons multiselect
+    // Receives selected Option from launchpad Icons multiselect
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
@@ -315,9 +323,9 @@ export default {
       ProcessMaker.apiClient
         .get(`processes/${this.processId}/media`)
         .then((response) => {
-          let firstResponse = response.data.data.shift();
+          const firstResponse = response.data.data.shift();
           const launchpadProperties = JSON.parse(
-            firstResponse?.launchpad_properties
+            firstResponse?.launchpad_properties,
           );
 
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
@@ -327,16 +335,17 @@ export default {
             this.selectedSavedChartId = launchpadProperties.saved_chart_id;
             this.selectedLaunchpadIcon = launchpadProperties.icon;
             this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
           } else {
             this.selectedSavedChart = "";
             this.selectedSavedChartId = "";
           }
 
-          //Load Images into Carousel Container
+          // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
-              mediaArray.forEach((media) => {   
-               this.convertImageUrlToBase64(media);
-            });
+          mediaArray.forEach((media) => {
+            this.convertImageUrlToBase64(media);
+          });
         });
     },
     /**
@@ -344,17 +353,17 @@ export default {
      */
     convertImageUrlToBase64(media) {
       fetch(media.original_url)
-        .then(response => response.blob())
-        .then(blob => {
+        .then((response) => response.blob())
+        .then((blob) => {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64Data = reader.result;
-              this.images.push({ url: base64Data, uuid: media.uuid });
+            this.images.push({ url: base64Data, uuid: media.uuid });
           };
           reader.readAsDataURL(blob);
         })
-        .catch(error => {
-          console.error('Error loading image:', error);
+        .catch((error) => {
+          console.error("Error loading image:", error);
         });
     },
     swapLabel() {
@@ -389,14 +398,14 @@ export default {
 
       // Checks if event has 'dataTransfer' property
       if (event.dataTransfer) {
-        const files = event.dataTransfer.files;
+        const { files } = event.dataTransfer;
 
         // Checks if 'dataTransfer' has 'files' property
         if (files && files.length > 0) {
           if (this.images.length + files.length > this.maxImages) {
             ProcessMaker.alert(
               this.$t("It is not possible to include more than four images."),
-              "danger"
+              "danger",
             );
             return;
           }
@@ -413,8 +422,8 @@ export default {
           if (this.isValidFileExtension(file.name)) {
             const reader = new FileReader();
             reader.onload = (event) => {
-              this.images.push({ 
-                file, 
+              this.images.push({
+                file,
                 url: event.target.result,
                 uuid: "",
               });
@@ -424,9 +433,8 @@ export default {
           } else {
             ProcessMaker.alert(
               this.$t("Only PNG and JPG extensions are allowed."),
-              "danger"
+              "danger",
             );
-            return;
           }
         }
       });
@@ -435,7 +443,7 @@ export default {
      * Adds an image from drag and drop to image container
      */
     handleDroppedImage(event) {
-      const files = event.dataTransfer.files;
+      const { files } = event.dataTransfer;
       this.handleImages(files);
     },
     /**
@@ -451,7 +459,7 @@ export default {
     isValidFileExtension(fileName) {
       const allowedExtensions = [".jpg", ".jpeg", ".png"];
       return allowedExtensions.includes(
-        fileName.slice(fileName.lastIndexOf(".")).toLowerCase()
+        fileName.slice(fileName.lastIndexOf(".")).toLowerCase(),
       );
     },
     /**
@@ -460,7 +468,7 @@ export default {
     retrieveSavedSearchCharts() {
       ProcessMaker.apiClient
         .get(
-          "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
+          "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
         )
         .then((response) => {
           if (response.data.data[0].charts) {
@@ -510,11 +518,11 @@ export default {
         // The amount of images allowed was reached.
         ProcessMaker.alert(
           this.$t("It is not possible to include more than four images."),
-          "danger"
+          "danger",
         );
         return;
       }
-      const files = event.target.files;
+      const { files } = event.target;
       this.handleImages(files);
       event.target.value = "";
     },
@@ -547,27 +555,27 @@ export default {
      * Method to delete image from carousel container
      */
     deleteImage(index) {
-      const uuid = this.images[index].uuid;
+      const { uuid } = this.images[index];
       this.images.splice(index, 1);
       this.$set(this.showDeleteIcons, index, false);
       this.$set(this.focusIcons, index, false);
-      
-      //Call API to delete
+
+      // Call API to delete
       ProcessMaker.apiClient
-          .delete(`processes/${this.processId}/media`, { 
-            data: { uuid } 
-          })
-          .then(response => {
-            ProcessMaker.alert(this.$t("The image was deleted"), "success");
-          })
-          .catch(error => {
-            console.error("Error", error);
-          });
+        .delete(`processes/${this.processId}/media`, {
+          data: { uuid },
+        })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The image was deleted"), "success");
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        });
       const params = {
         indexImage: index,
         type: "delete",
-      };    
-      ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
+      };
+      ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
@@ -583,7 +591,7 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
-      //if method is called from ProcessMaker core
+      // if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
         this.dataProcess = this.process;
@@ -593,14 +601,14 @@ export default {
       }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
-      let promise = new Promise((resolve, reject) => {
-        //emit save types
+      const promise = new Promise((resolve, reject) => {
+        // emit save types
         window.ProcessMaker.EventBus.$emit(
           this.types[this.options.type],
           this.redirectUrl,
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
-          reject
+          reject,
         );
       });
 
@@ -621,7 +629,7 @@ export default {
                 this.errors = error.response.data.errors;
               }
               if (error.response.status === 404) {
-                //version_histories route not found because package-versions is not installed
+                // version_histories route not found because package-versions is not installed
                 console.error(err);
               }
             });
@@ -630,7 +638,7 @@ export default {
           console.error(err);
         });
 
-      //Save only process description field using Process API
+      // Save only process description field using Process API
       this.saveProcessDescription();
     },
     /**
@@ -646,22 +654,23 @@ export default {
       });
 
       ProcessMaker.apiClient
-        .put(`processes/${this.options.id}`, this.dataProcess)
+        .put(`processes/${this.options.id}`, {
+          imagesCarousel: this.dataProcess.imagesCarousel,
+          description: this.dataProcess.description,
+          launchpad_properties: this.dataProcess.launchpad_properties,
+        })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
           const params = {
             indexImage: null,
             type: "add",
           };
-          ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
+          ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           this.hideModal();
         })
         .catch((error) => {
           console.error("Error: ", error);
         });
-
-      
-
     },
     showModal() {
       this.subject = "";
@@ -766,6 +775,7 @@ $multiselect-height: 38px;
 
 .btn-custom {
   text-transform: none;
+  border-color: #6C757D;
 }
 
 .drag-and-drop-container {
