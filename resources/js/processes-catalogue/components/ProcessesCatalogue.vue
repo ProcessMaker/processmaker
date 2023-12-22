@@ -19,43 +19,28 @@
           @wizardLinkSelect="showWizardTemplates = 'true'"
           @addCategories="addCategories"
         />
-        <!-- <ul>
-          <li>
-            <button
-              type="button"
-              class="btn btn-link"
-              @click="wizardTemplatesSelected"
-            >
-              {{ $t('Wizard Templates') }}
-            </button>
-          </li>
-        </ul> -->
       </b-col>
       <b-col cols="10">
         <div
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
-        <div v-else>
-          <CardProcess
-            v-if="showCardProcesses && !showWizardTemplates"
-            :category="category"
-            @openProcess="openProcess"
-          />
-          <ProcessInfo
-            v-if="showProcess && !showWizardTemplates"
-            :process="selectedProcess"
-            :current-user-id="currentUserId"
-            :permission="permission"
-            :is-documenter-installed="isDocumenterInstalled"
-            @goBackCategory="returnedFromInfo"
-          />
-          <wizard-templates
-            v-if="showWizardTemplates"
-          />
-        </div>
+        <wizard-templates v-if="showWizardTemplates" />
+        <CardProcess
+          v-if="showCardProcesses"
+          :category="category"
+          @openProcess="openProcess"
+        />
+        <ProcessInfo
+          v-if="showProcess"
+          :process="selectedProcess"
+          :current-user-id="currentUserId"
+          :permission="permission"
+          :is-documenter-installed="isDocumenterInstalled"
+          @goBackCategory="returnedFromInfo"
+        />
       </b-col>
     </b-row>
   </div>

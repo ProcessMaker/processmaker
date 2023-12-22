@@ -178,11 +178,9 @@ export default {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
-          record["case_number"] = this.formatCaseNumber(record.process_request);
-          record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAsignee(record["user"]);
-          record["process"] = this.formatProcess(record);
+          record["request"] = this.formatRequest(record);
         }
       }
     },
@@ -196,23 +194,6 @@ export default {
     }
   },
   methods: {
-    openRequest(data) {
-      return `/requests/${data.id}`;
-    },
-    formatCaseNumber(processRequest) {
-      return `
-      <a href="${this.openRequest(processRequest, 1)}"
-         class="text-nowrap">
-         # ${processRequest.case_number}
-      </a>`;
-    },
-    formatCaseTitle(processRequest) {
-      return `
-      <a href="${this.openRequest(processRequest, 1)}"
-         class="text-nowrap">
-         ${processRequest.case_title_formatted || ""}
-      </a>`;
-    },
     setupColumns() {
       const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
@@ -221,35 +202,25 @@ export default {
       if (this.$props.columns) {
         return this.$props.columns;
       }
-      // from query string status=CLOSED
-      const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: "CASE #",
-          field: "case_number",
+          label: "#",
+          field: "id",
           sortable: true,
           default: true,
           width: 55,
         },
         {
-          label: "CASE TITLE",
-          field: "case_title",
-          name: "__slot:case_number",
-          sortable: true,
-          default: true,
-          width: 220,
-        },
-        {
-          label: "PROCESS NAME",
-          field: "process",
+          label: "NAME",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
           truncate: true,
         },
         {
-          label: "TASK NAME",
-          field: "element_name",
+          label: "REQUEST",
+          field: "request",
           sortable: true,
           default: true,
           width: 140,
@@ -270,17 +241,22 @@ export default {
           default: true,
           width: 140,
         },
-      ];
-      if (isStatusCompletedList) {
-        columns.push({
+        {
+          label: "ASSIGNEE",
+          field: "assignee",
+          sortable: false,
+          default: true,
+          width: 140,
+        },
+        {
           label: "COMPLETED",
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        });
-      }
+        },
+      ];
       return columns;
     },
     onAction(action, rowData, index) {
@@ -326,8 +302,13 @@ export default {
         },
       };
     },
-    formatProcess(request) {
-      return request.process.name;
+    formatRequest(request) {
+      return `
+          <a 
+            href="${this.onAction('showRequestSummary', request, 1)}" 
+            class="text-nowrap">#${request.process_request.id}
+              ${request.process.name}
+          </a>`;
     },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
@@ -348,10 +329,7 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
+      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|a|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;

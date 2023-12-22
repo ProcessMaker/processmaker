@@ -53,29 +53,10 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component
-              :is="component(row.item)"
-              v-if="row.item && !isSwitch(row.item)"
-              :ref="`settingComponent_${row.index}`"
-              :key="row.item.key"
-              v-model="row.item.config"
-              :setting="settings[row.index]"
-              @saved="onChange"
-            />
+            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
           </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
-          <keep-alive>
-            <component
-              :is="component(row.item)"
-              v-if="isSwitch(row.item)"
-              :ref="`settingComponent_${row.index}`"
-              :key="row.item.key"
-              v-model="row.item.config"
-              :setting="settings[row.index]"
-              @saved="onChange"
-            />
-          </keep-alive>
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
               <b-button
@@ -92,7 +73,6 @@
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
               <b-button
-                v-if="!disabledCopySetting(row)"
                 v-uni-aria-describedby="row.item.id.toString()"
                 v-b-tooltip.hover
                 variant="link"
@@ -119,7 +99,7 @@
                 </b-button>
               </span>
 
-              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
+              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
                 <b-button 
                   :aria-label="$t('Clear')"
                   v-uni-aria-describedby="row.item.id.toString()"
@@ -297,9 +277,6 @@ export default {
     },
     apiPut(setting) {
       return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
-    },
-    isSwitch(setting) {
-      return setting.format === "boolean";
     },
     component(setting) {
       switch (setting.format) {
@@ -572,12 +549,6 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
-    },
-    disabledCopySetting(row) {
-      return row.item.ui?.copySettingEnabled === false;
-    },
-    disabledDeleteSetting(row) {
-      return row.item.ui?.deleteSettingEnabled === false;
     },
     enableDeleteSetting(row) {
       return row.item.ui?.deleteSettingEnabled || false;

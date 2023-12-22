@@ -1811,7 +1811,7 @@
   "This environment already contains the same version of the {{ item }} named '{{ name }}.'": "Este entorno ya contiene la misma versión del {{ item }} llamado '{{ name }}'.",
   "Visit our Gallery for more Templates": "Visita nuestra Galería para más Plantillas",
   "Start a new process from a blank canvas, a text description, or a preset template.": "Inicie un nuevo proceso desde un lienzo en blanco, una descripción de texto o una plantilla preestablecida.",
-  "Log-In Options": "Log-In Options",
+  "Password Policies": "Password Policies",
   "Your password has expired.": "Tu contraseña ha expirado.",
   "Password set by user": "Password set by user",
   "Allow to users to change their own password.": "Allow to users to change their own password.",
@@ -1830,7 +1830,5 @@
   "Login failed": "Login failed",
   "Number of consecutive unsuccessful login attempts before block the login action momentarily.": "Number of consecutive unsuccessful login attempts before block the login action momentarily.",
   "Blocked": "Blocked",
-  "Account locked after too many failed attempts. Contact administrator.": "Account locked after too many failed attempts. Contact administrator.",
-  "Block duplicate session": "Block duplicate session",
-  "Kill existing session": "Kill existing session"
+  "Account locked after too many failed attempts. Contact administrator.": "Account locked after too many failed attempts. Contact administrator."
 }

@@ -207,7 +207,6 @@ export default {
         {
           label: "CASE TITLE",
           field: "case_title",
-          name: "__slot:case_number",
           sortable: true,
           default: true,
           width: 220,
