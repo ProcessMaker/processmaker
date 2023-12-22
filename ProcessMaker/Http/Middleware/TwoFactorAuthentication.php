@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 
 class TwoFactorAuthentication
 {
@@ -18,7 +19,7 @@ class TwoFactorAuthentication
         // Check if 2FA is enabled, a method is set, and the current session is not yet validated
         if (config('password-policies.2fa_enabled', false) &&
             !empty(config('password-policies.2fa_method', [])) &&
-            !session()->get('2fa-validated', false)
+            !session()->get(TwoFactorAuthController::TFA_VALIDATED, false)
         ) {
             // If not validated display the 2FA code screen
             return redirect()->route('2fa');

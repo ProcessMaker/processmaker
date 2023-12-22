@@ -14,6 +14,7 @@ class TwoFactorAuthController extends Controller
     const TFA_ERROR = '2fa-error';
     const TFA_MESSAGE = '2fa-message';
     const TFA_AUTH_APP = '2fa-auth-app';
+    const TFA_VALIDATED = '2fa-validated';
 
     public function __construct()
     {
@@ -74,7 +75,7 @@ class TwoFactorAuthController extends Controller
         $validated = $this->twoFactorAuthentication->validateCode($user, $code);
 
         // Store validation status
-        session()->put('2fa-validated', $validated);
+        session()->put(self::TFA_VALIDATED, $validated);
 
         if ($validated) {
             // Remove 2fa values in session
