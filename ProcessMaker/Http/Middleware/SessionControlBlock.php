@@ -3,13 +3,19 @@
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Jenssegers\Agent\Agent;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
 class SessionControlBlock
 {
+    const IP_RESTRICTION_KEY = 'session-control.ip_restriction';
+    const DEVICE_RESTRICTION_KEY = 'session-control.device_restriction';
+
     /**
      * Handle an incoming request.
      *
@@ -17,16 +23,17 @@ class SessionControlBlock
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($this->hasUserSession($request)) {
-            return $next($request);
-        }
+        $user = $this->getUser($request);
+        $hasUserSession = $this->hasUserSession($request);
 
-        $user = $this->getUserWithSession($request->input('username'));
+        if ($user && !$hasUserSession) {
+            if ($this->blockedByIp($user, $request)) {
+                return $this->redirectToLogin('You are already logged in IP');
+            }
 
-        if ($user && $this->blockDuplicateSessionByIp($user, $request)) {
-            return redirect()
-                ->route('login')
-                ->with('login-error', __('You are already logged in'));
+            if ($this->blockedByDevice($user)) {
+                return $this->redirectToLogin('You are already logged in device');
+            }
         }
 
         return $next($request);
@@ -37,18 +44,75 @@ class SessionControlBlock
         return $request->session()->has('user_session');
     }
 
-    private function getUserWithSession(string $username): ?User
+    private function getUser(Request $request): ?User
     {
-        return User::with(['session'])->where('username', $username)->first();
+        return User::with(['sessions' => function($query) {
+                $query->where('is_active', true);
+            }])
+            ->whereHas('sessions', function(Builder $query) {
+                $query->where('is_active', true);
+            })->where('username', $request->input('username'))
+            ->first();
     }
 
-    private function blockDuplicateSessionByIp(User $user, Request $request): bool
+    private function blockedByIp(User $user, Request $request): bool
     {
-        if ($user->session && Setting::configByKey('session-control.ip_restriction') === '1') {
-            $ip = $request->getClientIp() ?? $request->ip();
-            return $user->session->ip_address === $ip;
-        }
+        return Setting::configByKey(self::IP_RESTRICTION_KEY) === '1' && $this->blockSessionByIp($user, $request);
+    }
 
-        return false;
+    private function blockedByDevice(User $user): bool
+    {
+        return Setting::configByKey(self::DEVICE_RESTRICTION_KEY) === '1' && $this->blockSessionByDevice($user);
+    }
+
+    /**
+     * Checks if a user's session is a duplicate based on their IP address.
+     *
+     * @param User user
+     * @param Request request
+     *
+     * @return bool
+     */
+    private function blockSessionByIp(User $user, Request $request): bool
+    {
+        // Get the user's most recent session
+        $session = $user->sessions->sortByDesc('created_at')->first();
+        // Get the user's current IP address
+        $ip = $request->getClientIp() ?? $request->ip();
+
+        return $session->ip_address === $ip;
+    }
+
+    /**
+     * Checks if the user's current session device matches the device used in the request
+     *
+     * @param User user
+     *
+     * @return bool
+     */
+    private function blockSessionByDevice(User $user): bool
+    {
+        $agent = new Agent();
+        // Get the device details from the request
+        $requestDevice = $this->formatDeviceInfo($agent->device(), $agent->deviceType(), $agent->platform());
+        // Get the user's most recent session
+        $session = $user->sessions->sortByDesc('created_at')->first();
+        $sessionDevice = $this->formatDeviceInfo(
+            $session->device_name, $session->device_type, $session->device_platform
+        );
+
+        return $requestDevice !== $sessionDevice;
+    }
+
+    private function formatDeviceInfo(string $deviceName, string $deviceType, string $devicePlatform): string
+    {
+        return Str::slug($deviceName . '-' . $deviceType . '-' . $devicePlatform);
+    }
+
+    private function redirectToLogin(string $message): Response
+    {
+        return redirect()
+            ->route('login')
+            ->with('login-error', __($message));
     }
 }

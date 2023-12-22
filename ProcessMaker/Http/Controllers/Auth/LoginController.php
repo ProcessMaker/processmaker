@@ -226,10 +226,20 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            // Clear the user session
+            $this->forgetUserSession();
+
             event(new Logout(Auth::user()));
         }
 
         return $this->logout($request);
+    }
+
+    private function forgetUserSession() {
+        $user_session = session()->get('user_session');
+        $user = Auth::user();
+        $user->sessions()->where('token', $user_session)->update(['is_active' => false]);
+        session()->forget('user_session');
     }
 
     public function loggedOut(Request $request)

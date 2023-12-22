@@ -27,17 +27,18 @@ class UserSession
         $agent = new Agent();
         $user = $event->user;
 
-        $session = $user->session ?? new Session();
+        $session = new Session([
+            'user_agent' => request()->userAgent(),
+            'ip_address' => request()->getClientIp() ?? request()->ip(),
+            'device_name' => $agent->device(),
+            'device_type' => $agent->deviceType(),
+            'device_platform' => $agent->platform(),
+            'device_browser' => $agent->browser(),
+            'token' => Str::uuid()->toString(),
+            'is_active' => true,
+        ]);
 
-        $session->user_id = $user->id;
-        $session->user_agent = request()->userAgent();
-        $session->ip_address = request()->getClientIp() ?? request()->ip();
-        $session->device_name = $agent->device();
-        $session->device_type = $agent->deviceType();
-        $session->device_platform = $agent->platform();
-        $session->device_browser = $agent->browser();
-        $session->token = Str::uuid()->toString();
-        $session->save();
+        $user->sessions()->save($session);
 
         session(['user_session' => $session->token]);
     }

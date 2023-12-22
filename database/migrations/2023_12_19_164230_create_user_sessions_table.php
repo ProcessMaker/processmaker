@@ -21,9 +21,11 @@ return new class extends Migration
             $table->string('device_platform', 30);
             $table->string('device_browser', 30);
             $table->string('token');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->index(['token']);
         });
     }
 
