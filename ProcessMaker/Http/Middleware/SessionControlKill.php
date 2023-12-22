@@ -27,24 +27,26 @@ class SessionControlKill
         $user = Auth::user();
         $userSession = $request->session()->get('user_session');
 
-        $configIP = Setting::configByKey(self::IP_RESTRICTION_KEY);
-        $configDevice = Setting::configByKey(self::DEVICE_RESTRICTION_KEY);
+        if ($userSession) {
+            $configIP = Setting::configByKey(self::IP_RESTRICTION_KEY);
+            $configDevice = Setting::configByKey(self::DEVICE_RESTRICTION_KEY);
 
-        $session = $this->getActiveSession($user, $userSession);
+            $session = $this->getActiveSession($user, $userSession);
 
-        // Checks if the session has expired based on the IP address
-        if ($session && $configIP === '2' && $this->isSessionExpiredByIP($session, $request)) {
-            return $this->killSessionAndRedirect($session);
-        }
-        // Checks if the session has expired based on the device
-        if ($session && $configDevice === '2' && $this->isSessionExpiredByDevice($session)) {
-            return $this->killSessionAndRedirect($session);
+            // Checks if the session has expired based on the IP address
+            if ($session && $configIP === '2' && $this->isSessionExpiredByIP($session, $request)) {
+                return $this->killSessionAndRedirect($session);
+            }
+            // Checks if the session has expired based on the device
+            if ($session && $configDevice === '2' && $this->isSessionExpiredByDevice($session)) {
+                return $this->killSessionAndRedirect($session);
+            }
         }
 
         return $next($request);
     }
 
-    private function getActiveSession(User $user, string $userSession)
+    private function getActiveSession(User $user, string $userSession): ?UserSession
     {
         return $user->sessions()->where('is_active', true)->where('token', $userSession)->first();
     }
