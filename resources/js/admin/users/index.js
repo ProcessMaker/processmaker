@@ -44,17 +44,6 @@ new Vue({
       }]);
     },
     validatePassword() {
-      if (this.config.password.trim().length > 0 && this.config.password.trim().length < 8) {
-        if (!("password" in this.config.addError)) {
-          this.$set(this.config.addError, "password", null);
-        }
-        this.config.addError.password = ["Password must be at least 8 characters"];
-        this.$refs.passwordStrength.updatePassword("");
-        this.config.password = "";
-        this.config.confpassword = "";
-        this.config.submitted = false;
-        return false;
-      }
       if (this.config.password !== this.config.confpassword) {
         if (!("password" in this.config.addError)) {
           this.$set(this.config.addError, "password", null);
