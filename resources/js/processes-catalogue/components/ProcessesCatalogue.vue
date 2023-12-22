@@ -10,7 +10,7 @@
         <h4> {{ $t('Processes Browser') }} </h4>
         <MenuCatologue
           ref="category-list"
-          title="Avaible Processses"
+          title="Available Processes"
           preicon="fas fa-play-circle"
           class="mt-3"
           show-bookmark="true"
@@ -36,23 +36,26 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <wizard-templates v-if="showWizardTemplates" />
-          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
+          <CatalogueEmpty />
         </div>
-        <wizard-templates v-if="showWizardTemplates" />
-        <CardProcess
-          v-if="showCardProcesses"
-          :category="category"
-          @openProcess="openProcess"
-        />
-        <ProcessInfo
-          v-if="showProcess"
-          :process="selectedProcess"
-          :current-user-id="currentUserId"
-          :permission="permission"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="returnedFromInfo"
-        />
+        <div v-else>
+          <CardProcess
+            v-if="showCardProcesses && !showWizardTemplates"
+            :category="category"
+            @openProcess="openProcess"
+          />
+          <ProcessInfo
+            v-if="showProcess && !showWizardTemplates"
+            :process="selectedProcess"
+            :current-user-id="currentUserId"
+            :permission="permission"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="returnedFromInfo"
+          />
+          <wizard-templates
+            v-if="showWizardTemplates"
+          />
+        </div>
       </b-col>
     </b-row>
   </div>
@@ -106,7 +109,7 @@ export default {
      */
     getCategories() {
       ProcessMaker.apiClient
-        .get(`process_categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
         .then((response) => {
           this.listCategories = [...this.listCategories, ...response.data.data];
         });
@@ -120,7 +123,7 @@ export default {
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
-          .get(`process_categories/${categoryId}`)
+          .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
           });

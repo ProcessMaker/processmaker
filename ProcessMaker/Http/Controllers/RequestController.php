@@ -90,8 +90,15 @@ class RequestController extends Controller
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
 
+                    // If the interstitial is enabled on the start event, then use it as the task
+                    if ($active) {
+                        $task = $allowInterstitial ? $startEvent : $active;
+                    } else {
+                        $task = $startEvent;
+                    }
+
                     return redirect(route('tasks.edit', [
-                        'task' => $active ? $active->getKey() : $startEvent->getKey()
+                        'task' => $task->getKey(),
                     ]));
                 }
             }

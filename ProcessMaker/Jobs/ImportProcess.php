@@ -956,11 +956,18 @@ class ImportProcess implements ShouldQueue
      * @param $element
      * @param $error
      */
-    protected function finishStatus($element, $error = false)
+    protected function finishStatus($element, $error = false, $payload = null)
     {
         $label = ucwords(implode(' ', explode('_', $element)));
         $this->status[$element]['label'] = __($label);
         $this->status[$element]['success'] = true;
+        if (!is_null($payload)) {
+            $uuids = [];
+            foreach ($payload as $key => $value) {
+                array_push($uuids, $value->uuid);
+            }
+            $this->status[$element]['uuids'] = $uuids;
+        }
         $this->status[$element]['message'] = __('Successfully imported');
         if ($error) {
             $this->status[$element]['success'] = false;

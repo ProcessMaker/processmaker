@@ -8,9 +8,7 @@
     @hidden="hideModal()"
   >
     <div class="form-group">
-      <p>
-        {{ $t("Once published, all new requests will use the new process model.") }}
-      </p>
+      <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <b-card no-body>
           <b-tabs card>
@@ -41,7 +39,10 @@
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
-                    <icon-dropdown></icon-dropdown>
+                    <icon-dropdown
+                      :custom-value="selectedLaunchpadIcon"
+                      :custom-label="selectedLaunchpadIconLabel"
+                    />
                     <label class="label-text mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
@@ -54,7 +55,7 @@
                       >
                         <div class="d-flex align-items-center">
                           <i class="far fa-chart-bar" />
-                          <span class="ml-2">{{ selectedSavedChart }}</span>
+                          <span class="ml-2">{{ selectedSavedChart || 'Select Chart' }}</span>
                         </div>
                       </button>
                       <div
@@ -68,20 +69,15 @@
                           @click="selectOption(item)"
                         >
                           <i class="far fa-chart-bar" />
-                          {{ item.title }}
+                          {{ item.title || 'Select Chart' }}
                         </a>
                       </div>
                     </div>
                   </b-col>
                   <b-col>
-                    <div
-                      md="12"
-                      class="no-padding"
-                    >
+                    <div md="12" class="no-padding">
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label
-                          class="label-text"
-                          for="name"
+                        <label class="label-text" for="name"
                           >{{ $t("Images for carousel") }}
                         </label>
                         <input
@@ -170,10 +166,7 @@
                         md="12"
                         class="text-center"
                       >
-                        <div
-                          class="drag-and-drop-container"
-                          @dragover.prevent
-                        >
+                        <div class="drag-and-drop-container" @dragover.prevent>
                           <i class="fas fa-cloud-upload-alt"></i>
                           <div>
                             <strong>{{ $t("Drop your images here") }}</strong>
@@ -209,10 +202,7 @@
                 >
                   {{ errors.subject[0] }}
                 </div>
-                <label
-                  class="mt-2"
-                  for="additional-details"
-                >
+                <label class="mt-2" for="additional-details">
                   {{ $t("Description") }}
                 </label>
                 <textarea
@@ -261,11 +251,12 @@ export default {
     process: {
       type: Object,
       default: () => ({}),
-    }
+    },
   },
   data() {
     return {
       images: [],
+      imagesMedia: [],
       showDeleteIcons: Array(4).fill(false),
       focusIcons: Array(4).fill(false),
       list: {},
@@ -284,11 +275,16 @@ export default {
       maxImages: 4,
       processDescription: "",
       selectedLaunchpadIcon: "",
+      selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
       labelButton: "Version Info",
       labelTab: "Launchpad Settings",
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
+      selectedSavedChartId: "",
+      processId: "",
+      mediaImageId: [],
+      dataProcess: {},
     };
   },
   computed: {
@@ -306,10 +302,61 @@ export default {
     });
     this.retrieveSavedSearchCharts();
     this.getProcessDescription();
+
     //Receives selected Option from launchpad Icons multiselect
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
+    /**
+     * Get all information related to Launchpad Settings Modal
+     */
+    getLaunchpadSettings() {
+      this.images = [];
+      ProcessMaker.apiClient
+        .get(`processes/${this.processId}/media`)
+        .then((response) => {
+          let firstResponse = response.data.data.shift();
+          const launchpadProperties = JSON.parse(
+            firstResponse?.launchpad_properties
+          );
+
+          if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
+            this.selectedSavedChart = launchpadProperties.saved_chart_title
+              ? launchpadProperties.saved_chart_title
+              : "";
+            this.selectedSavedChartId = launchpadProperties.saved_chart_id;
+            this.selectedLaunchpadIcon = launchpadProperties.icon;
+            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+          } else {
+            this.selectedSavedChart = "";
+            this.selectedSavedChartId = "";
+          }
+
+          //Load Images into Carousel Container
+          const mediaArray = firstResponse.media;
+              mediaArray.forEach((media) => {   
+               this.convertImageUrlToBase64(media);
+            });
+        });
+    },
+    /**
+     * Converts Image from URL to Base64
+     */
+    convertImageUrlToBase64(media) {
+      fetch(media.original_url)
+        .then(response => response.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64Data = reader.result;
+              this.images.push({ url: base64Data, uuid: media.uuid });
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(error => {
+          console.error('Error loading image:', error);
+        });
+    },
     swapLabel() {
       const tempLabel = this.labelButton;
       this.showVersionInfo = !this.showVersionInfo;
@@ -319,7 +366,8 @@ export default {
       this.isSecondaryColor = !this.isSecondaryColor;
     },
     launchpadIconSelected(iconData) {
-      this.selectedLaunchpadIcon = iconData;
+      this.selectedLaunchpadIcon = iconData.value;
+      this.selectedLaunchpadIconLabel = iconData.label;
     },
     /**
      * Method that allows drag elements to the container
@@ -365,7 +413,11 @@ export default {
           if (this.isValidFileExtension(file.name)) {
             const reader = new FileReader();
             reader.onload = (event) => {
-              this.images.push({ file, url: event.target.result });
+              this.images.push({ 
+                file, 
+                url: event.target.result,
+                uuid: "",
+              });
               this.showDeleteIcons.push(false);
             };
             reader.readAsDataURL(file);
@@ -415,6 +467,7 @@ export default {
             const resultArray = response.data.data.flatMap((item) => {
               if (item.charts && Array.isArray(item.charts)) {
                 return item.charts.map((chartItem) => ({
+                  id: chartItem.id,
                   title: chartItem.title,
                 }));
               }
@@ -422,7 +475,7 @@ export default {
             });
 
             this.dropdownSavedCharts = resultArray;
-            this.selectedSavedChart = resultArray[0].title;
+            this.selectedSavedChart = "";
           }
         })
         .catch((error) => {
@@ -436,9 +489,11 @@ export default {
       if (this.origin !== "core") {
         if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
+          this.processId = ProcessMaker.modeler.process.id;
         }
       } else {
         this.processDescription = this.descriptionSettings;
+        this.processId = this.process.id;
       }
     },
     /**
@@ -492,9 +547,27 @@ export default {
      * Method to delete image from carousel container
      */
     deleteImage(index) {
+      const uuid = this.images[index].uuid;
       this.images.splice(index, 1);
       this.$set(this.showDeleteIcons, index, false);
       this.$set(this.focusIcons, index, false);
+      
+      //Call API to delete
+      ProcessMaker.apiClient
+          .delete(`processes/${this.processId}/media`, { 
+            data: { uuid } 
+          })
+          .then(response => {
+            ProcessMaker.alert(this.$t("The image was deleted"), "success");
+          })
+          .catch(error => {
+            console.error("Error", error);
+          });
+      const params = {
+        indexImage: index,
+        type: "delete",
+      };    
+      ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
@@ -510,17 +583,16 @@ export default {
       this.isSecondaryColor = false;
     },
     saveModal() {
-      let dataProcess = {};
       //if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
-        dataProcess = this.process;
-        dataProcess.description = this.processDescription;
-        this.saveProcessDescription(dataProcess);
+        this.dataProcess = this.process;
+        this.dataProcess.description = this.processDescription;
+        this.saveProcessDescription();
         return;
       }
-      dataProcess = ProcessMaker.modeler.process;
-      dataProcess.description = this.processDescription;
+      this.dataProcess = ProcessMaker.modeler.process;
+      this.dataProcess.description = this.processDescription;
       let promise = new Promise((resolve, reject) => {
         //emit save types
         window.ProcessMaker.EventBus.$emit(
@@ -543,11 +615,14 @@ export default {
             })
             .then((response) => {
               ProcessMaker.alert(this.$t("The version was saved."), "success");
-              this.hideModal();
             })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
+              }
+              if (error.response.status === 404) {
+                //version_histories route not found because package-versions is not installed
+                console.error(err);
               }
             });
         })
@@ -556,19 +631,36 @@ export default {
         });
 
       //Save only process description field using Process API
-      this.saveProcessDescription(dataProcess);
-
+      this.saveProcessDescription();
     },
     /**
      * Save description field in Process
      */
-    saveProcessDescription(dataProcess) {
-      this.process.description = this.processDescription;
-      ProcessMaker.apiClient.put('processes/' + this.options.id, dataProcess)
-        .then(response => {
-          ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
+    saveProcessDescription() {
+      this.dataProcess.imagesCarousel = this.images;
+      this.dataProcess.launchpad_properties = JSON.stringify({
+        saved_chart_id: this.selectedSavedChartId,
+        saved_chart_title: this.selectedSavedChart,
+        icon: this.selectedLaunchpadIcon,
+        icon_label: this.selectedLaunchpadIconLabel,
+      });
+
+      ProcessMaker.apiClient
+        .put(`processes/${this.options.id}`, {
+          imagesCarousel: this.dataProcess.imagesCarousel,
+          description: this.dataProcess.description,
+          launchpad_properties: this.dataProcess.launchpad_properties,
         })
-        .catch(error => {
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
+          const params = {
+            indexImage: null,
+            type: "add",
+          };
+          ProcessMaker.EventBus.$emit('getLaunchpadImagesEvent', params);
+          this.hideModal();
+        })
+        .catch((error) => {
           console.error("Error: ", error);
         });
     },
@@ -576,6 +668,8 @@ export default {
       this.subject = "";
       this.description = "";
       this.errors = "";
+      this.images = [];
+      this.getLaunchpadSettings();
       this.$refs["my-modal-save"].show();
     },
     /**
@@ -583,6 +677,7 @@ export default {
      */
     selectOption(option) {
       this.selectedSavedChart = option.title;
+      this.selectedSavedChartId = option.id;
     },
     /**
      * Method to store version info from Launchpad Window
@@ -597,7 +692,6 @@ export default {
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The version was saved."), "success");
-          this.hideModal();
         })
         .catch((error) => {
           if (error.response.status && error.response.status === 422) {

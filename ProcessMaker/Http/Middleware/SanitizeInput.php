@@ -45,7 +45,7 @@ class SanitizeInput extends TransformsRequest
             }
             if ($controller && property_exists($controller, 'doNotSanitizeMustache')) {
                 if (is_array($controller->doNotSanitizeMustache)) {
-                    $this->except = array_merge($this->except, $controller->doNotSanitizeMustache);
+                    $this->allowExpressions = array_merge($this->allowExpressions, $controller->doNotSanitizeMustache);
                 }
             }
         }

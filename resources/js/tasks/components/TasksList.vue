@@ -217,11 +217,14 @@ export default {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
+          record["case_number"] = this.formatCaseNumber(record.process_request);
+          record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAsignee(record["user"]);
           record["request"] = this.formatRequest(record);
           record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
+          record["process"] = this.formatProcess(record);
         }
       }
     },
@@ -235,6 +238,23 @@ export default {
     }
   },
   methods: {
+    openRequest(data) {
+      return `/requests/${data.id}`;
+    },
+    formatCaseNumber(processRequest) {
+      return `
+      <a href="${this.openRequest(processRequest, 1)}"
+         class="text-nowrap">
+         # ${processRequest.case_number}
+      </a>`;
+    },
+    formatCaseTitle(processRequest) {
+      return `
+      <a href="${this.openRequest(processRequest, 1)}"
+         class="text-nowrap">
+         ${processRequest.case_title_formatted || ""}
+      </a>`;
+    },
     setupColumns() {
       const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
@@ -243,25 +263,35 @@ export default {
       if (this.$props.columns) {
         return this.$props.columns;
       }
+      // from query string status=CLOSED
+      const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: "#",
-          field: "id",
+          label: "CASE #",
+          field: "case_number",
           sortable: true,
           default: true,
           width: 45,
         },
         {
-          label: "NAME",
-          field: "element_name",
+          label: "CASE TITLE",
+          field: "case_title",
+          name: "__slot:case_number",
+          sortable: true,
+          default: true,
+          width: 220,
+        },
+        {
+          label: "PROCESS NAME",
+          field: "process",
           sortable: true,
           default: true,
           width: 140,
           truncate: true,
         },
         {
-          label: "REQUEST",
-          field: "request",
+          label: "TASK NAME",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
@@ -296,7 +326,7 @@ export default {
           default: true,
           width: 140,
         },
-      ];
+      ]
       return columns;
     },
     onAction(action, rowData, index) {
@@ -369,6 +399,9 @@ export default {
       const endDate = new Date(formatDate);
       return endDate - currentDate;
     },
+    formatProcess(request) {
+      return request.process.name;
+    },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
@@ -415,7 +448,10 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|a|div|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(
+        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
+        "",
+      );
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
