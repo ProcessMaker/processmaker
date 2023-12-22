@@ -88,7 +88,7 @@ class ProcessCategoriesTest extends TestCase
      */
     public function testProcessesListing()
     {
-        $initialCount = ProcessCategory::count();
+        $initialCount = ProcessCategory::nonSystem()->count();
         // Create some processes
         $countProcesses = 20;
         ProcessCategory::factory()->count($countProcesses)->create();
@@ -122,8 +122,8 @@ class ProcessCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status', 'INACTIVE')->count();
+        $initialActiveCount = ProcessCategory::nonSystem()->where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ProcessCategory::nonSystem()->where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -179,8 +179,8 @@ class ProcessCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status', 'INACTIVE')->count();
+        $initialActiveCount = ProcessCategory::nonSystem()->where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ProcessCategory::nonSystem()->where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -268,7 +268,7 @@ class ProcessCategoriesTest extends TestCase
     public function testPagination()
     {
         // Number of processes in the tables at the moment of starting the test
-        $initialRows = ProcessCategory::all()->count();
+        $initialRows = ProcessCategory::nonSystem()->count();
 
         // Number of rows to be created for the test
         $rowsToAdd = 7;
