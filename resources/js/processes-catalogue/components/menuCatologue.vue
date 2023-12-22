@@ -29,7 +29,6 @@
       </b-list-group>
     </b-collapse>
     <div
-      v-if="wizardTemplates.length > 0"
       v-b-toggle.collapse-3
       block
       variant="light"
@@ -42,7 +41,6 @@
       </div>
     </div>
     <b-collapse
-      v-if="wizardTemplates.length > 0"
       id="collapse-3"
       visible
     >
@@ -60,7 +58,7 @@
 
 <script>
 export default {
-  props: ["data", "select", "title", "preicon", "wizardTemplates"],
+  props: ["data", "select", "title", "preicon"],
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {

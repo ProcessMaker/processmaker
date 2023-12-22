@@ -43,3 +43,26 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.wizard-details-text {
+  font-weight: 400;
+}
+.wizard-details-description {
+  font-size: 16px;
+}
+
+.wizard-details-headline {
+  font-size: 26px;
+}
+
+.wizard-details-button{
+  border-radius: 11px;
+  border: none;
+  background-color: #1572C2;
+  color: #FFFFFF;
+  display: inline-flex;
+  padding: 7px 16px;
+  align-items: center;
+}
+</style>

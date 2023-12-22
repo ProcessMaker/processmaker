@@ -17,7 +17,6 @@
           :data="listCategories"
           :select="selectCategorie"
           @wizardLinkSelect="showWizardTemplates = 'true'"
-          :wizardTemplates="wizardTemplates"
           @addCategories="addCategories"
         />
       </b-col>
