@@ -24,7 +24,7 @@
             <div class="wizard-details-text">
               <h2 class="wizard-details-headline">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h2>
               <p class="wizard-details-description">{{ templateDetails['modal-description'] | str_limit(150) }}</p>
-              <button class="wizard-details-button text-uppercase"  @click.prevent="triggerHelperProcessStartEvent">
+              <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
                 <i class="fas fa-play-circle mr-1" />
                 {{ $t('Use Now') }}
               </button>
@@ -55,10 +55,11 @@
 <script>
 import Modal from "../shared/Modal.vue";
 import {Task} from "@processmaker/screen-builder";
+import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
 
 export default {
   components: { Modal, Task },
-  mixins: [],
+  mixins: [wizardHelperProcessModalMixin],
   props: ["template"],
   data() {
     return {
@@ -67,6 +68,9 @@ export default {
       formData: {},
       task: {},
       currentUserId: null,
+      helperProcessId: null,
+      startEvents: null,
+      shouldImportProcessTemplate: true,
     };
   },
   computed: {
@@ -94,124 +98,6 @@ export default {
         this.cancelHelperProcessRequest();
       }
     },
-    async triggerHelperProcessStartEvent() {
-      try {
-        const startEvents = this.template.process.start_events.filter(event => !event.eventDefinitions || event.eventDefinitions.length === 0);
-        const helperProcessId = this.template.process.id;
-        const startEventId = startEvents[0].id;
-        const url = `/process_events/${helperProcessId}?event=${startEventId}`;
-
-        // Start the helper process
-        const response = await window.ProcessMaker.apiClient.post(url);
-        const processRequestId = response.data.id;
-
-        this.getNextTask(processRequestId);
-      } catch (err) {
-        const data = err.response?.data;
-        if (data && data.message) {
-          ProcessMaker.alert(data.message, 'danger');
-        }
-      }
-    },
-    async getNextTask(processRequestId) {
-      try {
-        const response = await ProcessMaker.apiClient.get(`tasks`, {
-          params: {
-            page: 1,
-            include: 'user,assignableUsers',
-            process_request_id: processRequestId,
-            status: 'ACTIVE',
-            per_page: 10,
-            order_by: 'due_at',
-            order_direction: 'asc'
-          }
-        });
-
-        const taskData = response.data.data;
-
-        if (taskData.length > 0) {
-          this.task = taskData[0];
-          this.currentUserId = parseInt(document.head.querySelector('meta[name="user-id"]').content);
-          this.showHelperProcess = true;
-        } else {
-          // Process is completed import the process template
-          this.importProcessTemplate();
-        }
-      } catch (error) {
-        if (error && error.message) {
-          ProcessMaker.alert(error.message, 'danger');
-        }
-      }
-    },
-    taskUpdated(task) {
-      this.task = task;
-    },
-    async submit(task) {
-      const { id: taskId, process_request_id: processRequestId } = task;
-
-      try {
-        await ProcessMaker.apiClient.put(`tasks/${taskId}`, {
-          status: "COMPLETED",
-          data: this.formData
-        });
-
-        // Successfully completed task, get the next one
-        await this.getNextTask(processRequestId);
-      } catch (error) {
-        if (error && error.message) {
-          ProcessMaker.alert(error.message, 'danger');
-        }
-      }
-    },
-    async cancelHelperProcessRequest() {
-      const {process_request_id: processRequestId } = this.task;
-
-      try {
-        await ProcessMaker.apiClient.put(`requests/${processRequestId}`, {
-          status: "CANCELED"
-        });
-        this.showHelperProcess = false;
-      } catch (error) {
-        if (data && data.message) {
-          ProcessMaker.alert(data.message, 'danger');
-        }
-      }
-    },
-    async importProcessTemplate() {
-      const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
-        name: this.template.name,
-        description: this.template.description,
-        version: '1.0.0', // TODO: Wizards should have a versions property 
-        process_category_id: this.template.process.process_category_id,
-        projects: null,
-        wizardTemplateUuid: this.template.uuid,
-      });
-
-      if (response.data?.existingAssets) {
-        this.handleExistingAssets(response.data);
-      } else {
-        // redirect to the new process launchpad
-        window.location = `/processes-catalogue/${response.data.processId}`;
-      }
-    },
-    handleExistingAssets(data) {
-      const assets = JSON.stringify(data.existingAssets);
-      const responseId = data.id;
-      const request = JSON.stringify(data.request);
-      window.history.pushState(
-        {
-          assets,
-          name: this.template.name,
-          responseId,
-          request,
-          redirectTo: 'process-launchpad',
-          wizardTemplateUuid: this.template.uuid,
-        },
-        "",
-        "/template/assets",
-      );
-      window.location = "/template/assets";
-    }
   },
 };
 </script>

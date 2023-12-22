@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     getHelperProcess() {
-      this.$refs.wizardHelperProcessModal.getHelperProcess();
+      this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
    },
 };
