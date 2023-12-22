@@ -24,24 +24,20 @@ class SessionControlBlock
     public function handle(Request $request, Closure $next): Response
     {
         $user = $this->getUser($request);
-        $hasUserSession = $this->hasUserSession($request);
+        $hasUserSession = $request->session()->has('user_session');
 
         if ($user && !$hasUserSession) {
+            // Check if the user's session should be blocked based on IP restriction
             if ($this->blockedByIp($user, $request)) {
-                return $this->redirectToLogin('You are already logged in IP');
+                return $this->redirectToLogin();
             }
-
+            // Check if the user's session should be blocked based on device restriction
             if ($this->blockedByDevice($user)) {
-                return $this->redirectToLogin('You are already logged in device');
+                return $this->redirectToLogin();
             }
         }
 
         return $next($request);
-    }
-
-    private function hasUserSession(Request $request): bool
-    {
-        return $request->session()->has('user_session');
     }
 
     private function getUser(Request $request): ?User
@@ -109,10 +105,10 @@ class SessionControlBlock
         return Str::slug($deviceName . '-' . $deviceType . '-' . $devicePlatform);
     }
 
-    private function redirectToLogin(string $message): Response
+    private function redirectToLogin(): Response
     {
         return redirect()
             ->route('login')
-            ->with('login-error', __($message));
+            ->with('login-error', __('You are already logged in'));
     }
 }

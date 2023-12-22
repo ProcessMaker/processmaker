@@ -27,6 +27,14 @@ class UserSession
         $agent = new Agent();
         $user = $event->user;
 
+        $configIP = Setting::configByKey('session-control.ip_restriction');
+        $configDevice = Setting::configByKey('session-control.device_restriction');
+
+        // if kill session by IP or Device is enabled, then kill all active sessions
+        if ($configIP === '2' || $configDevice === '2') {
+            $user->sessions()->where('is_active', true)->update(['expired_date' => now()]);
+        }
+
         $session = new Session([
             'user_agent' => request()->userAgent(),
             'ip_address' => request()->getClientIp() ?? request()->ip(),

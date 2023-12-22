@@ -18,10 +18,12 @@ class UserSession extends ProcessMakerModel
         'device_browser',
         'token',
         'is_active',
+        'expired_date',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'expired_date' => 'datetime',
     ];
 
     public function user()
