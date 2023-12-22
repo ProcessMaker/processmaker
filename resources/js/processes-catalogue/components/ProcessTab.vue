@@ -51,17 +51,18 @@
 </template>
 
 <script>
+
 import Vue from "vue";
-import moment from "moment";
-import { createUniqIdsMixin } from "vue-uniq-ids";
 import AvatarImage from "../../components/AvatarImage";
-import isPMQL from "../../modules/isPMQL";
-import ListMixin from "../../requests/components/ListMixin";
-import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TasksList from "../../tasks/components/TasksList.vue";
 import DefaultTab from "./DefaultTab.vue";
+import isPMQL from "../../modules/isPMQL";
+import ListMixin from "../../requests/components/ListMixin";
+import { FilterTable } from "../../components/shared";
+import moment from "moment";
+import { createUniqIdsMixin } from "vue-uniq-ids";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -171,15 +172,6 @@ export default {
       perPage: 10,
     };
   },
-  computed: {
-    endpoint() {
-      if (this.savedSearch !== false) {
-        return `saved-searches/${this.savedSearch}/results`;
-      }
-
-      return "requests";
-    },
-  },
   mounted() {
     this.queryBuilder();
   },
@@ -211,9 +203,7 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatParticipants(
-          record["participants"]
-        );
+        record["participants"] = this.formatParticipants(record["participants"]);
       }
       return data;
     },
@@ -226,37 +216,6 @@ export default {
           "hide-name": false,
         },
       };
-    },
-    formatStatus(status) {
-      let color = "success",
-        label = "In Progress";
-      switch (status) {
-        case "DRAFT":
-          color = "danger";
-          label = "Draft";
-          break;
-        case "CANCELED":
-          color = "danger";
-          label = "Canceled";
-          break;
-        case "COMPLETED":
-          color = "primary";
-          label = "Completed";
-          break;
-        case "ERROR":
-          color = "danger";
-          label = "Error";
-          break;
-      }
-      return (
-        '<span class="badge badge-' +
-        color +
-        " status-" +
-        color +
-        '">' +
-        this.$t(label) +
-        "</span>"
-      );
     },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
@@ -294,6 +253,10 @@ export default {
 
       this.previousPmql = pmql;
 
+      this.tabRequests();
+      this.tabTasks();
+    },
+    tabRequests() {
       this.queryRequest =
         "requests?page=" +
         this.page +
@@ -306,6 +269,9 @@ export default {
         `${this.process.id}` +
         "&filter&order_by=id&order_direction=DESC";
 
+      this.getData(this.queryRequest, "requests");
+    },
+    tabTasks() {
       this.queryTask =
         "tasks?page=" +
         this.page +
@@ -315,8 +281,7 @@ export default {
         " AND process_id=" +
         `${this.process.id}` +
         "&per_page=10&order_by=ID&order_direction=DESC&non_system=true";
-
-      this.getData(this.queryRequest, "requests");
+      
       this.getData(this.queryTask, "tasks");
     },
     getData(query, type) {
