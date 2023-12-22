@@ -19,17 +19,6 @@
           @wizardLinkSelect="showWizardTemplates = 'true'"
           @addCategories="addCategories"
         />
-        <!-- <ul>
-          <li>
-            <button
-              type="button"
-              class="btn btn-link"
-              @click="wizardTemplatesSelected"
-            >
-              {{ $t('Wizard Templates') }}
-            </button>
-          </li>
-        </ul> -->
       </b-col>
       <b-col cols="10">
         <div

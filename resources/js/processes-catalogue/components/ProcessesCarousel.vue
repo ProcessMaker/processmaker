@@ -14,16 +14,13 @@
         :key="index"
         class="custom-style"
         :img-src="image.url"
-      ></b-carousel-slide>
+      />
     </b-carousel>
   </div>
 </template>
 
 <script>
-import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
   props: {
     process: {
       type: Object,
@@ -41,14 +38,14 @@ export default {
   },
   mounted() {
     this.getLaunchpadImages();
-    ProcessMaker.EventBus.$on('getLaunchpadImagesEvent', ({ indexImage, type }) => {
-      if(type === 'delete') {
-        this.images.splice(indexImage,1);
+    ProcessMaker.EventBus.$on("getLaunchpadImagesEvent", ({ indexImage, type }) => {
+      if (type === "delete") {
+        this.images.splice(indexImage, 1);
       } else {
         this.images = [];
         this.getLaunchpadImages();
       }
-    }); 
+    });
   },
   methods: {
     onSlideStart(slide) {
@@ -64,9 +61,9 @@ export default {
       ProcessMaker.apiClient
         .get(`processes/${this.process.id}/media`)
         .then((response) => {
-            let firstResponse = response.data.data.shift();
-            const mediaArray = firstResponse.media;
-            mediaArray.forEach((media) => {
+          const firstResponse = response.data.data.shift();
+          const mediaArray = firstResponse.media;
+          mediaArray.forEach((media) => {
             this.images.push({ url: media.original_url });
           });
         })

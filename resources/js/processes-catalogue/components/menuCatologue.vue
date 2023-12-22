@@ -45,15 +45,6 @@
       visible
     >
       <b-list-group>
-        <!-- <b-list-group-item
-          v-for="item in data"
-          :key="item.id"
-          :ref="item.name"
-          class="list-item"
-          @click="selectItem(item)"
-        >
-          {{ item.name }}
-        </b-list-group-item> -->
         <b-list-group-item
           class="list-item"
           @click="wizardLinkSelected"
