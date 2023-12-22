@@ -108,12 +108,18 @@ export default {
       tableHeaders: [],
       tableHeadersRequests: [
         {
-          label: "REQUEST",
-          field: "name",
+          label: "CASE #",
+          field: "case_number",
           sortable: true,
           default: true,
-          width: 110,
-          truncate: true,
+          width: 55,
+        },
+        {
+          label: "CASE TITLE",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          width: 220,
         },
         {
           label: "STATUS",
@@ -123,17 +129,25 @@ export default {
           width: 150,
         },
         {
-          label: "DUE DATE",
-          field: "due_at",
+          label: "STARTED",
+          field: "initiated_at",
           format: "datetime",
           sortable: true,
           default: true,
-          width: 120,
+          width: 160,
+        },
+        {
+          label: "COMPLETED",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160,
         },
       ],
       tableHeadersTasks: [
         {
-          label: "NAME",
+          label: "CASE TITLE",
           field: "element_name",
           sortable: true,
           default: true,
@@ -141,7 +155,7 @@ export default {
           truncate: true,
         },
         {
-          label: "REQUEST",
+          label: "PROCESS NAME",
           field: "request",
           sortable: true,
           default: true,
