@@ -3,6 +3,7 @@
     <table
       class="pm-table-filter"
       aria-label="custom-pm-table"
+      @mouseleave="handleRowMouseleave"
     >
       <thead>
         <tr>
@@ -45,8 +46,10 @@
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
+          :id="`row-${row.id}`"
           :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row)"
+          @mouseover="handleRowMouseover(row)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
@@ -191,6 +194,12 @@ export default {
     },
     handleRowClick(row) {
       this.$emit('table-row-click', row);
+    },
+    handleRowMouseover(row) {
+      this.$emit('table-row-mouseover', row);
+    },
+    handleRowMouseleave() {
+      this.$emit('table-row-mouseleave', false);
     },
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");

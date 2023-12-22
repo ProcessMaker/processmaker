@@ -16,6 +16,8 @@
         :data="data"
         :unread="unreadColumnName"
         @table-row-click="handleRowClick"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
@@ -94,6 +96,29 @@
           </td>
         </template>
       </filter-table>
+      <task-tooltip
+        :position="rowPosition"
+        v-show="isTooltipVisible"
+      >
+        <template v-slot:task-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+          <span>
+            <i
+              class="fa fa-eye py-2"
+              @click="previewTasks(tooltipRowData)"
+            />
+          </span>
+          <ellipsis-menu
+            :actions="actions"
+            :data="tooltipRowData"
+            :divider="false"
+          />
+          </div>
+        </template>
+      </task-tooltip>
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -116,6 +141,7 @@ import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import TaskTooltip from "./TaskTooltip.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -127,6 +153,7 @@ export default {
     EllipsisMenu,
     PMColumnFilterPopover,
     paginationTable,
+    TaskTooltip,
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
@@ -170,6 +197,10 @@ export default {
       previousPmql: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
+      rowPosition: {},
+      tooltipRowData: {},
+      isTooltipVisible: false,
+      hideTimer: null,
     };
   },
   computed: {
@@ -319,12 +350,7 @@ export default {
       return days >= 0 ? "primary" : "danger";
     },
     formatRequest(request) {
-      return `
-          <a 
-            href="${this.onAction('showRequestSummary', request, 1)}" 
-            class="text-nowrap">#${request.process_request.id}
-              ${request.process.name}
-          </a>`;
+      return `#${request.process_request.id} ${request.process.name}`;
     },
     formatRemainingTime(date) {
       const millisecondsPerDay = 1000 * 60 * 60 * 24;
@@ -348,6 +374,33 @@ export default {
     },
     handleRowClick(row) {
       window.location.href = this.openTask(row, 1);
+    },
+    handleRowMouseover(row) {
+      this.clearHideTimer();
+      this.isTooltipVisible = true;
+      this.tooltipRowData = row;
+      const rowElement = document.getElementById(`row-${row.id}`);
+      const rect = rowElement.getBoundingClientRect();
+      const rightBorderX = rect.right;
+      const bottomBorderY = rect.bottom - 280;
+      this.rowPosition = {
+        x: rightBorderX,
+        y: bottomBorderY,
+      };
+    },
+    handleRowMouseleave(visible) {
+      this.startHideTimer();
+    },
+    startHideTimer() {
+      this.hideTimer = setTimeout(() => {
+        this.hideTooltip();
+      }, 700);
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
+    hideTooltip() {
+      this.isTooltipVisible = false;
     },
     containsHTML(text) {
       const doc = new DOMParser().parseFromString(text, 'text/html');
