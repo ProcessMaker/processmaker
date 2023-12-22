@@ -9,7 +9,7 @@
           <filter-table
             :headers="tableHeadersRequests"
             :data="dataRequests"
-            @table-row-click="handleRowClickRequest"
+            @table-row-click="(row) => handleRowClick('request', row)"
           />
           <pagination-table
             :meta="dataRequests.meta"
@@ -29,7 +29,7 @@
           <filter-table
             :headers="tableHeadersTasks"
             :data="dataTasks"
-            @table-row-click="handleRowClickTask"
+            @table-row-click="(row) => handleRowClick('task', row)"
           />
           <pagination-table
             :meta="dataTasks.meta"
@@ -194,11 +194,9 @@ export default {
       this.page = page;
       this.queryBuilder();
     },
-    handleRowClickRequest(row) {
-      window.location.href = this.openRequest(row, 1);
-    },
-    handleRowClickTask(row) {
-      window.location.href = this.openTask(row, 1);
+    handleRowClick(type, row) {
+      const openFunction = type === 'request' ? this.openRequest : this.openTask;
+      window.location.href = openFunction(row, 1);
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
@@ -263,19 +261,6 @@ export default {
         this.$t(label) +
         "</span>"
       );
-    },
-    formatActiveTasks(value) {
-      let htmlString = "";
-      for (const task of value) {
-        htmlString += `
-          <div>
-            <a class="text-nowrap" href="${this.openTask(task)}">
-              ${task.element_name}
-            </a>
-          </div>
-        `;
-      }
-      return htmlString;
     },
     openTask(task) {
       return `/tasks/${task.id}/edit`;
