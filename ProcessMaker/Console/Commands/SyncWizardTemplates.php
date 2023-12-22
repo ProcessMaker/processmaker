@@ -39,12 +39,12 @@ class SyncWizardTemplates extends Command
      */
     public function handle()
     {
-        // if ($this->option('queue')) {
-        //     $randomDelay = random_int(10, 120);
-        //     Job::dispatch()->delay(now()->addMinutes($randomDelay));
-        // } else {
-        //     Job::dispatchSync();
-        // }
+        if ($this->option('queue')) {
+            $randomDelay = random_int(10, 120);
+            Job::dispatch()->delay(now()->addMinutes($randomDelay));
+        } else {
+            Job::dispatchSync();
+        }
 
         Job::dispatchSync();
 
