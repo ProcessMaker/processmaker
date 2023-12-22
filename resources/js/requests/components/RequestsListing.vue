@@ -323,7 +323,7 @@ export default {
       return `
       <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
-         ${value.case_title_formatted || ""}
+         ${value.case_title_formatted || value.case_title || ""}
       </a>`;
     },
     formatParticipants(participants) {
