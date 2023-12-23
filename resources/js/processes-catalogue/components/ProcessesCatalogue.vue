@@ -27,20 +27,22 @@
         >
           <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
         </div>
+        <div v-else>
+          <CardProcess
+            v-if="showCardProcesses && !showWizardTemplates"
+            :category="category"
+            @openProcess="openProcess"
+          />
+          <ProcessInfo
+            v-if="showProcess && !showWizardTemplates"
+            :process="selectedProcess"
+            :current-user-id="currentUserId"
+            :permission="permission"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="returnedFromInfo"
+          />
         <wizard-templates v-if="showWizardTemplates" />
-        <CardProcess
-          v-if="showCardProcesses"
-          :category="category"
-          @openProcess="openProcess"
-        />
-        <ProcessInfo
-          v-if="showProcess"
-          :process="selectedProcess"
-          :current-user-id="currentUserId"
-          :permission="permission"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="returnedFromInfo"
-        />
+      </div>
       </b-col>
     </b-row>
   </div>
