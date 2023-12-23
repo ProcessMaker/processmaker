@@ -25,7 +25,7 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty v-if="!showWizardTemplates && !fields.length" />
+          <CatalogueEmpty />
         </div>
         <div v-else>
           <CardProcess
@@ -41,8 +41,10 @@
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
           />
-        <wizard-templates v-if="showWizardTemplates" />
-      </div>
+          <wizard-templates
+            v-if="showWizardTemplates"
+          />
+        </div>
       </b-col>
     </b-row>
   </div>
