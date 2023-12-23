@@ -7,6 +7,10 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
 {
     const CHUNK_SIZE = 5000;
 
+    const REFRESH_TIME = 1;
+
+    private $lastPrint = 0;
+
     /**
      * Run any validations/pre-run checks to ensure the environment, settings,
      * packages installed, etc. are right correct to run this upgrade.
@@ -37,8 +41,9 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
         $caseNumber = 1;
         $chunkSize = self::CHUNK_SIZE;
         $startTime = microtime(true);
-
+        echo '    Counting process requests...';
         $count = $this->getParentNonSystemRequests()->count();
+        echo ' ', $count, PHP_EOL;
 
         // Truncate the table case_numbers
         DB::table('case_numbers')->truncate();
@@ -61,12 +66,15 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
                     'process_request_id' => $record->id,
                 ];
                 $caseNumber++;
+
+                // Display the processing rate
+                $this->displayRate($caseNumber, $startTime, $count, false);
             }
             // INSERT INTO case_numbers in chunks
             DB::table('case_numbers')->insert($inserts);
 
             // Display the processing rate
-            $this->displayRate($caseNumber, $startTime, $count);
+            $this->displayRate($caseNumber, $startTime, $count, true);
         });
 
         // Update the auto increment value of table case_numbers to the next case number
@@ -113,9 +121,13 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
             });
     }
 
-    protected function displayRate($processed, $startTime, $count)
+    protected function displayRate($processed, $startTime, $count, $forceShow)
     {
         $currentTime = microtime(true);
+        if (!$forceShow && ($this->lastPrint + self::REFRESH_TIME > $currentTime)) {
+            return;
+        }
+        $this->lastPrint = $currentTime;
         $timeElapsed = $currentTime - $startTime;
         $rate = $timeElapsed > 0 ? $processed / $timeElapsed : 0;
 
@@ -138,6 +150,10 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
         // Update the auto increment value of table case_numbers to 1
         DB::statement('ALTER TABLE case_numbers AUTO_INCREMENT = 1;');
         // Set the case_number of all the process requests to null
-        DB::table('process_requests')->update(['case_number' => null]);
+        DB::table('process_requests')->update([
+            'case_number' => null,
+            'case_title' => null,
+            'case_title_formatted' => null,
+        ]);
     }
 }
