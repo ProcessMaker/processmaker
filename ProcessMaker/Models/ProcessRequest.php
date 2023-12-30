@@ -26,7 +26,6 @@ use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
-use ProcessMaker\Traits\TracksUserViewed;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
@@ -101,7 +100,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use Searchable;
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
-    use TracksUserViewed;
 
     /**
      * The attributes that aren't mass assignable.
@@ -946,6 +944,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         } else {
             $caseTitle = $this->process()->select('case_title')->first()->case_title;
         }
+
         return $caseTitle ?: self::DEFAULT_CASE_TITLE;
     }
 
@@ -962,7 +961,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if ($formatted) {
             $mustache = new MustacheExpressionEvaluator([
                 'escape' => function ($value) {
-                    return '<b>'.
+                    return '<b>' .
                         htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
                         '</b>';
                 },
@@ -996,12 +995,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             // multi-byte 200 characters limit
             $title = mb_substr($title, 0, 200);
         }
+
         return $title;
     }
 
     public function isSystem()
     {
         $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+
         return DB::table('category_assignments')
             ->where('assignable_type', Process::class)
             ->where('assignable_id', $this->process_id)
