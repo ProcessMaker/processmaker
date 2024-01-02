@@ -1,27 +1,25 @@
 <template>
   <div>
-    <b-row>
-      <div class="d-flex">
-        <b-col cols="9">
-          <process-map
-            :process="process"
-            :permission="permission"
-            :current-user-id="currentUserId"
-            :is-documenter-installed="isDocumenterInstalled"
-            @goBackCategory="goBackCategory"
-          />
-          <processes-carousel
-            :process="process"
-          />
-        </b-col>
-        <b-col cols="3">
-          <process-options :process="process" />
-        </b-col>
-      </div>
-      <b-col cols="12">
-        <process-tab />
+    <div class="d-flex">
+      <b-col cols="9">
+        <process-map
+          :process="process"
+          :permission="permission"
+          :current-user-id="currentUserId"
+          :is-documenter-installed="isDocumenterInstalled"
+          @goBackCategory="goBackCategory"
+        />
+        <processes-carousel
+          :process="process"
+        />
       </b-col>
-    </b-row>
+      <b-col cols="3">
+        <process-options :process="process" />
+      </b-col>
+    </div>
+    <b-col cols="12">
+      <process-tab />
+    </b-col>
   </div>
 </template>
 

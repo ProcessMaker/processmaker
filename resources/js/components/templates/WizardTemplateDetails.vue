@@ -7,52 +7,85 @@
       :hide-footer="true"
       @close="close"
     >
-      <b-row>
+      <b-row v-if="!showHelperProcess">
         <b-col>
           <div class="wizard-details-container text-left mb-3">
             <span>
               <img
-                :src="template.icon"
-                :alt="template.name + 'icon'"
+                :src="templateIcon"
+                :alt="template.name + ' icon'"
                 width="45px"
-                class="mb-3 d-inline-block"
+                class="mb-3 d-block"
               >
             </span>
             <span>
               <h5 class="text-uppercase mb-1 d-inline-block font-weight-bold template-name">{{ template.name | str_limit(30) }}</h5>
             </span>
             <div class="wizard-details-text">
-              <h2 class="wizard-details-headline">{{ template.headline | str_limit(150) }}</h2>
-              <p class="wizard-details-description">{{ template.description | str_limit(150) }}</p>
-              <button class="wizard-details-button text-uppercase">
-                <i class="fas fa-play-circle" />
-                {{ $t('Call to Action') }}
+              <h2 class="wizard-details-headline">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h2>
+              <p class="wizard-details-description">{{ templateDetails['modal-description'] | str_limit(150) }}</p>
+              <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
+                <i class="fas fa-play-circle mr-1" />
+                {{ $t('Use Now') }}
               </button>
             </div>
           </div>
         </b-col>
         <b-col>
-          <b-carousel :interval="0">
-            <b-carousel-slide v-for="(image, index) in template.sliderImages" :key="index" :img-src="image"/>
+          <b-carousel fade :interval="slideInterval">
+            <b-carousel-slide v-for="(image, index) in templateSlides" :key="index" :img-src="image"/>
           </b-carousel>
         </b-col>
       </b-row>
+      <task
+          v-if="showHelperProcess"
+          ref="task"
+          class="card border-0"
+          v-model="formData"
+          :initial-task-id="task.id"
+          :initial-request-id="task.process_request_id"
+          :user-id="currentUserId"
+          @task-updated="taskUpdated"
+          @submit="submit"
+      ></task>
     </modal>
   </div>
 </template>
 
 <script>
 import Modal from "../shared/Modal.vue";
+import {Task} from "@processmaker/screen-builder";
+import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
 
 export default {
-  components: { Modal },
-  mixins: [],
+  components: { Modal, Task },
+  mixins: [wizardHelperProcessModalMixin],
   props: ["template"],
   data() {
     return {
+      showHelperProcess: false,
+      src: "",
+      formData: {},
+      task: {},
+      currentUserId: null,
+      helperProcessId: null,
+      startEvents: null,
+      shouldImportProcessTemplate: true,
     };
   },
   computed: {
+    templateDetails() {
+      return JSON.parse(this.template?.template_details);
+    },
+    templateIcon() {
+      return this.template?.template_media?.icon;
+    },
+    templateSlides() {
+      return this.template?.template_media?.slides;
+    },
+    slideInterval() {
+      return Object.keys(this.template?.template_media?.slides).length > 1 ? 3000 : 0;
+    }
   },
   methods: {
     show() {
@@ -60,6 +93,10 @@ export default {
     },
     close() {
       this.$bvModal.hide("wizardTemplateDetails");
+      if (this.showHelperProcess) {
+        // Cancels the associated process request to prevent orphaned processes.
+        this.cancelHelperProcessRequest();
+      }
     },
   },
 };

@@ -34,13 +34,28 @@
       </b-card-group>
 
       <div class="pb-2 template-container">
-        <template v-if="noResults">
+        <template v-if="noResults && type !== 'wizard'">
           <div class="no-data-icon d-flex d-block justify-content-center pb-2">
             <i class="fas fa-umbrella-beach mt-5" />
           </div>
           <div class="no-data d-block d-flex justify-content-center">
             {{ $t('No Data Available') }}
           </div>
+        </template>
+        <template v-else-if="noResults && type == 'wizard'">
+          <div class="d-flex justify-content-center my-5">
+            <img
+              class="image d-flex"
+              src="/img/processes-catalogue-empty.svg"
+              alt="recent projects"
+            >
+          </div>
+          <h4 class="text-center">
+            {{ $t("Currently, there are no Guided Templates available.") }}
+          </h4>
+          <p class="text-center">
+            {{ $t('Please check back soon.') }}
+          </p>
         </template>
         <template v-else>
           <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
@@ -54,8 +69,8 @@
             />
           </b-card-group>
         </template>
-        <template-details v-if="component === 'template-details'" :template="template" :type="type"></template-details>
-        <wizard-template-details ref="wizardTemplateDetails" :template="template"></wizard-template-details>
+        <template-details v-if="component === 'template-details'" :template="template"></template-details>
+        <wizard-template-details v-if="showWizardTemplateDetails" ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -123,6 +138,7 @@ export default {
         svgIconStyle: "height: 2em;",
         showAiSlogan: true,
       },
+      showWizardTemplateDetails: false,
     };
   },
   watch: {
@@ -137,7 +153,10 @@ export default {
     showDetails($event) {
       if ($event.type === "wizard") {
         this.template = $event.template;
-        this.$refs.wizardTemplateDetails.show();
+        this.showWizardTemplateDetails = true;
+        this.$nextTick(() => {
+          this.$refs.wizardTemplateDetails.show();
+        });
       } else {
         this.$emit('show-details', {
           'id': $event.template.id, 
@@ -159,63 +178,10 @@ export default {
                 ? "templates/" + this.type.toLowerCase() +"?"
                 : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
 
-        // TODO: Remove this temporary code to populate the wizard templates
+        // If the type is 'wizard', override the URL to fetch guided templates
         if (this.type === 'wizard') {
-          this.templates = [
-            {
-              id: 1, 
-              name: 'New Hire Onboarding', 
-              shortDescription: 'Keep a constant pulse on employee engagement',
-              headline: 'Gather real-time Data about how your people feel about work',
-              description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
-              icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
-              backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png', 'https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png'],
-              helperProcessId: 1,
-              categories:'1',
-            },
-            {
-              id: 1, 
-              name: 'New Hire Onboarding', 
-              shortDescription: 'Keep a constant pulse on employee engagement',
-              headline: 'Gather real-time Data about how your people feel about work',
-              description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
-              icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
-              backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png', 'https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png'],
-              helperProcessId: 1,
-              categories:'1',
-            },
-            {
-              id: 1, 
-              name: 'New Hire Onboarding', 
-              shortDescription: 'Keep a constant pulse on employee engagement',
-              headline: 'Gather real-time Data about how your people feel about work',
-              description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
-              icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
-              backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png', 'https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png'],
-              helperProcessId: 1,
-              categories:'1',
-            },
-            {
-              id: 1, 
-              name: 'New Hire Onboarding', 
-              shortDescription: 'Keep a constant pulse on employee engagement',
-              headline: 'Gather real-time Data about how your people feel about work',
-              description: 'Drive action and measure your impact with a continuous, real-time understanding of employee engagement.',
-              icon: 'https://cdn-icons-png.flaticon.com/512/1160/1160358.png',
-              backgroundImage: 'https://images.pexels.com/photos/255379/pexels-photo-255379.jpeg?cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-255379.jpg&fm=jpg',
-              sliderImages: ['https://www.smartinsights.com/wp-content/uploads/2023/11/RACE-Digital-Marketing-Plan-Funnel-2023.png', 'https://blog.hootsuite.com/wp-content/uploads/2021/10/How-to-Create-a-Social-Media-Marketing-Strategy-in-9-Easy-Steps-Free-Template.png'],
-              helperProcessId: 1,
-              categories:'1',
-            },
-          ];
-          this.totalRow = 1;
-          this.apiDataLoading = false;
-          this.apiNoResults = false;
-          this.noResults = false;
-        } else  {
+          url = 'wizard-templates?';
+        }
         // Load from our api client
         ProcessMaker.apiClient
             .get(
@@ -247,7 +213,6 @@ export default {
               this.loading = false;
             });
         }
-      },
   },
   mounted() {
     this.fetch();

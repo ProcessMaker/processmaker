@@ -1,0 +1,16 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Exclamation Mark">
+<path id="Vector" d="M48.024 88C45.436 88 43.304 87.216 41.624 85.648C39.944 84.08 39.102 82.182 39.102 79.952C39.102 77.624 39.952 75.718 41.646 74.23C43.346 72.744 45.472 72 48.024 72C50.612 72 52.726 72.75 54.378 74.256C56.022 75.758 56.848 77.658 56.848 79.952C56.848 82.28 56.03 84.204 54.4 85.722C52.768 87.24 50.642 88 48.024 88Z" fill="url(#paint0_linear_370_9726)"/>
+<path id="Vector_2" d="M57.326 10.078L55.272 62.078C55.23 63.152 54.348 64 53.274 64H42.612C41.536 64 40.654 63.15 40.614 62.074L38.668 10.074C38.626 8.942 39.534 8 40.668 8H55.33C56.464 8 57.372 8.944 57.326 10.078Z" fill="url(#paint1_linear_370_9726)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_370_9726" x1="37.308" y1="7.496" x2="48.904" y2="86.236" gradientUnits="userSpaceOnUse">
+<stop stop-color="#33BEF0"/>
+<stop offset="1" stop-color="#0A85D9"/>
+</linearGradient>
+<linearGradient id="paint1_linear_370_9726" x1="44.286" y1="7.888" x2="57.23" y2="85.552" gradientUnits="userSpaceOnUse">
+<stop stop-color="#33BEF0"/>
+<stop offset="1" stop-color="#0A85D9"/>
+</linearGradient>
+</defs>
+</svg>

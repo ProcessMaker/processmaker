@@ -104,6 +104,10 @@ export default {
     },
     setModeForGroup(group, mode) {
       Object.entries(this.manifest).filter(([uuid, asset]) => {
+        if (uuid === this.rootUuid) {
+          // Do not change the mode of the root asset
+          return false;
+        }
         return asset.type === group;
       }).forEach(([uuid, _]) => {
         this.set(uuid, mode);

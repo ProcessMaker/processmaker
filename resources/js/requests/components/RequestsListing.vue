@@ -166,6 +166,9 @@ export default {
           case "name":
             field.name = "__slot:name";
             break;
+          case "case_title":
+            field.name = "__slot:case_title";
+            break;
           default:
             field.name = column.name || column.field;
         }
@@ -232,6 +235,14 @@ export default {
         {
           label: "PARTICIPANTS",
           field: "participants",
+          sortable: true,
+          default: true,
+          width: 160,
+          truncate: true,
+        },
+        {
+          label: "STATUS",
+          field: "status",
           sortable: true,
           default: true,
           width: 160,
@@ -312,6 +323,13 @@ export default {
          # ${value.case_number}
       </a>`;
     },
+    formatCaseTitle(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
+      </a>`;
+    },
     formatParticipants(participants) {
       return {
         component: "AvatarImage",
@@ -331,6 +349,7 @@ export default {
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
+        record["case_title"] = this.formatCaseTitle(record);
         record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
@@ -430,7 +449,10 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(
+        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
+        "",
+      );
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;

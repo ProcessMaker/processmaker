@@ -39,6 +39,7 @@
       :submitResponse="submitResponse"
       :postComplete="postComplete"
       :processName="processName"
+      :redirectTo="redirectTo"
     >
     </asset-confirmation-modal>
   </div>
@@ -65,6 +66,8 @@ export default {
       submitResponse: {},
       postComplete: false,
       processName: "",
+      redirectTo: null,
+      wizardTemplateUuid: null,
     };
   },
   computed: {
@@ -77,6 +80,8 @@ export default {
   mounted() {
     this.templateAssets = this.assets;
     this.templateName = this.name;
+    this.redirectTo = window.history.state?.redirectTo;
+    this.wizardTemplateUuid =  window.history.state?.wizardTemplateUuid;
   },
   methods: {
     reload() {
@@ -90,6 +95,9 @@ export default {
       formData.append("id", this.$root.responseId);
       formData.append("request", this.request);
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
+      if (this.wizardTemplateUuid !== null) {
+        formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
+      }       
       ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
         .then(response => {
           this.$nextTick(() => {

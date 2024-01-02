@@ -28,6 +28,7 @@ export default {
           href: "/processes-catalogue/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
           icon: "fas fa-file-export",
+          conditional: "if(status == 'ACTIVE', true, false)"
         },
         {
           value: "open-in-modeler",
@@ -41,7 +42,9 @@ export default {
         {
           value: "edit-launchpad",
           content: "Edit in Launchpad",
+          permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
+          conditional: "if(status == 'ACTIVE', true, false)"
         },
         {
           value: "create-template",
