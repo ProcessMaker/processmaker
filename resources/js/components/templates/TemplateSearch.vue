@@ -34,13 +34,28 @@
       </b-card-group>
 
       <div class="pb-2 template-container">
-        <template v-if="noResults">
+        <template v-if="noResults && type !== 'wizard'">
           <div class="no-data-icon d-flex d-block justify-content-center pb-2">
             <i class="fas fa-umbrella-beach mt-5" />
           </div>
           <div class="no-data d-block d-flex justify-content-center">
             {{ $t('No Data Available') }}
           </div>
+        </template>
+        <template v-else-if="noResults && type == 'wizard'">
+          <div class="d-flex justify-content-center my-5">
+            <img
+              class="image d-flex"
+              src="/img/processes-catalogue-empty.svg"
+              alt="recent projects"
+            >
+          </div>
+          <h4 class="text-center">
+            {{ $t("Currently, there are no Guided Templates available.") }}
+          </h4>
+          <p class="text-center">
+            {{ $t('Please check back soon.') }}
+          </p>
         </template>
         <template v-else>
           <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">

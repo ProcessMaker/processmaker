@@ -170,8 +170,8 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError) => {
-      this.saveProcess(onSuccess, onError, redirectUrl, nodeId);
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, generatingAssets, onSuccess, onError) => {
+      this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       window.ProcessMaker.EventBus.$emit("new-changes");
@@ -231,16 +231,16 @@ export default {
       return notifications;
     },
     emitSaveEvent({
-      xml, svg, redirectUrl = null, nodeId = null,
+      xml, svg, redirectUrl = null, nodeId = null, generatingAssets = false,
     }) {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
       if (this.externalEmit.includes("open-modal-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId, generatingAssets);
         return;
       }
-      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId);
+      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, generatingAssets);
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
@@ -256,7 +256,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -280,7 +280,7 @@ export default {
         if (response.data.warnings && response.data.warnings.length > 0) {
           window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
         }
-        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId);
+        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
         if (!redirectUrl) {
           window.ProcessMaker.EventBus.$emit("redirect");
         }

@@ -123,6 +123,7 @@ class User extends Authenticatable implements HasMedia
         'schedule',
         'force_change_password',
         'password_changed_at',
+        'connected_accounts',
     ];
 
     protected $appends = [

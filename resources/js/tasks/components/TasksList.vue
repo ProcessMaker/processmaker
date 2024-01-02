@@ -129,6 +129,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
@@ -271,7 +272,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 45,
+          width: 55,
         },
         {
           label: "CASE TITLE",

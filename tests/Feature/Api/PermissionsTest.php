@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
@@ -100,6 +101,32 @@ class PermissionsTest extends TestCase
         //Assert that the permissions has been set
         $this->assertEquals($testUser->permissions->count(), 1);
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
+    }
+
+    public function testSetPermissionsViewProcessCatalogForUser()
+    {
+        $faker = Faker::create();
+        Permission::updateOrCreate([
+            'name' => 'view-process-catalog',
+        ], [
+            'title' => 'View Process Catalog',
+            'name' => 'view-process-catalog',
+            'group' => 'Process Catalog',
+        ]);
+        $testUser = User::updateOrCreate([
+            'username' => 'will',
+            'is_administrator' => true,
+        ], [
+            'username' => 'will',
+            'password' => $faker->password(8) . 'A' . '1' . '+',
+            'email' => $faker->email(),
+            'firstname' => $faker->firstName(),
+            'lastname' => $faker->lastName(),
+        ]);
+        // Assert that the permissions has been set
+        $this->assertTrue($testUser->hasPermission('view-process-catalog'));
+        // Clean
+        session(['permissions' => null]);
     }
 
     public function testCategoryPermission()

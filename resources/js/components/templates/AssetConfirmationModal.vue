@@ -25,7 +25,7 @@
     
   export default {
     components: { Modal },
-    props: ["templateName", "submitResponse", "processName"],
+    props: ["templateName", "submitResponse", "processName", "redirectTo"],
     data: function() {
       return {
         postComplete: false,
@@ -50,7 +50,13 @@
       },
       goToModeler() {
         this.processId = this.submitResponse.processId;
-        window.location = "/modeler/" + this.processId;
+        if (this.redirectTo !== null) {
+          if (this.redirectTo === 'process-launchpad') {
+            window.location = `/processes-catalogue/${this.processId}`;
+          }
+        } else  {
+          window.location = "/modeler/" + this.processId;
+        }
       }
     },
   };

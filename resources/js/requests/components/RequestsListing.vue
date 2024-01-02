@@ -224,7 +224,6 @@ export default {
         {
           label: "CASE TITLE",
           field: "case_title",
-          name: "__slot:case_number",
           sortable: true,
           default: true,
           truncate: true,
@@ -337,7 +336,11 @@ export default {
       </a>`;
     },
     formatCaseTitle(value) {
-      return `${value.case_title_formatted || ""}`;
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
+      </a>`;
     },
     formatParticipants(participants) {
       return {
