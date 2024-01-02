@@ -6,10 +6,16 @@
       variant="light"
       class="m-1"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <i :class="preicon" />
-        {{ $t(title) }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <i :class="preicon" />
+          {{ $t(title) }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="showCatalogue ? 'fa-sort-up' : 'fa-sort-down'"
+          @click="onToggleCatalogue"
+        />
       </div>
     </div>
     <b-collapse
@@ -34,10 +40,16 @@
       variant="light"
       class="m-1"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <img src="../../../img/template-icon.svg" alt="Template Icon">
-        {{ $t("Add From Templates") }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <img src="../../../img/template-icon.svg" alt="Template Icon">
+          {{ $t("Add From Templates") }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="showGuidedTemplates ? 'fa-sort-up' : 'fa-sort-down'"
+          @click="onToggleTemplates"
+        />
       </div>
     </div>
     <b-collapse
@@ -59,6 +71,12 @@
 <script>
 export default {
   props: ["data", "select", "title", "preicon"],
+  data() {
+    return {
+      showCatalogue: false,
+      showGuidedTemplates: false,
+    };
+  },
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
@@ -86,6 +104,12 @@ export default {
     },
     wizardLinkSelected() {
       this.$emit("wizardLinkSelect");
+    },
+    onToggleCatalogue() {
+      this.showCatalogue = !this.showCatalogue;
+    },
+    onToggleTemplates() {
+      this.showGuidedTemplates = !this.showGuidedTemplates;
     },
   },
 };
