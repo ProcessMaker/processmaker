@@ -31,6 +31,7 @@
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates"
             :category="category"
+            :key="key"
             @openProcess="openProcess"
           />
           <ProcessInfo
@@ -79,6 +80,7 @@ export default {
       selectedProcess: null,
       numCategories: 15,
       page: 1,
+      key: 0,
     };
   },
   mounted() {
@@ -122,6 +124,9 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      if (this.category === value) {
+        this.key += 1;
+      }
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
