@@ -31,18 +31,18 @@ class UserSession
 
         // Get the IP address and device information
         $ip = request()->getClientIp() ?? request()->ip();
-        $agent_device = $agent->device();
-        $agent_device_type = $agent->deviceType();
-        $agent_platform = $agent->platform();
+        $agentDevice = $agent->device();
+        $agentDeviceType = $agent->deviceType();
+        $agentPlatform = $agent->platform();
 
         // if block session by IP or Device is enabled, then mark all active sessions as inactive
         if ($configDevice === '1') {
             $user->sessions()
                 ->where('is_active', true)
                 ->where([
-                    ['device_name', $agent_device],
-                    ['device_type', $agent_device_type],
-                    ['device_platform', $agent_platform],
+                    ['device_name', $agentDevice],
+                    ['device_type', $agentDeviceType],
+                    ['device_platform', $agentPlatform],
                 ])
                 ->update(['is_active' => false]);
         }
@@ -57,10 +57,10 @@ class UserSession
         if ($configDevice === '2') {
             $user->sessions()
                 ->where('is_active', true)
-                ->where(function (Builder $query) use ($agent_device, $agent_device_type, $agent_platform) {
-                    $query->where('device_name', '!=', $agent_device)
-                        ->orWhere('device_type', '!=', $agent_device_type)
-                        ->orWhere('device_platform', '!=', $agent_platform);
+                ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform) {
+                    $query->where('device_name', '!=', $agentDevice)
+                        ->orWhere('device_type', '!=', $agentDeviceType)
+                        ->orWhere('device_platform', '!=', $agentPlatform);
                 })
                 ->update(['expired_date' => now()]);
         }
@@ -68,9 +68,9 @@ class UserSession
         $session = new Session([
             'user_agent' => request()->userAgent(),
             'ip_address' => $ip,
-            'device_name' => $agent_device,
-            'device_type' => $agent_device_type,
-            'device_platform' => $agent_platform,
+            'device_name' => $agentDevice,
+            'device_type' => $agentDeviceType,
+            'device_platform' => $agentPlatform,
             'device_browser' => $agent->browser(),
             'token' => Str::uuid()->toString(),
             'is_active' => true,
