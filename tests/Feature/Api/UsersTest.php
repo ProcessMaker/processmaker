@@ -176,7 +176,7 @@ class UsersTest extends TestCase
             'lastname' => $faker->lastName(),
             'email' => $faker->email(),
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(8) . 'A' . '1',
+            'password' => $faker->password(8) . 'A' . '1' . '+',
             'datetime_format' => $dateFormat,
         ]);
 

@@ -1,0 +1,29 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Cash and Credit Card">
+<path id="Vector" d="M86.25 18H9.75C6.574 18 4 20.574 4 23.75V72.25C4 75.426 6.574 78 9.75 78H86.25C89.426 78 92 75.426 92 72.25V23.75C92 20.574 89.426 18 86.25 18Z" fill="url(#paint0_linear_370_9781)"/>
+<path id="Vector_2" d="M92 28H4V36H92V28Z" fill="url(#paint1_linear_370_9781)"/>
+<path id="Vector_3" d="M84 48H12C10.896 48 10 47.104 10 46V42C10 40.896 10.896 40 12 40H84C85.104 40 86 40.896 86 42V46C86 47.104 85.104 48 84 48Z" fill="#A8E7FF"/>
+<path id="Vector_4" d="M76 52C62.766 52 52 62.766 52 76C52 76.676 52.046 77.338 52.102 78H86.25C89.426 78 92 75.426 92 72.25V58.162C87.748 54.344 82.15 52 76 52Z" fill="url(#paint2_radial_370_9781)"/>
+<path id="Vector_5" d="M76 96C87.0457 96 96 87.0457 96 76C96 64.9543 87.0457 56 76 56C64.9543 56 56 64.9543 56 76C56 87.0457 64.9543 96 76 96Z" fill="url(#paint3_linear_370_9781)"/>
+<path id="Vector_6" d="M76 92C84.8366 92 92 84.8366 92 76C92 67.1634 84.8366 60 76 60C67.1634 60 60 67.1634 60 76C60 84.8366 67.1634 92 76 92Z" fill="#F5BE00"/>
+<path id="Vector_7" d="M71.534 83.37V80.39C72.616 81.052 73.768 81.384 74.99 81.384C75.91 81.384 76.63 81.166 77.148 80.728C77.666 80.29 77.926 79.696 77.926 78.944C77.926 77.376 76.818 76.592 74.602 76.592C73.88 76.592 73.008 76.658 71.984 76.79V67.944H80.752V70.794H74.966V73.962C75.43 73.918 75.868 73.896 76.28 73.896C77.906 73.896 79.18 74.324 80.1 75.176C81.02 76.03 81.48 77.18 81.48 78.622C81.48 80.218 80.932 81.524 79.834 82.536C78.738 83.55 77.25 84.054 75.372 84.054C73.852 84.056 72.572 83.828 71.534 83.37Z" fill="#FEE119"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_370_9781" x1="40.75" y1="22.122" x2="57.496" y2="81.892" gradientUnits="userSpaceOnUse">
+<stop stop-color="#32BDEF"/>
+<stop offset="1" stop-color="#1EA2E4"/>
+</linearGradient>
+<linearGradient id="paint1_linear_370_9781" x1="4" y1="32" x2="92" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="#45494D"/>
+<stop offset="1" stop-color="#6D7479"/>
+</linearGradient>
+<radialGradient id="paint2_radial_370_9781" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(75.064 76.064) scale(23.618 23.618)">
+<stop/>
+<stop offset="0.979" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="paint3_linear_370_9781" x1="62.272" y1="62.272" x2="90.112" y2="90.112" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FEDE00"/>
+<stop offset="1" stop-color="#FFD000"/>
+</linearGradient>
+</defs>
+</svg>

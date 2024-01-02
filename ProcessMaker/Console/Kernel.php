@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Jobs\SyncDefaultTemplates;
+use ProcessMaker\Jobs\SyncWizardTemplates;
 
 class Kernel extends ConsoleKernel
 {
@@ -34,6 +35,8 @@ class Kernel extends ConsoleKernel
             ->weekly();
 
         $schedule->command('processmaker:sync-default-templates --queue')->daily();
+
+        $schedule->command('processmaker:sync-wizard-templates --queue')->daily();
     }
 
     /**

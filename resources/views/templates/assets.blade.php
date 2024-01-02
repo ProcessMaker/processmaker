@@ -21,8 +21,10 @@
         :assets="assets"
         :name="name"
         :responseId="responseId"
-        :request="request
-        ">
+        :request="request"
+        :redirectTo="redirectTo"
+        :wizardTemplateUuid="wizardTemplateUuid"
+        >
     </template-assets-view>
 </div>
 @endsection
