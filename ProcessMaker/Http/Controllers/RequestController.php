@@ -181,7 +181,7 @@ class RequestController extends Controller
             ));
         }
 
-        UserResourceView::setViewed(Auth::user(), $request->id, ProcessRequest::class);
+        UserResourceView::setViewed(Auth::user(), $request);
 
         return view('requests.show', compact(
             'request',

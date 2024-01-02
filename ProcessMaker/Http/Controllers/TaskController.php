@@ -106,7 +106,7 @@ class TaskController extends Controller
                 ]);
             }
 
-            UserResourceView::setViewed(Auth::user(), $task->id, ProcessRequestToken::class);
+            UserResourceView::setViewed(Auth::user(), $task);
 
             return view('tasks.edit', [
                 'task' => $task,
