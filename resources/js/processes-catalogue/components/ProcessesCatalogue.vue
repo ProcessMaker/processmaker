@@ -4,6 +4,7 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
+      :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <b-row>
       <b-col cols="2">
@@ -16,7 +17,7 @@
           show-bookmark="true"
           :data="listCategories"
           :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
       </b-col>
@@ -43,6 +44,7 @@
           />
           <wizard-templates
             v-if="showWizardTemplates"
+            :template="guidedTemplates"
           />
         </div>
       </b-col>
@@ -77,6 +79,7 @@ export default {
       showProcess: false,
       category: null,
       selectedProcess: null,
+      guidedTemplates: false,
       numCategories: 15,
       page: 1,
     };
@@ -125,6 +128,7 @@ export default {
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
+      this.guidedTemplates = false;
       this.showWizardTemplates = false;
       this.showProcess = false;
     },
@@ -133,14 +137,18 @@ export default {
      */
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
+      this.guidedTemplates = true;
       this.showCardProcesses = false;
       this.showProcess = false;
+      this.selectedProcess = null;
+      this.category = null;
     },
     /**
      * Select a process and show display
      */
     openProcess(process) {
       this.showCardProcesses = false;
+      this.guidedTemplates = false;
       this.showProcess = true;
       this.selectedProcess = process;
     },
