@@ -99,7 +99,7 @@ class TwoFactorAuthentication
         // Build body
         $body = $user->username . PHP_EOL . PHP_EOL;
         $body .= __('This is your security code: :code', ['code' => $code]) . PHP_EOL . PHP_EOL;
-        $body .= _('Regards') . PHP_EOL;
+        $body .= __('Regards') . PHP_EOL;
         $body .= 'ProcessMaker';
 
         // Send SMS using Twilio SDK
