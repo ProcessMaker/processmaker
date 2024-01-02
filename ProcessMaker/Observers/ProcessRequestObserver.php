@@ -4,6 +4,7 @@ namespace ProcessMaker\Observers;
 
 use ProcessMaker\Events\RequestAction;
 use ProcessMaker\Events\RequestError;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\CaseNumber;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -64,21 +65,28 @@ class ProcessRequestObserver
     {
         // When data is updated we update the case_title
         if ($request->isDirty('data')) {
-            $data = $request->data;
+            $dm = new DataManager();
+            $data = $dm->getRequestData($request);
             // If request is a parent process, inherit the case title to the child requests
             if (!$request->parent_request_id) {
-                $request->case_title = $request->evaluateCaseTitle($data);
+                $mustacheTitle = $request->getCaseTitleFromProcess();
+                $request->case_title = $request->evaluateCaseTitle($mustacheTitle, $data, false);
+                $request->case_title_formatted = $request->evaluateCaseTitle($mustacheTitle, $data, true);
                 // Copy the case title to the child requests
                 if (!empty($request->id)) {
                     ProcessRequest::where('parent_request_id', $request->id)
-                        ->update(['case_title' => $request->case_title]);
+                        ->update([
+                            'case_title' => $request->case_title,
+                            'case_title_formatted' => $request->case_title_formatted,
+                        ]);
                 }
             } else {
                 // If request is a subprocess, inherit the case title from the parent
-                $request->case_title = ProcessRequest::whereId($request->parent_request_id)
-                    ->select('case_title')
-                    ->first()
-                    ->case_title;
+                $parent = ProcessRequest::whereId($request->parent_request_id)
+                    ->select('case_title', 'case_title_formatted')
+                    ->first();
+                $request->case_title = $parent->case_title;
+                $request->case_title_formatted = $parent->case_title_formatted;
             }
         }
     }

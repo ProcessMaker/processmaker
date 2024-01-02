@@ -153,20 +153,7 @@
                     }
                 ],
                 focusErrors: 'errors',
-                accounts:[
-                  {
-                    id: 1,
-                    name: 'Gmail',
-                    description: 'Provide automated responses, generate drafts, and assist with email composition.',
-                    icon: 'https://img.icons8.com/color/48/gmail--v1.png',
-                  },
-                  {
-                    id: 2,
-                    name: 'Slack',
-                    description: 'Assist with task management, scheduling, and provide intelligent message responses.',
-                    icon: 'https://img.icons8.com/color/48/slack-new.png',
-                  },
-                ],
+                accounts: @json($currentUser['connected_accounts']) === null ? []  : @json(json_decode($currentUser['connected_accounts'], true)),
             },
             created() {
               if (this.meta) {

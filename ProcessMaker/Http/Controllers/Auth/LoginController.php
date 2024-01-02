@@ -235,6 +235,9 @@ class LoginController extends Controller
             $this->forgetUserSession();
 
             event(new Logout(Auth::user()));
+
+            // Always destroy 2fa flag
+            session()->remove(TwoFactorAuthController::TFA_VALIDATED);
         }
 
         return $this->logout($request);

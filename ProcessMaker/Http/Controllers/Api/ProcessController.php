@@ -340,7 +340,11 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        $request->validate(Process::rules($process));
+        $rules = Process::rules($process);
+        if (!$request->has('name')) {
+            unset($rules['name']);
+        }
+        $request->validate($rules);
         $original = $process->getOriginal();
 
         // bpmn validation
