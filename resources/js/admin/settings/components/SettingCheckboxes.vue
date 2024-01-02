@@ -19,13 +19,17 @@
         {{ $t('Unable to load options.') }}
       </div>
       <div v-else-if="loaded">
-        <b-form-group>
+        <b-form-group
+          :invalid-feedback="$t(message)"
+          :state="invalid ? false : null"
+        >
           <b-form-checkbox-group
             v-model="transformed"
             :options="options"
             :switches="switches"
             stacked
-          ></b-form-checkbox-group>
+            @change="onChanged"
+          />
         </b-form-group>
       </div>
       <div v-else>
@@ -35,7 +39,7 @@
         <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
             {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed">
+        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="invalid || ! changed">
             {{ $t('Save')}}
         </button>
       </div>
@@ -51,6 +55,8 @@ export default {
   props: ['value', 'setting'],
   data() {
     return {
+      message: "",
+      invalid: false,
       error: false,
       input: null,
       loaded: false,
@@ -103,6 +109,10 @@ export default {
     }
   },
   methods: {
+    onChanged() {
+      this.invalid = false;
+      this.message = "";
+    },
     onCancel() {
       this.showModal = false;
     },
@@ -112,8 +122,12 @@ export default {
     onModalHidden() {
       this.transformed = this.copy(this.input);
       this.error = false;
-      this.loaded = false;
-      this.options = [];
+      if (this.ui("dynamic")) {
+        this.loaded = false;
+        this.options = [];
+      }
+      this.invalid = false;
+      this.message = "";
     },
     onShowModal() {
       if (! this.loaded && this.ui('dynamic')) {
@@ -129,8 +143,19 @@ export default {
         });
       }
     },
-    onSave() {
-      this.input = this.copy(this.transformed);
+    async onSave() {
+      const testSettingEndpoint = this.ui("testSettingEndpoint");
+      const enabled = this.copy(this.transformed);
+      if (testSettingEndpoint) {
+        try {
+          await ProcessMaker.apiClient.post(testSettingEndpoint, { enabled });
+        } catch (error) {
+          this.invalid = true;
+          this.message = error.response.data.message || error.message;
+          return;
+        }
+      }
+      this.input = enabled;
       this.showModal = false;
       this.emitSaved(this.input);
     },
