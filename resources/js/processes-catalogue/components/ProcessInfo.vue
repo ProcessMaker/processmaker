@@ -18,7 +18,10 @@
       </b-col>
     </div>
     <b-col cols="12">
-      <process-tab />
+      <process-tab 
+      :current-user="currentUser" 
+      :process="process"
+      />
     </b-col>
   </div>
 </template>
@@ -36,7 +39,7 @@ export default {
     ProcessesCarousel,
     ProcessTab,
   },
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],
   data() {
     return {
       listCategories: [],

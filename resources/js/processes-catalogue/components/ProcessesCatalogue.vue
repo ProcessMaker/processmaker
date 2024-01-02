@@ -37,6 +37,7 @@
             v-if="showProcess && !showWizardTemplates"
             :process="selectedProcess"
             :current-user-id="currentUserId"
+            :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
@@ -62,7 +63,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [{
