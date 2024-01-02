@@ -1,8 +1,9 @@
 <div class="container h-100" id="connectedAccounts">
   <div class="card card-body h-100 border-0">
     <h4 class="mt-2 pb-3 page-title">{{__('Connected Accounts')}}</h4>
-    <ul class="accounts-list w-100 pl-0">
-      <li class="accounts-list-item d-flex align-items-start py-3 mt-3" v-for="account in accounts">
+    <div v-if="accounts.length === 0">{{__('You currently don\'t have any connected accounts enabled.')}} </div>
+    <ul v-else class="accounts-list w-100 pl-0">
+      <li class="accounts-list-item d-flex align-items-start py-3 mt-3" v-for="(account, index) in accounts" :key="index" >
         <div class="d-flex align-items-start mr-3">
           <img :src="account.icon" :alt="account.name + 'icon'" width="45px"/>
         </div>

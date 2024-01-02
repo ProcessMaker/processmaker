@@ -8,10 +8,10 @@
       >
     </div>
     <h4 class="text-center">
-      {{ $t('Currently you dont have processes created') }}
+      {{ $t("Currently, you don't have any processes created.") }}
     </h4>
     <p class="text-center">
-      {{ $t('We encourage you to create new processes using our templates') }}
+      {{ $t('We encourage you to create new processes using our templates.') }}
     </p>
     <p class="text-center my-4">
       <button

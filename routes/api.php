@@ -131,7 +131,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes,process');
     Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can:edit-processes,process');
-    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens,process');
+    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-processes,process');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
@@ -162,7 +162,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     //Process Launchpad
     Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
     Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
-    
+
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
     Route::put('permissions', [PermissionController::class, 'update'])->name('permissions.update')->middleware('can:edit-users');
@@ -278,6 +278,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
+    Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
 
     // Process Translations
     Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index')->middleware('can:view-process-translations');

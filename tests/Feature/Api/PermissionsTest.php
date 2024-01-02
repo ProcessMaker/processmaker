@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use Database\Seeders\PermissionSeeder;
+use Faker\Factory as Faker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
@@ -115,7 +116,7 @@ class PermissionsTest extends TestCase
         ]);
         $testUser = User::updateOrCreate([
             'username' => 'will',
-            'is_administrator' => false,
+            'is_administrator' => true,
         ], [
             'username' => 'will',
             'password' => $faker->password(8) . 'A' . '1' . '+',
