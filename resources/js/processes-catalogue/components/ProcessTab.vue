@@ -18,9 +18,9 @@
         </div>
         <div v-else>
           <default-tab
-            :altText="$t('No Image')"
-            :titleText="$t('You have made no requests of this process.')"
-            :descriptionText="$t('All your requests will be shown here')"
+            :alt-text="$t('No Image')"
+            :title-text="$t('You have made no requests of this process.')"
+            :description-text="$t('All your requests will be shown here')"
           />
         </div>
       </b-tab>
@@ -38,9 +38,9 @@
         </div>
         <div v-else>
           <default-tab
-            :altText="$t('No Image')"
-            :titleText="$t('You have no tasks from this process')"
-            :descriptionText="
+            :alt-text="$t('No Image')"
+            :title-text="$t('You have no tasks from this process')"
+            :description-text="
               $t('All your tasks related to this process will be shown here.')
             "
           />
@@ -230,8 +230,8 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
-    let color = "success",
-        label = "In Progress";
+      let color = "success",
+      label = "In Progress";
       switch (status) {
         case "DRAFT":
           color = "danger";
@@ -268,7 +268,7 @@ export default {
       </a>`;
     },
     queryBuilder() {
-    let pmql = "";
+      let pmql = "";
       if (this.pmqlRequest !== undefined) {
         pmql = this.pmqlRequest;
       }

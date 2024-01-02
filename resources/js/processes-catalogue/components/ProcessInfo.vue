@@ -19,8 +19,8 @@
     </div>
     <b-col cols="12">
       <process-tab 
-      :current-user="currentUser" 
-      :process="process"
+        :current-user="currentUser" 
+        :process="process"
       />
     </b-col>
   </div>
