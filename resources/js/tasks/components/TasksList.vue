@@ -1,7 +1,14 @@
 <template>
   <div class="data-table">
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/tasks\?page|results\?page/"
+      :empty="$t('Congratulations')"
+      :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+      empty-icon="beach"
+    />
     <div
-      v-show="true"
+      v-show="!shouldShowLoader"
       data-cy="tasks-table"
     >
       <filter-table
@@ -23,13 +30,9 @@
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
-                                   :viewConfig="getViewConfigFilter()"
-                                   :sort="order_direction"
                                    :container="''"
-                                   @onChangeSort="onChangeSort"
-                                   @onApply="onApply($event, index)"
-                                   @onClear="onClear(index)"
-                                   @onUpdate="onUpdate($event, index)">
+                                   @onApply="onApply"
+                                   @onClear="onClear">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -82,13 +85,6 @@
           </td>
         </template>
       </filter-table>
-      <data-loading
-        v-show="shouldShowLoader"
-        :for="/tasks\?page|results\?page/"
-        :empty="$t('Congratulations')"
-        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-        empty-icon="beach"
-      />
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -110,7 +106,6 @@ import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverTasksMixin from "./PMColumnFilterPopoverTasksMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -124,7 +119,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverTasksMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
   props: {
     filter: {},
     columns: {},
@@ -178,6 +173,7 @@ export default {
   },
   watch: {
     data(newData) {
+      console.log(newData);
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
@@ -189,8 +185,6 @@ export default {
     },
   },
   mounted: function mounted() {
-    this.getAssignee("");
-    this.getFilterConfiguration(this.userId, "task");
     this.setupColumns();
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
@@ -221,7 +215,7 @@ export default {
           sortable: true,
           default: true,
           width: 140,
-          truncate: true
+          truncate: true,
         },
         {
           label: "REQUEST",
@@ -249,7 +243,7 @@ export default {
         {
           label: "ASSIGNEE",
           field: "assignee",
-          sortable: true,
+          sortable: false,
           default: true,
           width: 140,
         },
@@ -350,6 +344,41 @@ export default {
     changePage(page) {
       this.page = page;
       this.fetch();
+    },
+    onApply(json) {
+      this.advanced_filter = json;
+      this.fetch();
+    },
+    onClear() {
+      this.advanced_filter = [];
+      this.fetch();
+    },
+    getFormat(column) {
+      let format = "string";
+      if (column.format) {
+        format = column.format;
+      }
+      if (column.field === "status" || column.field === "participants") {
+        format = "stringSelect";
+      }
+      return format;
+    },
+    getFormatRange(column) {
+      let formatRange = [];
+      if (column.field === "status") {
+        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+      }
+      if (column.field === "participants") {
+        formatRange = ["user1", "user2", "user3", "user4"];
+      }
+      return formatRange;
+    },
+    getOperators(column) {
+      let operators = [];
+      if (column.field === "status" || column.field === "participants") {
+        operators = ["=", "in"];
+      }
+      return operators;
     },
   },
 };
