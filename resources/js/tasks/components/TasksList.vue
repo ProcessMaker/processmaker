@@ -226,6 +226,7 @@ export default {
           record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
+          record["task_name"] = this.formatActiveTask(record);
         }
       }
     },
@@ -256,6 +257,13 @@ export default {
          ${processRequest.case_title_formatted || ""}
       </a>`;
     },
+    formatActiveTask(row) {
+      return `
+      <a href="${this.openTask(row)}"
+        class="text-nowrap">
+        ${row.element_name}
+      </a>`;
+    },
     setupColumns() {
       const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
@@ -281,6 +289,7 @@ export default {
           sortable: true,
           default: true,
           width: 220,
+          truncate: true,
         },
         {
           label: "PROCESS NAME",
@@ -292,7 +301,7 @@ export default {
         },
         {
           label: "TASK NAME",
-          field: "element_name",
+          field: "task_name",
           sortable: true,
           default: true,
           width: 140,
@@ -407,7 +416,7 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     handleRowClick(row) {
-      window.location.href = this.openTask(row, 1);
+      window.location.href = this.openTask(row);
     },
     handleRowMouseover(row) {
       this.clearHideTimer();

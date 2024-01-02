@@ -81,7 +81,20 @@
                   </component>
                 </template>
                 <template v-else>
-                  {{ row[header.field] }}
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ row[header.field] }}
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
                 </template>
               </template>
             </td>
@@ -354,5 +367,12 @@ export default {
   color: rgba(21, 114, 194, 1);
   width: 100px;
   border-radius: 5px;
+}
+@-moz-document url-prefix() {
+  .pm-table-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>
