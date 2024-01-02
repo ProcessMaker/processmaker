@@ -181,20 +181,7 @@ class RequestController extends Controller
             ));
         }
 
-        $existingView = UserResourceView::where('user_id',Auth::id())
-            ->where('viewable_type', ProcessRequest::class)
-            ->where('viewable_id', $request->id)
-            ->first();
-
-        if (!$existingView) {
-
-            $userResourceView = new UserResourceView();
-            $userResourceView->user_id = Auth::id();
-            $userResourceView->viewable_type = ProcessRequest::class;
-            $userResourceView->viewable_id = $request->id;
-            $userResourceView->save();
-
-        }
+        UserResourceView::setViewed(Auth::user(), $request->id, ProcessRequest::class);
 
         return view('requests.show', compact(
             'request',

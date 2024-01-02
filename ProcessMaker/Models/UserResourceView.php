@@ -19,4 +19,12 @@ class UserResourceView extends ProcessMakerModel
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function setViewed($user, $viewableId, $viewableType) {
+        return self::firstOrCreate([
+            'user_id' => $user->id,
+            'viewable_type' => $viewableType,
+            'viewable_id' => $viewableId,
+        ]);
+    }
 }

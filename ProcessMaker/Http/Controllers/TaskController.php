@@ -106,20 +106,8 @@ class TaskController extends Controller
                 ]);
             }
 
-            $existingView = UserResourceView::where('user_id',Auth::user()->id)
-                ->where('viewable_type', ProcessRequest::class)
-                ->where('viewable_id', $task->id)
-                ->first();
+            UserResourceView::setViewed(Auth::user(), $task->id, ProcessRequestToken::class);
 
-            if (!$existingView) {
-                $userResourceView = new UserResourceView();
-                $userResourceView->user_id = Auth::user()->id;
-                $userResourceView->viewable_type = ProcessRequestToken::class;
-                $userResourceView->viewable_id = $task->id;
-                $userResourceView->save();
-
-            }
-            
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
