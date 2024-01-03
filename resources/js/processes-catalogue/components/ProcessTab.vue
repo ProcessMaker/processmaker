@@ -5,7 +5,7 @@
         title="My Requests"
         active
       >
-         <div v-if="showTabRequests">
+         <div class="bg-white" v-if="showTabRequests">
           <filter-table
             :headers="tableHeadersRequests"
             :data="dataRequests"
@@ -24,7 +24,7 @@
           />
         </div>
       </b-tab>
-      <b-tab title="My Tasks">
+      <b-tab class="bg-white" title="My Tasks">
         <div v-if="showTabTasks">
           <filter-table
             :headers="tableHeadersTasks"
@@ -264,7 +264,7 @@ export default {
       return `
       <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
-         # ${value.case_number}
+        ${value.case_number}
       </a>`;
     },
     queryBuilder() {
