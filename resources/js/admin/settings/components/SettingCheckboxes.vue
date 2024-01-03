@@ -55,7 +55,7 @@ export default {
   props: ['value', 'setting'],
   data() {
     return {
-      message: "",
+      message: '',
       invalid: false,
       error: false,
       input: null,
@@ -111,7 +111,7 @@ export default {
   methods: {
     onChanged() {
       this.invalid = false;
-      this.message = "";
+      this.message = '';
     },
     onCancel() {
       this.showModal = false;
@@ -122,12 +122,12 @@ export default {
     onModalHidden() {
       this.transformed = this.copy(this.input);
       this.error = false;
-      if (this.ui("dynamic")) {
+      if (this.ui('dynamic')) {
         this.loaded = false;
         this.options = [];
       }
       this.invalid = false;
-      this.message = "";
+      this.message = '';
     },
     onShowModal() {
       if (! this.loaded && this.ui('dynamic')) {
@@ -144,7 +144,7 @@ export default {
       }
     },
     async onSave() {
-      const testSettingEndpoint = this.ui("testSettingEndpoint");
+      const testSettingEndpoint = this.ui('testSettingEndpoint');
       const enabled = this.copy(this.transformed);
       if (testSettingEndpoint) {
         try {

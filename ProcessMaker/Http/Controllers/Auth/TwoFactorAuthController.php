@@ -156,7 +156,6 @@ class TwoFactorAuthController extends Controller
 
     private function testEmailServer()
     {
-
         try {
             $user = Auth::user();
             Mail::to($user)->send(new TestEmailServer);
@@ -190,8 +189,8 @@ class TwoFactorAuthController extends Controller
             $twilio->messages->create($to,
                 [
                     'from' => $from,
-                    'body' => $body
-                ]
+                    'body' => $body,
+                ],
             );
         } catch (Exception $error) {
             return response()->json([
