@@ -7,10 +7,10 @@
       >
         <h4 class="d-flex align-items-center">
           <i
-            class="fas fa-arrow-circle-left text-secondary mr-2 title-font"
+            class="fas fa-arrow-circle-left text-secondary mr-2 iconTitle"
             @click="goBack"
           />
-          {{ process.name }}
+          <span class="ml-2 title-process">{{ process.name }}</span>
         </h4>
         <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
           <ellipsis-menu
@@ -25,7 +25,9 @@
           />
         </span>
       </div>
-      <p> {{ process.description }}</p>
+      <p class="description">
+        {{ process.description }}
+      </p>
     </div>
     <create-template-modal
       id="create-template-modal"
@@ -55,7 +57,7 @@
       asset-type="process"
       origin="core"
       :options="optionsData"
-      :descriptionSettings="process.description"
+      :description-settings="process.description"
       :process="process"
     />
   </div>
@@ -68,7 +70,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
-import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue"
+import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
 
 export default {
   components: {
@@ -132,9 +134,21 @@ export default {
 </script>
 
 <style scoped>
-.title-font {
+.iconTitle {
   font-size: 32px;
   cursor: pointer;
+}
+.title-process {
+  color: #556271;
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.42px;
+}
+.description {
+  color: #4F606D;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.32px;
 }
 .ellipsis-border{
   border-color: #CDDDEE;
