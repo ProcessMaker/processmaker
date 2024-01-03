@@ -77,6 +77,8 @@ class Kernel extends HttpKernel
         'edit_username_password' => \ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission::class,
         '2fa' => \ProcessMaker\Http\Middleware\TwoFactorAuthentication::class,
         'saml_request' => \ProcessMaker\Http\Middleware\SamlRequest::class,
+        'session_block' => \ProcessMaker\Http\Middleware\SessionControlBlock::class,
+        'session_kill' => \ProcessMaker\Http\Middleware\SessionControlKill::class,
     ];
 
     /**

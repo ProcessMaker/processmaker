@@ -37,7 +37,7 @@ use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
 
-Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(function () {
+Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
@@ -94,7 +94,7 @@ Route::middleware('auth', 'sanitize', 'force_change_password', '2fa')->group(fun
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
     Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index')->middleware('can:view-process-catalog');
-    
+
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');

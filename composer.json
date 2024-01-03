@@ -20,6 +20,7 @@
         "google/apiclient": "^2.12",
         "guzzlehttp/guzzle": "^7.4",
         "igaster/laravel-theme": "2.0.*",
+        "jenssegers/agent": "^2.6",
         "laravel/framework": "^10.19",
         "laravel/horizon": "^5.12",
         "laravel/passport": "^11.5",
