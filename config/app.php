@@ -179,6 +179,7 @@ return [
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Docker' => ProcessMaker\Facades\Docker::class,
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
         'Form' => Collective\Html\FormFacade::class,
@@ -190,7 +191,6 @@ return [
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
-        'Agent' => Jenssegers\Agent\Facades\Agent::class,
     ])->toArray(),
 
     'debug_blacklist' => [
