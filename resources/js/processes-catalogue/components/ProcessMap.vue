@@ -36,7 +36,7 @@
           v-if="!readActivated && largeDescription"
           class="description"
         >
-          {{ process.description.slice(0,200) }}
+          {{ process.description.slice(0,300) }}
           <a
             v-if="!readActivated"
             class="read-more"
