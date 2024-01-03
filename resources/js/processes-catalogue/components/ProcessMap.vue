@@ -146,17 +146,23 @@ export default {
     getActions() {
       this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
     },
-    /** Rerun a process cards from process info */
+    /**
+     * Rerun a process cards from process info
+     * */
     goBack() {
       this.$emit("goBackCategory");
     },
-    /** Verify if the Description is large */
+    /**
+     * Verify if the Description is large
+     */
     verifyDescription() {
       if (this.process.description.length > 200) {
         this.largeDescription = true;
       }
     },
-    /** Show the whole large description */
+    /**
+     * Show the whole large description
+     */
     activateReadMore() {
       this.readActivated = true;
     },
