@@ -666,6 +666,7 @@ export default {
             type: "add",
           };
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+          ProcessMaker.EventBus.$emit("getChartId");
           this.hideModal();
         })
         .catch((error) => {

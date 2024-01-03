@@ -436,8 +436,7 @@ export default {
 </script>
 
 <style lang="scss">
-  @import "../../../../../vendor/processmaker/processmaker/resources/sass/variables";
-
+  @import "../../../../../vendor/processmaker/package-savedsearch/resources/sass/_variables.scss";
   $animationLength: 500ms;
   $footerHeight: 35px;
 

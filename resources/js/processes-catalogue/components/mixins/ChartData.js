@@ -14,14 +14,10 @@ export default {
   },
   methods: {
     transformChartData(chart) {
-      console.log("en Transform chart data: ", chart);
       let transformed = this.copy(chart);
-      console.log("transformed : ", transformed);
       if (transformed.chart_data) {
         transformed.chart_data.header = this.transformHeader(transformed);
         transformed.chart_data.rows = this.transformRows(transformed);
-        console.log("transformed.chart_data.header : ", transformed.chart_data.header);
-        console.log("transformed.chart_data.rows : ", transformed.chart_data.rows);
         return this.conformData(transformed);
       }
     },
