@@ -103,6 +103,10 @@ export default {
       this.$refs.input.focus();
     },
     onSave() {
+      if (this.setting.ui?.isNotEmpty && this.transformed == '') {
+        ProcessMaker.alert(this.$t("This value is invalid, please use another value."), "danger");
+        return;
+      }
       this.input = this.copy(this.transformed);
       this.showModal = false;
       this.emitSaved(this.input);

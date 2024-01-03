@@ -151,6 +151,7 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10008,
+                        'isNotEmpty' => true,
                         'deleteSettingEnabled' => false,
                         'copySettingEnabled' => false,
                     ],

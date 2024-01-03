@@ -48,10 +48,17 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        // Set middle wares
         $this->middleware('session_block')->only('loginWithIntendedCheck');
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
         $this->middleware('saml_request')->only('showLoginForm');
-        $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
+
+        // Set login attempts
+        $loginAttempts = (int) config('password-policies.login_attempts', PHP_INT_MAX);
+        if ($loginAttempts === 0) {
+            $loginAttempts = PHP_INT_MAX;
+        }
+        $this->maxAttempts = $loginAttempts;
     }
 
     /**
