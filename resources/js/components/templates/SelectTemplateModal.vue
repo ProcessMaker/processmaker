@@ -98,7 +98,7 @@
       },
       createAiProcess() {
         if (this.projectId) {
-          window.location.href = `/package-ai/processes/create/${this.projectId}`;
+          window.location.href = `/package-ai/processes/create?projectId=${this.projectId}`;
         } else {
           window.location.href = "/package-ai/processes/create";
         }
