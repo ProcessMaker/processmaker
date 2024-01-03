@@ -40,12 +40,14 @@
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
+        "@chantouchsek/validatorjs": "2.0.1",
         "@braintree/sanitize-url": "^6.0.2",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
         "@fortawesome/free-brands-svg-icons": "^5.15.1",
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
+        "@tinymce/tinymce-vue": "2.0.0",
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.43.8",
         "@processmaker/processmaker-bpmn-moddle": "0.14.1",
@@ -71,6 +73,7 @@
         "luxon": "^1.25.0",
         "monaco-editor": "^0.34.0",
         "monaco-editor-webpack-plugin": "^7.0.1",
+        "mustache": "3.2.1",
         "npm-font-open-sans": "^1.1.0",
         "phpunserialize": "^1.0.1",
         "popper.js": "^1.16.1",
@@ -80,6 +83,7 @@
         "svg-pan-zoom": "^3.6.1",
         "timezones.json": "^1.5.2",
         "tinycolor2": "^1.4.2",
+        "tinymce": "5.10.0",
         "tooltip.js": "^1.3.3",
         "v-tooltip": "^2.0.3",
         "vue": "^2.6.14",
@@ -129,7 +133,7 @@
         "coverageDirectory": "<rootDir>/tests/js/coverage"
     },
     "engines": {
-        "npm": "~8.19",
-        "node": "~16.18"
+        "npm": ">=8",
+        "node": ">=16"
     }
 }

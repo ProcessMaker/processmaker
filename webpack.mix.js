@@ -1,5 +1,6 @@
-const mix = require('laravel-mix');
+const mix = require("laravel-mix");
 const path = require("path");
+const packageJson = require("./package.json");
 
 /*
  |--------------------------------------------------------------------------
@@ -22,37 +23,22 @@ mix.webpackConfig({
     "ModelerInspector",
   ],
   resolve: {
+    extensions: ["*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
     alias: {
-      'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
+      "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
     },
-  }
+  },
 });
 
 mix.options({
+  legacyNodePolyfills: false,
   terser: {
-    parallel: true
-  }
+    parallel: true,
+  },
 });
 
-mix.extract([
-  "vue",
-  "vue-router",
-  "jquery",
-  "bootstrap-vue",
-  "axios",
-  "popper.js",
-  "lodash",
-  "bootstrap",
-  "jointjs",
-  "luxon",
-  "bpmn-moddle",
-  "@fortawesome/fontawesome-free",
-  "@fortawesome/fontawesome-svg-core",
-  "@fortawesome/free-brands-svg-icons",
-  "@fortawesome/free-solid-svg-icons",
-  "@fortawesome/vue-fontawesome"
-])
+mix.extract([...Object.keys(packageJson.dependencies)])
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
@@ -65,8 +51,8 @@ mix.extract([
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
   .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
-  .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
-  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
+  // .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
+  // .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix.js("resources/js/app-layout.js", "public/js")
@@ -132,26 +118,26 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/app.js", "public/js");
 
 // Monaco AMD modules. Copy only the files we need to make the build faster.
-const monacoSource = 'node_modules/monaco-editor/min/vs/';
-const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html', 'xml', 'typescript', 'sql'];
+const monacoSource = "node_modules/monaco-editor/min/vs/";
+const monacoDestination = "public/vendor/monaco-editor/min/vs/";
+const monacoLanguages = ["php", "css", "lua", "javascript", "csharp", "java", "python", "r", "html", "xml", "typescript", "sql"];
 const monacoFiles = [
-  'loader.js',
-  'editor/editor.main.js',
-  'editor/editor.main.css',
-  'editor/editor.main.nls.js',
-  'base/browser/ui/codicons/codicon/codicon.ttf',
-  'base/worker/workerMain.js',
-  'base/common/worker/simpleWorker.nls.js',
+  "loader.js",
+  "editor/editor.main.js",
+  "editor/editor.main.css",
+  "editor/editor.main.nls.js",
+  "base/browser/ui/codicons/codicon/codicon.ttf",
+  "base/worker/workerMain.js",
+  "base/common/worker/simpleWorker.nls.js",
 ];
-monacoFiles.forEach(file => {
+monacoFiles.forEach((file) => {
   mix.copy(monacoSource + file, monacoDestination + file);
 });
-monacoLanguages.forEach(lang => {
+monacoLanguages.forEach((lang) => {
   const path = `basic-languages/${lang}/${lang}.js`;
   mix.copy(monacoSource + path, monacoDestination + path);
 });
-mix.copyDirectory(monacoSource + 'language', monacoDestination + 'language');
+mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")

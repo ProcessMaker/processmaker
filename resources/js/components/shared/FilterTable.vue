@@ -6,14 +6,17 @@
     >
       <thead>
         <tr>
-          <th class="pm-table-border" :colspan="headers.length"></th>
+          <th
+            class="pm-table-border"
+            :colspan="headers.length"
+          />
         </tr>
         <tr>
           <th
-            class="pm-table-ellipsis-column"
             v-for="(column, index) in headers"
-            :key="index"
             :id="`column-${index}`"
+            :key="index"
+            class="pm-table-ellipsis-column"
             :class="{ 'pm-table-filter-applied': column.filterApplied }"
           >
             <div
@@ -25,20 +28,20 @@
               </slot>
             </div>
             <div class="pm-table-filter-button">
-              <slot :name="`filter-${column.field}`">
-                
-              </slot>
+              <slot :name="`filter-${column.field}`" />
             </div>
             <div
               v-if="index !== headers.length - 1"
               class="pm-table-column-resizer"
               @mousedown="startResize(index)"
-            >
-            </div>
+            />
           </th>
         </tr>
         <tr>
-          <th class="pm-table-border" :colspan="headers.length"></th>
+          <th
+            class="pm-table-border"
+            :colspan="headers.length"
+          />
         </tr>
       </thead>
       <tbody>
@@ -52,14 +55,16 @@
               v-for="(header, index) in headers"
               :key="index"
             >
-              <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+              <div
+                v-if="containsHTML(row[header.field])"
+                v-html="sanitize(row[header.field])"
+              />
               <template v-else>
                 <template v-if="isComponent(row[header.field])">
                   <component
                     :is="row[header.field].component"
                     v-bind="row[header.field].props"
-                  >
-                  </component>
+                  />
                 </template>
                 <template v-else>
                   {{ row[header.field] }}
@@ -71,7 +76,7 @@
       </tbody>
     </table>
   </div>
-  </template>
+</template>
 
 <script>
 
@@ -83,9 +88,9 @@ export default {
   props: {
     headers: {
       type: Array,
-      default: function () {
+      default() {
         return [];
-      }
+      },
     },
     data: [],
   },
@@ -102,7 +107,7 @@ export default {
     data() {
       this.headers.forEach((column) => {
         if (column.format) {
-          if (column.format === 'datetime' || column.format === 'date') {
+          if (column.format === "datetime" || column.format === "date") {
             this.data.data.forEach((element) => {
               element[column.field] = this.formatDate(element[column.field], column.format);
             });
@@ -113,21 +118,21 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
-      const ellipsisColumn = document.querySelectorAll('.pm-table-ellipsis-column');
+      const ellipsisColumn = document.querySelectorAll(".pm-table-ellipsis-column");
 
       ellipsisColumn.forEach((column) => {
-        column.addEventListener('click', this.handleEllipsisClick);
+        column.addEventListener("click", this.handleEllipsisClick);
       });
     });
   },
   methods: {
     containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+      const doc = new DOMParser().parseFromString(text, "text/html");
+      return Array.from(doc.body.childNodes).some((node) => node.nodeType === Node.ELEMENT_NODE);
     },
     isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
+      if (content && typeof content === "object") {
+        return content.component && typeof content.props === "object";
       }
       return false;
     },
@@ -137,22 +142,22 @@ export default {
       this.startX = event.pageX;
       this.startWidth = this.headers[index].width;
 
-      document.addEventListener('mousemove', this.doResize);
-      document.addEventListener('mouseup', this.stopResize);
+      document.addEventListener("mousemove", this.doResize);
+      document.addEventListener("mouseup", this.stopResize);
     },
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
         this.headers[this.resizingColumnIndex].width = Math.max(
           40,
-          this.startWidth + diff
+          this.startWidth + diff,
         );
       }
     },
     stopResize() {
       if (this.isResizing) {
-        document.removeEventListener('mousemove', this.doResize);
-        document.removeEventListener('mouseup', this.stopResize);
+        document.removeEventListener("mousemove", this.doResize);
+        document.removeEventListener("mouseup", this.stopResize);
         this.isResizing = false;
         this.resizingColumnIndex = -1;
       }
@@ -160,15 +165,15 @@ export default {
     formatDate(date, mask) {
       const dateTimeFormat = "MM/DD/YY HH:mm";
       const dateFormat = "MM/DD/YY";
-      if (mask === 'datetime') {
+      if (mask === "datetime") {
         return date === null ? "-" : moment(date).format(dateTimeFormat);
       }
-      if (mask === 'date') {
+      if (mask === "date") {
         return date === null ? "-" : moment(date).format(dateFormat);
       }
     },
     handleRowClick(row) {
-      this.$emit('table-row-click', row);
+      this.$emit("table-row-click", row);
     },
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
