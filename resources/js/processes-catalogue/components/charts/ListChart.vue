@@ -50,7 +50,6 @@
             :class="linkVariant"
             v-b-tooltip.hover.left
             :title="$t('Open Record')"
-            @click=openUrl()
           >
             <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
           </b-link>
