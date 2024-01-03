@@ -1756,6 +1756,8 @@
   "Translate process screens to a desired language": "Traduce las pantallas de proceso a un idioma deseado",
   "translations for each screen associated to the process.": "traducciones para cada pantalla asociada al proceso.",
   "translations for the process": "traducciones para el proceso",
+  "Unable to send email. Please check your email server settings.": "No se puede enviar el correo electrónico. Por favor, compruebe la configuración del servidor de correo electrónico.",
+  "Unable to send SMS. Please check your cell number and SMS server settings.": "No se puede enviar SMS. Por favor, compruebe su número de teléfono celular y la configuración del servidor SMS.",
   "UnauthorizedAccessAttempt": "Intento de Acceso No Autorizado",
   "Updated_at": "Actualizado En",
   "UserCreated": "Usuario Creado",

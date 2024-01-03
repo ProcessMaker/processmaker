@@ -909,6 +909,8 @@
   "Type": "Type",
   "Unable to import the process.": "Impossible d'importer le processus.",
   "Unable to import": "Impossible d'importer",
+  "Unable to send email. Please check your email server settings.": "Unable to send email. Please check your email server settings.",
+  "Unable to send SMS. Please check your cell number and SMS server settings.": "Unable to send SMS. Please check your cell number and SMS server settings.",
   "Unauthorized - ProcessMaker": "Action non autorisée - ProcessMaker",
   "Undo": "Annuler",
   "Unfortunately this screen has had an issue. We've notified the administrator.": "Désolé, cet écran a rencontré un problème. L'administrateur en a été informé.",

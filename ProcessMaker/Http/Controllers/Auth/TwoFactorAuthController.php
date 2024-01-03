@@ -4,8 +4,12 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Mail\TestEmailServer;
 use ProcessMaker\TwoFactorAuthentication;
+use Twilio\Rest\Client;
 
 class TwoFactorAuthController extends Controller
 {
@@ -123,5 +127,77 @@ class TwoFactorAuthController extends Controller
 
         // Display view
         return view('auth.2fa.auth_app_qr', compact('qrCode'));
+    }
+
+    public function testSettings(Request $request)
+    {
+        $enabled = $request->json('enabled');
+        // Test Email Server, send email to current user
+        if (in_array('By email', $enabled)) {
+            $testEmailServer = $this->testEmailServer();
+            if ($testEmailServer !== true) {
+                return $testEmailServer;
+            }
+        }
+
+        // Test SMS Server
+        if (in_array('By message to phone number', $enabled)) {
+            $testSmsServer = $this->testSmsServer();
+            if ($testSmsServer !== true) {
+                return $testSmsServer;
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => ('Configuration tested successfully.'),
+        ]);
+    }
+
+    private function testEmailServer()
+    {
+        try {
+            $user = Auth::user();
+            Mail::to($user)->send(new TestEmailServer);
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Unable to send email. Please check your email server settings.'),
+            ], 500);
+        }
+        return true;
+    }
+
+    private function testSmsServer()
+    {
+        try {
+            $user = Auth::user();
+            // Get config parameters for Twilio
+            $sid = config('twilio.sid');
+            $token = config('twilio.token');
+            $from = config('twilio.active_phone_number');
+
+            // Format the number to send the code
+            $to = '+' . ltrim($user->cell, '+');
+
+            // Build body
+            $body = $user->username . PHP_EOL . PHP_EOL;
+            $body .= __('This is a test') . PHP_EOL . PHP_EOL;
+
+            // Send SMS using Twilio SDK
+            $twilio = new Client($sid, $token);
+            $twilio->messages->create($to,
+                [
+                    'from' => $from,
+                    'body' => $body,
+                ],
+            );
+        } catch (Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Unable to send SMS. Please check your cell number and SMS server settings.'),
+            ], 500);
+        }
+        return true;
     }
 }
