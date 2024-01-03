@@ -25,7 +25,7 @@
                                    :viewConfig="getViewConfigFilter()"
                                    :sort="orderDirection"
                                    :container="''"
-                                   @onChangeSort="onChangeSort"
+                                   @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"
                                    @onUpdate="onUpdate($event, index)">
@@ -142,7 +142,7 @@ export default {
   },
   mounted() {
     this.getParticipants("");
-    this.getFilterConfiguration(this.userId, "request");
+    this.getFilterConfiguration("request");
     this.setupColumns();
   },
   methods: {

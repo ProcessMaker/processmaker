@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Events\UserCreated;
 use ProcessMaker\Events\UserDeleted;
@@ -14,6 +13,7 @@ use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
@@ -644,105 +644,67 @@ class UserController extends Controller
     /**
      * Get filter configuration.
      * 
-     * @param User $user
      * @param String $name
      * @return \Illuminate\Http\Response
      *
-     *     @OA\Get(
-     *     path="/users/{user_id}/get_filter_configuration/{name}",
-     *     summary="",
+     * @OA\Get(
+     *     path="/users/get_filter_configuration/{name}",
+     *     summary="Get filter configuration by name",
      *     operationId="getFilterConfiguration",
      *     tags={"Users"},
      *     @OA\Parameter(
-     *         description="",
      *         in="path",
-     *         name="user_id",
+     *         name="name",
      *         required=true,
      *         @OA\Schema(
-     *           type="integer",
+     *           type="string",
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="success",
+     *         description="Success",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function getFilterConfiguration(User $user, String $name) 
+    public function getFilterConfiguration(String $name, Request $request) 
     {
-        $key = $this->getKeyFilterConfiguration($user, $name);
-
-        $valueInCache = $this->getCacheRememberFilter($key, []);
-
-        return response(["data" => $valueInCache], 200);
+        $filter = SaveSession::getFilterConfiguration($name, $request->user());
+        return response(["data" => $filter], 200);
     }
 
     /**
      * Store filter configuration.
      * 
-     * @param User $user
      * @param String $name
      * @param Request $request
      * @return \Illuminate\Http\Response
      *
-     *     @OA\Get(
-     *     path="/users/{user_id}/store_filter_configuration/{name}",
-     *     summary="",
+     * @OA\Get(
+     *     path="/users/store_filter_configuration/{name}",
+     *     summary="Store filter configuration by name",
      *     operationId="storeFilterConfiguration",
      *     tags={"Users"},
      *     @OA\Parameter(
-     *         description="",
      *         in="path",
-     *         name="user_id",
+     *         name="name",
      *         required=true,
      *         @OA\Schema(
-     *           type="integer",
+     *           type="string",
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="success",
+     *         description="Success",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function storeFilterConfiguration(User $user, String $name, Request $request) 
+    public function storeFilterConfiguration(String $name, Request $request) 
     {
-        $key = $this->getKeyFilterConfiguration($user, $name);
-        Cache::pull($key);
-
-        $valueInCache = $this->getCacheRememberFilter($key, $request->json()->all());
-
-        return response(["data" => $valueInCache], 200);
-    }
-
-    /**
-     * Get cache remember filter.
-     * 
-     * @param Array $json
-     * @return Array
-     */
-    private function getCacheRememberFilter($key, $json) 
-    {
-        $valueInCache = Cache::remember($key, now()->addWeek(), function () use($json) {
-            return $json;
-        });
-        return $valueInCache;
-    }
-
-    /**
-     * Get key filter configuration.
-     * 
-     * @param User $user
-     * @param string $name
-     * @return string
-     */
-    private function getKeyFilterConfiguration($user, $name)
-    {
-        $key = str_replace("-", "_", "user-{$user->id}-{$user->uuid}-{$name}");
-        return $key;
+        $filter = SaveSession::storeFilterConfiguration($name, $request->user(), $request->json()->all());
+        return response(["data" => $filter], 200);
     }
 }

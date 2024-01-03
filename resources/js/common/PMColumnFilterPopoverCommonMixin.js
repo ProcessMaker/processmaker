@@ -93,15 +93,15 @@ const PMColumnFilterCommonMixin = {
               "&order_direction=" + orderDirection;
       return url;
     },
-    getFilterConfiguration(user_id, filterName) {
-      let url = "users/" + user_id + "/get_filter_configuration/" + filterName;
+    getFilterConfiguration(filterName) {
+      let url = "users/get_filter_configuration/" + filterName;
       ProcessMaker.apiClient.get(url).then(response => {
         this.advancedFilter = response.data.data;
         this.verifyIfHeaderContainFilter();
       });
     },
-    storeFilterConfiguration(user_id, filterName) {
-      let url = "users/" + user_id + "/store_filter_configuration/" + filterName;
+    storeFilterConfiguration(filterName) {
+      let url = "users/store_filter_configuration/" + filterName;
       ProcessMaker.apiClient.put(url, this.advancedFilter);
     },
     advancedFilterInit(size) {

@@ -12,17 +12,21 @@ const PMColumnFilterPopoverTasksMixin = {
       this.advancedFilterInit(this.tableHeaders.length);
       this.advancedFilter[index] = json;
       this.tableHeaders[index].filterApplied = true;
-      this.storeFilterConfiguration(this.userId, "task");
+      this.storeFilterConfiguration("task");
       this.fetch();
     },
     onClear(index) {
       this.advancedFilter[index] = [];
       this.tableHeaders[index].filterApplied = false;
-      this.storeFilterConfiguration(this.userId, "task");
+      this.storeFilterConfiguration("task");
       this.fetch();
     },
-    onChangeSort(value) {
+    onChangeSort(value, field) {
+      this.orderBy = field;
       this.order_direction = value;
+//      this.sortOrder[0].sortField = field;
+//      this.sortOrder[0].direction = value;
+      this.fetch();
     },
     getFormat(column) {
       let format = "string";
