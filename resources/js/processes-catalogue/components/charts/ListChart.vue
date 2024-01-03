@@ -45,11 +45,12 @@
         <template v-slot:cell(actions)="row">
           <b-link
             v-if="!config.display.pivot && config.display.linkButton"
-            :href="row.item.ProcessMaker__url"
+            v-bind="{ href: row.item.ProcessMaker__url }"
             class="p-2"
             :class="linkVariant"
             v-b-tooltip.hover.left
             :title="$t('Open Record')"
+            @click=openUrl()
           >
             <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
           </b-link>
