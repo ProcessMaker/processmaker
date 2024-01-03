@@ -39,7 +39,6 @@
         "sass-loader": "^12.6.0",
         "vue-loader": "^15.10.0"
     },
-
     "dependencies": {
         "@braintree/sanitize-url": "^6.0.2",
         "@fortawesome/fontawesome-free": "^5.15.1",

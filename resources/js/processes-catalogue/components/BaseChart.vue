@@ -23,7 +23,7 @@
           src="/img/launchpad-images/defaultImage.svg"
           alt="Chart"
           style="width: 100%; height: 100%; object-fit: cover"
-        />
+        >
       </div>
     </div>
   </div>
@@ -97,20 +97,6 @@ export default {
       chartName: "",
     };
   },
-  watch: {
-    value: {
-      handler: function (value) {
-        this.transform(value);
-      },
-      deep: true,
-    },
-    chart: {
-      handler: function (value) {
-        this.$emit("input", value);
-      },
-      deep: true,
-    },
-  },
   computed: {
     chartComponent() {
       if (!this.chart) {
@@ -138,6 +124,20 @@ export default {
   },
   beforeMount() {
     this.setDefaults();
+  },
+  watch: {
+    value: {
+      handler: function (value) {
+        this.transform(value);
+      },
+      deep: true,
+    },
+    chart: {
+      handler: function (value) {
+        this.$emit("input", value);
+      },
+      deep: true,
+    },
   },
   mounted() {
     this.getChartSettings();
@@ -200,7 +200,7 @@ export default {
       });
     },
     setupChartOptions() {
-      let options = this.options;
+      const { options } = this;
       if (this.chart.config.display) {
         if (this.chart.config.display.legend) {
           options.legend.display = true;

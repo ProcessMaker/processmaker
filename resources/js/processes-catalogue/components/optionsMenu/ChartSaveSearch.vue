@@ -18,32 +18,6 @@ export default {
       selectedSavedChartId: "",
     };
   },
-  methods: {
-    getChartSettings() {
-      ProcessMaker.apiClient
-        .get(`processes/${this.process.id}/media`)
-        .then((response) => {
-          const firstResponse = response.data.data.shift();
-          const launchpadProperties = JSON.parse(
-            firstResponse?.launchpad_properties,
-          );
-
-          if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
-            this.selectedSavedChart = launchpadProperties.saved_chart_title
-              ? launchpadProperties.saved_chart_title
-              : "";
-            this.selectedSavedChartId = launchpadProperties.saved_chart_id;
-            this.chart = false;
-          } else {
-            this.selectedSavedChart = "";
-            this.selectedSavedChartId = 0;
-          }
-        })
-        .catch((error) => {
-          console.error("Error getting chart id", error);
-        });
-    },
-  }
 };
 </script>
 

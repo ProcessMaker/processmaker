@@ -137,8 +137,7 @@ export default {
       }
       return data;
     },
-    conformCount(data, config)
-    {
+    conformCount(data, config) {
       return {
         datasets: [{
           label: config.display.label ? config.display.label : data.header[0].label,
@@ -148,8 +147,7 @@ export default {
         }]
       };
     },
-    conformSimple(data, config)
-    {
+    conformSimple(data, config) {
       let parsed = {
         labels: [],
         datasets: [this.copy(this.datasetTemplate)],
@@ -168,8 +166,7 @@ export default {
 
       return parsed;
     },
-    conformComplex(data, config)
-    {
+    conformComplex(data, config) {
       let parsed = {
         labels: [],
         datasets: {},

@@ -1,9 +1,9 @@
 <script>
-import { Bar } from 'vue-chartjs'
+import { Bar } from "vue-chartjs"
 
 export default {
   extends: Bar,
-  props: ['data', 'options', 'preview'],
+  props: ["data", "options", "preview"],
   computed: {
     chartData: function() {
       return this.data;
@@ -64,10 +64,10 @@ export default {
       } else {
         this.renderChart(this.previewData, this.previewOptions);
       }
-      this.$emit('render');
+      this.$emit("render");
     },
     describe() {
-      return this.$t('Vertical Bar Graph');
+      return this.$t("Vertical Bar Graph");
     }
   },
   watch: {
@@ -77,6 +77,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

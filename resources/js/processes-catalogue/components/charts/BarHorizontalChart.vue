@@ -1,9 +1,9 @@
 <script>
-import { HorizontalBar } from 'vue-chartjs'
+import { HorizontalBar } from "vue-chartjs"
 
 export default {
   extends: HorizontalBar,
-  props: ['data', 'options', 'preview'],
+  props: ["data", "options", "preview"],
   computed: {
     chartData: function() {
       return this.data;
@@ -59,15 +59,15 @@ export default {
   },
   methods: {
     render() {
-      if (! this.preview) {
+      if (!this.preview) {
         this.renderChart(this.chartData, this.options);
       } else {
         this.renderChart(this.previewData, this.previewOptions);
       }
-      this.$emit('render');
+      this.$emit("render");
     },
     describe() {
-      return this.$t('Horizontal Bar Graph');
+      return this.$t("Horizontal Bar Graph");
     }
   },
   watch: {
@@ -77,6 +77,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

@@ -1,9 +1,9 @@
 <script>
-import { Doughnut } from 'vue-chartjs'
+import { Doughnut } from "vue-chartjs"
 
 export default {
   extends: Doughnut,
-  props: ['data', 'options', 'preview'],
+  props: ["data", "options", "preview"],
   computed: {
     chartData: function() {
       return this.data;
@@ -56,10 +56,10 @@ export default {
       } else {
         this.renderChart(this.previewData, this.previewOptions);
       }
-      this.$emit('render');
+      this.$emit("render");
     },
     describe() {
-      return this.$t('Doughnut Chart');
+      return this.$t("Doughnut Chart");
     },
   },
   watch: {
@@ -69,6 +69,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

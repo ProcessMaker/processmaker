@@ -1,9 +1,9 @@
 <script>
-import { Line } from 'vue-chartjs'
+import { Line } from "vue-chartjs"
 
 export default {
   extends: Line,
-  props: ['data', 'options', 'preview'],
+  props: ["data", "options", "preview"],
   computed: {
     chartData: function() {
       return this.data;
@@ -69,10 +69,10 @@ export default {
       } else {
         this.renderChart(this.previewData, this.previewOptions);
       }
-      this.$emit('render');
+      this.$emit("render");
     },
     describe() {
-      return this.$t('Line Graph');
+      return this.$t("Line Graph");
     }
   },
   watch: {
@@ -82,6 +82,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

@@ -1,28 +1,43 @@
 <template>
-  <div class="list-chart w-100 h-100" v-if="rendered">
-    <div class="list-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center" v-if="preview">
+  <div
+    class="list-chart w-100 h-100"
+    v-if="rendered"
+  >
+    <div
+      class="list-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center"
+      v-if="preview"
+    >
       <i class="fas fa-fw fa-list"></i>
     </div>
-    <div v-else class="list-chart-container w-100 h-100" :style="{backgroundColor: backgroundColor}">
-      <div v-if="! config.display.pivot && config.display.searchable" :class="textVariant" class="list-chart-search-container d-flex flex-column flex-md-row" :style="{height: (pmqlInputHeight + 3) + 'px'}">
-
+    <div
+      v-else
+      class="list-chart-container w-100 h-100"
+      :style="{ backgroundColor: backgroundColor }"
+    >
+      <div
+        v-if="!config.display.pivot && config.display.searchable"
+        :class="textVariant"
+        class="list-chart-search-container d-flex flex-column flex-md-row"
+        :style="{ height: pmqlInputHeight + 3 + 'px' }"
+      >
         <div class="list-chart-search d-flex w-100">
-            <pmql-input 
-              :search-type="savedSearchType ? savedSearchType + 's' : ''"
-              class="mb-2 w-100"
-              :value="query"
-              :ai-enabled="false"
-              :styles="pmqlInputStyles"
-              @submit="onNLQConversion"
-              @inputresize="onInputResize">
-            </pmql-input>
+          <pmql-input
+            :search-type="savedSearchType ? savedSearchType + 's' : ''"
+            class="mb-2 w-100"
+            :value="query"
+            :ai-enabled="false"
+            :styles="pmqlInputStyles"
+            @submit="onNLQConversion"
+            @inputresize="onInputResize"
+          >
+          </pmql-input>
         </div>
       </div>
       <b-table
         class="list-chart-table m-0 h-100 w-100"
         :class="textVariant"
         :head-variant="headVariant"
-        :tbody-tr-class="{clickable: isClickable}"
+        :tbody-tr-class="{ clickable: isClickable }"
         :sticky-header="stickyHeaderHeight"
         :striped="striped"
         :borderless="striped"
@@ -60,21 +75,22 @@
           </div>
         </template>
       </b-table>
-      <div class="sticky-footer text-secondary d-flex align-items-center" :class="textVariant">
+      <div
+        class="sticky-footer text-secondary d-flex align-items-center"
+        :class="textVariant"
+      >
         <div class="flex-grow-1">
           <span v-if="totalRows">
             <span v-if="from == to">
-              {{from}}
+              {{ from }}
             </span>
-            <span v-else>
-              {{from}} - {{to}}
-            </span>
-            of {{totalRows}}
+            <span v-else> {{ from }} - {{ to }} </span>
+            of {{ totalRows }}
             <span v-if="totalRows == 1">
-              {{ $t('Item') }}
+              {{ $t("Item") }}
             </span>
             <span v-else>
-              {{ $t('Items') }}
+              {{ $t("Items") }}
             </span>
           </span>
         </div>
@@ -87,10 +103,24 @@
           hide-ellipsis
           limit="3"
         >
-          <template v-slot:first-text><i class="fas fa-step-backward fa-sm"></i></template>
-          <template v-slot:last-text><i class="fas fa-step-forward fa-sm"></i></template>
-          <template v-slot:prev-text><i class="fas fa-caret-left fa-lg" style="padding-top: 9px;"></i></template>
-          <template v-slot:next-text><i class="fas fa-caret-right fa-lg" style="padding-top: 9px;"></i></template>
+          <template v-slot:first-text
+            ><i class="fas fa-step-backward fa-sm"></i
+          ></template>
+          <template v-slot:last-text
+            ><i class="fas fa-step-forward fa-sm"></i
+          ></template>
+          <template v-slot:prev-text
+            ><i
+              class="fas fa-caret-left fa-lg"
+              style="padding-top: 9px"
+            ></i
+          ></template>
+          <template v-slot:next-text
+            ><i
+              class="fas fa-caret-right fa-lg"
+              style="padding-top: 9px"
+            ></i
+          ></template>
         </b-pagination>
       </div>
     </div>
@@ -99,176 +129,186 @@
 
 <script>
 import ChartDataMixin from "../mixins/ChartData.js";
-//import isPMQL from "../../../../../vendor/processmaker/processmaker/resources/js/modules/isPMQL";
 import { PmqlInput } from "SharedComponents";
 
 export default {
-  mixins: [ ChartDataMixin ],
+  mixins: [ChartDataMixin],
   components: { PmqlInput },
-  props: ['data', 'options', 'config', 'preview', 'additionalPmql', 'savedSearchType'],
-  data: function() {
+  props: [
+    "data",
+    "options",
+    "config",
+    "preview",
+    "additionalPmql",
+    "savedSearchType",
+  ],
+  data: function () {
     return {
       originalData: null,
       rendered: false,
       chartData: null,
       chartOptions: null,
       currentPage: 1,
-      dataFilter: '',
-      dataPmql: '',
+      dataFilter: "",
+      dataPmql: "",
       pmqlInputHeight: 38,
       firstLoad: true,
       fields: [],
       perPage: 50,
-      filter: '',
+      filter: "",
       from: 0,
-      orderBy: '#',
-      orderDirection: 'DESC',
+      orderBy: "#",
+      orderDirection: "DESC",
       to: 0,
       totalRows: 0,
       totalPages: 0,
       pages: {},
       preloads: {},
-      query: '',
+      query: "",
       url: null,
-    }
+    };
   },
   computed: {
-    stickyHeaderHeight: function() {
+    stickyHeaderHeight: function () {
       let height = 38 + this.pmqlInputHeight;
       return "calc(100% - " + height + "px)";
     },
-    pmqlInputStyles: function() {
+    pmqlInputStyles: function () {
       return {
         container: {
           backgroundColor: this.searchInputBackgroundColor,
           borderColor: this.searchInputBorderColor,
         },
         input: {
-          color: this.searchInputTextColor
+          color: this.searchInputTextColor,
         },
         pmql: {
-          color: this.searchInputTextColor
+          color: this.searchInputTextColor,
         },
         icons: {
-          color: this.searchInputTextColor
+          color: this.searchInputTextColor,
         },
         separators: {
           borderColor: this.searchInputBorderColor,
         },
-      }
+      };
     },
-    orderDesc: function() {
-      if (this.orderDirection.toLowerCase() == 'desc') {
+    orderDesc: function () {
+      if (this.orderDirection.toLowerCase() === "desc") {
         return true;
       } else {
         return false;
       }
     },
-    backgroundColor: function() {
+    backgroundColor: function () {
       return this.config.colorScheme.colors[0];
     },
-    searchInputBackgroundColor: function() {
-      if (this.backgroundColor !== '#fff') {
-        return 'rgba(0, 0, 0, .3)';
+    searchInputBackgroundColor: function () {
+      if (this.backgroundColor !== "#fff") {
+        return "rgba(0, 0, 0, .3)";
       }
       return null;
     },
-    searchInputBorderColor: function() {
-      if (this.backgroundColor !== '#fff') {
+    searchInputBorderColor: function () {
+      if (this.backgroundColor !== "#fff") {
         return this.backgroundColor;
       }
       return null;
     },
-    searchInputTextColor: function() {
-      if (this.backgroundColor !== '#fff') {
-        return '#fff';
+    searchInputTextColor: function () {
+      if (this.backgroundColor !== "#fff") {
+        return "#fff";
       }
       return null;
     },
-    searchButtonBackgroundColor: function() {
-      if (this.backgroundColor !== '#fff') {
+    searchButtonBackgroundColor: function () {
+      if (this.backgroundColor !== "#fff") {
         return this.backgroundColor;
       }
       return null;
     },
-    headVariant: function() {
-      if (this.backgroundColor === '#fff') {
-        return 'light';
+    headVariant: function () {
+      if (this.backgroundColor === "#fff") {
+        return "light";
       } else {
-        return 'dark';
+        return "dark";
       }
     },
-    textVariant: function() {
+    textVariant: function () {
       let classes = [];
-      if (this.backgroundColor === '#fff') {
-        classes.push('list-chart-dark');
+      if (this.backgroundColor === "#fff") {
+        classes.push("list-chart-dark");
       } else {
-        classes.push('list-chart-white');
+        classes.push("list-chart-white");
       }
 
-      if (! this.config.display.pivot && this.config.display.searchable) {
-        classes.push('list-chart-searchable');
+      if (!this.config.display.pivot && this.config.display.searchable) {
+        classes.push("list-chart-searchable");
       }
 
-      return classes.join(' ');
+      return classes.join(" ");
     },
-    linkVariant: function() {
-      if (this.backgroundColor === '#fff') {
-        return 'text-primary';
+    linkVariant: function () {
+      if (this.backgroundColor === "#fff") {
+        return "text-primary";
       } else {
-        return 'text-white';
+        return "text-white";
       }
     },
-    striped: function() {
-      if (this.backgroundColor === '#fff') {
+    striped: function () {
+      if (this.backgroundColor === "#fff") {
         return false;
       }
       return true;
     },
-    previewData: function() {
+    previewData: function () {
       return {
-        datasets: [{
-          data: [
-            42
-          ],
-          label: 'Preview',
-          icon: 'chart-line',
-        }]
+        datasets: [
+          {
+            data: [42],
+            label: "Preview",
+            icon: "chart-line",
+          },
+        ],
       };
     },
-    previewOptions: function() {
+    previewOptions: function () {
       return {};
     },
-    isClickable: function() {
+    isClickable: function () {
       if (!this.config.display.pivot && this.config.display.linkRow) {
         return true;
       }
       return false;
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.render();
     this.originalData = JSON.stringify(this.data);
   },
   methods: {
     uid(page, filter) {
-      return page + '::' + encodeURIComponent(filter);
+      return page + "::" + encodeURIComponent(filter);
     },
     pageFromUid(uid) {
-      return parseInt(uid.split('::')[0]);
+      return parseInt(uid.split("::")[0]);
     },
     filterFromUid(uid) {
-      return decodeURIComponent(uid.split('::')[1]);
+      return decodeURIComponent(uid.split("::")[1]);
     },
     dataProvider(context, callback) {
       const uid = this.uid(context.currentPage, context.filter);
 
-      if (context.filter && typeof context.filter === 'string' && context.filter.isPMQL()) {
+      if (
+        context.filter &&
+        typeof context.filter === "string" &&
+        context.filter.isPMQL()
+      ) {
         this.dataPmql = context.filter;
-        this.dataFilter = '';
+        this.dataFilter = "";
       } else {
         this.dataFilter = context.filter;
-        this.dataPmql = '';
+        this.dataPmql = "";
       }
 
       this.setOrder(context);
@@ -280,7 +320,7 @@ export default {
       }
 
       if (!this.pages[uid]) {
-        this.getPage(uid).then(response => {
+        this.getPage(uid).then((response) => {
           if (response && response.rows) {
             callback(response.rows);
           } else {
@@ -301,8 +341,11 @@ export default {
       let prevOrderBy = this.orderBy;
       let prevOrderDirection = this.orderDirection;
       this.orderBy = context.sortBy;
-      this.orderDirection = context.sortDesc ? 'DESC' : 'ASC';
-      if (prevOrderBy != this.orderBy || prevOrderDirection != this.orderDirection) {
+      this.orderDirection = context.sortDesc ? "DESC" : "ASC";
+      if (
+        prevOrderBy != this.orderBy ||
+        prevOrderDirection != this.orderDirection
+      ) {
         this.clear();
       }
     },
@@ -326,7 +369,7 @@ export default {
       if (page <= this.totalPages) {
         if (!this.preloads[uid]) {
           return new Promise((resolve, reject) => {
-            ProcessMaker.apiClient.get(this.pageUrl(page)).then(response => {
+            ProcessMaker.apiClient.get(this.pageUrl(page)).then((response) => {
               this.pages[uid] = this.transformChartData(response.data);
               resolve(this.pages[uid]);
             });
@@ -350,9 +393,9 @@ export default {
     onRowClicked(record, index, event) {
       if (record.ProcessMaker__url) {
         if (!this.config.display.pivot && this.config.display.linkRow) {
-          let target = '_self';
+          let target = "_self";
           if (event.metaKey || event.ctrlKey) {
-            target = '_blank';
+            target = "_blank";
           }
           window.open(record.ProcessMaker__url, target);
         }
@@ -361,18 +404,19 @@ export default {
     onRowMiddleClicked(record, index, event) {
       if (record.ProcessMaker__url) {
         if (!this.config.display.pivot && this.config.display.linkRow) {
-          window.open(record.ProcessMaker__url, '_blank');
+          window.open(record.ProcessMaker__url, "_blank");
         }
       }
     },
     pageUrl(page) {
-      let url = `${this.url}?` +
-                `data_page=${page}&` +
-                `data_per_page=${this.perPage}&` +
-                `data_order_by=${encodeURIComponent(this.orderBy)}&` +
-                `data_order_direction=${this.orderDirection}&` +
-                `data_filter=${this.dataFilter}&` +
-                `data_pmql=${this.dataPmql}`;
+      let url =
+        `${this.url}?` +
+        `data_page=${page}&` +
+        `data_per_page=${this.perPage}&` +
+        `data_order_by=${encodeURIComponent(this.orderBy)}&` +
+        `data_order_direction=${this.orderDirection}&` +
+        `data_filter=${this.dataFilter}&` +
+        `data_pmql=${this.dataPmql}`;
 
       if (this.additionalPmql && this.additionalPmql.length) {
         url += `&additional_pmql=${this.additionalPmql}`;
@@ -386,15 +430,15 @@ export default {
       this.currentPage = 1;
     },
     render() {
-      if (! this.preview) {
+      if (!this.preview) {
         this.renderChart(this.data, this.options);
       } else {
         this.renderPreview();
       }
-      this.$emit('render');
+      this.$emit("render");
     },
     describe() {
-      return this.$t('Data Table');
+      return this.$t("Data Table");
     },
     renderPreview() {
       this.rendered = true;
@@ -420,238 +464,238 @@ export default {
   },
   watch: {
     data: {
-      handler: function(value) {
+      handler: function (value) {
         if (JSON.stringify(value) !== this.originalData) {
           this.clear();
           this.render();
         }
       },
-      deep: true
+      deep: true,
     },
     filter(filter) {
       this.currentPage = 1;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss">
-  @import "../../../../../vendor/processmaker/package-savedsearch/resources/sass/_variables.scss";
-  $animationLength: 500ms;
-  $footerHeight: 35px;
+@import "../../../../../vendor/processmaker/package-savedsearch/resources/sass/_variables.scss";
+$animationLength: 500ms;
+$footerHeight: 35px;
 
-  $searchHeight: 40px;
-  $searchPadding: 1px;
+$searchHeight: 40px;
+$searchPadding: 1px;
 
-  $listChartWhite: white !important;
-  $listChartDark: #212529 !important;
+$listChartWhite: white !important;
+$listChartDark: #212529 !important;
 
-  .list-chart {
+.list-chart {
+  .list-chart-header {
+    padding: 0;
+    width: 120px;
+  }
+
+  .list-chart-icon {
+    opacity: 0;
+    transform: scale(1.75);
+    transition: all $animationLength ease-in;
+  }
+
+  &[max-width~="220px"] {
     .list-chart-header {
-      padding: 0;
-      width: 120px;
+      display: none !important;
+    }
+  }
+
+  .list-chart-text {
+    cursor: default;
+    line-height: 1;
+    opacity: 0;
+    transform: translate(30px, 0);
+    transition: all $animationLength ease-in;
+  }
+
+  .list-chart-metric {
+    font-size: 3rem;
+  }
+
+  .list-chart-label {
+    font-size: 1rem;
+  }
+
+  .list-chart-preview {
+    color: #a6cee3;
+    font-size: 1.9rem;
+  }
+
+  .list-chart-search-container {
+    height: $searchHeight + $searchPadding;
+    padding: $searchPadding;
+    width: 100%;
+    z-index: 3;
+
+    &.list-chart-dark {
+      background: #fff;
     }
 
-    .list-chart-icon {
-      opacity: 0;
-      transform: scale(1.75);
-      transition: all $animationLength ease-in;
-    }
+    &.list-chart-white {
+      background-color: rgba(0, 0, 0, 0.65) !important;
 
-    &[max-width~="220px"] {
-      .list-chart-header {
-        display: none !important;
+      @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        background-color: rgba(0, 0, 0, 0.25) !important;
       }
     }
 
-    .list-chart-text {
-      cursor: default;
-      line-height: 1;
-      opacity: 0;
-      transform: translate(30px, 0);
-      transition: all $animationLength ease-in;
+    .list-chart-search {
+      .btn {
+        height: $searchHeight;
+      }
+
+      .form-control,
+      .form-control:active,
+      .form-control:focus {
+        border-bottom-right-radius: 0;
+        border-right-width: 0;
+        border-top-right-radius: 0;
+        color: gray;
+        height: $searchHeight;
+
+        &.list-chart-white::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+      }
+
+      .btn-search-run {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 2px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 2px;
+      }
+    }
+  }
+
+  .list-chart-table {
+    font-size: 0.8rem;
+    th {
+      border-bottom-width: 1px !important;
+      border-top-width: 0 !important;
     }
 
-    .list-chart-metric {
-      font-size: 3rem;
-    }
-
-    .list-chart-label {
-      font-size: 1rem;
-    }
-
-    .list-chart-preview {
-      color: #a6cee3;
-      font-size: 1.9rem;
-    }
-
-    .list-chart-search-container {
-      height: $searchHeight + $searchPadding;
-      padding: $searchPadding;
-      width: 100%;
-      z-index: 3;
-
-      &.list-chart-dark {
+    &.list-chart-dark {
+      th {
         background: #fff;
       }
 
-      &.list-chart-white {
-        background-color: rgba(0, 0, 0, 0.65) !important;
+      table.table {
+        color: $listChartDark;
+      }
 
-        @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+      th {
+        color: $listChartDark;
+      }
+
+      tr:hover {
+        color: $listChartDark;
+      }
+    }
+
+    &.list-chart-white {
+      th {
+        background-color: rgba(0, 0, 0, 0.65) !important;
+      }
+
+      @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+        th {
           -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
           background-color: rgba(0, 0, 0, 0.25) !important;
         }
       }
 
-      .list-chart-search {
-        .btn {
-          height: $searchHeight;
-        }
-
-        .form-control,
-        .form-control:active,
-        .form-control:focus {
-          border-bottom-right-radius: 0;
-          border-right-width: 0;
-          border-top-right-radius: 0;
-          color: gray;
-          height: $searchHeight;
-
-          &.list-chart-white::placeholder {
-            color: rgba(255, 255, 255, .4);
-          }
-        }
-
-        .btn-search-run {
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 2px;
-          border-top-left-radius: 0;
-          border-top-right-radius: 2px;
-        }
+      table.table {
+        color: $listChartWhite;
       }
-    }
 
-    .list-chart-table {
-      font-size: .8rem;
       th {
-        border-bottom-width: 1px !important;
-        border-top-width: 0 !important;
+        color: $listChartWhite;
       }
 
-      &.list-chart-dark {
-        th {
-          background: #fff;
-        }
-
-        table.table {
-          color: $listChartDark;
-        }
-
-        th {
-          color: $listChartDark;
-        }
-
-        tr:hover {
-          color: $listChartDark;
-        }
-      }
-
-      &.list-chart-white {
-        th {
-          background-color: rgba(0, 0, 0, 0.65) !important;
-        }
-
-        @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-          th {
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            background-color: rgba(0, 0, 0, 0.25) !important;
-          }
-        }
-
-        table.table {
-          color: $listChartWhite;
-        }
-
-        th {
-          color: $listChartWhite;
-        }
-
-        tr:hover {
-          color: $listChartWhite;
-        }
+      tr:hover {
+        color: $listChartWhite;
       }
     }
+  }
 
-    .clickable {
-      cursor: pointer !important;
+  .clickable {
+    cursor: pointer !important;
+  }
+
+  .b-table-bottom-row {
+    opacity: 0;
+  }
+
+  .bottom-padding {
+    display: block;
+    height: $footerHeight;
+    pointer-events: none;
+  }
+
+  .sticky-footer {
+    background: white;
+    bottom: 0;
+    height: $footerHeight;
+    padding-left: 8px;
+    padding-right: 2px;
+    position: relative !important;
+    width: 100%;
+
+    &.list-chart-dark {
+      border-top: 1px solid #ddd;
     }
+  }
 
-    .b-table-bottom-row {
-      opacity: 0;
-    }
-
-    .bottom-padding {
-      display: block;
-      height: $footerHeight;
-      pointer-events: none;
-    }
-
-    .sticky-footer {
-      background: white;
-      bottom: 0;
-      height: $footerHeight;
-      padding-left: 8px;
-      padding-right: 2px;
-      position: relative !important;
-      width: 100%;
-
-      &.list-chart-dark {
-        border-top: 1px solid #ddd;
+  .b-pagination {
+    .page-item {
+      .page-link {
+        background-color: lighten($secondary, 44%);
+        border-radius: 2px;
+        color: $secondary;
+        cursor: pointer;
+        font-size: 12px;
+        height: 29px;
+        line-height: 29px;
+        margin: 1px;
+        padding: 0;
+        text-align: center;
+        width: 29px;
       }
-    }
-
-    .b-pagination {
-      .page-item {
+      &:hover {
+        .page-link {
+          background-color: lighten($secondary, 40%);
+        }
+      }
+      &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
         .page-link {
           background-color: lighten($secondary, 44%);
-          border-radius: 2px;
-          color: $secondary;
-          cursor: pointer;
-          font-size: 12px;
-          height: 29px;
-          line-height: 29px;
-          margin: 1px;
-          padding: 0;
-          text-align: center;
-          width: 29px;
+        }
+      }
+      &.active {
+        .page-link {
+          background-color: lighten($secondary, 15%);
+          color: white;
         }
         &:hover {
           .page-link {
-            background-color: lighten($secondary, 40%);
-          }
-        }
-        &.disabled {
-          cursor: not-allowed;
-          opacity: .5;
-          .page-link {
-            background-color: lighten($secondary, 44%);
-          }
-        }
-        &.active {
-          .page-link {
-            background-color: lighten($secondary, 15%);
-            color: white;
-          }
-          &:hover {
-            .page-link {
-              background-color: lighten($secondary, 11%);
-            }
+            background-color: lighten($secondary, 11%);
           }
         }
       }
     }
   }
+}
 </style>
