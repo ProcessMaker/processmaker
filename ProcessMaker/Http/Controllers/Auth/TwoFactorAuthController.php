@@ -163,10 +163,7 @@ class TwoFactorAuthController extends Controller
         } catch (Exception $error) {
             return response()->json([
                 'status' => 'error',
-                'message' => __(
-                    'Unable send email. Please check your email server settings. '
-                    . $error->getMessage()
-                ),
+                'message' => __('Unable to send email. Please check your email server settings.'),
             ], 500);
         }
         return true;
@@ -186,7 +183,7 @@ class TwoFactorAuthController extends Controller
 
             // Build body
             $body = $user->username . PHP_EOL . PHP_EOL;
-            $body .= __('This is sms test') . PHP_EOL . PHP_EOL;
+            $body .= __('This is a test') . PHP_EOL . PHP_EOL;
 
             // Send SMS using Twilio SDK
             $twilio = new Client($sid, $token);
@@ -199,10 +196,7 @@ class TwoFactorAuthController extends Controller
         } catch (Exception $error) {
             return response()->json([
                 'status' => 'error',
-                'message' => __(
-                    'Unable to send SMS. Please check your cell number and SMS server settings. '
-                    . $error->getMessage()
-                ),
+                'message' => __('Unable to send SMS. Please check your cell number and SMS server settings.'),
             ], 500);
         }
         return true;
