@@ -179,8 +179,6 @@ export default {
             this.selectedSavedChartId = 0;
           }
           this.fetchChart(this.selectedSavedChartId);
-          console.log('width : ', this.width);
-    console.log('height : ', this.height);
         })
         .catch((error) => {
           console.error("Error getting chart id", error);
