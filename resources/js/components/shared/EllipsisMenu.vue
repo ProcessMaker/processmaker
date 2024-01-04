@@ -75,23 +75,25 @@
           />
         </b-input-group>
       </div>
-      <div v-for="action in filterActions">
-        <b-dropdown-divider v-if="action.value == 'divider'"/>
-        <b-dropdown-item
-          v-else
-          :key="action.value"
-          :href="action.link ? itemLink(action, data) : null"
-          class="ellipsis-dropdown-item mx-auto"
-          @click="!action.link ? onClick(action, data) : null"
-        >
-          <div class="ellipsis-dropdown-content">
-            <i
-              class="pr-1 fa-fw"
-              :class="action.icon"
-            />
-            <span>{{ $t(action.content) }}</span>
-          </div>
-        </b-dropdown-item>
+      <div v-for="action in filterActions" :key="action.value">
+        <div v-if="action.value !== 'edit-launchpad' || isProcessesCatalogueInUrl()">
+          <b-dropdown-divider v-if="action.value == 'divider'"/>
+          <b-dropdown-item
+            v-else
+            :key="action.value"
+            :href="action.link ? itemLink(action, data) : null"
+            class="ellipsis-dropdown-item mx-auto"
+            @click="!action.link ? onClick(action, data) : null"
+          >
+            <div class="ellipsis-dropdown-content">
+              <i
+                class="pr-1 fa-fw"
+                :class="action.icon"
+              />
+              <span>{{ $t(action.content) }}</span>
+            </div>
+          </b-dropdown-item>
+        </div>
       </div>
     </div>
   </b-dropdown>
@@ -220,6 +222,11 @@ export default {
         }
       });
     },
+    isProcessesCatalogueInUrl() {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes("processes-catalogue");
+      return isInUrl;
+    }
   },
 };
 </script>
