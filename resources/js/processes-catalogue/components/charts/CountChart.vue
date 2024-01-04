@@ -1,12 +1,12 @@
 <template>
   <div
+    v-if="rendered"
     class="count-chart w-100 h-100"
     :class="{ animated: animated }"
-    v-if="rendered"
   >
     <div
-      class="count-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center"
       v-if="preview"
+      class="count-chart-preview d-flex align-items-center justify-content-center w-100 h-100 rounded-sm text-center"
     >
       <p class="count-chart-text count-chart-metric m-0 font-weight-bold">
         {{ chartData.datasets[0].data[0] }}
@@ -81,7 +81,7 @@ export default {
       return this.chartData.datasets[0].backgroundColor[0];
     },
     textVariant: function () {
-      if (this.chartData.datasets[0].backgroundColor[0] == "#fff") {
+      if (this.chartData.datasets[0].backgroundColor[0] === "#fff") {
         return "muted";
       }
 
