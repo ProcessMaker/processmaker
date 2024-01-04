@@ -78,6 +78,27 @@ export default {
                 }
             );
             break;
+          case "archive-item-launchpad":
+            ProcessMaker.confirmModal(
+              this.$t("Caution!"),
+              this.$t("Are you sure you want to archive the process") +
+              data.name +
+              "?",
+              "",
+              () => {
+                ProcessMaker.apiClient
+                  .delete("processes/" + data.id)
+                  .then(response => {
+                    ProcessMaker.alert(
+                      this.$t("The process was archived."),
+                      "success"
+                    );
+                    // @TODO Behaviour
+                    console.log("TODO ACTION")
+                  });
+              }
+            );
+            break;
 
           case "download-bpmn":
             ProcessMaker.confirmModal(

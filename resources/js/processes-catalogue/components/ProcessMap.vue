@@ -123,7 +123,17 @@ export default {
       this.$refs["modal-save-version"].showModal();
     },
     getActions() {
-      this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
+      this.processLaunchpadActions = this.processActions
+        .filter((action) => action.value !== "open-launchpad" && action.value !== "archive-item");
+      this.processLaunchpadActions.push(
+        {
+          value: "archive-item-launchpad",
+          content: "Archive",
+          permission: ["archive-processes", "view-additional-asset-actions"],
+          icon: "fas fa-archive",
+          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
+        },
+      );
     },
     /** Rerun a process cards from process info */
     goBack() {
