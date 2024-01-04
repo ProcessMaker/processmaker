@@ -5,8 +5,8 @@
         pill
         :variant="isAuthorized ? 'success' : 'warning'"
       >
-        <span v-if="isAuthorized">{{ $t('Authorized') }}</span>
-        <span v-else>{{ $t('Not Authorized') }}</span>
+        <span v-if="isAuthorized">{{ $t("Authorized") }}</span>
+        <span v-else>{{ $t("Not Authorized") }}</span>
       </b-badge>
     </div>
     <div v-else>
@@ -24,34 +24,34 @@
         class="d-block"
       >
         <div>
-          <h5
-            v-if="setting.name"
-            class="mb-0"
-          >
-            {{ $t(setting.name) }}
+          <h5 class="mb-0">
+            <span v-if="setting.name">{{ $t(setting.name) }}</span>
+            <span v-else>{{ $t(setting.key) }}</span>
           </h5>
-          <h5
-            v-else
-            class="mb-0"
-          >
-            {{ setting.key }}
-          </h5>
-          <small class="form-text text-muted">{{ $t('Configure the driver connection properties.') }}</small>
+          <small class="form-text text-muted">{{
+            $t("Configure the driver connection properties.")
+          }}</small>
         </div>
         <button
           type="button"
-          :aria-label="$t('Close')"
           class="close"
+          :aria-label="$t('Close')"
           @click="onCancel"
         >
-          ×
+          &times;
         </button>
       </template>
       <div>
         <b-form-group
           required
           :label="$t('Client ID')"
-          :description="formDescription('The client ID assigned when you register your application.', 'client_id', errors)"
+          :description="
+            formDescription(
+              'The client ID assigned when you register your application.',
+              'client_id',
+              errors
+            )
+          "
           :invalid-feedback="errorMessage('client_id', errors)"
           :state="errorState('client_id', errors)"
         >
@@ -69,7 +69,13 @@
         <b-form-group
           required
           :label="$t('Client Secret')"
-          :description="formDescription('The client secret assigned when you register your application.', 'client_secret', errors)"
+          :description="
+            formDescription(
+              'The client secret assigned when you register your application.',
+              'client_secret',
+              errors
+            )
+          "
           :invalid-feedback="errorMessage('client_secret', errors)"
           :state="errorState('client_secret', errors)"
         >
@@ -103,7 +109,13 @@
         <b-form-group
           required
           :label="$t('Redirect URL')"
-          :description="formDescription('This value must match the callback URL you specify in your app settings.', 'callback_url', errors)"
+          :description="
+            formDescription(
+              'This value must match the callback URL you specify in your app settings.',
+              'callback_url',
+              errors
+            )
+          "
           :invalid-feedback="errorMessage('callback_url', errors)"
           :state="errorState('callback_url', errors)"
         >
@@ -145,7 +157,7 @@
           data-cy="cancel-button"
           @click="onCancel"
         >
-          {{ $t('Cancel') }}
+          {{ $t("Cancel") }}
         </button>
         <button
           type="button"
@@ -154,7 +166,7 @@
           :disabled="isButtonDisabled"
           @click="onSave"
         >
-          {{ $t('Authorize') }}
+          {{ $t("Authorize") }}
         </button>
       </div>
     </b-modal>
@@ -169,7 +181,7 @@
       no-fade
     >
       <div class="text-center">
-        <h3>{{ $t('Connecting Driver') }}</h3>
+        <h3>{{ $t("Connecting Driver") }}</h3>
         <i class="fas fa-circle-notch fa-spin fa-3x p-0 text-primary" />
       </div>
     </b-modal>
@@ -259,11 +271,20 @@ export default {
   },
   methods: {
     onCopy() {
-      navigator.clipboard.writeText(this.formData.callback_url).then(() => {
-        ProcessMaker.alert(this.$t("The setting was copied to your clipboard."), "success");
-      }, () => {
-        ProcessMaker.alert(this.$t("The setting was not copied to your clipboard."), "danger");
-      });
+      navigator.clipboard.writeText(this.formData.callback_url).then(
+        () => {
+          ProcessMaker.alert(
+            this.$t("The setting was copied to your clipboard."),
+            "success",
+          );
+        },
+        () => {
+          ProcessMaker.alert(
+            this.$t("The setting was not copied to your clipboard."),
+            "danger",
+          );
+        },
+      );
     },
     togglePassword() {
       if (this.type === "text") {
@@ -298,7 +319,8 @@ export default {
       this.showAuthorizingModal = true;
       this.showModal = false;
       this.resetData = false;
-      ProcessMaker.apiClient.post(`settings/${this.setting.id}/get-oauth-url`, this.formData)
+      ProcessMaker.apiClient
+        .post(`settings/${this.setting.id}/get-oauth-url`, this.formData)
         .then((response) => {
           window.location = response.data?.url;
         })
