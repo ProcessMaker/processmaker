@@ -32,6 +32,7 @@
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates"
             :category="category"
+            :key="key"
             @openProcess="openProcess"
           />
           <ProcessInfo
@@ -82,6 +83,8 @@ export default {
       guidedTemplates: false,
       numCategories: 15,
       page: 1,
+      key: 0,
+      totalPages: 1,
     };
   },
   mounted() {
@@ -100,11 +103,14 @@ export default {
      * Get list of categories
      */
     getCategories() {
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
-        .then((response) => {
-          this.listCategories = [...this.listCategories, ...response.data.data];
-        });
+      if (this.page <= this.totalPages) {
+        ProcessMaker.apiClient
+          .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+          .then((response) => {
+            this.listCategories = [...this.listCategories, ...response.data.data];
+            this.totalPages = response.data.meta.total_pages;
+          });
+      }
     },
     /**
      * Check if there is a pre-selected process
@@ -125,6 +131,9 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      if (this.category === value) {
+        this.key += 1;
+      }
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;

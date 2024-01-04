@@ -16,6 +16,7 @@
         v-model="filter"
         class="ml-1"
         :placeholder="$t('Search Processes')"
+        @keyup.enter="fetch()"
       />
     </b-input-group>
   </div>
