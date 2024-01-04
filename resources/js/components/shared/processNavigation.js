@@ -93,8 +93,7 @@ export default {
                       this.$t("The process was archived."),
                       "success"
                     );
-                    // @TODO Behaviour
-                    console.log("TODO ACTION")
+                    this.goBack();
                   });
               }
             );

@@ -124,16 +124,16 @@ export default {
     },
     getActions() {
       this.processLaunchpadActions = this.processActions
-        .filter((action) => action.value !== "open-launchpad" && action.value !== "archive-item");
-      this.processLaunchpadActions.push(
-        {
-          value: "archive-item-launchpad",
-          content: "Archive",
-          permission: ["archive-processes", "view-additional-asset-actions"],
-          icon: "fas fa-archive",
-          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
-        },
-      );
+        .filter((action) => action.value !== "open-launchpad");
+
+      const newAction = {
+        value: "archive-item-launchpad",
+        content: "Archive",
+        permission: ["archive-processes", "view-additional-asset-actions"],
+        icon: "fas fa-archive",
+        conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
+      };
+      this.processLaunchpadActions = this.processLaunchpadActions.map((action) => (action.value !== "archive-item" ? action : newAction));
     },
     /** Rerun a process cards from process info */
     goBack() {
