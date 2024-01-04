@@ -744,6 +744,23 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * PMQL value alias for the process name field related to process request
+     *
+     * @param string value
+     * @param ProcessMaker\Query\Expression expression
+     *
+     * @return callable
+     */
+    public function valueAliasName(string $value, Expression $expression): callable
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('processRequest', function ($query) use ($expression, $value) {
+                $query->where('name', $expression->operator, $value);
+            });
+        };
+    }
+
+    /**
      * PMQL wildcard for process request & data fields
      *
      * @param string $value
