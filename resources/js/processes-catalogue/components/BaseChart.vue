@@ -22,7 +22,7 @@
         <img
           src="/img/launchpad-images/defaultImage.svg"
           alt="Chart"
-          style="width: 100%; height: 100%; object-fit: cover"
+          style="width: 90%; height: 90%; object-fit: cover; margin-top: 10px"
         >
       </div>
     </div>
