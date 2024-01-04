@@ -351,13 +351,6 @@ export default {
     show() {
       this.$bvModal.show("createScript");
     },
-    getAdminUser() {
-      ProcessMaker.apiClient
-        .get(`/users/${this.userRunScript}`)
-        .then((response) => {
-          this.selectedUser = response.data;
-        });
-    },
     onClose() {
       this.title = "";
       this.language = "";
@@ -370,7 +363,6 @@ export default {
       this.retry_attempts = 0;
       this.retry_wait_time = 5;
       this.addError = {};
-      this.getAdminUser();
       this.projects = [];
       this.close();
     },
