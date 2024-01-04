@@ -17,6 +17,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Query\Expression;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
@@ -705,6 +706,40 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         return function ($query) use ($expression, $value) {
             $query->where('process_request_tokens.element_name', $expression->operator, $value);
+        };
+    }
+
+    /**
+     * PMQL value alias for the case number field related to process request
+     *
+     * @param string value
+     * @param ProcessMaker\Query\Expression expression
+     *
+     * @return callable
+     */
+    public function valueAliasCase_Number(string $value, Expression $expression): callable
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('processRequest', function ($query) use ($expression, $value) {
+                return $query->where('case_number', $expression->operator, $value);
+            });
+        };
+    }
+
+    /**
+     * PMQL value alias for the case title field related to process request
+     *
+     * @param string value
+     * @param ProcessMaker\Query\Expression expression
+     *
+     * @return callable
+     */
+    public function valueAliasCase_Title(string $value, Expression $expression): callable
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('processRequest', function ($query) use ($expression, $value) {
+                $query->where('case_title', $expression->operator, $value);
+            });
         };
     }
 
