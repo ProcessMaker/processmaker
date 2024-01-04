@@ -111,7 +111,7 @@ import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverTasksMixin from "./PMColumnFilterPopoverTasksMixin.js";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -125,7 +125,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverTasksMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {
     filter: {},
     columns: {},
@@ -193,7 +193,7 @@ export default {
   },
   mounted: function mounted() {
     this.getAssignee("");
-    this.getFilterConfiguration("task");
+    this.getFilterConfiguration("taskFilter");
     this.setupColumns();
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
@@ -267,6 +267,13 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+        },
+        {
+          label: "ASSIGNEE",
+          field: "assignee",
+          sortable: true,
+          default: true,
+          width: 140,
         },
         {
           label: "DUE DATE",
@@ -374,7 +381,39 @@ export default {
       this.page = page;
       this.fetch();
     },
-  },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["Self Service", "In Progress", "Completed"];
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      this.orderBy = by;
+      this.order_direction = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/taskFilter";
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.order_direction
+        }
+      };
+      ProcessMaker.apiClient.put(url, config);
+    }
+  }
 };
 </script>
 

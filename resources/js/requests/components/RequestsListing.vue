@@ -92,7 +92,7 @@ import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverRequestMixin from "./PMColumnFilterPopoverRequestMixin.js";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -104,7 +104,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverRequestMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {
     filter: {},
     columns: {},
@@ -142,7 +142,7 @@ export default {
   },
   mounted() {
     this.getParticipants("");
-    this.getFilterConfiguration("request");
+    this.getFilterConfiguration("requestFilter");
     this.setupColumns();
   },
   methods: {
@@ -461,7 +461,39 @@ export default {
       this.page = page;
       this.fetch();
     },
-  },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["In Progress", "Completed", "Error", "Canceled"];
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      this.orderBy = by;
+      this.orderDirection = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/requestFilter";
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.orderDirection
+        }
+      };
+      ProcessMaker.apiClient.put(url, config);
+    }
+  }
 };
 </script>
 <style>

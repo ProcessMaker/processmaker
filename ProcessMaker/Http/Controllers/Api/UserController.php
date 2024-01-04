@@ -670,7 +670,7 @@ class UserController extends Controller
      */
     public function getFilterConfiguration(String $name, Request $request) 
     {
-        $filter = SaveSession::getFilterConfiguration($name, $request->user());
+        $filter = SaveSession::getConfigFilter($name, $request->user());
         return response(["data" => $filter], 200);
     }
 
@@ -704,7 +704,8 @@ class UserController extends Controller
      */
     public function storeFilterConfiguration(String $name, Request $request) 
     {
-        $filter = SaveSession::storeFilterConfiguration($name, $request->user(), $request->json()->all());
+        $a = $request->json()->all();
+        $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
         return response(["data" => $filter], 200);
     }
 }

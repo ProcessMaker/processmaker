@@ -53,6 +53,7 @@
       },
       onChangeSort(value) {
         this.$emit("onChangeSort", value);
+        this.popoverShow = false;
       },
       onApply(json) {
         this.popoverShow = false;
