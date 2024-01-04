@@ -10,7 +10,7 @@
       </b-badge>
     </div>
     <div v-else>
-      Empty
+      {{ $t("Empty") }}
     </div>
     <b-modal
       v-model="showModal"
@@ -28,9 +28,9 @@
             <span v-if="setting.name">{{ $t(setting.name) }}</span>
             <span v-else>{{ $t(setting.key) }}</span>
           </h5>
-          <small class="form-text text-muted">{{
-            $t("Configure the driver connection properties.")
-          }}</small>
+          <small class="form-text text-muted">
+            {{ $t("Configure the driver connection properties.") }}
+          </small>
         </div>
         <button
           type="button"
@@ -42,104 +42,11 @@
         </button>
       </template>
       <div>
-        <b-form-group
-          required
-          :label="$t('Client ID')"
-          :description="
-            formDescription(
-              'The client ID assigned when you register your application.',
-              'client_id',
-              errors
-            )
-          "
-          :invalid-feedback="errorMessage('client_id', errors)"
-          :state="errorState('client_id', errors)"
-        >
-          <b-form-input
-            v-model="formData.client_id"
-            required
-            autofocus
-            autocomplete="off"
-            :state="errorState('client_id', errors)"
-            name="client_id"
-            data-cy="client_id"
-          />
-        </b-form-group>
-
-        <b-form-group
-          required
-          :label="$t('Client Secret')"
-          :description="
-            formDescription(
-              'The client secret assigned when you register your application.',
-              'client_secret',
-              errors
-            )
-          "
-          :invalid-feedback="errorMessage('client_secret', errors)"
-          :state="errorState('client_secret', errors)"
-        >
-          <b-input-group>
-            <b-form-input
-              v-model="formData.client_secret"
-              required
-              autofocus
-              autocomplete="off"
-              trim
-              :type="type"
-              :state="errorState('client_secret', errors)"
-              name="client_secret"
-              data-cy="client_secret"
-            />
-            <b-input-group-append>
-              <b-button
-                :aria-label="$t('Toggle Show Password')"
-                variant="secondary"
-                @click="togglePassword"
-              >
-                <i
-                  class="fas"
-                  :class="icon"
-                />
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-
-        <b-form-group
-          required
-          :label="$t('Redirect URL')"
-          :description="
-            formDescription(
-              'This value must match the callback URL you specify in your app settings.',
-              'callback_url',
-              errors
-            )
-          "
-          :invalid-feedback="errorMessage('callback_url', errors)"
-          :state="errorState('callback_url', errors)"
-        >
-          <b-input-group>
-            <b-form-input
-              v-model="formData.callback_url"
-              autofocus
-              readonly
-              autocomplete="off"
-              :state="errorState('callback_url', errors)"
-              name="callback_url"
-              data-cy="callback_url"
-            />
-            <b-input-group-append>
-              <b-button
-                :aria-label="$t('Copy')"
-                variant="secondary"
-                @click="onCopy"
-              >
-                <i class="fas fa-copy" />
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
+        <component
+          :is="authSchemeToComponent(setting.config.AuthScheme)"
+          :form-data="formData"
+          @updateFormData="updateFormData"
+        />
 
         <additional-driver-connection-properties
           :driver-key="setting?.key"
@@ -193,9 +100,15 @@
 import { FormErrorsMixin, Required } from "SharedComponents";
 import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
+import OAuthConnectionProperties from "./cdata/OauthConnectionProperties.vue";
+import NoneConnectionProperties from "./cdata/NoneConnectionProperties.vue";
 
 export default {
-  components: { AdditionalDriverConnectionProperties },
+  components: {
+    AdditionalDriverConnectionProperties,
+    OAuthConnectionProperties,
+    NoneConnectionProperties,
+  },
   mixins: [settingMixin, FormErrorsMixin, Required],
   props: {
     setting: {
@@ -210,11 +123,7 @@ export default {
   data() {
     return {
       input: "",
-      formData: {
-        client_id: "",
-        client_secret: "",
-        callback_url: "",
-      },
+      formData: {},
       selected: null,
       showModal: false,
       showAuthorizingModal: false,
@@ -223,6 +132,10 @@ export default {
       isInvalid: true,
       type: "password",
       resetData: true,
+      componentsMap: {
+        OAuth: "oauth-connection-properties",
+        None: "none-connection-properties",
+      },
     };
   },
   computed: {
@@ -270,21 +183,8 @@ export default {
     this.transformed = this.copy(this.formData);
   },
   methods: {
-    onCopy() {
-      navigator.clipboard.writeText(this.formData.callback_url).then(
-        () => {
-          ProcessMaker.alert(
-            this.$t("The setting was copied to your clipboard."),
-            "success",
-          );
-        },
-        () => {
-          ProcessMaker.alert(
-            this.$t("The setting was not copied to your clipboard."),
-            "danger",
-          );
-        },
-      );
+    authSchemeToComponent(scheme) {
+      return this.componentsMap[scheme] || null;
     },
     togglePassword() {
       if (this.type === "text") {
