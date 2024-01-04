@@ -21,7 +21,9 @@
         <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
       </template>
       <template v-if="! ui('sensitive')">
-        <b-form-input ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="off" type="text"></b-form-input>
+        <b-form-group :invalid-feedback="invalidFeedback">
+          <b-form-input ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="off" type="text" :state="state"></b-form-input>
+        </b-form-group>
       </template>
       <template v-else>
         <b-input-group>
@@ -79,6 +81,17 @@ export default {
     },
     hidden() {
       return '•'.repeat(this.input.length);
+    },
+    state() {
+      if (this.setting.ui?.isNotEmpty) {
+        return this.transformed !== '' && this.transformed !== null;
+      }
+      return true;
+    },
+    invalidFeedback() {
+      if (this.setting.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
+        return this.$t("The current value is empty but a value is required. Please provide a valid value.");
+      }
     }
   },
   watch: {
@@ -103,8 +116,7 @@ export default {
       this.$refs.input.focus();
     },
     onSave() {
-      if (this.setting.ui?.isNotEmpty && this.transformed == '') {
-        ProcessMaker.alert(this.$t("This value is invalid, please use another value."), "danger");
+      if (this.setting.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
         return;
       }
       this.input = this.copy(this.transformed);

@@ -1829,7 +1829,7 @@
   "Password will expire in the days configured here.": "Password will expire in the days configured here.",
   "Login failed": "Login failed",
   "Number of consecutive unsuccessful login attempts before block the login action momentarily (0 for unlimited).": "Number of consecutive unsuccessful login attempts before block the login action momentarily (0 for unlimited).",
-  "This value is invalid, please use another value.": "This value is invalid, please use another value.",
+  "The current value is empty but a value is required. Please provide a valid value.": "The current value is empty but a value is required. Please provide a valid value.",
   "Require Two Step Authentication": "Require Two Step Authentication",
   "Enhance security with an additional authentication step for user verification.": "Enhance security with an additional authentication step for user verification.",
   "Two Step Authentication Method": "Two Step Authentication Method",
