@@ -22,6 +22,10 @@
       <li v-if="process" class="breadcrumb-item">
         {{ process }}
       </li>
+
+      <li v-if="template" class="breadcrumb-item">
+        {{ template }}
+      </li>
     </ol>
   </nav>
 </template>
@@ -29,7 +33,7 @@
 <script>
 export default {
   router: window.ProcessMaker.Router,
-  props: ["process", "category"],
+  props: ["process", "category", "template"],
   data() {
     return {
     };
