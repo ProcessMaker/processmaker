@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="hasData">
-      <div class="base-chart h-100 w-100 custom-settings">
+      <div class="base-chart h-85 w-85 custom-settings">
         <component
           ref="chart"
           :is="chartComponent"
@@ -179,6 +179,8 @@ export default {
             this.selectedSavedChartId = 0;
           }
           this.fetchChart(this.selectedSavedChartId);
+          console.log('width : ', this.width);
+    console.log('height : ', this.height);
         })
         .catch((error) => {
           console.error("Error getting chart id", error);
@@ -279,5 +281,8 @@ export default {
 
 .custom-settings {
   margin-top: 10px;
+  width: 90%;
+  height: 90%;
+  background-color: white;
 }
 </style>
