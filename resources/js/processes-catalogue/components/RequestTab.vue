@@ -71,7 +71,6 @@ export default {
       ],
       fields: [],
       showTabRequests: false,
-      showTabTasks: false,
       tableHeaders: [],
       tableHeadersRequests: [
         {
@@ -122,12 +121,6 @@ export default {
     this.queryBuilder();
   },
   methods: {
-    // jsonRows(rows) {
-    //   if (rows.length === 0 || !_.has(_.head(rows), "_json")) {
-    //     return rows;
-    //   }
-    //   return rows.map((row) => JSON.parse(row._json));
-    // },
     changePageRequests(page) {
       this.page = page;
       this.queryBuilder();
@@ -203,7 +196,7 @@ export default {
         " AND process_id=" +
         `${this.process.id}` +
         "&filter&order_by=id&order_direction=DESC";
-      this.getData(this.queryRequest, "requests");
+      this.getData(this.queryRequest);
     },
     getData(query, type) {
     // Load from api client
@@ -217,14 +210,8 @@ export default {
             Array.isArray(dataResponse.data) &&
             dataResponse.data.length === 0
           ) {
-            type === "requests"
-              ? (this.showTabRequests = false)
-              : (this.showTabTasks = false);
-          } else {
-            type === "tasks"
-              ? (this.showTabRequests = true)
-              : (this.showTabTasks = true);
-          }
+             this.showTabRequests = true;
+          } 
         })
         .catch((error) => {
           if (error.code === "ERR_CANCELED") {

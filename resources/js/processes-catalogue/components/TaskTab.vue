@@ -14,8 +14,8 @@
         <div v-else>
           <default-tab
             :alt-text="$t('No Image')"
-            :title-text="$t('You have made no requests of this process.')"
-            :description-text="$t('All your requests will be shown here')"
+            :title-text="$t('You have no tasks from this process.')"
+            :description-text="$t('All your tasks related to this process will be shown here')"
           />
         </div>
   </div>
@@ -70,7 +70,6 @@ export default {
         },
       ],
       fields: [],
-      showTabRequests: false,
       showTabTasks: false,
       tableHeaders: [],
       tableHeadersTasks: [
@@ -116,7 +115,6 @@ export default {
       ],
       dataTasks: {},
       savedSearch: false,
-      queryRequest: "",
       perPage: 10,
     };
   },
@@ -216,19 +214,12 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataTasks = this.transform(response.data);
-
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&
             dataResponse.data.length === 0
           ) {
-            type === "requests"
-              ? (this.showTabRequests = false)
-              : (this.showTabTasks = false);
-          } else {
-            type === "tasks"
-              ? (this.showTabRequests = true)
-              : (this.showTabTasks = true);
+            this.showTabTasks = true;
           }
         })
         .catch((error) => {
