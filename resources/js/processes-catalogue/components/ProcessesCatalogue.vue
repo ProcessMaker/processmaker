@@ -4,6 +4,7 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
+      :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <b-row>
       <b-col cols="2">
@@ -16,7 +17,7 @@
           show-bookmark="true"
           :data="listCategories"
           :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
       </b-col>
@@ -31,6 +32,7 @@
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates"
             :category="category"
+            :key="key"
             @openProcess="openProcess"
           />
           <ProcessInfo
@@ -43,6 +45,7 @@
           />
           <wizard-templates
             v-if="showWizardTemplates"
+            :template="guidedTemplates"
           />
         </div>
       </b-col>
@@ -77,8 +80,11 @@ export default {
       showProcess: false,
       category: null,
       selectedProcess: null,
+      guidedTemplates: false,
       numCategories: 15,
       page: 1,
+      key: 0,
+      totalPages: 1,
     };
   },
   mounted() {
@@ -97,11 +103,14 @@ export default {
      * Get list of categories
      */
     getCategories() {
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
-        .then((response) => {
-          this.listCategories = [...this.listCategories, ...response.data.data];
-        });
+      if (this.page <= this.totalPages) {
+        ProcessMaker.apiClient
+          .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+          .then((response) => {
+            this.listCategories = [...this.listCategories, ...response.data.data];
+            this.totalPages = response.data.meta.total_pages;
+          });
+      }
     },
     /**
      * Check if there is a pre-selected process
@@ -122,9 +131,13 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      if (this.category === value) {
+        this.key += 1;
+      }
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
+      this.guidedTemplates = false;
       this.showWizardTemplates = false;
       this.showProcess = false;
     },
@@ -133,14 +146,18 @@ export default {
      */
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
+      this.guidedTemplates = true;
       this.showCardProcesses = false;
       this.showProcess = false;
+      this.selectedProcess = null;
+      this.category = null;
     },
     /**
      * Select a process and show display
      */
     openProcess(process) {
       this.showCardProcesses = false;
+      this.guidedTemplates = false;
       this.showProcess = true;
       this.selectedProcess = process;
     },
