@@ -142,8 +142,8 @@ export default {
   },
   mounted() {
     this.getParticipants("");
-    this.getFilterConfiguration("requestFilter");
     this.setupColumns();
+    this.getFilterConfiguration("requestFilter");
   },
   methods: {
     setupColumns() {

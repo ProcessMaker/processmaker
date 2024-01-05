@@ -25,7 +25,7 @@
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
                                    :sort="order_direction"
-                                   :container="''"
+                                   :container="'body'"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"
@@ -193,8 +193,8 @@ export default {
   },
   mounted: function mounted() {
     this.getAssignee("");
-    this.getFilterConfiguration("taskFilter");
     this.setupColumns();
+    this.getFilterConfiguration("taskFilter");
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
