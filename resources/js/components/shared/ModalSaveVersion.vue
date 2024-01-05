@@ -650,9 +650,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
-
       if (!this.processDescription) return;
-
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
