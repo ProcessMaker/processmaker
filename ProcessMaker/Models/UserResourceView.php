@@ -21,14 +21,15 @@ class UserResourceView extends ProcessMakerModel
         return $this->belongsTo(User::class);
     }
 
-    public static function setViewed($user, $viewable) {
+    public static function setViewed($user, $viewable)
+    {
         return self::firstOrCreate([
             'user_id' => $user->id,
             'viewable_type' => get_class($viewable),
             'viewable_id' => $viewable->id,
         ]);
     }
-    
+
     public static function addToResourceCollection(Collection &$collection, User|null $user)
     {
         if (!$user) {
@@ -39,9 +40,18 @@ class UserResourceView extends ProcessMakerModel
             return $collection;
         }
 
-        $class = get_class($collection->first()->resource);
+        $class = null;
+        $firstItem = $collection->first();
+        if (property_exists($firstItem, 'resource')) {
+            $firstResource = $firstItem->resource;
+            if ($firstResource instanceof ProcessRequest) {
+                $class = ProcessRequest::class;
+            } elseif ($firstResource instanceof ProcessRequestToken) {
+                $class = ProcessRequestToken::class;
+            }
+        }
 
-        if ($class !== ProcessRequest::class && $class !== ProcessRequestToken::class) {
+        if (!$class) {
             return $collection;
         }
 
