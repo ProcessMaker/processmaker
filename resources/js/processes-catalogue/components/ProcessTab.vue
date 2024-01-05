@@ -13,6 +13,7 @@
       <b-tab
         class="bg-white"
         title="My Tasks"
+        lazy
       >
         <task-tab
           :currentUser="currentUser"
@@ -39,9 +40,6 @@ export default {
       type: Object,
     },
   },
-  // data() {
-  //   return {};
-  // },
 };
 </script>
 <style>

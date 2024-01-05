@@ -32,7 +32,7 @@ import ListMixin from "../../requests/components/ListMixin";
 import { FilterTable } from "../../components/shared";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-
+import { methodsTabMixin } from "./TabMixing.js";
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
@@ -43,7 +43,7 @@ export default {
     paginationTable,
     DefaultTab,
   },
-  mixins: [uniqIdsMixin, ListMixin],
+  mixins: [uniqIdsMixin, ListMixin, methodsTabMixin ],
   props: {
     currentUser: {
       type: Object,
@@ -122,12 +122,12 @@ export default {
     this.queryBuilder();
   },
   methods: {
-    jsonRows(rows) {
-      if (rows.length === 0 || !_.has(_.head(rows), "_json")) {
-        return rows;
-      }
-      return rows.map((row) => JSON.parse(row._json));
-    },
+    // jsonRows(rows) {
+    //   if (rows.length === 0 || !_.has(_.head(rows), "_json")) {
+    //     return rows;
+    //   }
+    //   return rows.map((row) => JSON.parse(row._json));
+    // },
     changePageRequests(page) {
       this.page = page;
       this.queryBuilder();
@@ -161,37 +161,6 @@ export default {
           "hide-name": false,
         },
       };
-    },
-    formatStatus(status) {
-      let color = "success",
-      label = "In Progress";
-      switch (status) {
-        case "DRAFT":
-          color = "danger";
-          label = "Draft";
-          break;
-        case "CANCELED":
-          color = "danger";
-          label = "Canceled";
-          break;
-        case "COMPLETED":
-          color = "primary";
-          label = "Completed";
-          break;
-        case "ERROR":
-          color = "danger";
-          label = "Error";
-          break;
-      }
-      return (
-        '<span class="badge badge-' +
-        color +
-        ' status-' +
-        color +
-        '">' +
-        this.$t(label) +
-        "</span>"
-      );
     },
     formatCaseNumber(value) {
       return `
