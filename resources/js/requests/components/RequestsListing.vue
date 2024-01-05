@@ -25,6 +25,7 @@
                                    :viewConfig="getViewConfigFilter()"
                                    :sort="orderDirection"
                                    :container="''"
+                                   :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"

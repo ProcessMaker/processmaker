@@ -6,6 +6,7 @@
       <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
     <b-popover :container="container"
+               :boundary="boundary"
                :target="'pm-cff-button-'+id"
                :show.sync="popoverShow"
                triggers="click"
@@ -38,7 +39,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
+    props: ["container", "boundary", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
     data() {
       return {
         popoverShow: false
