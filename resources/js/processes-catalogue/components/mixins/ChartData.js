@@ -112,15 +112,14 @@ export default {
 
       if (chart.type === 'list') {
         return this.conformList(data, config);
-      } else if (chart.type === 'count') {
-        return this.conformCount(data, config);
-      } else {
-        if (config.pivot.category) {
-          return this.conformComplex(data, config);
-        } else {
-          return this.conformSimple(data, config);
-        }
       }
+      if (chart.type === 'count') {
+        return this.conformCount(data, config);
+      }
+      if (config.pivot.category) {
+        return this.conformComplex(data, config);
+      }
+      return this.conformSimple(data, config);
     },
     conformList(data, config) {
       if (!config.display.pivot) {

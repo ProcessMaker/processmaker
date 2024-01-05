@@ -194,11 +194,7 @@ export default {
       };
     },
     orderDesc: function () {
-      if (this.orderDirection.toLowerCase() === "desc") {
-        return true;
-      } else {
-        return false;
-      }
+      return this.orderDirection.toLowerCase() === "desc";
     },
     backgroundColor: function () {
       return this.config.colorScheme.colors[0];
@@ -256,10 +252,7 @@ export default {
       }
     },
     striped: function () {
-      if (this.backgroundColor === "#fff") {
-        return false;
-      }
-      return true;
+      return this.backgroundColor !== "#fff";
     },
     previewData: function () {
       return {
@@ -276,10 +269,7 @@ export default {
       return {};
     },
     isClickable: function () {
-      if (!this.config.display.pivot && this.config.display.linkRow) {
-        return true;
-      }
-      return false;
+      return !this.config.display.pivot && this.config.display.linkRow;
     },
   },
   mounted() {
@@ -321,7 +311,7 @@ export default {
 
       if (!this.pages[uid]) {
         this.getPage(uid).then((response) => {
-          if (response && response.rows) {
+          if (response?.rows) {
             callback(response.rows);
           } else {
             callback([]);
@@ -350,7 +340,6 @@ export default {
       }
     },
     updateMeta(uid) {
-      const page = this.pageFromUid(uid);
       if (this.pages[uid]) {
         this.fields = this.pages[uid].header;
         this.totalRows = this.pages[uid].meta.total;
@@ -418,7 +407,7 @@ export default {
         `data_filter=${this.dataFilter}&` +
         `data_pmql=${this.dataPmql}`;
 
-      if (this.additionalPmql && this.additionalPmql.length) {
+      if (this.additionalPmql?.length) {
         url += `&additional_pmql=${this.additionalPmql}`;
       }
 
@@ -585,46 +574,32 @@ $listChartDark: #212529 !important;
     }
 
     &.list-chart-dark {
-      th {
-        background: #fff;
-      }
-
-      table.table {
-        color: $listChartDark;
-      }
-
-      th {
-        color: $listChartDark;
-      }
-
-      tr:hover {
-        color: $listChartDark;
+      .list-chart-table {
+        th {
+          background: #fff;
+          color: $listChartDark;
+          tr:hover {
+            color: $listChartDark;
+          }
+        }
       }
     }
 
     &.list-chart-white {
-      th {
-        background-color: rgba(0, 0, 0, 0.65) !important;
-      }
-
-      @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+      .list-chart-table {
         th {
-          -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
-          background-color: rgba(0, 0, 0, 0.25) !important;
+          background-color: rgba(0, 0, 0, 0.65) !important;
+
+          @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.25) !important;
+          }
+          color: $listChartWhite;
+          tr:hover {
+            color: $listChartWhite;
+          }
         }
-      }
-
-      table.table {
-        color: $listChartWhite;
-      }
-
-      th {
-        color: $listChartWhite;
-      }
-
-      tr:hover {
-        color: $listChartWhite;
       }
     }
   }

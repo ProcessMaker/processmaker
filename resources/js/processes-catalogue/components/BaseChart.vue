@@ -282,5 +282,6 @@ export default {
   width: 90%;
   height: 90%;
   background-color: white;
+  max-height: 250px;
 }
 </style>
