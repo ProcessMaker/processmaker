@@ -245,6 +245,8 @@ class LoginController extends Controller
 
             // Always destroy 2fa flag
             session()->remove(TwoFactorAuthController::TFA_VALIDATED);
+            session()->remove(TwoFactorAuthController::TFA_MESSAGE);
+            session()->remove(TwoFactorAuthController::TFA_ERROR);
         }
 
         return $this->logout($request);

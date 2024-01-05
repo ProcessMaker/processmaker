@@ -1839,6 +1839,7 @@
   "Enter Security Code": "Enter Security Code",
   "Enter your security code": "Enter your security code",
   "Send Again": "Send Again",
+  "Incorrect phone number, please verify and try again.": "Incorrect phone number, please verify and try again.",
   "Invalid code.": "Invalid code.",
   "Security Code": "Security Code",
   "This is your security code: :code": "This is your security code: :code",
