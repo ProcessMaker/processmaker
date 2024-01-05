@@ -44,7 +44,7 @@
           autofocus
           autocomplete="off"
           trim
-          :type="type"
+          :type="inputType"
           :state="errorState('client_secret', errors)"
           name="client_secret"
           data-cy="client_secret"
@@ -120,7 +120,15 @@ export default {
         callback_url: "",
       },
       errors: {},
+      inputType: "password",
     };
+  },
+  computed: {
+    icon() {
+      return this.inputType === "password"
+        ? "fa-eye-slash"
+        : "fa-eye";
+    },
   },
   watch: {
     config: {
@@ -143,6 +151,9 @@ export default {
           solid: true,
         });
       });
+    },
+    togglePassword() {
+      this.inputType = this.inputType === "password" ? "text" : "password";
     },
   },
 };
