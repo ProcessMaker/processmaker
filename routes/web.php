@@ -27,8 +27,10 @@ use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
 use ProcessMaker\Http\Controllers\Process\SignalController;
 use ProcessMaker\Http\Controllers\ProcessController;
+use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
@@ -89,10 +91,14 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
+
+    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index')->middleware('can:view-process-catalog');
+    
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
     Route::get('processes/import/{page?}', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
+    Route::get('import/download-debug', [ProcessController::class, 'downloadImportDebug'])->name('import.download-debug')->middleware('can:import-processes');
     Route::get('processes/{process}/download/{key}', [ProcessController::class, 'download'])->name('processes.download')->middleware('can:export-processes');
     Route::get('processes/create', [ProcessController::class, 'create'])->name('processes.create')->middleware('can:create-processes');
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:edit-processes');
@@ -174,3 +180,6 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
+
+// SAML Metadata Route
+Route::resource('/saml/metadata', MetadataController::class)->only('index');

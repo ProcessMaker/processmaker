@@ -76,16 +76,29 @@ class RequestController extends Controller
                 $definition = $startEvent->getDefinition();
                 $allowInterstitial = false;
                 if (isset($definition['allowInterstitial'])) {
-                    $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    $allowInterstitial = filter_var(
+                        $definition['allowInterstitial'],
+                        FILTER_VALIDATE_BOOLEAN,
+                        FILTER_NULL_ON_FAILURE
+                    );
                 }
-                if ($allowInterstitial && $request->user_id == Auth::id() && request()->cookie('fromTriggerStartEvent')) {
+                if ($allowInterstitial && $request->user_id == Auth::id() && request()->has('fromTriggerStartEvent')) {
                     $active = $request->tokens()
                         ->where('user_id', Auth::id())
                         ->where('element_type', 'task')
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
 
-                    return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]))->withoutCookie('fromTriggerStartEvent');
+                    // If the interstitial is enabled on the start event, then use it as the task
+                    if ($active) {
+                        $task = $allowInterstitial ? $startEvent : $active;
+                    } else {
+                        $task = $startEvent;
+                    }
+
+                    return redirect(route('tasks.edit', [
+                        'task' => $task->getKey(),
+                    ]));
                 }
             }
         }

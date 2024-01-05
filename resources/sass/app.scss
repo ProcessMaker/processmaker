@@ -971,3 +971,26 @@ nav {
   align-items: center;
   color: #7f7f7f;
 }
+
+
+//Guided templates modal styling
+#wizardTemplateDetails___BV_modal_content_,
+#processWizard___BV_modal_content_{
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.29) 0%, rgba(255, 255, 255, 0.62) 100%), var(--borders, #CDDDEE);
+  padding: 50px;
+  color: #556271;
+  height: 450px;
+}
+
+#wizardTemplateDetails___BV_modal_header_,
+#wizardTemplateDetails___BV_modal_header_ {
+  border-bottom: none;
+  padding: 0;
+  margin: 0.5rem;
+}
+
+#wizardTemplateDetails___BV_modal_body_ .card {
+  background-color: inherit;
+  border: none;
+}

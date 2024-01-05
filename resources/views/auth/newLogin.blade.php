@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';"> 
+  <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
@@ -25,7 +25,8 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan.svg" alt="Slogan ProcessMaker" />
+              <img src="/img/slogan.svg" alt="ProcessMaker" />
+              <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
           </div>
@@ -43,6 +44,9 @@
                 @if (session()->has('login-error'))
                 <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
                 @endif
+
+                @samlidp
+
                 <div class="form-group">
                   <label for="username">{{ __('Username') }}</label>
                   <div class="password-container">
@@ -58,7 +62,7 @@
                   <label for="password">{{ __('Password') }}</label>
                   <div class="password-container">
                     <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
-                    <i class="fa fa-eye" id="eye"></i>
+                    <i class="fa fa-eye" id="togglePassword"></i>
                     @if ($errors->has('password'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('password') }}</strong>
@@ -109,6 +113,15 @@
   if (isMobileDevice) {
     document.cookie = "isMobile=true"
   }
+
+  const togglePassword = document.querySelector('#togglePassword');
+  const password = document.querySelector('#password');
+
+  togglePassword.addEventListener('click', function (e) {
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    this.classList.toggle('fa-eye-slash');
+});
 </script>
 <style>
   .row {
@@ -146,11 +159,15 @@
     position: fixed;
     margin-left: 10%;
     width: 700px;
+    font-family: Poppins;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .footer {
     margin-left: 10%;
   }
-  #eye{
+  #togglePassword{
     position: absolute;
     top: 28%;
     right: 4%;
@@ -159,6 +176,33 @@
   }
   .password-container {
     position: relative;
+  }
+  .head-text {
+    color: #FFF;
+    font-size: 46.067px;
+    font-weight: 600;
+    font-family: Poppins;
+  }
+  .display {
+    color: #FFC107;
+    font-size: 61.987px;
+    font-weight: 600;
+  }
+  .superscript {
+    color: #FFF;
+    position: relative;
+    top: -1.5em;
+    font-weight: 600;
+    font-family: Poppins;
+  }
+  .subtext {
+    width: 60%;
+    color: #FFF;
+    font-size: 24.017px;
+    font-family: Poppins;
+  }
+  .sub_logo {
+    margin-top: 7%;
   }
 </style>
 </html>

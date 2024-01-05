@@ -2,9 +2,11 @@
 
 namespace ProcessMaker\Providers;
 
+use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\PackageManifest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 use Predis\Connection\ConnectionException;
@@ -17,6 +19,12 @@ class LicenseServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $this->app['events']->listen(CommandFinished::class, function ($event) {
+            if ($event->command == 'clear-compiled' || $event->command == 'optimize:clear') {
+                Artisan::call('package:discover');
+            }
+        });
+
         try {
             $expires = Cache::get(LicensedPackageManifest::EXPIRE_CACHE_KEY);
         } catch (ConnectionException $e) {

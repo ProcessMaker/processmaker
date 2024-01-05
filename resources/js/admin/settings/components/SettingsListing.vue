@@ -10,17 +10,18 @@
       <template v-slot:right-buttons>
         <div v-if="topButtons" class="d-flex">
           <b-button
-            v-for="(btn,index) in topButtons"
-            :ref="formatGroupName(btn.group)"
-            :key="`btn-${index}`"
-            class="ml-2 nowrap"
+            v-for="(btn, index) in topButtons"
             v-bind="btn.ui.props"
-            @click="handler(btn)"
+            :key="`btn-${index}`"
+            :ref="formatGroupName(btn.group)"
+            :data-cy="btn.key"
             :disabled="false"
-            >
-            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-            {{btn.name}}
+            class="ml-2 nowrap"
+            @click="handler(btn)"
+          >
+            <b-spinner ref="b-spinner" small :hidden="true" />
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon" />
+            {{ btn.name }}
           </b-button>
         </div>
       </template>
@@ -52,50 +53,73 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+            <component
+              :is="component(row.item)"
+              v-if="row.item && !isSwitch(row.item)"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
           </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
+          <keep-alive>
+            <component
+              :is="component(row.item)"
+              v-if="isSwitch(row.item)"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
+          </keep-alive>
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button 
-                :aria-label="$t('Edit')" 
+              <b-button
                 v-uni-aria-describedby="row.item.id.toString()"
-                :disabled="row.item.readonly" 
-                @click="onEdit(row)" 
-                variant="link" 
+                variant="link"
                 class="settings-listing-button"
-                >
-                <i class="fa-lg fas fa-edit settings-listing-button"></i>
+                :data-cy="`edit-${row.item.key}`"
+                :aria-label="$t('Edit')"
+                :disabled="row.item.readonly"
+                @click="onEdit(row)"
+              >
+                <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
               </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
               <b-button
+                v-if="!disabledCopySetting(row)"
                 v-uni-aria-describedby="row.item.id.toString()"
                 v-b-tooltip.hover
                 variant="link"
+                class="settings-listing-button"
+                :data-cy="`copy-${row.item.key}`"
                 :aria-label="$t('Copy to Clipboard')"
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-                class="settings-listing-button"
-                >
-                <i class="fa-lg fas fa-copy settings-listing-button" />
+              >
+                <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
               </b-button>
 
               <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
-                <b-button 
-                  :aria-label="$t('Delete')"
+                <b-button
                   v-uni-aria-describedby="row.item.id.toString()"
-                  @click="onDelete(row)" 
-                  variant="link" 
+                  variant="link"
                   class="settings-listing-button"
-                  >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                  :data-cy="`delete-${row.item.key}`"
+                  :aria-label="$t('Delete')"
+                  @click="onDelete(row)"
+                >
+                  <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
                 </b-button>
               </span>
 
-              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
                 <b-button 
                   :aria-label="$t('Clear')"
                   v-uni-aria-describedby="row.item.id.toString()"
@@ -273,6 +297,9 @@ export default {
     },
     apiPut(setting) {
       return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
+    },
+    isSwitch(setting) {
+      return setting.format === "boolean";
     },
     component(setting) {
       switch (setting.format) {
@@ -476,8 +503,8 @@ export default {
       this.$refs.table.refresh();
       this.$emit('refresh');
     },
-    formatGroupName(name)  {
-      return name.toLowerCase().replaceAll(" ", '-');
+    formatGroupName(name) {
+      return name.toLowerCase().replaceAll(" ", "-");
     },
     filterTopButtons(buttons) {
       if (!this.settings) {
@@ -545,6 +572,12 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
+    },
+    disabledCopySetting(row) {
+      return row.item.ui?.copySettingEnabled === false;
+    },
+    disabledDeleteSetting(row) {
+      return row.item.ui?.deleteSettingEnabled === false;
     },
     enableDeleteSetting(row) {
       return row.item.ui?.deleteSettingEnabled || false;

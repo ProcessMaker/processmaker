@@ -194,9 +194,16 @@ class Deserializer
         // Set process request properties
         $properties = array_merge($instance->getProperties(), $properties);
         $instance->setProperties($properties);
+        if (isset($properties['parent_request_id'])) {
+            $instance->parent_request_id = $properties['parent_request_id'];
+        }
 
         // Set request data
         if (!empty($serialized['data']) && is_array($serialized['data'])) {
+            // Preserve the parent request id
+            if (isset($serialized['data']['_parent'])) {
+                $serialized['data']['_parent']['request_id'] = $instance->parent_request_id;
+            }
             $dataStore = $instance->getDataStore();
             foreach ($serialized['data'] as $key => $value) {
                 $dataStore->putData($key, $value);

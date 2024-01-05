@@ -21,11 +21,19 @@ class GenerateMenus
         Menu::make('topnav', function ($menu) {
             // The home will display the dynamic ui view
             // @todo home will replace the request and task
-            $menu->group(['prefix' => 'home'], function ($request_items) {
+            if (hasPackage('package-dynamic-ui')) {
+                $menu->group(['prefix' => 'home'], function ($request_items) {
+                    $request_items->add(
+                        __('Home'),
+                        ['route' => 'home', 'id' => 'home']
+                    )->active('home/*');
+                });
+            }
+            $menu->group(['prefix' => 'processes'], function ($request_items) {
                 $request_items->add(
-                    __('Home'),
-                    ['route' => 'home', 'id' => 'home']
-                )->active('home/*');
+                    __('Processes'),
+                    ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
+                )->active('processes-catalogue/*');
             });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
@@ -126,6 +134,9 @@ class GenerateMenus
                 'icon' => 'fa-user',
                 'id' => 'homeid',
             ]);
+        });
+        Menu::make('sidebar_processes_catalogue', function ($menu) {
+            $submenu = $menu->add(__('Processes'));
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));

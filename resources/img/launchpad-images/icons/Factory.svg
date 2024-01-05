@@ -1,0 +1,39 @@
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Factory">
+<path id="Vector" d="M58 32V20L24 32V80H58H86C88.21 80 90 78.21 90 76V20L58 32Z" fill="url(#paint0_linear_370_9698)"/>
+<path id="Vector_2" d="M90 20L58 32V20L24 32" stroke="#A60F0F" stroke-width="4" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M22.108 8H11.892C10.83 8 9.95396 8.83 9.89596 9.89L6.23596 75.78C6.10796 78.07 7.93196 80 10.228 80H28L24.104 9.89C24.046 8.83 23.17 8 22.108 8Z" fill="#D43A02"/>
+<path id="Vector_4" d="M27.334 68L26.888 60H7.11202L6.66602 68H27.334Z" fill="#A8A8A8"/>
+<path id="Vector_5" d="M8.22195 40L7.77795 48H26.222L25.778 40H8.22195Z" fill="#A8A8A8"/>
+<path id="Vector_6" d="M9.33394 20L8.88794 28H25.1119L24.6659 20H9.33394Z" fill="#A8A8A8"/>
+<path id="Vector_7" d="M84 40H80V44H84V40Z" fill="#FF8800"/>
+<path id="Vector_8" d="M76 40H72V44H76V40Z" fill="#FF8800"/>
+<path id="Vector_9" d="M68 40H64V44H68V40Z" fill="#FF8800"/>
+<path id="Vector_10" d="M60 40H56V44H60V40Z" fill="#FF8800"/>
+<path id="Vector_11" d="M52 40H48V44H52V40Z" fill="#FF8800"/>
+<path id="Vector_12" d="M44 40H40V44H44V40Z" fill="#FF8800"/>
+<path id="Vector_13" d="M36 40H32V44H36V40Z" fill="#FF8800"/>
+<path id="Vector_14" d="M84 52H80V56H84V52Z" fill="#FF8800"/>
+<path id="Vector_15" d="M76 52H72V56H76V52Z" fill="#FF8800"/>
+<path id="Vector_16" d="M68 52H64V56H68V52Z" fill="#FF8800"/>
+<path id="Vector_17" d="M60 52H56V56H60V52Z" fill="#FF8800"/>
+<path id="Vector_18" d="M52 52H48V56H52V52Z" fill="#FF8800"/>
+<path id="Vector_19" d="M44 52H40V56H44V52Z" fill="#FF8800"/>
+<path id="Vector_20" d="M36 52H32V56H36V52Z" fill="#FF8800"/>
+<path id="Vector_21" d="M84 64H80V68H84V64Z" fill="#FF8800"/>
+<path id="Vector_22" d="M76 64H72V68H76V64Z" fill="#FF8800"/>
+<path id="Vector_23" d="M68 64H64V68H68V64Z" fill="#FF8800"/>
+<path id="Vector_24" d="M60 64H56V68H60V64Z" fill="#FF8800"/>
+<path id="Vector_25" d="M52 64H48V68H52V64Z" fill="#FF8800"/>
+<path id="Vector_26" d="M44 64H40V68H44V64Z" fill="#FF8800"/>
+<path id="Vector_27" d="M36 64H32V68H36V64Z" fill="#FF8800"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_370_9698" x1="87.98" y1="48.332" x2="21.83" y2="55.284" gradientUnits="userSpaceOnUse">
+<stop offset="0.863" stop-color="#C93702"/>
+<stop offset="0.895" stop-color="#BA3202"/>
+<stop offset="0.957" stop-color="#922704"/>
+<stop offset="0.98" stop-color="#822204"/>
+</linearGradient>
+</defs>
+</svg>

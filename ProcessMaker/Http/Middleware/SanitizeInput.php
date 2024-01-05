@@ -18,6 +18,7 @@ class SanitizeInput extends TransformsRequest
     public $except = [
         //
     ];
+    public $allowExpressions = [];
 
     /**
      * Construct the class.
@@ -42,6 +43,11 @@ class SanitizeInput extends TransformsRequest
                     $this->except = array_merge($this->except, $controller->doNotSanitize);
                 }
             }
+            if ($controller && property_exists($controller, 'doNotSanitizeMustache')) {
+                if (is_array($controller->doNotSanitizeMustache)) {
+                    $this->allowExpressions = array_merge($this->allowExpressions, $controller->doNotSanitizeMustache);
+                }
+            }
         }
     }
 
@@ -61,7 +67,7 @@ class SanitizeInput extends TransformsRequest
 
         // If this is a string and is not in the exceptions
         // array, return it after sanitization.
-        return SanitizeHelper::sanitize($value, !in_array($key, $this->except, true));
+        return SanitizeHelper::sanitize($value, !in_array($key, $this->except, true), !in_array($key, $this->allowExpressions, true));
     }
 
     /**

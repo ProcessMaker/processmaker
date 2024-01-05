@@ -244,6 +244,7 @@ export default {
     },
     clearSearch() {
       this.searchCriteria = "";
+      this.performSearch();
       this.toggleInput();
     },
   },

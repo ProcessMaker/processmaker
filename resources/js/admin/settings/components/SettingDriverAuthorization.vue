@@ -3,9 +3,9 @@
     <div v-if="hasAuthorizedBadge">
       <b-badge
         pill
-        :variant="setting.ui.authorizedBadge ? 'success' : 'warning'"
+        :variant="isAuthorized ? 'success' : 'warning'"
       >
-        <span v-if="setting.ui.authorizedBadge">{{ $t('Authorized') }}</span>
+        <span v-if="isAuthorized">{{ $t('Authorized') }}</span>
         <span v-else>{{ $t('Not Authorized') }}</span>
       </b-badge>
     </div>
@@ -62,6 +62,7 @@
             autocomplete="off"
             :state="errorState('client_id', errors)"
             name="client_id"
+            data-cy="client_id"
           />
         </b-form-group>
 
@@ -82,6 +83,7 @@
               :type="type"
               :state="errorState('client_secret', errors)"
               name="client_secret"
+              data-cy="client_secret"
             />
             <b-input-group-append>
               <b-button
@@ -113,6 +115,7 @@
               autocomplete="off"
               :state="errorState('callback_url', errors)"
               name="callback_url"
+              data-cy="callback_url"
             />
             <b-input-group-append>
               <b-button
@@ -139,6 +142,7 @@
         <button
           type="button"
           class="btn btn-outline-secondary ml-auto"
+          data-cy="cancel-button"
           @click="onCancel"
         >
           {{ $t('Cancel') }}
@@ -146,7 +150,8 @@
         <button
           type="button"
           class="btn btn-secondary ml-3"
-          :disabled=" isInvalid || !changed "
+          data-cy="authorize-button"
+          :disabled="isButtonDisabled"
           @click="onSave"
         >
           {{ $t('Authorize') }}
@@ -216,6 +221,12 @@ export default {
       const hasAuthorizedBadge = !!_.has(this.setting, "ui.authorizedBadge");
       return hasAuthorizedBadge;
     },
+    isAuthorized() {
+      if (this.hasAuthorizedBadge) {
+        return Boolean(this.setting.ui.authorizedBadge);
+      }
+      return false;
+    },
     changed() {
       return JSON.stringify(this.formData) !== JSON.stringify(this.transformed);
     },
@@ -224,6 +235,9 @@ export default {
         return "fa-eye";
       }
       return "fa-eye-slash";
+    },
+    isButtonDisabled() {
+      return this.isInvalid || (this.isAuthorized && !this.changed);
     },
   },
   watch: {

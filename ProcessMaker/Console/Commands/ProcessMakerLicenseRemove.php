@@ -3,6 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessMakerLicenseRemove extends Command
@@ -37,6 +38,10 @@ class ProcessMakerLicenseRemove extends Command
             if ($this->confirm('Are you sure you want to remove the license.json file?')) {
                 Storage::disk('local')->delete('license.json');
                 $this->info('license.json removed successfully!');
+
+                $this->info('Calling package:discover to update the package cache with enabled packages');
+                Artisan::call('package:discover');
+                $this->info(Artisan::output());
             } else {
                 $this->info('Operation cancelled. license.json was not removed.');
             }

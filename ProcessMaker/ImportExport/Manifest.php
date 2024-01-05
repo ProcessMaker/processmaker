@@ -3,7 +3,7 @@
 namespace ProcessMaker\ImportExport;
 
 use Illuminate\Support\Arr;
-use ProcessMaker\Exception\PackageNotInstalledException;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\ImportExport\Exporters\ExporterInterface;
 use ReflectionClass;
 
@@ -16,6 +16,10 @@ class Manifest
     private $afterImportCallbacks = [];
 
     public static $parents = null;
+
+    private static $tableColumns = [];
+
+    private static $logger = null;
 
     public function has(string $uuid)
     {
@@ -77,19 +81,24 @@ class Manifest
         return $manifest;
     }
 
-    public static function fromArray(array $array, Options $options)
+    public static function fromArray(array $array, Options $options, $logger)
     {
+        self::$logger = $logger;
+
         self::buildParentModeMap($array, $options);
 
         $manifest = new self();
         foreach ($array as $uuid => $assetInfo) {
+            if (!self::checkClasses($assetInfo)) {
+                continue;
+            }
             $exporterClass = $assetInfo['exporter'];
-            self::checkClass($exporterClass);
             $modeOption = $options->get('mode', $uuid);
             $saveAssetsModeOption = $options->get('saveAssetsMode', $uuid);
             list($mode, $model, $matchedBy) = self::getModel($uuid, $assetInfo, $modeOption, $exporterClass);
             $model = self::updateBPMNDefinitions($model, $saveAssetsModeOption);
             $exporter = new $exporterClass($model, $manifest, $options, false);
+            $exporter->logger = $logger;
             $exporter->importing = true;
             $exporter->mode = $mode;
             $exporter->matchedBy = $matchedBy;
@@ -103,15 +112,20 @@ class Manifest
         return $manifest;
     }
 
-    public static function checkClass($exporterClass)
+    public static function checkClasses($assetInfo)
     {
-        if (!class_exists($exporterClass)) {
-            if (preg_match('/.*\\\\(.+)\\\\ImportExport/', $exporterClass, $matches)) {
-                $package = trim(preg_replace('/(?!^)[A-Z]{2,}(?=[A-Z][a-z])|[A-Z][a-z]/', ' $0', $matches[1]));
-                throw new PackageNotInstalledException("Can not import because $package is not installed.");
+        $modelClass = $assetInfo['model'];
+        $exporterClass = $assetInfo['exporter'];
+
+        foreach ([$modelClass, $exporterClass] as $class) {
+            if (!class_exists($class)) {
+                self::$logger?->warn("Class {$class} does not exist.");
+
+                return false;
             }
-            throw new PackageNotInstalledException("$exporterClass not found");
         }
+
+        return true;
     }
 
     public function push(string $uuid, ExporterInterface $exporter)
@@ -155,6 +169,10 @@ class Manifest
             }
         }
 
+        if (method_exists($model, 'getTable')) {
+            $attrs = self::removeAttributesThatDontExist($attrs, $model->getTable());
+        }
+
         $class::unguard();
         switch ($mode) {
             case 'update':
@@ -193,6 +211,30 @@ class Manifest
         return [$mode, $model, $matchedBy];
     }
 
+    private static function removeAttributesThatDontExist($attrs, $table)
+    {
+        $columns = self::getColumnsForTable($table);
+        foreach ($attrs as $key => $value) {
+            if (!in_array($key, $columns)) {
+                unset($attrs[$key]);
+                self::$logger?->warn("Attribute '$key' does not exist in the table '$table'");
+            }
+        }
+
+        return $attrs;
+    }
+
+    private static function getColumnsForTable($table)
+    {
+        if (isset(self::$tableColumns[$table])) {
+            return self::$tableColumns[$table];
+        }
+        $columns = Schema::getColumnListing($table);
+        self::$tableColumns[$table] = $columns;
+
+        return $columns;
+    }
+
     private static function handleCasts(&$model)
     {
         foreach ($model->getCasts() as $field => $cast) {
@@ -204,7 +246,11 @@ class Manifest
                     break;
                 case 'object':
                     if (!is_object($model->$field)) {
-                        $model->$field = json_decode($model->$field);
+                        if (gettype($model->$field) !== 'array') {
+                            $model->$field = json_decode($model->$field);
+                        } else {
+                            $model->$field = (object) $model->$field;
+                        }
                     }
                     break;
             }

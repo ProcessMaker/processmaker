@@ -15,6 +15,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Package\Cdata\Http\Controllers\Api\CdataController;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -31,6 +32,7 @@ class ModelerController extends Controller
     public function show(ModelerManager $manager, Process $process, Request $request)
     {
         $pmBlockList = $this->getPmBlockList();
+        $externalIntegrationsList = $this->getExternalIntegrationsList();
 
         /*
          * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
@@ -68,12 +70,14 @@ class ModelerController extends Controller
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
             'pmBlockList' => $pmBlockList,
+            'externalIntegrationsList' => $externalIntegrationsList,
             'screenTypes' => $screenTypes,
             'scriptExecutors' => $scriptExecutors,
             'countProcessCategories' => $countProcessCategories,
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
+            'isAiGenerated' => request()->query('ai'),
         ]);
     }
 
@@ -96,6 +100,7 @@ class ModelerController extends Controller
     public function renderInflight(ModelerManager $manager, Process $process, $processRequest, $processRequestId)
     {
         $pmBlockList = $this->getPmBlockList();
+        $externalIntegrationsList = $this->getExternalIntegrationsList();
 
         event(new ModelerStarting($manager));
 
@@ -140,6 +145,7 @@ class ModelerController extends Controller
             'requestIdleNodes' => $requestIdleNodes,
             'requestId' => $processRequestId,
             'pmBlockList' => $pmBlockList,
+            'externalIntegrationsList' => $externalIntegrationsList,
         ]);
     }
 
@@ -159,6 +165,24 @@ class ModelerController extends Controller
         }
 
         return $pmBlockList;
+    }
+
+    /**
+     * Load External Integrations list
+     */
+    private function getExternalIntegrationsList()
+    {
+        $externalIntegrationsList = null;
+        if (hasPackage('package-cdata')) {
+            $controller = new CdataController();
+            $newRequest = new Request(['per_page' => 10]);
+            $response = $controller->index($newRequest);
+            if ($response->getStatusCode() === 200) {
+                $externalIntegrationsList = json_decode($response->getContent());
+            }
+        }
+
+        return $externalIntegrationsList;
     }
 
     /**

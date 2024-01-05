@@ -15,7 +15,7 @@
           ref="modeler"
           :owner="self"
           :decorations="decorations"
-          :validationBar="validationBar"
+          :validation-bar="validationBar"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
@@ -25,10 +25,11 @@
           @publishPmBlock="publishPmBlock"
           @set-xml-manager="xmlManager = $event"
         />
-        <pan-comment :commentable_id="processId"
-                     commentable_type="ProcessMaker\Models\Process"
-                     :readonly="false"
-                     />
+        <pan-comment
+          :commentable_id="processId"
+          commentable_type="ProcessMaker\Models\Process"
+          :readonly="false"
+        />
       </b-card-body>
       <component
         :is="component.panel"
@@ -42,8 +43,20 @@
         :key="`external-${index}`"
         :options="component.options"
       />
-      <create-template-modal ref="create-template-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
-      <create-pm-block-modal ref="create-pm-block-modal" assetType="process" :assetName="processName" :assetId="processId" :currentUserId="currentUserId"/>
+      <create-template-modal
+        ref="create-template-modal"
+        asset-type="process"
+        :asset-name="processName"
+        :asset-id="processId"
+        :current-user-id="currentUserId"
+      />
+      <create-pm-block-modal
+        ref="create-pm-block-modal"
+        asset-type="process"
+        :asset-name="processName"
+        :asset-id="processId"
+        :current-user-id="currentUserId"
+      />
     </b-card>
   </b-container>
 </template>
@@ -53,6 +66,7 @@ import { Modeler, ValidationStatus } from "@processmaker/modeler";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../../components/pm-blocks/CreatePmBlockModal.vue";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 export default {
   name: "ModelerApp",
@@ -62,7 +76,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
   },
-  mixins: [...autosaveMixins],
+  mixins: [...autosaveMixins, AssetRedirectMixin],
   data() {
     return {
       self: this,
@@ -127,8 +141,16 @@ export default {
       };
     },
     closeHref() {
-      return this.process?.asset_type === 'PM_BLOCK' ? "/designer/pm-blocks" : "/processes";
-    }
+      let url = "/processes";
+
+      if (this.redirectUrl) {
+        url = this.redirectUrl;
+      } else if (this.process?.asset_type === "PM_BLOCK") {
+        url = "/designer/pm-blocks";
+      }
+
+      return url;
+    },
   },
   watch: {
     validationErrors: {
@@ -148,8 +170,8 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError) => {
-      this.saveProcess(onSuccess, onError, redirectUrl, nodeId);
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, generatingAssets, onSuccess, onError) => {
+      this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       window.ProcessMaker.EventBus.$emit("new-changes");
@@ -208,15 +230,17 @@ export default {
       });
       return notifications;
     },
-    emitSaveEvent({ xml, svg, redirectUrl = null, nodeId = null }) {
+    emitSaveEvent({
+      xml, svg, redirectUrl = null, nodeId = null, generatingAssets = false,
+    }) {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
       if (this.externalEmit.includes("open-modal-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId, generatingAssets);
         return;
       }
-      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId);
+      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, generatingAssets);
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
@@ -232,7 +256,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -252,10 +276,13 @@ export default {
         ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
         // Set published status.
         this.setVersionIndicator(false);
-        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId);
         this.$set(this, "warnings", response.data.warnings || []);
         if (response.data.warnings && response.data.warnings.length > 0) {
           window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
+        }
+        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
+        if (!redirectUrl) {
+          window.ProcessMaker.EventBus.$emit("redirect");
         }
         if (typeof onSuccess === "function") {
           onSuccess(response);

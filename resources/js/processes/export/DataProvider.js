@@ -23,6 +23,18 @@ export default {
         }
     });
   },
+  doImportQueued(options, password, hash) {
+    const params = {
+      queue: 1,
+      options,
+      password,
+      hash,
+    };
+    return ProcessMaker.apiClient.post('/import/do-import', params);
+  },
+  getImportManifest() {
+    return ProcessMaker.apiClient.get('/import/get-manifest');
+  },
   doImportTemplate(file, options, type) {
     let formData = new FormData();
     const optionsBlob = new Blob([JSON.stringify(options)], {

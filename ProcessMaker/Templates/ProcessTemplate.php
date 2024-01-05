@@ -247,12 +247,17 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['attributes']['name'] = $requestData['name'];
                 $payload['export'][$key]['attributes']['description'] = $requestData['description'];
                 $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
+                // Store the wizard template uuid on the process to rerun the helper process
+                if (isset($request->wizardTemplateUuid)) {
+                    $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
+                    $properties['wizardTemplateUuid'] = $request->wizardTemplateUuid;
+                    $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+                }
 
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
 
-                // TODO:Check on ['manager_id'] when updating assets
                 if (!isset($existingAssets)) {
                     $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
                 }

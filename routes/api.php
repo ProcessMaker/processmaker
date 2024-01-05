@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Http\Controllers\Api\BookmarkController;
 use ProcessMaker\Http\Controllers\Api\ChangePasswordController;
 use ProcessMaker\Http\Controllers\Api\CommentController;
 use ProcessMaker\Http\Controllers\Api\CssOverrideController;
@@ -32,9 +33,8 @@ use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
-use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Http\Controllers\Api\WizardTemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
-use ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission;
 
 Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/1.0')->name('api.')->group(function () {
     // Users
@@ -131,11 +131,26 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes', [ProcessController::class, 'store'])->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', [ProcessController::class, 'update'])->name('processes.update')->middleware('can:edit-processes,process');
     Route::put('processes/{process}/update-bpmn', [ProcessController::class, 'updateBpmn'])->name('processes.update_bpmn')->middleware('can:edit-processes,process');
-    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-screens,process');
+    Route::put('processes/{process}/draft', [ProcessController::class, 'updateDraft'])->name('processes.update_draft')->middleware('can:edit-processes,process');
     Route::post('processes/{process}/close', [ProcessController::class, 'close'])->name('processes.close')->middleware('can:edit-processes');
     Route::delete('processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/restore', [ProcessController::class, 'restore'])->name('processes.restore')->middleware('can:archive-processes,process');
     Route::put('processes/{process}/duplicate', [ProcessController::class, 'duplicate'])->name('processes.duplicate')->middleware('can:create-processes,process');
+
+    // Process Bookmark
+    $middlewareCatalog = 'can:view-process-catalog';
+    Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
+    ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
+    ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/{process_category}', [ProcessCategoryController::class, 'show'])
+    ->name('bookmarks.categories.show')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks', [BookmarkController::class, 'index'])
+    ->name('bookmarks.index')->middleware($middlewareCatalog);
+    Route::post('process_bookmarks/{process}', [BookmarkController::class, 'store'])
+    ->name('bookmarks.store')->middleware($middlewareCatalog);
+    Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])
+    ->name('bookmarks.destroy')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -143,6 +158,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('process_categories', [ProcessCategoryController::class, 'store'])->name('process_categories.store')->middleware('can:create-process-categories');
     Route::put('process_categories/{process_category}', [ProcessCategoryController::class, 'update'])->name('process_categories.update')->middleware('can:edit-process-categories');
     Route::delete('process_categories/{process_category}', [ProcessCategoryController::class, 'destroy'])->name('process_categories.destroy')->middleware('can:delete-process-categories');
+
+    //Process Launchpad
+    Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
+    Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
 
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
@@ -157,6 +176,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
+    Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
@@ -241,6 +261,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('export/manifest/{type}/{id}/', [ExportController::class, 'manifest'])->name('export.manifest')->middleware('can:export-processes,type');
     Route::post('export/{type}/download/{id}', [ExportController::class, 'download'])->name('export.download')->middleware('template-authorization');
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
+    Route::get('import/get-manifest', [ImportController::class, 'getImportManifest'])->name('import.get-import-manifest')->middleware('can:import-processes');
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:import-processes');
 
     // Templates
@@ -254,6 +275,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
+
+    // Wizard Templates
+    Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');
+    Route::get('wizard-templates/{template_uuid}/get-helper-process', [WizardTemplateController::class, 'getHelperProcess'])->name('wizard-templates.getHelperProcess');
 
     // Process Translations
     Route::get('process/translations', [ProcessTranslationController::class, 'index'])->name('process-translation.index')->middleware('can:view-process-translations');
@@ -277,10 +302,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
 
-    // OpenAI
-    Route::middleware('throttle:30,1')->post('openai/nlq-to-pmql', [OpenAIController::class, 'NLQToPMQL'])->name('openai.nlq-to-pmql');
-    Route::middleware('throttle:30,1')->post('openai/nlq-to-category', [OpenAIController::class, 'NLQToCategory'])->name('openai.nlq-to-category');
+    // OpenAI Translations
     Route::middleware('throttle:30,1')->post('openai/language-translation', [OpenAIController::class, 'languageTranslation'])->name('openai.language-translation')->middleware('can:view-process-translations');
-    Route::get('openai/recent-searches', [OpenAIController::class, 'recentSearches'])->name('openai.recent-searches');
-    Route::delete('openai/recent-searches', [OpenAIController::class, 'deleteRecentSearches'])->name('openai.recent-searches.delete');
 });

@@ -15,6 +15,10 @@ export default {
       importMode: 'update',
       file: null,
       password: '',
+      queue: false,
+      hash: '',
+      queueLog: [],
+      allowDownloadDebug: false,
     }
   },
   watch: {
@@ -40,6 +44,9 @@ export default {
             return [uuid, { mode: this.defaultMode, discardedByParent: false, saveAssetsMode: 'saveAllAssets' }];
           })
       );
+    },
+    log(item) {
+      this.queueLog.push(item);
     },
     // Hide the asset from UI if its parent is was discarded AND the
     // asset is not used by any other non-discarded asset.
@@ -97,6 +104,10 @@ export default {
     },
     setModeForGroup(group, mode) {
       Object.entries(this.manifest).filter(([uuid, asset]) => {
+        if (uuid === this.rootUuid) {
+          // Do not change the mode of the root asset
+          return false;
+        }
         return asset.type === group;
       }).forEach(([uuid, _]) => {
         this.set(uuid, mode);

@@ -218,4 +218,8 @@ return [
         'cache_enabled' => env('SCREEN_CACHE_ENABLED', false),
         'cache_timeout' => env('SCREEN_CACHE_TIMEOUT', 5000), // timeout in milliseconds
     ],
+
+    'queue_imports' => env('QUEUE_IMPORTS', true),
+
+    'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
 ];

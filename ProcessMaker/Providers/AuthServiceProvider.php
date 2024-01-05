@@ -66,7 +66,6 @@ class AuthServiceProvider extends ServiceProvider
 
         try {
             $permissions = Permission::select('name')->get();
-
             // Define the Gate permissions
             $permissions->each(function ($permission) {
                 Gate::define($permission->name, function (User $user, ...$params) use ($permission) {
@@ -106,6 +105,9 @@ class AuthServiceProvider extends ServiceProvider
             'designer/screen-builder',
             'modeler/',
             'script/',
+            'designer/scripts',
+            'designer/screens',
+            'processes/',
             'designer/decision-tables',
             'designer/data-sources',
         ];
@@ -129,14 +131,32 @@ class AuthServiceProvider extends ServiceProvider
 
     private function handleUpdateDeleteOperations($permission, $modelClass)
     {
-        $asset = Str::snake(class_basename($modelClass));
+        $asset = $this->getAssetName($modelClass);
 
         return $this->checkPermissionForAsset($permission, $asset);
     }
 
+    /**
+     * Get the asset name based on the model class.
+     *
+     * @param string $modelClass
+     * @return string
+     */
+    private function getAssetName($modelClass)
+    {
+        $asset = Str::snake(class_basename($modelClass));
+
+        // Adjust asset name for DataSource class
+        if ($modelClass === 'DataSource') {
+            $asset = 'data-source';
+        }
+
+        return $asset;
+    }
+
     private function checkForListCreateOperations($permission)
     {
-        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table'];
+        $projectAssetTypes = ['process', 'screen', 'script', 'data-source', 'decision_table', 'pm-block'];
 
         foreach ($projectAssetTypes as $asset) {
             if (Str::contains($permission->name, $asset)) {

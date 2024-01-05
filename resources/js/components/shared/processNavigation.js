@@ -7,6 +7,7 @@ export default {
       showAddProjectModal: false,
       showTemplateModal: false,
       showCreatePmBlockModal: false,
+      showModalSaveVersion: false,
     }
   },
   methods: {
@@ -77,6 +78,26 @@ export default {
                 }
             );
             break;
+          case "archive-item-launchpad":
+            ProcessMaker.confirmModal(
+              this.$t("Caution!"),
+              this.$t("Are you sure you want to archive the process") +
+              data.name +
+              "?",
+              "",
+              () => {
+                ProcessMaker.apiClient
+                  .delete("processes/" + data.id)
+                  .then(response => {
+                    ProcessMaker.alert(
+                      this.$t("The process was archived."),
+                      "success"
+                    );
+                    this.goBack();
+                  });
+              }
+            );
+            break;
 
           case "download-bpmn":
             ProcessMaker.confirmModal(
@@ -106,6 +127,9 @@ export default {
             break;
             case 'add-to-project':
               this.showAddToProjectModal(data.name, data.id);
+            break;
+            case 'edit-launchpad':
+              this.showAddToModalSaveVersion(data.name, data.id);
             break;
         }
       },

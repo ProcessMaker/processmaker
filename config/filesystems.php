@@ -109,6 +109,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'samlidp' => [
+            'driver' => 'local',
+            'root' => storage_path() . '/samlidp',
+        ],
+
     ],
 
     /*

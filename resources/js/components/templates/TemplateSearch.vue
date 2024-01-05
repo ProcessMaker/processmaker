@@ -10,12 +10,10 @@
         <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
       </b-input-group>
     </div>
-
-    <div class="cards-container">
-      <b-card-group id="template-options" deck class="d-flex small-deck-margin">
+    <div class="cards-container" :class="type !== 'wizard' ? 'fixed-height' : '' ">
+      <b-card-group v-if="showTemplateOptionsActionBar && component === 'template-select-card' " id="template-options" deck class="d-flex small-deck-margin">
         <button-card
           class="col-4 p-0"
-          v-show="component === 'template-select-card'"
           :button="blankProcessButton"
           @show-details="showDetails($event)"
           @card-button-clicked="$emit('blank-process-button-clicked')"
@@ -23,21 +21,20 @@
 
         <div v-if="packageAi" class="col-8 p-0">
           <button-card
-            v-if="component === 'template-select-card'"
             :button="aiProcessButton"
             @show-details="showDetails($event)"
             @card-button-clicked="$emit('ai-process-button-clicked')"
           />
         </div>
-        <div v-if="component === 'template-select-card'" class="d-flex w-100 align-items-center my-3 card-separator">
-          <small class="mr-2 text-secondary">Templates</small>
+        <div class="d-flex w-100 align-items-center my-3 card-separator">
+          <small class="mr-2 text-secondary">{{ $t('Templates') }}</small>
           <div class="flex-grow-1 border-bottom"></div>
         </div>
 
       </b-card-group>
 
       <div class="pb-2 template-container">
-        <template v-if="noResults === true">
+        <template v-if="noResults && type !== 'wizard'">
           <div class="no-data-icon d-flex d-block justify-content-center pb-2">
             <i class="fas fa-umbrella-beach mt-5" />
           </div>
@@ -45,11 +42,27 @@
             {{ $t('No Data Available') }}
           </div>
         </template>
+        <template v-else-if="noResults && type == 'wizard'">
+          <div class="d-flex justify-content-center my-5">
+            <img
+              class="image d-flex"
+              src="/img/processes-catalogue-empty.svg"
+              alt="recent projects"
+            >
+          </div>
+          <h4 class="text-center">
+            {{ $t("Currently, there are no Guided Templates available.") }}
+          </h4>
+          <p class="text-center">
+            {{ $t('Please check back soon.') }}
+          </p>
+        </template>
         <template v-else>
           <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
+              :type="type"
               :key="index"
               :template="template"
               @show-details="showDetails($event)"
@@ -57,6 +70,7 @@
           </b-card-group>
         </template>
         <template-details v-if="component === 'template-details'" :template="template"></template-details>
+        <wizard-template-details v-if="showWizardTemplateDetails" ref="wizardTemplateDetails" :template="template"></wizard-template-details>
       </div>
     </div>
     <template v-if="component !== 'template-details'">
@@ -74,7 +88,7 @@
         last-number
         first-number
         ></b-pagination>
-        <div>
+        <div v-if="showTemplateGalleryLink">
           <a href="https://www.processmaker.com/resources/customer-success/templates/" 
             class="text-muted"
             target="_blank">
@@ -93,11 +107,12 @@ import TemplateSelectCard from "./TemplateSelectCard.vue";
 import TemplateDetails from "./TemplateDetails.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import WizardTemplateDetails from "./WizardTemplateDetails.vue";
 
 export default {
-  components: { ButtonCard, TemplateSelectCard, TemplateDetails },
+  components: { ButtonCard, TemplateSelectCard, TemplateDetails, WizardTemplateDetails },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type", "component", "packageAi"],
+  props: ["type", "component", "packageAi", 'showTemplateGalleryLink', 'showTemplateOptionsActionBar'],
   data() {
     return {
       filter: "",
@@ -123,6 +138,7 @@ export default {
         svgIconStyle: "height: 2em;",
         showAiSlogan: true,
       },
+      showWizardTemplateDetails: false,
     };
   },
   watch: {
@@ -135,14 +151,22 @@ export default {
   },
   methods: {
     showDetails($event) {
-      this.$emit('show-details', {
-        'id': $event.template.id, 
-        'name': $event.template.name, 
-        'description': $event.template.description,
-        'category_id': $event.template.process_category_id,
-        'version' : $event.template.version,
-      });
-      this.template = $event.template;
+      if ($event.type === "wizard") {
+        this.template = $event.template;
+        this.showWizardTemplateDetails = true;
+        this.$nextTick(() => {
+          this.$refs.wizardTemplateDetails.show();
+        });
+      } else {
+        this.$emit('show-details', {
+          'id': $event.template.id, 
+          'name': $event.template.name, 
+          'description': $event.template.description,
+          'category_id': $event.template.process_category_id,
+          'version' : $event.template.version,
+        });
+        this.template = $event.template;
+      }
     },
     fetch() {
         this.loading = true;
@@ -154,6 +178,10 @@ export default {
                 ? "templates/" + this.type.toLowerCase() +"?"
                 : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
 
+        // If the type is 'wizard', override the URL to fetch guided templates
+        if (this.type === 'wizard') {
+          url = 'wizard-templates?';
+        }
         // Load from our api client
         ProcessMaker.apiClient
             .get(
@@ -184,7 +212,7 @@ export default {
             .finally(() => {
               this.loading = false;
             });
-      },
+        }
   },
   mounted() {
     this.fetch();
@@ -228,9 +256,11 @@ export default {
   margin-right: 0.7rem;
 }
 .cards-container {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 415px;
+  &.fixed-height {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 415px;
+  }
 }
 .template-options {
   display: flex;

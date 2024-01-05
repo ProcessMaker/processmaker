@@ -1,58 +1,108 @@
 <template>
   <b-container class="h-100">
-    <b-card no-body class="h-100" >
-      <top-menu v-show="!previewChanges" ref="menuScript" :options="optionsMenu" />
-      <b-card-body ref="editorContainer" class="overflow-hidden p-4" >
+    <b-card
+      no-body
+      class="h-100"
+    >
+      <top-menu
+        v-show="!previewChanges"
+        ref="menuScript"
+        :options="optionsMenu"
+      />
+      <b-card-body
+        ref="editorContainer"
+        class="overflow-hidden p-4"
+      >
         <b-row class="h-100">
-          <b-col :cols="previewChanges && action !== 'generate' ? 12 : 9" class="h-100 p-0">
+          <b-col
+            :cols="previewChanges && action !== 'generate' ? 12 : 9"
+            class="h-100 p-0"
+          >
             <b-row class="h-100 w-100">
-              <b-col cols="12" class="h-100 p-0">
-                <div v-if="packageAi" v-show="showDiffEditor || showExplainEditor">
+              <b-col
+                cols="12"
+                class="h-100 p-0"
+              >
+                <div
+                  v-if="packageAi"
+                  v-show="showDiffEditor || showExplainEditor"
+                >
                   <div class="d-flex">
                     <div class="left-header-width pb-3 pl-3">
                       <div class="card-header h-100 d-flex align-items-center justify-content-between editor-header-border">
                         <span>{{ $t('Current Script') }}</span>
                       </div>
                     </div>
-                    <div v-if="showDiffEditor" class="right-header-width pb-3 pl-3">
+                    <div
+                      v-if="showDiffEditor"
+                      class="right-header-width pb-3 pl-3"
+                    >
                       <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border pulse header-x-padding">
                         <span>{{ $t('AI Generated Response') }}</span>
                         <div>
-                          <button class="btn btn-sm btn-light" @click="cancelChanges()">{{ $t('Cancel') }}</button>
-                          <button class="btn btn-sm btn-primary" @click="applyChanges()" v-b-tooltip.hover :title="$t('Apply recommended changes')">{{ $t('Apply changes  ') }}</button>
+                          <button
+                            class="btn btn-sm btn-light"
+                            @click="cancelChanges()"
+                          >
+                            {{ $t('Cancel') }}
+                          </button>
+                          <button
+                            v-b-tooltip.hover
+                            class="btn btn-sm btn-primary"
+                            :title="$t('Apply recommended changes')"
+                            @click="applyChanges()"
+                          >
+                            {{ $t('Apply changes  ') }}
+                          </button>
                         </div>
                       </div>
                     </div>
-                    <div v-else-if="showExplainEditor" class="right-header-width pb-3 pl-3">
+                    <div
+                      v-else-if="showExplainEditor"
+                      class="right-header-width pb-3 pl-3"
+                    >
                       <div class="card-header h-100 bg-primary-light d-flex align-items-center justify-content-between editor-header-border header-x-padding">
                         <span>{{ $t('AI Explanation') }}</span>
                         <div>
-                          <button class="btn" @click="closeExplanation()" v-b-tooltip.hover :title="$t('Close Explanation')">
-                            <i class="fa fa-times"></i>
-                        </button>
+                          <button
+                            v-b-tooltip.hover
+                            class="btn"
+                            :title="$t('Close Explanation')"
+                            @click="closeExplanation()"
+                          >
+                            <i class="fa fa-times" />
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="d-flex justify-content-between" :class="{'h-100': !(showExplainEditor || showDiffEditor), 'editors-container': showExplainEditor || showDiffEditor}">
+                <div
+                  class="d-flex justify-content-between"
+                  :class="{'h-100': !(showExplainEditor || showDiffEditor), 'editors-container': showExplainEditor || showDiffEditor}"
+                >
                   <monaco-editor
-                    ref="editor"
                     v-show="showEditor"
+                    ref="editor"
                     v-model="code"
                     :class="[{hidden: resizing}, showExplainEditor ? 'w-50' : 'w-100']"
                     :options="monacoOptions"
                     :language="language"
                     :diff-editor="false"
                   />
-                  <div v-if="showExplainEditor" class="w-50 h-100 py-2 px-4 explain-editor-container">
-                    <div class="mx-auto explain-editor pb-5" v-html="newCode">
-                    </div>
+                  <div
+                    v-if="showExplainEditor"
+                    class="w-50 h-100 py-2 px-4 explain-editor-container"
+                  >
+                    <div
+                      class="mx-auto explain-editor pb-5"
+                      v-html="newCode"
+                    />
                   </div>
 
                   <monaco-editor
-                    ref="diffEditor"
                     v-show="showDiffEditor"
+                    ref="diffEditor"
                     class="diff-height w-100"
                     :class="{hidden: resizing}"
                     :options="monacoOptionsDiff"
@@ -67,34 +117,63 @@
           </b-col>
 
           <!-- Progress panel -->
-          <b-col v-if="packageAi && loading" cols="3" class="h-100">
+          <b-col
+            v-if="packageAi && loading"
+            cols="3"
+            class="h-100"
+          >
             <div class="h-100 px-5 d-flex justify-items-center justify-content-center flex-column progress-panel">
               <div class="w-100 d-flex justify-content-between text-muted">
                 <div><small>{{ loaderAction }}...</small></div>
-                <div v-if="progress.progress"><small>{{ Math.trunc(progress.progress) }}%</small></div>
+                <div v-if="progress.progress">
+                  <small>{{ Math.trunc(progress.progress) }}%</small>
+                </div>
               </div>
               <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" :style="{'width': progress.progress + '%'}" :aria-valuenow="progress.progress" aria-valuemin="0" aria-valuemax="100"></div>
+                <div
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  :style="{'width': progress.progress + '%'}"
+                  :aria-valuenow="progress.progress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                />
               </div>
               <div class="text-right progress-panel-footer">
-                <button class="btn btn-light" @click="cancelRequest()">{{ $t('Cancel') }}</button>
+                <button
+                  class="btn btn-light"
+                  @click="cancelRequest()"
+                >
+                  {{ $t('Cancel') }}
+                </button>
               </div>
             </div>
           </b-col>
 
           <!-- Right panel -->
-          <b-col v-if="!loading && !previewChanges" cols="3" class="h-100">
-            <b-card no-body class="h-100">
+          <b-col
+            v-if="!loading && !previewChanges"
+            cols="3"
+            class="h-100"
+          >
+            <b-card
+              no-body
+              class="h-100"
+            >
               <b-card-header class="light-gray-background">
                 <b-row class="d-flex align-items-center">
                   <b-col>{{ $t('Debugger') }}</b-col>
 
-                  <b-col align-self="end" class="text-right">
+                  <b-col
+                    align-self="end"
+                    class="text-right"
+                  >
                     <b-button
                       class="text-capitalize pl-3 pr-3"
                       :disabled="preview.executing"
                       size="sm"
-                      @click="execute" >
+                      @click="execute"
+                    >
                       <i class="fas fa-caret-square-right" />
                       {{ $t('Run') }}
                     </b-button>
@@ -113,7 +192,7 @@
                     :package-ai="packageAi"
                     :process-id="processId"
                     :default-prompt="prompt"
-                    :lineContext="lineContext"
+                    :line-context="lineContext"
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
                     @current-nonce-changed="onCurrentNonceChanged"
@@ -186,8 +265,8 @@
                       </b-col>
                       <b-col class="text-right">
                         <button
-                          type="button"
                           v-b-modal.data-preview
+                          type="button"
                           class="btn-sm float-right"
                           @click.stop
                         >
@@ -231,8 +310,15 @@
           </b-col>
 
           <!-- Right Panel generate script -->
-          <b-col v-if="!loading && previewChanges && action ==='generate'" cols="3" class="h-100">
-            <b-card no-body class="h-100">
+          <b-col
+            v-if="!loading && previewChanges && action ==='generate'"
+            cols="3"
+            class="h-100"
+          >
+            <b-card
+              no-body
+              class="h-100"
+            >
               <b-card-header class="light-gray-background">
                 {{ $t('Generate Script From Text') }}
               </b-card-header>
@@ -243,12 +329,12 @@
                     ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
-                    :sourceCode="code"
+                    :source-code="code"
                     :language="language"
                     :selection="selection"
                     :package-ai="packageAi"
                     :default-selected="'generate'"
-                    :lineContext="lineContext"
+                    :line-context="lineContext"
                     @get-selection="onGetSelection"
                     @request-started="onRequestStarted"
                     @current-nonce-changed="onCurrentNonceChanged"
@@ -304,10 +390,9 @@
         <b-col cols="6">
           <tree-view
             v-model="stringifyJson"
-            :iframeHeight="iframeHeight"
+            :iframe-height="iframeHeight"
             style="border:1px; solid gray;"
-          >
-          </tree-view>
+          />
         </b-col>
       </b-row>
     </b-modal>
@@ -321,6 +406,7 @@ import TopMenu from "../../../components/Menu.vue";
 // eslint-disable-next-line no-unused-vars
 import customFilters from "../customFilters";
 import autosaveMixins from "../../../modules/autosave/mixins";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 import AiTab from "./AiTab.vue";
 
 export default {
@@ -329,7 +415,7 @@ export default {
     TopMenu,
     AiTab,
   },
-  mixins: [...autosaveMixins],
+  mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
     script: {
       type: Object,
@@ -356,12 +442,16 @@ export default {
       default: false,
     },
     packageAi: {
+      type: [String, Number],
       default: 0,
     },
     processId: {
+      type: Number,
       default: 0,
     },
     user: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -444,7 +534,6 @@ export default {
           },
         ],
       },
-      closeHref: "/designer/scripts",
     };
   },
   computed: {
@@ -484,6 +573,9 @@ export default {
             this.setLoadingState(false);
           });
       };
+    },
+    closeHref() {
+      return this.redirectUrl ? this.redirectUrl : "/designer/scripts";
     },
   },
   watch: {
@@ -544,13 +636,11 @@ export default {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
-      this.$refs.aiTab2.showMenu();
     },
     cancelChanges() {
       this.newCode = "";
       this.changesApplied = true;
       this.action = "";
-      this.$refs.aiTab2.showMenu();
     },
     cancelRequest() {
       if (this.currentNonce) {
@@ -559,7 +649,6 @@ export default {
         this.loading = false;
         this.progress.progress = 0;
         this.action = "";
-        this.$refs.aiTab2.showMenu();
       }
     },
     closeExplanation() {
@@ -635,6 +724,10 @@ export default {
         streamProgressEvent,
         (response) => {
           if (response.data.promptSessionId !== localStorage.promptSessionId) {
+            return;
+          }
+
+          if (response.data.nonce !== this.currentNonce) {
             return;
           }
 
@@ -768,8 +861,12 @@ export default {
             onSuccess(response);
           }
 
-          if (this.processId !== 0 && this.processId !== undefined && shouldRedirect) {
-            window.location = `/modeler/${this.processId}`;
+          if (shouldRedirect) {
+            if (this.processId) {
+              window.location = `/modeler/${this.processId}`;
+            }
+
+            window.ProcessMaker.EventBus.$emit("redirect");
           }
         }).catch((err) => {
           if (typeof onError === "function") {
@@ -810,7 +907,8 @@ export default {
         }
 
         // Save boilerplate template to avoid issues when script code is [].
-        ProcessMaker.EventBus.$emit("save-script", false);
+        const shouldRedirect = false;
+        ProcessMaker.EventBus.$emit("save-script", shouldRedirect);
       }
     },
     setVersionIndicator(isDraft = null) {
