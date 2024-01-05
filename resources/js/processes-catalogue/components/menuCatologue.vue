@@ -104,7 +104,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import url("../../../sass/_scrollbar.scss");
 i {
   font-size: 20px;
   color: #6A7888;
