@@ -106,7 +106,7 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
   data() {
     return {
       active: false,
@@ -140,6 +140,10 @@ export default {
       this.$emit("navigate", action, data);
     },
     itemLink(action, data) {
+      if (this.redirectTo === "projects") {
+        const href = Mustache.render(action.href, data);
+        return `${href}?project_id=${this.redirectId}`;
+      }
       return Mustache.render(action.href, data);
     },
     onShow() {
