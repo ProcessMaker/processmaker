@@ -42,6 +42,11 @@
         this.emitInput();
       }
     },
+    mounted() {
+      if (this.input === "") {
+        this.input = this.currentDate();
+      }
+    },
     methods: {
       emitInput() {
         this.dateToDatetime();
@@ -51,6 +56,15 @@
         if (this.input && this.input !== "" && !/\d{2}:\d{2}:\d{2}/.test(this.input)) {
           this.input = this.input + " 00:00:00";
         }
+      },
+      currentDate() {
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        month = month < 10 ? "0" + month : month;
+        day = day < 10 ? "0" + day : day;
+        return year + "-" + month + "-" + day;
       }
     }
   };
