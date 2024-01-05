@@ -100,13 +100,13 @@
 import { FormErrorsMixin, Required } from "SharedComponents";
 import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
-import OAuthConnectionProperties from "./cdata/OauthConnectionProperties.vue";
+import OauthConnectionProperties from "./cdata/OauthConnectionProperties.vue";
 import NoneConnectionProperties from "./cdata/NoneConnectionProperties.vue";
 
 export default {
   components: {
     AdditionalDriverConnectionProperties,
-    OAuthConnectionProperties,
+    OauthConnectionProperties,
     NoneConnectionProperties,
   },
   mixins: [settingMixin, FormErrorsMixin, Required],
@@ -130,7 +130,6 @@ export default {
       transformed: null,
       errors: {},
       isInvalid: true,
-      type: "password",
       resetData: true,
       componentsMap: {
         OAuth: "oauth-connection-properties",
@@ -154,12 +153,6 @@ export default {
     },
     changed() {
       return JSON.stringify(this.formData) !== JSON.stringify(this.transformed);
-    },
-    icon() {
-      if (this.type === "password") {
-        return "fa-eye";
-      }
-      return "fa-eye-slash";
     },
     isButtonDisabled() {
       return this.isInvalid || (this.isAuthorized && !this.changed);
@@ -185,13 +178,6 @@ export default {
   methods: {
     authSchemeToComponent(scheme) {
       return this.componentsMap[scheme] || null;
-    },
-    togglePassword() {
-      if (this.type === "text") {
-        this.type = "password";
-      } else {
-        this.type = "text";
-      }
     },
     validateData() {
       // Check if client_id and client_secret are empty
