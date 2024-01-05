@@ -116,10 +116,6 @@ export default {
           .then((response) => {
             this.category = response.data;
           });
-      } else {
-        const indexUncategorized = this.listCategories.findIndex((category) => category.name === "Uncategorized");
-        console.log(this.listCategories, indexUncategorized);
-        this.$refs["category-list"].selectItem(this.listCategories[indexUncategorized]);
       }
     },
     /**

@@ -59,13 +59,26 @@
 <script>
 export default {
   props: ["data", "select", "title", "preicon"],
+  data() {
+    return {
+      showDefaultCategory: false,
+    };
+  },
   mounted() {
+    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+  },
+  updated() {
+    if(this.showDefaultCategory) {
+      const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
+      this.selectItem(this.data[indexUncategorized]);
+      this.showDefaultCategory = false;
+    }
   },
   methods: {
     /**
