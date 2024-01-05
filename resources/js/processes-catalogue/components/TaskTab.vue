@@ -1,23 +1,28 @@
 <template>
   <div class="mt-3">
-        <div class="bg-white" v-if="!showTabTasks">
-          <filter-table
-            :headers="tableHeadersTasks"
-            :data="dataTasks"
-            @table-row-click="handleRowClick"
-          />
-          <pagination-table
-            :meta="dataTasks.meta"
-            @page-change="changePageTasks"
-          />
-        </div>
-        <div v-else>
-          <default-tab
-            :alt-text="$t('No Image')"
-            :title-text="$t('You have no tasks from this process.')"
-            :description-text="$t('All your tasks related to this process will be shown here')"
-          />
-        </div>
+    <div
+      class="bg-white"
+      v-if="!showTabTasks"
+    >
+      <filter-table
+        :headers="tableHeadersTasks"
+        :data="dataTasks"
+        @table-row-click="handleRowClick"
+      />
+      <pagination-table
+        :meta="dataTasks.meta"
+        @page-change="changePageTasks"
+      />
+    </div>
+    <div v-else>
+      <default-tab
+        :alt-text="$t('No Image')"
+        :title-text="$t('You have no tasks from this process.')"
+        :description-text="
+          $t('All your tasks related to this process will be shown here')
+        "
+      />
+    </div>
   </div>
 </template>
 
@@ -32,7 +37,7 @@ import ListMixin from "../../tasks/components/ListMixin";
 import { FilterTable } from "../../components/shared";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import { methodsTabMixin } from './TabMixing.js';
+import { methodsTabMixin } from "./TabMixing.js";
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
@@ -141,7 +146,9 @@ export default {
         record["case_title"] = this.formatCaseTitle(record.process_request);
         record["name"] = record.process.name;
         record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatParticipants(record["participants"]);
+        record["participants"] = this.formatParticipants(
+          record["participants"]
+        );
       }
       return data;
     },
@@ -172,7 +179,7 @@ export default {
         # ${value.case_number}
       </a>`;
     },
-    queryBuilder() {    
+    queryBuilder() {
       let pmql = "";
       if (this.pmqlTask !== undefined) {
         pmql = this.pmqlTask;
@@ -204,11 +211,11 @@ export default {
         " AND process_id=" +
         `${this.process.id}` +
         "&per_page=10&order_by=ID&order_direction=DESC&non_system=true";
-      
+
       this.getData(this.queryTask, "tasks");
     },
     getData(query, type) {
-    // Load from api client
+      // Load from api client
       ProcessMaker.apiClient
         .get(query)
         .then((response) => {

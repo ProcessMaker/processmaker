@@ -1,23 +1,26 @@
 <template>
   <div class="mt-3">
-        <div class="bg-white" v-if="!showTabRequests">
-          <filter-table
-            :headers="tableHeadersRequests"
-            :data="dataRequests"
-            @table-row-click="handleRowClick"
-          />
-          <pagination-table
-            :meta="dataRequests.meta"
-            @page-change="changePageRequests"
-          />
-        </div>
-        <div v-else>
-          <default-tab
-            :alt-text="$t('No Image')"
-            :title-text="$t('You have made no requests of this process.')"
-            :description-text="$t('All your requests will be shown here')"
-          />
-        </div>
+    <div
+      class="bg-white"
+      v-if="!showTabRequests"
+    >
+      <filter-table
+        :headers="tableHeadersRequests"
+        :data="dataRequests"
+        @table-row-click="handleRowClick"
+      />
+      <pagination-table
+        :meta="dataRequests.meta"
+        @page-change="changePageRequests"
+      />
+    </div>
+    <div v-else>
+      <default-tab
+        :alt-text="$t('No Image')"
+        :title-text="$t('You have made no requests of this process.')"
+        :description-text="$t('All your requests will be shown here')"
+      />
+    </div>
   </div>
 </template>
 
@@ -43,7 +46,7 @@ export default {
     paginationTable,
     DefaultTab,
   },
-  mixins: [uniqIdsMixin, ListMixin, methodsTabMixin ],
+  mixins: [uniqIdsMixin, ListMixin, methodsTabMixin],
   props: {
     currentUser: {
       type: Object,
@@ -141,7 +144,9 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatParticipants(record["participants"]);
+        record["participants"] = this.formatParticipants(
+          record["participants"]
+        );
       }
       return data;
     },
@@ -199,19 +204,19 @@ export default {
       this.getData(this.queryRequest);
     },
     getData(query, type) {
-    // Load from api client
+      // Load from api client
       ProcessMaker.apiClient
         .get(query)
         .then((response) => {
-          const dataResponse = response.data
-          this.dataRequests = this.transform(response.data)
+          const dataResponse = response.data;
+          this.dataRequests = this.transform(response.data);
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&
             dataResponse.data.length === 0
           ) {
-             this.showTabRequests = true;
-          } 
+            this.showTabRequests = true;
+          }
         })
         .catch((error) => {
           if (error.code === "ERR_CANCELED") {
