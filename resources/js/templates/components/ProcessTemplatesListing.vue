@@ -190,24 +190,14 @@
 
           for (let record of data.data) {
             //format Status
-            record["owner"] = this.formatOwner(record["user"]);
+            record["owner"] = this.formatAvatar(record["user"]);
             record["category_list"] = this.formatCategory(record["categories"]);
           }
           return data;
         },
-        formatOwner(user) {
-          return {
-            component: "AvatarImage",
-            props: {
-              size: "25",
-              "input-data": user,
-              "hide-name": false,
-            },
-          };
-        },
         formatCategory(categories) {
           return categories.map(item => item.name).join(', ');
-        },        
+        },
         exportTemplate(template) {
           ProcessMaker.apiClient({
             method: 'POST',

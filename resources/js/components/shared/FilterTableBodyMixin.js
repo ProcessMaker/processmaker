@@ -25,5 +25,15 @@ export default {
       this.page = page;
       this.fetch();
     },
+    formatAvatar(user) {
+      return {
+        component: "AvatarImage",
+        props: {
+          size: "25",
+          "input-data": user,
+          "hide-name": false,
+        },
+      };
+    },
   },
 };

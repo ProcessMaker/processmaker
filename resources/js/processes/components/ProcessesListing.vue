@@ -219,7 +219,7 @@ export default {
 
       for (let record of data.data) {
         //format Status
-        record["owner"] = this.formatOwner(record["user"]);
+        record["owner"] = this.formatAvatar(record["user"]);
         record["category_list"] = this.formatCategory(record["categories"]);
       }
       return data;
@@ -252,16 +252,6 @@ export default {
           '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
       status = status.charAt(0).toUpperCase() + status.slice(1);
       return '<div style="white-space:nowrap">' + response + status + "</div>";
-    },
-    formatOwner(user) {
-      return {
-        component: "AvatarImage",
-        props: {
-          size: "25",
-          "input-data": user,
-          "hide-name": false,
-        },
-      };
     },
     formatCategory(categories) {
       return categories.map(item => item.name).join(', ');
