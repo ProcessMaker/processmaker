@@ -44,7 +44,7 @@
           slot-scope="props"
         >
           <div
-            class="icon-square"
+            class="icon-squares"
             @mouseover="onHover(props.option)"
           >
             <img
@@ -187,9 +187,9 @@ $multiselect-height: 38px;
     height: 25px;
     margin-top: -4px;
   }
-  .icon-square {
+  .icon-squares {
     color: #788793;
-    padding: 16px;
+    padding: 14px;
     text-align: center;
   }
 
@@ -199,7 +199,7 @@ $multiselect-height: 38px;
 
   .multiselect__option--selected {
     background: #3397e1;
-    .icon-square {
+    .icon-squares {
       color: white;
     }
   }

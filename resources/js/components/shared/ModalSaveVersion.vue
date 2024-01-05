@@ -767,13 +767,6 @@ $multiselect-height: 38px;
   color: darkgray;
 }
 
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
-}
-
 .btn-custom {
   text-transform: none;
   border-color: #6C757D;
