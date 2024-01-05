@@ -11,7 +11,9 @@
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index">{{ column.label }}</div>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -114,6 +116,8 @@ import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -125,6 +129,8 @@ export default {
     EllipsisMenu,
     PMColumnFilterPopover,
     paginationTable,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
   },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {

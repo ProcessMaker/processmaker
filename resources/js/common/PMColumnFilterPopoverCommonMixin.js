@@ -164,10 +164,15 @@ const PMColumnFilterCommonMixin = {
     markStyleWhenColumnSetAFilter() {
       for (let i in this.tableHeaders) {
         this.tableHeaders[i].filterApplied = false;
+        this.tableHeaders[i].sortAsc = false;
+        this.tableHeaders[i].sortDesc = false;
       }
       for (let i in this.tableHeaders) {
         if (this.tableHeaders[i].field === this.orderBy) {
           this.tableHeaders[i].filterApplied = true;
+          let sort = this.sortOrder[0].direction;
+          this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
+          this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
         }
       }
       for (let i in this.advancedFilter) {
