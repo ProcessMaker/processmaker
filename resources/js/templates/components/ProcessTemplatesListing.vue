@@ -44,18 +44,9 @@
                 />
                 <template v-if="header.field !== 'name'">
                   <div
-                    :id="`element-${rowIndex}-${colIndex}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
-                      custom-class="pm-table-tooltip"
-                    >
-                      {{ row[header.field] }}
-                    </b-tooltip>
                   </div>
                 </template>
               </template>

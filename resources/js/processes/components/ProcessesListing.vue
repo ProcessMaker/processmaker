@@ -30,37 +30,24 @@
               </template>
               <template v-else>
                 <template v-if="header.field === 'name'">
-                  <div
-                    :id="`element-${rowIndex}-${colIndex}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
+                  <i tabindex="0"
+                    v-b-tooltip
+                    :title="row.warningMessages.join(' ')"
+                    class="text-warning fa fa-exclamation-triangle"
+                    :class="{'invisible': row.warningMessages.length == 0}">
+                  </i>
+                  <i tabindex="0"
+                    v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
+                    v-b-tooltip
+                    :title="row.status"
+                    class="mr-2"
+                    :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }">
+                  </i>
+                  <span
+                    v-uni-id="row.id.toString()"
                   >
-                    <i tabindex="0"
-                      v-b-tooltip
-                      :title="row.warningMessages.join(' ')"
-                      class="text-warning fa fa-exclamation-triangle"
-                      :class="{'invisible': row.warningMessages.length == 0}">
-                    </i>
-                    <i tabindex="0"
-                      v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
-                      v-b-tooltip
-                      :title="row.status"
-                      class="mr-2"
-                      :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }">
-                    </i>
-                    <span
-                      v-uni-id="row.id.toString()"
-                    >
-                      {{ row[header.field] }}
-                    </span>
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
-                      custom-class="pm-table-tooltip"
-                    >
-                      {{ row[header.field] }}
-                    </b-tooltip>
-                  </div>
+                    {{ row[header.field] }}
+                  </span>
                 </template>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
@@ -74,18 +61,9 @@
                 />
                 <template v-if="header.field !== 'name'">
                   <div
-                    :id="`element-${rowIndex}-${colIndex}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
-                      custom-class="pm-table-tooltip"
-                    >
-                      {{ row[header.field] }}
-                    </b-tooltip>
                   </div>
                 </template>
               </template>
