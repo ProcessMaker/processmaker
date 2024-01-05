@@ -80,7 +80,9 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    <script src="{{mix('js/tasks/index.js')}}">
+    window.Processmaker.filter_user = @json($userFilter);
+    </script>
 @endsection
 
 @section('css')

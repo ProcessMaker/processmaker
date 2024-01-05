@@ -69,18 +69,19 @@ const PMColumnFilterCommonMixin = {
     onApply(json, index) {
       this.advancedFilterInit(this.tableHeaders.length);
       this.advancedFilter[index] = json;
-      this.tableHeaders[index].filterApplied = true;
+      this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch();
     },
     onClear(index) {
       this.advancedFilter[index] = [];
-      this.tableHeaders[index].filterApplied = false;
+      this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch();
     },
     onChangeSort(value, field) {
       this.setOrderByProps(field, value);
+      this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch();
     },
@@ -160,7 +161,15 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
-    verifyIfHeaderContainFilter() {
+    markStyleWhenColumnSetAFilter() {
+      for (let i in this.tableHeaders) {
+        this.tableHeaders[i].filterApplied = false;
+      }
+      for (let i in this.tableHeaders) {
+        if (this.tableHeaders[i].field === this.orderBy) {
+          this.tableHeaders[i].filterApplied = true;
+        }
+      }
       for (let i in this.advancedFilter) {
         if (i in this.tableHeaders && this.advancedFilter[i].length > 0) {
           this.tableHeaders[i].filterApplied = true;
@@ -168,20 +177,23 @@ const PMColumnFilterCommonMixin = {
       }
     },
     getFilterConfiguration(name) {
+      if ("filter_user" in window.Processmaker) {
+        this.setFilterPropsFromConfig(window.Processmaker.filter_user);
+        return;
+      }
       let url = "users/get_filter_configuration/" + name;
       ProcessMaker.apiClient.get(url).then(response => {
-        let sw = response.data.data.filter && response.data.data.filter instanceof Array;
-        if (sw) {
-          this.advancedFilter = response.data.data.filter;
-        }
-        sw = response.data.data.order &&
-                response.data.data.order.by &&
-                response.data.data.order.direction;
-        if (sw) {
-          this.setOrderByProps(response.data.data.order.by, response.data.data.order.direction);
-        }
-        this.verifyIfHeaderContainFilter();
+        this.setFilterPropsFromConfig(response.data.data);
       });
+    },
+    setFilterPropsFromConfig(config) {
+      if (config.filter && config.filter instanceof Array) {
+        this.advancedFilter = config.filter;
+      }
+      if (config.order && config.order.by && config.order.direction) {
+        this.setOrderByProps(config.order.by, config.order.direction);
+      }
+      this.markStyleWhenColumnSetAFilter();
     }
   }
 };
