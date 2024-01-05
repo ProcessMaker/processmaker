@@ -96,7 +96,6 @@ export default {
     this.list = this.all;
   },
   mounted() {
-    debugger;
     this.icon = this.value ? this.find(this.value) : this.find(this.default);
   },
   methods: {
