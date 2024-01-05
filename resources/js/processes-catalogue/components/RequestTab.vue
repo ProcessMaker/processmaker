@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div>
     <div
       class="bg-white"
       v-if="!showTabRequests"

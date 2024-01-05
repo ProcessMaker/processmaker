@@ -1,6 +1,6 @@
 <template>
   <div class="mt-3">
-    <b-tabs content-class="mt-3 text-style">
+    <b-tabs content-class="text-style">
       <b-tab
         title="My Requests"
         active
