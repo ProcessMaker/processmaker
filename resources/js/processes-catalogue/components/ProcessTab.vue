@@ -147,7 +147,7 @@ export default {
       tableHeadersTasks: [
         {
           label: "CASE TITLE",
-          field: "element_name",
+          field: "case_title",
           sortable: true,
           default: true,
           width: 140,
@@ -155,7 +155,15 @@ export default {
         },
         {
           label: "PROCESS NAME",
-          field: "request",
+          field: "name",
+          sortable: true,
+          default: true,
+          width: 140,
+          truncate: true,
+        },
+        {
+          label: "TASK NAME",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
@@ -208,6 +216,7 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
+      console.log("EN TRANSFORM: ", data.data);
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
@@ -264,7 +273,7 @@ export default {
       return `
       <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
-        ${value.case_number}
+        # ${value.case_number}
       </a>`;
     },
     queryBuilder() {
@@ -322,6 +331,7 @@ export default {
       ProcessMaker.apiClient
         .get(query)
         .then((response) => {
+          console.log('GET DATA: ', response.data);
           const dataResponse = this.transform(response.data);
           type === "requests"
             ? (this.dataRequests = this.transform(response.data))
