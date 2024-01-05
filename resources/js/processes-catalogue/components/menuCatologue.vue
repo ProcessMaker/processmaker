@@ -26,9 +26,10 @@
         <b-list-group-item
           v-for="item in data"
           :key="item.id"
-          :ref="item.name"
+          ref="processItems"
+          :class="{ 'list-item-selected': isSelectedProcess(item) }"
           class="list-item"
-          @click="selectItem(item)"
+          @click="selectProcessItem(item)"
         >
           {{ item.name }}
         </b-list-group-item>
@@ -58,10 +59,14 @@
     >
       <b-list-group>
         <b-list-group-item
+          v-for="(item, index) in templateOptions"
+          :key="index"
+          ref="templateItems"
+          :class="{ 'list-item-selected': isSelectedTemplate(item) }"
           class="list-item"
-          @click="wizardLinkSelected"
+          @click="selectTemplateItem(item)"
         >
-          {{ $t("Guided Templates") }}
+          {{ item.label }}
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
@@ -75,6 +80,14 @@ export default {
     return {
       showCatalogue: false,
       showGuidedTemplates: false,
+      selectedProcessItem: null,
+      selectedTemplateItem: null,
+      templateOptions: [
+        {
+          label: this.$t("Guided Templates"),
+          selected: false,
+        },
+      ],
     };
   },
   mounted() {
@@ -92,18 +105,22 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
-    selectItem(item) {
-      this.setSelectItem(item.name || item);
+    selectProcessItem(item) {
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
       this.select(item);
     },
-    setSelectItem(item) {
-      for (const item in this.$refs) {
-        this.$refs[item][0].className = "list-item";
-      }
-      this.$refs[item][0].className = "list-item list-item-selected";
-    },
-    wizardLinkSelected() {
+    selectTemplateItem(item) {
+      this.selectedTemplateItem = item;
+      this.selectedProcessItem = null;
+      this.select(item);
       this.$emit("wizardLinkSelect");
+    },
+    isSelectedProcess(item) {
+      return this.selectedProcessItem === item;
+    },
+    isSelectedTemplate(index) {
+      return this.selectedTemplateItem === index;
     },
     onToggleCatalogue() {
       this.showCatalogue = !this.showCatalogue;
