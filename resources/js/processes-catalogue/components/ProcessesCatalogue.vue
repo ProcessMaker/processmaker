@@ -26,7 +26,9 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty 
+            @wizardLinkSelect="wizardTemplatesSelected"
+          />
         </div>
         <div v-else>
           <CardProcess
