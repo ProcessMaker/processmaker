@@ -114,7 +114,6 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
-import { FilterTable } from "../../components/shared";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";

@@ -11,15 +11,22 @@ export default {
       return false;
     },
     sanitize(html) {
-      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
-      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
-      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+      return this.removeScripts(html);
+    },
+    removeScripts(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
 
-      return cleanHtml;
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach((script) => {
+        script.remove();
+      });
+
+      const styles = doc.querySelectorAll('style');
+      styles.forEach((style) => {
+        style.remove();
+      });
+
+      return doc.body.innerHTML;
     },
     changePage(page) {
       this.page = page;

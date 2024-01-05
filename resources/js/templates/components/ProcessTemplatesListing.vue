@@ -97,7 +97,6 @@
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
     import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-    import { FilterTable } from "../../components/shared";
     import paginationTable from "../../components/shared/PaginationTable.vue";
     import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
   
