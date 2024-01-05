@@ -226,13 +226,14 @@ export default {
         this.$emit("screen-created-from-modeler", url, data.id, data.title);
       } else if (this.copyAssetMode) {
         this.close();
-      } else if (this.isQuickCreate === true) {
-        channel.postMessage({
-          assetType: "screen",
-          asset: data,
-          screenSelectId: this.screenSelectId,
-        });
       } else {
+        if (this.isQuickCreate === true) {
+          channel.postMessage({
+            assetType: "screen",
+            asset: data,
+            screenSelectId: this.screenSelectId,
+          });
+        }
         window.location = url;
       }
     },
