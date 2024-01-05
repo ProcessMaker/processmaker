@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <!-- <div class="container"> -->
     <b-input-group>
       <b-input-group-prepend>
         <b-btn
@@ -11,7 +11,7 @@
           <i class="fas fa-search search-icon" />
         </b-btn>
       </b-input-group-prepend>
-      <div class="search-container">
+   
         <b-form-input
           id="search-box"
           v-model="filter"
@@ -19,12 +19,15 @@
           :placeholder="$t('Search Processes')"
           @keyup.enter="fetch()"
         />
-        <button class="btn-clear-search" @click="clearSearch()">
+        <!-- <button class="btn-clear-search" @click="clearSearch()">
           <i class="fas fa-times"></i>
-        </button>
-      </div>
-    </b-input-group>
-  </div>
+        </button> -->
+        <!-- TO DO: Apply below changes when Styles will be approved (and remove commented code) -->
+        <b-input-group-append>
+              <b-button variant="outline-dark" @click="clearSearch">X</b-button>
+            </b-input-group-append>
+        </b-input-group>
+  <!-- </div> -->
 </template>
 
 <script>
