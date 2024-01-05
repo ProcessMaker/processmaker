@@ -32,10 +32,8 @@ import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import DefaultTab from "./DefaultTab.vue";
-import isPMQL from "../../modules/isPMQL";
 import ListMixin from "../../tasks/components/ListMixin";
 import { FilterTable } from "../../components/shared";
-import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import { methodsTabMixin } from "./TabMixing.js";
 const uniqIdsMixin = createUniqIdsMixin();
@@ -47,6 +45,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     DefaultTab,
+    FilterTable,
   },
   mixins: [uniqIdsMixin, ListMixin, methodsTabMixin],
   props: {
@@ -185,7 +184,7 @@ export default {
         pmql = this.pmqlTask;
       }
       let filter = this.filter;
-      if (filter && filter.length) {
+      if (filter?.length) {
         if (filter.isPMQL()) {
           pmql = `(${pmql}) and (${filter})`;
           filter = "";
