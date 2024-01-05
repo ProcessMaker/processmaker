@@ -751,7 +751,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      *
      * @return callable
      */
-    public function valueAliasName(string $value, Expression $expression): callable
+    public function valueAliasProcess_Name(string $value, Expression $expression): callable
     {
         return function ($query) use ($expression, $value) {
             $query->whereHas('processRequest', function ($query) use ($expression, $value) {
