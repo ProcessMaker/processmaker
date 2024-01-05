@@ -6,7 +6,7 @@
     />
     <div
       v-if="processList.length > 0"
-      class="container processList"
+      class="processList"
     >
       <Card
         v-for="(process, index) in processList"
