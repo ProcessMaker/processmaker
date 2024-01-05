@@ -34,7 +34,10 @@ class UserResourceViewTest extends TestCase
         $response = $this->apiCall('GET', '/requests');
 
         $results = collect($response->json()['data']);
-        $this->assertEquals((string) $now, $results->first(fn ($i) => $i['id'] === $processRequest->id)['user_viewed_at']);
+        $this->assertEquals(
+            (string) $now,
+            $results->first(fn ($i) => $i['id'] === $processRequest->id)['user_viewed_at']
+        );
         $this->assertNull($results->first(fn ($i) => $i['id'] === $processRequestNotViewed->id)['user_viewed_at']);
     }
 
