@@ -9,7 +9,13 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <input id="search-box" v-model="filter" class="form-control pl-1 search-text search-input" placeholder="{{__('Search here')}}"  aria-label="{{__('Search')}}">
+                        <input 
+                            id="search-box" 
+                            v-model="filter" 
+                            class="form-control pl-1 search-text search-input" 
+                            placeholder="{{__('Search here')}}"  
+                            aria-label="{{__('Search')}}"
+                        >
                     </div>
                 </div>
             </div>
@@ -17,7 +23,13 @@
                 <div class="d-flex ml-md-0 flex-column flex-md-row">
                     @can('import-process-templates')
                         <div class="mb-3 mb-md-0 ml-md-2">
-                            <a href="#" aria-label="{{ __('Import Template') }}" id="import_template" class="btn btn-outline-secondary w-100" @click="goToImport">
+                            <a 
+                                href="#" 
+                                aria-label="{{ __('Import Template') }}" 
+                                id="import_template" 
+                                class="btn btn-outline-secondary w-100" 
+                                @click="goToImport"
+                            >
                                 <i class="fas fa-file-import"></i> {{__('Import')}}
                             </a>
                         </div>
