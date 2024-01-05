@@ -88,15 +88,24 @@ export default {
           selected: false,
         },
       ],
+      showDefaultCategory: false,
     };
   },
   mounted() {
+    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+  },
+  updated() {
+    if(this.showDefaultCategory) {
+      const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
+      this.selectItem(this.data[indexUncategorized]);
+      this.showDefaultCategory = false;
+    }
   },
   methods: {
     /**
@@ -132,7 +141,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import url("../../../sass/_scrollbar.scss");
 i {
   font-size: 20px;
   color: #6A7888;
