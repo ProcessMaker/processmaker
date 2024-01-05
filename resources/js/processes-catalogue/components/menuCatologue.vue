@@ -5,6 +5,7 @@
       block
       variant="light"
       class="m-1"
+      @click="onToggleCatalogue"
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
@@ -13,8 +14,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="showCatalogue ? 'fa-sort-up' : 'fa-sort-down'"
-          @click="onToggleCatalogue"
+          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue}"
         />
       </div>
     </div>
@@ -40,6 +40,7 @@
       block
       variant="light"
       class="m-1"
+      @click="onToggleTemplates"
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
@@ -48,8 +49,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="showGuidedTemplates ? 'fa-sort-up' : 'fa-sort-down'"
-          @click="onToggleTemplates"
+          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates}"
         />
       </div>
     </div>
