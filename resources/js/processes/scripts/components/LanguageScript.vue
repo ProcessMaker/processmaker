@@ -1,7 +1,7 @@
 <template>
   <div class="container-lang">
     <label class="choose-lang m-2 text-uppercase">
-      {{ $t("Choose a language") }}
+      {{ $t("Choose an Executor") }}
     </label>
     <div class="content-lang">
       <template

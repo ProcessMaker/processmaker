@@ -520,6 +520,7 @@ export default {
           this.$t("It is not possible to include more than four images."),
           "danger",
         );
+        this.$refs.fileInput.value = "";
         return;
       }
       const { files } = event.target;
@@ -666,6 +667,7 @@ export default {
             type: "add",
           };
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+          ProcessMaker.EventBus.$emit("getChartId");
           this.hideModal();
         })
         .catch((error) => {

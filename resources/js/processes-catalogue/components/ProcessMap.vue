@@ -144,7 +144,17 @@ export default {
       this.$refs["modal-save-version"].showModal();
     },
     getActions() {
-      this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
+      this.processLaunchpadActions = this.processActions
+        .filter((action) => action.value !== "open-launchpad");
+
+      const newAction = {
+        value: "archive-item-launchpad",
+        content: "Archive",
+        permission: ["archive-processes", "view-additional-asset-actions"],
+        icon: "fas fa-archive",
+        conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
+      };
+      this.processLaunchpadActions = this.processLaunchpadActions.map((action) => (action.value !== "archive-item" ? action : newAction));
     },
     /**
      * Return a process cards from process info
