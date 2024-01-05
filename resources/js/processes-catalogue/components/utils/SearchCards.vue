@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <b-input-group>
       <b-input-group-prepend>
         <b-btn
