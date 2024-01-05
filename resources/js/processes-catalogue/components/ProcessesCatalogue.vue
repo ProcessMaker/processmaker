@@ -8,7 +8,7 @@
     />
     <b-row>
       <b-col cols="2">
-        <h4> {{ $t('Processes Browser') }} </h4>
+        <span class="pl-3 menu-title"> {{ $t('Processes Browser') }} </span>
         <MenuCatologue
           ref="category-list"
           title="Available Processes"
@@ -31,8 +31,8 @@
         <div v-else>
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates"
-            :category="category"
             :key="key"
+            :category="category"
             @openProcess="openProcess"
           />
           <ProcessInfo
@@ -171,3 +171,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menu-title {
+  color: #556271;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 46.08px;
+  letter-spacing: -0.44px;
+}
+</style>
