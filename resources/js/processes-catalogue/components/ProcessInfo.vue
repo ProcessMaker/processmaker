@@ -14,7 +14,7 @@
         />
       </b-col>
       <b-col cols="3">
-        <process-options :process="process" />
+        <process-options :process="process" :user="currentUserId"/>
       </b-col>
     </div>
     <b-col cols="12">

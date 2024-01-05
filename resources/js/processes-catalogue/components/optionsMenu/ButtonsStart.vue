@@ -62,9 +62,11 @@
 </template>
 
 <script>
+import { integer } from '@processmaker/screen-builder';
+
 
 export default {
-  props: ["process"],
+  props: ["process", "currentUser"],
   data() {
     return {
       processEvents: [],
@@ -87,7 +89,21 @@ export default {
             const webEntry = JSON.parse(event.config).web_entry;
             event.webEntry = webEntry;
           }
-          this.processEvents.push(event);
+          switch (event.assignment) {
+            case "user":
+              if (this.currentUser === Number(event.assignedUsers)){
+                this.processEvents.push(event);
+              }
+              break;
+            case "group":
+              this.checkUsersGroup(event, event.assignedGroups);
+              break;
+            case "process_manager":
+              if (this.currentUser === this.process.manager_id){
+                this.processEvents.push(event);
+              }
+              break;
+          }
         }
       });
       if (this.processEvents.length <= 1) {
@@ -97,6 +113,33 @@ export default {
           this.startEvent = event.id ?? 0;
         }
       }
+    },
+    /**
+     * check if currentUser is member of a group
+     */
+    checkUsersGroup(event, groupId) {
+      ProcessMaker.apiClient
+        .get(`groups/${groupId}/users`)
+        .then((response) => {
+          const users = response.data.data;
+          users.forEach((user) => {
+            if(user.id === this.currentUser) {
+              this.processEvents.push(event);
+              if (this.processEvents.length > 1) {
+                  this.havelessOneStartEvent = false;
+                  this.startEvent = 0;
+              }
+            }
+          })
+        });
+      ProcessMaker.apiClient
+        .get(`groups/${groupId}/groups`)
+        .then((response) => {
+          const groups = response.data.data;
+          groups.forEach((group) => {
+            this.checkUsersGroup(group.id);
+          })
+        });
     },
     /**
      * Start new request
