@@ -97,7 +97,11 @@
         this.$refs["create-process-modal"].show();
       },
       createAiProcess() {
-        window.location.href = "/package-ai/processes/create";
+        if (this.projectId) {
+          window.location.href = `/package-ai/processes/create?projectId=${this.projectId}`;
+        } else {
+          window.location.href = "/package-ai/processes/create";
+        }
       },
       useSelectedTemplate() {
         this.selectedTemplate = true;
