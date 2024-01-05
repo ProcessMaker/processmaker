@@ -40,7 +40,7 @@
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
-        "@chantouchsek/validatorjs": "2.0.1",
+        "@chantouchsek/validatorjs": "1.2.3",
         "@braintree/sanitize-url": "^6.0.2",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -49,9 +49,9 @@
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@tinymce/tinymce-vue": "2.0.0",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.43.10",
+        "@processmaker/modeler": "1.43.11",
         "@processmaker/processmaker-bpmn-moddle": "0.14.1",
-        "@processmaker/screen-builder": "2.79.3",
+        "@processmaker/screen-builder": "2.79.4",
         "@processmaker/vue-form-elements": "0.50.1",
         "@processmaker/vue-multiselect": "2.2.0",
         "autoprefixer": "10.4.5",
