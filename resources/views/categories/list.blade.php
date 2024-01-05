@@ -10,11 +10,11 @@
                                 <i class="fas fa-search"></i>
                             </span>
                         </div>
-                        <input 
-                          id="search-box" 
+                        <input
+                          id="search-box"
                           v-model="filter" 
-                          class="form-control pl-1 search-text search-input" 
-                          placeholder="{{__('Search here')}}"  
+                          class="form-control pl-1 search-text search-input"
+                          placeholder="{{__('Search here')}}"
                           aria-label="{{__('Search')}}"
                         >
                     </div>
@@ -22,11 +22,11 @@
             </div>
             @if ($config->permissions['create'])
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <button 
-                      type="button" 
-                      class="btn btn-secondary" 
-                      @click="showModal()" 
-                      aria-label="{{ __('Create Category') }}" 
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      @click="showModal()"
+                      aria-label="{{ __('Create Category') }}"
                       aria-haspopup="dialog"
                     >
                         <i class="fas fa-plus"></i> {{ __('Category') }}
