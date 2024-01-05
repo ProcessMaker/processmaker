@@ -12,7 +12,7 @@
                         </div>
                         <input
                           id="search-box"
-                          v-model="filter" 
+                          v-model="filter"
                           class="form-control pl-1 search-text search-input"
                           placeholder="{{__('Search here')}}"
                           aria-label="{{__('Search')}}"
