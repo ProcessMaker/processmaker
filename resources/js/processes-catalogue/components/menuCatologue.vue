@@ -5,11 +5,17 @@
       block
       variant="light"
       class="m-1"
+      @click="onToggleCatalogue"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <i :class="preicon" />
-        {{ $t(title) }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <i :class="preicon" />
+          {{ $t(title) }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue}"
+        />
       </div>
     </div>
     <b-collapse
@@ -20,9 +26,10 @@
         <b-list-group-item
           v-for="item in data"
           :key="item.id"
-          :ref="item.name"
+          ref="processItems"
+          :class="{ 'list-item-selected': isSelectedProcess(item) }"
           class="list-item"
-          @click="selectItem(item)"
+          @click="selectProcessItem(item)"
         >
           {{ item.name }}
         </b-list-group-item>
@@ -33,11 +40,17 @@
       block
       variant="light"
       class="m-1"
+      @click="onToggleTemplates"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <img src="../../../img/template-icon.svg" alt="Template Icon">
-        {{ $t("Add From Templates") }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <img src="../../../img/template-icon.svg" alt="Template Icon">
+          {{ $t("Add From Templates") }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates}"
+        />
       </div>
     </div>
     <b-collapse
@@ -46,10 +59,14 @@
     >
       <b-list-group>
         <b-list-group-item
+          v-for="(item, index) in templateOptions"
+          :key="index"
+          ref="templateItems"
+          :class="{ 'list-item-selected': isSelectedTemplate(item) }"
           class="list-item"
-          @click="wizardLinkSelected"
+          @click="selectTemplateItem(item)"
         >
-          {{ $t("Guided Templates") }}
+          {{ item.label }}
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
@@ -61,6 +78,16 @@ export default {
   props: ["data", "select", "title", "preicon"],
   data() {
     return {
+      showCatalogue: false,
+      showGuidedTemplates: false,
+      selectedProcessItem: null,
+      selectedTemplateItem: null,
+      templateOptions: [
+        {
+          label: this.$t("Guided Templates"),
+          selected: false,
+        },
+      ],
       showDefaultCategory: false,
     };
   },
@@ -74,9 +101,9 @@ export default {
     });
   },
   updated() {
-    if(this.showDefaultCategory) {
+    if (this.showDefaultCategory) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
-      this.selectItem(this.data[indexUncategorized]);
+      this.selectProcessItem(this.data[indexUncategorized]);
       this.showDefaultCategory = false;
     }
   },
@@ -87,18 +114,28 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
-    selectItem(item) {
-      this.setSelectItem(item.name || item);
+    selectProcessItem(item) {
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
       this.select(item);
     },
-    setSelectItem(item) {
-      for (const item in this.$refs) {
-        this.$refs[item][0].className = "list-item";
-      }
-      this.$refs[item][0].className = "list-item list-item-selected";
-    },
-    wizardLinkSelected() {
+    selectTemplateItem(item) {
+      this.selectedTemplateItem = item;
+      this.selectedProcessItem = null;
+      this.select(item);
       this.$emit("wizardLinkSelect");
+    },
+    isSelectedProcess(item) {
+      return this.selectedProcessItem === item;
+    },
+    isSelectedTemplate(index) {
+      return this.selectedTemplateItem === index;
+    },
+    onToggleCatalogue() {
+      this.showCatalogue = !this.showCatalogue;
+    },
+    onToggleTemplates() {
+      this.showGuidedTemplates = !this.showGuidedTemplates;
     },
   },
 };
