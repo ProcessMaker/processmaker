@@ -27,13 +27,16 @@
           slot="singleLabel"
           slot-scope="props"
         >
-          <span v-if="props.option">
+          <span v-if="props.option.value">
             <img
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
             >
             {{ props.option.label }}
+          </span>
+          <span v-else>
+            {{ placeholder }}
           </span>
         </template>
         <template
@@ -93,14 +96,14 @@ export default {
     this.list = this.all;
   },
   mounted() {
+    debugger;
     this.icon = this.value ? this.find(this.value) : this.find(this.default);
   },
   methods: {
     onSearch(query) {
-      this.query = query.length ? query.toLowerCase() : this.isOpen ? "" : this.query;
-
+      this.query = query.toLowerCase();
       if (this.query.length) {
-        this.list = this.all.filter((icon) => icon.search.includes(this.query));
+        this.list = this.all.filter((icon) => icon.label.toLowerCase().includes(this.query));
       } else {
         this.list = this.all;
       }
@@ -186,8 +189,7 @@ $multiselect-height: 38px;
   }
   .icon-square {
     color: #788793;
-    font-size: $iconSize;
-    padding: calc($iconSize / 1.5);
+    padding: 16px;
     text-align: center;
   }
 

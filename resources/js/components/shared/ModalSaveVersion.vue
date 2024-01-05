@@ -22,7 +22,7 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card v-if="showVersionInfo">
+              <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
                     <label class="label-text mt-2">
@@ -191,7 +191,7 @@
                   </b-col>
                 </b-row>
               </b-card>
-              <b-card v-if="!showVersionInfo">
+              <b-card v-show="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   id="name"
