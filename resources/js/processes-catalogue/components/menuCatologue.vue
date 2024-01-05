@@ -101,9 +101,9 @@ export default {
     });
   },
   updated() {
-    if(this.showDefaultCategory) {
+    if (this.showDefaultCategory) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
-      this.selectItem(this.data[indexUncategorized]);
+      this.selectProcessItem(this.data[indexUncategorized]);
       this.showDefaultCategory = false;
     }
   },
