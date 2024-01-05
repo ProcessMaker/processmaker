@@ -228,7 +228,7 @@ class TaskController extends Controller
             preg_match($regex, $e->getMessage(), $m);
 
             return response([
-                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
+                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . (isset($m[1]) ? $m[1] : '') . '"',
             ], 422);
         }
 
