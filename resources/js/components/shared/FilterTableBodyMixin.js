@@ -35,5 +35,8 @@ export default {
         },
       };
     },
+    formatCategory(categories) {
+      return categories.map(item => item.name).join(', ');
+    },
   },
 };

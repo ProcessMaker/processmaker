@@ -18,17 +18,29 @@
           <td
             v-for="(header, colIndex) in fields"
             :key="colIndex"
+            :data-cy="`process-table-td-${rowIndex}-${colIndex}`"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <div
+              :data-cy="`process-table-html-${rowIndex}-${colIndex}`"
+              v-if="containsHTML(row[header.field])"
+              v-html="sanitize(row[header.field])"
+            >
+            </div>
             <template v-else>
-              <template v-if="isComponent(row[header.field])">
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`process-table-component-${rowIndex}-${colIndex}`"
+              >
                 <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
                 >
                 </component>
               </template>
-              <template v-else>
+              <template
+                v-else
+                :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
+              >
                 <template v-if="header.field === 'name'">
                   <i tabindex="0"
                     v-b-tooltip
@@ -77,6 +89,7 @@
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
+        data-cy="process-pagination"
       />
       <pagination
         :single="$t('Process')"
@@ -137,28 +150,24 @@ export default {
 
       fields: [
         {
-          title: () => this.$t("Name"),
           label: "NAME",
           field: "name",
           width: 200,
           sortable: true,
         },
         {
-          title: () => this.$t("Category"),
           label: "CATEGORY",
           field: "category_list",
           width: 160,
           sortable: true,
         },
         {
-          title: () => this.$t("Owner"),
           label: "OWNER",
           field: "owner",
           width: 160,
           sortable: true,
         },
         {
-          title: () => this.$t("Modified"),
           label: "MODIFIED",
           field: "updated_at",
           format: "datetime",
@@ -166,7 +175,6 @@ export default {
           sortable: true,
         },
         {
-          title: () => this.$t("Created"),
           label: "CREATED",
           field: "created_at",
           format: "datetime",
@@ -217,22 +225,6 @@ export default {
       this.assetName = name;
       this.assetType = "process";
       this.$refs["add-to-project-modal"].show();
-    },
-    formatStatus(status) {
-      status = status.toLowerCase();
-      let bubbleColor = {
-        active: "text-success",
-        inactive: "text-danger",
-        draft: "text-warning",
-        archived: "text-info"
-      };
-      let response =
-          '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
-      status = status.charAt(0).toUpperCase() + status.slice(1);
-      return '<div style="white-space:nowrap">' + response + status + "</div>";
-    },
-    formatCategory(categories) {
-      return categories.map(item => item.name).join(', ');
     },
     fetch() {
       Vue.nextTick(() => {

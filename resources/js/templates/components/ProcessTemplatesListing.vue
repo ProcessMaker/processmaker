@@ -17,17 +17,29 @@
           <td
             v-for="(header, colIndex) in fields"
             :key="colIndex"
+            :data-cy="`template-table-td-${rowIndex}-${colIndex}`"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <div
+              v-if="containsHTML(row[header.field])"
+              v-html="sanitize(row[header.field])"
+              :data-cy="`template-table-html-${rowIndex}-${colIndex}`"
+            >
+            </div>
             <template v-else>
-              <template v-if="isComponent(row[header.field])">
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`template-table-component-${rowIndex}-${colIndex}`"
+              >
                 <component
                   :is="row[header.field].component"
                   v-bind="row[header.field].props"
                 >
                 </component>
               </template>
-              <template v-else>
+              <template
+                v-else
+                :data-cy="`template-table-field-${rowIndex}-${colIndex}`"
+              >
                 <template v-if="header.field === 'name'">
                   <span v-uni-id="row.id.toString()">{{row.name}}
                     <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
@@ -57,6 +69,7 @@
         <pagination-table
           :meta="data.meta"
           @page-change="changePage"
+          data-cy="template-pagination"
         />
         <pagination
           :single="$t('Template')"
@@ -107,35 +120,30 @@
   
           fields: [
             {
-              title: () => this.$t("Name"),
               label: "NAME",
               field: "name",
               width: 200,
               sortable: true,
             },
             {
-              title: () => this.$t("Category"),
               label: "CATEGORY",
               field: "category_list",
               width: 160,
               sortable: true,
             },
             {
-              title: () => this.$t("Template Author"),
               label: "TEMPLATE AUTHOR",
               field: "owner",
               width: 160,
               sortable: true,
             },
             {
-              title: () => this.$t("Version"),
               label: "VERSION",
               field: "version",
               width: 100,
               sortable: true,
             },
             {
-              title: () => this.$t("Version Date"),
               label: "VERSION DATE",
               field: "updated_at",
               format: "datetime",
@@ -143,7 +151,6 @@
               sortable: true,
             },
             {
-              title: () => this.$t("Created"),
               label: "CREATED",
               field: "created_at",
               format: "datetime",
@@ -185,9 +192,6 @@
             record["category_list"] = this.formatCategory(record["categories"]);
           }
           return data;
-        },
-        formatCategory(categories) {
-          return categories.map(item => item.name).join(', ');
         },
         exportTemplate(template) {
           ProcessMaker.apiClient({

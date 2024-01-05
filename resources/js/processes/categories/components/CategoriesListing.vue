@@ -17,17 +17,29 @@
               <td
                 v-for="(header, colIndex) in fields"
                 :key="colIndex"
+                :data-cy="`category-table-td-${rowIndex}-${colIndex}`"
               >
-                <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+                <div
+                  v-if="containsHTML(row[header.field])"
+                  v-html="sanitize(row[header.field])"
+                  :data-cy="`category-table-html-${rowIndex}-${colIndex}`"
+                >
+                </div>
                 <template v-else>
-                  <template v-if="isComponent(row[header.field])">
+                  <template 
+                    v-if="isComponent(row[header.field])"
+                    :data-cy="`category-table-component-${rowIndex}-${colIndex}`"
+                  >
                     <component
                       :is="row[header.field].component"
                       v-bind="row[header.field].props"
                     >
                     </component>
                   </template>
-                  <template v-else>
+                  <template
+                    v-else
+                    :data-cy="`category-table-field-${rowIndex}-${colIndex}`"
+                  >
                     <template v-if="header.field === 'status'">
                       <i
                         :class="`fas fa-circle ${ row['bubble_color'] } small`"
@@ -61,6 +73,7 @@
             <pagination-table
               :meta="data.meta"
               @page-change="changePage"
+              data-cy="category-pagination"
             />
             <pagination
                 :single="$t('Category')"
@@ -104,7 +117,6 @@
         ],
         fields: [
           {
-            title: () => this.$t("Name"),
             name: "__slot:name",
             sortField: "name",
             label: "NAME",
@@ -113,7 +125,6 @@
             sortable: true,
           },
           {
-            title: () => this.$t("Status"),
             name: "status",
             sortField: "status",
             label: "STATUS",
@@ -123,7 +134,6 @@
             callback: this.formatStatus
           },
           {
-            title: () => this.labelCount,
             name: this.count,
             label: this.labelCount,
             field: this.count,
@@ -132,7 +142,6 @@
             sortField: this.count
           },
           {
-            title: () => this.$t("Modified"),
             name: "updated_at",
             sortField: "updated_at",
             label: "MODIFIED",
@@ -143,7 +152,6 @@
             callback: "formatDate"
           },
           {
-            title: () => this.$t("Created"),
             name: "created_at",
             sortField: "created_at",
             label: "CREATED",
