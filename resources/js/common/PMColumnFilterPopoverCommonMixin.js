@@ -195,7 +195,7 @@ const PMColumnFilterCommonMixin = {
       if (config.filter && config.filter instanceof Array) {
         this.advancedFilter = config.filter;
       }
-      if (config.order && config.order.by && config.order.direction) {
+      if (config?.order?.by && config?.order?.direction) {
         this.setOrderByProps(config.order.by, config.order.direction);
       }
       this.markStyleWhenColumnSetAFilter();

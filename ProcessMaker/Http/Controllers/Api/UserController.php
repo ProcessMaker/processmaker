@@ -643,7 +643,7 @@ class UserController extends Controller
 
     /**
      * Get filter configuration.
-     * 
+     *
      * @param String $name
      * @return \Illuminate\Http\Response
      *
@@ -668,7 +668,7 @@ class UserController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function getFilterConfiguration(String $name, Request $request) 
+    public function getFilterConfiguration(String $name, Request $request)
     {
         $filter = SaveSession::getConfigFilter($name, $request->user());
         return response(["data" => $filter], 200);
@@ -676,7 +676,7 @@ class UserController extends Controller
 
     /**
      * Store filter configuration.
-     * 
+     *
      * @param String $name
      * @param Request $request
      * @return \Illuminate\Http\Response
@@ -702,9 +702,9 @@ class UserController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function storeFilterConfiguration(String $name, Request $request) 
+    public function storeFilterConfiguration(String $name, Request $request)
     {
-        $a = $request->json()->all();
+        $request->json()->all();
         $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
         return response(["data" => $filter], 200);
     }
