@@ -118,7 +118,6 @@ class SyncWizardTemplates implements ShouldQueue
 
         // Import the helper process and get the new ID
         $newHelperProcessId = $this->importProcess($helperProcessPayload, 'WIZARD_HELPER_PROCESS');
-
         // Import the process template and get the new ID
         $newProcessTemplateId = $this->importProcess($templateProcessPayload, 'WIZARD_PROCESS_TEMPLATE');
 
