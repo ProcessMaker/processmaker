@@ -65,7 +65,7 @@ class SyncWizardTemplates implements ShouldQueue
                 'is_system' => 1,
             ])->getKey();
 
-            // Fetch the default template list from Github
+            // Fetch the guided template list from Github
             $response = Http::get($url);
 
             // Check if the request was successful
@@ -82,8 +82,12 @@ class SyncWizardTemplates implements ShouldQueue
                     continue;
                 }
 
-                foreach ($wizardTemplates as $template) {
-                    $this->importTemplate($template, $config, $wizardTemplateCategoryId);
+                try {
+                    foreach ($wizardTemplates as $template) {
+                        $this->importTemplate($template, $config, $wizardTemplateCategoryId);
+                    }
+                } catch (Exception $e) {
+                    Log::error("Error Importing Guided Templates: {$e->getMessage()}");
                 }
             }
         } catch (Exception $e) {
@@ -101,15 +105,13 @@ class SyncWizardTemplates implements ShouldQueue
      */
     private function importTemplate($template, $config, $wizardTemplateCategoryId)
     {
-        // Configure URLs for the helper process, process template, and collection
+        // Configure URLs for the helper process, process template
         $helperProcessUrl = $this->buildTemplateUrl($config, $template['helper_process']);
         $processTemplateUrl = $this->buildTemplateUrl($config, $template['template_process']);
-        $configCollectionUrl = $this->buildTemplateUrl($config, $template['config_collection']);
 
-        // Get manifests of the exported helper process, process template, and collection
+        // Get manifests of the exported helper process, process template
         $helperProcessPayload = $this->fetchPayload($helperProcessUrl);
         $templateProcessPayload = $this->fetchPayload($processTemplateUrl);
-        $configCollectionPayload = $this->fetchPayload($configCollectionUrl);
 
         // Update process categories for the helper process and process template
         $this->updateProcessCategories($helperProcessPayload, $templateProcessPayload, $wizardTemplateCategoryId);
@@ -129,22 +131,6 @@ class SyncWizardTemplates implements ShouldQueue
         // Import template assets and associate with the media collection
         $this->importTemplateAssets($template, $config, $mediaCollectionName, $wizardTemplate);
 
-        // Import the config collection and update associations
-        $this->importConfigCollection($configCollectionUrl, $configCollectionPayload, $wizardTemplate);
-        // Update the wizard template with the config collection ID
-
-        // TODO: An issue occurs at this point as there is currently no direct way to update an existing collection when importing a collection.
-        // When importing a collection from the wizard template, a new collection is created each time.
-        // As a temporary solution, we could check if the wizard template already has a config_collection_id associated.
-        // If so, we need to delete the existing collection along with all its assets (screens, process signals, etc.).
-        // Subsequently, we import a new collection and associate it with the wizard template.
-        // This approach prevents the database from being cluttered with orphaned collections and collection assets.
-        // Considerations:
-        // - Could this cause issues with already configured wizard templates?
-        // - Could this cause issues with the helper process/process template if they reference a specific collection?
-        // - Does deleting a collection automatically remove all associated assets?
-        // - How can we implement an import method similar to processes for collections, and what is the expected duration of implementation?
-        $wizardTemplate->config_collection_id = $this->newConfigCollectionId;
         $wizardTemplate->media_collection = $mediaCollectionName;
         $wizardTemplate->save();
     }
@@ -211,9 +197,6 @@ class SyncWizardTemplates implements ShouldQueue
     private function updateOrCreateWizardTemplate($template, $newHelperProcessId, $newProcessTemplateId)
     {
         // Update or create the wizard template in the database
-        // TODO: Currently, the index.json in the GitHub repository contains identical wizard template test data for each category,
-        // resulting in a single record creation that gets updated for each template within the category.
-        // This behavior will be corrected once we ensure that each category has only one instance of the test data.
 
         return WizardTemplate::updateOrCreate([
             'name' => $template['template_details']['card-title'],
@@ -222,7 +205,6 @@ class SyncWizardTemplates implements ShouldQueue
             'helper_process_id' => $newHelperProcessId,
             'process_template_id' => $newProcessTemplateId,
             'media_collection' => '',
-            'config_collection_id' => null,
             'template_details' => json_encode($template['template_details']),
         ]);
     }
@@ -257,117 +239,5 @@ class SyncWizardTemplates implements ShouldQueue
     {
         // Import a media asset and associate it with the media collection
         $wizardTemplate->addMediaFromUrl($assetUrl)->withCustomProperties(['media_type' => $customProperty])->toMediaCollection($mediaCollectionName);
-    }
-
-    private function importConfigCollection($configCollectionUrl, $configCollectionPayload, $wizardTemplate)
-    {
-        // Import the config collection and update associations
-        if (class_exists('ProcessMaker\Plugins\Collections\Jobs\ImportCollection')) {
-            // Obtain the user ID for the admin user
-            $adminUserId = User::where('username', 'admin')->first()->value('id');
-            // Create a temporary file to store the JSON payload
-            $tempFileName = $this->createTempFile($configCollectionUrl, $configCollectionPayload);
-
-            // Store the temporary file in the storage directory
-            $pathInStorage = $this->storeInStorage($tempFileName);
-
-            // Import the config collection using the Collection package
-            $importedData = $this->importCollection($pathInStorage, $adminUserId);
-
-            // Process the imported data and update asset types and associations
-            $this->processImportedData($importedData);
-        } else {
-            Log::debug('Error Syncing Guided Templates: The Collection package is not installed. Please install the Collection package to enable full functionality for Guided Templates.');
-        }
-    }
-
-    /**
-     * Create a temporary file and store the JSON payload.
-     *
-     * @param string $configCollectionUrl
-     * @param array $configCollectionPayload
-     * @return string
-     */
-    private function createTempFile($configCollectionUrl, $configCollectionPayload)
-    {
-        $info = pathinfo($configCollectionUrl);
-        $tempFileName = '/tmp/' . $info['basename'];
-        file_put_contents($tempFileName, json_encode($configCollectionPayload));
-
-        return $tempFileName;
-    }
-
-    /**
-     * Store the temporary file in the storage directory.
-     *
-     * @param string $tempFileName
-     * @return string
-     */
-    private function storeInStorage($tempFileName)
-    {
-        return Storage::putFile('imports', $tempFileName);
-    }
-
-    /**
-     * Import the config collection using the Collection package.
-     *
-     * @param string $pathInStorage
-     * @param int $adminUserId
-     * @return array
-     */
-    private function importCollection($pathInStorage, $adminUserId)
-    {
-        $collectionImporterClass = 'ProcessMaker\Plugins\Collections\Jobs\ImportCollection';
-
-        return (new $collectionImporterClass($pathInStorage, $adminUserId))->handle();
-    }
-
-    /**
-     * Process the imported data and update asset types and associations.
-     *
-     * @param array $importedData
-     * @return void
-     */
-    private function processImportedData($importedData)
-    {
-        foreach ($importedData as $element => $value) {
-            if (isset($value['uuids'])) {
-                foreach ($value['uuids'] as $uuid) {
-                    if ($element === 'collections') {
-                        $this->updateCollectionAssetType($uuid);
-                    } elseif ($element === 'screens') {
-                        $this->updateScreenAssetType($uuid);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Update the asset type on the imported collection.
-     *
-     * @param string $uuid
-     * @return void
-     */
-    private function updateCollectionAssetType($uuid)
-    {
-        $collectionClass = 'ProcessMaker\Plugins\Collections\Models\Collection';
-        $importedCollection = (new $collectionClass)->where('uuid', $uuid)->first();
-        $importedCollection->asset_type = 'WIZARD_CONFIG_COLLECTION';
-        $importedCollection->save();
-        $this->newConfigCollectionId = $importedCollection->id;
-    }
-
-    /**
-     * Update the asset type for imported collection screens.
-     *
-     * @param string $uuid
-     * @return void
-     */
-    private function updateScreenAssetType($uuid)
-    {
-        $importedCollectionScreen = Screen::where('uuid', $uuid)->first();
-        $importedCollectionScreen->asset_type = 'WIZARD_CONFIG_COLLECTION_SCREEN';
-        $importedCollectionScreen->save();
     }
 }
