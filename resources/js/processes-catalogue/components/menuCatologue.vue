@@ -83,7 +83,7 @@ export default {
   components: {
     SearchCategories,
   },
-  props: ["data", "select", "title", "preicon", "filterCategories"],
+  props: ["data", "select", "title", "preicon", "filterCategories", "showDefaultCategory", "fromProcessList"],
   data() {
     return {
       showCatalogue: false,
@@ -96,11 +96,9 @@ export default {
           selected: false,
         },
       ],
-      showDefaultCategory: false,
     };
   },
   mounted() {
-    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
@@ -109,7 +107,7 @@ export default {
     });
   },
   updated() {
-    if (this.showDefaultCategory) {
+    if (this.showDefaultCategory && !this.fromProcessList) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
       this.selectProcessItem(this.data[indexUncategorized]);
       this.showDefaultCategory = false;
@@ -121,6 +119,11 @@ export default {
      */
     loadMore() {
       this.$emit("addCategories");
+    },
+    markCategory(item) {
+      this.fromProcessList = true;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
     },
     selectProcessItem(item) {
       this.selectedProcessItem = item;

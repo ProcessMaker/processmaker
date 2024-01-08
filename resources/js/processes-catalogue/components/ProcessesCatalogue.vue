@@ -16,6 +16,8 @@
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
+          :showDefaultCategory="showDefaultCategory"
+          :fromProcessList="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
@@ -31,13 +33,13 @@
         </div>
         <div v-else>
           <CardProcess
-            v-if="showCardProcesses && !showWizardTemplates"
+            v-if="showCardProcesses && !showWizardTemplates && !showProcess"
             :key="key"
             :category="category"
             @openProcess="openProcess"
           />
           <ProcessInfo
-            v-if="showProcess && !showWizardTemplates"
+            v-if="showProcess && !showWizardTemplates && !showCardProcesses"
             :process="selectedProcess"
             :current-user-id="currentUserId"
             :permission="permission"
@@ -87,10 +89,13 @@ export default {
       key: 0,
       totalPages: 1,
       filter: "",
-      markCategorie: false,
+      markCategory: false,
+      showDefaultCategory: false,
+      fromProcessList: false,
     };
   },
   mounted() {
+    this.showDefaultCategory = true;
     this.getCategories();
     this.checkSelectedProcess();
   },
@@ -105,7 +110,7 @@ export default {
     /**
      * Filter categories
      */
-     filterCategories(filter = "") {
+    filterCategories(filter = "") {
       this.page = 1;
       this.listCategories = [];
       this.filter = filter;
@@ -126,10 +131,10 @@ export default {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages;
 
-            if (this.markCategorie) {
+            if (this.markCategory) {
               const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
-              this.$refs.categoryList.selectProcessItem(this.listCategories[indexUncategorized]);
-              this.showDefaultCategory = false;
+              this.$refs.categoryList.markCategory(this.listCategories[indexUncategorized]);
+              this.markCategory = false;
             }
           });
       }
@@ -140,13 +145,15 @@ export default {
     checkSelectedProcess() {
       if (this.process) {
         this.openProcess(this.process);
+        this.fromProcessList = true;
+        this.showDefaultCategory = false;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
           .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
-            this.markCategorie = true;
+            this.markCategory = true;
             this.filterCategories(this.category.name);
           });
       }
@@ -155,6 +162,7 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      console.log("porque");
       if (this.category === value) {
         this.key += 1;
       }
