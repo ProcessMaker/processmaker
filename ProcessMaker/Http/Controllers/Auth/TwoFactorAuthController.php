@@ -109,7 +109,11 @@ class TwoFactorAuthController extends Controller
         $user = $request->user();
 
         // Send the code
-        $this->twoFactorAuthentication->sendCode($user);
+        try {
+            $this->twoFactorAuthentication->sendCode($user);
+        } catch (Exception $error) {
+            session()->put(self::TFA_ERROR, $error->getMessage());
+        }
 
         // Return to 2fa page
         return redirect()->route('2fa');
