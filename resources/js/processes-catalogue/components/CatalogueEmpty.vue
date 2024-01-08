@@ -17,9 +17,22 @@
       <button
         type="button"
         class="btn btn-primary text-capitalize"
+        @click="wizardLinkSelected"
       >
         {{ $t("Show Me The Templates") }}
       </button>
     </p>
   </div>
 </template>
+<script>
+export default {
+  methods: {
+    /**
+     * go to wizard templates section
+     */
+    wizardLinkSelected() {
+      this.$emit("wizardLinkSelect");
+    },
+  },
+};
+</script>
