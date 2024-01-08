@@ -9,6 +9,8 @@
       <div class="card-bookmark">
         <i
           :ref="`bookmark-${process.id}`"
+          v-b-tooltip.hover
+          :title="$t('Add to Favorites')"
           :class="bookmarkIcon()"
           @click="checkBookmark(process)"
         />
