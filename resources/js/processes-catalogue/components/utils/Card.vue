@@ -126,5 +126,10 @@ export default {
   line-height: normal;
   letter-spacing: -0.4px;
   text-transform: uppercase;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
 }
 </style>

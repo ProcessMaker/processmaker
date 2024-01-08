@@ -4,10 +4,11 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
+      :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <b-row>
       <b-col cols="2">
-        <h4> {{ $t('Processes Browser') }} </h4>
+        <span class="pl-3 menu-title"> {{ $t('Processes Browser') }} </span>
         <MenuCatologue
           ref="category-list"
           title="Available Processes"
@@ -16,7 +17,7 @@
           show-bookmark="true"
           :data="listCategories"
           :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
       </b-col>
@@ -25,11 +26,14 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty 
+            @wizardLinkSelect="wizardTemplatesSelected"
+          />
         </div>
         <div v-else>
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates"
+            :key="key"
             :category="category"
             @openProcess="openProcess"
           />
@@ -37,12 +41,14 @@
             v-if="showProcess && !showWizardTemplates"
             :process="selectedProcess"
             :current-user-id="currentUserId"
+            :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
           />
           <wizard-templates
             v-if="showWizardTemplates"
+            :template="guidedTemplates"
           />
         </div>
       </b-col>
@@ -62,7 +68,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [{
@@ -77,8 +83,11 @@ export default {
       showProcess: false,
       category: null,
       selectedProcess: null,
+      guidedTemplates: false,
       numCategories: 15,
       page: 1,
+      key: 0,
+      totalPages: 1,
     };
   },
   mounted() {
@@ -97,11 +106,14 @@ export default {
      * Get list of categories
      */
     getCategories() {
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
-        .then((response) => {
-          this.listCategories = [...this.listCategories, ...response.data.data];
-        });
+      if (this.page <= this.totalPages) {
+        ProcessMaker.apiClient
+          .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+          .then((response) => {
+            this.listCategories = [...this.listCategories, ...response.data.data];
+            this.totalPages = response.data.meta.total_pages;
+          });
+      }
     },
     /**
      * Check if there is a pre-selected process
@@ -122,9 +134,13 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      if (this.category === value) {
+        this.key += 1;
+      }
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
+      this.guidedTemplates = false;
       this.showWizardTemplates = false;
       this.showProcess = false;
     },
@@ -133,14 +149,18 @@ export default {
      */
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
+      this.guidedTemplates = true;
       this.showCardProcesses = false;
       this.showProcess = false;
+      this.selectedProcess = null;
+      this.category = null;
     },
     /**
      * Select a process and show display
      */
     openProcess(process) {
       this.showCardProcesses = false;
+      this.guidedTemplates = false;
       this.showProcess = true;
       this.selectedProcess = process;
     },
@@ -153,3 +173,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menu-title {
+  color: #556271;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 46.08px;
+  letter-spacing: -0.44px;
+}
+</style>
