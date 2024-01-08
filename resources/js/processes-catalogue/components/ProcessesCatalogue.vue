@@ -97,7 +97,7 @@ export default {
     /**
      * Add new page of categories
      */
-    addCategories(pmql = "") {
+    addCategories() {
       this.page += 1;
       this.getCategories();
     },
