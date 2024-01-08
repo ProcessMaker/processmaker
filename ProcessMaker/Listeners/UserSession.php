@@ -31,7 +31,7 @@ class UserSession
 
         // Get the IP address and device information
         $ip = request()->getClientIp() ?? request()->ip();
-        $agentDevice = $agent->device();
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
         $agentDeviceType = $agent->deviceType();
         $agentPlatform = $agent->platform();
 
