@@ -131,9 +131,5 @@
         ],
         "collectCoverage": true,
         "coverageDirectory": "<rootDir>/tests/js/coverage"
-    },
-    "engines": {
-        "npm": "~8.19",
-        "node": "~16.18"
     }
 }
