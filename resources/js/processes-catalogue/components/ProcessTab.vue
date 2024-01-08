@@ -1,6 +1,6 @@
 <template>
   <div class="mt-3">
-    <b-tabs content-class="text-style">
+    <b-tabs content-class="text-style" lazy>
       <b-tab
         title="My Requests"
         active
@@ -13,7 +13,6 @@
       <b-tab
         class="bg-white"
         title="My Tasks"
-        lazy
       >
         <task-tab
           :currentUser="currentUser"
