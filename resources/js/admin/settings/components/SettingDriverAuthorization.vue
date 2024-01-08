@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Authorize badge -->
     <div v-if="hasAuthorizedBadge">
       <b-badge
         pill
@@ -12,6 +13,8 @@
     <div v-else>
       {{ $t("Empty") }}
     </div>
+
+    <!-- Connection properties modal -->
     <b-modal
       v-model="showModal"
       class="setting-object-modal"
@@ -43,7 +46,7 @@
       </template>
       <div>
         <component
-          :is="authSchemeToComponent(setting.config.AuthScheme)"
+          :is="authSchemeToComponent(setting.config?.AuthScheme)"
           :form-data="formData"
           @updateFormData="updateFormData"
         />
@@ -70,7 +73,6 @@
           type="button"
           class="btn btn-secondary ml-3"
           data-cy="authorize-button"
-          :disabled="isButtonDisabled"
           @click="onSave"
         >
           {{ $t("Authorize") }}
@@ -78,6 +80,7 @@
       </div>
     </b-modal>
 
+    <!-- Authorizing modal -->
     <b-modal
       v-model="showAuthorizingModal"
       class="setting-object-modal"
@@ -94,7 +97,6 @@
     </b-modal>
   </div>
 </template>
-
 <script>
 // eslint-disable-next-line import/no-unresolved
 import { FormErrorsMixin, Required } from "SharedComponents";
@@ -129,7 +131,6 @@ export default {
       showAuthorizingModal: false,
       transformed: null,
       errors: {},
-      isInvalid: true,
       resetData: true,
       componentsMap: {
         OAuth: "oauth-connection-properties",
@@ -151,20 +152,6 @@ export default {
       }
       return false;
     },
-    changed() {
-      return JSON.stringify(this.formData) !== JSON.stringify(this.transformed);
-    },
-    isButtonDisabled() {
-      return this.isInvalid || (this.isAuthorized && !this.changed);
-    },
-  },
-  watch: {
-    formData: {
-      handler() {
-        this.isInvalid = this.validateData();
-      },
-      deep: true,
-    },
   },
   mounted() {
     if (this.value === null) {
@@ -172,19 +159,11 @@ export default {
     } else {
       this.formData = this.value;
     }
-    this.isInvalid = this.validateData();
     this.transformed = this.copy(this.formData);
   },
   methods: {
     authSchemeToComponent(scheme) {
       return this.componentsMap[scheme] || null;
-    },
-    validateData() {
-      // Check if client_id and client_secret are empty
-      const clientIdEmpty = _.isEmpty(this.formData.client_id);
-      const clientSecretEmpty = _.isEmpty(this.formData.client_secret);
-
-      return _.isEmpty(this.formData) || clientIdEmpty || clientSecretEmpty;
     },
     onCancel() {
       this.showModal = false;
@@ -201,6 +180,14 @@ export default {
     onModalHidden() {
       this.resetFormData();
     },
+    generateCallbackUrl(item) {
+      if (item.config.AuthScheme === "OAuth") {
+        const name = item.key.split("cdata.")[1];
+        const appUrl = document.head.querySelector("meta[name=\"app-url\"]").content;
+
+        this.formData.callback_url = `${appUrl}/external-integrations/${name}`;
+      }
+    },
     authorizeConnection() {
       this.showAuthorizingModal = true;
       this.showModal = false;
@@ -213,22 +200,19 @@ export default {
         .catch((error) => {
           const errorMessage = error.response?.data?.message || error.message;
           ProcessMaker.alert(errorMessage, "danger");
+        })
+        .finally(() => {
           this.showModal = true;
           this.showAuthorizingModal = false;
         });
     },
     onSave() {
-      const driver = this.setting.key.split("cdata.")[1];
-
+      const name = this.setting.key.split("cdata.")[1];
+      this.formData.name = name;
+      const driver = this.setting.config?.driver;
       this.formData.driver = driver;
       this.transformed = { ...this.formData };
       this.authorizeConnection();
-    },
-    generateCallbackUrl(data) {
-      const name = data.key.split("cdata.")[1];
-      const appUrl = document.head.querySelector("meta[name=\"app-url\"]").content;
-
-      this.formData.callback_url = `${appUrl}/external-integrations/${name}`;
     },
     resetFormData() {
       if (this.resetData) {

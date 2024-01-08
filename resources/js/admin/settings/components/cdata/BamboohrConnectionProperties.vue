@@ -73,7 +73,6 @@ export default {
     return {
       errors: {},
       config: {
-        AuthScheme: "None",
         APIKey: "",
         Domain: "",
       },
