@@ -8,7 +8,7 @@
     />
     <b-row>
       <b-col cols="2">
-        <span class="pl-3 menu-title"> {{ $t('Processes Browser') }} </span>
+        <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="category-list"
           title="Available Processes"
