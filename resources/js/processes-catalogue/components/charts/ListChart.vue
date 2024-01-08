@@ -469,7 +469,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../../../../vendor/processmaker/package-savedsearch/resources/sass/_variables.scss";
+// @import "../../../../../vendor/processmaker/package-savedsearch/resources/sass/_variables.scss";
 $animationLength: 500ms;
 $footerHeight: 35px;
 
@@ -635,9 +635,9 @@ $listChartDark: #212529 !important;
   .b-pagination {
     .page-item {
       .page-link {
-        background-color: lighten($secondary, 44%);
+        background-color: gray;
         border-radius: 2px;
-        color: $secondary;
+        color: grey;
         cursor: pointer;
         font-size: 12px;
         height: 29px;
@@ -649,24 +649,24 @@ $listChartDark: #212529 !important;
       }
       &:hover {
         .page-link {
-          background-color: lighten($secondary, 40%);
+          background-color: #c3c3c3;
         }
       }
       &.disabled {
         cursor: not-allowed;
         opacity: 0.5;
         .page-link {
-          background-color: lighten($secondary, 44%);
+          background-color: #c4c4c4;
         }
       }
       &.active {
         .page-link {
-          background-color: lighten($secondary, 15%);
+          background-color: #c2c2c2;
           color: white;
         }
         &:hover {
           .page-link {
-            background-color: lighten($secondary, 11%);
+            background-color: #c1c1c1;
           }
         }
       }
