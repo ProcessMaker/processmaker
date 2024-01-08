@@ -82,63 +82,18 @@ export default {
      * get start events for dropdown Menu
      */
     getStartEvents() {
-      const startEvents = this.process.start_events;
-      startEvents.forEach((event) => {
-        if (event.eventDefinitions.length === 0) {
-          if (event.config) {
-            const webEntry = JSON.parse(event.config).web_entry;
-            event.webEntry = webEntry;
-          }
-          switch (event.assignment) {
-            case "user":
-              if (this.currentUser === Number(event.assignedUsers)){
-                this.processEvents.push(event);
-              }
-              break;
-            case "group":
-              this.checkUsersGroup(event, event.assignedGroups);
-              break;
-            case "process_manager":
-              if (this.currentUser === this.process.manager_id){
-                this.processEvents.push(event);
-              }
-              break;
-          }
-        }
-      });
-      if (this.processEvents.length <= 1) {
-        const event = this.processEvents[0] ?? {};
-        if (!event.webEntry) {
-          this.havelessOneStartEvent = true;
-          this.startEvent = event.id ?? 0;
-        }
-      }
-    },
-    /**
-     * check if currentUser is member of a group
-     */
-    checkUsersGroup(event, groupId) {
+      this.processEvents = [];
       ProcessMaker.apiClient
-        .get(`groups/${groupId}/users`)
+        .get(`processes/${this.process.id}/start_events`)
         .then((response) => {
-          const users = response.data.data;
-          users.forEach((user) => {
-            if(user.id === this.currentUser) {
-              this.processEvents.push(event);
-              if (this.processEvents.length > 1) {
-                  this.havelessOneStartEvent = false;
-                  this.startEvent = 0;
-              }
+          this.processEvents = response.data.data;
+          if (this.processEvents.length <= 1) {
+            const event = this.processEvents[0] ?? {};
+            if (!event.webEntry) {
+              this.havelOneStartEvent = true;
+              this.startEvent = event.id ?? 0;
             }
-          })
-        });
-      ProcessMaker.apiClient
-        .get(`groups/${groupId}/groups`)
-        .then((response) => {
-          const groups = response.data.data;
-          groups.forEach((group) => {
-            this.checkUsersGroup(group.id);
-          })
+          }
         });
     },
     /**

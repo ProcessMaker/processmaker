@@ -15,6 +15,7 @@ use ProcessMaker\Events\RequestCreated;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -25,6 +26,7 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
@@ -212,6 +214,79 @@ class ProcessController extends Controller
     public function show(Request $request, Process $process)
     {
         return new Resource($process);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/{processId}/start_events",
+     *     summary="Get start events of a process by Id",
+     *     operationId="getStartEventsProcessById",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the start events process",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),)
+     *     ),
+     * )
+     */
+    public function startEvents(Request $request, Process $process)
+    {
+        $startEvents = [];
+        $currentUser = Auth::user()->id;
+        foreach ($process->start_events as $event) {
+            if (count($event->eventDefinitions) === 0) {
+                if ($event->config) {
+                    $webEntry = json_decode($event->config)->web_entry;
+                    $event->webEntry = $webEntry;
+                }
+                switch ($event->assignment) {
+                    case "user":
+                        if ($currentUser === (int)$event->assignedUsers){
+                            $startEvents[] = $event;
+                        }
+                    break;
+                    case "group":
+                        if ($this->checkUsersGroup($event, $event->assignedGroups, $request)){
+                            $startEvents[] = $event;
+                        }
+                    break;
+                    case "process_manager":
+                        if ($currentUser === $process->manager_id){
+                            $startEvents[] = $event;
+                        }
+                    break;
+                }
+            }
+        }
+        return new Resource($startEvents);
     }
 
     /**
@@ -1432,6 +1507,47 @@ class ProcessController extends Controller
         }
 
         return $where;
+    }
+
+    /**
+     * check if currentUser is member of a group
+     *
+     * @param object $event
+     * @param Group $groupId
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function checkUsersGroup($event, Group $groupId, Request $request)
+    {
+        $currentUser = Auth::user()->id;
+        try {
+            $response = (new GroupController(new Group()))->users($groupId, $request);
+            $users = $response->data->data;
+
+            foreach ($users as $user) {
+                if($user->id === $currentUser) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (\Exception $error) {
+            return ['error' => $error->getMessage()];
+        }
+
+        try {
+            $response = (new GroupController(new Group()))->groups($groupId, $request);
+            $groups = $response->data->data;
+
+            foreach ($groups as $group) {
+                if ($this->checkUsersGroup($event, $group->id, $request)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (\Exception $error) {
+            return ['error' => $error->getMessage()];
+        }
     }
 
     /**
