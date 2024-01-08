@@ -123,7 +123,10 @@ class TwoFactorAuthentication
             // Check if the error code is for a invalid "to" number
             if ($error->getCode() === self::ERROR_INVALID_TO_NUMBER) {
                 // Change to a friendly error message
-                $error = new TwilioException(__('Incorrect phone number, please verify and try again.'), self::ERROR_INVALID_TO_NUMBER);
+                $error = new TwilioException(
+                    __('Invalid phone number. Please verify and update your phone number in your account settings.'),
+                    self::ERROR_INVALID_TO_NUMBER
+                );
             }
             throw $error;
         }
