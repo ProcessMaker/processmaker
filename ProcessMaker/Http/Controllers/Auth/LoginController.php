@@ -230,6 +230,7 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            $request->session()->forget('permissions');
             event(new Logout(Auth::user()));
         }
 
@@ -265,7 +266,6 @@ class LoginController extends Controller
         // the IP address of the client making these requests into this application.
         if (method_exists($this, 'hasTooManyLoginAttempts') &&
             $this->hasTooManyLoginAttempts($request)) {
-
             // Block the user
             $user->status = 'BLOCKED';
             $user->save();
