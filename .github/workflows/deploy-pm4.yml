@@ -80,7 +80,7 @@ jobs:
     name: build-deploy-EKS
     if: contains(github.event.pull_request.body, 'ci:deploy')
     needs: imageEKS
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: self-hosted
     steps:   
       - name: Clone private repository
         run: |
@@ -129,7 +129,7 @@ jobs:
   deleteEKS:
     name: Delete Instance
     if: github.event.action == 'closed'
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: self-hosted
     steps:      
       - name: Delete instance EKS            
         run: |           
