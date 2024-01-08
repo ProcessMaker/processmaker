@@ -393,8 +393,8 @@ button:focus.navbar-toggler {
 }
 
 .modal .modal-huge {
-  max-width: 947px;
-  width: 947px;
+  max-width: 1250px;
+  width: 100%;
   height: 746px;
 }
 
@@ -980,7 +980,6 @@ nav {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.29) 0%, rgba(255, 255, 255, 0.62) 100%), var(--borders, #CDDDEE);
   padding: 50px;
   color: #556271;
-  height: 450px;
 }
 
 #wizardTemplateDetails___BV_modal_header_,

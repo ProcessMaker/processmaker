@@ -29,7 +29,9 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty 
+            @wizardLinkSelect="wizardTemplatesSelected"
+          />
         </div>
         <div v-else>
           <CardProcess
@@ -42,6 +44,7 @@
             v-if="showProcess && !showWizardTemplates && !showCardProcesses"
             :process="selectedProcess"
             :current-user-id="currentUserId"
+            :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
@@ -68,7 +71,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [{

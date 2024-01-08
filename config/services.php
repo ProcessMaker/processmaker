@@ -49,7 +49,7 @@ return [
     'wizard_templates_github' => [
         'base_url' => 'https://raw.githubusercontent.com/processmaker/',
         'wizard_repo' => env('WIZARD_TEMPLATE_REPO', 'wizard-templates'),
-        'wizard_branch' => env('WIZARD_TEMPLATE_BRANCH', 'main'),
+        'wizard_branch' => env('WIZARD_TEMPLATE_BRANCH', '2023-winter'),
         'wizard_categories' => env('WIZARD_TEMPLATE_CATEGORIES', 'all'),
     ],
 
