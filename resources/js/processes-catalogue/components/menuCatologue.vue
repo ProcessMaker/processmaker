@@ -120,7 +120,7 @@ export default {
      * Adding categories
      */
     loadMore() {
-      this.addCategories();
+      this.$emit("addCategories");
     },
     selectProcessItem(item) {
       this.selectedProcessItem = item;

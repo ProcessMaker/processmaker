@@ -19,6 +19,7 @@
           :select="selectCategorie"
           :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
+          @addCategories="addCategories"
         />
       </b-col>
       <b-col cols="10">
