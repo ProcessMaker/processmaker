@@ -34,13 +34,14 @@ class UserSession extends ProcessMakerModel
     /**
      * Expires duplicate active sessions from the same IP address.
      *
-     * @param string $ip The IP address to check for duplicate sessions.
+     * Close all active sessions from the same IP address except the last one.
      */
-    public static function expiresDuplicatedSessionByIP($ip)
+    public static function expiresDuplicatedSessionByIP()
     {
         $userIP = [];
-        self::where('ip_address', $ip)
-            ->where('is_active', true)
+        self::where('is_active', true)
+            ->where('expired_date', null)
+            ->orderBy('id', 'desc')
             ->chunk(100, function ($sessions) use (&$userIP) {
                 foreach ($sessions as $session) {
                     $key = $session->user_id . '.' . $session->ip_address;
@@ -49,6 +50,33 @@ class UserSession extends ProcessMakerModel
                     } else {
                         // keep first session by user and ip
                         $userIP[] = $key;
+                    }
+                }
+            });
+    }
+
+    /**
+     * Expires duplicate active sessions from the same device.
+     *
+     * Close all active sessions from the same device except the last one.
+     */
+    public static function expiresDuplicatedSessionByDevice()
+    {
+        $userDevice = [];
+        self::where('is_active', true)
+            ->where('expired_date', null)
+            ->orderBy('id', 'desc')
+            ->chunk(100, function ($sessions) use (&$userDevice) {
+                foreach ($sessions as $session) {
+                    $key = $session->user_id . '.'.
+                        $session->device_name . '.' .
+                        $session->device_type . '.' .
+                        $session->device_platform;
+                    if (in_array($key, $userDevice)) {
+                        $session->update(['expired_date' => now()]);
+                    } else {
+                        // keep first session by user and device
+                        $userDevice[] = $key;
                     }
                 }
             });
