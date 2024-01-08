@@ -11,7 +11,9 @@ export default {
   },
   data() {
     return {
-      config: {},
+      config: {
+        AuthScheme: "None",
+      },
     };
   },
   mounted() {

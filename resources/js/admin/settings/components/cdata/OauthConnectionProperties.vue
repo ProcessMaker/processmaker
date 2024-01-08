@@ -115,6 +115,7 @@ export default {
   data() {
     return {
       config: {
+        AuthScheme: "OAuth",
         client_id: "",
         client_secret: "",
         callback_url: "",
