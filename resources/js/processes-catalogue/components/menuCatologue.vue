@@ -95,7 +95,7 @@ export default {
     this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
