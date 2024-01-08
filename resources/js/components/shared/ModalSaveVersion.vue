@@ -36,6 +36,10 @@
                       rows="5"
                       :aria-label="$t('Description')"
                     />
+                    <span v-if="!processDescription" class="error-message">
+                      {{ $t("The Description field is required.") }}
+                      <br>
+                    </span>
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
@@ -646,6 +650,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
+      if (!this.processDescription) return;
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
@@ -837,5 +842,11 @@ $multiselect-height: 38px;
 
 .custom-dropdown {
   width: 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 </style>
