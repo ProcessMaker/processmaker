@@ -262,19 +262,19 @@ class ProcessController extends Controller
         $startEvents = [];
         $currentUser = Auth::user()->id;
         foreach ($process->start_events as $event) {
-            if (count($event->eventDefinitions) === 0) {
-                if ($event->config) {
-                    $webEntry = json_decode($event->config)->web_entry;
-                    $event->webEntry = $webEntry;
+            if (count($event["eventDefinitions"]) === 0) {
+                if (array_key_exists("config", $event)) {
+                    $webEntry = json_decode($event["config"])->web_entry;
+                    $event["webEntry"] = $webEntry;
                 }
-                switch ($event->assignment) {
+                switch ($event["assignment"]) {
                     case "user":
-                        if ($currentUser === (int)$event->assignedUsers){
+                        if ($currentUser === (int)$event["assignedUsers"]){
                             $startEvents[] = $event;
                         }
                     break;
                     case "group":
-                        if ($this->checkUsersGroup($event, $event->assignedGroups, $request)){
+                        if ($this->checkUsersGroup($event, $event["assignedGroups"], $request)){
                             $startEvents[] = $event;
                         }
                     break;
