@@ -22,7 +22,7 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card v-if="showVersionInfo">
+              <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
                     <label class="label-text mt-2">
@@ -195,7 +195,7 @@
                   </b-col>
                 </b-row>
               </b-card>
-              <b-card v-if="!showVersionInfo">
+              <b-card v-show="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   id="name"
@@ -771,13 +771,6 @@ $multiselect-height: 38px;
 .delete-icon i {
   font-size: 18px;
   color: darkgray;
-}
-
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
 }
 
 .btn-custom {
