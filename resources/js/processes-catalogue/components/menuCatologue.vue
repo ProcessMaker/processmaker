@@ -158,13 +158,11 @@ i {
 }
 .list-item {
   cursor: pointer;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
-  padding-left: 1rem;
+  padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  margin-bottom: 0.25rem;
   color: #4F606D;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;;
 }
 .list-item:hover {
   background: #E5EDF3;
