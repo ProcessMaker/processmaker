@@ -4,12 +4,18 @@
             <div class="flex-grow-1">
                 <div id="search" class="mb-3 mb-md-0">
                     <div class="input-group w-100">
-                        <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white search-text">
                                 <i class="fas fa-search"></i>
-                            </button>
+                            </span>
                         </div>
+                        <input
+                            id="search-box"
+                            v-model="filter"
+                            class="form-control pl-1 search-text search-input"
+                            placeholder="{{__('Search here')}}"
+                            aria-label="{{__('Search')}}"
+                        >
                     </div>
                 </div>
             </div>
@@ -17,7 +23,13 @@
                 <div class="d-flex ml-md-0 flex-column flex-md-row">
                     @can('import-process-templates')
                         <div class="mb-3 mb-md-0 ml-md-2">
-                            <a href="#" aria-label="{{ __('Import Template') }}" id="import_template" class="btn btn-outline-secondary w-100" @click="goToImport">
+                            <a
+                                href="#"
+                                aria-label="{{ __('Import Template') }}"
+                                id="import_template"
+                                class="btn btn-outline-secondary w-100"
+                                @click="goToImport"
+                            >
                                 <i class="fas fa-file-import"></i> {{__('Import')}}
                             </a>
                         </div>
@@ -45,3 +57,18 @@
 @section('js')
     <script src="{{mix('js/templates/index.js')}}"></script>
 @append
+@section('css')
+<style>
+.search-text {
+    color: gray;
+    border-color: #CDDDEE;
+}
+.search-text:hover {
+    background-color: #FAFBFC;
+    border-color: #CDDDEE;
+}
+.search-input {
+    border-left: 0;
+}
+</style>
+@endsection

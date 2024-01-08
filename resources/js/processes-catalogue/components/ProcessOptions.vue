@@ -6,7 +6,7 @@
       <img src="../../../img/wizard-icon.svg" :alt="$t('Guided Template Icon')" />
       {{ $t('Re-run Wizard') }}
     </b-button>
-    <chart-save-search />
+    <chart-save-search :process="process"/>
 
     <wizard-helper-process-modal
       v-if="createdFromWizardTemplate"
