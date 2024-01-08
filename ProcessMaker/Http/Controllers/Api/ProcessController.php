@@ -274,7 +274,7 @@ class ProcessController extends Controller
                         }
                     break;
                     case "group":
-                        if ($this->checkUsersGroup($event, $event["assignedGroups"], $request)){
+                        if ($this->checkUsersGroup($event, (int)$event["assignedGroups"], $request)){
                             $startEvents[] = $event;
                         }
                     break;
