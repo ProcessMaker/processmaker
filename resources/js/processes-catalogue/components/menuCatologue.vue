@@ -97,7 +97,6 @@ export default {
         },
       ],
       showDefaultCategory: false,
-      pmql: '',
     };
   },
   mounted() {
@@ -121,7 +120,7 @@ export default {
      * Adding categories
      */
     loadMore() {
-      this.addCategories(this.pmql);
+      this.addCategories();
     },
     selectProcessItem(item) {
       this.selectedProcessItem = item;
