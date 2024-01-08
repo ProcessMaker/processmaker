@@ -1,5 +1,8 @@
 <template>
   <div>
+    <SearchCategories
+      :filter-pmql="onFilter"
+    />
     <div
       v-b-toggle.category-menu
       block
@@ -74,8 +77,13 @@
 </template>
 
 <script>
+import SearchCategories from "./utils/SearchCategories.vue";
+
 export default {
-  props: ["data", "select", "title", "preicon"],
+  components: {
+    SearchCategories,
+  },
+  props: ["data", "select", "title", "preicon", "filterCategories"],
   data() {
     return {
       showCatalogue: false,
@@ -89,6 +97,7 @@ export default {
         },
       ],
       showDefaultCategory: false,
+      pmql: '',
     };
   },
   mounted() {
@@ -112,7 +121,7 @@ export default {
      * Adding categories
      */
     loadMore() {
-      this.$emit("addCategories");
+      this.addCategories(this.pmql);
     },
     selectProcessItem(item) {
       this.selectedProcessItem = item;
@@ -136,6 +145,12 @@ export default {
     },
     onToggleTemplates() {
       this.showGuidedTemplates = !this.showGuidedTemplates;
+    },
+    /**
+     * Filter categories
+     */
+    onFilter(value) {
+      this.filterCategories(value);
     },
   },
 };

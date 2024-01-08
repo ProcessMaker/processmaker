@@ -17,8 +17,8 @@
           show-bookmark="true"
           :data="listCategories"
           :select="selectCategorie"
+          :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
-          @addCategories="addCategories"
         />
       </b-col>
       <b-col cols="10">
@@ -85,6 +85,7 @@ export default {
       page: 1,
       key: 0,
       totalPages: 1,
+      filter: "",
     };
   },
   mounted() {
@@ -95,8 +96,17 @@ export default {
     /**
      * Add new page of categories
      */
-    addCategories() {
+    addCategories(pmql = "") {
       this.page += 1;
+      this.getCategories();
+    },
+    /**
+     * Filter categories
+     */
+     filterCategories(filter = "") {
+      this.page = 1;
+      this.listCategories = [];
+      this.filter = filter;
       this.getCategories();
     },
     /**
@@ -105,7 +115,11 @@ export default {
     getCategories() {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
-          .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+          .get(`process_bookmarks/categories?status=active
+            &page=${this.page}
+            &per_page=${this.numCategories}
+            &filter=${this.filter}`
+            )
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages;
