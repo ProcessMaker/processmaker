@@ -10,7 +10,7 @@
       <b-col cols="2">
         <span class="pl-3 menu-title"> {{ $t('Processes Browser') }} </span>
         <MenuCatologue
-          ref="category-list"
+          ref="categoryList"
           title="Available Processes"
           preicon="fas fa-play-circle"
           class="mt-3"
@@ -86,6 +86,7 @@ export default {
       key: 0,
       totalPages: 1,
       filter: "",
+      markCategorie: false,
     };
   },
   mounted() {
@@ -123,6 +124,12 @@ export default {
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages;
+
+            if (this.markCategorie) {
+              const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
+              this.$refs.categoryList.selectProcessItem(this.listCategories[indexUncategorized]);
+              this.showDefaultCategory = false;
+            }
           });
       }
     },
@@ -138,6 +145,8 @@ export default {
           .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
+            this.markCategorie = true;
+            this.filterCategories(this.category.name);
           });
       }
     },
