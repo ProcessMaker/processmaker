@@ -74,7 +74,26 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="scss">
+#carousel-1 {
+  .carousel-indicators {
+    li {
+      background-color: #EDEDED;
+      width: 27px;
+      height: 8px;
+      border-radius: 5px;
+      border-top: 0;
+      border-bottom: 0;
+      opacity: 0.5;
+    }
+
+    .active {
+      background-color: #9C9C9C;
+      opacity: 1;
+    }
+  }
+}
+
 .carousel-inner {
   overflow: hidden;
 }
