@@ -162,7 +162,6 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      console.log("porque");
       if (this.category === value) {
         this.key += 1;
       }

@@ -18,6 +18,15 @@
         @keyup.enter="fetch()"
       />
     </b-input-group>
+    <b-input-group-append>
+      <b-btn
+        class="px-1"
+        variant="outline-secondary"
+        @click="clean()"
+      >
+        <b-icon icon="x" />
+      </b-btn>
+    </b-input-group-append>
   </div>
 </template>
 
@@ -32,6 +41,10 @@ export default {
   methods: {
     fetch() {
       this.filterPmql(this.filter);
+    },
+    clean() {
+      this.filter = "";
+      this.fetch();
     },
   },
 };

@@ -96,6 +96,8 @@ export default {
           selected: false,
         },
       ],
+      showDefault: false,
+      comeFromProcess: false,
     };
   },
   mounted() {
@@ -105,12 +107,14 @@ export default {
         this.loadMore();
       }
     });
+    this.showDefault = this.showDefaultCategory;
+    this.comeFromProcess = this.fromProcessList;
   },
   updated() {
-    if (this.showDefaultCategory && !this.fromProcessList) {
+    if (this.showDefault && !this.comeFromProcess) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
       this.selectProcessItem(this.data[indexUncategorized]);
-      this.showDefaultCategory = false;
+      this.showDefault = false;
     }
   },
   methods: {
@@ -121,11 +125,12 @@ export default {
       this.$emit("addCategories");
     },
     markCategory(item) {
-      this.fromProcessList = true;
+      this.comeFromProcess = true;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
     },
     selectProcessItem(item) {
+      this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
       this.select(item);
