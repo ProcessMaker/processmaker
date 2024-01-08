@@ -30,4 +30,27 @@ class UserSession extends ProcessMakerModel
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Expires duplicate active sessions from the same IP address.
+     *
+     * @param string $ip The IP address to check for duplicate sessions.
+     */
+    public static function expiresDuplicatedSessionByIP($ip)
+    {
+        $userIP = [];
+        self::where('ip_address', $ip)
+            ->where('is_active', true)
+            ->chunk(100, function ($sessions) use (&$userIP) {
+                foreach ($sessions as $session) {
+                    $key = $session->user_id . '.' . $session->ip_address;
+                    if (in_array($key, $userIP)) {
+                        $session->update(['expired_date' => now()]);
+                    } else {
+                        // keep first session by user and ip
+                        $userIP[] = $key;
+                    }
+                }
+            });
+    }
 }
