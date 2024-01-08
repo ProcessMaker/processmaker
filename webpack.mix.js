@@ -1,6 +1,6 @@
 const mix = require("laravel-mix");
 const path = require("path");
-const packageJson = require("./package.json");
+// const packageJson = require("./package.json");
 
 /*
  |--------------------------------------------------------------------------
@@ -14,14 +14,8 @@ const packageJson = require("./package.json");
 */
 
 mix.webpackConfig({
-
-  plugins: [
-  ],
-  externals: [
-    "monaco-editor",
-    "SharedComponents",
-    "ModelerInspector",
-  ],
+  plugins: [],
+  externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: ["*", ".js", ".ts", ".mjs", ".vue", ".json"],
     symlinks: false,
@@ -38,7 +32,25 @@ mix.options({
   },
 });
 
-mix.extract([...Object.keys(packageJson.dependencies)])
+mix
+  .extract([
+    "vue",
+    "vue-router",
+    "jquery",
+    "bootstrap-vue",
+    "axios",
+    "popper.js",
+    "lodash",
+    "bootstrap",
+    "jointjs",
+    "luxon",
+    "bpmn-moddle",
+    "@fortawesome/fontawesome-free",
+    "@fortawesome/fontawesome-svg-core",
+    "@fortawesome/free-brands-svg-icons",
+    "@fortawesome/free-solid-svg-icons",
+    "@fortawesome/vue-fontawesome",
+  ])
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
@@ -55,7 +67,8 @@ mix.extract([...Object.keys(packageJson.dependencies)])
   // .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
-mix.js("resources/js/app-layout.js", "public/js")
+mix
+  .js("resources/js/app-layout.js", "public/js")
   .js("resources/js/process-map-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/process-map.js", "public/js/processes/modeler")
@@ -139,7 +152,8 @@ monacoLanguages.forEach((lang) => {
 });
 mix.copyDirectory(`${monacoSource}language`, `${monacoDestination}language`);
 
-mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
+mix
+  .sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .version();
