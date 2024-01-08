@@ -32,7 +32,7 @@ class TwoFactorAuthController extends Controller
             $user = $request->user();
 
             // If not user not authenticated, redirect to login page
-            if (empty($user)) {
+            if (empty($user) || !config('password-policies.2fa_enabled', false)) {
                 return redirect()->route('login');
             }
 
