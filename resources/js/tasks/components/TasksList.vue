@@ -240,7 +240,7 @@ export default {
           width: 220,
         },
         {
-          label: "PROCESS NAME",
+          label: "PROCESS",
           field: "process",
           sortable: true,
           default: true,
@@ -248,7 +248,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: "TASK",
           field: "element_name",
           sortable: true,
           default: true,
