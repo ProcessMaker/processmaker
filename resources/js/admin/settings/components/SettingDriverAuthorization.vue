@@ -192,6 +192,14 @@ export default {
       this.showAuthorizingModal = true;
       this.showModal = false;
       this.resetData = false;
+
+      if (this.setting.config.AuthScheme === "OAuth") {
+        this.authorizeOAuthConnection();
+      } else {
+        this.authorizeNoneConnection();
+      }
+    },
+    authorizeOAuthConnection() {
       ProcessMaker.apiClient
         .post(`settings/${this.setting.id}/get-oauth-url`, this.formData)
         .then((response) => {
@@ -206,11 +214,13 @@ export default {
           this.showAuthorizingModal = false;
         });
     },
+    authorizeNoneConnection() {
+      const { driver } = this.setting.config;
+      window.location.href = `${window.location.origin}/external-integrations/${driver}`;
+    },
     onSave() {
-      const name = this.setting.key.split("cdata.")[1];
-      this.formData.name = name;
-      const driver = this.setting.config?.driver;
-      this.formData.driver = driver;
+      this.formData.name = this.setting.config?.name;
+      this.formData.driver = this.setting.config?.driver;
       this.transformed = { ...this.formData };
       this.authorizeConnection();
     },
