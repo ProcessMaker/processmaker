@@ -11,6 +11,7 @@ use OTPHP\TOTP;
 use ParagonIE\ConstantTime\Base32;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TwoFactorAuthNotification;
+use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 
 class TwoFactorAuthentication
@@ -18,6 +19,7 @@ class TwoFactorAuthentication
     const EMAIL = 'By email';
     const SMS = 'By message to phone number';
     const AUTH_APP = 'Authenticator App';
+    const ERROR_INVALID_TO_NUMBER = 21211;
 
     public function sendCode(User $user): void
     {
@@ -86,6 +88,12 @@ class TwoFactorAuthentication
         return $otp->verify($code);
     }
 
+    /**
+     * @param User $user
+     * @param string $code
+     *
+     * @throws TwilioException
+     */
     private function sendSms(User $user, string $code)
     {
         // Get config parameters for Twilio
@@ -104,12 +112,24 @@ class TwoFactorAuthentication
 
         // Send SMS using Twilio SDK
         $twilio = new Client($sid, $token);
-        $twilio->messages->create($to,
-            [
-                'from' => $from,
-                'body' => $body
-            ]
-        );
+        try {
+            $twilio->messages->create($to,
+                [
+                    'from' => $from,
+                    'body' => $body
+                ]
+            );
+        } catch (TwilioException $error) {
+            // Check if the error code is for a invalid "to" number
+            if ($error->getCode() === self::ERROR_INVALID_TO_NUMBER) {
+                // Change to a friendly error message
+                $error = new TwilioException(
+                    __('Invalid phone number. Please verify and update your phone number in your account settings.'),
+                    self::ERROR_INVALID_TO_NUMBER
+                );
+            }
+            throw $error;
+        }
     }
 
     public function generateQr(User $user)

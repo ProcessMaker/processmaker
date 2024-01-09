@@ -48,7 +48,13 @@ class SessionControlKill
 
     private function getActiveSession(User $user, string $userSession): ?UserSession
     {
-        return $user->sessions()->where('is_active', true)->where('token', $userSession)->first();
+        return $user->sessions()
+            ->where([
+                ['is_active', true],
+                ['token', $userSession],
+                ['expired_date', '!=', null]
+            ])
+            ->first();
     }
 
     /**

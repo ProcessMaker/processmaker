@@ -32,7 +32,7 @@ class TwoFactorAuthController extends Controller
             $user = $request->user();
 
             // If not user not authenticated, redirect to login page
-            if (empty($user)) {
+            if (empty($user) || !config('password-policies.2fa_enabled', false)) {
                 return redirect()->route('login');
             }
 
@@ -46,7 +46,10 @@ class TwoFactorAuthController extends Controller
             }
 
             // Set informative message
-            session()->put(self::TFA_MESSAGE, _('Enter the security code we sent you.'));
+            $methodsNames = $this->friendlyMethodsNames();
+            $message = __('Enter the security code from :methods. If incorrect, please retry with the latest code provided.',
+                ['methods' => $methodsNames]);
+            session()->put(self::TFA_MESSAGE, $message);
         } catch (Exception $error) {
             session()->put(self::TFA_ERROR, $error->getMessage());
         }
@@ -106,7 +109,11 @@ class TwoFactorAuthController extends Controller
         $user = $request->user();
 
         // Send the code
-        $this->twoFactorAuthentication->sendCode($user);
+        try {
+            $this->twoFactorAuthentication->sendCode($user);
+        } catch (Exception $error) {
+            session()->put(self::TFA_ERROR, $error->getMessage());
+        }
 
         // Return to 2fa page
         return redirect()->route('2fa');
@@ -199,5 +206,33 @@ class TwoFactorAuthController extends Controller
             ], 500);
         }
         return true;
+    }
+
+    private function friendlyMethodsNames()
+    {
+        // Define the friendly names for each method
+        $friendlyNames = [
+            TwoFactorAuthentication::EMAIL => __('Email'),
+            TwoFactorAuthentication::SMS => __('SMS'),
+            TwoFactorAuthentication::AUTH_APP => __('Google Authenticator'),
+        ];
+
+        // Get enabled methods to send the code
+        $enabledMethods = config('password-policies.2fa_method', []);
+
+        // Return the friendly names for enabled methods
+        $methods = array_map(function($method) use ($friendlyNames) {
+            return $friendlyNames[$method] ?? $method;
+        }, $enabledMethods);
+
+        // Build final string
+        if (count($methods) > 1) {
+            $lastMethod = array_pop($methods);
+            $methods = implode(', ', $methods) . ' ' . __('or') . ' ' . $lastMethod;
+        } else {
+            $methods = $methods[0];
+        }
+
+        return $methods;
     }
 }

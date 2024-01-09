@@ -27,7 +27,7 @@
           slot="singleLabel"
           slot-scope="props"
         >
-          <span v-if="props.option">
+          <span v-if="props.option.value">
             <img
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
@@ -35,13 +35,16 @@
             >
             {{ props.option.label }}
           </span>
+          <span v-else>
+            {{ placeholder }}
+          </span>
         </template>
         <template
           slot="option"
           slot-scope="props"
         >
           <div
-            class="icon-square"
+            class="icon-squares"
             @mouseover="onHover(props.option)"
           >
             <img
@@ -97,10 +100,9 @@ export default {
   },
   methods: {
     onSearch(query) {
-      this.query = query.length ? query.toLowerCase() : this.isOpen ? "" : this.query;
-
+      this.query = query.toLowerCase();
       if (this.query.length) {
-        this.list = this.all.filter((icon) => icon.search.includes(this.query));
+        this.list = this.all.filter((icon) => icon.label.toLowerCase().includes(this.query));
       } else {
         this.list = this.all;
       }
@@ -184,10 +186,9 @@ $multiselect-height: 38px;
     height: 25px;
     margin-top: -4px;
   }
-  .icon-square {
+  .icon-squares {
     color: #788793;
-    font-size: $iconSize;
-    padding: calc($iconSize / 1.5);
+    padding: 14px;
     text-align: center;
   }
 
@@ -197,7 +198,7 @@ $multiselect-height: 38px;
 
   .multiselect__option--selected {
     background: #3397e1;
-    .icon-square {
+    .icon-squares {
       color: white;
     }
   }
