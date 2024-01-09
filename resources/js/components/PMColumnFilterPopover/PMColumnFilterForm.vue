@@ -1,24 +1,9 @@
 <template>
   <div class="pm-filter-form">
     <b-form>
-      <b-form-group>
-        <b-button variant="light"
-                  @click="onSortAscending"
-                  :pressed.sync="viewToggleAsc"
-                  squared
-                  size="sm">
-          <PMColumnFilterIconAsc></PMColumnFilterIconAsc>
-          {{$t("Sort Ascending")}}
-        </b-button>
-        <b-button variant="light"
-                  @click="onSortDescending"
-                  :pressed.sync="viewToggleDesc"
-                  squared
-                  size="sm">
-          <PMColumnFilterIconDesc></PMColumnFilterIconDesc>
-          {{$t("Sort Descending")}}
-        </b-button>
-      </b-form-group>
+      <PMColumnFilterToggleAscDesc v-model="viewSort"
+                                   @onChange="onChangeSort">
+      </PMColumnFilterToggleAscDesc>
 
       <div class="pm-filter-form-area" ref="pmFilterFormArea">
         <template v-for="(item, index) in items">
@@ -100,12 +85,11 @@
     components: {
       ...Components
     },
-    props: ["type", "value", "format", "formatRange", "operators", "viewConfig"],
+    props: ["type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
     data() {
       return {
         items: [],
-        viewToggleAsc: true,
-        viewToggleDesc: false,
+        viewSort: "asc",
         viewItemsChanged: false
       };
     },
@@ -118,16 +102,17 @@
     watch: {
       items() {
         this.viewItemsChanged = true;
+      },
+      sort: {
+        handler(newValue) {
+          this.viewSort = newValue;
+        },
+        immediate: true
       }
     },
     methods: {
-      onSortAscending() {
-        this.viewToggleDesc = false;
-        this.$emit("onSortAscending", "asc");
-      },
-      onSortDescending() {
-        this.viewToggleAsc = false;
-        this.$emit("onSortDescending", "desc");
+      onChangeSort(value) {
+        this.$emit("onChangeSort", value);
       },
       onApply() {
         let json = this.getValues();
@@ -170,12 +155,13 @@
         for (let i = 0; i < n; i++) {
           items[i].logical = "and";
           items[i].viewControl = items[i].viewControl ?? "";
+          this.switchViewControl(items[i], false);
+
           if ("or" in items[i]) {
             //save and delete the 'or' property.
             items[i].logical = "or";
             or = items[i].or;
             delete items[i].or;
-            this.switchViewControl(items[i], false);
 
             //add the elements from the 'or' variable into 'items'.
             n = n + or.length;

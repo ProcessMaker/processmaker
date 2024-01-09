@@ -9,7 +9,7 @@
       >
         <b-card
           :key="index"
-          :ref="`${lang.title}`"
+          :ref="`${lang.title}-${index}`"
           class="mt-2"
           @click="selectLanguage(lang, index)"
         >
@@ -62,7 +62,7 @@ export default {
      * Check the language selected and emit to modal
      */
     selectLanguage(lang, index) {
-      this.selectedLang(lang);
+      this.selectedLang(lang, index);
       this.select(index);
     },
     /**
@@ -84,11 +84,11 @@ export default {
     /**
      * Add the border to the item selected
      */
-    selectedLang(lang) {
+    selectedLang(lang, index) {
       for (const item in this.$refs) {
         this.$refs[item][0].className = "card mb-2 card-lang";
       }
-      this.$refs[lang.title][0].className = "card mb-2 card-lang selected";
+      this.$refs[lang.title + '-' + index][0].className = "card mb-2 card-lang selected";
     },
   },
 };

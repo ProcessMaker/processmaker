@@ -8,7 +8,7 @@
     />
     <b-row>
       <b-col cols="2">
-        <span class="pl-3 menu-title"> {{ $t('Processes Browser') }} </span>
+        <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="category-list"
           title="Available Processes"
@@ -26,7 +26,9 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty 
+            @wizardLinkSelect="wizardTemplatesSelected"
+          />
         </div>
         <div v-else>
           <CardProcess
@@ -39,6 +41,7 @@
             v-if="showProcess && !showWizardTemplates"
             :process="selectedProcess"
             :current-user-id="currentUserId"
+            :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
@@ -65,7 +68,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [{

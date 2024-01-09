@@ -33,7 +33,7 @@ export default {
       sliding: null,
       images: [],
       defaultImage: Array(4).fill({ url: "/img/launchpad-images/defaultImage.svg" }),
-      interval: 2000,
+      interval: 0,
     };
   },
   mounted() {
