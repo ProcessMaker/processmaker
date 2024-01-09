@@ -31,15 +31,15 @@ class UserSession
 
         // Get the IP address and device information
         $ip = request()->getClientIp() ?? request()->ip();
-        $agentDevice = $agent->device();
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
         $agentDeviceType = $agent->deviceType();
         $agentPlatform = $agent->platform();
-
-        // if block session by IP or Device is enabled, then mark all active sessions as inactive
+        // if block session by Device is enabled, then mark all active sessions as inactive
         if ($configDevice === '1') {
             $user->sessions()
-                ->where('is_active', true)
                 ->where([
+                    ['is_active', true],
+                    ['ip_address', '!=', $ip],
                     ['device_name', $agentDevice],
                     ['device_type', $agentDeviceType],
                     ['device_platform', $agentPlatform],
@@ -51,18 +51,21 @@ class UserSession
             $user->sessions()
                 ->where('is_active', true)
                 ->where('ip_address', $ip)
-                ->update(['expired_date' => now()]);
+                ->update(['expired_date' => now()->toDateTimeString()]);
         }
 
         if ($configDevice === '2') {
             $user->sessions()
-                ->where('is_active', true)
-                ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform) {
+                ->where([
+                    ['is_active', true],
+                ])
+                ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform, $ip) {
                     $query->where('device_name', '!=', $agentDevice)
                         ->orWhere('device_type', '!=', $agentDeviceType)
-                        ->orWhere('device_platform', '!=', $agentPlatform);
+                        ->orWhere('device_platform', '!=', $agentPlatform)
+                        ->orWhere('ip_address', '!=', $ip);
                 })
-                ->update(['expired_date' => now()]);
+                ->update(['expired_date' => now()->toDateTimeString()]);
         }
 
         $session = new Session([

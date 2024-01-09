@@ -1,0 +1,16 @@
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #6A7888 #f7f9fb;
+}
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%), var(--icons-buttons-inter, #f7f9fb);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #6A7888;
+  border-radius: 4px;
+}
