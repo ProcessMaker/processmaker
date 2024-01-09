@@ -97,12 +97,23 @@ class SessionControlBlock
         // Get the user's current IP address
         $ip = $request->getClientIp() ?? $request->ip();
         // Get the user's most recent session
-        $session = $user->sessions->sortByDesc('created_at')->first();
-        $sessionDevice = $this->formatDeviceInfo(
-            $session->device_name, $session->device_type, $session->device_platform
-        );
+        $session = $user->sessions()
+            ->where([
+                ['is_active', true],
+                ['ip_address', '!=', $ip],
+            ])
+            ->orderBy('created_at', 'desc')
+            ->first();
 
-        return $requestDevice !== $sessionDevice || $session->ip_address !== $ip;
+        if ($session) {
+            $sessionDevice = $this->formatDeviceInfo(
+                $session->device_name, $session->device_type, $session->device_platform
+            );
+
+            return $requestDevice !== $sessionDevice || $session->ip_address !== $ip;
+        }
+
+        return false;
     }
 
     private function formatDeviceInfo(string $deviceName, string $deviceType, string $devicePlatform): string
