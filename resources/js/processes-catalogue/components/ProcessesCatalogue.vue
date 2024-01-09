@@ -99,7 +99,7 @@ export default {
   },
   computed: {
     hasGuidedTemplateParams() {
-      return window.location.search.includes('?guided_templates=true') ? true : false;
+      return window.location.search.includes('?guided_templates=true');
     },
   },
   mounted() {

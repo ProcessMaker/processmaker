@@ -143,7 +143,7 @@ export default {
   },
   computed: {
     hasGuidedTemplateParams() {
-      return window.location.search.includes('?guided_templates=true&template=') ? true : false;
+      return window.location.search.includes('?guided_templates=true&template=');
     }
   },
   watch: {
@@ -227,7 +227,7 @@ export default {
             url.searchParams.append('template', $event.template.id);
             history.pushState(null, '', url); // Update the URL without triggering a page reload
           }
-          
+
           // Direct selection of a wizard template card
           this.loadTemplateDetails($event.template.id);
         } else {
