@@ -3,8 +3,10 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
@@ -37,8 +39,10 @@ class TaskController extends Controller
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('tasks.mobile', compact('title'));
         }
+        
+        $userFilter = SaveSession::getConfigFilter("taskFilter", Auth::user());
 
-        return view('tasks.index', compact('title'));
+        return view('tasks.index', compact('title', 'userFilter'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')

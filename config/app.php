@@ -158,6 +158,7 @@ return [
         Laravel\Scout\ScoutServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
 
         /**
          * ProcessMaker Service Providers
@@ -178,6 +179,7 @@ return [
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
         'Docker' => ProcessMaker\Facades\Docker::class,
         'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
         'Form' => Collective\Html\FormFacade::class,
