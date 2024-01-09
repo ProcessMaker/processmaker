@@ -1,5 +1,7 @@
 <template>
-  <div class="container-lang">
+  <div class="container-lang"
+       :class="{'is-invalid': invalid_feedback !== ''}"
+  >
     <label class="choose-lang m-2 text-uppercase">
       {{ $t("Choose an Executor") }}
     </label>
@@ -108,6 +110,9 @@ export default {
     max-height: 450px;
     font-size: 14px;
     overflow-y: auto;
+  }
+  .container-lang.is-invalid {
+    border: 1px solid #E50130;
   }
   .choose-lang {
     color: #6A7888;
