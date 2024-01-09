@@ -32,51 +32,49 @@ class UserSession extends ProcessMakerModel
     }
 
     /**
-     * Expires duplicate active sessions from the same IP address.
-     *
-     * Close all active sessions from the same IP address except the last one.
+     * Expires sessions from other IP addresses different to the active one.
      */
     public static function expiresDuplicatedSessionByIP()
     {
-        $userIP = [];
+        $usersActiveIP = [];
         self::where('is_active', true)
             ->where('expired_date', null)
             ->orderBy('id', 'desc')
-            ->chunk(100, function ($sessions) use (&$userIP) {
+            ->chunk(100, function ($sessions) use (&$usersActiveIP) {
                 foreach ($sessions as $session) {
                     $key = $session->user_id . '.' . $session->ip_address;
-                    if (in_array($key, $userIP)) {
+                    if (!isset($usersActiveIP[$session->user_id])) {
+                        $usersActiveIP[$session->user_id] = $key;
+                    }
+                    // expire all sessions except the ones within the active IP
+                    if ($usersActiveIP[$session->user_id] !== $key) {
                         $session->update(['expired_date' => now()]);
-                    } else {
-                        // keep first session by user and ip
-                        $userIP[] = $key;
                     }
                 }
             });
     }
 
     /**
-     * Expires duplicate active sessions from the same device.
-     *
-     * Close all active sessions from the same device except the last one.
+     * Close all active sessions from other devices different to the active one.
      */
     public static function expiresDuplicatedSessionByDevice()
     {
-        $userDevice = [];
+        $usersActiveDevice = [];
         self::where('is_active', true)
             ->where('expired_date', null)
             ->orderBy('id', 'desc')
-            ->chunk(100, function ($sessions) use (&$userDevice) {
+            ->chunk(100, function ($sessions) use (&$usersActiveDevice) {
                 foreach ($sessions as $session) {
                     $key = $session->user_id . '.'.
                         $session->device_name . '.' .
                         $session->device_type . '.' .
                         $session->device_platform;
-                    if (in_array($key, $userDevice)) {
+                    if (!isset($usersActiveDevice[$session->user_id])) {
+                        $usersActiveDevice[$session->user_id] = $key;
+                    }
+                    // expire all sessions except the ones within the active device
+                    if ($usersActiveDevice[$session->user_id] !== $key) {
                         $session->update(['expired_date' => now()]);
-                    } else {
-                        // keep first session by user and device
-                        $userDevice[] = $key;
                     }
                 }
             });
