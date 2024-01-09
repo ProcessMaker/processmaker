@@ -7,12 +7,12 @@
       id="navbar-request-button"
       type="button"
       class="btn btn-success btn-sm"
-      :aria-label="$t('New Request')"
+      :aria-label="$t('New Case')"
       aria-haspopup="dialog"
       @click="showRequestModal"
     >
       <i class="fas fa-plus" />
-      {{ $t('Request') }}
+      {{ $t('Case') }}
     </button>
     <new-request-modal
       ref="requestModal"
