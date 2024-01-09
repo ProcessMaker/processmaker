@@ -218,22 +218,19 @@ export default {
         if (templateId) {
           this.loadTemplateDetails(templateId);
         }
-      } else {
-        // Handle different scenarios based on $event type
-        if ($event.type === "wizard") {
-          // Add template parameter to the URL if guided templates are selected
-          let url = new URL(window.location.href);
-          if (url.search.includes('?guided_templates=true')) {
-            url.searchParams.append('template', $event.template.id);
-            history.pushState(null, '', url); // Update the URL without triggering a page reload
-          }
-
-          // Direct selection of a wizard template card
-          this.loadTemplateDetails($event.template.id);
-        } else {
-          // Direct selection of a default template card
-          this.emitTemplateDetails($event.template);
+      } else if ($event && $event.type === "wizard") {  // Handle different scenarios based on $event type 
+        // Add template parameter to the URL if guided templates are selected
+        let url = new URL(window.location.href);
+        if (url.search.includes('?guided_templates=true')) {
+          url.searchParams.append('template', $event.template.id);
+          history.pushState(null, '', url); // Update the URL without triggering a page reload
         }
+
+        // Direct selection of a wizard template card
+        this.loadTemplateDetails($event.template.id);
+      } else {
+        // Direct selection of a default template card
+        this.emitTemplateDetails($event.template);
       }
     },
     loadTemplateDetails(templateId) {
