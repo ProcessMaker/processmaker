@@ -1,14 +1,7 @@
 <template>
   <div class="data-table">
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/tasks\?page|results\?page/"
-      :empty="$t('Congratulations')"
-      :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-      empty-icon="beach"
-    />
     <div
-      v-show="!shouldShowLoader"
+      v-show="true"
       data-cy="tasks-table"
     >
       <filter-table
@@ -21,7 +14,9 @@
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index">{{ column.label }}</div>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -33,9 +28,14 @@
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
+                                   :sort="order_direction"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   :boundary="'viewport'"
+                                   @onChangeSort="onChangeSort($event, column.field)"
+                                   @onApply="onApply($event, index)"
+                                   @onClear="onClear(index)"
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -119,6 +119,13 @@
           </div>
         </template>
       </task-tooltip>
+      <data-loading
+        v-show="shouldShowLoader"
+        :for="/tasks\?page|results\?page/"
+        :empty="$t('Congratulations')"
+        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+        empty-icon="beach"
+      />
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -141,8 +148,11 @@ import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -155,8 +165,10 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     TaskTooltip,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {
     filter: {},
     columns: {},
@@ -232,7 +244,9 @@ export default {
     },
   },
   mounted: function mounted() {
+    this.getAssignee("");
     this.setupColumns();
+    this.getFilterConfiguration("taskFilter");
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -313,6 +327,13 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+        },
+        {
+          label: "ASSIGNEE",
+          field: "assignee",
+          sortable: true,
+          default: true,
+          width: 140,
         },
         {
           label: "DUE DATE",
@@ -478,42 +499,51 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onApply(json) {
-      this.advanced_filter = json;
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["Self Service", "In Progress", "Completed"];
     },
-    onClear() {
-      this.advanced_filter = [];
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      if(by === "case_number"){
+        by = "id";
+      }
+      if(by === "case_title"){
+        by = "id";
+      }
+      if(by === "process"){
+        by = "id";
+      }
+      if(by === "assignee"){
+        by = "id";
+      }
+      this.orderBy = by;
+      this.order_direction = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
     },
-    getFormat(column) {
-      let format = "string";
-      if (column.format) {
-        format = column.format;
-      }
-      if (column.field === "status" || column.field === "participants") {
-        format = "stringSelect";
-      }
-      return format;
-    },
-    getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
-      }
-      if (column.field === "participants") {
-        formatRange = ["user1", "user2", "user3", "user4"];
-      }
-      return formatRange;
-    },
-    getOperators(column) {
-      let operators = [];
-      if (column.field === "status" || column.field === "participants") {
-        operators = ["=", "in"];
-      }
-      return operators;
-    },
-  },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/taskFilter";
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.order_direction
+        }
+      };
+      ProcessMaker.apiClient.put(url, config);
+    }
+  }
 };
 </script>
 

@@ -45,7 +45,9 @@
                                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
                                 </div>
                             </vue-password>
-                            <small v-for="(error, index) in errors.password" class="text-danger">@{{ error }}</small>
+                            <small v-for="(error, index) in errors.password" v-cloak class="text-danger">
+                                @{{ error }}
+                            </small>
                         </div>
                         <div class="form-group">
                             {!!Form::label('confpassword', __('Confirm Password'))!!}<small class="ml-1">*</small>
@@ -134,12 +136,16 @@
 
 @section('css')
   <style media="screen">
+      [v-cloak] {
+          display: none;
+      }
+
       .formContainer {
-          width:504px;
+          width: 504px;
       }
 
       .formContainer .form {
-        margin-top:85px;
+        margin-top: 85px;
         text-align: left
       }
   </style>

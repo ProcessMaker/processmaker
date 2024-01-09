@@ -6,8 +6,10 @@ use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
@@ -56,9 +58,11 @@ class RequestController extends Controller
                 ['type', 'title', 'currentUser']
             ));
         }
+        
+        $userFilter = SaveSession::getConfigFilter("requestFilter", Auth::user());
 
         return view('requests.index', compact(
-            ['type', 'title', 'currentUser']
+            ['type', 'title', 'currentUser', 'userFilter']
         ));
     }
 
