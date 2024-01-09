@@ -31,7 +31,7 @@ class UserSession
 
         // Get the IP address and device information
         $ip = request()->getClientIp() ?? request()->ip();
-        $agentDevice = $agent->device();
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
         $agentDeviceType = $agent->deviceType();
         $agentPlatform = $agent->platform();
         // if block session by Device is enabled, then mark all active sessions as inactive
@@ -51,7 +51,7 @@ class UserSession
             $user->sessions()
                 ->where('is_active', true)
                 ->where('ip_address', $ip)
-                ->update(['expired_date' => now()]);
+                ->update(['expired_date' => now()->toDateTimeString()]);
         }
 
         if ($configDevice === '2') {
@@ -65,7 +65,7 @@ class UserSession
                         ->orWhere('device_platform', '!=', $agentPlatform)
                         ->orWhere('ip_address', '!=', $ip);
                 })
-                ->update(['expired_date' => now()]);
+                ->update(['expired_date' => now()->toDateTimeString()]);
         }
 
         $session = new Session([

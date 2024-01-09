@@ -92,7 +92,8 @@ class SessionControlBlock
     {
         $agent = new Agent();
         // Get the device details from the request
-        $requestDevice = $this->formatDeviceInfo($agent->device(), $agent->deviceType(), $agent->platform());
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
+        $requestDevice = $this->formatDeviceInfo($agentDevice, $agent->deviceType(), $agent->platform());
         // Get the user's current IP address
         $ip = $request->getClientIp() ?? $request->ip();
         // Get the user's most recent session

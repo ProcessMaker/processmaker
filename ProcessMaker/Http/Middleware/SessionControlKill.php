@@ -81,7 +81,10 @@ class SessionControlKill
     private function isSessionExpiredByDevice(UserSession $session): bool
     {
         $agent = new Agent();
-        $requestDevice = $this->formatDeviceInfo($agent->device(), $agent->deviceType(), $agent->platform());
+        // Get the device details from the request
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
+        $requestDevice = $this->formatDeviceInfo($agentDevice, $agent->deviceType(), $agent->platform());
+        // Get the user's most recent session
         $sessionDevice = $this->formatDeviceInfo(
             $session->device_name, $session->device_type, $session->device_platform
         );
