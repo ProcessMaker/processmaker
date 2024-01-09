@@ -1,7 +1,7 @@
 <template>
   <div>
     <SearchCards
-      v-if="processList.length > 0"
+      v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
     />
     <div
@@ -20,8 +20,10 @@
       :total-pages="totalPages"
       @onPageChanged="onPageChanged"
     />
-
-    <CatalogueEmpty v-if="processList.length === 0" />
+    <CatalogueEmpty
+      v-if="processList.length === 0"
+      :show-empty="showEmpty"
+    />
   </div>
 </template>
 
@@ -50,6 +52,7 @@ export default {
       totalPages: 1,
       pmql: "",
       bookmarkIcon: "far fa-bookmark",
+      showEmpty: false,
     };
   },
   watch: {
@@ -106,8 +109,9 @@ export default {
     /**
      * Build the PMQL
      */
-    onFilter(value) {
+    onFilter(value, showEmpty = false) {
       this.pmql = `(fulltext LIKE "%${value}%")`;
+      this.showEmpty = showEmpty;
       this.loadCard();
     },
   },

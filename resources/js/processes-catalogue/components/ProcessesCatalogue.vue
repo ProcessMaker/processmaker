@@ -16,8 +16,8 @@
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
-          :showDefaultCategory="showDefaultCategory"
-          :fromProcessList="fromProcessList"
+          :show-default-category="showDefaultCategory"
+          :from-process-list="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
@@ -29,9 +29,7 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty 
-            @wizardLinkSelect="wizardTemplatesSelected"
-          />
+          <CatalogueEmpty />
         </div>
         <div v-else>
           <CardProcess
@@ -128,8 +126,7 @@ export default {
           .get(`process_bookmarks/categories?status=active
             &page=${this.page}
             &per_page=${this.numCategories}
-            &filter=${this.filter}`
-            )
+            &filter=${this.filter}`)
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages;
@@ -165,9 +162,7 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      if (this.category === value) {
-        this.key += 1;
-      }
+      this.key += 1;
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
