@@ -25,9 +25,27 @@
           />
         </span>
       </div>
-      <p class="description">
-        {{ process.description }}
-      </p>
+      <div>
+        <p
+          v-if="readActivated || !largeDescription"
+          class="description"
+        >
+          {{ process.description }}
+        </p>
+        <p
+          v-if="!readActivated && largeDescription"
+          class="description"
+        >
+          {{ process.description.slice(0,300) }}
+          <a
+            v-if="!readActivated"
+            class="read-more"
+            @click="activateReadMore"
+          >
+            ...
+          </a>
+        </p>
+      </div>
     </div>
     <create-template-modal
       id="create-template-modal"
@@ -90,6 +108,8 @@ export default {
       assetName: "",
       processLaunchpadActions: [],
       optionsData: {},
+      largeDescription: false,
+      readActivated: false,
     };
   },
   mounted() {
@@ -98,6 +118,7 @@ export default {
       id: this.process.id.toString(),
       type: "Process",
     };
+    this.verifyDescription();
   },
   methods: {
     showCreateTemplateModal(name, id) {
@@ -123,11 +144,37 @@ export default {
       this.$refs["modal-save-version"].showModal();
     },
     getActions() {
-      this.processLaunchpadActions = this.processActions.filter((action) => action.value !== "open-launchpad");
+      this.processLaunchpadActions = this.processActions
+        .filter((action) => action.value !== "open-launchpad");
+
+      const newAction = {
+        value: "archive-item-launchpad",
+        content: "Archive",
+        permission: ["archive-processes", "view-additional-asset-actions"],
+        icon: "fas fa-archive",
+        conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
+      };
+      this.processLaunchpadActions = this.processLaunchpadActions.map((action) => (action.value !== "archive-item" ? action : newAction));
     },
-    /** Rerun a process cards from process info */
+    /**
+     * Return a process cards from process info
+     */
     goBack() {
       this.$emit("goBackCategory");
+    },
+    /**
+     * Verify if the Description is large
+     */
+    verifyDescription() {
+      if (this.process.description.length > 200) {
+        this.largeDescription = true;
+      }
+    },
+    /**
+     * Show the whole large description
+     */
+    activateReadMore() {
+      this.readActivated = true;
     },
   },
 };
@@ -152,5 +199,9 @@ export default {
 }
 .ellipsis-border{
   border-color: #CDDDEE;
+}
+.read-more {
+  cursor: pointer;
+  color: #1572C2;
 }
 </style>

@@ -1,33 +1,47 @@
 <template>
   <div class="mt-3">
-    <b-tabs content-class="mt-3 text-style">
+    <b-tabs
+      content-class="text-style"
+      lazy
+    >
       <b-tab
         title="My Requests"
         active
       >
-        <default-tab
-          :altText="$t('No Image')"
-          :titleText="$t('You have made no requests of this process.')"
-          :descriptionText="$t('All your requests will be shown here')"
-        />
+        <request-tab
+          :currentUser="currentUser"
+          :process="process"
+        ></request-tab>
       </b-tab>
-      <b-tab title="My Tasks">
-        <default-tab
-          :altText="$t('No Image')"
-          :titleText="$t('You have no tasks from this process')"
-          :descriptionText="
-            $t('All your tasks related to this process will be shown here.')
-          "
-        />
+      <b-tab
+        class="bg-white"
+        title="My Tasks"
+      >
+        <task-tab
+          :currentUser="currentUser"
+          :process="process"
+        ></task-tab>
       </b-tab>
     </b-tabs>
   </div>
 </template>
 
 <script>
-import DefaultTab from "./DefaultTab.vue";
+import RequestTab from "./RequestTab.vue";
+import TaskTab from "./TaskTab.vue";
 export default {
-  components: { DefaultTab },
+  components: {
+    RequestTab,
+    TaskTab,
+  },
+  props: {
+    currentUser: {
+      type: Object,
+    },
+    process: {
+      type: Object,
+    },
+  },
 };
 </script>
 <style>

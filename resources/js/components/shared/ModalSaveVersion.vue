@@ -22,7 +22,7 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card v-if="showVersionInfo">
+              <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
                     <label class="label-text mt-2">
@@ -36,6 +36,10 @@
                       rows="5"
                       :aria-label="$t('Description')"
                     />
+                    <span v-if="!processDescription" class="error-message">
+                      {{ $t("The Description field is required.") }}
+                      <br>
+                    </span>
                     <label class="label-text mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
@@ -191,7 +195,7 @@
                   </b-col>
                 </b-row>
               </b-card>
-              <b-card v-if="!showVersionInfo">
+              <b-card v-show="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   id="name"
@@ -520,6 +524,7 @@ export default {
           this.$t("It is not possible to include more than four images."),
           "danger",
         );
+        this.$refs.fileInput.value = "";
         return;
       }
       const { files } = event.target;
@@ -645,6 +650,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
+      if (!this.processDescription) return;
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
@@ -666,6 +672,7 @@ export default {
             type: "add",
           };
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+          ProcessMaker.EventBus.$emit("getChartId");
           this.hideModal();
         })
         .catch((error) => {
@@ -766,13 +773,6 @@ $multiselect-height: 38px;
   color: darkgray;
 }
 
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
-}
-
 .btn-custom {
   text-transform: none;
   border-color: #6C757D;
@@ -835,5 +835,11 @@ $multiselect-height: 38px;
 
 .custom-dropdown {
   width: 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 </style>

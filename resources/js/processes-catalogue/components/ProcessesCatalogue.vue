@@ -4,19 +4,23 @@
       ref="breadcrumb"
       :category="category ? category.name : ''"
       :process="selectedProcess ? selectedProcess.name : ''"
+      :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <b-row>
       <b-col cols="2">
-        <h4> {{ $t('Processes Browser') }} </h4>
+        <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
-          ref="category-list"
+          ref="categoryList"
           title="Available Processes"
           preicon="fas fa-play-circle"
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
+          :showDefaultCategory="showDefaultCategory"
+          :fromProcessList="fromProcessList"
           :select="selectCategorie"
-          @wizardLinkSelect="showWizardTemplates = 'true'"
+          :filter-categories="filterCategories"
+          @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
       </b-col>
@@ -25,24 +29,29 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty />
+          <CatalogueEmpty 
+            @wizardLinkSelect="wizardTemplatesSelected"
+          />
         </div>
         <div v-else>
           <CardProcess
-            v-if="showCardProcesses && !showWizardTemplates"
+            v-if="showCardProcesses && !showWizardTemplates && !showProcess"
+            :key="key"
             :category="category"
             @openProcess="openProcess"
           />
           <ProcessInfo
-            v-if="showProcess && !showWizardTemplates"
+            v-if="showProcess && !showWizardTemplates && !showCardProcesses"
             :process="selectedProcess"
             :current-user-id="currentUserId"
+            :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
           />
           <wizard-templates
             v-if="showWizardTemplates"
+            :template="guidedTemplates"
           />
         </div>
       </b-col>
@@ -62,7 +71,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [{
@@ -77,11 +86,19 @@ export default {
       showProcess: false,
       category: null,
       selectedProcess: null,
+      guidedTemplates: false,
       numCategories: 15,
       page: 1,
+      key: 0,
+      totalPages: 1,
+      filter: "",
+      markCategory: false,
+      showDefaultCategory: false,
+      fromProcessList: false,
     };
   },
   mounted() {
+    this.showDefaultCategory = true;
     this.getCategories();
     this.checkSelectedProcess();
   },
@@ -94,14 +111,36 @@ export default {
       this.getCategories();
     },
     /**
+     * Filter categories
+     */
+    filterCategories(filter = "") {
+      this.page = 1;
+      this.listCategories = [];
+      this.filter = filter;
+      this.getCategories();
+    },
+    /**
      * Get list of categories
      */
     getCategories() {
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
-        .then((response) => {
-          this.listCategories = [...this.listCategories, ...response.data.data];
-        });
+      if (this.page <= this.totalPages) {
+        ProcessMaker.apiClient
+          .get(`process_bookmarks/categories?status=active
+            &page=${this.page}
+            &per_page=${this.numCategories}
+            &filter=${this.filter}`
+            )
+          .then((response) => {
+            this.listCategories = [...this.listCategories, ...response.data.data];
+            this.totalPages = response.data.meta.total_pages;
+
+            if (this.markCategory) {
+              const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
+              this.$refs.categoryList.markCategory(this.listCategories[indexUncategorized]);
+              this.markCategory = false;
+            }
+          });
+      }
     },
     /**
      * Check if there is a pre-selected process
@@ -109,12 +148,16 @@ export default {
     checkSelectedProcess() {
       if (this.process) {
         this.openProcess(this.process);
+        this.fromProcessList = true;
+        this.showDefaultCategory = false;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
           .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
+            this.markCategory = true;
+            this.filterCategories(this.category.name);
           });
       }
     },
@@ -122,9 +165,13 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      if (this.category === value) {
+        this.key += 1;
+      }
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
+      this.guidedTemplates = false;
       this.showWizardTemplates = false;
       this.showProcess = false;
     },
@@ -133,14 +180,18 @@ export default {
      */
     wizardTemplatesSelected() {
       this.showWizardTemplates = true;
+      this.guidedTemplates = true;
       this.showCardProcesses = false;
       this.showProcess = false;
+      this.selectedProcess = null;
+      this.category = null;
     },
     /**
      * Select a process and show display
      */
     openProcess(process) {
       this.showCardProcesses = false;
+      this.guidedTemplates = false;
       this.showProcess = true;
       this.selectedProcess = process;
     },
@@ -153,3 +204,14 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menu-title {
+  color: #556271;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 46.08px;
+  letter-spacing: -0.44px;
+}
+</style>

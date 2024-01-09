@@ -81,7 +81,7 @@ class ProcessCategoryController extends Controller
             $query->where('status', 'like', $request->input('status'));
         }
         $query->orderBy(
-            $request->input('order_by', 'name'),
+            $request->input('order_by', 'id'),
             $request->input('order_direction', 'asc')
         );
         $response = $query->paginate($request->input('per_page', 10));
