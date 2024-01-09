@@ -25,7 +25,14 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan.svg" alt="ProcessMaker" />
+              <img src="/img/slogan1.svg" alt="ProcessMaker" />
+              <div class="typewriter-container d-flex align-items-center my-5">
+                <img src="/img/proceC2.svg" class="mr-2 procesC2-icon" alt="ProceC2" />
+                <div class="typewriter">
+                  <p>Have you tried the new AI Assistant?</p>
+                </div>
+              </div>
+              <img src="/img/slogan2.svg" alt="ProcessMaker" />
               <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
@@ -203,6 +210,90 @@
   }
   .sub_logo {
     margin-top: 7%;
+  }
+  .procesC2-icon {
+    width: 1.8rem;
+  }
+  .typewriter-container {
+    background: #ffffff;
+    border-radius: 34px;
+    height: 3.5rem;
+    padding: 3px 18px;
+    min-width: 30rem;
+    animation: slidedown 1s cubic-bezier(0.8, 0.3, 0.01, 1), 3s;
+  }
+  @keyframes cursor {
+    from, to {
+      border-color: transparent;
+    }
+    50% {
+      border-color: black;
+    }
+  }
+  @keyframes typing {
+    from {
+      width: 100%;
+    }
+    3%, to {
+      width: 0;
+    }
+  }
+  @keyframes slidedown {
+    from {
+      height: 0px;
+      visibility: hidden;
+      opacity: 0;
+    }
+    to {
+      height: 3.5rem;
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide {
+    33.3333333333% {
+      font-size: 1.1rem;
+    }
+    to {
+      font-size: 1.1rem;
+    }
+  }
+  .typewriter {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .typewriter p {
+    position: relative;
+    display: inline;
+    font-size: 0;
+    font-family: "Open Sans";
+    font-weight: 600;
+    animation: slide 15s step-start infinite;
+  }
+
+  .typewriter p::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-left: 1px solid black;
+    background-color: #ffffff;
+    animation: typing 18s infinite, cursor 1s infinite;
+  }
+
+  .typewriter p:nth-child(1) {
+    animation-delay: 1s;
+  }
+  .typewriter p:nth-child(1)::after {
+    animation-delay: 1s;
+    animation-timing-function: steps(40), step-end;
+  }
+  .typewriter p:nth-child(1)::before {
+    animation-delay: 0s;
+    animation-timing-function: steps(40), step-end;
   }
 </style>
 </html>
