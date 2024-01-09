@@ -40,7 +40,7 @@ export default {
         "cdata.github": "github-connection-properties",
         "cdata.docusign": "docusign-connection-properties",
         "cdata.gmail": "gmail-connection-properties",
-        "cdata.bamboohr": "bamboohr-connection-properties",
+        "cdata.BambooHR": "bamboohr-connection-properties",
       },
     };
   },
