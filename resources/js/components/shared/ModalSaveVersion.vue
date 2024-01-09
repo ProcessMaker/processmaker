@@ -501,7 +501,7 @@ export default {
      */
     getDescriptionInitial() {
       if (this.origin !== "core") {
-        if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
+        if (ProcessMaker.modeler?.process) {
           this.processDescriptionInitial = ProcessMaker.modeler.process.description;
         }
       } else {
@@ -513,7 +513,7 @@ export default {
      */
     getProcessDescription() {
       if (this.origin !== "core") {
-        if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
+        if (ProcessMaker.modeler?.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
           this.processId = ProcessMaker.modeler.process.id;
           if(ProcessMaker.modeler.process.description === "") {
