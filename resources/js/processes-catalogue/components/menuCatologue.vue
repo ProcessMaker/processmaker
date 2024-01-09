@@ -9,7 +9,10 @@
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
-          <i :class="preicon" />
+          <i
+            class="mr-3"
+            :class="preicon"
+          />
           {{ $t(title) }}
         </div>
         <i
@@ -35,6 +38,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+    <hr class="my-12">
     <div
       v-b-toggle.collapse-3
       block
@@ -44,7 +48,11 @@
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
-          <img src="../../../img/template-icon.svg" alt="Template Icon">
+          <img
+            class="mr-3"
+            src="../../../img/template-icon.svg"
+            alt="Template Icon"
+          >
           {{ $t("Add From Templates") }}
         </div>
         <i
