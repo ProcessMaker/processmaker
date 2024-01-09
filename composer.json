@@ -131,10 +131,10 @@
                 "package-zj-nas": "dev-fall"
             },
             "enterprise": {
-                "connector-docusign": "1.6.0",
-                "connector-idp": "1.6.0",
+                "connector-docusign": "1.7.0",
+                "connector-idp": "1.7.0",
                 "connector-pdf-print": "1.15.3",
-                "connector-send-email": "1.23.8",
+                "connector-send-email": "1.24.0",
                 "connector-slack": "1.7.0",
                 "docker-executor-cdata": "1.2.0",
                 "docker-executor-node-ssr": "1.5.0",
@@ -144,7 +144,7 @@
                 "package-analytics-reporting": "1.4.3",
                 "package-auth": "1.15.2",
                 "package-cdata": "1.1.1",
-                "package-collections": "2.15.0",
+                "package-collections": "2.15.1",
                 "package-comments": "1.10.1",
                 "package-conversational-forms": "1.6.0",
                 "package-data-sources": "1.24.3",
