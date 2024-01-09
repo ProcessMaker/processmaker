@@ -133,7 +133,7 @@ class DataManager
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;
         if (!(isset($data['not_override_request']) && $data['not_override_request'] === true)) {
-            $data['_request'] = $request->attributesToArray();
+            $data = $this->updateRequestMagicVariable($data, $request);
         }
 
         // Magic Variable: _parent
@@ -173,6 +173,21 @@ class DataManager
         $data['numberOfInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfInstances', 0);
         $data['numberOfActiveInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfActiveInstances', 0);
         $data['numberOfCompletedInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfCompletedInstances', 0);
+
+        return $data;
+    }
+
+    public function updateRequestMagicVariable(array $data, ProcessRequest $request)
+    {
+        // Magic Variable: _request
+        $data['_request'] = $request->attributesToArray();
+        $startEventToken = $request
+            ->tokens()
+            ->select('element_id', 'element_name')
+            ->where('element_type', 'startEvent')
+            ->first();
+        $data['_request']['startEventId'] = $startEventToken?->element_id;
+        $data['_request']['startEventName'] = $startEventToken?->element_name;
 
         return $data;
     }

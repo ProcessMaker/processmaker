@@ -103,9 +103,11 @@ export default {
       this.headers.forEach((column) => {
         if (column.format) {
           if (column.format === 'datetime' || column.format === 'date') {
-            this.data.data.forEach((element) => {
-              element[column.field] = this.formatDate(element[column.field], column.format);
-            });
+            if (this.data?.data?.forEach) {
+              this.data.data.forEach((element) => {
+                element[column.field] = this.formatDate(element[column.field], column.format);
+              });
+            }
           }
         }
       });
