@@ -48,9 +48,17 @@ class LoginController extends Controller
      */
     public function __construct()
     {
+        // Set middle wares
+        $this->middleware('session_block')->only('loginWithIntendedCheck');
         $this->middleware('guest')->except(['logout', 'beforeLogout', 'keepAlive']);
         $this->middleware('saml_request')->only('showLoginForm');
-        $this->maxAttempts = (int) config('password-policies.login_attempts', 5);
+
+        // Set login attempts
+        $loginAttempts = (int) config('password-policies.login_attempts', PHP_INT_MAX);
+        if ($loginAttempts === 0) {
+            $loginAttempts = PHP_INT_MAX;
+        }
+        $this->maxAttempts = $loginAttempts;
     }
 
     /**
@@ -230,10 +238,25 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
+            // Clear the user session
+            $this->forgetUserSession();
+
             event(new Logout(Auth::user()));
+
+            // Always destroy 2fa flag
+            session()->remove(TwoFactorAuthController::TFA_VALIDATED);
+            session()->remove(TwoFactorAuthController::TFA_MESSAGE);
+            session()->remove(TwoFactorAuthController::TFA_ERROR);
         }
 
         return $this->logout($request);
+    }
+
+    private function forgetUserSession() {
+        $userSession = session()->get('user_session');
+        $user = Auth::user();
+        $user->sessions()->where('token', $userSession)->update(['is_active' => false]);
+        session()->forget('user_session');
     }
 
     public function loggedOut(Request $request)

@@ -76,6 +76,7 @@ class EventServiceProvider extends ServiceProvider
         'Illuminate\Auth\Events\Login' => [
             'ProcessMaker\Listeners\LoginListener',
             'ProcessMaker\Listeners\SecurityLogger',
+            'ProcessMaker\Listeners\UserSession',
         ],
         'Illuminate\Auth\Events\Logout' => [
             'ProcessMaker\Listeners\SecurityLogger',

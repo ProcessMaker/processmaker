@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -512,5 +513,10 @@ class User extends Authenticatable implements HasMedia
             ->where('name', 'script-runner')
             ->where('created_at', '<', now()->subWeek())
             ->delete();
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(UserSession::class);
     }
 }

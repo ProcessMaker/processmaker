@@ -151,8 +151,49 @@ class AddPasswordPoliciesSettings extends Upgrade
                     'hidden' => false,
                     'ui' => [
                         'order' => 10008,
+                        'isNotEmpty' => true,
                         'deleteSettingEnabled' => false,
                         'copySettingEnabled' => false,
+                    ],
+                ],
+            ],
+            [
+                [
+                    'key' => 'password-policies.2fa_enabled',
+                ],
+                [
+                    'format' => 'boolean',
+                    'config' => false,
+                    'name' => 'Require Two Step Authentication',
+                    'helper' => 'Enhance security with an additional authentication step for user verification.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
+                    'hidden' => false,
+                    'ui' => [
+                        'order' => 10009,
+                    ],
+                ],
+            ],
+            [
+                [
+                    'key' => 'password-policies.2fa_method',
+                ],
+                [
+                    'format' => 'checkboxes',
+                    'config' => [],
+                    'name' => 'Two Step Authentication Method',
+                    'helper' => 'A security code will be sent to all selected methods.',
+                    'group' => Setting::LOGIN_OPTIONS_GROUP,
+                    'hidden' => false,
+                    'ui' => [
+                        'order' => 10010,
+                        'options' => [
+                            'By email',
+                            'By message to phone number',
+                            'Authenticator App',
+                        ],
+                        'deleteSettingEnabled' => false,
+                        'copySettingEnabled' => false,
+                        'testSettingEndpoint' => '2fa/test',
                     ],
                 ],
             ],
