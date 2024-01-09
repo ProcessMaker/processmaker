@@ -1,7 +1,7 @@
 <template>
   <div class="d-block">
     <b-carousel
-      id="carousel-1"
+      id="processes-carousel"
       v-model="slide"
       :interval="interval"
       indicators
@@ -75,7 +75,7 @@ export default {
 };
 </script>
 <style lang="scss">
-#carousel-1 {
+#processes-carousel {
   .carousel-indicators {
     li {
       background-color: #EDEDED;
