@@ -16,6 +16,9 @@
         :placeholder="$t('Search Processes')"
         @keyup.enter="fetch()"
       />
+      <b-input-group-append>
+        <b-button variant="outline-secondary" @click="clearSearch">X</b-button>
+      </b-input-group-append>
     </b-input-group>
   </div>
 </template>
@@ -31,6 +34,10 @@ export default {
   methods: {
     fetch() {
       this.filterPmql(this.filter);
+    },
+    clearSearch() {
+      this.filter = "";
+      this.fetch();
     },
   },
 };

@@ -14,6 +14,7 @@
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
+      :current-user="{{ \Auth::user() }}"
       is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
     >
   </processes-catalogue>
