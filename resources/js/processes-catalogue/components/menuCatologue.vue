@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SearchCategories
+      ref="searchCategory"
+      :filter-pmql="onFilter"
+    />
     <div
       v-b-toggle.category-menu
       block
@@ -82,8 +86,13 @@
 </template>
 
 <script>
+import SearchCategories from "./utils/SearchCategories.vue";
+
 export default {
-  props: ["data", "select", "title", "preicon"],
+  components: {
+    SearchCategories,
+  },
+  props: ["data", "select", "title", "preicon", "filterCategories", "showDefaultCategory", "fromProcessList"],
   data() {
     return {
       showCatalogue: false,
@@ -96,23 +105,25 @@ export default {
           selected: false,
         },
       ],
-      showDefaultCategory: false,
+      showDefault: false,
+      comeFromProcess: false,
     };
   },
   mounted() {
-    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+    this.showDefault = this.showDefaultCategory;
+    this.comeFromProcess = this.fromProcessList;
   },
   updated() {
-    if (this.showDefaultCategory) {
+    if (this.showDefault && !this.comeFromProcess) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
       this.selectProcessItem(this.data[indexUncategorized]);
-      this.showDefaultCategory = false;
+      this.showDefault = false;
     }
   },
   methods: {
@@ -122,7 +133,14 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
+    markCategory(item) {
+      this.comeFromProcess = true;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
+      this.$refs.searchCategory.fillFilter(item.name);
+    },
     selectProcessItem(item) {
+      this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
       this.select(item);
@@ -144,6 +162,12 @@ export default {
     },
     onToggleTemplates() {
       this.showGuidedTemplates = !this.showGuidedTemplates;
+    },
+    /**
+     * Filter categories
+     */
+    onFilter(value) {
+      this.filterCategories(value);
     },
   },
 };
