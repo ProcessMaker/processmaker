@@ -1,6 +1,7 @@
 <template>
   <div>
     <SearchCategories
+      ref="searchCategory"
       :filter-pmql="onFilter"
     />
     <div
@@ -128,6 +129,7 @@ export default {
       this.comeFromProcess = true;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
+      this.$refs.searchCategory.fillFilter(item.name);
     },
     selectProcessItem(item) {
       this.comeFromProcess = false;

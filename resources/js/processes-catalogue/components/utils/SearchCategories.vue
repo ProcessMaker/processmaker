@@ -17,16 +17,18 @@
         :placeholder="$t('Search Categories')"
         @keyup.enter="fetch()"
       />
-    </b-input-group>
-    <b-input-group-append>
-      <b-btn
-        class="px-1"
-        variant="outline-secondary"
-        @click="clean()"
+      <b-input-group-append
+        v-if="filter"
       >
-        <b-icon icon="x" />
-      </b-btn>
-    </b-input-group-append>
+        <b-btn
+          class="px-1"
+          variant="outline-secondary"
+          @click="clean()"
+        >
+          <b-icon icon="x" />
+        </b-btn>
+      </b-input-group-append>
+    </b-input-group>
   </div>
 </template>
 
@@ -46,6 +48,9 @@ export default {
       this.filter = "";
       this.fetch();
     },
+    fillFilter(filter) {
+      this.filter = filter;
+    }
   },
 };
 </script>
@@ -61,7 +66,7 @@ export default {
 }
 #search-box {
   color: #B9B9B9;
-  padding-left: 4px;
+  padding: 4px;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
