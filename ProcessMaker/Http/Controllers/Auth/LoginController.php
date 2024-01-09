@@ -238,7 +238,9 @@ class LoginController extends Controller
     public function beforeLogout(Request $request)
     {
         if (Auth::check()) {
-            // $request->session()->forget('permissions');
+            //Clear the user permissions
+            $request->session()->forget('permissions');
+
             // Clear the user session
             $this->forgetUserSession();
 
@@ -253,7 +255,8 @@ class LoginController extends Controller
         return $this->logout($request);
     }
 
-    private function forgetUserSession() {
+    private function forgetUserSession()
+    {
         $userSession = session()->get('user_session');
         $user = Auth::user();
         $user->sessions()->where('token', $userSession)->update(['is_active' => false]);
