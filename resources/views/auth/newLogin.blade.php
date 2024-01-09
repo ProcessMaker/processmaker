@@ -10,6 +10,10 @@
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
 </head>
 <body>
   <div class="content" id="app">
@@ -268,7 +272,7 @@
     position: relative;
     display: inline;
     font-size: 0;
-    font-family: "Open Sans";
+    font-family: Poppins;
     font-weight: 600;
     animation: slide 15s step-start infinite;
   }
