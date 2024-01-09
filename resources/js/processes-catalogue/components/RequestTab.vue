@@ -76,15 +76,15 @@ export default {
       tableHeaders: [],
       tableHeadersRequests: [
         {
-          label: "CASE #",
-          field: "case_number",
-          sortable: true,
-          default: true,
-          width: 55,
-        },
-        {
           label: "CASE TITLE",
           field: "case_title",
+          sortable: true,
+          default: true,
+          width: 180,
+        },
+        {
+          label: "PROCESS NAME",
+          field: "name",
           sortable: true,
           default: true,
           width: 220,
@@ -94,7 +94,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 150,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -102,7 +102,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
         {
           label: "COMPLETED",
@@ -110,7 +110,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
       ],
       dataRequests: {},
