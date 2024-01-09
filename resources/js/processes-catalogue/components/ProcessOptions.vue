@@ -1,6 +1,6 @@
 <template>
   <div>
-    <buttons-start :process="process" :currentUser="user"/>
+    <buttons-start :process="process"/>
     <process-counter :process="process" />
     <b-button v-if="createdFromWizardTemplate" class="mt-2 wizard-link" variant="link" @click="getHelperProcess">
       <img src="../../../img/wizard-icon.svg" :alt="$t('Guided Template Icon')" />
@@ -25,7 +25,7 @@ import WizardHelperProcessModal from '../../components/templates/WizardHelperPro
 
 export default {
   components: { ButtonsStart, ProcessCounter, ChartSaveSearch, WizardHelperProcessModal },
-  props: ["process", "user"],
+  props: ["process"],
   computed: {
     createdFromWizardTemplate() {
       return this.process?.properties?.wizardTemplateUuid ? true : false;

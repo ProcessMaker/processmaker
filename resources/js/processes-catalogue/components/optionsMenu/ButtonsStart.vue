@@ -67,7 +67,7 @@ import { integer } from '@processmaker/screen-builder';
 
 
 export default {
-  props: ["process", "currentUser"],
+  props: ["process"],
   data() {
     return {
       processEvents: [],
