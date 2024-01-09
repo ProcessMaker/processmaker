@@ -63,9 +63,6 @@
 </template>
 
 <script>
-import { integer } from '@processmaker/screen-builder';
-
-
 export default {
   props: ["process"],
   data() {
