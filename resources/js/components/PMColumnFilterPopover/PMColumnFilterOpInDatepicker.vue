@@ -4,7 +4,8 @@
          :key="index"
          class="pm-column-filter-op-in">
       <PMColumnFilterOpDatetime v-model="input[index]"
-                                @input="onInput">
+                                @input="onInput"
+                                class="pm-column-filter-op-in-datetime">
       </PMColumnFilterOpDatetime>
       <b-icon icon="plus-square-dotted"
               @click="onPlusIcon(index)"
@@ -76,5 +77,8 @@
   .pm-column-filter-op-in-plus-square{
     cursor: pointer;
     user-select: none;
+  }
+  .pm-column-filter-op-in-datetime{
+    margin-bottom: 5px;
   }
 </style>
