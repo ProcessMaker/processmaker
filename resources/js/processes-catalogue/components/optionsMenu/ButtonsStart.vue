@@ -16,6 +16,7 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      @click="getStartEvents()"
     >
       <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
     </button>
@@ -89,8 +90,8 @@ export default {
           this.processEvents = response.data.data;
           if (this.processEvents.length <= 1) {
             const event = this.processEvents[0] ?? {};
-            if (!event.webEntry) {
-              this.havelOneStartEvent = true;
+            if (!("webEntry" in event)) {
+              this.havelessOneStartEvent = true;
               this.startEvent = event.id ?? 0;
             }
           }
