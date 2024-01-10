@@ -306,7 +306,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PROCESS NAME",
+          label: "PROCESS",
           field: "process",
           sortable: true,
           default: true,
@@ -327,13 +327,6 @@ export default {
           sortable: true,
           default: true,
           width: 100,
-        },
-        {
-          label: "ASSIGNEE",
-          field: "assignee",
-          sortable: true,
-          default: true,
-          width: 140,
         },
         {
           label: "DUE DATE",

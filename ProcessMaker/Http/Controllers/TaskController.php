@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
