@@ -152,6 +152,7 @@ export default {
       this.$emit("wizardLinkSelect");
     },
     isSelectedProcess(item) {
+      this.clearSearch();
       return this.selectedProcessItem === item;
     },
     isSelectedTemplate(index) {
@@ -162,6 +163,9 @@ export default {
     },
     onToggleTemplates() {
       this.showGuidedTemplates = !this.showGuidedTemplates;
+    },
+    clearSearch() {
+      this.$root.$emit("clearSearch");
     },
     /**
      * Filter categories

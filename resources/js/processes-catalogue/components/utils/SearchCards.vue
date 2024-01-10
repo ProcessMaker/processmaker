@@ -31,6 +31,11 @@ export default {
       filter: "",
     };
   },
+  mounted () {
+    this.$root.$on("clearSearch", () => {
+      this.filter = "";
+    });
+  },
   methods: {
     fetch() {
       this.filterPmql(this.filter);
