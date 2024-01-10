@@ -179,7 +179,7 @@ i {
   font-size: 20px;
   color: #6A7888;
 }
-.list-group {
+#category-menu > .list-group {
   max-height: 37vh;
   min-height: 37vh;
   overflow-y: auto;
