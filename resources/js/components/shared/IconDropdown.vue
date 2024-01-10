@@ -32,7 +32,7 @@
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
-            />
+            >
             {{ props.option.label }}
           </span>
           <span v-else>
@@ -51,7 +51,7 @@
               class="icon-select"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
-            />
+            >
           </div>
         </template>
       </multiselect>
