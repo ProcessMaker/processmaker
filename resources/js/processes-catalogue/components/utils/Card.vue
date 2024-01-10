@@ -77,7 +77,7 @@ export default {
     getIconProcess() {
       let icon = "default-icon";
       if (this.process.launchpad_properties) {
-        icon = JSON.parse(this.process.launchpad_properties).icon;
+        icon = JSON.parse(this.process.launchpad_properties).icon || "default-icon";
       }
       return `/img/launchpad-images/icons/${icon}.svg`;
     },
