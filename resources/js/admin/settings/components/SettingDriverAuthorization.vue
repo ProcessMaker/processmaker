@@ -46,8 +46,9 @@
       </template>
       <div>
         <component
-          :is="authSchemeToComponent(setting.config?.AuthScheme)"
+          :is="authSchemeToComponent(setting.config.AuthScheme)"
           :form-data="formData"
+          :auth-scheme="setting.config.AuthScheme"
           @updateFormData="updateFormData"
         />
 
@@ -104,12 +105,14 @@ import settingMixin from "../mixins/setting";
 import AdditionalDriverConnectionProperties from "./AdditionalDriverConnectionProperties.vue";
 import OauthConnectionProperties from "./cdata/OauthConnectionProperties.vue";
 import NoneConnectionProperties from "./cdata/NoneConnectionProperties.vue";
+import PasswordConnectionProperties from "./cdata/PasswordConnectionProperties.vue";
 
 export default {
   components: {
     AdditionalDriverConnectionProperties,
     OauthConnectionProperties,
     NoneConnectionProperties,
+    PasswordConnectionProperties,
   },
   mixins: [settingMixin, FormErrorsMixin, Required],
   props: {
@@ -135,6 +138,8 @@ export default {
       componentsMap: {
         OAuth: "oauth-connection-properties",
         None: "none-connection-properties",
+        Password: "password-connection-properties",
+        Basic: "password-connection-properties",
       },
     };
   },
