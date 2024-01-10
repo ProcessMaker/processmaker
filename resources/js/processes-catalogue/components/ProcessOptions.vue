@@ -1,6 +1,6 @@
 <template>
   <div>
-    <buttons-start :process="process"/>
+    <buttons-start :process="process" />
     <process-counter :process="process" />
     <b-button v-if="createdFromWizardTemplate" class="mt-2 wizard-link" variant="link" @click="getHelperProcess">
       <img src="../../../img/wizard-icon.svg" :alt="$t('Guided Template Icon')" />
