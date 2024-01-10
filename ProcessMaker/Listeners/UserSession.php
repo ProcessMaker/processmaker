@@ -48,10 +48,11 @@ class UserSession
                     ['is_active', true],
                     ['ip_address', '!=', $ip],
                 ])
-                ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform) {
+                ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform, $ip) {
                     $query->where('device_name', '!=', $agentDevice)
                         ->orWhere('device_type', '!=', $agentDeviceType)
-                        ->orWhere('device_platform', '!=', $agentPlatform);
+                        ->orWhere('device_platform', '!=', $agentPlatform)
+                        ->orWhere('ip_address', '!=', $ip);
                 })
                 ->update(['expired_date' => now()->toDateTimeString()]);
         }
