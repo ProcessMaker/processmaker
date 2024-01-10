@@ -113,6 +113,8 @@ trait HideSystemResources
                 });
         } elseif (static::class === ScriptExecutor::class) {
             return $query->where('is_system', false);
+        } elseif (static::class === 'ProcessMaker\Plugins\Collections\Models\Collection') {
+            return $query->whereNull('collections.asset_type');
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);
