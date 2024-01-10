@@ -32,7 +32,7 @@
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
-            >
+            />
             {{ props.option.label }}
           </span>
           <span v-else>
@@ -51,7 +51,7 @@
               class="icon-select"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
-            >
+            />
           </div>
         </template>
       </multiselect>
@@ -102,7 +102,9 @@ export default {
     onSearch(query) {
       this.query = query.toLowerCase();
       if (this.query.length) {
-        this.list = this.all.filter((icon) => icon.label.toLowerCase().includes(this.query));
+        this.list = this.all.filter((icon) =>
+          icon.label.toLowerCase().includes(this.query)
+        );
       } else {
         this.list = this.all;
       }
@@ -133,7 +135,7 @@ export default {
 </script>
 
 <style lang="scss">
-$iconSize: 20px;
+$iconSize: 19px;
 $multiselect-height: 38px;
 
 .multiselect-icons {
@@ -141,25 +143,34 @@ $multiselect-height: 38px;
     width: 100%;
   }
 
-  .multiselect {
-    display: inline-block;
-    position: relative;
-    -webkit-box-flex: 1;
-    -ms-flex: 1 1 0%;
-    flex: 1 1 0%;
-    min-width: 0;
-    margin-bottom: 0;
-  }
-
   .multiselect,
   .multiselect__tags {
-    height: $multiselect-height;
-    min-height: $multiselect-height;
-    max-height: $multiselect-height;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+    border-radius: 4px;
+    border-color: #6c757d;
+  }
+
+  .multiselect__Select {
+    width: 28px;
+    height: 34px;
   }
 
   .multiselect__tags {
-    overflow: hidden;
+    padding: 3px 22px 3px 3px;
+  }
+
+  .multiselect__single {
+    font-size: 15px;
+    font-family: inherit;
+  }
+
+  .multiselect__select:before {
+    border-width: 3px 3px 0 3px;
+    right: -8px;
+    top: 50%;
+    border-color: #000000 transparent;
   }
 
   .multiselect__content {
@@ -177,15 +188,18 @@ $multiselect-height: 38px;
     padding: 0;
     width: auto;
   }
+
   .icon-select {
     width: 70px;
     height: 70px;
   }
+
   .icon-selected {
-    width: 25px;
-    height: 25px;
+    width: 19px;
+    height: 19px;
     margin-top: -4px;
   }
+
   .icon-squares {
     color: #788793;
     padding: 14px;
