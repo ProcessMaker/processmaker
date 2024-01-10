@@ -51,7 +51,10 @@ export default {
     },
   },
   mounted() {
-    this.config.use_sandbox = this.formData?.use_sandbox ?? true;
+    this.config = {
+      ...this.config,
+      ...this.formData,
+    };
 
     // Emit the updateFormData event after assigning values.
     this.$emit("updateFormData", this.config);

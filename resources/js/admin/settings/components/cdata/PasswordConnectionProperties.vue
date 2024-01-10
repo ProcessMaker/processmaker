@@ -1,24 +1,45 @@
 <template>
   <div>
-    <!-- API key input field -->
     <b-form-group
       required
-      :label="$t('API Key')"
-      :description="formDescription('Your BambooHR API Key.', 'APIKey', errors)"
-      :invalid-feedback="errorMessage('APIKey', errors)"
-      :state="errorState('APIKey', errors)"
+      :label="$t('User')"
+      :description="
+        formDescription('The user account used to authenticate.', 'user', errors)
+      "
+      :invalid-feedback="errorMessage('user', errors)"
+      :state="errorState('user', errors)"
+    >
+      <b-form-input
+        v-model="config.user"
+        required
+        autofocus
+        autocomplete="off"
+        :state="errorState('user', errors)"
+        name="user"
+        data-cy="user"
+      />
+    </b-form-group>
+
+    <b-form-group
+      required
+      :label="$t('Password')"
+      :description="
+        formDescription('The password used to authenticate the user.', 'password', errors)
+      "
+      :invalid-feedback="errorMessage('password', errors)"
+      :state="errorState('password', errors)"
     >
       <b-input-group>
         <b-form-input
-          v-model="config.APIKey"
+          v-model="config.password"
           required
           autofocus
           autocomplete="off"
           trim
           :type="inputType"
-          :state="errorState('APIKey', errors)"
-          name="APIKey"
-          data-cy="api-key"
+          :state="errorState('password', errors)"
+          name="password"
+          data-cy="password"
         />
         <b-input-group-append>
           <b-button
@@ -34,27 +55,6 @@
         </b-input-group-append>
       </b-input-group>
     </b-form-group>
-
-    <!-- Domain input field -->
-    <b-form-group
-      required
-      :label="$t('Domain')"
-      :description="
-        formDescription('The Domain for the BambooHR account.', 'Domain', errors)
-      "
-      :invalid-feedback="errorMessage('Domain', errors)"
-      :state="errorState('Domain', errors)"
-    >
-      <b-form-input
-        v-model="config.Domain"
-        required
-        autofocus
-        autocomplete="off"
-        :state="errorState('Domain', errors)"
-        name="Domain"
-        data-cy="domain"
-      />
-    </b-form-group>
   </div>
 </template>
 <script>
@@ -68,14 +68,19 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    authScheme: {
+      type: String,
+      default: "Password",
+    },
   },
   data() {
     return {
-      errors: {},
       config: {
-        APIKey: "",
-        Domain: "",
+        AuthScheme: this.authScheme,
+        user: "",
+        password: "",
       },
+      errors: {},
       inputType: "password",
     };
   },
