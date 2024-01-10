@@ -102,9 +102,7 @@ export default {
     onSearch(query) {
       this.query = query.toLowerCase();
       if (this.query.length) {
-        this.list = this.all.filter((icon) =>
-          icon.label.toLowerCase().includes(this.query)
-        );
+        this.list = this.all.filter((icon) => icon.label.toLowerCase().includes(this.query));
       } else {
         this.list = this.all;
       }
