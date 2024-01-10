@@ -13,6 +13,7 @@ use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
@@ -638,5 +639,73 @@ class UserController extends Controller
 
         // return $deletedUsers;
         return new ApiCollection($response);
+    }
+
+    /**
+     * Get filter configuration.
+     *
+     * @param String $name
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/users/get_filter_configuration/{name}",
+     *     summary="Get filter configuration by name",
+     *     operationId="getFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         in="path",
+     *         name="name",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function getFilterConfiguration(String $name, Request $request)
+    {
+        $filter = SaveSession::getConfigFilter($name, $request->user());
+        return response(["data" => $filter], 200);
+    }
+
+    /**
+     * Store filter configuration.
+     *
+     * @param String $name
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/users/store_filter_configuration/{name}",
+     *     summary="Store filter configuration by name",
+     *     operationId="storeFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         in="path",
+     *         name="name",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function storeFilterConfiguration(String $name, Request $request)
+    {
+        $request->json()->all();
+        $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
+        return response(["data" => $filter], 200);
     }
 }

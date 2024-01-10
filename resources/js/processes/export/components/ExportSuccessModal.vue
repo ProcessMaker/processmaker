@@ -48,7 +48,7 @@ import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 export default {
   components: { Modal },
-  props: ["processId", "processName", "exportInfo", "info"],
+  props: ["processId", "processName", "exportInfo", "info", "projectId"],
   mixins: [ AssetRedirectMixin ],
   data() {
       return {
@@ -85,6 +85,8 @@ export default {
     onClose() {
       if (this.redirectUrl) {
         window.ProcessMaker.EventBus.$emit("redirect");
+      } else if (this.projectId) {
+        window.location = `/designer/projects/${this.projectId}`;
       } else {
         window.location = "/processes";
       }

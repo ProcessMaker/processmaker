@@ -1,8 +1,8 @@
 <template>
   <div>
-    <PMColumnFilterOpDatetime v-model="value1">
+    <PMColumnFilterOpDatetime v-model="value1" class="pm-column-filter-op-between-datetime">
     </PMColumnFilterOpDatetime>
-    <PMColumnFilterOpDatetime v-model="value2">
+    <PMColumnFilterOpDatetime v-model="value2" class="pm-column-filter-op-between-datetime">
     </PMColumnFilterOpDatetime>
   </div>
 </template>
@@ -49,4 +49,7 @@
 </script>
 
 <style scoped>
+  .pm-column-filter-op-between-datetime{
+    margin-bottom: 5px;
+  }
 </style>

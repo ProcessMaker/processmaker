@@ -7,6 +7,7 @@
 @section('meta')
     <meta name="export-process-name" content="{{ $process->name }}">
     <meta name="export-process-id" content="{{ $process->id }}">
+    <meta name="export-project-id" content="{{ $projectId }}"
 
 @endsection
 

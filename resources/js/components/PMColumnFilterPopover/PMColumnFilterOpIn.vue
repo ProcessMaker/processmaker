@@ -80,5 +80,6 @@
   }
   .pm-column-filter-op-in-input{
     width: auto;
+    margin-bottom: 5px;
   }
 </style>
