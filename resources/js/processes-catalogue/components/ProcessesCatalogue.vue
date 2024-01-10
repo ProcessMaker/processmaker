@@ -95,10 +95,21 @@ export default {
       fromProcessList: false,
     };
   },
+  computed: {
+    hasGuidedTemplateParams() {
+      return window.location.search.includes("?guided_templates=true");
+    },
+  },
   mounted() {
-    this.showDefaultCategory = true;
-    this.getCategories();
-    this.checkSelectedProcess();
+    if (this.hasGuidedTemplateParams) {
+      // Loaded from URL with guided template parameters to show guided templates
+      // Dynamically load the component
+      this.wizardTemplatesSelected(true);
+    } else {
+      this.showDefaultCategory = true;
+      this.getCategories();
+      this.checkSelectedProcess();
+    }
   },
   methods: {
     /**
@@ -168,12 +179,31 @@ export default {
       this.showCardProcesses = true;
       this.guidedTemplates = false;
       this.showWizardTemplates = false;
+
+      // Remove guided_templates and template parameters from the URL
+      const url = new URL(window.location.href);
+      if (url.search.includes("?guided_templates=true")) {
+        url.searchParams.delete("guided_templates");
+        url.searchParams.delete("template");
+        history.pushState(null, "", url); // Update the URL without triggering a page reload
+      }
+
       this.showProcess = false;
     },
     /**
      * Select a wizard templates and show display
      */
-    wizardTemplatesSelected() {
+    wizardTemplatesSelected(hasUrlParams = false) {
+      if (!hasUrlParams) {
+        // Add the params if the guided template link was selected
+        const url = new URL(window.location.href);
+        if (!url.search.includes("?guided_templates=true")) {
+          url.searchParams.append("guided_templates", true);
+          history.pushState(null, "", url); // Update the URL without triggering a page reload
+        }
+      }
+
+      // Update state variables
       this.showWizardTemplates = true;
       this.guidedTemplates = true;
       this.showCardProcesses = false;

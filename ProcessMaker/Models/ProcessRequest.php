@@ -26,7 +26,6 @@ use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
-use ProcessMaker\Traits\TracksUserViewed;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Throwable;
@@ -101,7 +100,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     use Searchable;
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
-    use TracksUserViewed;
 
     /**
      * The attributes that aren't mass assignable.
@@ -440,11 +438,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
-                    ->orWhere(DB::raw('process_requests.id'), 'like', $filter)
+                    ->orWhere(DB::raw('id'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
                     ->orWhere('initiated_at', 'like', $filter)
-                    ->orWhere('process_requests.created_at', 'like', $filter)
-                    ->orWhere('process_requests.updated_at', 'like', $filter);
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
             });
         }
 
@@ -696,7 +694,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
         if ($user) {
             return function ($query) use ($user, $expression) {
-                $query->where('process_requests.user_id', $expression->operator, $user->id);
+                $query->where('user_id', $expression->operator, $user->id);
             };
         } else {
             throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
@@ -946,6 +944,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         } else {
             $caseTitle = $this->process()->select('case_title')->first()->case_title;
         }
+
         return $caseTitle ?: self::DEFAULT_CASE_TITLE;
     }
 
@@ -962,7 +961,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         if ($formatted) {
             $mustache = new MustacheExpressionEvaluator([
                 'escape' => function ($value) {
-                    return '<b>'.
+                    return '<b>' .
                         htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
                         '</b>';
                 },
@@ -996,12 +995,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             // multi-byte 200 characters limit
             $title = mb_substr($title, 0, 200);
         }
+
         return $title;
     }
 
     public function isSystem()
     {
         $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+
         return DB::table('category_assignments')
             ->where('assignable_type', Process::class)
             ->where('assignable_id', $this->process_id)

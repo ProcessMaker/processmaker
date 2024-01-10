@@ -20,6 +20,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -183,6 +184,8 @@ class RequestController extends Controller
                 'errorTask',
             ));
         }
+
+        UserResourceView::setViewed(Auth::user(), $request);
 
         return view('requests.show', compact(
             'request',
