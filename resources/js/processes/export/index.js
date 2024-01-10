@@ -9,6 +9,7 @@ import State from './state';
 Vue.component("VuePassword", VuePassword);
 
 const processName = document.head.querySelector('meta[name="export-process-name"]').content;
+const projectId = document.head.querySelector('meta[name="export-project-id"]').content;
 
 const routes = [
     { 
@@ -29,6 +30,7 @@ const routes = [
             routeName: 'export-custom-process',
             processName: processName,
             processId: route.params.processId,
+            projectId: projectId,
           }),
     },
 ];
