@@ -174,7 +174,6 @@ export default {
   },
   watch: {
     data(newData) {
-      console.log(newData);
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
@@ -185,6 +184,7 @@ export default {
           record["process"] = this.formatProcess(record);
         }
       }
+      console.log(newData);
     },
   },
   mounted: function mounted() {
