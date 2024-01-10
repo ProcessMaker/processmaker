@@ -8,6 +8,7 @@
             :groups="$root.groups"
             :process-name="$root.rootAsset.name"
             :process-id="processId"
+            :project-id="projectId"
           />
           <!-- TODO: Complete Changelog -->
           <!-- <MainAssetView
@@ -54,6 +55,7 @@ export default {
   props: {
     processName: {},
     processId: {},
+    projectId: null,
   },
   mixins: [],
   data() {

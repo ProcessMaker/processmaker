@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      pmqlRequest: `(status = "In Progress") AND (requester = "${this.currentUser.username}")`,
+      pmqlRequest: `(requester = "${this.currentUser.username}")`,
       filter: "",
       previousFilter: "",
       previousPmql: "",

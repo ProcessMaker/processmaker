@@ -22,7 +22,6 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
-use ProcessMaker\Traits\TracksUserViewed;
 use Throwable;
 
 /**
@@ -87,7 +86,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     use Searchable;
     use SerializeToIso8601;
     use TokenTrait;
-    use TracksUserViewed;
 
     protected $connection = 'processmaker';
 
@@ -547,10 +545,10 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
                     ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
-                    ->orWhere('process_request_tokens.id', 'like', $filter)
-                    ->orWhere('process_request_tokens.created_at', 'like', $filter)
+                    ->orWhere('id', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
                     ->orWhere('due_at', 'like', $filter)
-                    ->orWhere('process_request_tokens.updated_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter)
                     ->orWhereHas('processRequest', function ($query) use ($filter) {
                         $query->where(DB::raw('LOWER(name)'), 'like', $filter);
                     })
@@ -618,7 +616,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     public function fieldAliasUser_Id()
     {
-        return 'process_request_tokens.user_id';
+        return 'user_id';
     }
 
     /**

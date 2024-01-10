@@ -13,6 +13,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -107,6 +108,8 @@ class TaskController extends Controller
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 ]);
             }
+
+            UserResourceView::setViewed(Auth::user(), $task);
 
             return view('tasks.edit', [
                 'task' => $task,
