@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SearchCategories
+      ref="searchCategory"
+      :filter-pmql="onFilter"
+    />
     <div
       v-b-toggle.category-menu
       block
@@ -9,7 +13,10 @@
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
-          <i :class="preicon" />
+          <i
+            class="mr-3"
+            :class="preicon"
+          />
           {{ $t(title) }}
         </div>
         <i
@@ -35,6 +42,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+    <hr class="my-12">
     <div
       v-b-toggle.collapse-3
       block
@@ -44,7 +52,11 @@
     >
       <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
         <div class="d-flex align-items-center">
-          <img src="../../../img/template-icon.svg" alt="Template Icon">
+          <img
+            class="mr-3"
+            src="../../../img/template-icon.svg"
+            alt="Template Icon"
+          >
           {{ $t("Add From Templates") }}
         </div>
         <i
@@ -74,8 +86,13 @@
 </template>
 
 <script>
+import SearchCategories from "./utils/SearchCategories.vue";
+
 export default {
-  props: ["data", "select", "title", "preicon"],
+  components: {
+    SearchCategories,
+  },
+  props: ["data", "select", "title", "preicon", "filterCategories", "showDefaultCategory", "fromProcessList"],
   data() {
     return {
       showCatalogue: false,
@@ -88,23 +105,25 @@ export default {
           selected: false,
         },
       ],
-      showDefaultCategory: false,
+      showDefault: false,
+      comeFromProcess: false,
     };
   },
   mounted() {
-    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+    this.showDefault = this.showDefaultCategory;
+    this.comeFromProcess = this.fromProcessList;
   },
   updated() {
-    if (this.showDefaultCategory) {
+    if (this.showDefault && !this.comeFromProcess) {
       const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
       this.selectProcessItem(this.data[indexUncategorized]);
-      this.showDefaultCategory = false;
+      this.showDefault = false;
     }
   },
   methods: {
@@ -114,7 +133,14 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
+    markCategory(item) {
+      this.comeFromProcess = true;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
+      this.$refs.searchCategory.fillFilter(item.name);
+    },
     selectProcessItem(item) {
+      this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
       this.select(item);
@@ -137,6 +163,12 @@ export default {
     onToggleTemplates() {
       this.showGuidedTemplates = !this.showGuidedTemplates;
     },
+    /**
+     * Filter categories
+     */
+    onFilter(value) {
+      this.filterCategories(value);
+    },
   },
 };
 </script>
@@ -158,13 +190,11 @@ i {
 }
 .list-item {
   cursor: pointer;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
-  padding-left: 1rem;
+  padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  margin-bottom: 0.25rem;
   color: #4F606D;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;;
 }
 .list-item:hover {
   background: #E5EDF3;

@@ -93,8 +93,16 @@ export default {
     },
     close() {
       this.$bvModal.hide("wizardTemplateDetails");
+      
+      // Remove template parameter from the URL
+      let url = new URL(window.location.href);
+      if (url.search.includes('?guided_templates=true&template=')) {
+        url.searchParams.delete('template');
+        history.pushState(null, '', url); // Update the URL without triggering a page reload
+      }
+      
+      // Cancels the associated process request to prevent orphaned processes.
       if (this.showHelperProcess) {
-        // Cancels the associated process request to prevent orphaned processes.
         this.cancelHelperProcessRequest();
       }
     },

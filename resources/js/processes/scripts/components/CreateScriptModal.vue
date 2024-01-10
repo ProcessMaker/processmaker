@@ -421,14 +421,14 @@ export default {
         this.$emit("script-created-from-modeler", url, data.id, data.title);
       } else if (this.copyAssetMode) {
         this.close();
-      } else if (this.isQuickCreate === true) {
-        channel.postMessage({
-          assetType: "script",
-          asset: data,
-        });
-        const urlScripts = new URL(`/designer/scripts/`, window.location.origin);
-        window.location.href = urlScripts;
       } else {
+        if (this.isQuickCreate === true) {
+          channel.postMessage({
+            assetType: "script",
+            asset: data,
+          });
+        }
+
         window.location.href = url;
       }
     },

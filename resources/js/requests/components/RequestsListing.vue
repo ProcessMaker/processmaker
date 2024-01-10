@@ -1,23 +1,19 @@
 <template>
   <div>
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/requests\?page|results\?page/"
-      :empty="$t('¡ Whoops ! No results')"
-      :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
-      empty-icon="noData"
-    />
     <div
-      v-show="!shouldShowLoader"
+      v-show="true"
     >
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index">{{ column.label }}</div>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -30,9 +26,13 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
+                                   :sort="orderDirection"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   :boundary="'viewport'"
+                                   @onChangeSort="onChangeSort($event, column.field)"
+                                   @onApply="onApply($event, index)"
+                                   @onClear="onClear(index)"
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -41,7 +41,22 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <template v-if="containsHTML(row[header.field])">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+              >
+                <div v-html="sanitize(row[header.field])"></div>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+              >
+                {{ sanitizeTooltip(row[header.field]) }}
+              </b-tooltip>
+            </template>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
                 <component
@@ -71,6 +86,13 @@
         </template>
       </filter-table>
     </div>
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/requests\?page|results\?page/"
+      :empty="$t('¡ Whoops ! No results')"
+      :empty-desc="$t('Sorry but nothing matched your search. Try a new search.')"
+      empty-icon="noData"
+    />
     <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -89,7 +111,10 @@ import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -99,8 +124,10 @@ export default {
   components: {
     PMColumnFilterPopover,
     paginationTable,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {
     filter: {},
     columns: {},
@@ -114,7 +141,6 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
-      advanced_filter: [],
       sortOrder: [
         {
           field: "id",
@@ -126,6 +152,7 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -138,7 +165,9 @@ export default {
     },
   },
   mounted() {
+    this.getParticipants("");
     this.setupColumns();
+    this.getFilterConfiguration("requestFilter");
   },
   methods: {
     setupColumns() {
@@ -209,10 +238,11 @@ export default {
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
-          label: "PROCESS NAME",
+          label: "PROCESS",
           field: "name",
           sortable: true,
           default: true,
@@ -220,9 +250,9 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: "TASK",
           field: "active_tasks",
-          sortable: false,
+          sortable: true,
           default: true,
           width: 140,
           truncate: true,
@@ -240,8 +270,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 160,
-          truncate: true,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -406,7 +435,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            (this.advanced_filter.length >= 0 ? "&advanced_filter=" + JSON.stringify(this.advanced_filter) : ""),
+            this.getAdvancedFilter(),
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -416,6 +445,7 @@ export default {
           .then((response) => {
             this.data = this.transform(response.data);
           }).catch((error) => {
+            this.data = [];
             if (error.code === "ERR_CANCELED") {
               return;
             }
@@ -457,99 +487,52 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onApply(json) {
-      this.advanced_filter = json;
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["In Progress", "Completed", "Error", "Canceled"];
     },
-    onClear() {
-      this.advanced_filter = [];
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      if(by === "active_tasks"){
+        by = "id";
+      }
+      if(by === "participants"){
+        by = "id";
+      }
+      this.orderBy = by;
+      this.orderDirection = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
     },
-    getFormat(column) {
-      let format = "string";
-      if (column.format) {
-        format = column.format;
-      }
-      if (column.field === "status" || column.field === "participants") {
-        format = "stringSelect";
-      }
-      return format;
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
     },
-    getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
-      }
-      if (column.field === "participants") {
-        formatRange = ["user1", "user2", "user3", "user4"];
-      }
-      return formatRange;
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/requestFilter";
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.orderDirection
+        },
+      };
+      ProcessMaker.apiClient.put(url, config);
     },
-    getOperators(column) {
-      let operators = [];
-      if (column.field === "status" || column.field === "participants") {
-        operators = ["=", "in"];
-      }
-      return operators;
-    },
-    getViewConfigFilter() {
-      return [
-        {
-          "type": "string",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpInput",
-          "input": ""
-        },
-        {
-          "type": "string",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetween",
-          "input": []
-        },
-        {
-          "type": "string",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpIn",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpDatetime",
-          "input": ""
-        },
-        {
-          "type": "datetime",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetweenDatepicker",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpInDatepicker",
-          "input": []
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["="],
-          "control": "PMColumnFilterOpSelect",
-          "input": ""
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpSelectMultiple",
-          "input": []
-        },
-        {
-          "type": "boolean",
-          "includes": ["="],
-          "control": "PMColumnFilterOpBoolean",
-          "input": false
-        }
-      ];
-    }
   },
 };
 </script>

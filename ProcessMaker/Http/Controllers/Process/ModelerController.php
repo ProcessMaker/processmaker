@@ -52,6 +52,7 @@ class ModelerController extends Controller
         asort($screenTypes);
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
         $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
+        $isPackageAiInstalled = hasPackage('package-ai');
 
         // For create script modal in modeler
         $scriptExecutors = ScriptExecutor::list();
@@ -77,6 +78,7 @@ class ModelerController extends Controller
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
+            'isPackageAiInstalled' => $isPackageAiInstalled,
             'isAiGenerated' => request()->query('ai'),
         ]);
     }
