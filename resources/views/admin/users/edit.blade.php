@@ -256,6 +256,7 @@
             userId: @json($user->id),
             image: '',
             status: @json($status),
+            global2FAEnabled: @json($global2FAEnabled),
             errors: {
               username: null,
               firstname: null,
@@ -316,6 +317,9 @@
           states() {
             return this.formatDataSelect(this.statesValues);
           },
+          state2FA() {
+            return this.formData.preferences_2fa.length > 0;
+          }
         },
         mounted() {
           let created = (new URLSearchParams(window.location.search)).get('created');
@@ -407,6 +411,7 @@
           profileUpdate($event) {
             this.resetErrors();
             if (!this.validatePassword()) return false;
+            if (@json($enabled2FA) && this.formData.preferences_2fa.length < 1) return false;
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');

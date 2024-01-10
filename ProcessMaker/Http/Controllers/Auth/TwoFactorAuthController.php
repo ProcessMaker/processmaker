@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Mail\TestEmailServer;
+use ProcessMaker\Models\User;
 use ProcessMaker\TwoFactorAuthentication;
 use Twilio\Rest\Client;
 
@@ -46,7 +47,7 @@ class TwoFactorAuthController extends Controller
             }
 
             // Set informative message
-            $methodsNames = $this->friendlyMethodsNames();
+            $methodsNames = $this->friendlyMethodsNames($user);
             $message = __('Enter the security code from :methods. If incorrect, please retry with the latest code provided.',
                 ['methods' => $methodsNames]);
             session()->put(self::TFA_MESSAGE, $message);
@@ -208,7 +209,7 @@ class TwoFactorAuthController extends Controller
         return true;
     }
 
-    private function friendlyMethodsNames()
+    private function friendlyMethodsNames(User $user)
     {
         // Define the friendly names for each method
         $friendlyNames = [
@@ -218,7 +219,7 @@ class TwoFactorAuthController extends Controller
         ];
 
         // Get enabled methods to send the code
-        $enabledMethods = config('password-policies.2fa_method', []);
+        $enabledMethods = $user->getValid2FAPreferences();
 
         // Return the friendly names for enabled methods
         $methods = array_map(function($method) use ($friendlyNames) {

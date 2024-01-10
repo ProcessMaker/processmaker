@@ -58,6 +58,22 @@
                 <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
                      v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
+
+            @if (config('password-policies.2fa_enabled', false))
+            <div class="form-group">
+                {!! Form::label('preferences_2fa', __('Two Factor Authentication')) !!}
+                <b-form-checkbox-group
+                    id="preferences_2fa"
+                    v-model="formData.preferences_2fa"
+                    :options="global2FAEnabled"
+                    :state="state2FA"
+                    switches
+                    required
+                >
+                </b-form-checkbox-group>
+            </div>
+            @endif
+
             @endif
             @cannot('edit-user-and-password')
                 <div class="form-group">
