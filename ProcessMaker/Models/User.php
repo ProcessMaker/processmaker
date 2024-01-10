@@ -530,8 +530,7 @@ class User extends Authenticatable implements HasMedia
 
         // Get valid values
         $aux = array_intersect($global2FAEnabled, $user2FAEnabled);
-        $valid2FAPreferences = !empty($aux) ? array_values($aux) : $global2FAEnabled;
 
-        return $valid2FAPreferences;
+        return !empty($aux) ? array_values($aux) : $global2FAEnabled;
     }
 }
