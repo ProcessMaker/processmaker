@@ -267,26 +267,24 @@ class ProcessController extends Controller
                     $webEntry = json_decode($event["config"])->web_entry;
                     $event["webEntry"] = $webEntry;
                 }
-                if (!Auth::user()->is_administrator) {
-                    if (array_key_exists("assignment", $event)){
-                        switch ($event["assignment"]) {
-                            case "user":
-                                if ($currentUser === (int)$event["assignedUsers"]){
-                                    $startEvents[] = $event;
-                                }
-                                break;
-                            case "group":
-                                if ($this->checkUsersGroup($event, (int)$event["assignedGroups"], $request)){
-                                    $startEvents[] = $event;
-                                }
+                if (!Auth::user()->is_administrator && array_key_exists("assignment", $event)) {
+                    switch ($event["assignment"]) {
+                        case "user":
+                            if ($currentUser === (int)$event["assignedUsers"]){
+                                $startEvents[] = $event;
+                            }
                             break;
-                            case "process_manager":
-                                if ($currentUser === $process->manager_id){
-                                    $startEvents[] = $event;
-                                }
-                            break;
-                        }
-                    } 
+                        case "group":
+                            if ($this->checkUsersGroup($event, (int)$event["assignedGroups"], $request)){
+                                $startEvents[] = $event;
+                            }
+                        break;
+                        case "process_manager":
+                            if ($currentUser === $process->manager_id){
+                                $startEvents[] = $event;
+                            }
+                        break;
+                    }
                 } else {
                     $startEvents[] = $event;
                 }
@@ -1528,13 +1526,14 @@ class ProcessController extends Controller
     {
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
+        $response = false; 
         try {
             $response = (new GroupController(new Group()))->users($group, $request);
             $users = $response->all();
 
             foreach ($users as $user) {
                 if($user->resource->id === $currentUser) {
-                    return true;
+                    $response = true;
                 }
             }
         } catch (\Exception $error) {
@@ -1547,13 +1546,13 @@ class ProcessController extends Controller
 
             foreach ($groups as $group) {
                 if ($this->checkUsersGroup($event, $group->resource->id, $request)) {
-                    return true;
+                    $response = true;
                 }
             }
         } catch (\Exception $error) {
             return ['error' => $error->getMessage()];
         }
-        return false;
+        return $response;
     }
 
     /**
