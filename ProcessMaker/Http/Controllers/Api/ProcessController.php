@@ -260,32 +260,17 @@ class ProcessController extends Controller
     public function startEvents(Request $request, Process $process)
     {
         $startEvents = [];
-        $currentUser = Auth::user()->id;
+        $currentUser = Auth::user();
         foreach ($process->start_events as $event) {
             if (count($event["eventDefinitions"]) === 0) {
                 if (array_key_exists("config", $event)) {
                     $webEntry = json_decode($event["config"])->web_entry;
                     $event["webEntry"] = $webEntry;
                 }
-                if (!Auth::user()->is_administrator && array_key_exists("assignment", $event)) {
-                    switch ($event["assignment"]) {
-                        case "user":
-                            if ($currentUser === (int)$event["assignedUsers"]){
-                                $startEvents[] = $event;
-                            }
-                            break;
-                        case "group":
-                            if ($this->checkUsersGroup($event, (int)$event["assignedGroups"], $request)){
-                                $startEvents[] = $event;
-                            }
-                        break;
-                        case "process_manager":
-                            if ($currentUser === $process->manager_id){
-                                $startEvents[] = $event;
-                            }
-                        break;
-                    }
-                } else {
+                if (
+                    $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request) ||
+                    Auth::user()->is_administrator
+                ) {
                     $startEvents[] = $event;
                 }
             }
@@ -1512,21 +1497,48 @@ class ProcessController extends Controller
 
         return $where;
     }
+    /**
+     * check if currentUser can start the request
+     *
+     * @param array $event
+     * @param int $currentUser
+     * @param Process $process
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function checkUserCanStartProcess($event, $currentUser, $process, $request)
+    {
+        $response = false;
+        if (array_key_exists("assignment", $event)) {
+            switch ($event["assignment"]) {
+                case "user":
+                    $response = $currentUser === (int)$event["assignedUsers"];
+                    break;
+                case "group":
+                    $response = $this->checkUsersGroup((int)$event["assignedGroups"], $request);
+                break;
+                case "process_manager":
+                    $response = $currentUser === $process->manager_id;
+                break;
+            }
+        }
+        return $response;
+    }
 
     /**
      * check if currentUser is member of a group
      *
-     * @param object $event
      * @param int $groupId
      * @param Request $request
      *
      * @return bool
      */
-    protected function checkUsersGroup($event, int $groupId, Request $request)
+    protected function checkUsersGroup(int $groupId, Request $request)
     {
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
-        $response = false; 
+        $response = false;
         try {
             $response = (new GroupController(new Group()))->users($group, $request);
             $users = $response->all();
@@ -1545,7 +1557,7 @@ class ProcessController extends Controller
             $groups = $response->all();
 
             foreach ($groups as $group) {
-                if ($this->checkUsersGroup($event, $group->resource->id, $request)) {
+                if ($this->checkUsersGroup($group->resource->id, $request)) {
                     $response = true;
                 }
             }
