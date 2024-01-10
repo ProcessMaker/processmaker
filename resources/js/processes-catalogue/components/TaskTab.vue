@@ -78,16 +78,15 @@ export default {
       tableHeaders: [],
       tableHeadersTasks: [
         {
-          label: "CASE TITLE",
-          field: "case_title",
+          label: "CASE #",
+          field: "case_number",
           sortable: true,
           default: true,
-          width: 140,
-          truncate: true,
+          width: 55,
         },
         {
-          label: "PROCESS NAME",
-          field: "name",
+          label: "CASE TITLE",
+          field: "case_title",
           sortable: true,
           default: true,
           width: 140,

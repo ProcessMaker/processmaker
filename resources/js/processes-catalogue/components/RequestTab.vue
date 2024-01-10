@@ -76,17 +76,18 @@ export default {
       tableHeaders: [],
       tableHeadersRequests: [
         {
+          label: "CASE #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 55,
+        },
+        {
           label: "CASE TITLE",
           field: "case_title",
           sortable: true,
           default: true,
-          width: 180,
-        },
-        {
-          label: "PROCESS NAME",
-          field: "name",
-          sortable: true,
-          default: true,
+          truncate: true,
           width: 220,
         },
         {
@@ -142,6 +143,7 @@ export default {
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
+        record["case_title"] = this.formatCaseTitle(record);
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(
           record["participants"]
@@ -164,6 +166,13 @@ export default {
       <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
         # ${value.case_number}
+      </a>`;
+    },
+    formatCaseTitle(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
       </a>`;
     },
     queryBuilder() {
