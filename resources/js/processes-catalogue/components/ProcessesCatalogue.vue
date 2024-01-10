@@ -10,13 +10,16 @@
       <b-col cols="2">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
-          ref="category-list"
+          ref="categoryList"
           title="Available Processes"
           preicon="fas fa-play-circle"
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
+          :showDefaultCategory="showDefaultCategory"
+          :fromProcessList="fromProcessList"
           :select="selectCategorie"
+          :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
@@ -32,13 +35,13 @@
         </div>
         <div v-else>
           <CardProcess
-            v-if="showCardProcesses && !showWizardTemplates"
+            v-if="showCardProcesses && !showWizardTemplates && !showProcess"
             :key="key"
             :category="category"
             @openProcess="openProcess"
           />
           <ProcessInfo
-            v-if="showProcess && !showWizardTemplates"
+            v-if="showProcess && !showWizardTemplates && !showCardProcesses"
             :process="selectedProcess"
             :current-user-id="currentUserId"
             :current-user="currentUser"
@@ -88,11 +91,27 @@ export default {
       page: 1,
       key: 0,
       totalPages: 1,
+      filter: "",
+      markCategory: false,
+      showDefaultCategory: false,
+      fromProcessList: false,
     };
   },
+  computed: {
+    hasGuidedTemplateParams() {
+      return window.location.search.includes('?guided_templates=true');
+    },
+  },
   mounted() {
-    this.getCategories();
-    this.checkSelectedProcess();
+    if (this.hasGuidedTemplateParams) {
+      // Loaded from URL with guided template parameters to show guided templates
+      // Dynamically load the component
+      this.wizardTemplatesSelected(true);
+    } else {
+      this.showDefaultCategory = true;
+      this.getCategories();
+      this.checkSelectedProcess();
+    }
   },
   methods: {
     /**
@@ -103,15 +122,34 @@ export default {
       this.getCategories();
     },
     /**
+     * Filter categories
+     */
+    filterCategories(filter = "") {
+      this.page = 1;
+      this.listCategories = [];
+      this.filter = filter;
+      this.getCategories();
+    },
+    /**
      * Get list of categories
      */
     getCategories() {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
-          .get(`process_bookmarks/categories?status=active&page=${this.page}&per_page=${this.numCategories}`)
+          .get(`process_bookmarks/categories?status=active
+            &page=${this.page}
+            &per_page=${this.numCategories}
+            &filter=${this.filter}`
+            )
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages;
+
+            if (this.markCategory) {
+              const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
+              this.$refs.categoryList.markCategory(this.listCategories[indexUncategorized]);
+              this.markCategory = false;
+            }
           });
       }
     },
@@ -121,12 +159,16 @@ export default {
     checkSelectedProcess() {
       if (this.process) {
         this.openProcess(this.process);
+        this.fromProcessList = true;
+        this.showDefaultCategory = false;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
           .get(`process_bookmarks/${categoryId}`)
           .then((response) => {
             this.category = response.data;
+            this.markCategory = true;
+            this.filterCategories(this.category.name);
           });
       }
     },
@@ -137,17 +179,37 @@ export default {
       if (this.category === value) {
         this.key += 1;
       }
+
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
       this.guidedTemplates = false;
       this.showWizardTemplates = false;
+      
+      // Remove guided_templates and template parameters from the URL
+      let url = new URL(window.location.href);
+      if (url.search.includes('?guided_templates=true')) {
+        url.searchParams.delete('guided_templates');
+        url.searchParams.delete('template');
+        history.pushState(null, '', url); // Update the URL without triggering a page reload
+      }
+
       this.showProcess = false;
     },
     /**
      * Select a wizard templates and show display
      */
-    wizardTemplatesSelected() {
+    wizardTemplatesSelected(hasUrlParams = false) {
+      if (!hasUrlParams) {
+        // Add the params if the guided template link was selected
+        let url = new URL(window.location.href);
+        if (!url.search.includes('?guided_templates=true')) {
+          url.searchParams.append('guided_templates', true);
+          history.pushState(null, '', url); // Update the URL without triggering a page reload
+        }
+      }
+
+      // Update state variables
       this.showWizardTemplates = true;
       this.guidedTemplates = true;
       this.showCardProcesses = false;

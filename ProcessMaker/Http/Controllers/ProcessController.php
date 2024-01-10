@@ -198,9 +198,11 @@ class ProcessController extends Controller
         return redirect()->to(route('modeler'));
     }
 
-    public function export(Process $process)
+    public function export(Request $request, Process $process)
     {
-        return view('processes.export', compact('process'));
+        $projectId = $request->query('project_id');
+
+        return view('processes.export', compact('process', 'projectId'));
     }
 
     public function import(Request $request, Process $process)
