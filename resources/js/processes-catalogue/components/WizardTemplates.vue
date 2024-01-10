@@ -1,6 +1,7 @@
 <template>
   <div class="container wizard-template-container">
     <template-search
+      id="wizard-search"
       type="wizard"
       package-ai="false"
       :component="currentComponent"
@@ -30,3 +31,11 @@ export default {
   },
 };
 </script>
+
+<style>
+#wizard-search  #search-box,
+#wizard-search .input-group-prepend .btn-search-run {
+  border: none;
+  background-color: #f7f9fb;
+}
+</style>
