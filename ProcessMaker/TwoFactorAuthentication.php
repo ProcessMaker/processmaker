@@ -24,7 +24,7 @@ class TwoFactorAuthentication
     public function sendCode(User $user): void
     {
         // Get methods to send the code
-        $methods = config('password-policies.2fa_method', []);
+        $methods = $user->getValid2FAPreferences();
 
         if (in_array(self::EMAIL, $methods) || in_array(self::SMS, $methods)) {
             // Get code

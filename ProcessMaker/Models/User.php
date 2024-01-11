@@ -125,6 +125,7 @@ class User extends Authenticatable implements HasMedia
         'force_change_password',
         'password_changed_at',
         'connected_accounts',
+        'preferences_2fa',
     ];
 
     protected $appends = [
@@ -136,6 +137,7 @@ class User extends Authenticatable implements HasMedia
         'meta' => 'object',
         'active_at' => 'datetime',
         'schedule' => 'array',
+        'preferences_2fa' => 'array',
     ];
 
     /**
@@ -518,5 +520,17 @@ class User extends Authenticatable implements HasMedia
     public function sessions(): HasMany
     {
         return $this->hasMany(UserSession::class);
+    }
+
+    public function getValid2FAPreferences(): array
+    {
+        // Get global and user values
+        $global2FAEnabled = config('password-policies.2fa_method', []);
+        $user2FAEnabled = !is_null($this->preferences_2fa) ? $this->preferences_2fa : [];
+
+        // Get valid values
+        $aux = array_intersect($global2FAEnabled, $user2FAEnabled);
+
+        return !empty($aux) ? array_values($aux) : $global2FAEnabled;
     }
 }

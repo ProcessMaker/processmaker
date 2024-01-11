@@ -77,6 +77,11 @@ class UserController extends Controller
             }
         );
 
+        // Get global and valid 2FA preferences for the user
+        $enabled2FA = config('password-policies.2fa_enabled', false);
+        $global2FAEnabled = config('password-policies.2fa_method', []);
+        $user->preferences_2fa = $user->getValid2FAPreferences();
+
         $addons = $this->getPluginAddons('edit', compact(['user']));
         $addonsSettings = $this->getPluginAddons('edit.settings', compact(['user']));
 
@@ -92,6 +97,8 @@ class UserController extends Controller
             'datetimeFormats',
             'availableLangs',
             'status',
+            'enabled2FA',
+            'global2FAEnabled',
             'addons',
             'addonsSettings',
         ));
