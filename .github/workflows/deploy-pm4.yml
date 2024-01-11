@@ -88,9 +88,7 @@ jobs:
    steps:
      - name: Export Params                
        run: |
-         echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
-         echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-         echo "IMAGE=${{env.AWS_URL}}/processmaker/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+         echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV          
      - name: Clone Repo STM
        run: |
          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
@@ -103,13 +101,11 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
      - name: PHPUnits
        run: |          
-         cd pm4-stm-docker
-         echo "IMAGE1 :: $IMAGE"
-         echo "IMAGE :  ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}"         
-         docker pull ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}          
-         docker-compose down -v          
-         docker-compose build phpunit          
-         docker-compose run phpunit
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build phpunit
+          docker-compose run phpunit
   #deployEKS: 
   #  name: build-deploy-EKS
   #  if: contains(github.event.pull_request.body, 'ci:deploy')
