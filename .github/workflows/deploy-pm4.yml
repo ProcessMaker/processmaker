@@ -158,7 +158,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - name: PHPUnits
         run: |          
-          cd pm4-stm-docker
+          cd pm4-k8s-distribution/images/pm4-tools
           docker pull $IMAGE
           docker-compose down -v
           docker-compose build phpunit
