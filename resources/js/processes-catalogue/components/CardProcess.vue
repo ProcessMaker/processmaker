@@ -76,7 +76,7 @@ export default {
         });
     },
     /**
-     * go to wizard templates section
+     * Go to wizard templates section
      */
     wizardLinkSelected() {
       this.$emit("wizardLinkSelect");
