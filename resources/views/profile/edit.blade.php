@@ -176,7 +176,8 @@
                 profileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
-                    if (@json($enabled2FA) && this.formData.preferences_2fa.length < 1) return false;
+                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+                        this.formData.preferences_2fa.length != null && this.formData.preferences_2fa.length < 1) return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
@@ -236,7 +237,8 @@
             },
             computed: {
                 state2FA() {
-                    return this.formData.preferences_2fa.length > 0;
+                    return typeof this.formData.preferences_2fa != "undefined" && this.formData.preferences_2fa.length != null &&
+                        this.formData.preferences_2fa.length > 0;
                 }
             }
         });

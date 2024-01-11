@@ -59,7 +59,7 @@
                      v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
 
-            @if (config('password-policies.2fa_enabled', false))
+            @if (config('password-policies.2fa_enabled', false) && count($global2FAEnabled) > 0)
             <div class="form-group">
                 {!! Form::label('preferences_2fa', __('Two Factor Authentication')) !!}
                 <b-form-checkbox-group
