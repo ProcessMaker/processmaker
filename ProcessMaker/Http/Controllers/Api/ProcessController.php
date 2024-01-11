@@ -261,6 +261,7 @@ class ProcessController extends Controller
     {
         $startEvents = [];
         $currentUser = Auth::user();
+        dd($process, 'porsiiaaaa');
         foreach ($process->start_events as $event) {
             if (count($event["eventDefinitions"]) === 0) {
                 if (array_key_exists("config", $event)) {
