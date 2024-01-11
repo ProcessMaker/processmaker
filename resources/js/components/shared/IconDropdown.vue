@@ -1,5 +1,5 @@
 <template>
-  <div class="multiselect-icons">
+  <div class="multiselect-icons custom-multiselect">
     <b-input-group>
       <multiselect
         ref="multiselect"
@@ -136,18 +136,18 @@ export default {
 
 <style lang="scss">
 $iconSize: 19px;
-$multiselect-height: 38px;
+$multiselect-height: 33px;
 
-.multiselect-icons {
+.multiselect-icons.custom-multiselect {
   .input-group {
     width: 100%;
   }
 
   .multiselect,
   .multiselect__tags {
-    height: 30px;
-    min-height: 30px;
-    max-height: 30px;
+    height: 33px;
+    min-height: 33px;
+    max-height: 33px;
     border-radius: 4px;
     border-color: #6c757d;
   }
@@ -167,7 +167,7 @@ $multiselect-height: 38px;
   }
 
   .multiselect__select:before {
-    border-width: 3px 3px 0 3px;
+    border-width: 4px 4px 0 4px;
     right: -8px;
     top: 50%;
     border-color: #000000 transparent;
