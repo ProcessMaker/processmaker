@@ -39,6 +39,7 @@
             :key="key"
             :category="category"
             @openProcess="openProcess"
+            @wizardLinkSelect="wizardTemplatesSelected"
           />
           <ProcessInfo
             v-if="showProcess && !showWizardTemplates && !showCardProcesses"

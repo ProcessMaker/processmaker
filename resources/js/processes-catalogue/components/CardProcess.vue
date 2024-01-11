@@ -21,7 +21,10 @@
       @onPageChanged="onPageChanged"
     />
 
-    <CatalogueEmpty v-if="processList.length === 0" />
+    <CatalogueEmpty
+      v-if="processList.length === 0"
+      @wizardLinkSelect="wizardLinkSelected"
+    />
   </div>
 </template>
 
@@ -71,6 +74,12 @@ export default {
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
         });
+    },
+    /**
+     * go to wizard templates section
+     */
+    wizardLinkSelected() {
+      this.$emit("wizardLinkSelect");
     },
     /**
      * Build URL for Process Cards
