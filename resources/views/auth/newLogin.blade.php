@@ -33,7 +33,7 @@
                   <p>{{ __('Have you tried the new AI Assistant?') }}</p>
                 </div>
               </div>
-              <img src="/img/slogan2.svg" 
+              <img src="/img/slogan2.svg"
                 alt="Create processes from a written description. Translate into multiple languages. Search faster." />
               <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
