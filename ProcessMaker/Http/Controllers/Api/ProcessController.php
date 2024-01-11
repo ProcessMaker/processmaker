@@ -261,7 +261,6 @@ class ProcessController extends Controller
     {
         $startEvents = [];
         $currentUser = Auth::user();
-        dd($process, 'porsiiaaaa');
         foreach ($process->start_events as $event) {
             if (count($event["eventDefinitions"]) === 0) {
                 if (array_key_exists("config", $event)) {
@@ -1514,10 +1513,14 @@ class ProcessController extends Controller
         if (array_key_exists("assignment", $event)) {
             switch ($event["assignment"]) {
                 case "user":
-                    $response = $currentUser === (int)$event["assignedUsers"];
+                    if (array_key_exists("assignedUsers", $event)) {
+                        $response = $currentUser === (int)$event["assignedUsers"];
+                    }
                     break;
                 case "group":
-                    $response = $this->checkUsersGroup((int)$event["assignedGroups"], $request);
+                    if (array_key_exists("assignedGroups", $event)) {
+                        $response = $this->checkUsersGroup((int)$event["assignedGroups"], $request);
+                    }
                 break;
                 case "process_manager":
                     $response = $currentUser === $process->manager_id;
