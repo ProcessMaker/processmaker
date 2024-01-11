@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="search-categories">
     <b-input-group>
       <b-input-group-prepend>
         <b-btn
@@ -29,6 +29,7 @@
         </b-btn>
       </b-input-group-append>
     </b-input-group>
+    <hr class="my-12">
   </div>
 </template>
 
@@ -72,5 +73,8 @@ export default {
   font-weight: 400;
   line-height: 32.077px;
   letter-spacing: -0.38px;
+}
+.search-categories {
+  padding-left: 1rem;
 }
 </style>
