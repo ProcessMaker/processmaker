@@ -152,7 +152,7 @@ $multiselect-height: 33px;
 
   .multiselect__Select {
     width: 28px;
-    height: 34px;
+    height: 33px;
   }
 
   .multiselect__tags {
