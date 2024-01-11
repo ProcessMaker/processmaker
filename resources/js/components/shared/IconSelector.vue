@@ -283,4 +283,3 @@
     }
   }
 </style>
-./LaunchpadIcons
