@@ -26,14 +26,14 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan1.svg" alt="ProcessMaker" />
+              <img src="/img/slogan1.svg" alt="Smarter processes, easer than ever" />
               <div class="typewriter-container d-flex align-items-center my-5">
                 <img src="/img/proceC2.svg" class="mr-2 procesC2-icon" alt="ProceC2" />
                 <div class="typewriter">
-                  <p>Have you tried the new AI Assistant?</p>
+                  <p>{{ __('Have you tried the new AI Assistant?') }}</p>
                 </div>
               </div>
-              <img src="/img/slogan2.svg" alt="ProcessMaker" />
+              <img src="/img/slogan2.svg" alt="Create processes from a written description. Translate into multiple languages. Search faster." />
               <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
