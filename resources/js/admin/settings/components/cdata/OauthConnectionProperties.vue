@@ -140,7 +140,10 @@ export default {
     },
   },
   mounted() {
-    this.config = this.formData;
+    this.config = {
+      ...this.config,
+      ...this.formData,
+    };
     this.$emit("updateFormData", this.config);
   },
   methods: {

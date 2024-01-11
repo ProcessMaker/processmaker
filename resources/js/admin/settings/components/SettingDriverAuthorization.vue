@@ -46,9 +46,9 @@
       </template>
       <div>
         <component
-          :is="authSchemeToComponent(setting.config.AuthScheme)"
+          :is="authSchemeToComponent(setting.config?.AuthScheme)"
           :form-data="formData"
-          :auth-scheme="setting.config.AuthScheme"
+          :auth-scheme="setting.config?.AuthScheme"
           @updateFormData="updateFormData"
         />
 
@@ -118,7 +118,7 @@ export default {
   props: {
     setting: {
       type: [Object, null],
-      default: null,
+      default: () => ({}),
     },
     value: {
       type: Object,
