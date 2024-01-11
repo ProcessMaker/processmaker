@@ -1,6 +1,7 @@
 <template>
   <div class="pm-table-container">
     <table
+      id="table-filter"
       class="pm-table-filter"
       aria-label="custom-pm-table"
       @mouseleave="handleRowMouseleave"
@@ -58,7 +59,7 @@
             >
               <template v-if="containsHTML(row[header.field])">
                 <div
-                  :id="`element-${rowIndex}-${colIndex}`"
+                  :id="`element-${rowIndex}-${index}`"
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
@@ -66,7 +67,7 @@
                 </div>
                 <b-tooltip
                   v-if="header.truncate"
-                  :target="`element-${rowIndex}-${colIndex}`"
+                  :target="`element-${rowIndex}-${index}`"
                   custom-class="pm-table-tooltip"
                 >
                   {{ sanitizeTooltip(row[header.field]) }}
@@ -82,14 +83,14 @@
                 </template>
                 <template v-else>
                   <div
-                    :id="`element-${rowIndex}-${colIndex}`"
+                    :id="`element-${rowIndex}-${index}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
                     <b-tooltip
                       v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
+                      :target="`element-${rowIndex}-${index}`"
                       custom-class="pm-table-tooltip"
                     >
                       {{ row[header.field] }}
@@ -219,7 +220,7 @@ export default {
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!br|img|input|a|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
@@ -248,6 +249,8 @@ export default {
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 5px;
+  scrollbar-width: 8px;
+  scrollbar-color: #6C757D;
 }
 
 .pm-table-container th {
@@ -265,7 +268,7 @@ export default {
   right: -5px;
   top: 50%;
   transform: translateY(-50%);
-  height: 30px;
+  height: 85%;
   width: 10px;
   cursor: col-resize;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
@@ -280,9 +283,11 @@ export default {
 .pm-table-filter td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
+  height: 56px;
 }
 .pm-table-ellipsis-column {
   padding: 10px 16px;
+  height: 56px;
 }
 .pm-table-filter th:hover {
   background-color: #FAFBFC;
@@ -376,5 +381,13 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+.pm-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.pm-table-container::-webkit-scrollbar-thumb {
+  background-color: #6C757D;
+  border-radius: 20px;
 }
 </style>

@@ -107,6 +107,7 @@
           >
           <span>
             <i
+              v-if="!verifyURL('saved-searches')"
               class="fa fa-eye py-2"
               @click="previewTasks(tooltipRowData)"
             />
@@ -131,7 +132,10 @@
         @page-change="changePage"
       />
     </div>
-    <tasks-preview ref="preview" />
+    <tasks-preview
+      v-if="!verifyURL('saved-searches')"
+      ref="preview"
+    />
   </div>
 </template>
 
@@ -241,7 +245,6 @@ export default {
           record["task_name"] = this.formatActiveTask(record);
         }
       }
-      console.log(newData);
     },
   },
   mounted: function mounted() {
@@ -435,12 +438,29 @@ export default {
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
+
+      const tableElement = document.getElementById("table-filter");
+      const rectTable = tableElement.getBoundingClientRect();
+      const bottomAdjust = rectTable.y;
+      let elementHeight;
+      const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
+      if (tasksAlert) {
+        elementHeight = tasksAlert.clientHeight - 14;
+      } else {
+        elementHeight = 0;
+      }
+
+      const savedSearch = this.verifyURL("saved-searches");
+      if (savedSearch) {
+        elementHeight += 36;
+      }
+
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
       const rowElement = document.getElementById(`row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - 280;
+      const bottomBorderY = rect.bottom - bottomAdjust + 48 - elementHeight;
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -522,6 +542,11 @@ export default {
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
+    },
+    verifyURL(string) {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes(string);
+      return isInUrl;
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
