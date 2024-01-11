@@ -34,19 +34,7 @@ class UserSession
         $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
         $agentDeviceType = $agent->deviceType();
         $agentPlatform = $agent->platform();
-        // if block session by Device is enabled, then mark all active sessions as inactive
-        if ($configDevice === '1') {
-            $user->sessions()
-                ->where([
-                    ['is_active', true],
-                    ['ip_address', '!=', $ip],
-                    ['device_name', $agentDevice],
-                    ['device_type', $agentDeviceType],
-                    ['device_platform', $agentPlatform],
-                ])
-                ->update(['is_active' => false]);
-        }
-        // if kill session by IP or Device is enabled, then kill all active sessions
+
         if ($configIP === '2') {
             $user->sessions()
                 ->where('is_active', true)
@@ -58,6 +46,7 @@ class UserSession
             $user->sessions()
                 ->where([
                     ['is_active', true],
+                    ['ip_address', '!=', $ip],
                 ])
                 ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform, $ip) {
                     $query->where('device_name', '!=', $agentDevice)
