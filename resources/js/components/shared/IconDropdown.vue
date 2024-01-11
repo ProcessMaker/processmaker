@@ -220,4 +220,3 @@ $multiselect-height: 38px;
   }
 }
 </style>
-./LaunchpadIcons
