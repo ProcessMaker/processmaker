@@ -5,7 +5,7 @@
     class="requests-modal modal-dialog-scrollable"
     header-close-content="&times;"
     hide-footer
-    :title="$t('New Request')"
+    :title="$t('New Case')"
     :size="size"
   >
     <b-row no-gutters>
