@@ -141,7 +141,7 @@ export default {
     height: auto;
     max-height: 280px;
     overflow-x: hidden;
-    width: 248px;
+    width: 294px;
     border-radius: 4px;
 }
 </style>
