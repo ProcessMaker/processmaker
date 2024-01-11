@@ -32,7 +32,9 @@
                => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
                <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
             </div>
-            @if (config('password-policies.users_can_change', true) || !Request::is('profile/edit') || auth()->user()->is_administrator)
+            @if (config('password-policies.users_can_change', true) ||
+              !Request::is('profile/edit') ||
+              auth()->user()->is_administrator)
             @can('edit-user-and-password')
                 <div class="form-group">
                     <small class="form-text text-muted">
