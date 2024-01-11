@@ -285,6 +285,4 @@
   .pm-filter-form-button{
     padding: 0px;
   }
-  .pm-filter-form-button-cancel{
-  }
 </style>
