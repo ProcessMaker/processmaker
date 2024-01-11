@@ -714,6 +714,10 @@ export default {
      * Method to store version info from Launchpad Window
      */
     saveFromEditLaunchpad() {
+      if (!this.processDescription) {
+        ProcessMaker.alert(this.$t("The Description field is required."), "danger");
+        return; 
+      }
       ProcessMaker.apiClient
         .post("/version_histories", {
           subject: this.subject,
