@@ -6,6 +6,7 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -40,7 +41,22 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <template v-if="containsHTML(row[header.field])">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+              >
+                <div v-html="sanitize(row[header.field])"></div>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+              >
+                {{ sanitizeTooltip(row[header.field]) }}
+              </b-tooltip>
+            </template>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
                 <component
@@ -136,6 +152,7 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -221,10 +238,11 @@ export default {
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
-          label: "PROCESS NAME",
+          label: "PROCESS",
           field: "name",
           sortable: true,
           default: true,
@@ -232,7 +250,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: "TASK",
           field: "active_tasks",
           sortable: true,
           default: true,
@@ -252,8 +270,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 160,
-          truncate: true,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -492,6 +509,14 @@ export default {
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
     },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
@@ -502,11 +527,11 @@ export default {
         order: {
           by: this.orderBy,
           direction: this.orderDirection
-        }
+        },
       };
       ProcessMaker.apiClient.put(url, config);
-    }
-  }
+    },
+  },
 };
 </script>
 <style>
