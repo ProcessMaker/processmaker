@@ -22,6 +22,7 @@ env:
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  IMAGE_TAG1: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
   DEPLOY: ${{ secrets.DEPLOY }}
   GH_USER: ${{ secrets.GH_USER }}
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
@@ -103,6 +104,7 @@ jobs:
      - name: PHPUnits
        run: |          
          cd pm4-stm-docker
+         echo "IMAGE1 :: $IMAGE"
          echo "IMAGE :  ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}"         
          docker pull ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}          
          docker-compose down -v          
