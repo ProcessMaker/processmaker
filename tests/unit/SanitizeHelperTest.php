@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker;
+namespace Tests\Unit;
 
 use Tests\TestCase;
 

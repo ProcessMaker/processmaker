@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Support\Facades\Auth;

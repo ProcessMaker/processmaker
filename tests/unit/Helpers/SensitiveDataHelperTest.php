@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\unit\ProcessMaker\Helpers;
+namespace Tests\Unit\Helpers;
 
 use ProcessMaker\Helpers\SensitiveDataHelper;
 use Tests\TestCase;

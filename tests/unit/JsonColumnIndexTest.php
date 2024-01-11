@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use DB;
 use Facades\ProcessMaker\JsonColumnIndex;
