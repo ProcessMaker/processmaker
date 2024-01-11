@@ -64,7 +64,7 @@ class ModelerController extends Controller
             $process->fill($draft->only(['svg', 'bpmn']));
         }
 
-        $runAsUserDefault = User::where('username', 'admin')->first();
+        $runAsUserDefault = User::where('is_administrator', true)->first();
 
         return view('processes.modeler.index', [
             'process' => $process->append('notifications', 'task_notifications'),
