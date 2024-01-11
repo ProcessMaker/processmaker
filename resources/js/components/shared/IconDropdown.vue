@@ -162,6 +162,7 @@ $multiselect-height: 33px;
   .multiselect__single {
     font-size: 15px;
     font-family: inherit;
+    padding: 2px 0 0 0;
   }
 
   .multiselect__select:before {
@@ -223,7 +224,8 @@ $multiselect-height: 33px;
   .multiselect__placeholder {
     color: #212529;
     font-size: 16px;
-    margin-top: -4px;
+    margin-top: 0px;
+    margin-left: 5px;
     padding: 0;
   }
 
