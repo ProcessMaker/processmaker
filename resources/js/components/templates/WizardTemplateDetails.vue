@@ -26,7 +26,7 @@
               <p class="wizard-details-description">{{ templateDetails['modal-description'] | str_limit(150) }}</p>
               <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
                 <i class="fas fa-play-circle mr-1" />
-                {{ $t('Use Now') }}
+                {{ $t('Get Started') }}
               </button>
             </div>
           </div>
