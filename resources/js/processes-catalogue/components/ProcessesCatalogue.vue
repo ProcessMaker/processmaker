@@ -76,7 +76,7 @@ export default {
     return {
       listCategories: [{
         id: 0,
-        name: "Bookmarked Processes",
+        name: "Favorites",
         status: "ACTIVE",
       }],
       fields: [],
