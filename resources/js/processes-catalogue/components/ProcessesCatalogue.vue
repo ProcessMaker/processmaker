@@ -136,14 +136,13 @@ export default {
     getCategories() {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
-          .get(`process_bookmarks/categories?status=active
-            &page=${this.page}
-            &per_page=${this.numCategories}
-            &filter=${this.filter}`
-            )
+          .get("process_bookmarks/categories?status=active"
+            + `&page=${this.page}`
+            + `&per_page=${this.numCategories}`
+            + `&filter=${this.filter}`)
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
-            this.totalPages = response.data.meta.total_pages;
+            this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
 
             if (this.markCategory) {
               const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
