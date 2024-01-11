@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      pmqlRequest: `(requester = "${this.currentUser.username}")`,
+      pmqlRequest: "",
       filter: "",
       previousFilter: "",
       previousPmql: "",
@@ -168,8 +168,10 @@ export default {
     },
     queryBuilder() {
       let pmql = "";
-      if (this.pmqlRequest !== undefined) {
-        pmql = this.pmqlRequest;
+      if (this.pmqlRequest !== undefined && this.pmqlRequest !== "") {
+        pmql = this.pmqlRequest + " AND process_id=" + `${this.process.id}`;
+      } else {
+        pmql = " process_id=" + `${this.process.id}`;
       }
       let filter = this.filter;
       if (filter?.length) {
@@ -186,9 +188,9 @@ export default {
         this.page = 1;
       }
       this.previousPmql = pmql;
-      this.tabRequests();
+      this.tabRequests(pmql);
     },
-    tabRequests() {
+    tabRequests(pmql) {
       this.queryRequest =
         "requests?page=" +
         this.page +
@@ -196,9 +198,7 @@ export default {
         this.perPage +
         "&include=process,participants,activeTasks,data" +
         "&pmql=" +
-        `${this.pmqlRequest}` +
-        " AND process_id=" +
-        `${this.process.id}` +
+        `${pmql}` +
         "&filter&order_by=id&order_direction=DESC";
       this.getData(this.queryRequest);
     },

@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      pmqlTask: `(status = "In Progress")`,
+      pmqlTask: `(user_id = ${ProcessMaker.user.id})`,
       filter: "",
       previousFilter: "",
       previousPmql: "",
