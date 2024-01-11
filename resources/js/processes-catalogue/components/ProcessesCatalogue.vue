@@ -16,7 +16,6 @@
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
-          :showDefaultCategory="showDefaultCategory"
           :fromProcessList="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
@@ -93,7 +92,6 @@ export default {
       totalPages: 1,
       filter: "",
       markCategory: false,
-      showDefaultCategory: false,
       fromProcessList: false,
     };
   },
@@ -108,7 +106,6 @@ export default {
       // Dynamically load the component
       this.wizardTemplatesSelected(true);
     } else {
-      this.showDefaultCategory = true;
       this.getCategories();
       this.checkSelectedProcess();
     }
@@ -137,6 +134,8 @@ export default {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
           .get(`process_bookmarks/categories?status=active
+            &order_by=name
+            &order_direction=asc
             &page=${this.page}
             &per_page=${this.numCategories}
             &filter=${this.filter}`
@@ -160,7 +159,6 @@ export default {
       if (this.process) {
         this.openProcess(this.process);
         this.fromProcessList = true;
-        this.showDefaultCategory = false;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
