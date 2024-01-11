@@ -318,8 +318,8 @@
             return this.formatDataSelect(this.statesValues);
           },
           state2FA() {
-            return typeof this.formData.preferences_2fa != "undefined" && this.formData.preferences_2fa.length != null &&
-                this.formData.preferences_2fa.length > 0;
+            return typeof this.formData.preferences_2fa != "undefined" && this.formData.preferences_2fa != null
+                && this.formData.preferences_2fa.length > 0;
           }
         },
         mounted() {
@@ -413,7 +413,7 @@
             this.resetErrors();
             if (!this.validatePassword()) return false;
             if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
-              this.formData.preferences_2fa.length != null && this.formData.preferences_2fa.length < 1) return false;
+              this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');
