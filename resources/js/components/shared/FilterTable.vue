@@ -3,6 +3,7 @@
     <table
       class="pm-table-filter"
       aria-label="custom-pm-table"
+      @mouseleave="handleRowMouseleave"
     >
       <thead>
         <tr>
@@ -48,17 +49,35 @@
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
+          :id="`row-${row.id}`"
+          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row)"
+          @mouseover="handleRowMouseover(row)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in headers"
               :key="index"
             >
-              <div
+              <template
                 v-if="containsHTML(row[header.field])"
-                v-html="sanitize(row[header.field])"
+               >
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  <div v-html="sanitize(row[header.field])"
               />
+                </div>
+                <b-tooltip
+                  v-if="header.truncate"
+                  :target="`element-${rowIndex}-${colIndex}`"
+                  custom-class="pm-table-tooltip"
+                >
+                  {{ sanitizeTooltip(row[header.field]) }}
+                </b-tooltip>
+              </template>
               <template v-else>
                 <template v-if="isComponent(row[header.field])">
                   <component
@@ -67,7 +86,20 @@
                   />
                 </template>
                 <template v-else>
-                  {{ row[header.field] }}
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ row[header.field] }}
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
                 </template>
               </template>
             </td>
@@ -93,6 +125,12 @@ export default {
       },
     },
     data: [],
+    unread: {
+      type: String,
+      default: function () {
+        return "";
+      }
+    },
   },
   data() {
     return {
@@ -108,9 +146,11 @@ export default {
       this.headers.forEach((column) => {
         if (column.format) {
           if (column.format === "datetime" || column.format === "date") {
-            this.data.data.forEach((element) => {
-              element[column.field] = this.formatDate(element[column.field], column.format);
-            });
+            if (this.data?.data?.forEach) {
+              this.data.data.forEach((element) => {
+                element[column.field] = this.formatDate(element[column.field], column.format);
+              });
+            }
           }
         }
       });
@@ -175,6 +215,12 @@ export default {
     handleRowClick(row) {
       this.$emit("table-row-click", row);
     },
+    handleRowMouseover(row) {
+      this.$emit('table-row-mouseover', row);
+    },
+    handleRowMouseleave() {
+      this.$emit('table-row-mouseleave', false);
+    },
     sanitize(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
@@ -182,6 +228,17 @@ export default {
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
+    },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    isUnread(row, unreadColumnName) {
+      return row[unreadColumnName] === null;
     },
   },
 };
@@ -297,6 +354,9 @@ export default {
 .pm-table-filter-applied {
   color: #1572C2;
 }
+.pm-table-unread-row {
+  font-weight: bold;
+}
 .status-success {
   background-color: rgba(78, 160, 117, 0.2);
   color: rgba(78, 160, 117, 1);
@@ -314,5 +374,12 @@ export default {
   color: rgba(21, 114, 194, 1);
   width: 100px;
   border-radius: 5px;
+}
+@-moz-document url-prefix() {
+  .pm-table-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>

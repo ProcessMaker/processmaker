@@ -22,10 +22,10 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card v-if="showVersionInfo">
+              <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Description of Process") }}
                     </label>
                     <textarea
@@ -36,11 +36,15 @@
                       rows="5"
                       :aria-label="$t('Description')"
                     />
-                    <label class="label-text mt-2">
+                    <span v-if="!processDescription" class="error-message">
+                      {{ $t("The Description field is required.") }}
+                      <br>
+                    </span>
+                    <label class="mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
                     <icon-dropdown ref="icon-dropdown" />
-                    <label class="label-text mt-2">{{ $t("Chart") }}</label>
+                    <label class="mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
                         id="statusDropdown"
@@ -77,11 +81,7 @@
                       class="no-padding"
                     >
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label
-                          class="label-text"
-                          for="name"
-                        >{{ $t("Images for carousel") }}
-                        </label>
+                        <label>{{ $t("Images for carousel") }}</label>
                         <input
                           ref="fileInput"
                           type="file"
@@ -191,7 +191,7 @@
                   </b-col>
                 </b-row>
               </b-card>
-              <b-card v-if="!showVersionInfo">
+              <b-card v-show="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   id="name"
@@ -646,6 +646,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
+      if (!this.processDescription) return;
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
@@ -725,7 +726,7 @@ $multiselect-height: 38px;
 }
 
 .dropdown-toggle {
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 10px;
 }
 
@@ -747,10 +748,6 @@ $multiselect-height: 38px;
   margin-bottom: 10px;
 }
 
-.label-text {
-  font-size: 12px;
-}
-
 .image-thumbnails-container {
   border: 1px solid #ccc;
   padding: 5px;
@@ -766,13 +763,6 @@ $multiselect-height: 38px;
 .delete-icon i {
   font-size: 18px;
   color: darkgray;
-}
-
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
 }
 
 .btn-custom {
@@ -837,5 +827,11 @@ $multiselect-height: 38px;
 
 .custom-dropdown {
   width: 100%;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 </style>

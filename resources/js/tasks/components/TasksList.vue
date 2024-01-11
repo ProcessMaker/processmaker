@@ -1,24 +1,22 @@
 <template>
   <div class="data-table">
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/tasks\?page|results\?page/"
-      :empty="$t('Congratulations')"
-      :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-      empty-icon="beach"
-    />
     <div
-      v-show="!shouldShowLoader"
+      v-show="true"
       data-cy="tasks-table"
     >
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index">{{ column.label }}</div>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -30,9 +28,14 @@
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
+                                   :sort="order_direction"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   :boundary="'viewport'"
+                                   @onChangeSort="onChangeSort($event, column.field)"
+                                   @onApply="onApply($event, index)"
+                                   @onClear="onClear(index)"
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -66,25 +69,63 @@
                 </component>
               </template>
               <template v-else>
-                <div
-                  :id="`element-${rowIndex}-${colIndex}`"
-                  :class="{ 'pm-table-truncate': header.truncate }"
-                  :style="{ maxWidth: header.width + 'px' }"
-                >
-                  {{ row[header.field] }}
-                  <b-tooltip
-                    v-if="header.truncate"
-                    :target="`element-${rowIndex}-${colIndex}`"
-                    custom-class="pm-table-tooltip"
+                <template v-if="header.field === 'due_at'">
+                  <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
+                    {{ formatRemainingTime(row[header.field]) }}
+                  </span>
+                  <span>{{ row["due_date"] }}</span>
+                </template>
+                <template v-else>
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ row[header.field] }}
-                  </b-tooltip>
-                </div>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
+                </template>
               </template>
             </template>
           </td>
         </template>
       </filter-table>
+      <task-tooltip
+        :position="rowPosition"
+        v-show="isTooltipVisible"
+      >
+        <template v-slot:task-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+          <span>
+            <i
+              class="fa fa-eye py-2"
+              @click="previewTasks(tooltipRowData)"
+            />
+          </span>
+          <ellipsis-menu
+            :actions="actions"
+            :data="tooltipRowData"
+            :divider="false"
+          />
+          </div>
+        </template>
+      </task-tooltip>
+      <data-loading
+        v-show="shouldShowLoader"
+        :for="/tasks\?page|results\?page/"
+        :empty="$t('Congratulations')"
+        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+        empty-icon="beach"
+      />
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -107,7 +148,11 @@ import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import TaskTooltip from "./TaskTooltip.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -119,8 +164,11 @@ export default {
     EllipsisMenu,
     PMColumnFilterPopover,
     paginationTable,
+    TaskTooltip,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
   props: {
     filter: {},
     columns: {},
@@ -161,6 +209,11 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
+      rowPosition: {},
+      tooltipRowData: {},
+      isTooltipVisible: false,
+      hideTimer: null,
     };
   },
   computed: {
@@ -174,7 +227,6 @@ export default {
   },
   watch: {
     data(newData) {
-      console.log(newData);
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
@@ -182,13 +234,19 @@ export default {
           record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAsignee(record["user"]);
+          record["request"] = this.formatRequest(record);
+          record["due_date"] = this.formatDueDate(record["due_at"]);
+          record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
+          record["task_name"] = this.formatActiveTask(record);
         }
       }
     },
   },
   mounted: function mounted() {
+    this.getAssignee("");
     this.setupColumns();
+    this.getFilterConfiguration("taskFilter");
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -211,6 +269,13 @@ export default {
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
          ${processRequest.case_title_formatted || ""}
+      </a>`;
+    },
+    formatActiveTask(row) {
+      return `
+      <a href="${this.openTask(row)}"
+        class="text-nowrap">
+        ${row.element_name}
       </a>`;
     },
     setupColumns() {
@@ -238,9 +303,10 @@ export default {
           sortable: true,
           default: true,
           width: 220,
+          truncate: true,
         },
         {
-          label: "PROCESS NAME",
+          label: "PROCESS",
           field: "process",
           sortable: true,
           default: true,
@@ -249,7 +315,7 @@ export default {
         },
         {
           label: "TASK NAME",
-          field: "element_name",
+          field: "task_name",
           sortable: true,
           default: true,
           width: 140,
@@ -265,22 +331,26 @@ export default {
         {
           label: "DUE DATE",
           field: "due_at",
-          format: "datetime",
           sortable: true,
           default: true,
           width: 140,
         },
-      ];
-      if (isStatusCompletedList) {
-        columns.push({
+        {
+          label: "ASSIGNEE",
+          field: "assignee",
+          sortable: true,
+          default: true,
+          width: 140,
+        },
+        {
           label: "COMPLETED",
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        });
-      }
+        },
+      ]
       return columns;
     },
     onAction(action, rowData, index) {
@@ -326,6 +396,33 @@ export default {
         },
       };
     },
+    formatDueDate(date) {
+      return moment(date).format("MM/DD/YY HH:mm");
+    },
+    formatColorBadge(date) {
+      const days = this.remainingTime(date);
+      return days >= 0 ? "primary" : "danger";
+    },
+    formatRequest(request) {
+      return `#${request.process_request.id} ${request.process.name}`;
+    },
+    formatRemainingTime(date) {
+      const millisecondsPerDay = 1000 * 60 * 60 * 24;
+      const remaining = this.remainingTime(date);
+      const daysRemaining = Math.ceil(remaining / millisecondsPerDay);
+      if (daysRemaining <= 1 && daysRemaining >= -1) {
+        const hoursRemaining = Math.ceil(remaining / (1000 * 60 * 60));
+        return `${hoursRemaining}H`;
+      }
+
+      return `${daysRemaining}D`;
+    },
+    remainingTime(date) {
+      const currentDate = new Date();
+      const formatDate = moment(date).format("YYYY-MM-DD");
+      const endDate = new Date(formatDate);
+      return endDate - currentDate;
+    },
     formatProcess(request) {
       return request.process.name;
     },
@@ -333,7 +430,34 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     handleRowClick(row) {
-      window.location.href = this.openTask(row, 1);
+      window.location.href = this.openTask(row);
+    },
+    handleRowMouseover(row) {
+      this.clearHideTimer();
+      this.isTooltipVisible = true;
+      this.tooltipRowData = row;
+      const rowElement = document.getElementById(`row-${row.id}`);
+      const rect = rowElement.getBoundingClientRect();
+      const rightBorderX = rect.right;
+      const bottomBorderY = rect.bottom - 280;
+      this.rowPosition = {
+        x: rightBorderX,
+        y: bottomBorderY,
+      };
+    },
+    handleRowMouseleave(visible) {
+      this.startHideTimer();
+    },
+    startHideTimer() {
+      this.hideTimer = setTimeout(() => {
+        this.hideTooltip();
+      }, 700);
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
+    hideTooltip() {
+      this.isTooltipVisible = false;
     },
     containsHTML(text) {
       const doc = new DOMParser().parseFromString(text, 'text/html');
@@ -368,47 +492,68 @@ export default {
       this.page = page;
       this.fetch();
     },
-    onApply(json) {
-      this.advanced_filter = json;
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["Self Service", "In Progress", "Completed"];
     },
-    onClear() {
-      this.advanced_filter = [];
-      this.fetch();
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      if(by === "case_number"){
+        by = "id";
+      }
+      if(by === "case_title"){
+        by = "id";
+      }
+      if(by === "process"){
+        by = "id";
+      }
+      if(by === "assignee"){
+        by = "id";
+      }
+      this.orderBy = by;
+      this.order_direction = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
     },
-    getFormat(column) {
-      let format = "string";
-      if (column.format) {
-        format = column.format;
-      }
-      if (column.field === "status" || column.field === "participants") {
-        format = "stringSelect";
-      }
-      return format;
-    },
-    getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
-      }
-      if (column.field === "participants") {
-        formatRange = ["user1", "user2", "user3", "user4"];
-      }
-      return formatRange;
-    },
-    getOperators(column) {
-      let operators = [];
-      if (column.field === "status" || column.field === "participants") {
-        operators = ["=", "in"];
-      }
-      return operators;
-    },
-  },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/taskFilter";
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.order_direction
+        }
+      };
+      ProcessMaker.apiClient.put(url, config);
+    }
+  }
 };
 </script>
 
 <style>
 .tasks-table-card {
   padding: 0;
+}
+.due-danger {
+  background-color:rgba(237, 72, 88, 0.2);
+  color: rgba(237, 72, 88, 1);
+  font-weight: 600;
+  border-radius: 5px;
+}
+.due-primary {
+  background: rgba(205, 221, 238, 1);
+  color: rgba(86, 104, 119, 1);
+  font-weight: 600;
+  border-radius: 5px;
 }
 </style>

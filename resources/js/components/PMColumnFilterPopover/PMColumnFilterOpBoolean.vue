@@ -25,7 +25,7 @@
       input() {
         this.$emit("input", this.input);
       }
-    },
+    }
   };
 </script>
 
