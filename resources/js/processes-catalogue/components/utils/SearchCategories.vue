@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-input-group>
+    <b-input-group class="ml-3">
       <b-input-group-prepend>
         <b-btn
           class="px-1"
