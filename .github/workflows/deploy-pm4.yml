@@ -90,7 +90,7 @@ jobs:
        run: |
          echo "REPOSITORY=${{env.aws-url}}/enterprise" >> $GITHUB_ENV
          echo "TAG=${{env.IMAGE_TAG1}}" >> $GITHUB_ENV
-         echo "IMAGE=${{env.AWS_URL}}/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
+         echo "IMAGE=${{env.AWS_URL}}/processmaker/enterprise:${{env.IMAGE_TAG1}}" >> $GITHUB_ENV          
      - name: Clone Repo STM
        run: |
          git clone --depth 1 -b cicd "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-stm-docker.git" pm4-stm-docker
