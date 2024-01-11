@@ -1853,5 +1853,14 @@
   "Blocked": "Blocked",
   "Account locked after too many failed attempts. Contact administrator.": "Account locked after too many failed attempts. Contact administrator.",
   "Block duplicate session": "Block duplicate session",
-  "Kill existing session": "Kill existing session"
+  "Kill existing session": "Kill existing session",
+  "Type value": "Ingresa el valor",
+  "No new notifications at the moment.": "No hay nuevas notificaciones en este momento.",
+  "All Clear": "Todo claro",
+  "Notifications, No New Messages": "Notificaciones, No hay mensajes nuevos",
+  "Case #": "Caso #",
+  "Case title": "Título del caso",
+  "Task name": "Nombre de la tarea",
+  "Due date": "Fecha de vencimiento",
+  "Inbox": "Bandeja de entrada"
 }

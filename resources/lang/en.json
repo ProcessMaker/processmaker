@@ -686,7 +686,7 @@
   "FilesUpdated": "Files Updated",
   "Filter by Type": "Filter by Type",
   "Filter Controls": "Filter Controls",
-  "Filter the column": "Filter the column",
+  "Filter the column:": "Filter the column:",
   "Filter": "Filter",
   "Finding Requests available to you...": "Finding Requests available to you...",
   "First Name": "First Name",
@@ -1972,5 +1972,13 @@
   "Your profile was saved.": "Your profile was saved.",
   "Zoom In": "Zoom In",
   "Zoom Out": "Zoom Out",
-  "Pan Tool": "Pan Tool"
+  "Pan Tool": "Pan Tool",
+  "Type value": "Type value",
+  "No new notifications at the moment.": "No new notifications at the moment.",
+  "All Clear": "All Clear",
+  "Notifications, No New Messages": "Notifications, No New Messages",
+  "Case #": "Case #",
+  "Case title": "Case title",
+  "Task name": "Task name",
+  "Due date": "Due date"
 }
