@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Models;
+namespace Tests\Unit\Models;
 
 use ProcessMaker\Models\ScreenCategory;
 use Tests\TestCase;
