@@ -17,7 +17,10 @@ export default {
     };
   },
   mounted() {
-    this.config = this.formData;
+    this.config = {
+      ...this.config,
+      ...this.formData,
+    };
   },
 };
 </script>
