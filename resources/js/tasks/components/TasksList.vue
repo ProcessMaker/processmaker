@@ -439,16 +439,12 @@ export default {
     handleRowMouseover(row) {
       this.clearHideTimer();
 
-      const tableElement = document.getElementById("table-filter");
-      const rectTable = tableElement.getBoundingClientRect();
-      const bottomAdjust = rectTable.y;
-      let elementHeight;
+      const tableContainer = document.getElementById("table-container");
+      const rectTableContainer = tableContainer.getBoundingClientRect();
+      const topAdjust = rectTableContainer.top;
+
       const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
-      if (tasksAlert) {
-        elementHeight = tasksAlert.clientHeight - 14;
-      } else {
-        elementHeight = 0;
-      }
+      let elementHeight = tasksAlert ? tasksAlert.clientHeight - 14 : 0;
 
       const savedSearch = this.verifyURL("saved-searches");
       if (savedSearch) {
@@ -457,10 +453,13 @@ export default {
 
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
+
       const rowElement = document.getElementById(`row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
+
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - bottomAdjust + 48 - elementHeight;
+      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,

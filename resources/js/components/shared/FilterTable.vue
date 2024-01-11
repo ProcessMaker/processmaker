@@ -1,7 +1,9 @@
 <template>
-  <div class="pm-table-container">
+  <div
+    id="table-container"
+    class="pm-table-container"
+  >
     <table
-      id="table-filter"
       class="pm-table-filter"
       aria-label="custom-pm-table"
       @mouseleave="handleRowMouseleave"
@@ -28,7 +30,7 @@
             </div>
             <div class="pm-table-filter-button">
               <slot :name="`filter-${column.field}`">
-                
+
               </slot>
             </div>
             <div
@@ -104,15 +106,17 @@
       </tbody>
     </table>
   </div>
-  </template>
+</template>
 
 <script>
 
 import moment from "moment";
+import FilterTableBodyMixin from "./FilterTableBodyMixin";
 
 export default {
   components: {
   },
+  mixins: [FilterTableBodyMixin],
   props: {
     headers: {
       type: Array,
@@ -162,16 +166,6 @@ export default {
     });
   },
   methods: {
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
-    },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
-    },
     startResize(index) {
       this.isResizing = true;
       this.resizingColumnIndex = index;
@@ -216,24 +210,6 @@ export default {
     },
     handleRowMouseleave() {
       this.$emit('table-row-mouseleave', false);
-    },
-    sanitize(html) {
-      return this.removeScripts(html);
-    },
-    removeScripts(input) {
-      const doc = new DOMParser().parseFromString(input, 'text/html');
-
-      const scripts = doc.querySelectorAll('script');
-      scripts.forEach((script) => {
-        script.remove();
-      });
-
-      const styles = doc.querySelectorAll('style');
-      styles.forEach((style) => {
-        style.remove();
-      });
-
-      return doc.body.innerHTML;
     },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
