@@ -26,15 +26,19 @@
           @endphp
           @if (!$isMobile)
             <div class="slogan">
-              <img src="/img/slogan1.svg" alt="Smarter processes, easer than ever" />
+              <h1 class="title">{{ __("Smarter processes,") }}</h1>
+              <h1 class="title emphasis">{{ __("easier than ever") }}</h1>
               <div class="typewriter-container d-flex align-items-center my-5">
                 <img src="/img/proceC2.svg" class="mr-2 procesC2-icon" alt="ProceC2" />
                 <div class="typewriter">
                   <p>{{ __('Have you tried the new AI Assistant?') }}</p>
                 </div>
               </div>
-              <img src="/img/slogan2.svg"
-                alt="Create processes from a written description. Translate into multiple languages. Search faster." />
+              <ul class="list">
+                <li>{{ __("Create processes from a written description.") }}</li>
+                <li>{{ __("Translate into multiple languages.") }}</li>
+                <li>{{ __("Search faster.") }}</li>
+              </ul>
               <img class="sub_logo" src="/img/processmaker_do_more.svg" alt="ProcessMaker" />
             </div>
           @endif
@@ -172,6 +176,24 @@
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .slogan .title {
+    font-size: 3.4rem;
+    font-weight: 300;
+    color: #ffffff;
+  }
+
+  .slogan .title.emphasis{
+    font-weight: 500;
+    color: #FFCA2B;
+  }
+  .slogan .list {
+    list-style: none;
+    padding: 0;
+    color: #ffffff;
+    font-size: 1.23rem;
+    font-weight: 100;
   }
   .footer {
     margin-left: 10%;
