@@ -56,7 +56,6 @@ export default {
   },
   data() {
     return {
-      pmqlRequest: "",
       filter: "",
       previousFilter: "",
       previousPmql: "",
