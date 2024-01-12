@@ -171,7 +171,7 @@ export default {
   computed: {
     stickyHeaderHeight: function () {
       let height = 38 + this.pmqlInputHeight;
-      return "calc(100% - " + height + "px)";
+      return "calc(0 - " + height + "px)";
     },
     pmqlInputStyles: function () {
       return {

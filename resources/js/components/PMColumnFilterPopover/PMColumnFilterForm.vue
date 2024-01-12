@@ -9,7 +9,7 @@
         <template v-for="(item, index) in items">
           <b-form-group :key="'buttonRemove' + index">
             <div class="d-flex justify-content-between align-items-center">
-              <p class="mb-0">{{$t("Filter the column")}}:</p>
+              <p class="mb-0">{{$t("Filter the column:")}}</p>
               <b-button variant="light"
                         size="sm"
                         class="pm-filter-form-button"
@@ -58,7 +58,8 @@
       <b-form-group>
         <b-button variant="outline-secondary"
                   size="sm"
-                  @click="onCancel">
+                  @click="onCancel"
+                  class="pm-filter-form-button-cancel">
           {{$t("Cancel")}}
         </b-button>
         <span>&nbsp;</span>

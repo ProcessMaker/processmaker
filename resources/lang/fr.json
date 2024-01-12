@@ -362,7 +362,7 @@
   "Files": "Fichiers",
   "File ID does not exist": "Cet ID de fichier n'existe pas",
   "Filter Controls": "Commandes de filtre",
-  "Filter the column": "Filtrer la colonne",
+  "Filter the column:": "Filtrer la colonne:",
   "Filter": "Filtrer",
   "Finding Requests available to you...": "Trouver des demandes disponibles pour vous...",
   "First Name": "Prénom",
@@ -1853,5 +1853,14 @@
   "Blocked": "Blocked",
   "Account locked after too many failed attempts. Contact administrator.": "Account locked after too many failed attempts. Contact administrator.",
   "Block duplicate session": "Block duplicate session",
-  "Kill existing session": "Kill existing session"
+  "Kill existing session": "Kill existing session",
+  "Type value": "Entrer une valeur",
+  "No new notifications at the moment.": "Pas de nouvelles notifications pour le moment.",
+  "All Clear": "Tout est clair",
+  "Notifications, No New Messages": "Notifications, Aucun Nouveau Message",
+  "Case #": "Cas n°",
+  "Case title": "Titre du cas",
+  "Task name": "Nom de la tâche",
+  "Due date": "Date d'échéance",
+  "Inbox": "Boîte de réception"
 }

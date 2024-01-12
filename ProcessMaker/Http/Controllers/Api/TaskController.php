@@ -104,7 +104,6 @@ class TaskController extends Controller
 
         $query = ProcessRequestToken::with(['processRequest', 'user']);
         $query->select('process_request_tokens.*');
-        $query->withUserViewed($user->id);
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
         if (in_array('data', $include)) {
