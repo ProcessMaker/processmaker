@@ -46,6 +46,11 @@ import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
 import RequestsListing from "../../requests/components/RequestsListing.vue";
 import FilterTable from "./FilterTable.vue";
+import TasksList from '../../tasks/components/TasksList';
+import apiDataLoading from '../common/mixins/apiDataLoading';
+import datatable from '../common/mixins/datatable';
+import DataLoading from '../../components/common/DataLoading';
+import AvatarImage from '../../components/AvatarImage';
 
 export {
   AddToProjectModal,
@@ -96,4 +101,9 @@ export {
   TasksHome,
   RequestsListing,
   FilterTable,
+  TasksList,
+  apiDataLoading,
+  datatable,
+  DataLoading,
+  AvatarImage,
 };
