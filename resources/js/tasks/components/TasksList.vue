@@ -107,6 +107,7 @@
           >
           <span>
             <i
+              v-if="!verifyURL('saved-searches')"
               class="fa fa-eye py-2"
               @click="previewTasks(tooltipRowData)"
             />
@@ -131,7 +132,10 @@
         @page-change="changePage"
       />
     </div>
-    <tasks-preview ref="preview" />
+    <tasks-preview
+      v-if="!verifyURL('saved-searches')"
+      ref="preview"
+    />
   </div>
 </template>
 
@@ -290,14 +294,14 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
           width: 55,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
@@ -306,7 +310,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PROCESS",
+          label: this.$t("Process"),
           field: "process",
           sortable: true,
           default: true,
@@ -314,7 +318,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: this.$t("Task name"),
           field: "task_name",
           sortable: true,
           default: true,
@@ -322,28 +326,28 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
           width: 100,
         },
         {
-          label: "DUE DATE",
+          label: this.$t("Due date"),
           field: "due_at",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "ASSIGNEE",
+          label: this.$t("Assignee"),
           field: "assignee",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "COMPLETED",
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -434,12 +438,28 @@ export default {
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
+
+      const tableContainer = document.getElementById("table-container");
+      const rectTableContainer = tableContainer.getBoundingClientRect();
+      const topAdjust = rectTableContainer.top;
+
+      const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
+      let elementHeight = tasksAlert ? tasksAlert.clientHeight - 14 : 0;
+
+      const savedSearch = this.verifyURL("saved-searches");
+      if (savedSearch) {
+        elementHeight += 36;
+      }
+
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
+
       const rowElement = document.getElementById(`row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
+
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - 280;
+      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -521,6 +541,11 @@ export default {
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
+    },
+    verifyURL(string) {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes(string);
+      return isInUrl;
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
