@@ -12,7 +12,8 @@
                triggers="click"
                placement="bottom"
                custom-class="pm-filter-popover"
-               @show="onShow">
+               @show="onShow"
+               @shown="onShown">
       <PMColumnFilterForm ref="pmColumnFilterForm"
                           :type="type"
                           :value="value"
@@ -49,6 +50,10 @@
       this.$emit("onUpdate", this);
     },
     methods: {
+      onShown() {
+        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+        cancel[0].focus();
+      },
       onShow() {
         this.$root.$emit("bv::hide::popover");
       },
