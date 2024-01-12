@@ -15,6 +15,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
 use ProcessMaker\Package\Cdata\Http\Controllers\Api\CdataController;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
@@ -63,6 +64,8 @@ class ModelerController extends Controller
             $process->fill($draft->only(['svg', 'bpmn']));
         }
 
+        $runAsUserDefault = User::where('is_administrator', true)->first();
+
         return view('processes.modeler.index', [
             'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager,
@@ -80,6 +83,7 @@ class ModelerController extends Controller
             'isProjectsInstalled' => $isProjectsInstalled,
             'isPackageAiInstalled' => $isPackageAiInstalled,
             'isAiGenerated' => request()->query('ai'),
+            'runAsUserDefault' => $runAsUserDefault,
         ]);
     }
 
