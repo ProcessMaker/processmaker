@@ -328,7 +328,7 @@ import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
-import * as Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
