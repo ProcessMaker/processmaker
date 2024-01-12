@@ -46,6 +46,8 @@ import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
 import RequestsListing from "../../requests/components/RequestsListing.vue";
 import FilterTable from "./FilterTable.vue";
+import FilterTableBodyMixin from "./FilterTableBodyMixin";
+import PaginationTable from "./PaginationTable.vue";
 
 export {
   AddToProjectModal,
@@ -96,4 +98,6 @@ export {
   TasksHome,
   RequestsListing,
   FilterTable,
+  FilterTableBodyMixin,
+  PaginationTable,
 };
