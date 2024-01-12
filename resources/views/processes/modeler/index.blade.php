@@ -89,7 +89,8 @@ div.main {
     scriptExecutors: @json($scriptExecutors),
     isProjectsInstalled: @json($isProjectsInstalled),
     isPackageAiInstalled: @json($isPackageAiInstalled),
-    isAiGenerated: @json($isAiGenerated)
+    isAiGenerated: @json($isAiGenerated),
+    runAsUserDefault: @json($runAsUserDefault),
   }
   const warnings = @json($process->warnings);
 
