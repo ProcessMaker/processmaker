@@ -45,5 +45,8 @@ export default {
     formatCategory(categories) {
       return categories.map(item => item.name).join(', ');
     },
+    getNestedPropertyValue(obj, path) {
+      return path.split(".").reduce((acc, curr) => acc[curr], obj);
+    },
   },
 };
