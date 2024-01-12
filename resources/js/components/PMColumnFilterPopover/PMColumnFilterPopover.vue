@@ -52,6 +52,7 @@
     methods: {
       onShown() {
         this.$emit("onShown", this);
+        this.closeOnBlur();
       },
       onShow() {
         this.$root.$emit("bv::hide::popover");
