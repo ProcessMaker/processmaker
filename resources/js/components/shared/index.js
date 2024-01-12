@@ -48,7 +48,7 @@ import RequestsListing from "../../requests/components/RequestsListing.vue";
 import FilterTable from "./FilterTable.vue";
 import TasksList from '../../tasks/components/TasksList';
 import apiDataLoading from '../common/mixins/apiDataLoading';
-import datatable from '../common/mixins/datatable';
+import datatableMixin from '../common/mixins/datatable';
 import DataLoading from '../../components/common/DataLoading';
 import AvatarImage from '../../components/AvatarImage';
 import FilterTableBodyMixin from "./FilterTableBodyMixin";
@@ -105,7 +105,7 @@ export {
   FilterTable,
   TasksList,
   apiDataLoading,
-  datatable,
+  datatableMixin,
   DataLoading,
   AvatarImage,
   FilterTableBodyMixin,
