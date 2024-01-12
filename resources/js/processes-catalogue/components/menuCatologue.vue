@@ -92,7 +92,7 @@ export default {
   components: {
     SearchCategories,
   },
-  props: ["data", "select", "title", "preicon", "filterCategories", "showDefaultCategory", "fromProcessList"],
+  props: ["data", "select", "title", "preicon", "filterCategories", "fromProcessList"],
   data() {
     return {
       showCatalogue: false,
@@ -105,7 +105,6 @@ export default {
           selected: false,
         },
       ],
-      showDefault: false,
       comeFromProcess: false,
     };
   },
@@ -116,15 +115,9 @@ export default {
         this.loadMore();
       }
     });
-    this.showDefault = this.showDefaultCategory;
     this.comeFromProcess = this.fromProcessList;
   },
   updated() {
-    if (this.showDefault && !this.comeFromProcess) {
-      const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
-      this.selectProcessItem(this.data[indexUncategorized]);
-      this.showDefault = false;
-    }
   },
   methods: {
     /**
@@ -179,7 +172,7 @@ i {
   font-size: 20px;
   color: #6A7888;
 }
-.list-group {
+#category-menu > .list-group {
   max-height: 37vh;
   min-height: 37vh;
   overflow-y: auto;

@@ -14,6 +14,7 @@
         </h4>
         <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
           <ellipsis-menu
+            v-if="showEllipsis"
             :actions="processLaunchpadActions"
             :permission="permission"
             :data="process"
@@ -110,10 +111,12 @@ export default {
       optionsData: {},
       largeDescription: false,
       readActivated: false,
+      showEllipsis: false
     };
   },
   mounted() {
     this.getActions();
+    this.checkShowEllipsis();
     this.optionsData = {
       id: this.process.id.toString(),
       type: "Process",
@@ -155,6 +158,20 @@ export default {
         conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
       };
       this.processLaunchpadActions = this.processLaunchpadActions.map((action) => (action.value !== "archive-item" ? action : newAction));
+    },
+    checkShowEllipsis() {
+      const permissionsNeeded = [
+        "archive-processes",
+        "view-additional-asset-actions",
+        "export-processes",
+        "view-processes",
+        "edit-processes",
+        "create-projects",
+        "create-pm-blocks",
+        "create-process-templates",
+        "view-projects",
+      ];
+      this.showEllipsis = this.permission.some( (permission) => permissionsNeeded.includes(permission));
     },
     /**
      * Return a process cards from process info

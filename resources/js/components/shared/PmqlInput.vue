@@ -152,7 +152,7 @@
           v-for="filter in selectedFilters"
           class="selected-filter-item d-flex align-items-center"
         >
-          <span class="selected-filter-key mr-1">{{ filter[0] }}: </span>
+          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}: </span>
           {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
           <span
             v-if="filter[1].length > 1"
@@ -399,6 +399,13 @@ export default {
         true,
       );
     },
+    capitalizeString(string) {
+      if (string === "") {
+        return "";
+      }
+      let str = string.toLowerCase();
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
   },
 };
 </script>
