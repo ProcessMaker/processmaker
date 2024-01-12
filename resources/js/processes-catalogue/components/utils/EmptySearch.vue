@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-center my-5">
       <img
         class="empty-processes"
-        src="/img/launchpad-images/empty-process.png"
+        src="/img/launchpad-images/empty-process.svg"
         alt="Empty Process"
       >
     </div>
