@@ -12,6 +12,7 @@
   "+ Add Page": "+ Agregar página",
   "72 hours": "72 horas",
   "A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation.": "Un archivo .env ya existe. Detenga el procedimiento de instalación, elimine el archivo .env existente y luego reinicie la instalación.",
+  "A valid Cell phone number is required for SMS two-factor authentication.": "Se requiere un número de teléfono celular válido para la autenticación de dos factores de SMS.",
   "A variable key name is a symbolic name to reference information.": "Un nombre de clave variable es un nombre simbólico para hacer referencia a la información.",
   "About ProcessMaker": "Acerca de ProcessMaker",
   "About": "Acerca de",
