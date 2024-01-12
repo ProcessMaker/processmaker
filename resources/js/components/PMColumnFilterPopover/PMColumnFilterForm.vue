@@ -58,7 +58,8 @@
       <b-form-group>
         <b-button variant="outline-secondary"
                   size="sm"
-                  @click="onCancel">
+                  @click="onCancel"
+                  class="pm-filter-form-button-cancel">
           {{$t("Cancel")}}
         </b-button>
         <span>&nbsp;</span>
