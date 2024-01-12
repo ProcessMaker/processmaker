@@ -347,8 +347,8 @@ class UserController extends Controller
     /**
      * Validate the phone number for SMS two-factor authentication.
      *
-     * @param User $user 
-     * @param mixed $number 
+     * @param User $user User to validate
+     * @param mixed $number Number to validate
      */
     private function validateCellPhoneNumber(User $user, $number)
     {
