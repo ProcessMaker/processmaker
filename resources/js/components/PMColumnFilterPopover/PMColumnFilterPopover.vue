@@ -87,3 +87,6 @@
     max-width: 375px;
   }
 </style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
+</style>
