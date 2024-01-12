@@ -166,12 +166,7 @@ export default {
       </a>`;
     },
     queryBuilder() {
-      let pmql = "";
-      if (this.pmqlRequest !== undefined && this.pmqlRequest !== "") {
-        pmql = this.pmqlRequest + " AND process_id=" + `${this.process.id}`;
-      } else {
-        pmql = " process_id=" + `${this.process.id}`;
-      }
+      let pmql = " process_id=" + `${this.process.id}`;
       let filter = this.filter;
       if (filter?.length) {
         if (filter.isPMQL()) {
