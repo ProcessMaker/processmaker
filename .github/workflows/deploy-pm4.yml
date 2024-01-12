@@ -43,7 +43,6 @@ jobs:
             echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
       - name: Clone repo K8S
         run: |
-          # TODO: Change branch when pm4 k8s distribution is released
           echo "IMAGE: ${{ env.IMAGE }}"
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
       - name: Generate image EKS
@@ -137,3 +136,30 @@ jobs:
           echo "Deleting Instace :: ci-$deploy"
           helm delete ci-$deploy
           kubectl delete namespace ci-$deploy-ns-pm4      
+  
+  runPhpUnit: 
+    name: run-phpunit
+    if: github.event.action != 'closed'
+    needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Export Params                
+        run: |
+          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: PHPUnits
+        run: |          
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build phpunit
+          docker-compose run phpunit
