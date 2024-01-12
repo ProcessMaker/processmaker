@@ -5,7 +5,7 @@
       :filter-pmql="onFilter"
     />
     <div
-      v-if="processList.length > 0"
+      v-show="!loading && processList.length > 0"
       class="processList"
     >
       <Card
@@ -14,15 +14,20 @@
         :process="process"
         @openProcessInfo="openProcessInfo"
       />
+      <pagination
+        :total-row="totalRow"
+        :total-pages="totalPages"
+        @onPageChanged="onPageChanged"
+      />
     </div>
-    <pagination
-      :total-row="totalRow"
-      :total-pages="totalPages"
-      @onPageChanged="onPageChanged"
-    />
-
+    <div
+      v-if="loading"
+      class="d-flex justify-content-center align-items-center my-5"
+    >
+      <b-spinner variant="custom" />
+    </div>
     <CatalogueEmpty
-      v-if="processList.length === 0"
+      v-if="!loading && processList.length === 0"
       @wizardLinkSelect="wizardLinkSelected"
     />
   </div>
@@ -53,6 +58,7 @@ export default {
       totalPages: 1,
       pmql: "",
       bookmarkIcon: "far fa-bookmark",
+      loading: false,
     };
   },
   watch: {
@@ -66,10 +72,12 @@ export default {
   },
   methods: {
     loadCard() {
+      this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
+          this.loading = false;
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
@@ -127,5 +135,14 @@ export default {
 .processList {
   display: flex;
   flex-wrap: wrap;
+}
+.text-custom {
+  color: #1572C2;
+  width: 200px;
+  height: 200px;
+  border: 1.2em solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: 0.75s linear infinite spinner-border;
 }
 </style>
