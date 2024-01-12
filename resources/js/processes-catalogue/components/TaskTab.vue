@@ -150,9 +150,12 @@ export default {
       }
       return data;
     },
+    openRequest(data) {
+      return `/requests/${data.id}`;
+    },
     formatCaseTitle(processTask) {
       return `
-      <a href="${this.openTask(processTask, 1)}"
+      <a href="${this.openRequest(processTask, 1)}"
          class="text-nowrap">
          ${processTask.case_title_formatted || ""}
       </a>`;
@@ -193,7 +196,7 @@ export default {
     },
     formatCaseNumber(value) {
       return `
-      <a href="${this.openTask(value, 1)}"
+      <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
         # ${value.case_number}
       </a>`;
