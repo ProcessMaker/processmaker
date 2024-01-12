@@ -374,7 +374,9 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["case_title"] = this.formatCaseTitle(record);
-        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        if (record["active_tasks"]) {
+          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
       }
