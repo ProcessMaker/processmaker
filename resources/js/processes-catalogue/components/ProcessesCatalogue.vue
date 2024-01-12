@@ -16,7 +16,7 @@
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
-          :fromProcessList="fromProcessList"
+          :from-process-list="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
           @wizardLinkSelect="wizardTemplatesSelected"
@@ -28,9 +28,7 @@
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
         >
-          <CatalogueEmpty 
-            @wizardLinkSelect="wizardTemplatesSelected"
-          />
+          <CatalogueEmpty />
         </div>
         <div v-else>
           <CardProcess
@@ -98,7 +96,7 @@ export default {
   },
   computed: {
     hasGuidedTemplateParams() {
-      return window.location.search.includes('?guided_templates=true');
+      return window.location.search.includes("?guided_templates=true");
     },
   },
   mounted() {
@@ -135,8 +133,8 @@ export default {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
           .get("process_bookmarks/categories?status=active"
-            + `&order_by=name`
-            + `&order_direction=asc`
+            + "&order_by=name"
+            + "&order_direction=asc"
             + `&page=${this.page}`
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
@@ -174,22 +172,19 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      if (this.category === value) {
-        this.key += 1;
-      }
-
+      this.key += 1;
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
       this.guidedTemplates = false;
       this.showWizardTemplates = false;
-      
+
       // Remove guided_templates and template parameters from the URL
-      let url = new URL(window.location.href);
-      if (url.search.includes('?guided_templates=true')) {
-        url.searchParams.delete('guided_templates');
-        url.searchParams.delete('template');
-        history.pushState(null, '', url); // Update the URL without triggering a page reload
+      const url = new URL(window.location.href);
+      if (url.search.includes("?guided_templates=true")) {
+        url.searchParams.delete("guided_templates");
+        url.searchParams.delete("template");
+        history.pushState(null, "", url); // Update the URL without triggering a page reload
       }
 
       this.showProcess = false;
@@ -200,10 +195,10 @@ export default {
     wizardTemplatesSelected(hasUrlParams = false) {
       if (!hasUrlParams) {
         // Add the params if the guided template link was selected
-        let url = new URL(window.location.href);
-        if (!url.search.includes('?guided_templates=true')) {
-          url.searchParams.append('guided_templates', true);
-          history.pushState(null, '', url); // Update the URL without triggering a page reload
+        const url = new URL(window.location.href);
+        if (!url.search.includes("?guided_templates=true")) {
+          url.searchParams.append("guided_templates", true);
+          history.pushState(null, "", url); // Update the URL without triggering a page reload
         }
       }
 
