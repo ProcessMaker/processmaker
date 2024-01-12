@@ -97,6 +97,10 @@ const PMColumnFilterCommonMixin = {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
+    onShown(object, index) {
+      let cancel = object.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+      cancel[0].focus();
+    },
     getAdvancedFilter() {
       let flat = this.advancedFilter.flat(1);
       return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
@@ -203,54 +207,6 @@ const PMColumnFilterCommonMixin = {
         this.setOrderByProps(config.order.by, config.order.direction);
       }
       this.markStyleWhenColumnSetAFilter();
-    },
-    getTypeColumnFilter(value) {
-      let type = "Field";
-      if (value === "case_number" || value === "case_title" || value === "process") {
-        type = "Process";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      /*if (value === "due_at") {
-        type = "DueAt";
-      }*/
-      if (value === "assignee") {
-        type = "Assignee";
-      }
-      return type;
-    },
-    getAliasColumnForFilter(value) {
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      return value;
-    },
-    getAliasColumnForOrderBy(value) {
-      if (value === "case_number") {
-        value = "process_requests.case_number";
-      }
-      if (value === "case_title") {
-        value = "process_requests.case_title_formatted";
-      }
-      if (value === "process") {
-        value = "process.name";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user.fullname";
-      }
-      if (value === "active_tasks") {
-        //value = "active_tasks.element_name";
-        value = "id";
-      }
-      if (value === "participants") {
-        //value = "participants.fullname";
-        value = "id";
-      }
-      return value;
     }
   }
 };

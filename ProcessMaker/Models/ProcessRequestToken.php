@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -793,6 +794,30 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                     $query->whereIn('process_request_id', $requests->pluck('id'));
                 };
             }
+        }
+    }
+
+    /**
+     * PMQL value alias for participant field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasParticipant($value, $expression)
+    {
+        $user = User::where('username', $value)->get()->first();
+
+        if ($user) {
+            return function ($query) use ($user, $expression) {
+                $query->whereIn('id', function ($subquery) use ($user, $expression) {
+                    $subquery->select('process_request_id')->from('process_request_tokens')
+                        ->where('user_id', $expression->operator, $user->id)
+                        ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+                });
+            };
+        } else {
+            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
         }
     }
 

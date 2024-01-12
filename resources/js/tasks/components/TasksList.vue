@@ -35,7 +35,8 @@
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"
-                                   @onUpdate="onUpdate($event, index)">
+                                   @onUpdate="onUpdate($event, index)"
+                                   @onShown="onShown($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -525,6 +526,43 @@ export default {
         }
       };
       ProcessMaker.apiClient.put(url, config);
+    },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Process";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      if (value === "assignee") {
+        type = "Participants";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "case_number") {
+        value = "process_requests.case_number";
+      }
+      if (value === "case_title") {
+        value = "process_requests.case_title_formatted";
+      }
+      if (value === "process") {
+        value = "process_requests.name";
+      }
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user.fullname";
+      }
+      return value;
     }
   }
 };

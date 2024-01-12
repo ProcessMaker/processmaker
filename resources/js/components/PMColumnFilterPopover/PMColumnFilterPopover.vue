@@ -12,7 +12,8 @@
                triggers="click"
                placement="bottom"
                custom-class="pm-filter-popover"
-               @show="onShow">
+               @show="onShow"
+               @shown="onShown">
       <PMColumnFilterForm ref="pmColumnFilterForm"
                           :type="type"
                           :value="value"
@@ -49,6 +50,9 @@
       this.$emit("onUpdate", this);
     },
     methods: {
+      onShown() {
+        this.$emit("onShown", this);
+      },
       onShow() {
         this.$root.$emit("bv::hide::popover");
       },

@@ -207,7 +207,8 @@ class Filter
     private function convertUserIdsToUsernames($values)
     {
         return array_map(function ($value) {
-            return User::find($value)?->username;
+            $username = User::find($value)?->username;
+            return isset($username) ? $username : $value;
         }, $values);
     }
 
