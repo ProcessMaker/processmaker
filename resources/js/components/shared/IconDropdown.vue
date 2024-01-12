@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import Icons from "./Icons";
+import Icons from "./LaunchpadIcons";
 
 export default {
   props: {

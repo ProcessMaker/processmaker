@@ -26,8 +26,10 @@
     >
       <b-spinner variant="custom" />
     </div>
-
-    <CatalogueEmpty v-if="!loading && processList.length === 0" />
+    <CatalogueEmpty
+      v-if="!loading && processList.length === 0"
+      @wizardLinkSelect="wizardLinkSelected"
+    />
   </div>
 </template>
 
@@ -80,6 +82,12 @@ export default {
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
         });
+    },
+    /**
+     * Go to wizard templates section
+     */
+    wizardLinkSelected() {
+      this.$emit("wizardLinkSelect");
     },
     /**
      * Build URL for Process Cards
