@@ -229,7 +229,6 @@ export default {
 <style>
 .pm-table-container {
   overflow-x: auto;
-  max-height: 400px;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
   border-right: 1px solid rgba(0, 0, 0, 0.125);
