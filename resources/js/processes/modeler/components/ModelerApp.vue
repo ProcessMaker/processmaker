@@ -101,7 +101,7 @@ export default {
   },
   computed: {
     autosaveApiCall() {
-      return async () => {
+      return async (generatingAssets = false) => {
         const svg = document.querySelector(".mini-paper svg");
         const css = "text { font-family: sans-serif; }";
         const style = document.createElement("style");
@@ -109,7 +109,6 @@ export default {
         svg.appendChild(style);
         const svgString = new XMLSerializer().serializeToString(svg);
         const xml = await this.$refs.modeler.getXmlFromDiagram();
-
         this.setLoadingState(true);
         ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
           name: this.process.name,
@@ -121,7 +120,7 @@ export default {
         })
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
-            window.ProcessMaker.EventBus.$emit("save-changes");
+            window.ProcessMaker.EventBus.$emit("save-changes", null, null, generatingAssets);
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
               window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
@@ -236,10 +235,18 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
-      if (this.externalEmit.includes("open-modal-versions")) {
+      if (this.externalEmit.includes("open-modal-versions") && !generatingAssets) {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId, generatingAssets);
         return;
       }
+
+      if (this.externalEmit.includes("open-modal-versions") && generatingAssets) {
+        window.ProcessMaker.EventBus.$emit("new-changes");
+        this.refreshSession();
+        this.handleAutosave(true, generatingAssets);
+        return;
+      }
+
       window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, generatingAssets);
     },
     emitDiscardEvent() {
