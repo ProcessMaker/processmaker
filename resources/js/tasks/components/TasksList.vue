@@ -290,14 +290,14 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
           width: 55,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
@@ -306,7 +306,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PROCESS",
+          label: this.$t("Process"),
           field: "process",
           sortable: true,
           default: true,
@@ -314,7 +314,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: this.$t("Task name"),
           field: "task_name",
           sortable: true,
           default: true,
@@ -322,28 +322,28 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
           width: 100,
         },
         {
-          label: "DUE DATE",
+          label: this.$t("Due date"),
           field: "due_at",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "ASSIGNEE",
+          label: this.$t("Assignee"),
           field: "assignee",
           sortable: true,
           default: true,
           width: 140,
         },
         {
-          label: "COMPLETED",
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
