@@ -280,7 +280,11 @@ export default {
         if (this.process.is_template) {
           type = "process template";
         }
-        ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
+
+        if (!this.externalEmit.includes("open-modal-versions")) {
+          ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
+        }
+
         // Set published status.
         this.setVersionIndicator(false);
         this.$set(this, "warnings", response.data.warnings || []);
