@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
+use ProcessMaker\Models\UserResourceView;
 
 /**
  *  @OA\Schema(
@@ -36,6 +37,8 @@ class TaskCollection extends ApiCollection
      */
     public function toArray($request)
     {
+        UserResourceView::addToResourceCollection($this->collection, $request->user());
+
         $payload = [
             'data' => $this->collection,
             'meta' => [

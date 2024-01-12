@@ -6,6 +6,7 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -40,7 +41,22 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <template v-if="containsHTML(row[header.field])">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+              >
+                <div v-html="sanitize(row[header.field])"></div>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+              >
+                {{ sanitizeTooltip(row[header.field]) }}
+              </b-tooltip>
+            </template>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
                 <component
@@ -136,6 +152,7 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -210,21 +227,22 @@ export default {
       }
       return [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
           width: 55,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
-          label: "PROCESS",
+          label: this.$t("Process"),
           field: "name",
           sortable: true,
           default: true,
@@ -232,7 +250,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK",
+          label: this.$t("Task"),
           field: "active_tasks",
           sortable: true,
           default: true,
@@ -240,7 +258,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PARTICIPANTS",
+          label: this.$t("Participants"),
           field: "participants",
           sortable: true,
           default: true,
@@ -248,15 +266,14 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
-          width: 160,
-          truncate: true,
+          width: 100,
         },
         {
-          label: "STARTED",
+          label: this.$t("Started"),
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -264,7 +281,7 @@ export default {
           width: 160,
         },
         {
-          label: "COMPLETED",
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -357,7 +374,9 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["case_title"] = this.formatCaseTitle(record);
-        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        if (record["active_tasks"]) {
+          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
       }
@@ -492,6 +511,14 @@ export default {
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
     },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
@@ -502,13 +529,15 @@ export default {
         order: {
           by: this.orderBy,
           direction: this.orderDirection
-        }
+        },
       };
       ProcessMaker.apiClient.put(url, config);
-    }
-  }
+    },
+  },
 };
 </script>
 <style>
-
+  .pm-table-ellipsis-column{
+    text-transform: uppercase;
+  }
 </style>

@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      pmqlTask: `(status = "In Progress")`,
+      pmqlTask: `(user_id = ${ProcessMaker.user.id})`,
       filter: "",
       previousFilter: "",
       previousPmql: "",
@@ -144,7 +144,7 @@ export default {
         record["case_number"] = this.formatCaseNumber(record.process_request);
         record["case_title"] = this.formatCaseTitle(record.process_request);
         record["name"] = record.process.name;
-        record["status"] = this.formatStatus(record["status"]);
+        record["status"] = this.formatStatus(record);
         record["participants"] = this.formatParticipants(
           record["participants"]
         );
@@ -167,6 +167,27 @@ export default {
           "hide-name": false,
         },
       };
+    },
+    formatStatus(props) {
+      let color;
+      let label;
+
+      if (props.status === "ACTIVE" && props.isSelfService) {
+        color = "danger";
+        label = "Self Service";
+      } 
+      if (props.status === "ACTIVE") {
+        color = "success";
+        label = "In Progress";
+      } 
+      if (props.status === "CLOSED") {
+        color = "primary";
+        label = "Completed";
+      }
+      return `
+        <span class="badge badge-${color} status-${color}">
+          ${label}
+        </span>`;
     },
     handleRowClick(row) {
       window.location.href = this.openTask(row, 1);
@@ -210,10 +231,9 @@ export default {
         " AND process_id=" +
         `${this.process.id}` +
         "&per_page=10&order_by=ID&order_direction=DESC&non_system=true";
-
-      this.getData(this.queryTask, "tasks");
+      this.getData(this.queryTask);
     },
-    getData(query, type) {
+    getData(query) {
       // Load from api client
       ProcessMaker.apiClient
         .get(query)
