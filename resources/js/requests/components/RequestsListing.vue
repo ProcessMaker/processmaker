@@ -228,14 +228,14 @@ export default {
       }
       return [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
           width: 55,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           sortable: true,
           default: true,
@@ -243,7 +243,7 @@ export default {
           width: 220,
         },
         {
-          label: "PROCESS",
+          label: this.$t("Process"),
           field: "name",
           sortable: true,
           default: true,
@@ -251,7 +251,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK",
+          label: this.$t("Task"),
           field: "active_tasks",
           sortable: true,
           default: true,
@@ -259,7 +259,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PARTICIPANTS",
+          label: this.$t("Participants"),
           field: "participants",
           sortable: true,
           default: true,
@@ -267,14 +267,14 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
           width: 100,
         },
         {
-          label: "STARTED",
+          label: this.$t("Started"),
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -282,7 +282,7 @@ export default {
           width: 160,
         },
         {
-          label: "COMPLETED",
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -375,7 +375,9 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["case_title"] = this.formatCaseTitle(record);
-        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        if (record["active_tasks"]) {
+          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
       }
@@ -565,5 +567,7 @@ export default {
 };
 </script>
 <style>
-
+  .pm-table-ellipsis-column{
+    text-transform: uppercase;
+  }
 </style>

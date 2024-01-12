@@ -72,6 +72,15 @@
       onCancel() {
         this.popoverShow = false;
         this.$emit("onCancel");
+      },
+      closeOnBlur() {
+        let area = this.$refs.pmColumnFilterForm.$el.parentNode;
+        area.addEventListener('mouseenter', () => {
+          window.removeEventListener('click', this.onCancel);
+        });
+        area.addEventListener('mouseleave', () => {
+          window.addEventListener('click', this.onCancel);
+        });
       }
     }
   };
@@ -86,4 +95,7 @@
   .popover{
     max-width: 375px;
   }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>
