@@ -1,11 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-content-center my-5">
-      <img
-        class="empty-processes"
-        src="/img/launchpad-images/empty-process.svg"
-        alt="Empty Process"
-      >
+      <i class="empty-processes fa fa-umbrella-beach" />
     </div>
     <p class="text-center message-empty">
       {{ $t("No Processes Available") }}
@@ -15,9 +11,7 @@
 
 <style scoped>
 .empty-processes {
-  width: 679px;
-  height: 249px;
-  flex-shrink: 0;
+  font-size: 200px;
 }
 .message-empty {
   color: #000;
@@ -26,10 +20,5 @@
   font-weight: 600;
   line-height: normal;
   letter-spacing: -0.6px;
-}
-.empty-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

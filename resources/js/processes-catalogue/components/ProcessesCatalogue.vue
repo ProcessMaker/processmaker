@@ -16,7 +16,6 @@
           class="mt-3"
           show-bookmark="true"
           :data="listCategories"
-          :show-default-category="showDefaultCategory"
           :from-process-list="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
