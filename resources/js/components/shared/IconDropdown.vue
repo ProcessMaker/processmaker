@@ -78,7 +78,7 @@ export default {
       icon: null,
       list: {},
       loading: true,
-      placeholder: this.$t("Icon"),
+      placeholder: this.$t("Select Icon"),
       query: "",
     };
   },
@@ -111,7 +111,7 @@ export default {
       this.$refs.multiselect.search = this.query;
     },
     onClose() {
-      this.placeholder = this.$t("Icon");
+      this.placeholder = this.$t("Select Icon");
     },
     find(value) {
       return this.all.find((icon) => icon.value == value);
