@@ -37,6 +37,7 @@
             :key="key"
             :category="category"
             @openProcess="openProcess"
+            @wizardLinkSelect="wizardTemplatesSelected"
           />
           <ProcessInfo
             v-if="showProcess && !showWizardTemplates && !showCardProcesses"
@@ -74,7 +75,7 @@ export default {
     return {
       listCategories: [{
         id: 0,
-        name: "Bookmarked Processes",
+        name: "Favorites",
         status: "ACTIVE",
       }],
       fields: [],
@@ -91,7 +92,6 @@ export default {
       totalPages: 1,
       filter: "",
       markCategory: false,
-      showDefaultCategory: false,
       fromProcessList: false,
     };
   },
@@ -106,7 +106,6 @@ export default {
       // Dynamically load the component
       this.wizardTemplatesSelected(true);
     } else {
-      this.showDefaultCategory = true;
       this.getCategories();
       this.checkSelectedProcess();
     }
@@ -134,13 +133,15 @@ export default {
     getCategories() {
       if (this.page <= this.totalPages) {
         ProcessMaker.apiClient
-          .get(`process_bookmarks/categories?status=active
-            &page=${this.page}
-            &per_page=${this.numCategories}
-            &filter=${this.filter}`)
+          .get("process_bookmarks/categories?status=active"
+            + "&order_by=name"
+            + "&order_direction=asc"
+            + `&page=${this.page}`
+            + `&per_page=${this.numCategories}`
+            + `&filter=${this.filter}`)
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
-            this.totalPages = response.data.meta.total_pages;
+            this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
 
             if (this.markCategory) {
               const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
@@ -157,7 +158,6 @@ export default {
       if (this.process) {
         this.openProcess(this.process);
         this.fromProcessList = true;
-        this.showDefaultCategory = false;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         ProcessMaker.apiClient
