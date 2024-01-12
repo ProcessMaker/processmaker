@@ -172,7 +172,7 @@
     position: fixed;
     margin-left: 10%;
     width: 700px;
-    font-family: Poppins;
+    font-family: 'Poppins', sans-serif;
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
@@ -212,7 +212,7 @@
     color: #FFF;
     font-size: 46.067px;
     font-weight: 600;
-    font-family: Poppins;
+    font-family: 'Poppins', sans-serif;
   }
   .display {
     color: #FFC107;
@@ -224,13 +224,13 @@
     position: relative;
     top: -1.5em;
     font-weight: 600;
-    font-family: Poppins;
+    font-family: 'Poppins', sans-serif;
   }
   .subtext {
     width: 60%;
     color: #FFF;
     font-size: 24.017px;
-    font-family: Poppins;
+    font-family: 'Poppins', sans-serif;
   }
   .sub_logo {
     margin-top: 7%;
