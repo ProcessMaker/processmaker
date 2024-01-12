@@ -7,6 +7,7 @@ use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use Tests\TestCase;
 
 class FilterTest extends TestCase
 {

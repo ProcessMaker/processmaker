@@ -6,6 +6,7 @@ use DB;
 use Facades\ProcessMaker\JsonColumnIndex;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use Tests\TestCase;
 
 class JsonColumnIndexTest extends TestCase
 {
