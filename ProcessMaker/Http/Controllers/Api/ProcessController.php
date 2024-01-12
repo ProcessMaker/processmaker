@@ -1543,30 +1543,32 @@ class ProcessController extends Controller
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
         $response = false;
-        try {
-            $response = (new GroupController(new Group()))->users($group, $request);
-            $users = $response->all();
-
-            foreach ($users as $user) {
-                if($user->resource->id === $currentUser) {
-                    $response = true;
+        if (isset($group)){
+            try {
+                $response = (new GroupController(new Group()))->users($group, $request);
+                $users = $response->all();
+    
+                foreach ($users as $user) {
+                    if($user->resource->id === $currentUser) {
+                        $response = true;
+                    }
                 }
+            } catch (\Exception $error) {
+                return ['error' => $error->getMessage()];
             }
-        } catch (\Exception $error) {
-            return ['error' => $error->getMessage()];
-        }
-
-        try {
-            $response = (new GroupController(new Group()))->groups($group, $request);
-            $groups = $response->all();
-
-            foreach ($groups as $group) {
-                if ($this->checkUsersGroup($group->resource->id, $request)) {
-                    $response = true;
+    
+            try {
+                $response = (new GroupController(new Group()))->groups($group, $request);
+                $groups = $response->all();
+    
+                foreach ($groups as $group) {
+                    if ($this->checkUsersGroup($group->resource->id, $request)) {
+                        $response = true;
+                    }
                 }
+            } catch (\Exception $error) {
+                return ['error' => $error->getMessage()];
             }
-        } catch (\Exception $error) {
-            return ['error' => $error->getMessage()];
         }
         return $response;
     }

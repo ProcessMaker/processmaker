@@ -1294,44 +1294,4 @@ class ProcessTest extends TestCase
 
         $this->assertDatabaseMissing('media', ['id' => $mediaImagen->id]);
     }
-
-    // Test Get start events 
-    public function testGetStartEvents()
-    {
-        $this->user = User::factory()->create([
-            'is_administrator' => false,
-        ]);
-        $this->user->permissions()->attach(Permission::byName('view-processes'));
-
-        $process = Process::factory()->create(
-            [
-                'name' => 'Test SartEvents',
-                'start_events' => [
-                    [
-                    'assignment' => 'user',
-                    'assignedUsers' => $this->user->id
-                    ],
-                    [
-                    'assignment' => 'user',
-                    'assignedUsers' => '9'
-                    ]
-                ]
-            ]
-        );
-        $process->start_events = [
-            [
-                'assignment' => 'user',
-                'assignedUsers' => $this->user->id
-            ],
-            [
-            'assignment' => 'user',
-            'assignedUsers' => '9'
-            ]
-        ];
-        $route = route('api.processes.start.events', $process);
-
-        $response = $this->apiCall('GET', $route);
-        $response->assertStatus(200);
-        dd($response->getData()->data);
-    }
 }
