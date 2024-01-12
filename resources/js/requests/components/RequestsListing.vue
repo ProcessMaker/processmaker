@@ -89,8 +89,9 @@
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
-      :empty="$t('¡ Whoops ! No results')"
-      :empty-desc="$t('Sorry but nothing matched your search. Try a new search.')"
+      :empty="$t('No results have been found')"
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+      Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
     <pagination-table
