@@ -23,7 +23,7 @@
         <b-btn
           class="px-1"
           variant="outline-secondary"
-          @click="clean()"
+          @click="clearFilter()"
         >
           <b-icon icon="x" />
         </b-btn>
@@ -44,13 +44,13 @@ export default {
     fetch() {
       this.filterPmql(this.filter);
     },
-    clean() {
+    clearFilter() {
       this.filter = "";
       this.fetch();
     },
     fillFilter(filter) {
       this.filter = filter;
-    }
+    },
   },
 };
 </script>
