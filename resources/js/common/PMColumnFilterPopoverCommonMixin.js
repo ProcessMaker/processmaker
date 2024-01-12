@@ -67,6 +67,10 @@ const PMColumnFilterCommonMixin = {
       ];
     },
     onApply(json, index) {
+      for (let i in json) {
+        json[i].subject.type = this.getTypeColumnFilter(json[i].subject.value);
+        json[i].subject.value = this.getAliasColumnForFilter(json[i].subject.value);
+      }
       this.advancedFilterInit(this.tableHeaders.length);
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
@@ -199,6 +203,54 @@ const PMColumnFilterCommonMixin = {
         this.setOrderByProps(config.order.by, config.order.direction);
       }
       this.markStyleWhenColumnSetAFilter();
+    },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Process";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      /*if (value === "due_at") {
+        type = "DueAt";
+      }*/
+      if (value === "assignee") {
+        type = "Assignee";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "case_number") {
+        value = "process_requests.case_number";
+      }
+      if (value === "case_title") {
+        value = "process_requests.case_title_formatted";
+      }
+      if (value === "process") {
+        value = "process.name";
+      }
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user.fullname";
+      }
+      if (value === "active_tasks") {
+        //value = "active_tasks.element_name";
+        value = "id";
+      }
+      if (value === "participants") {
+        //value = "participants.fullname";
+        value = "id";
+      }
+      return value;
     }
   }
 };

@@ -498,12 +498,7 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "active_tasks"){
-        by = "id";
-      }
-      if(by === "participants"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.orderDirection = direction;
       this.sortOrder[0].sortField = by;

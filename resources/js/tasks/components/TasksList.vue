@@ -331,6 +331,7 @@ export default {
         {
           label: "DUE DATE",
           field: "due_at",
+          format: "datetime",
           sortable: true,
           default: true,
           width: 140,
@@ -505,18 +506,7 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "case_number"){
-        by = "id";
-      }
-      if(by === "case_title"){
-        by = "id";
-      }
-      if(by === "process"){
-        by = "id";
-      }
-      if(by === "assignee"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;

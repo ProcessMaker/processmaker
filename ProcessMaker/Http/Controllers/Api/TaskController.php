@@ -221,6 +221,7 @@ class TaskController extends Controller
         $query->overdue($request->input('overdue'));
 
         try {
+            file_put_contents("/srv/http/processmaker4/.work/error.json", $query->toSql()."\n",FILE_APPEND);
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (QueryException $e) {
             $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
