@@ -169,7 +169,7 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, generatingAssets, onSuccess, onError) => {
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError, generatingAssets) => {
       this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
@@ -236,7 +236,7 @@ export default {
       this.dataXmlSvg.svg = svg;
 
       if (this.externalEmit.includes("open-modal-versions") && !generatingAssets) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId, generatingAssets);
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
 
@@ -247,7 +247,7 @@ export default {
         return;
       }
 
-      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, generatingAssets);
+      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, null, null, generatingAssets);
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
