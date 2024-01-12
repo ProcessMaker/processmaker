@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use ProcessMaker\Models\UserResourceView;
 
 /**
  *  @OA\Schema(
@@ -66,6 +67,8 @@ class ApiCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        UserResourceView::addToResourceCollection($this->collection, $request->user());
+
         $payload = [
             'data' => $this->collection,
             'meta' => [

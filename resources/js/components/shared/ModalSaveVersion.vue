@@ -25,7 +25,7 @@
               <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Description of Process") }}
                     </label>
                     <textarea
@@ -40,11 +40,11 @@
                       {{ $t("The Description field is required.") }}
                       <br>
                     </span>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
                     <icon-dropdown ref="icon-dropdown" />
-                    <label class="label-text mt-2">{{ $t("Chart") }}</label>
+                    <label class="mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
                         id="statusDropdown"
@@ -81,11 +81,7 @@
                       class="no-padding"
                     >
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label
-                          class="label-text"
-                          for="name"
-                        >{{ $t("Images for carousel") }}
-                        </label>
+                        <label>{{ $t("Images for carousel") }}</label>
                         <input
                           ref="fileInput"
                           type="file"
@@ -730,7 +726,7 @@ $multiselect-height: 38px;
 }
 
 .dropdown-toggle {
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 10px;
 }
 
@@ -750,10 +746,6 @@ $multiselect-height: 38px;
 
 .thumbnail {
   margin-bottom: 10px;
-}
-
-.label-text {
-  font-size: 12px;
 }
 
 .image-thumbnails-container {
