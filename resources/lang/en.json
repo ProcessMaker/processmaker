@@ -810,6 +810,7 @@
   "Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications.": "Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications.",
   "Installing ProcessMaker database, OAuth SSL keys and configuration file.": "Installing ProcessMaker database, OAuth SSL keys and configuration file.",
   "Integer": "Integer",
+  "Integrate with the Plaid banking service": "Integrate with the Plaid banking service",
   "Intelligent Document Processing": "Intelligent Document Processing",
   "Intermediate Conditional Catch Event": "Intermediate Conditional Catch Event",
   "Intermediate Event": "Intermediate Event",
