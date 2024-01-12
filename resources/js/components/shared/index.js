@@ -51,6 +51,8 @@ import apiDataLoading from '../common/mixins/apiDataLoading';
 import datatable from '../common/mixins/datatable';
 import DataLoading from '../../components/common/DataLoading';
 import AvatarImage from '../../components/AvatarImage';
+import FilterTableBodyMixin from "./FilterTableBodyMixin";
+import PaginationTable from "./PaginationTable.vue";
 
 export {
   AddToProjectModal,
@@ -106,4 +108,6 @@ export {
   datatable,
   DataLoading,
   AvatarImage,
+  FilterTableBodyMixin,
+  PaginationTable,
 };
