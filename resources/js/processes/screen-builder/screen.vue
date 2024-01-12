@@ -328,28 +328,13 @@ import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
-import Validator from "@chantouchsek/validatorjs";
+import * as Validator from "validatorjs";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import autosaveMixins from "../../modules/autosave/mixins";
-
-// To include another language in the Validator with variable processmaker
-if (
-  window.ProcessMaker
-  && window.ProcessMaker.user
-  && window.ProcessMaker.user.lang
-) {
-  Validator.useLang(window.ProcessMaker.user.lang);
-}
-
-Validator.register(
-  "attr-value",
-  (value) => value.match(/^[a-zA-Z0-9-_]+$/),
-  "Must be letters, numbers, underscores or dashes",
-);
 
 export default {
   components: {
@@ -673,6 +658,16 @@ export default {
     },
   },
   mounted() {
+    // To include another language in the Validator with variable processmaker
+    if (window.ProcessMaker?.user?.lang) {
+      Validator.useLang(window.ProcessMaker.user.lang);
+    }
+
+    Validator.register(
+      "attr-value",
+      (value) => value.match(/^[a-zA-Z0-9-_]+$/),
+      "Must be letters, numbers, underscores or dashes",
+    );
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
