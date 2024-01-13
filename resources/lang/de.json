@@ -1843,6 +1843,7 @@
   "Enter your security code": "Enter your security code",
   "Send Again": "Send Again",
   "Invalid phone number. Please verify and update your phone number in your account settings.": "Invalid phone number. Please verify and update your phone number in your account settings.",
+  "You can also authenticate by :otherMethods.": "You can also authenticate by :otherMethods.",
   "Invalid code.": "Invalid code.",
   "Security Code": "Security Code",
   "This is your security code: :code": "This is your security code: :code",
