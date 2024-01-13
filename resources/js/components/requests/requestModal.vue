@@ -5,7 +5,7 @@
     class="requests-modal modal-dialog-scrollable"
     header-close-content="&times;"
     hide-footer
-    :title="$t('New Request')"
+    :title="$t('New Case')"
     :size="size"
   >
     <b-row no-gutters>
@@ -14,7 +14,7 @@
         md="8"
       >
         <p>
-          {{ $t("We've made it easy for you to start a Request for the following Processes. Select a Process to start your Request.") }}
+          {{ $t("We've made it easy for you to start a Case for the following Processes. Select a Process to start your Case.") }}
         </p>
       </b-col>
       <b-col
