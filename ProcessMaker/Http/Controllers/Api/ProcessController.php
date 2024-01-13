@@ -1545,11 +1545,11 @@ class ProcessController extends Controller
         $response = false;
         if (isset($group)){
             try {
-                $response = (new GroupController(new Group()))->users($group, $request);
-                $users = $response->all();
+                $responseUsers = (new GroupController(new Group()))->users($group, $request);
+                $users = $responseUsers->all();
     
                 foreach ($users as $user) {
-                    if($user->resource->id === $currentUser) {
+                    if($user->resource->member_id === $currentUser) {
                         $response = true;
                     }
                 }
@@ -1558,11 +1558,11 @@ class ProcessController extends Controller
             }
     
             try {
-                $response = (new GroupController(new Group()))->groups($group, $request);
-                $groups = $response->all();
+                $responseGroups = (new GroupController(new Group()))->groups($group, $request);
+                $groups = $responseGroups->all();
     
                 foreach ($groups as $group) {
-                    if ($this->checkUsersGroup($group->resource->id, $request)) {
+                    if ($this->checkUsersGroup($group->resource->member_id, $request)) {
                         $response = true;
                     }
                 }
