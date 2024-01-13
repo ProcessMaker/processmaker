@@ -31,6 +31,7 @@
   "A script selection is required": "A script selection is required",
   "A security code will be sent to all selected methods.": "A security code will be sent to all selected methods.",
   "A user with the username {{username}} and email {{email}} was previously deleted.": "A user with the username :username and email :email was previously deleted.",
+  "A valid Cell phone number is required for SMS two-factor authentication.": "A valid Cell phone number is required for SMS two-factor authentication.",
   "A variable key name is a symbolic name to reference information.": "A variable key name is a symbolic name to reference information.",
   "A variable name is a symbolic name to reference information.": "A variable name is a symbolic name to reference information.",
   "About ProcessMaker": "About ProcessMaker",
