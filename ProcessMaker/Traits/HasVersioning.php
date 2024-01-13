@@ -106,6 +106,14 @@ trait HasVersioning
     }
 
     /**
+     * Get the latest version of artifact (screen, script)
+     */
+    public function getDraftOrPublishedLatestVersion()
+    {
+        return $this->versions()->orderBy('id', 'desc')->first();
+    }
+
+    /**
      * Return the version that was active when the task's request was started
      *
      * @param ProcessRequestToken $task
