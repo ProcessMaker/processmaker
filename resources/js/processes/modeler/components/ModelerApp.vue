@@ -101,7 +101,7 @@ export default {
   },
   computed: {
     autosaveApiCall() {
-      return async () => {
+      return async (generatingAssets = false) => {
         const svg = document.querySelector(".mini-paper svg");
         const css = "text { font-family: sans-serif; }";
         const style = document.createElement("style");
@@ -109,7 +109,6 @@ export default {
         svg.appendChild(style);
         const svgString = new XMLSerializer().serializeToString(svg);
         const xml = await this.$refs.modeler.getXmlFromDiagram();
-
         this.setLoadingState(true);
         ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
           name: this.process.name,
@@ -121,7 +120,7 @@ export default {
         })
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
-            window.ProcessMaker.EventBus.$emit("save-changes");
+            window.ProcessMaker.EventBus.$emit("save-changes", null, null, generatingAssets);
             this.$set(this, "warnings", response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
               window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
@@ -170,7 +169,7 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, generatingAssets, onSuccess, onError) => {
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError, generatingAssets) => {
       this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
@@ -236,11 +235,19 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
-      if (this.externalEmit.includes("open-modal-versions")) {
-        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId, generatingAssets);
+      if (this.externalEmit.includes("open-modal-versions") && !generatingAssets) {
+        window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
-      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, generatingAssets);
+
+      if (this.externalEmit.includes("open-modal-versions") && generatingAssets) {
+        window.ProcessMaker.EventBus.$emit("new-changes");
+        this.refreshSession();
+        this.handleAutosave(true, generatingAssets);
+        return;
+      }
+
+      window.ProcessMaker.EventBus.$emit("modeler-save", redirectUrl, nodeId, null, null, generatingAssets);
     },
     emitDiscardEvent() {
       if (this.externalEmit.includes("open-versions-discard-modal")) {
@@ -273,7 +280,11 @@ export default {
         if (this.process.is_template) {
           type = "process template";
         }
-        ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
+
+        if (!this.externalEmit.includes("open-modal-versions")) {
+          ProcessMaker.alert(this.$t(`The ${type} was saved.`, { type }), "success");
+        }
+
         // Set published status.
         this.setVersionIndicator(false);
         this.$set(this, "warnings", response.data.warnings || []);

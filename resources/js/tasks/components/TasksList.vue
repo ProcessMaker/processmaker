@@ -44,20 +44,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(row[header.field])">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <div v-html="sanitize(row[header.field])"></div>
+                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(row[header.field]) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -71,7 +71,7 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(row[header.field]) }}
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
                 </template>
@@ -81,13 +81,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header.field) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ row[header.field] }}
+                      {{ getNestedPropertyValue(row, header.field) }}
                     </b-tooltip>
                   </div>
                 </template>
@@ -157,6 +157,7 @@ import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
+import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -170,9 +171,14 @@ export default {
     paginationTable,
     TaskTooltip,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
+  mixins: [datatableMixin,
+    dataLoadingMixin,
+    uniqIdsMixin,
+    ListMixin,
+    PMColumnFilterPopoverCommonMixin,
+    FilterTableBodyMixin],
   props: {
     filter: {},
     columns: {},
@@ -237,7 +243,7 @@ export default {
           record["case_number"] = this.formatCaseNumber(record.process_request);
           record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
-          record["assignee"] = this.formatAsignee(record["user"]);
+          record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
           record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
@@ -479,27 +485,6 @@ export default {
     hideTooltip() {
       this.isTooltipVisible = false;
     },
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
-    },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
-    },
-    sanitize(html) {
-      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
-      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
-      cleanHtml = cleanHtml.replace(/\s+/g, " ");
-
-      return cleanHtml;
-    },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
@@ -508,14 +493,6 @@ export default {
 
       return cleanHtml;
     },
-    changePage(page) {
-      this.page = page;
-      this.fetch();
-    },
-    /**
-     * This method is used in PMColumnFilterPopoverCommonMixin.js
-     * @returns {Array}
-     */
     getStatus() {
       return ["Self Service", "In Progress", "Completed"];
     },

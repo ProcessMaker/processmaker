@@ -1,5 +1,5 @@
 <template>
-  <div class="container wizard-template-container">
+  <div class="wizard-template-container">
     <template-search
       id="wizard-search"
       type="wizard"

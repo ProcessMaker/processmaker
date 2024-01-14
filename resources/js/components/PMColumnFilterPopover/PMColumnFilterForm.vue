@@ -5,7 +5,7 @@
                                    @onChange="onChangeSort">
       </PMColumnFilterToggleAscDesc>
 
-      <div class="pm-filter-form-area" ref="pmFilterFormArea">
+      <div class="pm-filter-form-area" ref="pmFilterFormArea" data-cy="pmFilterFormArea">
         <template v-for="(item, index) in items">
           <b-form-group :key="'buttonRemove' + index">
             <div class="d-flex justify-content-between align-items-center">
@@ -13,6 +13,7 @@
               <b-button variant="light"
                         size="sm"
                         class="pm-filter-form-button"
+                        :data-cy="'buttonRemove' + index"
                         @click="onClickButtonRemove(item,index)">
                 <PMColumnFilterIconMinus></PMColumnFilterIconMinus>
               </b-button>
@@ -22,6 +23,7 @@
           <b-form-group :key="'operator' + index">
             <b-form-select v-model="item.operator" 
                            :options="getOperators()"
+                           :data-cy="'operator' + index"
                            @change="onChangeOperator(item,index)"
                            size="sm">
             </b-form-select>
@@ -30,7 +32,8 @@
           <b-form-group :key="'value' + index">
             <component :is="item.viewControl"
                        :formatRange="formatRange"
-                       v-model="item.value">
+                       v-model="item.value"
+                       :data-cy="'value' + index">
             </component>
           </b-form-group>
 
@@ -38,6 +41,7 @@
                         v-if="switchLogical(index)">
             <b-form-select v-model="item.logical" 
                            :options="getLogicals()"
+                           :data-cy="'logical' + index"
                            class="pm-filter-form-logical-operators"
                            @change="onChangeLogicalOp(item,index)"
                            size="sm">
