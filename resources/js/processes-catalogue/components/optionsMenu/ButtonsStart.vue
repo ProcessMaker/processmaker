@@ -82,7 +82,7 @@ export default {
     getStartEvents() {
       this.processEvents = [];
       ProcessMaker.apiClient
-        .get(`processes/${this.process.id}/start_events`)
+        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
         .then((response) => {
           this.processEvents = response.data.data;
           if (this.processEvents.length <= 1) {
@@ -92,6 +92,12 @@ export default {
               this.startEvent = event.id ?? 0;
             }
           }
+        })
+        .catch(err => {
+          this.havelessOneStartEvent = true;
+          this.processEvents = [];
+          this.startEvent = 0;
+          ProcessMaker.alert(err, "danger");
         });
     },
     /**

@@ -125,10 +125,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Processes
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}', [ProcessController::class, 'show'])->name('processes.show')->middleware('can:view-processes,process');
-    Route::get('processes/{process}/start_events',
-        [ProcessController::class, 'startEvents'])
-        ->name('processes.start.events')
-        ->middleware('can:view-processes,process');
     Route::post('processes/{process}/export', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes,process');
     Route::get('processes/{process}/bpmn', [ProcessController::class, 'downloadBpmn'])->name('processes.export.bpmn')->middleware('can:view-processes,process');
     Route::post('processes/import', [ProcessController::class, 'import'])->name('processes.import')->middleware('can:import-processes');
@@ -146,6 +142,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Process Bookmark
     $middlewareCatalog = 'can:view-process-catalog';
+    Route::get('process_bookmarks/processes/{process}/start_events',
+        [ProcessController::class, 'startEvents'])
+        ->name('processes.start.events')
+        ->middleware($middlewareCatalog);
     Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
     ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
