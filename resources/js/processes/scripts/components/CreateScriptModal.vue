@@ -345,7 +345,9 @@ export default {
     },
   },
   mounted() {
-    this.selectedUser = this.runAsUserDefault ? this.runAsUserDefault : null;
+    this.$nextTick(() => {
+      this.selectedUser = this.runAsUserDefault ? this.runAsUserDefault : null;
+    });
   },
   methods: {
     show() {

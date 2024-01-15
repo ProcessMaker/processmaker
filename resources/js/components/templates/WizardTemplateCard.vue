@@ -45,7 +45,8 @@ export default {
   border-radius: 16px;
   border: 1px solid #CDDDEE;
   background-size: cover;
-  height: 243px;
+  width: 350px;
+  height: 240px;
   overflow: hidden;
   &.hover {
     box-shadow: 0px 10px 20px 4px #00000021;

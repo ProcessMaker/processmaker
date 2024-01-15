@@ -73,4 +73,9 @@ class SettingsUpdated implements SecurityLogEventInterface
     {
         return 'SettingsUpdated';
     }
+
+    public function getSetting(): Setting
+    {
+        return $this->setting;
+    }
 }

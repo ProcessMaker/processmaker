@@ -11,6 +11,12 @@ class ProcessMakerAuthenticate extends Authenticate
     {
         $this->addAcceptJsonHeaderIfApiCall($request, $guards);
 
+        // Load permissions into the session
+        if (auth()->check() && !$request->ajax()) {
+            $permissions = $request->user()->loadPermissions();
+            session(['permissions' => $permissions]);
+        }
+
         return parent::authenticate($request, $guards);
     }
 
