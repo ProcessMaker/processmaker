@@ -72,7 +72,8 @@ export default {
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
-      listCategories: [{
+      listCategories: [],
+      favorite: [{
         id: 0,
         name: "Favorites",
         status: "ACTIVE",
@@ -139,6 +140,9 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
+            if (this.listCategories[0] !== this.favorite[0]) {
+              this.listCategories = [...this.favorite, ...this.listCategories];
+            }
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
 
