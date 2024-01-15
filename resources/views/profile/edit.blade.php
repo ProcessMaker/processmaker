@@ -135,6 +135,7 @@
                 countries: @json($countries),
                 states: @json($states),
                 status: @json($status),
+                global2FAEnabled: @json($global2FAEnabled),
                 errors: {
                     username: null,
                     firstname: null,
@@ -175,6 +176,9 @@
                 profileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
+                    if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1)
+                          return false;
                     if (this.image) {
                         this.formData.avatar = this.image;
                     }
@@ -231,6 +235,12 @@
                 onClose() {
                   window.location.href = '/admin/users';
                 },
+            },
+            computed: {
+                state2FA() {
+                    return typeof this.formData.preferences_2fa != "undefined" &&
+                        this.formData.preferences_2fa != null && this.formData.preferences_2fa.length > 0;
+                }
             }
         });
     </script>

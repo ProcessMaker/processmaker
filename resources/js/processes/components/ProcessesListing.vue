@@ -11,7 +11,7 @@
       <filter-table
         :headers="fields"
         :data="data"
-        style="height: 450px;"
+        style="height: calc(100vh - 350px);"
       >
         <!-- Slot Table Body -->
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>

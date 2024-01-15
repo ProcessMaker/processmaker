@@ -12,7 +12,8 @@
                triggers="click"
                placement="bottom"
                custom-class="pm-filter-popover"
-               @show="onShow">
+               @show="onShow"
+               @shown="onShown">
       <PMColumnFilterForm ref="pmColumnFilterForm"
                           :type="type"
                           :value="value"
@@ -49,6 +50,11 @@
       this.$emit("onUpdate", this);
     },
     methods: {
+      onShown() {
+        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+        cancel[0].focus();
+        this.closeOnBlur();
+      },
       onShow() {
         this.$root.$emit("bv::hide::popover");
       },
@@ -67,6 +73,15 @@
       onCancel() {
         this.popoverShow = false;
         this.$emit("onCancel");
+      },
+      closeOnBlur() {
+        let area = this.$refs.pmColumnFilterForm.$el.parentNode;
+        area.addEventListener('mouseenter', () => {
+          window.removeEventListener('click', this.onCancel);
+        });
+        area.addEventListener('mouseleave', () => {
+          window.addEventListener('click', this.onCancel);
+        });
       }
     }
   };
@@ -81,4 +96,7 @@
   .popover{
     max-width: 375px;
   }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

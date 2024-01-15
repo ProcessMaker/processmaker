@@ -59,6 +59,7 @@ use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Listeners\SecurityLogger;
+use ProcessMaker\Listeners\SessionControlSettingsUpdated;
 
 /**
  * Register our Events and their Listeners
@@ -86,6 +87,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
+        ],
+        SettingsUpdated::class => [
+            SessionControlSettingsUpdated::class,
         ],
     ];
 

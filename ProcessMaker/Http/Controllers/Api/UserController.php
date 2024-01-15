@@ -18,6 +18,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
 use ProcessMaker\Models\User;
+use ProcessMaker\TwoFactorAuthentication;
 
 class UserController extends Controller
 {
@@ -176,6 +177,12 @@ class UserController extends Controller
         }
 
         $user->fill($fields);
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
+            }
+        }
         $user->setTimezoneAttribute($request->input('timezone', ''));
         $user->saveOrFail();
         // Register the Event
@@ -214,7 +221,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (!Auth::user()->can('view', $user)) {
+        if (!Auth::user()->can('view', $user) && !Auth::user()->can('create-projects')) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
@@ -314,6 +321,12 @@ class UserController extends Controller
         }
         $original = $user->getOriginal();
         $user->fill($fields);
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
+            }
+        }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
@@ -329,6 +342,34 @@ class UserController extends Controller
         }
 
         return response([], 204);
+    }
+
+    /**
+     * Validate the phone number for SMS two-factor authentication.
+     *
+     * @param User $user User to validate
+     * @param mixed $number Number to validate
+     */
+    private function validateCellPhoneNumber(User $user, $number)
+    {
+        $methods = $user->getValid2FAPreferences();
+        $hasSMS2FA = in_array(TwoFactorAuthentication::SMS, $methods);
+        $isValid = !$hasSMS2FA || preg_match('/^[+\.0-9x\)\(\-\s\/]+$/', $number);
+        if (!$isValid) {
+            return response([
+                'message' => __(
+                    'A valid Cell phone number is required for SMS two-factor authentication.'
+                ),
+                'errors' => [
+                    'cell' => [
+                        __(
+                            'A valid Cell phone number is required for SMS two-factor authentication.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+        return false;
     }
 
     /**
@@ -644,7 +685,7 @@ class UserController extends Controller
     /**
      * Get filter configuration.
      *
-     * @param String $name
+     * @param string $name
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -671,13 +712,14 @@ class UserController extends Controller
     public function getFilterConfiguration(String $name, Request $request)
     {
         $filter = SaveSession::getConfigFilter($name, $request->user());
-        return response(["data" => $filter], 200);
+
+        return response(['data' => $filter], 200);
     }
 
     /**
      * Store filter configuration.
      *
-     * @param String $name
+     * @param string $name
      * @param Request $request
      * @return \Illuminate\Http\Response
      *
@@ -706,6 +748,7 @@ class UserController extends Controller
     {
         $request->json()->all();
         $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
-        return response(["data" => $filter], 200);
+
+        return response(['data' => $filter], 200);
     }
 }

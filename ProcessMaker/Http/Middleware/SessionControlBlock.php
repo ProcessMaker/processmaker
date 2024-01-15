@@ -32,7 +32,7 @@ class SessionControlBlock
                 return $this->redirectToLogin();
             }
             // Check if the user's session should be blocked based on device restriction
-            if ($this->blockedByDevice($user)) {
+            if ($this->blockedByDevice($user, $request)) {
                 return $this->redirectToLogin();
             }
         }
@@ -56,9 +56,10 @@ class SessionControlBlock
         return Setting::configByKey(self::IP_RESTRICTION_KEY) === '1' && $this->blockSessionByIp($user, $request);
     }
 
-    private function blockedByDevice(User $user): bool
+    private function blockedByDevice(User $user, Request $request): bool
     {
-        return Setting::configByKey(self::DEVICE_RESTRICTION_KEY) === '1' && $this->blockSessionByDevice($user);
+        return Setting::configByKey(self::DEVICE_RESTRICTION_KEY) === '1'
+            && $this->blockSessionByDevice($user, $request);
     }
 
     /**
@@ -83,21 +84,36 @@ class SessionControlBlock
      * Checks if the user's current session device matches the device used in the request
      *
      * @param User user
+     * @param Request request
      *
      * @return bool
      */
-    private function blockSessionByDevice(User $user): bool
+    private function blockSessionByDevice(User $user, Request $request): bool
     {
         $agent = new Agent();
         // Get the device details from the request
-        $requestDevice = $this->formatDeviceInfo($agent->device(), $agent->deviceType(), $agent->platform());
+        $agentDevice = $agent->device() ? $agent->device() : 'Unknown';
+        $requestDevice = $this->formatDeviceInfo($agentDevice, $agent->deviceType(), $agent->platform());
+        // Get the user's current IP address
+        $ip = $request->getClientIp() ?? $request->ip();
         // Get the user's most recent session
-        $session = $user->sessions->sortByDesc('created_at')->first();
-        $sessionDevice = $this->formatDeviceInfo(
-            $session->device_name, $session->device_type, $session->device_platform
-        );
+        $session = $user->sessions()
+            ->where([
+                ['is_active', true],
+                ['ip_address', '!=', $ip],
+            ])
+            ->orderBy('created_at', 'desc')
+            ->first();
 
-        return $requestDevice !== $sessionDevice;
+        if ($session) {
+            $sessionDevice = $this->formatDeviceInfo(
+                $session->device_name, $session->device_type, $session->device_platform
+            );
+
+            return $requestDevice !== $sessionDevice || $session->ip_address !== $ip;
+        }
+
+        return false;
     }
 
     private function formatDeviceInfo(string $deviceName, string $deviceType, string $devicePlatform): string
