@@ -85,7 +85,7 @@
 
     <select-template-modal
       :type="$t('Process')"
-      :countCategories="countCategories"
+      :count-categories="categoryCount"
       ref="addProcessModal"
       hide-add-btn="true"
     >
@@ -109,6 +109,7 @@ export default {
     "preicon",
     "filterCategories",
     "fromProcessList",
+    "categoryCount",
   ],
   data() {
     return {
@@ -125,6 +126,7 @@ export default {
         {
           label: this.$t("All Templates"),
           selected: false,
+          id: "all_templates",
         },
         {
           label: this.$t("Guided Templates"),
@@ -142,9 +144,7 @@ export default {
       }
     });
     this.comeFromProcess = this.fromProcessList;
-    this.getCountCategories();
   },
-  updated() {},
   methods: {
     /**
      * Adding categories
@@ -165,7 +165,7 @@ export default {
       this.select(item);
     },
     selectTemplateItem(item) {
-      if (item.label === "All Templates") {
+      if (item.id === "all_templates") {
         this.addNewProcess();
         return;
       }
@@ -174,6 +174,9 @@ export default {
       this.select(item);
       this.$emit("wizardLinkSelect");
     },
+    /**
+     * This method opens New Process modal window
+     */
     addNewProcess() {
       this.$nextTick(() => {
         this.$refs["addProcessModal"].show();
@@ -196,16 +199,6 @@ export default {
      */
     onFilter(value) {
       this.filterCategories(value);
-    },
-    getCountCategories() {
-      ProcessMaker.apiClient
-        .get("process_categories")
-        .then((response) => {
-          this.countCategories = response.data.meta.count;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
     },
   },
 };
