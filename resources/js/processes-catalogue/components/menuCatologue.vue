@@ -21,10 +21,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{
-            'fa-sort-up': showCatalogue,
-            'fa-sort-down': !showCatalogue,
-          }"
+          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue,}"
         />
       </div>
     </div>
@@ -45,7 +42,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
-    <hr class="my-12" />
+    <hr class="my-12">
     <div
       v-b-toggle.collapse-3
       block
@@ -59,15 +56,12 @@
             class="mr-3"
             src="../../../img/template-icon.svg"
             alt="Template Icon"
-          />
+          >
           {{ $t("Add From Templates") }}
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{
-            'fa-sort-up': showGuidedTemplates,
-            'fa-sort-down': !showGuidedTemplates,
-          }"
+          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
         />
       </div>
     </div>
@@ -143,10 +137,7 @@ export default {
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
-      if (
-        listElm.scrollTop + listElm.clientHeight + 2 >=
-        listElm.scrollHeight
-      ) {
+      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
