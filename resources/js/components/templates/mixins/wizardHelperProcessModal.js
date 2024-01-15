@@ -45,7 +45,6 @@ export default {
             }
         },
         async getNextTask(processRequestId) {
-            console.log("getNextTask", processRequestId);
             try {
                 const response = await ProcessMaker.apiClient.get(`tasks`, {
                 params: {
@@ -60,7 +59,6 @@ export default {
                 });
 
                 const taskData = response.data.data;
-                console.log("getNextTask - data", taskData);
                 if (taskData.length > 0) {
                     this.task = taskData[0];
                     this.currentUserId = parseInt(document.head.querySelector('meta[name="user-id"]').content);
@@ -101,18 +99,18 @@ export default {
             }
         },
         taskUpdated(task) {
-            console.log("taskUpdated", task);
             this.task = task;
         },
         async submit(task) {
             const { id: taskId, process_request_id: processRequestId } = task;
-            console.log("submit", task);
+
             try {
-                await ProcessMaker.apiClient.put(`tasks/${taskId}`, {
-                status: "COMPLETED",
-                data: this.formData
-                });
-                console.log("task completed", taskId);
+                if (task.advancedStatus !== 'completed') {
+                    await ProcessMaker.apiClient.put(`tasks/${taskId}`, {
+                        status: "COMPLETED",
+                        data: this.formData
+                     });
+                }
 
                 // Successfully completed task, get the next one
                 await this.getNextTask(processRequestId);
@@ -129,7 +127,6 @@ export default {
             console.error('error', processRequestId);
         },
         async importProcessTemplate() {
-            console.log("template", this.template);
             const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
                 name: this.template.name,
                 description: this.template.description,
