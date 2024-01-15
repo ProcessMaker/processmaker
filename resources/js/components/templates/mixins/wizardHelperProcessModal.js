@@ -45,6 +45,7 @@ export default {
             }
         },
         async getNextTask(processRequestId) {
+            console.log("getNextTask", processRequestId);
             try {
                 const response = await ProcessMaker.apiClient.get(`tasks`, {
                 params: {
@@ -59,7 +60,7 @@ export default {
                 });
 
                 const taskData = response.data.data;
-
+                console.log("getNextTask - data", taskData);
                 if (taskData.length > 0) {
                     this.task = taskData[0];
                     this.currentUserId = parseInt(document.head.querySelector('meta[name="user-id"]').content);
@@ -100,16 +101,18 @@ export default {
             }
         },
         taskUpdated(task) {
+            console.log("taskUpdated", task);
             this.task = task;
         },
         async submit(task) {
             const { id: taskId, process_request_id: processRequestId } = task;
-
+            console.log("submit", task);
             try {
                 await ProcessMaker.apiClient.put(`tasks/${taskId}`, {
                 status: "COMPLETED",
                 data: this.formData
                 });
+                console.log("task completed", taskId);
 
                 // Successfully completed task, get the next one
                 await this.getNextTask(processRequestId);
