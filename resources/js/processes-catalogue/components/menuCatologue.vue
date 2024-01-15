@@ -21,7 +21,10 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue}"
+          :class="{
+            'fa-sort-up': showCatalogue,
+            'fa-sort-down': !showCatalogue,
+          }"
         />
       </div>
     </div>
@@ -42,7 +45,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
-    <hr class="my-12">
+    <hr class="my-12" />
     <div
       v-b-toggle.collapse-3
       block
@@ -56,12 +59,15 @@
             class="mr-3"
             src="../../../img/template-icon.svg"
             alt="Template Icon"
-          >
+          />
           {{ $t("Add From Templates") }}
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates}"
+          :class="{
+            'fa-sort-up': showGuidedTemplates,
+            'fa-sort-down': !showGuidedTemplates,
+          }"
         />
       </div>
     </div>
@@ -82,24 +88,50 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+
+    <select-template-modal
+      :type="$t('Process')"
+      :countCategories="countCategories"
+      ref="addProcessModal"
+      hide-add-btn="true"
+    >
+    </select-template-modal>
   </div>
 </template>
 
 <script>
 import SearchCategories from "./utils/SearchCategories.vue";
+import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
 
 export default {
   components: {
     SearchCategories,
+    SelectTemplateModal,
   },
-  props: ["data", "select", "title", "preicon", "filterCategories", "fromProcessList"],
+  props: [
+    "data",
+    "select",
+    "title",
+    "preicon",
+    "filterCategories",
+    "fromProcessList",
+  ],
   data() {
     return {
+      showTemplateModal: true,
+      assetName: null,
+      assetId: null,
+      modalProcess: true,
+      countCategories: 0,
       showCatalogue: false,
       showGuidedTemplates: false,
       selectedProcessItem: null,
       selectedTemplateItem: null,
       templateOptions: [
+        {
+          label: this.$t("All Templates"),
+          selected: false,
+        },
         {
           label: this.$t("Guided Templates"),
           selected: false,
@@ -111,14 +143,17 @@ export default {
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
-      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
+      if (
+        listElm.scrollTop + listElm.clientHeight + 2 >=
+        listElm.scrollHeight
+      ) {
         this.loadMore();
       }
     });
     this.comeFromProcess = this.fromProcessList;
+    this.getCountCategories();
   },
-  updated() {
-  },
+  updated() {},
   methods: {
     /**
      * Adding categories
@@ -139,10 +174,19 @@ export default {
       this.select(item);
     },
     selectTemplateItem(item) {
+      if (item.label === "All Templates") {
+        this.addNewProcess();
+        return;
+      }
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
       this.select(item);
       this.$emit("wizardLinkSelect");
+    },
+    addNewProcess() {
+      this.$nextTick(() => {
+        this.$refs["addProcessModal"].show();
+      });
     },
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
@@ -162,6 +206,16 @@ export default {
     onFilter(value) {
       this.filterCategories(value);
     },
+    getCountCategories() {
+      ProcessMaker.apiClient
+        .get("process_categories")
+        .then((response) => {
+          this.countCategories = response.data.meta.count;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   },
 };
 </script>
@@ -170,7 +224,7 @@ export default {
 @import url("../../../sass/_scrollbar.scss");
 i {
   font-size: 20px;
-  color: #6A7888;
+  color: #6a7888;
 }
 #category-menu > .list-group {
   max-height: 37vh;
@@ -185,22 +239,24 @@ i {
   cursor: pointer;
   padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  color: #4F606D;
+  color: #4f606d;
   font-size: 15px;
-  font-weight: 400;;
+  font-weight: 400;
 }
 .list-item:hover {
-  background: #E5EDF3;
+  background: #e5edf3;
 }
 .list-item-selected {
-  background: #E5EDF3;
-  color: #1572C2;
+  background: #e5edf3;
+  color: #1572c2;
   font-weight: 700;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
-  opacity: 0
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
