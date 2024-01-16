@@ -94,7 +94,7 @@
     data() {
       return {
         items: [],
-        viewSort: "asc",
+        viewSort: null,
         viewItemsChanged: false
       };
     },

@@ -1,8 +1,9 @@
 <template>
   <div :id="id">
     <b-button :id="'pm-cff-button-'+id" 
-              variant="light"
-              size="sm">
+              variant="link"
+              size="sm"
+              class="pm-filter-popover-button">
       <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
     <b-popover :container="container"
@@ -91,12 +92,12 @@
   .pm-filter-popover .popover-body{
     padding: 0.5rem 0.75rem !important;
   }
+  .pm-filter-popover-button{
+    color: #1572C2 !important;
+  }
 </style>
 <style scoped>
   .popover{
     max-width: 375px;
   }
-</style>
-<style lang="scss" scoped>
-  @import url("../../../sass/_scrollbar.scss");
 </style>

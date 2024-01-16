@@ -232,7 +232,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 70,
         },
         {
           label: this.$t("Case title"),
@@ -476,12 +476,7 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "active_tasks"){
-        by = "id";
-      }
-      if(by === "participants"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.orderDirection = direction;
       this.sortOrder[0].sortField = by;
@@ -509,11 +504,48 @@ export default {
       };
       ProcessMaker.apiClient.put(url, config);
     },
-  },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Request";
+      }
+      if (value === "active_tasks") {
+        type = "Task";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      if (value === "participants") {
+        type = "Participants";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "active_tasks") {
+        value = "id";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "process") {
+        value = "process.name";
+      }
+      if (value === "active_tasks") {
+        value = "id";
+      }
+      if (value === "participants") {
+        value = "id";
+      }
+      return value;
+    }
+  }
 };
 </script>
 <style>
   .pm-table-ellipsis-column{
     text-transform: uppercase;
   }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

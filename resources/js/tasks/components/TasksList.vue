@@ -304,7 +304,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 70,
         },
         {
           label: this.$t("Case title"),
@@ -341,6 +341,7 @@ export default {
         {
           label: this.$t("Due date"),
           field: "due_at",
+          format: "datetime",
           sortable: true,
           default: true,
           width: 140,
@@ -502,18 +503,7 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "case_number"){
-        by = "id";
-      }
-      if(by === "case_title"){
-        by = "id";
-      }
-      if(by === "process"){
-        by = "id";
-      }
-      if(by === "assignee"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;
@@ -537,6 +527,43 @@ export default {
         }
       };
       ProcessMaker.apiClient.put(url, config);
+    },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Process";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      if (value === "assignee") {
+        type = "Participants";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "case_number") {
+        value = "process_requests.case_number";
+      }
+      if (value === "case_title") {
+        value = "process_requests.case_title_formatted";
+      }
+      if (value === "process") {
+        value = "process_requests.name";
+      }
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user.fullname";
+      }
+      return value;
     }
   }
 };
@@ -558,4 +585,7 @@ export default {
   font-weight: 600;
   border-radius: 5px;
 }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>
