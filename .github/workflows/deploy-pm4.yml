@@ -3,9 +3,6 @@ run-name: ${{ github.actor }} send deploy EKS 🚀
 on: 
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
-  push:
-    branches:
-      - FOUR-13153
   #schedule:
   #  - cron: '30 2 * * *'  # every day at midnight
   workflow_dispatch:
@@ -18,7 +15,7 @@ env:
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'FOUR-13153' }}
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
@@ -94,23 +91,14 @@ jobs:
           namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
           kubectl apply -f template-db.yaml
   deployEKS:
-    needs: imageEKS
     name: build-deploy-EKS
-    #if: contains(github.event.pull_request.body, 'ci:deploy')
-    #needs: imageEKS
+    if: contains(github.event.pull_request.body, 'ci:deploy')
+    needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:     
       - name: Clone private repository
         run: |
-          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
-      #- name: CreateDB 
-      #  run: |          
-      #    cd argocd
-      #    deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)          
-      #    sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
-      #    kubectl get namespace ci-processmaker-ns-pm4
-      #    namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
-      #    kubectl apply -f template-db.yaml                   
+          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd                   
       - name: Install pm4-tools
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
@@ -161,56 +149,6 @@ jobs:
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
           bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"
-  #deployEKS: 
-  #  name: build-deploy-EKS
-  #  if: contains(github.event.pull_request.body, 'ci:deploy')
-  #  needs: imageEKS
-  #  runs-on: self-hosted
-  #  steps:   
-  #    - name: Clone private repository
-  #      run: |
-  #        git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
-  #    - name: CreateDB 
-  #      run: |          
-  #        cd argocd
-  #        deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)          
-  #        sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
-  #        kubectl get namespace ci-processmaker-ns-pm4
-  #        namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
-  #        kubectl apply -f template-db.yaml                   
-  #    - name: Install pm4-tools
-  #      run: |
-  #        git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
-  #        cd pm4-k8s-distribution/images/pm4-tools
-  #        composer install --no-interaction
-  #        cd ..
-  #    - name: Deploy instance EKS           
-  #      run: |
-  #        cd argocd 
-  #        deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-  #        current_datetime=$(echo -n ${{env.CURRENT_DATE}} | md5sum | head -c 10)
-  #        echo "NAMESPACE : ci-$deploy-ns-pm4"
-  #        helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }} && helm repo update
-  #        if ! kubectl get namespace/ci-$deploy-ns-pm4 ; then 
-  #          echo "Creating Deploy :: $deploy"
-  #          sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
-  #          sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
-  #          cat template-instance.yaml         
-  #          helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise --version 2.1.0             
-  #        else
-  #          echo "Bouncing Instance  ";
-  #          sed -i "s/{{instance}}/ci-$deploy/g" template-bounce.yaml
-  #          sed -i "s/{{current_datetime}}/$current_datetime/g" template-bounce.yaml
-  #          helm upgrade --timeout 20m ci-$deploy processmaker/enterprise --version 2.1.0          
-  #          kubectl apply -f template-bounce.yaml
-  #        fi
-  #        export INSTANCE_URL=https://ci-$deploy$DOM_EKS
-  #        echo "INSTANCE_URL=${INSTANCE_URL}" >> "$GITHUB_ENV"
-  #        ../pm4-k8s-distribution/images/pm4-tools/pm wait-for-instance-ready
-  #    - name: Comment Instance
-  #      run: |
-  #        echo "Instance URL: '${INSTANCE_URL}'"
-  #        bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"
   deleteEKS:
     name: Delete Instance
     if: github.event.action == 'closed'
@@ -221,31 +159,30 @@ jobs:
           deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
           echo "Deleting Instace :: ci-$deploy"
           helm delete ci-$deploy
-          kubectl delete namespace ci-$deploy-ns-pm4      
-  
-  #runPhpUnit: 
-  #  name: run-phpunit
-  #  if: github.event.action != 'closed'
-  #  needs: imageEKS
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: Export Params                
-  #      run: |
-  #        echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
-  #    - name: Clone repo K8S
-  #      run: |
-  #        echo "IMAGE: ${{ env.IMAGE }}"
-  #        git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
-  #    - name: Login to Harbor
-  #      uses: docker/login-action@v2
-  #      with:
-  #        registry: ${{ secrets.REGISTRY_HOST  }}
-  #        username: ${{ secrets.REGISTRY_USERNAME }}
-  #        password: ${{ secrets.REGISTRY_PASSWORD }}
-  #    - name: PHPUnits
-  #      run: |          
-  #        cd pm4-k8s-distribution/images/pm4-tools
-  #        docker pull $IMAGE
-  #        docker-compose down -v
-  #        docker-compose build phpunit
-  #        docker-compose run phpunit
+          kubectl delete namespace ci-$deploy-ns-pm4 
+  runPhpUnit: 
+    name: run-phpunit
+    if: github.event.action != 'closed'
+    needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Export Params                
+        run: |
+          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: PHPUnits
+        run: |          
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build phpunit
+          docker-compose run phpunit
