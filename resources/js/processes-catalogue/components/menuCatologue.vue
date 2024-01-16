@@ -71,7 +71,7 @@
     >
       <b-list-group>
         <b-list-group-item
-          v-for="(item, index) in templateOptions"
+          v-for="(item, index) in filteredTemplateOptions"
           :key="index"
           ref="templateItems"
           :class="{ 'list-item-selected': isSelectedTemplate(item) }"
@@ -110,6 +110,7 @@ export default {
     "filterCategories",
     "fromProcessList",
     "categoryCount",
+    "permission",
   ],
   data() {
     return {
@@ -131,10 +132,19 @@ export default {
         {
           label: this.$t("Guided Templates"),
           selected: false,
+          id: "guided_templates",
         },
       ],
       comeFromProcess: false,
     };
+  },
+  computed: {
+    /**
+     * Filters options regarding user permissions
+     */
+    filteredTemplateOptions() {
+      return this.templateOptions.filter(item => this.shouldShowTemplateItem(item));
+    },
   },
   mounted() {
     const listElm = document.querySelector("#infinite-list");
@@ -164,15 +174,21 @@ export default {
       this.selectedTemplateItem = null;
       this.select(item);
     },
+    /**
+     * Enables All Templates option only if user has create-processes permission
+     */
+    shouldShowTemplateItem(item) {
+      return !(item.id === "all_templates" && !this.hasPermission());
+    },
     selectTemplateItem(item) {
       if (item.id === "all_templates") {
-        this.addNewProcess();
-        return;
+          this.addNewProcess();
+          return;
       }
-      this.selectedTemplateItem = item;
-      this.selectedProcessItem = null;
-      this.select(item);
-      this.$emit("wizardLinkSelect");
+        this.selectedTemplateItem = item;
+        this.selectedProcessItem = null;
+        this.select(item);
+        this.$emit("wizardLinkSelect");
     },
     /**
      * This method opens New Process modal window
@@ -199,6 +215,9 @@ export default {
      */
     onFilter(value) {
       this.filterCategories(value);
+    },
+    hasPermission() {
+      return this.permission.includes("create-processes")
     },
   },
 };

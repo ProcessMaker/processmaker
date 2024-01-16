@@ -20,6 +20,7 @@
           :from-process-list="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
+          :permission="permission"
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
@@ -143,7 +144,7 @@ export default {
           .then((response) => {
             this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
-            this.categoryCount = this.listCategories.length;
+            this.categoryCount = response.data.meta.total;
             if (this.markCategory) {
               const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
               this.$refs.categoryList.markCategory(this.listCategories[indexUncategorized]);
