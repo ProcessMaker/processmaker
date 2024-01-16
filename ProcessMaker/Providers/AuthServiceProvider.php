@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Laravel\Passport\Passport;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Notification;
@@ -32,7 +31,6 @@ use ProcessMaker\Policies\UserPolicy;
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
- * @todo Add gates to provide authorization functionality. See branch release/3.3 for sample implementations
  */
 class AuthServiceProvider extends ServiceProvider
 {
@@ -77,7 +75,7 @@ class AuthServiceProvider extends ServiceProvider
                         return true;
                     }
 
-                    $projects = $this->checkUsersProjectAssetAccess($user->id);
+                    $projects = $this->getProjectsForUser($user->id);
 
                     // Check if the user has 'create-projects' permission and the request is from specific endpoints
                     // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
@@ -103,28 +101,37 @@ class AuthServiceProvider extends ServiceProvider
         });
     }
 
-    private function checkUsersProjectAssetAccess($userId)
+    /**
+     * Retrieves the projects associated with the user.
+     */
+    private function getProjectsForUser(int $userId): array
     {
         if (!Schema::hasTable('projects')) {
             return [];
         }
 
-        //Get projects where the current user is an owner
+        // Get projects where the current user is an owner
         $ownerProjects = DB::table('projects')
-        ->where('user_id', $userId)
-        ->get();
+            ->where('user_id', $userId)
+            ->pluck('id');
 
-        //Get projects where the current user is a member
+        // Get projects where the current user is a member
         $memberProjects = DB::table('projects')
-        ->join('project_members', 'project_id', '=', 'project_members.project_id')
-        ->where('project_members.member_id', $userId)
-        ->get();
+            ->join('project_members', 'projects.id', '=', 'project_members.project_id')
+            ->where([
+                'project_members.member_id' => $userId,
+                'project_members.member_type' => User::class,
+            ])
+            ->pluck('projects.id');
 
         // Combine owner and member projects
-        return $ownerProjects->merge($memberProjects);
+        return $ownerProjects->merge($memberProjects)->unique()->values()->toArray();
     }
 
-    private function checkAllowedEndpoints($projects, $currentPath)
+    /**
+     * Checks if the current path is allowed based on the user's project assets.
+     */
+    private function checkAllowedEndpoints(array $projectIds, string $currentPath): bool
     {
         $allowedEndpoints = [
             'api',
@@ -135,35 +142,29 @@ class AuthServiceProvider extends ServiceProvider
             'designer/data-sources',
         ];
 
-        foreach ($projects as $project) {
-            // Get the assets associated with the user's projects
-            $projectAssets = DB::table('project_assets')
-                ->where('project_id', $project->id)
-                ->get();
+        // Get the assets associated with the user's projects
+        $projectAssets = DB::table('project_assets')
+            ->select('asset_id', 'asset_type')
+            ->whereIn('project_id', $projectIds)
+            ->distinct()
+            ->get();
 
-            foreach ($projectAssets as $asset) {
-                //Get each project asset's type and id
-                $assetId = $asset->asset_id;
-                $assetType = $asset->asset_type;
+        foreach ($projectAssets as $asset) {
+            // Get each project asset's type and id
+            $assetId = $asset->asset_id;
+            $assetType = $asset->asset_type;
 
-                //Check asset types and push to $allowedEndpoints
-                if ($assetType === Process::class) {
-                    $allowedEndpoints[] = 'modeler/' . $assetId;
-                } elseif ($assetType === Screen::class) {
-                    $allowedEndpoints[] = 'designer/screen-builder/' . $assetId . '/edit';
-                } elseif ($assetType === Script::class) {
-                    $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
-                }
+            // Check asset types and push to $allowedEndpoints
+            if ($assetType === Process::class) {
+                $allowedEndpoints[] = 'modeler/' . $assetId;
+            } elseif ($assetType === Screen::class) {
+                $allowedEndpoints[] = 'designer/screen-builder/' . $assetId . '/edit';
+            } elseif ($assetType === Script::class) {
+                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
             }
         }
 
-        foreach ($allowedEndpoints as $endpoint) {
-            if (Str::startsWith($currentPath, $endpoint)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Str::contains($currentPath, $allowedEndpoints);
     }
 
     private function isProjectAsset($permission, $params)
