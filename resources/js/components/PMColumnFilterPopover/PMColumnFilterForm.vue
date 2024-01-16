@@ -86,6 +86,12 @@
 <script>
   import * as Components from "./PMColumnFilterOp.js";
 
+  const specialCaseSubjectMap = {
+    'participants': 'Participants',
+    'status' : 'Status',
+    'process': 'Process',
+  };
+
   export default {
     components: {
       ...Components
@@ -113,6 +119,24 @@
           this.viewSort = newValue;
         },
         immediate: true
+      }
+    },
+    computed: {
+      subject() {
+        if (this.specialCase) {
+          return { type: this.specialCase };
+        }
+        const subject = {
+          type: this.type,
+          value: this.value,
+        }
+        if (this.type === 'Field' && this.value === 'assignee') {
+          subject.value = 'user_id';
+        }
+        return subject;
+      },
+      specialCase() {
+        return _.get(specialCaseSubjectMap, this.value, null);  
       }
     },
     methods: {
@@ -202,10 +226,7 @@
       },
       addItem(index) {
         let item = {
-          subject: {
-            type: this.type,
-            value: this.value
-          },
+          subject: this.subject,
           operator: "=",
           value: "",
           logical: "and",

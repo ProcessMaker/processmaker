@@ -255,6 +255,7 @@ export default {
   },
   mounted: function mounted() {
     this.getAssignee("");
+    this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration("taskFilter");
     const params = new URL(document.location).searchParams;

@@ -4,7 +4,8 @@ const PMColumnFilterCommonMixin = {
       advancedFilter: [],
       userId: window.Processmaker.userId,
       viewAssignee: [],
-      viewParticipants: []
+      viewParticipants: [],
+      viewProcesses: [],
     };
   },
   methods: {
@@ -95,7 +96,7 @@ const PMColumnFilterCommonMixin = {
     },
     getAdvancedFilter() {
       let flat = this.advancedFilter.flat(1);
-      return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
+      return flat.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(flat)) : "";
     },
     getUrlUsers(filter) {
       let page = 1;
@@ -115,7 +116,7 @@ const PMColumnFilterCommonMixin = {
       if (column.format) {
         format = column.format;
       }
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
+      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
         format = "stringSelect";
       }
       return format;
@@ -131,11 +132,14 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "participants") {
         formatRange = this.viewParticipants;
       }
+      if (column.field === "process") {
+        formatRange = this.viewProcesses;
+      }
       return formatRange;
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
+      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
         operators = ["=", "in"];
       }
       return operators;
@@ -143,14 +147,30 @@ const PMColumnFilterCommonMixin = {
     getAssignee(filter) {
       ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
         for (let i in response.data.data) {
-          this.viewAssignee.push(response.data.data[i].username);
+          this.viewAssignee.push({
+            text: response.data.data[i].username,
+            value: response.data.data[i].id
+          });
         }
       });
     },
     getParticipants(filter) {
       ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
         for (let i in response.data.data) {
-          this.viewParticipants.push(response.data.data[i].username);
+          this.viewParticipants.push({
+            text: response.data.data[i].username,
+            value: response.data.data[i].id
+          });
+        }
+      });
+    },
+    getProcess() {
+      ProcessMaker.apiClient.get('/processes?per_page=100').then(response => {
+        for (let i in response.data.data) {
+          this.viewProcesses.push({
+            text: response.data.data[i].name,
+            value: response.data.data[i].id
+          });
         }
       });
     },
