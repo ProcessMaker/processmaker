@@ -84,9 +84,9 @@
     </b-collapse>
 
     <select-template-modal
+      ref="addProcessModal"
       :type="$t('Process')"
       :count-categories="categoryCount"
-      ref="addProcessModal"
       hide-add-btn="true"
     >
     </select-template-modal>
