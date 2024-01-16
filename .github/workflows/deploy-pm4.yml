@@ -78,12 +78,9 @@ jobs:
   #      run: |          
   #        docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   #        docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
-  deployEKS:
-    name: build-deploy-EKS
-    #if: contains(github.event.pull_request.body, 'ci:deploy')
-    #needs: imageEKS
-    runs-on: ${{ vars.RUNNER }}
-    steps:     
+  prepareDB:
+    runs-on: self-hosted
+    steps:
       - name: Clone private repository
         run: |
           git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
@@ -94,7 +91,24 @@ jobs:
           sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
           kubectl get namespace ci-processmaker-ns-pm4
           namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
-          kubectl apply -f template-db.yaml                   
+          kubectl apply -f template-db.yaml
+  deployEKS:
+    name: build-deploy-EKS
+    #if: contains(github.event.pull_request.body, 'ci:deploy')
+    #needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:     
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+      #- name: CreateDB 
+      #  run: |          
+      #    cd argocd
+      #    deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)          
+      #    sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
+      #    kubectl get namespace ci-processmaker-ns-pm4
+      #    namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
+      #    kubectl apply -f template-db.yaml                   
       - name: Install pm4-tools
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
