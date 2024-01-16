@@ -86,6 +86,7 @@ export default {
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
@@ -93,7 +94,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 150,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -101,7 +102,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
         {
           label: "COMPLETED",
@@ -109,7 +110,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
       ],
       dataRequests: {},
@@ -141,6 +142,7 @@ export default {
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
+        record["case_title"] = this.formatCaseTitle(record);
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(
           record["participants"]
@@ -163,6 +165,13 @@ export default {
       <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
         # ${value.case_number}
+      </a>`;
+    },
+    formatCaseTitle(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
       </a>`;
     },
     queryBuilder() {
