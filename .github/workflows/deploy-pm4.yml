@@ -55,7 +55,7 @@ jobs:
         chmod +x kubectl
         sudo mv kubectl /usr/local/bin/
     - name: Authenticate with Amazon EKS
-      run: aws eks update-kubeconfig --region us-east-1 --name next-qa-cluster
+      run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
     #- name: Deploy to Amazon EKS
     #  run: kubectl get nodes
     - name: Helm list
