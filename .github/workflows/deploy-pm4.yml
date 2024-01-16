@@ -18,7 +18,7 @@ env:
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'FOUR-13151' }}
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'FOUR-13153' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
@@ -35,50 +35,51 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
-  #imageEKS: 
-  #  name: build-docker-image-EKS
-  #  if: github.event.action != 'closed'
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: Set image name
-  #      run: |
-  #          RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
-  #          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
-  #    - name: Clone repo K8S
-  #      run: |
-  #        echo "IMAGE: ${{ env.IMAGE }}"
-  #        git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
-  #    - name: Generate image EKS
-  #      run: |
-  #        cd pm4-k8s-distribution/images
-  #        branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
-  #        echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
-  #    - name: List Images
-  #      run: |
-  #        docker images
-  #    - name: Run Trivy vulnerability scanner
-  #      uses: aquasecurity/trivy-action@master
-  #      with:
-  #        image-ref: processmaker/enterprise:${{ env.VERSION }}
-  #        format: 'table'
-  #        exit-code: '0'
-  #        ignore-unfixed: false
-  #        vuln-type: 'os,library'
-  #        scanners: 'vuln,secret'
-  #        severity: 'MEDIUM,HIGH,CRITICAL'
-  #      env:
-  #        TRIVY_TIMEOUT: 30m
-  #    - name: Login to Harbor
-  #      uses: docker/login-action@v2
-  #      with:
-  #        registry: ${{ secrets.REGISTRY_HOST  }}
-  #        username: ${{ secrets.REGISTRY_USERNAME }}
-  #        password: ${{ secrets.REGISTRY_PASSWORD }}
-  #    - name: Push Enterprise Image to Harbor
-  #      run: |          
-  #        docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
-  #        docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+  imageEKS: 
+    name: build-docker-image-EKS
+    if: github.event.action != 'closed'
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Set image name
+        run: |
+            RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
+            echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution           
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution/images
+          branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
+          echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+      - name: List Images
+        run: |
+          docker images
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: processmaker/enterprise:${{ env.VERSION }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret'
+          severity: 'MEDIUM,HIGH,CRITICAL'
+        env:
+          TRIVY_TIMEOUT: 30m
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Push Enterprise Image to Harbor
+        run: |          
+          docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   prepareDB:
+    needs: imageEKS
     runs-on: self-hosted
     steps:
       - name: Clone private repository
@@ -93,6 +94,7 @@ jobs:
           namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
           kubectl apply -f template-db.yaml
   deployEKS:
+    needs: imageEKS
     name: build-deploy-EKS
     #if: contains(github.event.pull_request.body, 'ci:deploy')
     #needs: imageEKS
