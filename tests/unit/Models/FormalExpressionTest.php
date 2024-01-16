@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Models;
+namespace Tests\Unit\Models;
 
 use Carbon\Carbon;
 use DateTime;

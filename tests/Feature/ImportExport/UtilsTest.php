@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\ImportExport\Exporters;
+namespace Tests\Feature\ImportExport;
 
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Utils;

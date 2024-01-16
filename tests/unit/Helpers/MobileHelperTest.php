@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Helpers;
+namespace Tests\Unit\Helpers;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Helpers\MobileHelper;

@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker;
+namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;

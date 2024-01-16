@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Tests\Unit;
 
 use ProcessMaker\Models\ProcessRequest;
+use Tests\TestCase;
 
 class CaseTitleTest extends TestCase
 {
