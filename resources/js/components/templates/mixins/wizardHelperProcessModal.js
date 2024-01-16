@@ -105,7 +105,7 @@ export default {
             const { id: taskId, process_request_id: processRequestId } = task;
 
             try {
-                if (task.advancedStatus !== 'completed') {
+                if (task.advanceStatus !== 'completed') {
                     await ProcessMaker.apiClient.put(`tasks/${taskId}`, {
                         status: "COMPLETED",
                         data: this.formData
