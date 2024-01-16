@@ -47,7 +47,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID1 }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY1 }}
-        aws-region: ${{ secrets.aws-region }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Set up kubectl
       run: |
