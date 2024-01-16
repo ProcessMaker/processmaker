@@ -126,7 +126,6 @@ export default {
             console.error('error', processRequestId);
         },
         async importProcessTemplate() {
-            console.log("template", this.template);
             const response = await ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
                 name: this.template.name,
                 description: this.template.description,
