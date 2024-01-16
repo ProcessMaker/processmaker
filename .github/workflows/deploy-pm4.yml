@@ -140,7 +140,7 @@ jobs:
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
-            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise --version 2.1.0
+            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise
             sed -i "s/{{instance}}/ci-$deploy/" template-cert.yaml
             sed -i "s/{{tls-crt}}/${{ secrets.TLS_CRT }}/" template-cert.yaml
             sed -i "s/{{tls-key}}/${{ secrets.TLS_KEY }}/" template-cert.yaml
