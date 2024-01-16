@@ -56,8 +56,10 @@ jobs:
         sudo mv kubectl /usr/local/bin/
     - name: Authenticate with Amazon EKS
       run: aws eks update-kubeconfig --region us-east-1 --name next-qa-cluster
-    - name: Deploy to Amazon EKS
-      run: kubectl get nodes
+    #- name: Deploy to Amazon EKS
+    #  run: kubectl get nodes
+    - name: Helm list
+      run: helm version && helm list
   #imageEKS: 
   #  name: build-docker-image-EKS
   #  if: github.event.action != 'closed'
