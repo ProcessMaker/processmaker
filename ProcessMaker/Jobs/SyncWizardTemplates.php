@@ -83,9 +83,6 @@ class SyncWizardTemplates implements ShouldQueue
                 }
 
                 try {
-                    // Remove deprecated templates that are not in the index.json file.
-                    $this->removeDeprecatedTemplates($wizardTemplates);
-
                     // Import templates from the index.json file.
                     foreach ($wizardTemplates as $template) {
                         $this->importTemplate($template, $config, $wizardTemplateCategoryId);
@@ -97,18 +94,6 @@ class SyncWizardTemplates implements ShouldQueue
         } catch (Exception $e) {
             Log::error("Error Syncing Guided Templates: {$e->getMessage()}");
         }
-    }
-
-    // Since the wizard templates are not tracked by a specific ID, we need to track them by the template name.
-    // If the template name has changed, we need to remove the deprecated template name from the database.
-    private function removeDeprecatedTemplates($wizardTemplates)
-    {
-        $templateNames = array_map(function ($template) {
-            return $template['template_details']['card-title'];
-        }, $wizardTemplates);
-
-        // Remove templates that are no longer present in the provided wizard templates.
-        WizardTemplate::whereNotIn('name', $templateNames)->delete();
     }
 
     /**
@@ -212,10 +197,10 @@ class SyncWizardTemplates implements ShouldQueue
     private function updateOrCreateWizardTemplate($template, $newHelperProcessId, $newProcessTemplateId)
     {
         // Update or create the wizard template in the database
-
         return WizardTemplate::updateOrCreate([
-            'name' => $template['template_details']['card-title'],
+            'unique_template_id' => $template['template_details']['unique-template-id'],
         ], [
+            'name' => $template['template_details']['card-title'],
             'description' => $template['template_details']['card-excerpt'],
             'helper_process_id' => $newHelperProcessId,
             'process_template_id' => $newProcessTemplateId,
