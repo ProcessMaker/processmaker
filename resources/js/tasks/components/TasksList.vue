@@ -29,7 +29,6 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
-                                   :sort="order_direction"
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
@@ -304,7 +303,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 70,
+          width: 80,
         },
         {
           label: this.$t("Case title"),
@@ -324,7 +323,7 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task name"),
+          label: this.$t("Task"),
           field: "task_name",
           sortable: true,
           default: true,

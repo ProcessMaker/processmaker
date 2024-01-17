@@ -59,7 +59,7 @@
         this.input = value;
       },
       toogle(value) {
-        if (value === null) {
+        if (value === null || value === undefined) {
           this.viewToggleDesc = false;
           this.viewToggleAsc = false;
         } else {
