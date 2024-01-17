@@ -297,7 +297,7 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
-  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
   window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
   window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
   window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
