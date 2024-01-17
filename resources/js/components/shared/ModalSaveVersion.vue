@@ -643,9 +643,6 @@ export default {
               versionable_id: this.options.id,
               versionable_type: this.options.type,
             })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
-            })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
