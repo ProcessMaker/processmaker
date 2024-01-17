@@ -339,7 +339,7 @@
           },
           submit(task) {
             if (this.isSelfService) {
-              ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
+              window.parent.ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
             } else {
               if (this.submitting) {
                 return;
@@ -351,7 +351,7 @@
               ProcessMaker.apiClient
               .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
               .then(() => {
-                window.ProcessMaker.alert(message, 'success', 5, true);
+                window.parent.ProcessMaker.alert(message, 'success', 5, true);
               })
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page
@@ -359,7 +359,7 @@
                 if (error.response?.status && error.response?.status === 422) {
                   // Validation error
                   Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                    window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                    window.parent.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
                   });
                 }
               }).finally(() => {
