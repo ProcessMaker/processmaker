@@ -52,8 +52,7 @@
     },
     methods: {
       onShown() {
-        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
-        cancel[0].focus();
+        this.focusCancelButton();
         this.closeOnBlur();
       },
       onShow() {
@@ -83,6 +82,10 @@
         area.addEventListener('mouseleave', () => {
           window.addEventListener('click', this.onCancel);
         });
+      },
+      focusCancelButton() {
+        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+        cancel[0].focus();
       }
     }
   };
