@@ -94,11 +94,17 @@ export default {
           }
         })
         .catch(err => {
-          this.havelessOneStartEvent = true;
-          this.processEvents = [];
-          this.startEvent = 0;
+          this.disableButton();
           ProcessMaker.alert(err, "danger");
         });
+    },
+    /** 
+     * Disable Start Button
+     */
+    disableButton() {
+      this.havelessOneStartEvent = true;
+      this.processEvents = [];
+      this.startEvent = 0;
     },
     /**
      * Start new request
