@@ -3,16 +3,16 @@
 namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
-use ProcessMaker\Jobs\SyncWizardTemplates as Job;
+use ProcessMaker\Jobs\SyncGuidedTemplates as Job;
 
-class SyncWizardTemplates extends Command
+class SyncGuidedTemplates extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'processmaker:sync-wizard-templates
+    protected $signature = 'processmaker:sync-guided-templates
                             {--queue : Queue this command to run asynchronously}';
 
     /**
@@ -20,7 +20,7 @@ class SyncWizardTemplates extends Command
      *
      * @var string
      */
-    protected $description = 'Synchronize wizard templates from a central repository';
+    protected $description = 'Synchronize guided templates from a central repository';
 
     /**
      * Create a new command instance.
