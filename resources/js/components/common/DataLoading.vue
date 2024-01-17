@@ -151,5 +151,6 @@
         color: #556271;
         font-weight: 400;
         font-size: 20px;
+        white-space: pre-line
     }
 </style>
