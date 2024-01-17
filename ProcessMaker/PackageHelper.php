@@ -50,7 +50,7 @@ class PackageHelper
 
     const PM_PACKAGE_DECISION_ENGINE = 'ProcessMaker\Package\PackageDecisionEngine\PackageServiceProvider';
 
-    const PM_PACKAGE_SAVEDSEARCH = 'ProcessMaker\Package\SavedSearch\SavedSearchServiceProvider';
+    const PM_PACKAGE_SAVED_SEARCH = 'ProcessMaker\Package\SavedSearch\SavedSearchServiceProvider';
 
     public static function isPackageInstalled(string $serviceProviderClass): bool
     {
