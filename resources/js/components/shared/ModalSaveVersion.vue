@@ -630,6 +630,7 @@ export default {
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
+          this.types[this.options.type] === "modeler-save" ? false : null,
         );
       });
 

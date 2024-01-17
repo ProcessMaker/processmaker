@@ -1,3 +1,5 @@
+import { get } from 'lodash';
+
 export default {
   methods: {
     containsHTML(text) {
@@ -44,6 +46,9 @@ export default {
     },
     formatCategory(categories) {
       return categories.map(item => item.name).join(', ');
+    },
+    getNestedPropertyValue(obj, path) {
+      return get(obj, path);
     },
   },
 };

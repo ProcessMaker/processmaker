@@ -100,6 +100,10 @@ class Filter
             return 'like';
         }
 
+        if ($this->operator === 'regex') {
+            $this->operator = 'REGEXP';
+        }
+        
         return $this->operator;
     }
 
