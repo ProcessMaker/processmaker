@@ -23,7 +23,8 @@
 
 @section('js')
   <script>
-    window.Processmaker.isSavedSearchInstalled = @json(\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_SAVEDSEARCH));
+    window.Processmaker.isSavedSearchInstalled = 
+      @json(\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_SAVEDSEARCH));
   </script>
   <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
 @endsection
