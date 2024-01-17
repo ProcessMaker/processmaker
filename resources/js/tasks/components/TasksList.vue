@@ -463,6 +463,11 @@ export default {
       const rowElement = document.getElementById(`row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
 
+      const selectedFiltersBar = document.querySelector('.selected-filters-bar');
+      const selectedFiltersBarHeight = selectedFiltersBar ? selectedFiltersBar.offsetHeight : 0;
+
+      elementHeight -= selectedFiltersBarHeight;
+
       const rightBorderX = rect.right;
       const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
 

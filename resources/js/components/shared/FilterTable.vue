@@ -305,7 +305,7 @@ export default {
 }
 .pm-table-filter-button {
   position: absolute;
-  top: 17%;
+  top: 20%;
   right: 7px;
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
