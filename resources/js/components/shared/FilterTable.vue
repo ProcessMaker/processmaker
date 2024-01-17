@@ -338,6 +338,7 @@ export default {
 }
 .pm-table-filter-applied {
   color: #1572C2;
+  background-color: #F2F8FE !important;
 }
 .pm-table-unread-row {
   font-weight: bold;
