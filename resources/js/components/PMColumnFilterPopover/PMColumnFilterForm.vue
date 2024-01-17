@@ -1,6 +1,6 @@
 <template>
   <div class="pm-filter-form">
-    <b-form>
+    <b-form @submit.prevent="handleSubmit">
       <PMColumnFilterToggleAscDesc v-model="viewSort"
                                    @onChange="onChangeSort">
       </PMColumnFilterToggleAscDesc>
@@ -94,7 +94,7 @@
     data() {
       return {
         items: [],
-        viewSort: "asc",
+        viewSort: null,
         viewItemsChanged: false
       };
     },
@@ -267,6 +267,9 @@
           myDiv.scrollTop = 185 * (this.items.length);
           this.viewItemsChanged = false;
         }
+      },
+      handleSubmit() {
+        this.onApply();
       }
     }
   };

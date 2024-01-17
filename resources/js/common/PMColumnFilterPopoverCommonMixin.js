@@ -97,10 +97,6 @@ const PMColumnFilterCommonMixin = {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
-    onShown(object, index) {
-      let cancel = object.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
-      cancel[0].focus();
-    },
     getAdvancedFilter() {
       let flat = this.advancedFilter.flat(1);
       return flat.length > 0 ? "&advanced_filter=" + JSON.stringify(flat) : "";
@@ -177,7 +173,6 @@ const PMColumnFilterCommonMixin = {
       }
       for (let i in this.tableHeaders) {
         if (this.tableHeaders[i].field === this.orderBy) {
-          this.tableHeaders[i].filterApplied = true;
           let sort = this.sortOrder[0].direction;
           this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");

@@ -26,14 +26,12 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
-                                   :sort="orderDirection"
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"
-                                   @onUpdate="onUpdate($event, index)"
-                                   @onShown="onShown($event, index)">
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -234,7 +232,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
         },
         {
           label: this.$t("Case title"),
@@ -547,4 +545,7 @@ export default {
   .pm-table-ellipsis-column{
     text-transform: uppercase;
   }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

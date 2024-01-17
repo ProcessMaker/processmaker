@@ -29,14 +29,12 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
-                                   :sort="order_direction"
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, index)"
                                    @onClear="onClear(index)"
-                                   @onUpdate="onUpdate($event, index)"
-                                   @onShown="onShown($event, index)">
+                                   @onUpdate="onUpdate($event, index)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -305,7 +303,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
         },
         {
           label: this.$t("Case title"),
@@ -325,7 +323,7 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task name"),
+          label: this.$t("Task"),
           field: "task_name",
           sortable: true,
           default: true,
@@ -591,4 +589,7 @@ export default {
   font-weight: 600;
   border-radius: 5px;
 }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>
