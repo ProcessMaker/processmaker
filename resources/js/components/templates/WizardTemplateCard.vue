@@ -48,17 +48,32 @@ export default {
   width: 350px;
   height: 240px;
   overflow: hidden;
+  &:before {
+    content: "";
+    background-color: #ffff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: .5;
+  }
   &.hover {
     box-shadow: 0px 10px 20px 4px #00000021;
     cursor: pointer;
   }
-  .card-text {
-    font-size: 15px;
-    color: #556271;
-    h5 {
-        font-weight: 700;
+
+  .card-body {
+    z-index: 2;
+    .card-text {
+      font-size: 15px;
+      color: #556271;
+      h5 {
+          font-weight: 700;
+      }
     }
   }
+  
 }
 
 @media (min-width: 576px) {
