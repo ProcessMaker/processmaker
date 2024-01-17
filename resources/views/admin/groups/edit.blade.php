@@ -67,6 +67,30 @@
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
                             <div class="invalid-feedback" role="alert" v-if="errors.status">@{{errors.status[0]}}</div>
                         </div>
+
+                        @if ($settings['2fa_enabled'])
+                            <div class="form-group mt-3">
+                                <div class="custom-control custom-switch">
+                                    {!! Form::checkbox('enabled_2fa', 1, null, [
+                                        'id' => 'enabled_2fa',
+                                        'class' => 'custom-control-input',
+                                        'v-model' => 'formData.enabled_2fa',
+                                    ]) !!}
+
+                                    {!! Form::label('enabled_2fa', __('Two Factor Authentication'), [
+                                        'class' => 'custom-control-label',
+                                        'for' => 'enabled_2fa',
+                                    ]) !!}
+                                </div>
+
+                                <ul v-show="formData.enabled_2fa" v-cloak>
+                                    @foreach ($settings['2fa_methods'] as $method)
+                                        <li>{{ $method }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         @isset($addons)
                             @foreach ($addons as $addon)
                                 {!! __($addon['content']) !!}

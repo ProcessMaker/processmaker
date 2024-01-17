@@ -50,6 +50,7 @@ class Group extends ProcessMakerModel
         'description',
         'manager_id',
         'status',
+        'enabled_2fa',
     ];
 
     public static function rules($existing = null)
