@@ -87,6 +87,7 @@
       ref="addProcessModal"
       :type="$t('Process')"
       :count-categories="categoryCount"
+      :package-ai="hasPackageAI"
       hide-add-btn="true"
     >
     </select-template-modal>
@@ -114,6 +115,7 @@ export default {
   ],
   data() {
     return {
+      hasPackageAI: 0,
       showTemplateModal: true,
       assetName: null,
       assetId: null,
@@ -154,6 +156,7 @@ export default {
       }
     });
     this.comeFromProcess = this.fromProcessList;
+    this.checkPackageAiInstalled();
   },
   methods: {
     /**
@@ -219,6 +222,9 @@ export default {
     hasPermission() {
       return this.permission.includes("create-processes")
     },
+    checkPackageAiInstalled() {
+      this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
+    }
   },
 };
 </script>
