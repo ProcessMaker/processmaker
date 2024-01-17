@@ -115,6 +115,7 @@ export default {
         this.loadMore();
       }
     });
+    this.selectDefault();
     this.comeFromProcess = this.fromProcessList;
   },
   updated() {
@@ -161,6 +162,14 @@ export default {
      */
     onFilter(value) {
       this.filterCategories(value);
+    },
+    /**
+     * Select Default Option
+     */
+    selectDefault() {
+      if (window.location.pathname === "/processes-catalogue") {
+        this.selectProcessItem(this.data[0]);
+      }
     },
   },
 };
