@@ -345,22 +345,22 @@ export default {
       });
       return data;
     },
-    handleEllipsisClick(column) {
-      if (column.direction === "asc") {
-        column.direction = "desc";
-      } else if (column.direction === "desc") {
-        column.direction = "none";
-        column.filterApplied = false;
+    handleEllipsisClick(processColumn) {
+      if (processColumn.direction === "asc") {
+        processColumn.direction = "desc";
+      } else if (processColumn.direction === "desc") {
+        processColumn.direction = "none";
+        processColumn.filterApplied = false;
       } else {
-        column.direction = "asc";
-        column.filterApplied = true;
+        processColumn.direction = "asc";
+        processColumn.filterApplied = true;
       }
 
-      if (column.direction !== "none") {
+      if (processColumn.direction !== "none") {
         const sortOrder = [
           {
-            sortField: column.sortField || column.field,
-            direction: column.direction,
+            sortField: processColumn.sortField || processColumn.field,
+            direction: processColumn.direction,
           },
         ];
         this.dataManager(sortOrder);

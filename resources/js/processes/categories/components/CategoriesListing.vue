@@ -137,6 +137,7 @@
             field: "name",
             width: 200,
             sortable: true,
+            truncate: true,
             direction: "none",
           },
           {
@@ -279,22 +280,22 @@
         };
         return bubbleColor[status];
       },
-      handleEllipsisClick(column) {
-        if (column.direction === "asc") {
-          column.direction = "desc";
-        } else if (column.direction === "desc") {
-          column.direction = "none";
-          column.filterApplied = false;
+      handleEllipsisClick(categoryColumn) {
+        if (categoryColumn.direction === "asc") {
+          categoryColumn.direction = "desc";
+        } else if (categoryColumn.direction === "desc") {
+          categoryColumn.direction = "none";
+          categoryColumn.filterApplied = false;
         } else {
-          column.direction = "asc";
-          column.filterApplied = true;
+          categoryColumn.direction = "asc";
+          categoryColumn.filterApplied = true;
         }
 
-        if (column.direction !== "none") {
+        if (categoryColumn.direction !== "none") {
           const sortOrder = [
             {
-              sortField: column.sortField || column.field,
-              direction: column.direction,
+              sortField: categoryColumn.sortField || categoryColumn.field,
+              direction: categoryColumn.direction,
             },
           ];
           this.dataManager(sortOrder);

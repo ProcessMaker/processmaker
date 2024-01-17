@@ -55,9 +55,22 @@
                 :data-cy="`template-table-field-${rowIndex}-${colIndex}`"
               >
                 <template v-if="header.field === 'name'">
-                  <span v-uni-id="row.id.toString()">{{row.name}}
-                    <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
-                  </span>
+                  <div
+                    :id="`element-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <span v-uni-id="row.id.toString()">{{row.name}}
+                      <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
+                    </span>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${row.id}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
                 </template>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
@@ -137,6 +150,7 @@
               field: "name",
               width: 200,
               sortable: true,
+              truncate: true,
               direction: "none",
             },
             {
@@ -322,22 +336,22 @@
           });
           return data;
         },
-        handleEllipsisClick(column) {
-          if (column.direction === "asc") {
-            column.direction = "desc";
-          } else if (column.direction === "desc") {
-            column.direction = "none";
-            column.filterApplied = false;
+        handleEllipsisClick(templateColumn) {
+          if (templateColumn.direction === "asc") {
+            templateColumn.direction = "desc";
+          } else if (templateColumn.direction === "desc") {
+            templateColumn.direction = "none";
+            templateColumn.filterApplied = false;
           } else {
-            column.direction = "asc";
-            column.filterApplied = true;
+            templateColumn.direction = "asc";
+            templateColumn.filterApplied = true;
           }
 
-          if (column.direction !== "none") {
+          if (templateColumn.direction !== "none") {
             const sortOrder = [
               {
-                sortField: column.sortField || column.field,
-                direction: column.direction,
+                sortField: templateColumn.sortField || templateColumn.field,
+                direction: templateColumn.direction,
               },
             ];
             this.dataManager(sortOrder);
