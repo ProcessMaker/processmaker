@@ -8,7 +8,7 @@
       type="button"
       class="btn btn-success border border-white"
       aria-haspopup="dialog"
-      :aria-label="$t('New Request')"
+      :aria-label="$t('New Case')"
       @click="showRequestModal"
     >
       <i class="fas fa-plus" />

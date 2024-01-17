@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      pmqlTask: `(status = "In Progress")`,
+      pmqlTask: `(user_id = ${ProcessMaker.user.id})`,
       filter: "",
       previousFilter: "",
       previousPmql: "",
@@ -78,16 +78,15 @@ export default {
       tableHeaders: [],
       tableHeadersTasks: [
         {
-          label: "CASE TITLE",
-          field: "case_title",
+          label: "CASE #",
+          field: "case_number",
           sortable: true,
           default: true,
-          width: 140,
-          truncate: true,
+          width: 55,
         },
         {
-          label: "PROCESS NAME",
-          field: "name",
+          label: "CASE TITLE",
+          field: "case_title",
           sortable: true,
           default: true,
           width: 140,
@@ -144,16 +143,19 @@ export default {
         record["case_number"] = this.formatCaseNumber(record.process_request);
         record["case_title"] = this.formatCaseTitle(record.process_request);
         record["name"] = record.process.name;
-        record["status"] = this.formatStatus(record["status"]);
+        record["status"] = this.formatStatus(record);
         record["participants"] = this.formatParticipants(
           record["participants"]
         );
       }
       return data;
     },
+    openRequest(data) {
+      return `/requests/${data.id}`;
+    },
     formatCaseTitle(processTask) {
       return `
-      <a href="${this.openTask(processTask, 1)}"
+      <a href="${this.openRequest(processTask, 1)}"
          class="text-nowrap">
          ${processTask.case_title_formatted || ""}
       </a>`;
@@ -168,12 +170,33 @@ export default {
         },
       };
     },
+    formatStatus(props) {
+      let color;
+      let label;
+
+      if (props.status === "ACTIVE" && props.isSelfService) {
+        color = "danger";
+        label = "Self Service";
+      } 
+      if (props.status === "ACTIVE") {
+        color = "success";
+        label = "In Progress";
+      } 
+      if (props.status === "CLOSED") {
+        color = "primary";
+        label = "Completed";
+      }
+      return `
+        <span class="badge badge-${color} status-${color}">
+          ${label}
+        </span>`;
+    },
     handleRowClick(row) {
       window.location.href = this.openTask(row, 1);
     },
     formatCaseNumber(value) {
       return `
-      <a href="${this.openTask(value, 1)}"
+      <a href="${this.openRequest(value, 1)}"
          class="text-nowrap">
         # ${value.case_number}
       </a>`;
@@ -210,10 +233,9 @@ export default {
         " AND process_id=" +
         `${this.process.id}` +
         "&per_page=10&order_by=ID&order_direction=DESC&non_system=true";
-
-      this.getData(this.queryTask, "tasks");
+      this.getData(this.queryTask);
     },
-    getData(query, type) {
+    getData(query) {
       // Load from api client
       ProcessMaker.apiClient
         .get(query)

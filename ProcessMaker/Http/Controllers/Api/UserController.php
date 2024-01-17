@@ -221,7 +221,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (!Auth::user()->can('view', $user)) {
+        if (!Auth::user()->can('view', $user) && !Auth::user()->can('create-projects')) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
@@ -685,7 +685,7 @@ class UserController extends Controller
     /**
      * Get filter configuration.
      *
-     * @param String $name
+     * @param string $name
      * @return \Illuminate\Http\Response
      *
      * @OA\Get(
@@ -712,13 +712,14 @@ class UserController extends Controller
     public function getFilterConfiguration(String $name, Request $request)
     {
         $filter = SaveSession::getConfigFilter($name, $request->user());
-        return response(["data" => $filter], 200);
+
+        return response(['data' => $filter], 200);
     }
 
     /**
      * Store filter configuration.
      *
-     * @param String $name
+     * @param string $name
      * @param Request $request
      * @return \Illuminate\Http\Response
      *
@@ -747,6 +748,7 @@ class UserController extends Controller
     {
         $request->json()->all();
         $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
-        return response(["data" => $filter], 200);
+
+        return response(['data' => $filter], 200);
     }
 }
