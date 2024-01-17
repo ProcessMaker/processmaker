@@ -147,6 +147,7 @@ export default {
   },
   methods: {
     fetchChart(idChart) {
+      if (!Processmaker.isSavedSearchInstalled) return;
       ProcessMaker.apiClient
         .get(`saved-searches/charts/${idChart}`, { timeout: 0 })
         .then((response) => {

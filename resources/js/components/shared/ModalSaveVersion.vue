@@ -468,6 +468,7 @@ export default {
      * Initial method to retrieve Saved Search Charts and populate dropdown
      */
     retrieveSavedSearchCharts() {
+      if (!Processmaker.isSavedSearchInstalled) return;
       ProcessMaker.apiClient
         .get(
           "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
