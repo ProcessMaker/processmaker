@@ -13,6 +13,20 @@
           :data="data"
           style="height: calc(100vh - 350px);"
         >
+          <!-- Slot Table Header filter Button -->
+          <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+            <div
+              @click="handleEllipsisClick(column)"
+            >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
+        </template>
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
             v-for="(header, colIndex) in fields"
@@ -123,24 +137,30 @@
               field: "name",
               width: 200,
               sortable: true,
+              direction: "none",
             },
             {
               label: "CATEGORY",
               field: "category_list",
               width: 160,
               sortable: true,
+              direction: "none",
+              sortField: "category.name",
             },
             {
               label: "TEMPLATE AUTHOR",
               field: "owner",
               width: 160,
               sortable: true,
+              direction: "none",
+              sortField: "user.username",
             },
             {
               label: "VERSION",
               field: "version",
               width: 100,
               sortable: true,
+              direction: "none",
             },
             {
               label: "VERSION DATE",
@@ -148,6 +168,7 @@
               format: "datetime",
               width: 200,
               sortable: true,
+              direction: "none",
             },
             {
               label: "CREATED",
@@ -155,6 +176,7 @@
               format: "datetime",
               width: 200,
               sortable: true,
+              direction: "none",
             },
             {
               name: "__slot:actions",
@@ -299,6 +321,29 @@
             return template;
           });
           return data;
+        },
+        handleEllipsisClick(column) {
+          if (column.direction === "asc") {
+            column.direction = "desc";
+          } else if (column.direction === "desc") {
+            column.direction = "none";
+            column.filterApplied = false;
+          } else {
+            column.direction = "asc";
+            column.filterApplied = true;
+          }
+
+          if (column.direction !== "none") {
+            const sortOrder = [
+              {
+                sortField: column.sortField || column.field,
+                direction: column.direction,
+              },
+            ];
+            this.dataManager(sortOrder);
+          } else {
+            this.fetch();
+          }
         },
       },
     };

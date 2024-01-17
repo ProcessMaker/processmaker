@@ -13,6 +13,20 @@
         :data="data"
         style="height: calc(100vh - 350px);"
       >
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+          <div
+            @click="handleEllipsisClick(column)"
+          >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
+        </template>
         <!-- Slot Table Body -->
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
@@ -42,24 +56,35 @@
                 :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
               >
                 <template v-if="header.field === 'name'">
-                  <i tabindex="0"
-                    v-b-tooltip
-                    :title="row.warningMessages.join(' ')"
-                    class="text-warning fa fa-exclamation-triangle"
-                    :class="{'invisible': row.warningMessages.length == 0}">
-                  </i>
-                  <i tabindex="0"
-                    v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
-                    v-b-tooltip
-                    :title="row.status"
-                    class="mr-2"
-                    :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }">
-                  </i>
-                  <span
-                    v-uni-id="row.id.toString()"
+                  <div
+                    :id="`element-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <i tabindex="0"
+                      v-b-tooltip
+                      :title="row.warningMessages.join(' ')"
+                      class="text-warning fa fa-exclamation-triangle"
+                      :class="{'invisible': row.warningMessages.length == 0}">
+                    </i>
+                    <i tabindex="0"
+                      v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
+                      v-b-tooltip
+                      :title="row.status"
+                      class="mr-2"
+                      :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }">
+                    </i>
+                    <span>
+                      {{ row[header.field] }}
+                    </span>
+                  </div>
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${row.id}`"
+                    custom-class="pm-table-tooltip"
                   >
                     {{ row[header.field] }}
-                  </span>
+                  </b-tooltip>
                 </template>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
@@ -153,18 +178,24 @@ export default {
           field: "name",
           width: 200,
           sortable: true,
+          truncate: true,
+          direction: "none",
         },
         {
           label: "CATEGORY",
           field: "category_list",
           width: 160,
           sortable: true,
+          direction: "none",
+          sortField: "category.name",
         },
         {
           label: "OWNER",
           field: "owner",
           width: 160,
           sortable: true,
+          direction: "none",
+          sortField: "user.username",
         },
         {
           label: "MODIFIED",
@@ -172,6 +203,7 @@ export default {
           format: "datetime",
           width: 160,
           sortable: true,
+          direction: "none",
         },
         {
           label: "CREATED",
@@ -179,6 +211,7 @@ export default {
           format: "datetime",
           width: 160,
           sortable: true,
+          direction: "none",
         },
         {
           name: "__slot:actions",
@@ -311,6 +344,29 @@ export default {
         return process;
       });
       return data;
+    },
+    handleEllipsisClick(column) {
+      if (column.direction === "asc") {
+        column.direction = "desc";
+      } else if (column.direction === "desc") {
+        column.direction = "none";
+        column.filterApplied = false;
+      } else {
+        column.direction = "asc";
+        column.filterApplied = true;
+      }
+
+      if (column.direction !== "none") {
+        const sortOrder = [
+          {
+            sortField: column.sortField || column.field,
+            direction: column.direction,
+          },
+        ];
+        this.dataManager(sortOrder);
+      } else {
+        this.fetch();
+      }
     },
   },
 };
