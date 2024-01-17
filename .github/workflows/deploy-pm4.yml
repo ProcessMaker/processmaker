@@ -75,9 +75,7 @@ jobs:
         run: |          
           docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
-  deployEKS:
-    name: build-deploy-EKS
-    if: contains(github.event.pull_request.body, 'ci:deploy')
+  prepareDB:
     needs: imageEKS
     runs-on: self-hosted
     steps:
@@ -92,12 +90,34 @@ jobs:
           kubectl get namespace ci-processmaker-ns-pm4
           namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
           kubectl apply -f template-db.yaml
+  deployEKS:
+    name: build-deploy-EKS
+    if: contains(github.event.pull_request.body, 'ci:deploy')
+    needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
       - name: Install pm4-tools
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
           cd pm4-k8s-distribution/images/pm4-tools
           composer install --no-interaction
           cd ..
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID1 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY1 }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Set up kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      - name: Authenticate with Amazon EKS
+        run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
       - name: Deploy instance EKS
         run: |
           cd argocd 
@@ -110,7 +130,11 @@ jobs:
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
-            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise --version 2.1.0             
+            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise
+            sed -i "s/{{instance}}/ci-$deploy/" template-cert.yaml
+            sed -i "s/{{tls-crt}}/${{ secrets.TLS_CRT }}/" template-cert.yaml
+            sed -i "s/{{tls-key}}/${{ secrets.TLS_KEY }}/" template-cert.yaml
+            kubectl apply -f template-cert.yaml          
           else
             echo "Bouncing Instance  ";
             sed -i "s/{{instance}}/ci-$deploy/g" template-bounce.yaml
@@ -135,8 +159,7 @@ jobs:
           deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
           echo "Deleting Instace :: ci-$deploy"
           helm delete ci-$deploy
-          kubectl delete namespace ci-$deploy-ns-pm4      
-
+          kubectl delete namespace ci-$deploy-ns-pm4
   runPhpUnit:
     name: run-phpunit
     if: github.event.action != 'closed'

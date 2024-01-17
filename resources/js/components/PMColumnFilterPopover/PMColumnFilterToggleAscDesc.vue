@@ -35,8 +35,8 @@
     ],
     data() {
       return {
-        input: "asc",
-        viewToggleAsc: true,
+        input: null,
+        viewToggleAsc: false,
         viewToggleDesc: false
       };
     },
@@ -51,6 +51,7 @@
       input() {
         this.$emit("input", this.input);
         this.$emit("onChange", this.input);
+        this.toogle(this.input);
       }
     },
     methods: {
@@ -58,8 +59,13 @@
         this.input = value;
       },
       toogle(value) {
-        this.viewToggleDesc = value.toLowerCase() === "desc";
-        this.viewToggleAsc = value.toLowerCase() === "asc";
+        if (value === null || value === undefined) {
+          this.viewToggleDesc = false;
+          this.viewToggleAsc = false;
+        } else {
+          this.viewToggleDesc = value.toLowerCase() === "desc";
+          this.viewToggleAsc = value.toLowerCase() === "asc";
+        }
       }
     }
   };

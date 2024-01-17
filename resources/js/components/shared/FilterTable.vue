@@ -307,7 +307,7 @@ export default {
 }
 .pm-table-filter-button {
   position: absolute;
-  top: 10%;
+  top: 20%;
   right: 7px;
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
@@ -340,6 +340,7 @@ export default {
 }
 .pm-table-filter-applied {
   color: #1572C2;
+  background-color: #F2F8FE !important;
 }
 .pm-table-unread-row {
   font-weight: bold;
