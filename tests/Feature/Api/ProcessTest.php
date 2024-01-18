@@ -1273,13 +1273,12 @@ class ProcessTest extends TestCase
     public function testDeleteMediaImages()
     {
         $process = Process::factory()->create();
-        $faker = app(Faker::class);
-        $imageContent = file_get_contents($faker->imageUrl());
+        $imageContent = file_get_contents(__DIR__.'/images/640x480.png');
         $imagePath = storage_path('app/test-image.jpg');
-        file_put_contents($imagePath, $imageContent);
-        
-        $uploadedFile = new UploadedFile($imagePath, 'test-image.jpg', 'image/jpeg', null, true);
 
+        file_put_contents($imagePath, $imageContent);
+
+        $uploadedFile = new UploadedFile($imagePath, 'test-image.jpg', 'image/jpeg', null, true);
         $process->addMedia($uploadedFile)->toMediaCollection('images_carousel');
 
         $mediaImagen = $process->getFirstMedia('images_carousel');
