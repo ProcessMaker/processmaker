@@ -13,6 +13,7 @@
 
 </head>
 <body>
+  <div class="background-cover"></div>
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
       <div class="flex-fill small-screen">
@@ -162,10 +163,19 @@
     margin-top: 85px;
     text-align: left
   }
-  body {
-    background-image: url("/img/new_background.png");
+  .background-cover {
+    background-image: url(/img/new_background.png);
     background-repeat: no-repeat;
     background-size: cover;
+    position: fixed;
+    height: 100%;
+    top: 0;
+    z-index: -1;
+    left: 0;
+    width: 100%;
+  }
+  body {
+    background: transparent;
   }
   .slogan {
     max-width: 600px;
