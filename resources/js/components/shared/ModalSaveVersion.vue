@@ -56,7 +56,7 @@
                       >
                         <div class="d-flex align-items-center">
                           <i class="far fa-chart-bar" />
-                          <span class="ml-2">{{ selectedSavedChart || 'Select Chart' }}</span>
+                          <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
                         </div>
                       </button>
                       <div
@@ -69,7 +69,7 @@
                           class="dropdown-item"
                           @click="selectOption(item)"
                         >
-                          <i class="far fa-chart-bar" />
+                          <i class="far fa-chart-bar custom-text" />
                           {{ item.title || 'Select Chart' }}
                         </a>
                       </div>
@@ -643,9 +643,6 @@ export default {
               versionable_id: this.options.id,
               versionable_type: this.options.type,
             })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
-            })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
@@ -752,7 +749,7 @@ $multiselect-height: 38px;
 
 .dropdown-toggle {
   font-size: 14px;
-  padding: 5px 10px;
+  padding: 4px 10px;
 }
 
 .dropdown-item {
@@ -823,11 +820,11 @@ $multiselect-height: 38px;
   text-transform: none;
   border-color: rgba(35, 118, 200, 0.33);
   background-color: white;
-  color: black;
+  color: #212529;
 }
 
 .text-black {
-  color: #000000;
+  color: #212529;
 }
 
 .cursor-default {
@@ -858,5 +855,9 @@ $multiselect-height: 38px;
   color: red;
   font-size: 0.8rem;
   margin-top: 5px;
+}
+
+.custom-text {
+  font-size: 16px;
 }
 </style>

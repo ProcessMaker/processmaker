@@ -254,6 +254,7 @@ export default {
   },
   mounted: function mounted() {
     this.getAssignee("");
+    this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration("taskFilter");
     const params = new URL(document.location).searchParams;
@@ -529,20 +530,29 @@ export default {
     },
     getTypeColumnFilter(value) {
       let type = "Field";
-      if (value === "case_number" || value === "case_title" || value === "process") {
+      if (value === "case_number" || value === "case_title") {
+        type = "Relationship";
+      }
+      if (value === "process") {
         type = "Process";
       }
       if (value === "status") {
         type = "Status";
       }
-      if (value === "assignee") {
-        type = "Participants";
-      }
       return type;
     },
     getAliasColumnForFilter(value) {
+      if (value === "case_number") {
+        value = "processRequest.case_number";
+      }
+      if (value === "case_title") {
+        value = "processRequest.case_title";
+      }
       if (value === "task_name") {
         value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user_id";
       }
       return value;
     },
