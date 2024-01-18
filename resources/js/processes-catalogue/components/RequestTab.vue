@@ -56,7 +56,6 @@ export default {
   },
   data() {
     return {
-      pmqlRequest: `(requester = "${this.currentUser.username}")`,
       filter: "",
       previousFilter: "",
       previousPmql: "",
@@ -87,6 +86,7 @@ export default {
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
@@ -94,7 +94,7 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 150,
+          width: 100,
         },
         {
           label: "STARTED",
@@ -102,7 +102,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
         {
           label: "COMPLETED",
@@ -110,7 +110,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 160,
+          width: 140,
         },
       ],
       dataRequests: {},
@@ -142,6 +142,7 @@ export default {
       for (let record of data.data) {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
+        record["case_title"] = this.formatCaseTitle(record);
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(
           record["participants"]
@@ -166,11 +167,15 @@ export default {
         # ${value.case_number}
       </a>`;
     },
+    formatCaseTitle(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
+      </a>`;
+    },
     queryBuilder() {
-      let pmql = "";
-      if (this.pmqlRequest !== undefined) {
-        pmql = this.pmqlRequest;
-      }
+      let pmql = " process_id=" + `${this.process.id}`;
       let filter = this.filter;
       if (filter?.length) {
         if (filter.isPMQL()) {
@@ -186,9 +191,9 @@ export default {
         this.page = 1;
       }
       this.previousPmql = pmql;
-      this.tabRequests();
+      this.tabRequests(pmql);
     },
-    tabRequests() {
+    tabRequests(pmql) {
       this.queryRequest =
         "requests?page=" +
         this.page +
@@ -196,9 +201,7 @@ export default {
         this.perPage +
         "&include=process,participants,activeTasks,data" +
         "&pmql=" +
-        `${this.pmqlRequest}` +
-        " AND process_id=" +
-        `${this.process.id}` +
+        `${pmql}` +
         "&filter&order_by=id&order_direction=DESC";
       this.getData(this.queryRequest);
     },

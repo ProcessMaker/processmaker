@@ -1,8 +1,9 @@
 <template>
   <div :id="id">
     <b-button :id="'pm-cff-button-'+id" 
-              variant="light"
-              size="sm">
+              variant="link"
+              size="sm"
+              class="pm-filter-popover-button">
       <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
     <b-popover :container="container"
@@ -51,8 +52,8 @@
     },
     methods: {
       onShown() {
-        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
-        cancel[0].focus();
+        this.focusCancelButton();
+        this.closeOnBlur();
       },
       onShow() {
         this.$root.$emit("bv::hide::popover");
@@ -72,6 +73,19 @@
       onCancel() {
         this.popoverShow = false;
         this.$emit("onCancel");
+      },
+      closeOnBlur() {
+        let area = this.$refs.pmColumnFilterForm.$el.parentNode;
+        area.addEventListener('mouseenter', () => {
+          window.removeEventListener('click', this.onCancel);
+        });
+        area.addEventListener('mouseleave', () => {
+          window.addEventListener('click', this.onCancel);
+        });
+      },
+      focusCancelButton() {
+        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+        cancel[0].focus();
       }
     }
   };
@@ -80,6 +94,9 @@
 <style>
   .pm-filter-popover .popover-body{
     padding: 0.5rem 0.75rem !important;
+  }
+  .pm-filter-popover-button{
+    color: #1572C2 !important;
   }
 </style>
 <style scoped>

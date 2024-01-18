@@ -1,7 +1,7 @@
 <template>
   <div>
     <SearchCards
-      v-if="processList.length > 0"
+      v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
     />
     <div
@@ -28,6 +28,7 @@
     </div>
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
+      :show-empty="showEmpty"
       @wizardLinkSelect="wizardLinkSelected"
     />
   </div>
@@ -58,6 +59,7 @@ export default {
       totalPages: 1,
       pmql: "",
       bookmarkIcon: "far fa-bookmark",
+      showEmpty: false,
       loading: false,
     };
   },
@@ -93,6 +95,14 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
+      if (this.category === undefined || this.category.id === -1) {
+        return "process_bookmarks/processes?"
+          + `&page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&bookmark=true"
+          + "&order_by=name&order_direction=asc";
+      }
       if (this.category.id === 0) {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -123,8 +133,9 @@ export default {
     /**
      * Build the PMQL
      */
-    onFilter(value) {
+    onFilter(value, showEmpty = false) {
       this.pmql = `(fulltext LIKE "%${value}%")`;
+      this.showEmpty = showEmpty;
       this.loadCard();
     },
   },

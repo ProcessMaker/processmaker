@@ -67,6 +67,10 @@ const PMColumnFilterCommonMixin = {
       ];
     },
     onApply(json, index) {
+      for (let i in json) {
+        json[i].subject.type = this.getTypeColumnFilter(json[i].subject.value);
+        json[i].subject.value = this.getAliasColumnForFilter(json[i].subject.value);
+      }
       this.advancedFilterInit(this.tableHeaders.length);
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
@@ -169,7 +173,6 @@ const PMColumnFilterCommonMixin = {
       }
       for (let i in this.tableHeaders) {
         if (this.tableHeaders[i].field === this.orderBy) {
-          this.tableHeaders[i].filterApplied = true;
           let sort = this.sortOrder[0].direction;
           this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");

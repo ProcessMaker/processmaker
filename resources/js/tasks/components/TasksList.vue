@@ -29,7 +29,6 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
-                                   :sort="order_direction"
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
@@ -44,20 +43,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(row[header.field])">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <div v-html="sanitize(row[header.field])"></div>
+                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(row[header.field]) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -71,7 +70,7 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(row[header.field]) }}
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
                 </template>
@@ -81,13 +80,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header.field) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ row[header.field] }}
+                      {{ getNestedPropertyValue(row, header.field) }}
                     </b-tooltip>
                   </div>
                 </template>
@@ -157,6 +156,7 @@ import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
+import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -170,9 +170,14 @@ export default {
     paginationTable,
     TaskTooltip,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
+  mixins: [datatableMixin,
+    dataLoadingMixin,
+    uniqIdsMixin,
+    ListMixin,
+    PMColumnFilterPopoverCommonMixin,
+    FilterTableBodyMixin],
   props: {
     filter: {},
     columns: {},
@@ -237,7 +242,7 @@ export default {
           record["case_number"] = this.formatCaseNumber(record.process_request);
           record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
-          record["assignee"] = this.formatAsignee(record["user"]);
+          record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
           record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
@@ -298,7 +303,7 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
         },
         {
           label: this.$t("Case title"),
@@ -318,7 +323,7 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task name"),
+          label: this.$t("Task"),
           field: "task_name",
           sortable: true,
           default: true,
@@ -335,26 +340,22 @@ export default {
         {
           label: this.$t("Due date"),
           field: "due_at",
+          format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        },
-        {
-          label: this.$t("Assignee"),
-          field: "assignee",
-          sortable: true,
-          default: true,
-          width: 140,
-        },
-        {
+        }
+      ];
+      if (isStatusCompletedList) {
+        columns.push({
           label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        },
-      ]
+        });
+      }
       return columns;
     },
     onAction(action, rowData, index) {
@@ -457,6 +458,11 @@ export default {
       const rowElement = document.getElementById(`row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
 
+      const selectedFiltersBar = document.querySelector('.selected-filters-bar');
+      const selectedFiltersBarHeight = selectedFiltersBar ? selectedFiltersBar.offsetHeight : 0;
+
+      elementHeight -= selectedFiltersBarHeight;
+
       const rightBorderX = rect.right;
       const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
 
@@ -479,27 +485,6 @@ export default {
     hideTooltip() {
       this.isTooltipVisible = false;
     },
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
-    },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
-    },
-    sanitize(html) {
-      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
-      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
-      cleanHtml = cleanHtml.replace(/\s+/g, " ");
-
-      return cleanHtml;
-    },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
@@ -508,14 +493,6 @@ export default {
 
       return cleanHtml;
     },
-    changePage(page) {
-      this.page = page;
-      this.fetch();
-    },
-    /**
-     * This method is used in PMColumnFilterPopoverCommonMixin.js
-     * @returns {Array}
-     */
     getStatus() {
       return ["Self Service", "In Progress", "Completed"];
     },
@@ -525,18 +502,7 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "case_number"){
-        by = "id";
-      }
-      if(by === "case_title"){
-        by = "id";
-      }
-      if(by === "process"){
-        by = "id";
-      }
-      if(by === "assignee"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;
@@ -560,6 +526,43 @@ export default {
         }
       };
       ProcessMaker.apiClient.put(url, config);
+    },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Process";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      if (value === "assignee") {
+        type = "Participants";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "case_number") {
+        value = "process_requests.case_number";
+      }
+      if (value === "case_title") {
+        value = "process_requests.case_title_formatted";
+      }
+      if (value === "process") {
+        value = "process_requests.name";
+      }
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user.fullname";
+      }
+      return value;
     }
   }
 };
@@ -581,4 +584,7 @@ export default {
   font-weight: 600;
   border-radius: 5px;
 }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

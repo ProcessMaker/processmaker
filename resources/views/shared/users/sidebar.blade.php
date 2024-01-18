@@ -32,7 +32,9 @@
                => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
                <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
             </div>
-            @if (config('password-policies.users_can_change', true) || !Request::is('profile/edit'))
+            @if (config('password-policies.users_can_change', true) ||
+              !Request::is('profile/edit') ||
+              auth()->user()->is_administrator)
             @can('edit-user-and-password')
                 <div class="form-group">
                     <small class="form-text text-muted">
@@ -58,6 +60,7 @@
                 <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert"
                      v-for="(error, index) in errors.password">@{{error}}</div>
             </div>
+
             @endif
             @cannot('edit-user-and-password')
                 <div class="form-group">
@@ -78,6 +81,21 @@
                 </div>
             </div>
         </div>
+        @endif
+
+        @if (config('password-policies.2fa_enabled', false) && count($global2FAEnabled) > 0)
+            <div class="form-group">
+                {!! Form::label('preferences_2fa', __('Two Factor Authentication')) !!}
+                <b-form-checkbox-group
+                        id="preferences_2fa"
+                        v-model="formData.preferences_2fa"
+                        :options="global2FAEnabled"
+                        :state="state2FA"
+                        switches
+                        required
+                >
+                </b-form-checkbox-group>
+            </div>
         @endif
     </div>
 

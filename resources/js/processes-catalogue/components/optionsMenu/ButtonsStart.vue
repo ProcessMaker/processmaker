@@ -16,6 +16,7 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      @click="getStartEvents()"
     >
       <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
     </button>
@@ -62,7 +63,6 @@
 </template>
 
 <script>
-
 export default {
   props: ["process"],
   data() {
@@ -80,23 +80,31 @@ export default {
      * get start events for dropdown Menu
      */
     getStartEvents() {
-      const startEvents = this.process.start_events;
-      startEvents.forEach((event) => {
-        if (event.eventDefinitions.length === 0) {
-          if (event.config) {
-            const webEntry = JSON.parse(event.config).web_entry;
-            event.webEntry = webEntry;
+      this.processEvents = [];
+      ProcessMaker.apiClient
+        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
+        .then((response) => {
+          this.processEvents = response.data.data;
+          if (this.processEvents.length <= 1) {
+            const event = this.processEvents[0] ?? {};
+            if (!("webEntry" in event)) {
+              this.havelessOneStartEvent = true;
+              this.startEvent = event.id ?? 0;
+            }
           }
-          this.processEvents.push(event);
-        }
-      });
-      if (this.processEvents.length <= 1) {
-        const event = this.processEvents[0] ?? {};
-        if (!event.webEntry) {
-          this.havelessOneStartEvent = true;
-          this.startEvent = event.id ?? 0;
-        }
-      }
+        })
+        .catch(err => {
+          this.disableButton();
+          ProcessMaker.alert(err, "danger");
+        });
+    },
+    /** 
+     * Disable Start Button
+     */
+    disableButton() {
+      this.havelessOneStartEvent = true;
+      this.processEvents = [];
+      this.startEvent = 0;
     },
     /**
      * Start new request
