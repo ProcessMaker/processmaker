@@ -236,13 +236,10 @@
         },
         methods: {
           completed(processRequestId) {
-            console.log('completed');
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
-              console.log('uhoh');
               return;
             }
-            console.log('tonces que');
             setTimeout(() => {
               parent.location.reload();
             }, 200);
