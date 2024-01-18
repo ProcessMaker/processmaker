@@ -17,6 +17,7 @@
                 :user-id="currentUserId"
                 @task-updated="taskUpdated"
                 @submit="submit"
+                @completed="completed"
             ></task>
         </modal>
     </div>
