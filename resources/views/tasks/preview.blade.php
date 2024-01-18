@@ -166,7 +166,7 @@
             automaticLayout: true,
           },
           showJSONEditor: false,
-
+          windowParent: window.parent.ProcessMaker,
           // Reassignment
           selected: null,
           selectedIndex: -1,
@@ -264,7 +264,7 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.ProcessMaker.alert(this.$t('The task was successfully claimed'), 'primary', 5, true);
+                this.windowParent.alert(this.$t('The task was successfully claimed'), 'primary', 5, true);
                 parent.location.reload();
               });
           },
@@ -278,7 +278,7 @@
               })
               .then(response => {
                 this.fieldsToUpdate.splice(0);
-                ProcessMaker.alert(this.$t('The request data was saved.'), "success");
+                this.windowParent.alert(this.$t('The request data was saved.'), "success");
               });
           },
           saveJsonData () {
@@ -339,7 +339,7 @@
           },
           submit(task) {
             if (this.isSelfService) {
-              window.parent.ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
+              this.windowParent.alert(this.$t('Claim the Task to continue.'), 'warning');
             } else {
               if (this.submitting) {
                 return;
@@ -351,7 +351,7 @@
               ProcessMaker.apiClient
               .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
               .then(() => {
-                window.parent.ProcessMaker.alert(message, 'success', 5, true);
+                this.windowParent.alert(message, 'success', 5, true);
               })
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page
@@ -359,7 +359,7 @@
                 if (error.response?.status && error.response?.status === 422) {
                   // Validation error
                   Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                    window.parent.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                    this.windowParent.alert(`${key}: ${value[0]}`, 'danger', 0);
                   });
                 }
               }).finally(() => {
