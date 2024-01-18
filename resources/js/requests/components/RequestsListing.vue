@@ -253,7 +253,7 @@ export default {
         {
           label: this.$t("Task"),
           field: "active_tasks",
-          sortable: true,
+          sortable: false,
           default: true,
           width: 140,
           truncate: true,
