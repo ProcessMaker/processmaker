@@ -213,7 +213,7 @@ export default {
       if (!$event) {
         // Load details directly from the URL template parameter
         const params = new URL(window.location).searchParams;
-        const templateId = Number(params.get("template"));
+        const templateId = params.get("template");
 
         if (templateId) {
           this.loadTemplateDetails(templateId);
@@ -222,19 +222,19 @@ export default {
         // Add template parameter to the URL if guided templates are selected
         let url = new URL(window.location.href);
         if (url.search.includes('?guided_templates=true')) {
-          url.searchParams.append('template', $event.template.id);
+          url.searchParams.append('template', $event.template.unique_template_id);
           history.pushState(null, '', url); // Update the URL without triggering a page reload
         }
 
         // Direct selection of a wizard template card
-        this.loadTemplateDetails($event.template.id);
+        this.loadTemplateDetails($event.template.unique_template_id);
       } else {
         // Direct selection of a default template card
         this.emitTemplateDetails($event.template);
       }
     },
-    loadTemplateDetails(templateId) {
-      this.template = this.templates.find(template => template.id === templateId);
+    loadTemplateDetails(uniqueTemplateId) {
+      this.template = this.templates.find(template => template.unique_template_id === uniqueTemplateId);
       this.showWizardTemplateDetails = true;
 
       this.$nextTick(() => {

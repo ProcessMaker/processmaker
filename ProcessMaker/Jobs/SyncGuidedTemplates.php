@@ -21,7 +21,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\WizardTemplate;
 use Storage;
 
-class SyncWizardTemplates implements ShouldQueue
+class SyncGuidedTemplates implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -47,18 +47,18 @@ class SyncWizardTemplates implements ShouldQueue
     {
         try {
             // Fetch configuration from the environment
-            $config = config('services.wizard_templates_github');
+            $config = config('services.guided_templates_github');
 
-            // Build the URL to fetch the default templates list from GitHub
-            $url = $config['base_url'] . $config['wizard_repo'] . '/' . $config['wizard_branch'] . '/index.json';
+            // Build the URL to fetch the guided templates list from GitHub
+            $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
 
             // If there are multiple categories of templates defined in the .env, separate them into an array
-            $categories = (strpos($config['wizard_categories'], ',') !== false)
-                ? explode(',', $config['wizard_categories'])
-                : [$config['wizard_categories']];
+            $categories = (strpos($config['template_categories'], ',') !== false)
+                ? explode(',', $config['template_categories'])
+                : [$config['template_categories']];
 
             // Create or get the ID of the 'Guided Templates' category
-            $wizardTemplateCategoryId = ProcessCategory::firstOrCreate([
+            $guidedTemplateCategoryId = ProcessCategory::firstOrCreate([
                 'name' => 'Guided Templates',
             ], [
                 'status' => 'ACTIVE',
@@ -77,18 +77,15 @@ class SyncWizardTemplates implements ShouldQueue
             $data = $response->json();
 
             // Iterate over categories and templates to retrieve them
-            foreach ($data as $templateCategory => $wizardTemplates) {
+            foreach ($data as $templateCategory => $guidedTemplates) {
                 if (!in_array($templateCategory, $categories) && !in_array('all', $categories)) {
                     continue;
                 }
 
                 try {
-                    // Remove deprecated templates that are not in the index.json file.
-                    $this->removeDeprecatedTemplates($wizardTemplates);
-
                     // Import templates from the index.json file.
-                    foreach ($wizardTemplates as $template) {
-                        $this->importTemplate($template, $config, $wizardTemplateCategoryId);
+                    foreach ($guidedTemplates as $template) {
+                        $this->importTemplate($template, $config, $guidedTemplateCategoryId);
                     }
                 } catch (Exception $e) {
                     Log::error("Error Importing Guided Templates: {$e->getMessage()}");
@@ -99,27 +96,15 @@ class SyncWizardTemplates implements ShouldQueue
         }
     }
 
-    // Since the wizard templates are not tracked by a specific ID, we need to track them by the template name.
-    // If the template name has changed, we need to remove the deprecated template name from the database.
-    private function removeDeprecatedTemplates($wizardTemplates)
-    {
-        $templateNames = array_map(function ($template) {
-            return $template['template_details']['card-title'];
-        }, $wizardTemplates);
-
-        // Remove templates that are no longer present in the provided wizard templates.
-        WizardTemplate::whereNotIn('name', $templateNames)->delete();
-    }
-
     /**
-     * Import a wizard template into the database.
+     * Import a guided template into the database.
      *
      * @param array $template
      * @param array $config
-     * @param int $wizardTemplateCategoryId
+     * @param int $guidedTemplateCategoryId
      * @return void
      */
-    private function importTemplate($template, $config, $wizardTemplateCategoryId)
+    private function importTemplate($template, $config, $guidedTemplateCategoryId)
     {
         // Configure URLs for the helper process, process template
         $helperProcessUrl = $this->buildTemplateUrl($config, $template['helper_process']);
@@ -130,24 +115,24 @@ class SyncWizardTemplates implements ShouldQueue
         $templateProcessPayload = $this->fetchPayload($processTemplateUrl);
 
         // Update process categories for the helper process and process template
-        $this->updateProcessCategories($helperProcessPayload, $templateProcessPayload, $wizardTemplateCategoryId);
+        $this->updateProcessCategories($helperProcessPayload, $templateProcessPayload, $guidedTemplateCategoryId);
 
         // Import the helper process and get the new ID
-        $newHelperProcessId = $this->importProcess($helperProcessPayload, 'WIZARD_HELPER_PROCESS');
+        $newHelperProcessId = $this->importProcess($helperProcessPayload, 'GUIDED_HELPER_PROCESS');
         // Import the process template and get the new ID
-        $newProcessTemplateId = $this->importProcess($templateProcessPayload, 'WIZARD_PROCESS_TEMPLATE');
+        $newProcessTemplateId = $this->importProcess($templateProcessPayload, 'GUIDED_PROCESS_TEMPLATE');
 
-        // Update or create the wizard template in the database
-        $wizardTemplate = $this->updateOrCreateWizardTemplate($template, $newHelperProcessId, $newProcessTemplateId);
+        // Update or create the guided template in the database
+        $guidedTemplate = $this->updateOrCreateGuidedTemplate($template, $newHelperProcessId, $newProcessTemplateId);
 
         // Create a media collection for template assets
-        $mediaCollectionName = $this->createMediaCollection($wizardTemplate);
+        $mediaCollectionName = $this->createMediaCollection($guidedTemplate);
 
         // Import template assets and associate with the media collection
-        $this->importTemplateAssets($template, $config, $mediaCollectionName, $wizardTemplate);
+        $this->importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate);
 
-        $wizardTemplate->media_collection = $mediaCollectionName;
-        $wizardTemplate->save();
+        $guidedTemplate->media_collection = $mediaCollectionName;
+        $guidedTemplate->save();
     }
 
     // Helper functions used within importTemplate
@@ -155,8 +140,8 @@ class SyncWizardTemplates implements ShouldQueue
     {
         // Build the URL for a template based on the configuration and template path
         return $config['base_url'] .
-            $config['wizard_repo'] . '/' .
-            $config['wizard_branch'] . '/' .
+            $config['template_repo'] . '/' .
+            $config['template_branch'] . '/' .
             Str::replace('./', '', $templatePath);
     }
 
@@ -166,18 +151,18 @@ class SyncWizardTemplates implements ShouldQueue
         return Http::get($url)->json();
     }
 
-    private function updateProcessCategories(&$helperProcessPayload, &$templateProcessPayload, $wizardTemplateCategoryId)
+    private function updateProcessCategories(&$helperProcessPayload, &$templateProcessPayload, $guidedTemplateCategoryId)
     {
         // Update process categories for both the helper process and process template
         data_set(
             $helperProcessPayload,
             "export.{$helperProcessPayload['root']}.attributes.process_category_id",
-            $wizardTemplateCategoryId
+            $guidedTemplateCategoryId
         );
         data_set(
             $templateProcessPayload,
             "export.{$templateProcessPayload['root']}.attributes.process_category_id",
-            $wizardTemplateCategoryId
+            $guidedTemplateCategoryId
         );
     }
 
@@ -209,13 +194,13 @@ class SyncWizardTemplates implements ShouldQueue
         }
     }
 
-    private function updateOrCreateWizardTemplate($template, $newHelperProcessId, $newProcessTemplateId)
+    private function updateOrCreateGuidedTemplate($template, $newHelperProcessId, $newProcessTemplateId)
     {
         // Update or create the wizard template in the database
-
         return WizardTemplate::updateOrCreate([
-            'name' => $template['template_details']['card-title'],
+            'unique_template_id' => $template['template_details']['unique-template-id'],
         ], [
+            'name' => $template['template_details']['card-title'],
             'description' => $template['template_details']['card-excerpt'],
             'helper_process_id' => $newHelperProcessId,
             'process_template_id' => $newProcessTemplateId,
@@ -224,35 +209,35 @@ class SyncWizardTemplates implements ShouldQueue
         ]);
     }
 
-    private function createMediaCollection($wizardTemplate)
+    private function createMediaCollection($guidedTemplate)
     {
         // Create a media collection for template assets and return the collection name
-        $mediaCollectionName = 'wt-' . $wizardTemplate->uuid . '-media';
-        $wizardTemplate->addMediaCollection($mediaCollectionName);
+        $mediaCollectionName = 'wt-' . $guidedTemplate->uuid . '-media';
+        $guidedTemplate->addMediaCollection($mediaCollectionName);
 
         return $mediaCollectionName;
     }
 
-    private function importTemplateAssets($template, $config, $mediaCollectionName, $wizardTemplate)
+    private function importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate)
     {
         // Clear the collection to prevent duplicate images
-        $wizardTemplate->clearMediaCollection($mediaCollectionName);
+        $guidedTemplate->clearMediaCollection($mediaCollectionName);
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
         $templateCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['card-background']);
         // Import template assets and associate with the media collection
-        $this->importMedia($templateIconUrl, 'icon', $mediaCollectionName, $wizardTemplate);
-        $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $wizardTemplate);
+        $this->importMedia($templateIconUrl, 'icon', $mediaCollectionName, $guidedTemplate);
+        $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $guidedTemplate);
 
         foreach ($template['assets']['slides'] as $slide) {
             $templateSlideUrl = $this->buildTemplateUrl($config, $slide);
-            $this->importMedia($templateSlideUrl, 'slide', $mediaCollectionName, $wizardTemplate);
+            $this->importMedia($templateSlideUrl, 'slide', $mediaCollectionName, $guidedTemplate);
         }
     }
 
-    private function importMedia($assetUrl, $customProperty, $mediaCollectionName, $wizardTemplate)
+    private function importMedia($assetUrl, $customProperty, $mediaCollectionName, $guidedTemplate)
     {
         // Import a media asset and associate it with the media collection
-        $wizardTemplate->addMediaFromUrl($assetUrl)->withCustomProperties(['media_type' => $customProperty])->toMediaCollection($mediaCollectionName);
+        $guidedTemplate->addMediaFromUrl($assetUrl)->withCustomProperties(['media_type' => $customProperty])->toMediaCollection($mediaCollectionName);
     }
 }
