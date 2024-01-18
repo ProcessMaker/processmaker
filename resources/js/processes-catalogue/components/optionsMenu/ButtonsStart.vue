@@ -82,7 +82,7 @@ export default {
     getStartEvents() {
       this.processEvents = [];
       ProcessMaker.apiClient
-        .get(`processes/${this.process.id}/start_events`)
+        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
         .then((response) => {
           this.processEvents = response.data.data;
           if (this.processEvents.length <= 1) {
@@ -92,7 +92,19 @@ export default {
               this.startEvent = event.id ?? 0;
             }
           }
+        })
+        .catch(err => {
+          this.disableButton();
+          ProcessMaker.alert(err, "danger");
         });
+    },
+    /** 
+     * Disable Start Button
+     */
+    disableButton() {
+      this.havelessOneStartEvent = true;
+      this.processEvents = [];
+      this.startEvent = 0;
     },
     /**
      * Start new request
