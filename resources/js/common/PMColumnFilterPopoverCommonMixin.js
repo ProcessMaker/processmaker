@@ -5,7 +5,7 @@ const PMColumnFilterCommonMixin = {
       userId: window.Processmaker.userId,
       viewAssignee: [],
       viewParticipants: [],
-      viewProcesses: [],
+      viewProcesses: []
     };
   },
   methods: {
@@ -68,9 +68,13 @@ const PMColumnFilterCommonMixin = {
       ];
     },
     onApply(json, index) {
+      let oldValue, type, value;
       for (let i in json) {
-        json[i].subject.type = this.getTypeColumnFilter(json[i].subject.value);
-        json[i].subject.value = this.getAliasColumnForFilter(json[i].subject.value);
+        oldValue = json[i].subject.value;
+        type = this.getTypeColumnFilter(oldValue);
+        value = this.getAliasColumnForFilter(oldValue);
+        json[i].subject.type = type;
+        json[i].subject.value = value;
       }
       this.advancedFilterInit(this.tableHeaders.length);
       this.advancedFilter[index] = json;
