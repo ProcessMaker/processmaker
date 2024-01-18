@@ -76,12 +76,12 @@ export default {
       defaultOptions: [
         {
           id: -1,
-          name: "All Processes",
+          name: this.$t("All Processes"),
           status: "ACTIVE",
         },
         {
           id: 0,
-          name: "Favorites",
+          name: this.$t("My Bookmarks"),
           status: "ACTIVE",
         },
       ],
