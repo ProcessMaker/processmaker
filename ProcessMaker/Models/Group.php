@@ -53,6 +53,10 @@ class Group extends ProcessMakerModel
         'enabled_2fa',
     ];
 
+    protected $casts = [
+        'enabled_2fa' => 'boolean',
+    ];
+
     public static function rules($existing = null)
     {
         $unique = Rule::unique('groups')->ignore($existing);

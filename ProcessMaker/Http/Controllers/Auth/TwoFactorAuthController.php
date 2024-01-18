@@ -208,4 +208,34 @@ class TwoFactorAuthController extends Controller
         }
         return true;
     }
+
+    /**
+     * Check if 2FA is enabled for the current user based on the groups he belongs to
+     *
+     * @return bool
+     */
+    public static function check2faByGroups()
+    {
+        try {
+            $user = auth()->user();
+            $userGroups = $user->groups;
+            $groupsWith2fa = $userGroups->where('enabled_2fa', true);
+            $groupsWithout2fa = $userGroups->where('enabled_2fa', false);
+
+            // Check if the only group has 2fa enabled, if so, ask for 2fa
+            $hasSingleGroupWith2fa = $userGroups->count() === 1 && $groupsWith2fa->count() === 1;
+            // Check if at least one group has 2fa enabled, if so, ask for 2fa
+            $hasMultipleGroupsWithAtLeastOne2fa = $userGroups->count() > 1 && $groupsWith2fa->count() > 0;
+            // Check if all groups don't have 2fa enabled or if the user doesn't belong to any group, if so, ask for 2fa
+            $allGroupsWithout2fa = $userGroups->count() === $groupsWithout2fa->count();
+
+            if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $allGroupsWithout2fa) {
+                return true;
+            }
+        } catch (Exception $e) {
+            session()->put(self::TFA_ERROR, $e->getMessage());
+        }
+
+        return false;
+    }
 }
