@@ -96,7 +96,7 @@ export default {
             }
         },
         submit(task) {
-            const { id: taskId, process_request_id: processRequestId } = task;
+            const { id: taskId } = task;
             ProcessMaker.apiClient.put(`tasks/${taskId}`, {
                 status: "COMPLETED",
                 data: this.formData
