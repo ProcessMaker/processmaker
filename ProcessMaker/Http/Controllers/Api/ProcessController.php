@@ -122,6 +122,12 @@ class ProcessController extends Controller
             $processes->processCategory($category);
         }
 
+        // Filter by category status
+        $catStatus = $request->input('cat_status', null);
+        if (!empty($catStatus)) {
+            $processes->categoryStatus($catStatus);
+        }
+
         if (!empty($pmql)) {
             try {
                 $processes->pmql($pmql);
