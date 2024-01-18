@@ -14,6 +14,7 @@ class WizardTemplateFactory extends Factory
     {
         return [
             'uuid' => $this->faker->uuid,
+            'unique_template_id' => $this->faker->uuid,
             'process_template_id' => null,
             'name' => $this->faker->unique()->name(),
             'description' => $this->faker->unique()->name(),

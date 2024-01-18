@@ -155,6 +155,7 @@ export default {
         this.loadMore();
       }
     });
+    this.selectDefault();
     this.comeFromProcess = this.fromProcessList;
     this.checkPackageAiInstalled();
   },
@@ -224,7 +225,15 @@ export default {
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
-    }
+    },
+    /**
+     * Select Default Option
+     */
+    selectDefault() {
+      if (window.location.pathname === "/processes-catalogue") {
+        this.selectProcessItem(this.data[0]);
+      }
+    },
   },
 };
 </script>

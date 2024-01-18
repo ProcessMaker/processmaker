@@ -74,11 +74,19 @@ export default {
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
-      listCategories: [{
-        id: 0,
-        name: "Favorites",
-        status: "ACTIVE",
-      }],
+      listCategories: [],
+      defaultOptions: [
+        {
+          id: -1,
+          name: "All Processes",
+          status: "ACTIVE",
+        },
+        {
+          id: 0,
+          name: "Favorites",
+          status: "ACTIVE",
+        },
+      ],
       fields: [],
       wizardTemplates: [],
       showWizardTemplates: false,
@@ -109,7 +117,9 @@ export default {
       this.wizardTemplatesSelected(true);
     } else {
       this.getCategories();
-      this.checkSelectedProcess();
+      setTimeout(() => {
+        this.checkSelectedProcess();
+      }, 500);
     }
   },
   methods: {
@@ -142,12 +152,12 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            this.listCategories = [...this.listCategories, ...response.data.data];
+            this.listCategories = [...this.defaultOptions, ...response.data.data];
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
             this.categoryCount = response.data.meta.total;
             if (this.markCategory) {
-              const indexUncategorized = this.listCategories.findIndex((category) => category.name === this.category.name);
-              this.$refs.categoryList.markCategory(this.listCategories[indexUncategorized]);
+              const indexCategory = this.listCategories.findIndex((category) => category.name === this.category.name);
+              this.$refs.categoryList.markCategory(this.listCategories[indexCategory]);
               this.markCategory = false;
             }
           });
