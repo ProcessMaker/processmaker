@@ -253,7 +253,7 @@ export default {
         {
           label: this.$t("Task"),
           field: "active_tasks",
-          sortable: true,
+          sortable: false,
           default: true,
           width: 140,
           truncate: true,
@@ -506,17 +506,20 @@ export default {
     },
     getTypeColumnFilter(value) {
       let type = "Field";
-      if (value === "case_number" || value === "case_title" || value === "process") {
+      if (value === "case_number" || value === "case_title") {
         type = "Request";
+      }
+      if (value === "process") {
+        type = "Process";
       }
       if (value === "active_tasks") {
         type = "Task";
       }
-      if (value === "status") {
-        type = "Status";
-      }
       if (value === "participants") {
         type = "Participants";
+      }
+      if (value === "status") {
+        type = "Status";
       }
       return type;
     },
