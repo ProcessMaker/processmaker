@@ -345,23 +345,18 @@ export default {
           sortable: true,
           default: true,
           width: 140,
-        },
-        {
-          label: this.$t("Assignee"),
-          field: "assignee",
-          sortable: true,
-          default: true,
-          width: 140,
-        },
-        {
+        }
+      ];
+      if (isStatusCompletedList) {
+        columns.push({
           label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        },
-      ]
+        });
+      }
       return columns;
     },
     onAction(action, rowData, index) {
