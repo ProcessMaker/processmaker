@@ -1273,7 +1273,7 @@ class ProcessTest extends TestCase
     public function testDeleteMediaImages()
     {
         $process = Process::factory()->create();
-        $imageContent = file_get_contents(__DIR__.'/images/640x480.png');
+        $imageContent = file_get_contents(__DIR__ . '/images/640x480.png');
         $imagePath = storage_path('app/test-image.jpg');
 
         file_put_contents($imagePath, $imageContent);
