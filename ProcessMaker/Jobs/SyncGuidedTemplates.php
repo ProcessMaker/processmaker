@@ -83,9 +83,6 @@ class SyncGuidedTemplates implements ShouldQueue
                 }
 
                 try {
-                    // Remove deprecated templates that are not in the index.json file.
-                    $this->removeDeprecatedTemplates($guidedTemplates);
-
                     // Import templates from the index.json file.
                     foreach ($guidedTemplates as $template) {
                         $this->importTemplate($template, $config, $guidedTemplateCategoryId);
@@ -97,18 +94,6 @@ class SyncGuidedTemplates implements ShouldQueue
         } catch (Exception $e) {
             Log::error("Error Syncing Guided Templates: {$e->getMessage()}");
         }
-    }
-
-    // Since the guided templates are not tracked by a specific ID, we need to track them by the template name.
-    // If the template name has changed, we need to remove the deprecated template name from the database.
-    private function removeDeprecatedTemplates($guidedTemplates)
-    {
-        $templateNames = array_map(function ($template) {
-            return $template['template_details']['card-title'];
-        }, $guidedTemplates);
-
-        // Remove templates that are no longer present in the provided guided templates.
-        WizardTemplate::whereNotIn('name', $templateNames)->delete();
     }
 
     /**
@@ -211,11 +196,11 @@ class SyncGuidedTemplates implements ShouldQueue
 
     private function updateOrCreateGuidedTemplate($template, $newHelperProcessId, $newProcessTemplateId)
     {
-        // Update or create the guided template in the database
-
+        // Update or create the wizard template in the database
         return WizardTemplate::updateOrCreate([
-            'name' => $template['template_details']['card-title'],
+            'unique_template_id' => $template['template_details']['unique-template-id'],
         ], [
+            'name' => $template['template_details']['card-title'],
             'description' => $template['template_details']['card-excerpt'],
             'helper_process_id' => $newHelperProcessId,
             'process_template_id' => $newProcessTemplateId,
