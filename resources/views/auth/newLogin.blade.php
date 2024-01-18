@@ -15,9 +15,9 @@
 <body>
   <div class="content" id="app">
     <div class="d-flex flex-column" style="min-height: 100vh">
-      <div class="flex-fill">
-        <div class="row" align-v="center">
-          <div class="col-md-6 col-lg-8">
+      <div class="flex-fill small-screen">
+        <div class="d-flex justify-content-center align-items-center h-100-vh" align-v="center">
+          <div class="col-md-6 col-lg-6 col-xl-7 d-none d-lg-block">
           @php
             $isMobile = (
               isset($_SERVER['HTTP_USER_AGENT'])
@@ -43,8 +43,8 @@
             </div>
           @endif
           </div>
-          <div class="col-md-6 col-lg-3">
-            <div class="card card-body p-3">
+          <div class="col-md-6 col-lg-6 col-xl-4 col-xxl-3">
+            <div class="card card-body p-3 small-screen login-container">
               <div align="center" class="p-5">
                 @component('components.logo')
                 @endcomponent
@@ -144,8 +144,8 @@
     margin-left: 0;
   }
   .card {
-    top: 50%;
-    position: relative;
+    /* top: 50%;
+    position: relative; */
     border-radius: 16px;
   }
   .login-logo-custom,
@@ -168,10 +168,8 @@
     background-size: cover;
   }
   .slogan {
-    top: 30%;
-    position: fixed;
+    max-width: 600px;
     margin-left: 10%;
-    width: 700px;
     font-family: 'Poppins', sans-serif;
     display: inline-flex;
     flex-direction: column;
@@ -243,7 +241,8 @@
     border-radius: 34px;
     height: 3.5rem;
     padding: 3px 18px;
-    min-width: 30rem;
+    width: 100%;
+    max-width: 600px;
     animation: slidedown 1s cubic-bezier(0.8, 0.3, 0.01, 1), 3s;
   }
   @keyframes cursor {
@@ -319,6 +318,26 @@
     animation-delay: 0s;
     animation-timing-function: steps(40), step-end;
   }
+
+  .login-container {
+    max-width: 500px;
+  }
+  @media (max-width: 767px) {
+    .small-screen {
+      border: 0;
+      background: white;
+    }
+    .small-screen.login-container {
+      max-width: 100%;
+    }
+}
+
+body {
+  height: unset;
+}
+.h-100-vh {
+  height: 100vh;
+}
 </style>
 </html>
 
