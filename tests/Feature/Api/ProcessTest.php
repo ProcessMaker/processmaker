@@ -575,10 +575,10 @@ class ProcessTest extends TestCase
         $process = Process::factory()->create();
         Bookmark::factory()->create([
             'process_id' => $process->id,
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
         $response = $this->apiCall('GET',
-            route('api.processes.index',['per_page' => 5, 'page' => 1, 'bookmark' => true])
+            route('api.processes.index', ['per_page' => 5, 'page' => 1, 'bookmark' => true])
         );
         $response->assertJsonCount(5, 'data');
     }
@@ -1277,7 +1277,7 @@ class ProcessTest extends TestCase
         $imageContent = file_get_contents($faker->imageUrl());
         $imagePath = storage_path('app/test-image.jpg');
         file_put_contents($imagePath, $imageContent);
-        
+
         $uploadedFile = new UploadedFile($imagePath, 'test-image.jpg', 'image/jpeg', null, true);
 
         $process->addMedia($uploadedFile)->toMediaCollection('images_carousel');

@@ -103,7 +103,7 @@ class Filter
         if ($this->operator === 'regex') {
             $this->operator = 'REGEXP';
         }
-        
+
         return $this->operator;
     }
 
@@ -212,6 +212,7 @@ class Filter
     {
         return array_map(function ($value) {
             $username = User::find($value)?->username;
+
             return isset($username) ? $username : $value;
         }, $values);
     }
