@@ -10,7 +10,7 @@
         <i
           :ref="`bookmark-${process.id}`"
           v-b-tooltip.hover
-          :title="$t('Add to Favorites')"
+          :title="$t(labelTooltip)"
           :class="bookmarkIcon()"
           @click="checkBookmark(process)"
         />
@@ -36,6 +36,7 @@ export default {
   data() {
     return {
       labelIcon: "Default Icon",
+      labelTooltip: "",
     };
   },
   methods: {
@@ -64,8 +65,10 @@ export default {
      */
     bookmarkIcon() {
       if (this.process.bookmark_id !== 0) {
+        this.labelTooltip = "Remove from favorites";
         return "fas fa-bookmark marked";
       }
+      this.labelTooltip = "Add to Favorites";
       return "far fa-bookmark";
     },
     /**
