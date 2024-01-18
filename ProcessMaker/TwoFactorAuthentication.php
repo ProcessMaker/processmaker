@@ -24,7 +24,7 @@ class TwoFactorAuthentication
     public function sendCode(User $user): void
     {
         // Get methods to send the code
-        $methods = config('password-policies.2fa_method', []);
+        $methods = $user->getValid2FAPreferences();
 
         if (in_array(self::EMAIL, $methods) || in_array(self::SMS, $methods)) {
             // Get code
@@ -122,11 +122,27 @@ class TwoFactorAuthentication
         } catch (TwilioException $error) {
             // Check if the error code is for a invalid "to" number
             if ($error->getCode() === self::ERROR_INVALID_TO_NUMBER) {
-                // Change to a friendly error message
-                $error = new TwilioException(
-                    __('Invalid phone number. Please verify and update your phone number in your account settings.'),
-                    self::ERROR_INVALID_TO_NUMBER
+                // Get methods to send the code
+                $methods = $user->getValid2FAPreferences();
+
+                // Get another methods
+                $otherMethods = array_diff($methods, [self::SMS]);
+
+                // Set message
+                $message = __(
+                    'Invalid phone number. Please verify and update your phone number in your account settings.'
                 );
+
+                // Add complementary information if is needed
+                if (!empty($otherMethods)) {
+                    $otherMethods = $this->friendlyMethodsNames($user, $otherMethods);
+                    $message .= ' ';
+                    $message .= __('You can also authenticate by :otherMethods.',
+                        ['otherMethods' => $otherMethods]);
+                }
+
+                // Change to a friendly error message
+                $error = new TwilioException($message, self::ERROR_INVALID_TO_NUMBER);
             }
             throw $error;
         }
@@ -146,5 +162,35 @@ class TwoFactorAuthentication
         );
 
         return base64_encode($writer->writeString($g2faUrl));
+    }
+
+    public function friendlyMethodsNames(User $user, array $enabledMethods = [])
+    {
+        // Define the friendly names for each method
+        $friendlyNames = [
+            self::EMAIL => __('Email'),
+            self::SMS => __('SMS'),
+            self::AUTH_APP => __('Google Authenticator'),
+        ];
+
+        // Get enabled methods to send the code
+        if (empty($enabledMethods)) {
+            $enabledMethods = $user->getValid2FAPreferences();
+        }
+
+        // Return the friendly names for enabled methods
+        $methods = array_map(function($method) use ($friendlyNames) {
+            return $friendlyNames[$method] ?? $method;
+        }, $enabledMethods);
+
+        // Build final string
+        if (count($methods) > 1) {
+            $lastMethod = array_pop($methods);
+            $methods = implode(', ', $methods) . ' ' . __('or') . ' ' . $lastMethod;
+        } else {
+            $methods = array_pop($methods);
+        }
+
+        return $methods;
     }
 }

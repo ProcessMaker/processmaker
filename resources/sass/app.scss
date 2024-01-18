@@ -985,13 +985,14 @@ nav {
 }
 
 #wizardTemplateDetails___BV_modal_header_,
-#wizardTemplateDetails___BV_modal_header_ {
+#processWizard___BV_modal_header_ {
   border-bottom: none;
   padding: 0;
   margin: 0.5rem;
 }
 
-#wizardTemplateDetails___BV_modal_body_ .card {
+#wizardTemplateDetails___BV_modal_body_ .card,
+#processWizard___BV_modal_body_ .card {
   background-color: inherit;
   border: none;
 }

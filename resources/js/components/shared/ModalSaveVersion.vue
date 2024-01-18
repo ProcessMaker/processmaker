@@ -25,7 +25,7 @@
               <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Description of Process") }}
                     </label>
                     <textarea
@@ -40,11 +40,11 @@
                       {{ $t("The Description field is required.") }}
                       <br>
                     </span>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
                     <icon-dropdown ref="icon-dropdown" />
-                    <label class="label-text mt-2">{{ $t("Chart") }}</label>
+                    <label class="mt-2">{{ $t("Chart") }}</label>
                     <div class="dropdown mt-2">
                       <button
                         id="statusDropdown"
@@ -81,11 +81,7 @@
                       class="no-padding"
                     >
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label
-                          class="label-text"
-                          for="name"
-                        >{{ $t("Images for carousel") }}
-                        </label>
+                        <label>{{ $t("Images for carousel") }}</label>
                         <input
                           ref="fileInput"
                           type="file"
@@ -286,6 +282,7 @@ export default {
       dropdownSavedCharts: [],
       maxImages: 4,
       processDescription: "",
+      processDescriptionInitial: "",
       selectedLaunchpadIcon: "",
       selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
@@ -313,6 +310,7 @@ export default {
       this.showModal();
     });
     this.retrieveSavedSearchCharts();
+    this.getDescriptionInitial();
     this.getProcessDescription();
 
     // Receives selected Option from launchpad Icons multiselect
@@ -495,17 +493,35 @@ export default {
         });
     },
     /**
+     * Method to store initial data from process description field
+     */
+    getDescriptionInitial() {
+      if (this.origin !== "core") {
+        if (ProcessMaker.modeler?.process) {
+          this.processDescriptionInitial = ProcessMaker.modeler.process.description;
+        }
+      } else {
+        this.processDescriptionInitial = this.descriptionSettings;
+      }
+    },
+    /**
      * Method to retrieve data from process description field
      */
     getProcessDescription() {
       if (this.origin !== "core") {
-        if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
+        if (ProcessMaker.modeler?.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
           this.processId = ProcessMaker.modeler.process.id;
-        }
+          if(ProcessMaker.modeler.process.description === "") {
+            this.processDescription = this.processDescriptionInitial;
+          }
+        } 
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
+          if(!this.processDescription) {
+            this.processDescription = this.processDescriptionInitial;
+          }
       }
     },
     /**
@@ -614,6 +630,7 @@ export default {
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
+          this.types[this.options.type] === "modeler-save" ? false : null,
         );
       });
 
@@ -698,6 +715,10 @@ export default {
      * Method to store version info from Launchpad Window
      */
     saveFromEditLaunchpad() {
+      if (!this.processDescription) {
+        ProcessMaker.alert(this.$t("The Description field is required."), "danger");
+        return; 
+      }
       ProcessMaker.apiClient
         .post("/version_histories", {
           subject: this.subject,
@@ -730,7 +751,7 @@ $multiselect-height: 38px;
 }
 
 .dropdown-toggle {
-  font-size: 12px;
+  font-size: 14px;
   padding: 5px 10px;
 }
 
@@ -750,10 +771,6 @@ $multiselect-height: 38px;
 
 .thumbnail {
   margin-bottom: 10px;
-}
-
-.label-text {
-  font-size: 12px;
 }
 
 .image-thumbnails-container {

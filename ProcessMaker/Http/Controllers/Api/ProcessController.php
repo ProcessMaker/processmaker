@@ -15,6 +15,7 @@ use ProcessMaker\Events\RequestCreated;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -25,6 +26,7 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
@@ -212,6 +214,68 @@ class ProcessController extends Controller
     public function show(Request $request, Process $process)
     {
         return new Resource($process);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/processes/{processId}/start_events",
+     *     summary="Get start events of a process by Id",
+     *     operationId="getStartEventsProcessById",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="processId",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the start events process",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),)
+     *     ),
+     * )
+     */
+    public function startEvents(Request $request, Process $process)
+    {
+        $startEvents = [];
+        $currentUser = Auth::user();
+        foreach ($process->start_events as $event) {
+            if (count($event["eventDefinitions"]) === 0) {
+                if (array_key_exists("config", $event)) {
+                    $webEntry = json_decode($event["config"])->web_entry;
+                    $event["webEntry"] = $webEntry;
+                }
+                if (
+                    $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request) ||
+                    Auth::user()->is_administrator
+                ) {
+                    $startEvents[] = $event;
+                }
+            }
+        }
+        return new ApiCollection($startEvents);
     }
 
     /**
@@ -1432,6 +1496,81 @@ class ProcessController extends Controller
         }
 
         return $where;
+    }
+    /**
+     * check if currentUser can start the request
+     *
+     * @param array $event
+     * @param int $currentUser
+     * @param Process $process
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function checkUserCanStartProcess($event, $currentUser, $process, $request)
+    {
+        $response = false;
+        if (array_key_exists("assignment", $event)) {
+            switch ($event["assignment"]) {
+                case "user":
+                    if (array_key_exists("assignedUsers", $event)) {
+                        $response = $currentUser === (int)$event["assignedUsers"];
+                    }
+                    break;
+                case "group":
+                    if (array_key_exists("assignedGroups", $event)) {
+                        $response = $this->checkUsersGroup((int)$event["assignedGroups"], $request);
+                    }
+                break;
+                case "process_manager":
+                    $response = $currentUser === $process->manager_id;
+                break;
+            }
+        }
+        return $response;
+    }
+
+    /**
+     * check if currentUser is member of a group
+     *
+     * @param int $groupId
+     * @param Request $request
+     *
+     * @return bool
+     */
+    protected function checkUsersGroup(int $groupId, Request $request)
+    {
+        $currentUser = Auth::user()->id;
+        $group = Group::find($groupId);
+        $response = false;
+        if (isset($group)){
+            try {
+                $responseUsers = (new GroupController(new Group()))->users($group, $request);
+                $users = $responseUsers->all();
+    
+                foreach ($users as $user) {
+                    if($user->resource->member_id === $currentUser) {
+                        $response = true;
+                    }
+                }
+            } catch (\Exception $error) {
+                return ['error' => $error->getMessage()];
+            }
+    
+            try {
+                $responseGroups = (new GroupController(new Group()))->groups($group, $request);
+                $groups = $responseGroups->all();
+    
+                foreach ($groups as $group) {
+                    if ($this->checkUsersGroup($group->resource->member_id, $request)) {
+                        $response = true;
+                    }
+                }
+            } catch (\Exception $error) {
+                return ['error' => $error->getMessage()];
+            }
+        }
+        return $response;
     }
 
     /**

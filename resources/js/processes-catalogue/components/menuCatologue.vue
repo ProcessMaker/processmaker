@@ -1,5 +1,9 @@
 <template>
   <div>
+    <SearchCategories
+      ref="searchCategory"
+      :filter-pmql="onFilter"
+    />
     <div
       v-b-toggle.category-menu
       block
@@ -82,8 +86,13 @@
 </template>
 
 <script>
+import SearchCategories from "./utils/SearchCategories.vue";
+
 export default {
-  props: ["data", "select", "title", "preicon"],
+  components: {
+    SearchCategories,
+  },
+  props: ["data", "select", "title", "preicon", "filterCategories", "fromProcessList"],
   data() {
     return {
       showCatalogue: false,
@@ -96,24 +105,20 @@ export default {
           selected: false,
         },
       ],
-      showDefaultCategory: false,
+      comeFromProcess: false,
     };
   },
   mounted() {
-    this.showDefaultCategory = true;
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
       if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+    this.selectDefault();
+    this.comeFromProcess = this.fromProcessList;
   },
   updated() {
-    if (this.showDefaultCategory) {
-      const indexUncategorized = this.data.findIndex((category) => category.name === "Uncategorized");
-      this.selectProcessItem(this.data[indexUncategorized]);
-      this.showDefaultCategory = false;
-    }
   },
   methods: {
     /**
@@ -122,7 +127,14 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
+    markCategory(item) {
+      this.comeFromProcess = true;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
+      this.$refs.searchCategory.fillFilter(item.name);
+    },
     selectProcessItem(item) {
+      this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
       this.select(item);
@@ -145,6 +157,20 @@ export default {
     onToggleTemplates() {
       this.showGuidedTemplates = !this.showGuidedTemplates;
     },
+    /**
+     * Filter categories
+     */
+    onFilter(value) {
+      this.filterCategories(value);
+    },
+    /**
+     * Select Default Option
+     */
+    selectDefault() {
+      if (window.location.pathname === "/processes-catalogue") {
+        this.selectProcessItem(this.data[0]);
+      }
+    },
   },
 };
 </script>
@@ -155,7 +181,7 @@ i {
   font-size: 20px;
   color: #6A7888;
 }
-.list-group {
+#category-menu > .list-group {
   max-height: 37vh;
   min-height: 37vh;
   overflow-y: auto;
@@ -166,13 +192,11 @@ i {
 }
 .list-item {
   cursor: pointer;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
-  padding-left: 1rem;
+  padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  margin-bottom: 0.25rem;
   color: #4F606D;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 400;;
 }
 .list-item:hover {
   background: #E5EDF3;

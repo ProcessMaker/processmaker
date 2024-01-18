@@ -7,7 +7,10 @@
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
@@ -26,7 +29,6 @@
                                    :formatRange="getFormatRange(column)"
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
-                                   :sort="order_direction"
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
@@ -41,20 +43,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(row[header.field])">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <div v-html="sanitize(row[header.field])"></div>
+                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(row[header.field]) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -66,25 +68,57 @@
                 </component>
               </template>
               <template v-else>
-                <div
-                  :id="`element-${rowIndex}-${colIndex}`"
-                  :class="{ 'pm-table-truncate': header.truncate }"
-                  :style="{ maxWidth: header.width + 'px' }"
-                >
-                  {{ row[header.field] }}
-                  <b-tooltip
-                    v-if="header.truncate"
-                    :target="`element-${rowIndex}-${colIndex}`"
-                    custom-class="pm-table-tooltip"
+                <template v-if="header.field === 'due_at'">
+                  <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
+                  </span>
+                  <span>{{ row["due_date"] }}</span>
+                </template>
+                <template v-else>
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
-                  </b-tooltip>
-                </div>
+                    {{ getNestedPropertyValue(row, header.field) }}
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ getNestedPropertyValue(row, header.field) }}
+                    </b-tooltip>
+                  </div>
+                </template>
               </template>
             </template>
           </td>
         </template>
       </filter-table>
+      <task-tooltip
+        :position="rowPosition"
+        v-show="isTooltipVisible"
+      >
+        <template v-slot:task-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+          <span>
+            <i
+              v-if="!verifyURL('saved-searches')"
+              class="fa fa-eye py-2"
+              @click="previewTasks(tooltipRowData)"
+            />
+          </span>
+          <ellipsis-menu
+            :actions="actions"
+            :data="tooltipRowData"
+            :divider="false"
+          />
+          </div>
+        </template>
+      </task-tooltip>
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
@@ -97,7 +131,10 @@
         @page-change="changePage"
       />
     </div>
-    <tasks-preview ref="preview" />
+    <tasks-preview
+      v-if="!verifyURL('saved-searches')"
+      ref="preview"
+    />
   </div>
 </template>
 
@@ -116,8 +153,10 @@ import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
+import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -129,10 +168,16 @@ export default {
     EllipsisMenu,
     PMColumnFilterPopover,
     paginationTable,
+    TaskTooltip,
     PMColumnFilterIconAsc,
-    PMColumnFilterIconDesc
+    PMColumnFilterIconDesc,
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin],
+  mixins: [datatableMixin,
+    dataLoadingMixin,
+    uniqIdsMixin,
+    ListMixin,
+    PMColumnFilterPopoverCommonMixin,
+    FilterTableBodyMixin],
   props: {
     filter: {},
     columns: {},
@@ -173,6 +218,11 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
+      rowPosition: {},
+      tooltipRowData: {},
+      isTooltipVisible: false,
+      hideTimer: null,
     };
   },
   computed: {
@@ -192,8 +242,12 @@ export default {
           record["case_number"] = this.formatCaseNumber(record.process_request);
           record["case_title"] = this.formatCaseTitle(record.process_request);
           record["status"] = this.formatStatus(record);
-          record["assignee"] = this.formatAsignee(record["user"]);
+          record["assignee"] = this.formatAvatar(record["user"]);
+          record["request"] = this.formatRequest(record);
+          record["due_date"] = this.formatDueDate(record["due_at"]);
+          record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
+          record["task_name"] = this.formatActiveTask(record);
         }
       }
     },
@@ -226,6 +280,13 @@ export default {
          ${processRequest.case_title_formatted || ""}
       </a>`;
     },
+    formatActiveTask(row) {
+      return `
+      <a href="${this.openTask(row)}"
+        class="text-nowrap">
+        ${row.element_name}
+      </a>`;
+    },
     setupColumns() {
       const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
@@ -238,22 +299,23 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
           default: true,
           width: 220,
+          truncate: true,
         },
         {
-          label: "PROCESS NAME",
+          label: this.$t("Process"),
           field: "process",
           sortable: true,
           default: true,
@@ -261,46 +323,44 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
-          field: "element_name",
+          label: this.$t("Task"),
+          field: "task_name",
           sortable: true,
           default: true,
           width: 140,
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
           width: 100,
         },
         {
-          label: "ASSIGNEE",
-          field: "assignee",
-          sortable: true,
-          default: true,
-          width: 140,
-        },
-        {
-          label: "DUE DATE",
+          label: this.$t("Due date"),
           field: "due_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
         },
-      ];
-      if (isStatusCompletedList) {
-        columns.push({
-          label: "COMPLETED",
+        {
+          label: this.$t("Assignee"),
+          field: "assignee",
+          sortable: true,
+          default: true,
+          width: 140,
+        },
+        {
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
-        });
-      }
+        },
+      ]
       return columns;
     },
     onAction(action, rowData, index) {
@@ -346,6 +406,33 @@ export default {
         },
       };
     },
+    formatDueDate(date) {
+      return moment(date).format("MM/DD/YY HH:mm");
+    },
+    formatColorBadge(date) {
+      const days = this.remainingTime(date);
+      return days >= 0 ? "primary" : "danger";
+    },
+    formatRequest(request) {
+      return `#${request.process_request.id} ${request.process.name}`;
+    },
+    formatRemainingTime(date) {
+      const millisecondsPerDay = 1000 * 60 * 60 * 24;
+      const remaining = this.remainingTime(date);
+      const daysRemaining = Math.ceil(remaining / millisecondsPerDay);
+      if (daysRemaining <= 1 && daysRemaining >= -1) {
+        const hoursRemaining = Math.ceil(remaining / (1000 * 60 * 60));
+        return `${hoursRemaining}H`;
+      }
+
+      return `${daysRemaining}D`;
+    },
+    remainingTime(date) {
+      const currentDate = new Date();
+      const formatDate = moment(date).format("YYYY-MM-DD");
+      const endDate = new Date(formatDate);
+      return endDate - currentDate;
+    },
     formatProcess(request) {
       return request.process.name;
     },
@@ -353,28 +440,55 @@ export default {
       return `/tasks/${task.id}/edit`;
     },
     handleRowClick(row) {
-      window.location.href = this.openTask(row, 1);
+      window.location.href = this.openTask(row);
     },
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
-    },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
-    },
-    sanitize(html) {
-      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
-      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
-      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+    handleRowMouseover(row) {
+      this.clearHideTimer();
 
-      return cleanHtml;
+      const tableContainer = document.getElementById("table-container");
+      const rectTableContainer = tableContainer.getBoundingClientRect();
+      const topAdjust = rectTableContainer.top;
+
+      const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
+      let elementHeight = tasksAlert ? tasksAlert.clientHeight - 14 : 0;
+
+      const savedSearch = this.verifyURL("saved-searches");
+      if (savedSearch) {
+        elementHeight += 36;
+      }
+
+      this.isTooltipVisible = true;
+      this.tooltipRowData = row;
+
+      const rowElement = document.getElementById(`row-${row.id}`);
+      const rect = rowElement.getBoundingClientRect();
+
+      const selectedFiltersBar = document.querySelector('.selected-filters-bar');
+      const selectedFiltersBarHeight = selectedFiltersBar ? selectedFiltersBar.offsetHeight : 0;
+
+      elementHeight -= selectedFiltersBarHeight;
+
+      const rightBorderX = rect.right;
+      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+
+      this.rowPosition = {
+        x: rightBorderX,
+        y: bottomBorderY,
+      };
+    },
+    handleRowMouseleave(visible) {
+      this.startHideTimer();
+    },
+    startHideTimer() {
+      this.hideTimer = setTimeout(() => {
+        this.hideTooltip();
+      }, 700);
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
+    hideTooltip() {
+      this.isTooltipVisible = false;
     },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
@@ -384,14 +498,6 @@ export default {
 
       return cleanHtml;
     },
-    changePage(page) {
-      this.page = page;
-      this.fetch();
-    },
-    /**
-     * This method is used in PMColumnFilterPopoverCommonMixin.js
-     * @returns {Array}
-     */
     getStatus() {
       return ["Self Service", "In Progress", "Completed"];
     },
@@ -401,22 +507,16 @@ export default {
      * @param {string} direction
      */
     setOrderByProps(by, direction) {
-      if(by === "case_number"){
-        by = "id";
-      }
-      if(by === "case_title"){
-        by = "id";
-      }
-      if(by === "process"){
-        by = "id";
-      }
-      if(by === "assignee"){
-        by = "id";
-      }
+      by = this.getAliasColumnForOrderBy(by);
       this.orderBy = by;
       this.order_direction = direction;
       this.sortOrder[0].sortField = by;
       this.sortOrder[0].direction = direction;
+    },
+    verifyURL(string) {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes(string);
+      return isInUrl;
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
@@ -431,6 +531,43 @@ export default {
         }
       };
       ProcessMaker.apiClient.put(url, config);
+    },
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title" || value === "process") {
+        type = "Process";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      if (value === "assignee") {
+        type = "Participants";
+      }
+      return type;
+    },
+    getAliasColumnForFilter(value) {
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      return value;
+    },
+    getAliasColumnForOrderBy(value) {
+      if (value === "case_number") {
+        value = "process_requests.case_number";
+      }
+      if (value === "case_title") {
+        value = "process_requests.case_title_formatted";
+      }
+      if (value === "process") {
+        value = "process_requests.name";
+      }
+      if (value === "task_name") {
+        value = "element_name";
+      }
+      if (value === "assignee") {
+        value = "user.fullname";
+      }
+      return value;
     }
   }
 };
@@ -440,4 +577,19 @@ export default {
 .tasks-table-card {
   padding: 0;
 }
+.due-danger {
+  background-color:rgba(237, 72, 88, 0.2);
+  color: rgba(237, 72, 88, 1);
+  font-weight: 600;
+  border-radius: 5px;
+}
+.due-primary {
+  background: rgba(205, 221, 238, 1);
+  color: rgba(86, 104, 119, 1);
+  font-weight: 600;
+  border-radius: 5px;
+}
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>
