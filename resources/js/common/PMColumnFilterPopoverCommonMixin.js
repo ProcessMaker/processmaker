@@ -219,7 +219,10 @@ const PMColumnFilterCommonMixin = {
       });
     },
     setFilterPropsFromConfig(config) {
-      if (config.filter && config.filter instanceof Object) {
+      if (!(typeof config === "object")) {
+        config = {};
+      }
+      if ("filter" in config && typeof config.filter === "object") {
         this.advancedFilter = config.filter;
       }
       if (config?.order?.by && config?.order?.direction) {
