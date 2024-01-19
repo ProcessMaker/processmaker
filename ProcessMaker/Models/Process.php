@@ -1702,10 +1702,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $query->where('processes.name', 'like', $filter)
                  ->orWhere('processes.description', 'like', $filter)
                  ->orWhere('processes.status', '=', $filterStr)
-                 ->with(['user' => function ($query) use ($filter) {
-                    $query->orWhere('user.firstname', 'like', $filter)
-                        ->orWhere('user.lastname', 'like', $filter);
-                 }])
+                 ->orWhereHas('user', function ($query) use ($filter) {
+                    $query->where('firstname', 'like', $filter)
+                        ->orWhere('lastname', 'like', $filter);
+                })
                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
                      $qry->select('assignable_id')
                          ->from('category_assignments')
