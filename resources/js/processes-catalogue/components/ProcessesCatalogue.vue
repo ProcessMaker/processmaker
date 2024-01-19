@@ -152,7 +152,10 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            this.listCategories = [...this.defaultOptions, ...response.data.data];
+            if(!this.checkDefaultOptions()) {
+              this.listCategories = [...this.defaultOptions, ...this.listCategories];
+            }
+            this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
             this.categoryCount = response.data.meta.total;
             if (this.markCategory) {
@@ -162,6 +165,12 @@ export default {
             }
           });
       }
+    },
+    /**
+     * Check if listCatefgories have the default options
+     */
+    checkDefaultOptions() {
+      return this.defaultOptions.every(v => this.listCategories.includes(v));
     },
     /**
      * Check if there is a pre-selected process
