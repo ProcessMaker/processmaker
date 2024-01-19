@@ -123,10 +123,7 @@ class ProcessController extends Controller
         }
 
         // Filter by category status
-        $catStatus = $request->input('cat_status', null);
-        if (!empty($catStatus)) {
-            $processes->categoryStatus($catStatus);
-        }
+        $processes->categoryStatus($request->input('cat_status', null));
 
         if (!empty($pmql)) {
             try {

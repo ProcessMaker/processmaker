@@ -468,11 +468,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      * Scope a query to include a specific category
      * @param string $status
      */
-    public function scopeCategoryStatus($query, $status = 'ACTIVE')
+    public function scopeCategoryStatus($query, $status)
     {
-        return $query->whereHas('categories', function ($query) use ($status) {
-            $query->where('process_categories.status', $status);
-        });
+        if (!empty($status)) {
+            return $query->whereHas('categories', function ($query) use ($status) {
+                $query->where('process_categories.status', $status);
+            });
+        }
     }
 
     public function getCollaborations()
