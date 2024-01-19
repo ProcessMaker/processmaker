@@ -56,10 +56,9 @@ export default {
 
         let { filter } = this;
 
-        if (filter && filter.length) {
+        if (filter?.length) {
           if (filter.isPMQL()) {
             pmql = `(${pmql}) and (${filter})`;
-            filter = "";
           }
         }
 

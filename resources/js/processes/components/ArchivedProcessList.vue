@@ -128,29 +128,16 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
-<<<<<<< HEAD
-import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import isPMQL from "../../modules/isPMQL";
-=======
->>>>>>> 9ed828451b1a6a04cdefc40bb15eb64bee43d488
 import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-<<<<<<< HEAD
-import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
-import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
-import processNavigationMixin from "../../components/shared/processNavigation";
-import paginationTable from "../../components/shared/PaginationTable.vue";
-=======
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
->>>>>>> 9ed828451b1a6a04cdefc40bb15eb64bee43d488
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import ProcessMixin from "./ProcessMixin";
 
