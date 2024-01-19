@@ -364,6 +364,9 @@
                 }
               }).finally(() => {
                 this.submitting = false;
+                setTimeout(() => {
+                  parent.location.reload();
+                }, 200);
               })
             }
 
