@@ -101,6 +101,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
       if (this.category.id === 0) {
