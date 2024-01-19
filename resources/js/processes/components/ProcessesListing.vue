@@ -16,7 +16,6 @@
         :headers="fields"
         :data="data"
         style="height: calc(100vh - 350px);"
-        @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -260,11 +259,6 @@ export default {
       this.apiDataLoading = false;
       this.apiNoResults = false;
     });
-  },
-  methods: {
-    handleRowClick(row) {
-      window.location.href = `modeler/${row.id}`;
-    },
   },
 };
 </script>
