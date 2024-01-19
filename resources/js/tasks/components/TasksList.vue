@@ -519,6 +519,9 @@ export default {
      */
     storeFilterConfiguration() {
       let url = "users/store_filter_configuration/taskFilter";
+      if (this.$props.columns) {
+        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
+      }
       let config = {
         filter: this.advancedFilter,
         order: {
