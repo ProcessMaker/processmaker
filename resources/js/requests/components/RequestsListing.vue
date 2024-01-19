@@ -29,9 +29,9 @@
                                    :container="''"
                                    :boundary="'viewport'"
                                    @onChangeSort="onChangeSort($event, column.field)"
-                                   @onApply="onApply($event, index)"
-                                   @onClear="onClear(index)"
-                                   @onUpdate="onUpdate($event, index)">
+                                   @onApply="onApply($event, column.field)"
+                                   @onClear="onClear(column.field)"
+                                   @onUpdate="onUpdate($event, column.field)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -504,6 +504,7 @@ export default {
         },
       };
       ProcessMaker.apiClient.put(url, config);
+      window.Processmaker.filter_user = config;
     },
     getTypeColumnFilter(value) {
       let type = "Field";
