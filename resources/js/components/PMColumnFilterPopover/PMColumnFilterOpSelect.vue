@@ -12,7 +12,7 @@
     ],
     data() {
       return {
-        input: ""
+        input: null
       };
     },
     watch: {
