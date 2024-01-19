@@ -21,7 +21,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue}"
+          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue,}"
         />
       </div>
     </div>
@@ -61,7 +61,7 @@
         </div>
         <i
           class="fas fa-sort-down"
-          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates}"
+          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
         />
       </div>
     </div>
@@ -71,7 +71,7 @@
     >
       <b-list-group>
         <b-list-group-item
-          v-for="(item, index) in templateOptions"
+          v-for="(item, index) in filteredTemplateOptions"
           :key="index"
           ref="templateItems"
           :class="{ 'list-item-selected': isSelectedTemplate(item) }"
@@ -82,31 +82,71 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+
+    <select-template-modal
+      ref="addProcessModal"
+      :type="$t('Process')"
+      :count-categories="categoryCount"
+      :package-ai="hasPackageAI"
+      hide-add-btn="true"
+    >
+    </select-template-modal>
   </div>
 </template>
 
 <script>
 import SearchCategories from "./utils/SearchCategories.vue";
+import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
 
 export default {
   components: {
     SearchCategories,
+    SelectTemplateModal,
   },
-  props: ["data", "select", "title", "preicon", "filterCategories", "fromProcessList"],
+  props: [
+    "data",
+    "select",
+    "title",
+    "preicon",
+    "filterCategories",
+    "fromProcessList",
+    "categoryCount",
+    "permission",
+  ],
   data() {
     return {
+      hasPackageAI: 0,
+      showTemplateModal: true,
+      assetName: null,
+      assetId: null,
+      modalProcess: true,
+      countCategories: 0,
       showCatalogue: false,
       showGuidedTemplates: false,
       selectedProcessItem: null,
       selectedTemplateItem: null,
       templateOptions: [
         {
+          label: this.$t("All Templates"),
+          selected: false,
+          id: "all_templates",
+        },
+        {
           label: this.$t("Guided Templates"),
           selected: false,
+          id: "guided_templates",
         },
       ],
       comeFromProcess: false,
     };
+  },
+  computed: {
+    /**
+     * Filters options regarding user permissions
+     */
+    filteredTemplateOptions() {
+      return this.templateOptions.filter(item => this.shouldShowTemplateItem(item));
+    },
   },
   mounted() {
     const listElm = document.querySelector("#infinite-list");
@@ -117,8 +157,7 @@ export default {
     });
     this.selectDefault();
     this.comeFromProcess = this.fromProcessList;
-  },
-  updated() {
+    this.checkPackageAiInstalled();
   },
   methods: {
     /**
@@ -139,11 +178,29 @@ export default {
       this.selectedTemplateItem = null;
       this.select(item);
     },
+    /**
+     * Enables All Templates option only if user has create-processes permission
+     */
+    shouldShowTemplateItem(item) {
+      return !(item.id === "all_templates" && !this.hasPermission());
+    },
     selectTemplateItem(item) {
-      this.selectedTemplateItem = item;
-      this.selectedProcessItem = null;
-      this.select(item);
-      this.$emit("wizardLinkSelect");
+      if (item.id === "all_templates") {
+          this.addNewProcess();
+          return;
+      }
+        this.selectedTemplateItem = item;
+        this.selectedProcessItem = null;
+        this.select(item);
+        this.$emit("wizardLinkSelect");
+    },
+    /**
+     * This method opens New Process modal window
+     */
+    addNewProcess() {
+      this.$nextTick(() => {
+        this.$refs["addProcessModal"].show();
+      });
     },
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
@@ -163,6 +220,12 @@ export default {
     onFilter(value) {
       this.filterCategories(value);
     },
+    hasPermission() {
+      return this.permission.includes("create-processes")
+    },
+    checkPackageAiInstalled() {
+      this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
+    },
     /**
      * Select Default Option
      */
@@ -179,7 +242,7 @@ export default {
 @import url("../../../sass/_scrollbar.scss");
 i {
   font-size: 20px;
-  color: #6A7888;
+  color: #6a7888;
 }
 #category-menu > .list-group {
   max-height: 37vh;
@@ -194,22 +257,24 @@ i {
   cursor: pointer;
   padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  color: #4F606D;
+  color: #4f606d;
   font-size: 15px;
-  font-weight: 400;;
+  font-weight: 400;
 }
 .list-item:hover {
-  background: #E5EDF3;
+  background: #e5edf3;
 }
 .list-item-selected {
-  background: #E5EDF3;
-  color: #1572C2;
+  background: #e5edf3;
+  color: #1572c2;
   font-weight: 700;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
-  opacity: 0
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
