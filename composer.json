@@ -142,7 +142,7 @@
                 "package-advanced-user-manager": "1.9.0",
                 "package-ai": "1.4.17",
                 "package-analytics-reporting": "1.4.3",
-                "package-auth": "1.15.2",
+                "package-auth": "1.16.0",
                 "package-cdata": "1.1.1",
                 "package-collections": "2.15.3",
                 "package-comments": "1.10.1",
@@ -153,7 +153,7 @@
                 "package-files": "1.11.2",
                 "package-googleplaces": "1.9.0",
                 "package-photo-video": "1.2.0",
-                "package-pm-blocks": "1.4.3",
+                "package-pm-blocks": "1.4.4",
                 "package-process-documenter": "1.8.0",
                 "package-process-optimization": "1.9.0",
                 "package-product-analytics": "1.5.8",
@@ -165,7 +165,7 @@
                 "package-translations": "2.7.0",
                 "package-versions": "1.8.2",
                 "package-vocabularies": "2.13.0",
-                "package-webentry": "2.18.1",
+                "package-webentry": "2.19.0",
                 "packages": "^0"
             },
             "docker-executors": {
