@@ -82,12 +82,6 @@
                                         'for' => 'enabled_2fa',
                                     ]) !!}
                                 </div>
-
-                                <ul v-show="formData.enabled_2fa" v-cloak>
-                                    @foreach ($settings['2fa_methods'] as $method)
-                                        <li>{{ $method }}</li>
-                                    @endforeach
-                                </ul>
                             </div>
                         @endif
 
