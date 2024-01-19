@@ -110,7 +110,16 @@ class TaskController extends Controller
             }
 
             UserResourceView::setViewed(Auth::user(), $task);
-            $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar', 'timezone', 'datetime_format']);
+            $currentUser = Auth::user()->only([
+                'id',
+                'username',
+                'fullname',
+                'firstname',
+                'lastname',
+                'avatar',
+                'timezone',
+                'datetime_format'
+            ]);
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
