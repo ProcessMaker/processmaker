@@ -58,7 +58,7 @@
           </p>
         </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
+          <b-card-group id="template-options" deck class="small-deck-margin template-options" :class="type !== 'wizard' ?  'd-flex' : ''">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
