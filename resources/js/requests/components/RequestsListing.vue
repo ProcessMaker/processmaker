@@ -362,6 +362,7 @@ export default {
           size: "25",
           "input-data": participants,
           "hide-name": false,
+          vertical: true,
         },
       };
     },
@@ -379,7 +380,7 @@ export default {
           record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
         }
         record["status"] = this.formatStatus(record["status"]);
-        record["participants"] = this.formatAvatar(record["participants"]);
+        record["participants"] = this.formatParticipants(record["participants"]);
       }
       return data;
     },
