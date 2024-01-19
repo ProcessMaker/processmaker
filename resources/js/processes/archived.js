@@ -1,7 +1,7 @@
 import Vue from "vue";
-import ProcessesListing from "./components/ProcessesListing";
+import ArchivedProcessList from "./components/ArchivedProcessList.vue";
 
-Vue.component("ArchivedProcessesList", ProcessesListing);
+Vue.component("ArchivedProcessesList", ArchivedProcessList);
 
 new Vue({
   el: "#archivedProcess",
