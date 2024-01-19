@@ -1,5 +1,5 @@
 <template>
-  <div class="template-select-card-container" :class="type !== 'wizard' ? 'pb-2' : 'pb-4'">
+  <div class="template-select-card-container" :class="type !== 'wizard' ? 'pb-2 col-3' : 'pb-4'">
     <wizard-template-card
       v-if="type === 'wizard'"
       :template="template"
