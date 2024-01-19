@@ -44,10 +44,7 @@ class UserSession
 
         if ($configDevice === '2') {
             $user->sessions()
-                ->where([
-                    ['is_active', true],
-                    ['ip_address', '!=', $ip],
-                ])
+                ->where('is_active', true)
                 ->where(function (Builder $query) use ($agentDevice, $agentDeviceType, $agentPlatform, $ip) {
                     $query->where('device_name', '!=', $agentDevice)
                         ->orWhere('device_type', '!=', $agentDeviceType)
