@@ -8,11 +8,25 @@
             empty-icon="noData"
         />
         <div v-show="!shouldShowLoader" class="categories-table-card" data-cy="categories-table">
-            <filter-table
-              :headers="fields"
-              :data="data"
-              style="height: calc(100vh - 350px);"
-            >
+          <filter-table
+            :headers="fields"
+            :data="data"
+            style="height: calc(100vh - 350px);"
+          >
+         <!-- Slot Table Header filter Button -->
+            <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+              <div
+                @click="handleEllipsisClick(column)"
+              >
+                <i
+                  :class="['fas', {
+                    'fa-sort': column.direction === 'none',
+                    'fa-sort-up': column.direction === 'asc',
+                    'fa-sort-down': column.direction === 'desc',
+                  }]"
+                ></i>
+              </div>
+            </template>
             <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
               <td
                 v-for="(header, colIndex) in fields"
@@ -69,20 +83,20 @@
                 </template>
               </td>
             </template>
-            </filter-table>
-            <pagination-table
-              :meta="data.meta"
-              @page-change="changePage"
-              data-cy="category-pagination"
-            />
-            <pagination
-                :single="$t('Category')"
-                :plural="$t('Categories')"
-                :perPageSelectEnabled="true"
-                @changePerPage="changePerPage"
-                @vuetable-pagination:change-page="onPageChange"
-                ref="pagination"
-            ></pagination>
+          </filter-table>
+          <pagination-table
+            :meta="data.meta"
+            @page-change="changePage"
+            data-cy="category-pagination"
+          />
+          <pagination
+              :single="$t('Category')"
+              :plural="$t('Categories')"
+              :perPageSelectEnabled="true"
+              @changePerPage="changePerPage"
+              @vuetable-pagination:change-page="onPageChange"
+              ref="pagination"
+          ></pagination>
         </div>
     </div>
 </template>
@@ -123,6 +137,8 @@
             field: "name",
             width: 200,
             sortable: true,
+            truncate: true,
+            direction: "none",
           },
           {
             name: "status",
@@ -131,6 +147,7 @@
             field: "status",
             width: 160,
             sortable: true,
+            direction: "none",
             callback: this.formatStatus
           },
           {
@@ -139,6 +156,7 @@
             field: this.count,
             width: 160,
             sortable: true,
+            direction: "none",
             sortField: this.count
           },
           {
@@ -149,6 +167,7 @@
             width: 160,
             sortable: true,
             format: "datetime",
+            direction: "none",
             callback: "formatDate"
           },
           {
@@ -159,6 +178,7 @@
             width: 160,
             sortable: true,
             format: "datetime",
+            direction: "none",
             callback: "formatDate"
           },
           {
@@ -245,7 +265,6 @@
                     ProcessMaker.alert(this.$t("The category was deleted."), "success");
                     this.$emit("reload");
                   });
-
               }
             );
             break;
@@ -260,6 +279,29 @@
           archived: "text-info"
         };
         return bubbleColor[status];
+      },
+      handleEllipsisClick(categoryColumn) {
+        if (categoryColumn.direction === "asc") {
+          categoryColumn.direction = "desc";
+        } else if (categoryColumn.direction === "desc") {
+          categoryColumn.direction = "none";
+          categoryColumn.filterApplied = false;
+        } else {
+          categoryColumn.direction = "asc";
+          categoryColumn.filterApplied = true;
+        }
+
+        if (categoryColumn.direction !== "none") {
+          const sortOrder = [
+            {
+              sortField: categoryColumn.sortField || categoryColumn.field,
+              direction: categoryColumn.direction,
+            },
+          ];
+          this.dataManager(sortOrder);
+        } else {
+          this.fetch();
+        }
       },
     }
   };

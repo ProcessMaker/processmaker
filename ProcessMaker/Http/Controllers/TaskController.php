@@ -40,8 +40,8 @@ class TaskController extends Controller
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('tasks.mobile', compact('title'));
         }
-        
-        $userFilter = SaveSession::getConfigFilter("taskFilter", Auth::user());
+
+        $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
         return view('tasks.index', compact('title', 'userFilter'));
     }

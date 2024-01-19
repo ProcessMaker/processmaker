@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\ImportSettings;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Setting;
 use Throwable;
 
@@ -210,6 +211,12 @@ class SettingController extends Controller
         $setting->config = $request->input('config');
         $original = array_intersect_key($setting->getOriginal(), $setting->getDirty());
         $setting->save();
+
+        if ($setting->key === 'password-policies.2fa_enabled') {
+            // Update all groups with the new 2FA setting
+            Group::where('enabled_2fa', '!=', $setting->config)
+                ->update(['enabled_2fa' => $setting->config]);
+        }
 
         // Register the Event
         SettingsUpdated::dispatch($setting, $setting->getChanges(), $original);

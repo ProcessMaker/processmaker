@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SessionControlKill
 {
     const IP_RESTRICTION_KEY = 'session-control.ip_restriction';
+
     const DEVICE_RESTRICTION_KEY = 'session-control.device_restriction';
 
     /**
@@ -52,7 +53,7 @@ class SessionControlKill
             ->where([
                 ['is_active', true],
                 ['token', $userSession],
-                ['expired_date', '!=', null]
+                ['expired_date', '!=', null],
             ])
             ->first();
     }
@@ -68,6 +69,7 @@ class SessionControlKill
     private function isSessionExpiredByIP(UserSession $session, Request $request): bool
     {
         $ip = $request->getClientIp() ?? $request->ip();
+
         return $session->ip_address === $ip && !is_null($session->expired_date);
     }
 

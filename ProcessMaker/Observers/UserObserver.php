@@ -36,7 +36,7 @@ class UserObserver
     public function created(User $user): void
     {
         $perList = [
-            'view-process-catalog'
+            'view-process-catalog',
         ];
         $permissionIds = Permission::whereIn('name', $perList)->pluck('id')->toArray();
         $user->permissions()->attach($permissionIds);

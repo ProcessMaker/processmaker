@@ -51,6 +51,7 @@ class ProcessController extends Controller
         'bpmn',
         'svg',
     ];
+
     public $doNotSanitizeMustache = [
         'case_title',
     ];
@@ -121,6 +122,9 @@ class ProcessController extends Controller
         if (!empty($category)) {
             $processes->processCategory($category);
         }
+
+        // Filter by category status
+        $processes->categoryStatus($request->input('cat_status', null));
 
         if (!empty($pmql)) {
             try {
@@ -262,10 +266,10 @@ class ProcessController extends Controller
         $startEvents = [];
         $currentUser = Auth::user();
         foreach ($process->start_events as $event) {
-            if (count($event["eventDefinitions"]) === 0) {
-                if (array_key_exists("config", $event)) {
-                    $webEntry = json_decode($event["config"])->web_entry;
-                    $event["webEntry"] = $webEntry;
+            if (count($event['eventDefinitions']) === 0) {
+                if (array_key_exists('config', $event)) {
+                    $webEntry = json_decode($event['config'])->web_entry;
+                    $event['webEntry'] = $webEntry;
                 }
                 if (
                     $this->checkUserCanStartProcess($event, $currentUser->id, $process, $request) ||
@@ -275,6 +279,7 @@ class ProcessController extends Controller
                 }
             }
         }
+
         return new ApiCollection($startEvents);
     }
 
@@ -466,7 +471,7 @@ class ProcessController extends Controller
             }
         }
 
-        $this->saveImagesIntoMedia($request, $process);     
+        $this->saveImagesIntoMedia($request, $process);
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -1497,6 +1502,7 @@ class ProcessController extends Controller
 
         return $where;
     }
+
     /**
      * check if currentUser can start the request
      *
@@ -1510,23 +1516,24 @@ class ProcessController extends Controller
     protected function checkUserCanStartProcess($event, $currentUser, $process, $request)
     {
         $response = false;
-        if (array_key_exists("assignment", $event)) {
-            switch ($event["assignment"]) {
-                case "user":
-                    if (array_key_exists("assignedUsers", $event)) {
-                        $response = $currentUser === (int)$event["assignedUsers"];
+        if (array_key_exists('assignment', $event)) {
+            switch ($event['assignment']) {
+                case 'user':
+                    if (array_key_exists('assignedUsers', $event)) {
+                        $response = $currentUser === (int) $event['assignedUsers'];
                     }
                     break;
-                case "group":
-                    if (array_key_exists("assignedGroups", $event)) {
-                        $response = $this->checkUsersGroup((int)$event["assignedGroups"], $request);
+                case 'group':
+                    if (array_key_exists('assignedGroups', $event)) {
+                        $response = $this->checkUsersGroup((int) $event['assignedGroups'], $request);
                     }
-                break;
-                case "process_manager":
+                    break;
+                case 'process_manager':
                     $response = $currentUser === $process->manager_id;
-                break;
+                    break;
             }
         }
+
         return $response;
     }
 
@@ -1543,24 +1550,24 @@ class ProcessController extends Controller
         $currentUser = Auth::user()->id;
         $group = Group::find($groupId);
         $response = false;
-        if (isset($group)){
+        if (isset($group)) {
             try {
                 $responseUsers = (new GroupController(new Group()))->users($group, $request);
                 $users = $responseUsers->all();
-    
+
                 foreach ($users as $user) {
-                    if($user->resource->member_id === $currentUser) {
+                    if ($user->resource->member_id === $currentUser) {
                         $response = true;
                     }
                 }
             } catch (\Exception $error) {
                 return ['error' => $error->getMessage()];
             }
-    
+
             try {
                 $responseGroups = (new GroupController(new Group()))->groups($group, $request);
                 $groups = $responseGroups->all();
-    
+
                 foreach ($groups as $group) {
                     if ($this->checkUsersGroup($group->resource->member_id, $request)) {
                         $response = true;
@@ -1570,6 +1577,7 @@ class ProcessController extends Controller
                 return ['error' => $error->getMessage()];
             }
         }
+
         return $response;
     }
 
@@ -1697,7 +1705,7 @@ class ProcessController extends Controller
     }
 
     public function saveImagesIntoMedia(Request $request, Process $process)
-    { 
+    {
         // Saving Carousel Images into Media table related to process_id
         if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
             foreach ($request->imagesCarousel as $image) {
@@ -1706,19 +1714,22 @@ class ProcessController extends Controller
                         ->where('uuid', $image['uuid'])->exists()) {
                         $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
                     }
-                } 
+                }
             }
         }
     }
 
-    public function getMediaImages(Request $request, Process $process) {
+    public function getMediaImages(Request $request, Process $process)
+    {
         $media = Process::with(['media'])
             ->where('id', $process->id)
             ->get();
+
         return new ProcessCollection($media);
     }
 
-    public function deleteMediaImages(Request $request, Process $process) {
+    public function deleteMediaImages(Request $request, Process $process)
+    {
         $process = Process::find($process->id);
 
         // Get UUID image in media table

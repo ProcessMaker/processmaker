@@ -10,8 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('process_requests', function (Blueprint $table) {
-            $table->string('case_title', 200)->nullable();
+        Schema::table('wizard_templates', function (Blueprint $table) {
+            $table->string('unique_template_id')->unique()->after('uuid');
         });
     }
 
@@ -20,8 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('process_requests', function (Blueprint $table) {
-            $table->dropColumn('case_title');
+        Schema::table('wizard_templates', function (Blueprint $table) {
+            $table->dropColumn('unique_template_id');
         });
     }
 };

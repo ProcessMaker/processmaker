@@ -567,6 +567,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             where('process_collaboration_id', $instance->process_collaboration_id)
             ->pluck('id')
             ->toArray();
+
         return $ids;
     }
 

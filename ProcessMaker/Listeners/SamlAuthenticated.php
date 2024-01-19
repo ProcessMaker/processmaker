@@ -2,8 +2,8 @@
 
 namespace ProcessMaker\Listeners;
 
-use Illuminate\Auth\Events\Authenticated;
 use CodeGreenCreative\SamlIdp\Jobs\SamlSso;
+use Illuminate\Auth\Events\Authenticated;
 
 class SamlAuthenticated
 {

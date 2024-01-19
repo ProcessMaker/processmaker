@@ -95,6 +95,15 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
+      if (this.category === undefined || this.category.id === -1) {
+        return "process_bookmarks/processes?"
+          + `&page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&bookmark=true"
+          + "&cat_status=ACTIVE"
+          + "&order_by=name&order_direction=asc";
+      }
       if (this.category.id === 0) {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`

@@ -13,6 +13,20 @@
           :data="data"
           style="height: calc(100vh - 350px);"
         >
+          <!-- Slot Table Header filter Button -->
+          <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+            <div
+              @click="handleEllipsisClick(column)"
+            >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
+        </template>
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
             v-for="(header, colIndex) in fields"
@@ -41,9 +55,22 @@
                 :data-cy="`template-table-field-${rowIndex}-${colIndex}`"
               >
                 <template v-if="header.field === 'name'">
-                  <span v-uni-id="row.id.toString()">{{row.name}}
-                    <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
-                  </span>
+                  <div
+                    :id="`element-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <span v-uni-id="row.id.toString()">{{row.name}}
+                      <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
+                    </span>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${row.id}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
                 </template>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
@@ -123,24 +150,31 @@
               field: "name",
               width: 200,
               sortable: true,
+              truncate: true,
+              direction: "none",
             },
             {
               label: "CATEGORY",
               field: "category_list",
               width: 160,
               sortable: true,
+              direction: "none",
+              sortField: "category.name",
             },
             {
               label: "TEMPLATE AUTHOR",
               field: "owner",
               width: 160,
               sortable: true,
+              direction: "none",
+              sortField: "user.username",
             },
             {
               label: "VERSION",
               field: "version",
               width: 100,
               sortable: true,
+              direction: "none",
             },
             {
               label: "VERSION DATE",
@@ -148,6 +182,7 @@
               format: "datetime",
               width: 200,
               sortable: true,
+              direction: "none",
             },
             {
               label: "CREATED",
@@ -155,6 +190,7 @@
               format: "datetime",
               width: 200,
               sortable: true,
+              direction: "none",
             },
             {
               name: "__slot:actions",
@@ -299,6 +335,29 @@
             return template;
           });
           return data;
+        },
+        handleEllipsisClick(templateColumn) {
+          if (templateColumn.direction === "asc") {
+            templateColumn.direction = "desc";
+          } else if (templateColumn.direction === "desc") {
+            templateColumn.direction = "none";
+            templateColumn.filterApplied = false;
+          } else {
+            templateColumn.direction = "asc";
+            templateColumn.filterApplied = true;
+          }
+
+          if (templateColumn.direction !== "none") {
+            const sortOrder = [
+              {
+                sortField: templateColumn.sortField || templateColumn.field,
+                direction: templateColumn.direction,
+              },
+            ];
+            this.dataManager(sortOrder);
+          } else {
+            this.fetch();
+          }
         },
       },
     };

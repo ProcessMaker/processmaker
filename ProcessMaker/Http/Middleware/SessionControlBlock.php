@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SessionControlBlock
 {
     const IP_RESTRICTION_KEY = 'session-control.ip_restriction';
+
     const DEVICE_RESTRICTION_KEY = 'session-control.device_restriction';
 
     /**
@@ -42,10 +43,10 @@ class SessionControlBlock
 
     private function getUser(Request $request): ?User
     {
-        return User::with(['sessions' => function($query) {
-                $query->where('is_active', true);
-            }])
-            ->whereHas('sessions', function(Builder $query) {
+        return User::with(['sessions' => function ($query) {
+            $query->where('is_active', true);
+        }])
+            ->whereHas('sessions', function (Builder $query) {
                 $query->where('is_active', true);
             })->where('username', $request->input('username'))
             ->first();
@@ -98,10 +99,7 @@ class SessionControlBlock
         $ip = $request->getClientIp() ?? $request->ip();
         // Get the user's most recent session
         $session = $user->sessions()
-            ->where([
-                ['is_active', true],
-                ['ip_address', '!=', $ip],
-            ])
+            ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->first();
 

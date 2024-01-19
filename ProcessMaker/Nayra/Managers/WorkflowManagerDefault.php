@@ -272,7 +272,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     /**
      * Retrieves IDs of all instances collaborating with the given instance.
      *
-     * This function compiles a list of IDs from execution instances associated 
+     * This function compiles a list of IDs from execution instances associated
      * with the same process as the input instance, including the instance itself.
      *
      * @param ProcessRequest $instance The instance to find collaborators for.
@@ -285,6 +285,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
         foreach ($instances as $instance) {
             $ids[] = $instance->getId();
         }
+
         return $ids;
     }
 

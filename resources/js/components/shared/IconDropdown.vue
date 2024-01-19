@@ -160,9 +160,14 @@ $multiselect-height: 33px;
   }
 
   .multiselect__single {
-    font-size: 15px;
+    font-size: 16px;
     font-family: inherit;
     padding: 2px 0 0 0;
+    border-width: 4px 4px 0 4px;
+    border-color: #000000 transparent;
+    color: #212529;
+    margin-top: 0px;
+    margin-left: 5px;
   }
 
   .multiselect__select:before {

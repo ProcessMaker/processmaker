@@ -81,6 +81,7 @@ class UserController extends Controller
         $enabled2FA = config('password-policies.2fa_enabled', false);
         $global2FAEnabled = config('password-policies.2fa_method', []);
         $user->preferences_2fa = $user->getValid2FAPreferences();
+        $is2FAEnabledForGroup = $user->in2FAGroupOrIndependent();
 
         $addons = $this->getPluginAddons('edit', compact(['user']));
         $addonsSettings = $this->getPluginAddons('edit.settings', compact(['user']));
@@ -99,6 +100,7 @@ class UserController extends Controller
             'status',
             'enabled2FA',
             'global2FAEnabled',
+            'is2FAEnabledForGroup',
             'addons',
             'addonsSettings',
         ));

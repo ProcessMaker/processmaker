@@ -75,21 +75,6 @@ jobs:
         run: |          
           docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
-  prepareDB:
-    needs: imageEKS
-    runs-on: self-hosted
-    steps:
-      - name: Clone private repository
-        run: |
-          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
-      - name: CreateDB
-        run: |          
-          cd argocd
-          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)          
-          sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
-          kubectl get namespace ci-processmaker-ns-pm4
-          namespace=$(kubectl get namespace $deploy-ns-pm4|grep $deploy|awk '{print $1}')
-          kubectl apply -f template-db.yaml
   deployEKS:
     name: build-deploy-EKS
     if: contains(github.event.pull_request.body, 'ci:deploy')
@@ -126,11 +111,15 @@ jobs:
           echo "NAMESPACE : ci-$deploy-ns-pm4"
           helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }} && helm repo update
           if ! kubectl get namespace/ci-$deploy-ns-pm4 ; then 
+            echo "Creating DB"
+            sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
+            kubectl apply -f template-db.yaml
             echo "Creating Deploy :: $deploy"
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
             helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise
+            #Add cert
             sed -i "s/{{instance}}/ci-$deploy/" template-cert.yaml
             sed -i "s/{{tls-crt}}/${{ secrets.TLS_CRT }}/" template-cert.yaml
             sed -i "s/{{tls-key}}/${{ secrets.TLS_KEY }}/" template-cert.yaml
@@ -157,9 +146,13 @@ jobs:
       - name: Delete instance EKS
         run: |           
           deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
-          echo "Deleting Instace :: ci-$deploy"
-          helm delete ci-$deploy
-          kubectl delete namespace ci-$deploy-ns-pm4
+          if kubectl get namespace/ci-$deploy-ns-pm4 ; then
+            echo "Deleting Instace :: ci-$deploy"
+            helm delete ci-$deploy
+            kubectl delete namespace ci-$deploy-ns-pm4
+          else
+            echo "The pull request does not have an instance on K8s [https://ci-$deploy.engk8s.processmaker.net] not found!!"
+          fi
   runPhpUnit:
     name: run-phpunit
     if: github.event.action != 'closed'
