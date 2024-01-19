@@ -65,10 +65,10 @@ export default {
      */
     bookmarkIcon() {
       if (this.process.bookmark_id !== 0) {
-        this.labelTooltip = "Remove from favorites";
+        this.labelTooltip = this.$t("Remove from My Bookmarks");
         return "fas fa-bookmark marked";
       }
-      this.labelTooltip = "Add to Favorites";
+      this.labelTooltip = this.$t("Add to My Bookmarks");
       return "far fa-bookmark";
     },
     /**
