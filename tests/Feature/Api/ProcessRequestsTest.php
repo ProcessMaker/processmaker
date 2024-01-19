@@ -76,10 +76,10 @@ class ProcessRequestsTest extends TestCase
         ProcessRequest::query()->delete();
         $process = Process::factory()->create();
         ProcessRequest::factory()->count(10)->create([
-            'process_id' => $process->id
+            'process_id' => $process->id,
         ]);
 
-        $response = $this->apiCall('GET', self::API_TEST_URL . '/'. $process->id . '/count');
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $process->id . '/count');
 
         // Validate the header status code
         $response->assertStatus(200);

@@ -13,6 +13,7 @@ class TwoFactorAuthNotification extends Notification
     use Queueable;
 
     private $user;
+
     private $code;
 
     /**

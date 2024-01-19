@@ -1,6 +1,8 @@
 <template>
   <span>
+    <div :class="{ 'd-inline-flex': !vertical }">
     <template v-for="(value, key) in options">
+      <div class="vertical-view">
       <b-button
         ref="button"
         :variant="variant(value)"
@@ -36,7 +38,9 @@
           <span v-if="value.name">{{ limitCharacters(value.name)}}</span>
           <span v-else>ProcessMaker</span>
       </span>
+      </div>
     </template>
+    </div>
   </span>
 </template>
 
@@ -68,7 +72,11 @@ export default {
     characterLimit: {
       type: Number,
       default: null,
-    }
+    },
+    vertical: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -249,5 +257,9 @@ export default {
   .avatar-button:disabled {
     opacity: 1;
     pointer-events: none;
+  }
+  .vertical-view {
+    padding-top: 4px;
+    padding-bottom: 4px;
   }
 </style>

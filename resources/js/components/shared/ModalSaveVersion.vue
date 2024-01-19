@@ -329,7 +329,6 @@ export default {
           const launchpadProperties = JSON.parse(
             firstResponse?.launchpad_properties,
           );
-
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title
               ? launchpadProperties.saved_chart_title
@@ -342,7 +341,6 @@ export default {
             this.selectedSavedChart = "";
             this.selectedSavedChartId = "";
           }
-
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
           mediaArray.forEach((media) => {
@@ -466,8 +464,10 @@ export default {
     },
     /**
      * Initial method to retrieve Saved Search Charts and populate dropdown
+     * Package Collections and Package SavedSearch always go together
      */
     retrieveSavedSearchCharts() {
+      if (!ProcessMaker.packages.includes("package-collections")) return;
       ProcessMaker.apiClient
         .get(
           "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
