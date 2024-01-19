@@ -45,7 +45,7 @@
                     </label>
                     <icon-dropdown ref="icon-dropdown" />
                     <label class="mt-2">{{ $t("Chart") }}</label>
-                    <div class="dropdown mt-2">
+                    <div class="dropdown">
                       <button
                         id="statusDropdown"
                         class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
@@ -849,6 +849,9 @@ $multiselect-height: 38px;
 
 .custom-dropdown {
   width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  transform: none;
 }
 
 .error-message {
