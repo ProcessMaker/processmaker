@@ -46,7 +46,7 @@ class BookmarkController extends Controller
         try {
             $bookmark->updateOrCreate([
                 'process_id' => $process->id,
-                'user_id' => Auth::user()->id
+                'user_id' => Auth::user()->id,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);

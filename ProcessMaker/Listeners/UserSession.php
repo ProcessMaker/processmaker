@@ -3,10 +3,10 @@
 namespace ProcessMaker\Listeners;
 
 use Illuminate\Database\Eloquent\Builder;
-use ProcessMaker\Models\UserSession as Session;
 use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\UserSession as Session;
 
 class UserSession
 {

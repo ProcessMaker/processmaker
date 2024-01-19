@@ -104,7 +104,7 @@ class ProcessRequestObserver
                 ->select('case_number')
                 ->first()
                 ->case_number;
-            
+
             $request->save();
 
             return;
