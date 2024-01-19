@@ -346,13 +346,6 @@ export default {
       return data;
     },
     handleEllipsisClick(processColumn) {
-      this.fields.forEach(column => {
-        if (column.field !== processColumn.field) {
-          column.direction = "none";
-          column.filterApplied = false;
-        }
-      });
-
       if (processColumn.direction === "asc") {
         processColumn.direction = "desc";
       } else if (processColumn.direction === "desc") {
