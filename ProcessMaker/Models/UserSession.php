@@ -65,7 +65,7 @@ class UserSession extends ProcessMakerModel
             ->orderBy('id', 'desc')
             ->chunk(100, function ($sessions) use (&$usersActiveDevice) {
                 foreach ($sessions as $session) {
-                    $key = $session->user_id . '.'.
+                    $key = $session->user_id . '.' .
                         $session->device_name . '.' .
                         $session->device_type . '.' .
                         $session->device_platform;

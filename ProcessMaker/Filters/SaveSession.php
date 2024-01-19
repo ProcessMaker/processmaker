@@ -8,12 +8,12 @@ class SaveSession
 {
     /**
      * Retrieve cached data; this is preserved for a week.
-     * @param Array $json
-     * @return Array
+     * @param array $json
+     * @return array
      */
     private static function get($key, $json)
     {
-        return Cache::remember($key, now()->addWeek(), function () use($json) {
+        return Cache::remember($key, now()->addWeek(), function () use ($json) {
             return $json;
         });
     }
@@ -26,24 +26,25 @@ class SaveSession
      */
     private static function getKey($user, $name)
     {
-        return str_replace("-", "_", "user-{$user->id}-{$user->uuid}-{$name}");
+        return str_replace('-', '_', "user-{$user->id}-{$user->uuid}-{$name}");
     }
 
     /**
      * Get filter configuration.
-     * @param String $name
+     * @param string $name
      * @param User $user
      * @return type
      */
     public static function getConfigFilter(String $name, Object $user)
     {
         $key = self::getKey($user, $name);
+
         return self::get($key, []);
     }
 
     /**
      * Store filter configuration.
-     * @param String $name
+     * @param string $name
      * @param User $user
      * @param array $array
      * @return type
@@ -52,6 +53,7 @@ class SaveSession
     {
         $key = self::getKey($user, $name);
         Cache::pull($key);
+
         return self::get($key, $array);
     }
 }

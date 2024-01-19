@@ -15,10 +15,12 @@
           preicon="fas fa-play-circle"
           class="mt-3"
           show-bookmark="true"
+          :category-count="categoryCount"
           :data="listCategories"
           :from-process-list="fromProcessList"
           :select="selectCategorie"
           :filter-categories="filterCategories"
+          :permission="permission"
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
@@ -76,12 +78,12 @@ export default {
       defaultOptions: [
         {
           id: -1,
-          name: "All Processes",
+          name: this.$t("All Processes"),
           status: "ACTIVE",
         },
         {
           id: 0,
-          name: "Favorites",
+          name: this.$t("My Bookmarks"),
           status: "ACTIVE",
         },
       ],
@@ -100,6 +102,7 @@ export default {
       filter: "",
       markCategory: false,
       fromProcessList: false,
+      categoryCount: 0,
     };
   },
   computed: {
@@ -149,9 +152,12 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            this.listCategories = [...this.defaultOptions, ...response.data.data];
+            if(!this.checkDefaultOptions()) {
+              this.listCategories = [...this.defaultOptions, ...this.listCategories];
+            }
+            this.listCategories = [...this.listCategories, ...response.data.data];
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
-
+            this.categoryCount = response.data.meta.total;
             if (this.markCategory) {
               const indexCategory = this.listCategories.findIndex((category) => category.name === this.category.name);
               this.$refs.categoryList.markCategory(this.listCategories[indexCategory]);
@@ -159,6 +165,12 @@ export default {
             }
           });
       }
+    },
+    /**
+     * Check if listCatefgories have the default options
+     */
+    checkDefaultOptions() {
+      return this.defaultOptions.every(v => this.listCategories.includes(v));
     },
     /**
      * Check if there is a pre-selected process

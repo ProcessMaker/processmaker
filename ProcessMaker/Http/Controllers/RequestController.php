@@ -58,8 +58,8 @@ class RequestController extends Controller
                 ['type', 'title', 'currentUser']
             ));
         }
-        
-        $userFilter = SaveSession::getConfigFilter("requestFilter", Auth::user());
+
+        $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
 
         return view('requests.index', compact(
             ['type', 'title', 'currentUser', 'userFilter']

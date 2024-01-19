@@ -209,4 +209,48 @@ class FilterTest extends TestCase
             $sql
         );
     }
+
+    public function testTaskCaseTitle()
+    {
+        $request = ProcessRequest::factory()->create();
+        $caseTitle = $request->case_title;
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+        ]);
+
+        $filter = [
+            [
+                'subject' => ['type' => 'Relationship', 'value' => 'processRequest.case_title'],
+                'operator' => '=',
+                'value' => $caseTitle,
+            ],
+        ];
+
+        $query = ProcessRequestToken::query();
+        Filter::filter($query, json_encode($filter));
+        $this->assertEquals($query->first()->id, $task->id);
+    }
+
+    public function testTaskCaseNumber()
+    {
+        $request = ProcessRequest::factory()->create();
+        $caseNumber = $request->case_number;
+
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+        ]);
+
+        $filter = [
+            [
+                'subject' => ['type' => 'Relationship', 'value' => 'processRequest.case_number'],
+                'operator' => '=',
+                'value' => $caseNumber,
+            ],
+        ];
+
+        $query = ProcessRequestToken::query();
+        Filter::filter($query, json_encode($filter));
+        $this->assertEquals($query->first()->id, $task->id);
+    }
 }
