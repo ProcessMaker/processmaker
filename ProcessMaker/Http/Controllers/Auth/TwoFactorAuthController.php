@@ -17,8 +17,11 @@ class TwoFactorAuthController extends Controller
     private $twoFactorAuthentication;
 
     const TFA_ERROR = '2fa-error';
+
     const TFA_MESSAGE = '2fa-message';
+
     const TFA_AUTH_APP = '2fa-auth-app';
+
     const TFA_VALIDATED = '2fa-validated';
 
     public function __construct()
@@ -173,6 +176,7 @@ class TwoFactorAuthController extends Controller
                 'message' => __('Unable to send email. Please check your email server settings.'),
             ], 500);
         }
+
         return true;
     }
 
@@ -206,6 +210,7 @@ class TwoFactorAuthController extends Controller
                 'message' => __('Unable to send SMS. Please check your cell number and SMS server settings.'),
             ], 500);
         }
+
         return true;
     }
 }

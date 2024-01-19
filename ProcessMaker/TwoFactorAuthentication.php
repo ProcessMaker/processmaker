@@ -2,8 +2,8 @@
 
 namespace ProcessMaker;
 
-use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Notification;
@@ -17,8 +17,11 @@ use Twilio\Rest\Client;
 class TwoFactorAuthentication
 {
     const EMAIL = 'By email';
+
     const SMS = 'By message to phone number';
+
     const AUTH_APP = 'Authenticator App';
+
     const ERROR_INVALID_TO_NUMBER = 21211;
 
     public function sendCode(User $user): void
@@ -45,6 +48,7 @@ class TwoFactorAuthentication
     private function generateSecret(User $user): string
     {
         $base = $user->uuid . '_' . $user->username;
+
         return trim(Base32::encodeUpper($base), '=');
     }
 
@@ -116,7 +120,7 @@ class TwoFactorAuthentication
             $twilio->messages->create($to,
                 [
                     'from' => $from,
-                    'body' => $body
+                    'body' => $body,
                 ]
             );
         } catch (TwilioException $error) {
@@ -179,7 +183,7 @@ class TwoFactorAuthentication
         }
 
         // Return the friendly names for enabled methods
-        $methods = array_map(function($method) use ($friendlyNames) {
+        $methods = array_map(function ($method) use ($friendlyNames) {
             return $friendlyNames[$method] ?? $method;
         }, $enabledMethods);
 

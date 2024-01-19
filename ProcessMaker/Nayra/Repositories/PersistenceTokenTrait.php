@@ -164,11 +164,13 @@ trait PersistenceTokenTrait
         $gateway = $this->deserializer->unserializeEntity($transaction['gateway']);
         if (!is_numeric($transaction['transition'])) {
             Log::info('Invalid transition id for gateway token passed. ' . json_encode($transaction));
+
             return;
         }
         $transition = $gateway->getTransitions()[$transaction['transition']] ?? null;
         if (empty($transition)) {
             Log::info('Invalid transition for gateway token passed. ' . json_encode($transaction));
+
             return;
         }
         $tokens = $this->deserializer->unserializeTokensCollection($transaction['tokens']);

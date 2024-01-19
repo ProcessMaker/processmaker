@@ -146,7 +146,12 @@ export default {
     });
   },
   methods: {
+    /**
+     * This method is validating installation of Package-savedsearch with package-collections
+     * Both packages go always together
+     */
     fetchChart(idChart) {
+      if (!ProcessMaker.packages.includes("package-collections") || !idChart) return;
       ProcessMaker.apiClient
         .get(`saved-searches/charts/${idChart}`, { timeout: 0 })
         .then((response) => {
