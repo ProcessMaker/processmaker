@@ -99,10 +99,7 @@ class SessionControlBlock
         $ip = $request->getClientIp() ?? $request->ip();
         // Get the user's most recent session
         $session = $user->sessions()
-            ->where([
-                ['is_active', true],
-                ['ip_address', '!=', $ip],
-            ])
+            ->where('is_active', true)
             ->orderBy('created_at', 'desc')
             ->first();
 

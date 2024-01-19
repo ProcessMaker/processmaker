@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -532,5 +533,29 @@ class User extends Authenticatable implements HasMedia
         $aux = array_intersect($global2FAEnabled, $user2FAEnabled);
 
         return !empty($aux) ? array_values($aux) : $global2FAEnabled;
+    }
+
+    public function in2FAGroupOrIndependent()
+    {
+        $userGroups = $this->groups;
+        $groupCount = $userGroups->count();
+
+        if ($groupCount === 0) {
+            return true;
+        }
+
+        $groupsWith2fa = $userGroups->where('enabled_2fa', true);
+
+        // Check if the only group has 2fa enabled, if so, ask for 2fa
+        $hasSingleGroupWith2fa = $groupCount === 1 && $groupsWith2fa->count() === 1;
+        // Check if at least one group has 2fa enabled, if so, ask for 2fa
+        $hasMultipleGroupsWithAtLeastOne2fa = $groupCount > 1 && $groupsWith2fa->count() > 0;
+        // Check if all groups don't have 2fa enabled, if so, ask for 2fa if the 2fa setting is enabled
+        $independent = $groupCount === 0;
+
+        if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $independent) {
+            return true;
+        }
+        return false;
     }
 }
