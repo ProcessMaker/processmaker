@@ -978,6 +978,9 @@ export default {
       // Add it to the form builder
       this.$refs.builder.addControl(control, builderComponent, builderBinding);
     },
+    setGroupOrder(config) {
+      this.$refs.builder.setGroupOrder(config);
+    },
     translateControl(inputControl) {
       const control = { ...inputControl };
 
