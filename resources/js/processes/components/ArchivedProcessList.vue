@@ -15,26 +15,7 @@
       <filter-table
         :headers="fields"
         :data="data"
-        style="height: calc(100vh - 350px);"
       >
-        <!-- Slot Table Header filter Button -->
-        <template
-          v-for="(column, index) in fields"
-          #[`filter-${column.field}`]
-        >
-          <div
-            :key="index"
-            @click="handleEllipsisClick(column)"
-          >
-            <i
-              :class="['fas', {
-                'fa-sort': column.direction === 'none',
-                'fa-sort-up': column.direction === 'asc',
-                'fa-sort-down': column.direction === 'desc',
-              }]"
-            />
-          </div>
-        </template>
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
@@ -51,52 +32,39 @@
               v-html="sanitize(row[header.field])"
             />
             <template v-else>
-              <template
-                v-if="isComponent(row[header.field])"
-                :data-cy="`process-table-component-${rowIndex}-${colIndex}`"
-              >
+              <template v-if="isComponent(row[header.field])">
                 <component
                   :is="row[header.field].component"
+                  :data-cy="`process-table-component-${rowIndex}-${colIndex}`"
                   v-bind="row[header.field].props"
                 />
               </template>
-              <template
-                v-else
-                :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
-              >
-                <template v-if="header.field === 'name'">
-                  <div
-                    :id="`element-${row.id}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
-                    <i
-                      v-b-tooltip
-                      tabindex="0"
-                      :title="row.warningMessages.join(' ')"
-                      class="text-warning fa fa-exclamation-triangle"
-                      :class="{'invisible': row.warningMessages.length == 0}"
-                    />
-                    <i
-                      v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
-                      v-b-tooltip
-                      tabindex="0"
-                      :title="row.status"
-                      class="mr-2"
-                      :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
-                    />
-                    <span>
-                      {{ row[header.field] }}
-                    </span>
-                  </div>
-                  <b-tooltip
-                    v-if="header.truncate"
-                    :target="`element-${row.id}`"
-                    custom-class="pm-table-tooltip"
+              <template v-else>
+                <div
+                  v-if="header.field === 'name'"
+                  :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
+                >
+                  <i
+                    v-b-tooltip
+                    tabindex="0"
+                    :title="row.warningMessages.join(' ')"
+                    class="text-warning fa fa-exclamation-triangle"
+                    :class="{'invisible': row.warningMessages.length == 0}"
+                  />
+                  <i
+                    v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
+                    v-b-tooltip
+                    tabindex="0"
+                    :title="row.status"
+                    class="mr-2"
+                    :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
+                  />
+                  <span
+                    v-uni-id="row.id.toString()"
                   >
                     {{ row[header.field] }}
-                  </b-tooltip>
-                </template>
+                  </span>
+                </div>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
                   class="process-table"
@@ -160,17 +128,16 @@
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import isPMQL from "../../modules/isPMQL";
 import TemplateExistsModal from "../../components/templates/TemplateExistsModal.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
-import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
-import processNavigationMixin from "../../components/shared/processNavigation";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
+import processNavigationMixin from "../../components/shared/processNavigation";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import ProcessMixin from "./ProcessMixin";
 
@@ -209,24 +176,18 @@ export default {
           field: "name",
           width: 200,
           sortable: true,
-          truncate: true,
-          direction: "none",
         },
         {
           label: "CATEGORY",
           field: "category_list",
           width: 160,
           sortable: true,
-          direction: "none",
-          sortField: "category.name",
         },
         {
           label: "OWNER",
           field: "owner",
           width: 160,
           sortable: true,
-          direction: "none",
-          sortField: "user.username",
         },
         {
           label: "MODIFIED",
@@ -234,7 +195,6 @@ export default {
           format: "datetime",
           width: 160,
           sortable: true,
-          direction: "none",
         },
         {
           label: "CREATED",
@@ -242,7 +202,6 @@ export default {
           format: "datetime",
           width: 160,
           sortable: true,
-          direction: "none",
         },
         {
           name: "__slot:actions",
@@ -254,12 +213,11 @@ export default {
     };
   },
   created() {
-    ProcessMaker.EventBus.$on("api-data-process", (val) => {
+    ProcessMaker.EventBus.$on("api-data-archived-process", (val) => {
       this.fetch();
-      this.apiDataLoading = false;
-      this.apiNoResults = false;
     });
   },
+  methods: {},
 };
 </script>
 

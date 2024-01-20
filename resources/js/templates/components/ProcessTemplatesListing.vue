@@ -337,6 +337,13 @@
           return data;
         },
         handleEllipsisClick(templateColumn) {
+          this.fields.forEach(column => {
+            if (column.field !== templateColumn.field) {
+              column.direction = "none";
+              column.filterApplied = false;
+            }
+          });
+
           if (templateColumn.direction === "asc") {
             templateColumn.direction = "desc";
           } else if (templateColumn.direction === "desc") {

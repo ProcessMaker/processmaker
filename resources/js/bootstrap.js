@@ -78,6 +78,7 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
 window.VueMonaco = require("vue-monaco");
 
 window.ScreenBuilder = ScreenBuilder;
+window.VueFormElements = require("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
 
