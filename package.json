@@ -36,13 +36,11 @@
         "laravel-mix-polyfill": "^3.0.1",
         "moment": "^2.29.1",
         "moment-timezone": "^0.5.31",
-        "regenerator-runtime": "^0.14.1",
         "resolve-url-loader": "^3.1.2",
         "sass-loader": "^12.6.0",
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
-        "@babel/runtime": "^7.23.8",
         "@braintree/sanitize-url": "^6.0.2",
         "@chantouchsek/validatorjs": "1.2.3",
         "@fontsource/poppins": "^5.0.8",
