@@ -34,6 +34,12 @@ class GroupController extends Controller
         $all_permissions = Permission::all();
         $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
+        // Get the 2FA settings
+        $settings = [
+            '2fa_enabled' => config('password-policies.2fa_enabled', false),
+            '2fa_methods' => config('password-policies.2fa_method', []),
+        ];
+
         $addons = $this->getPluginAddons('edit', compact(['group']));
 
         return view('admin.groups.edit', compact(
@@ -41,7 +47,8 @@ class GroupController extends Controller
             'permissionNames',
             'all_permissions',
             'permissionGroups',
-            'addons'
+            'addons',
+            'settings',
         ));
     }
 

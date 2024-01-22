@@ -1,12 +1,12 @@
 <template>
   <div>
     <SearchCards
-      v-if="processList.length > 0"
+      v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
     />
     <div
-      v-if="processList.length > 0"
-      class="container processList"
+      v-show="!loading && processList.length > 0"
+      class="processList"
     >
       <Card
         v-for="(process, index) in processList"
@@ -14,14 +14,26 @@
         :process="process"
         @openProcessInfo="openProcessInfo"
       />
+      <pagination
+        :total-row="totalRow"
+        :total-pages="totalPages"
+        @onPageChanged="onPageChanged"
+      />
     </div>
-    <pagination
-      :total-row="totalRow"
-      :total-pages="totalPages"
-      @onPageChanged="onPageChanged"
+    <div
+      v-if="loading"
+      class="d-flex justify-content-center align-items-center m-5"
+    >
+      <data-loading
+        v-show="shouldShowLoader"
+        empty-icon="beach"
+      />
+    </div>
+    <CatalogueEmpty
+      v-if="!loading && processList.length === 0"
+      :show-empty="showEmpty"
+      @wizardLinkSelect="wizardLinkSelected"
     />
-
-    <CatalogueEmpty v-if="processList.length === 0" />
   </div>
 </template>
 
@@ -29,12 +41,14 @@
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
 
 export default {
   components: {
     pagination, CatalogueEmpty, SearchCards, Card,
   },
+  mixins: [dataLoadingMixin],
   props: ["category"],
   data() {
     return {
@@ -50,6 +64,8 @@ export default {
       totalPages: 1,
       pmql: "",
       bookmarkIcon: "far fa-bookmark",
+      showEmpty: false,
+      loading: false,
     };
   },
   watch: {
@@ -63,19 +79,36 @@ export default {
   },
   methods: {
     loadCard() {
+      this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
+          this.loading = false;
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
         });
     },
     /**
+     * Go to wizard templates section
+     */
+    wizardLinkSelected() {
+      this.$emit("wizardLinkSelect");
+    },
+    /**
      * Build URL for Process Cards
      */
     buildURL() {
+      if (this.category === undefined || this.category.id === -1) {
+        return "process_bookmarks/processes?"
+          + `&page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&pmql=${encodeURIComponent(this.pmql)}`
+          + "&bookmark=true"
+          + "&cat_status=ACTIVE"
+          + "&order_by=name&order_direction=asc";
+      }
       if (this.category.id === 0) {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -106,8 +139,9 @@ export default {
     /**
      * Build the PMQL
      */
-    onFilter(value) {
+    onFilter(value, showEmpty = false) {
       this.pmql = `(fulltext LIKE "%${value}%")`;
+      this.showEmpty = showEmpty;
       this.loadCard();
     },
   },
@@ -118,5 +152,14 @@ export default {
 .processList {
   display: flex;
   flex-wrap: wrap;
+}
+.text-custom {
+  color: #1572C2;
+  width: 200px;
+  height: 200px;
+  border: 1.2em solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: 0.75s linear infinite spinner-border;
 }
 </style>

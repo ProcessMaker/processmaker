@@ -97,7 +97,6 @@ class PopulateProcessRequestsCaseNumber extends Upgrade
                     select 1 from category_assignments
                         left join process_categories on category_assignments.category_id = process_categories.id
                     where process_requests.process_id = category_assignments.assignable_id
-                        and process_requests.process_id = category_assignments.assignable_id
                         and category_assignments.assignable_type = \'ProcessMaker\\\\Models\\\\Process\'
                         and process_categories.is_system = 1
                 )

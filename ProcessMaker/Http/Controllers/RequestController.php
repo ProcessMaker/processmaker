@@ -6,8 +6,10 @@ use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
@@ -18,6 +20,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -56,8 +59,10 @@ class RequestController extends Controller
             ));
         }
 
+        $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
+
         return view('requests.index', compact(
-            ['type', 'title', 'currentUser']
+            ['type', 'title', 'currentUser', 'userFilter']
         ));
     }
 
@@ -179,6 +184,8 @@ class RequestController extends Controller
                 'errorTask',
             ));
         }
+
+        UserResourceView::setViewed(Auth::user(), $request);
 
         return view('requests.show', compact(
             'request',

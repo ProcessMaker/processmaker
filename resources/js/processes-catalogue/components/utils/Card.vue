@@ -9,6 +9,8 @@
       <div class="card-bookmark">
         <i
           :ref="`bookmark-${process.id}`"
+          v-b-tooltip.hover
+          :title="$t(labelTooltip)"
           :class="bookmarkIcon()"
           @click="checkBookmark(process)"
         />
@@ -34,6 +36,7 @@ export default {
   data() {
     return {
       labelIcon: "Default Icon",
+      labelTooltip: "",
     };
   },
   methods: {
@@ -62,8 +65,10 @@ export default {
      */
     bookmarkIcon() {
       if (this.process.bookmark_id !== 0) {
+        this.labelTooltip = this.$t("Remove from My Bookmarks");
         return "fas fa-bookmark marked";
       }
+      this.labelTooltip = this.$t("Add to My Bookmarks");
       return "far fa-bookmark";
     },
     /**
@@ -75,7 +80,7 @@ export default {
     getIconProcess() {
       let icon = "default-icon";
       if (this.process.launchpad_properties) {
-        icon = JSON.parse(this.process.launchpad_properties).icon;
+        icon = JSON.parse(this.process.launchpad_properties).icon || "default-icon";
       }
       return `/img/launchpad-images/icons/${icon}.svg`;
     },

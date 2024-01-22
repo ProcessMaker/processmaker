@@ -1,23 +1,19 @@
 <template>
   <div>
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/requests\?page|results\?page/"
-      :empty="$t('¡ Whoops ! No results')"
-      :empty-desc="$t('Sorry but nothing matched your search.Try a new search ')"
-      empty-icon="noData"
-    />
     <div
-      v-show="!shouldShowLoader"
+      v-show="true"
     >
       <filter-table
         :headers="tableHeaders"
         :data="data"
+        :unread="unreadColumnName"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <div :key="index">{{ column.label }}</div>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -31,8 +27,11 @@
                                    :operators="getOperators(column)"
                                    :viewConfig="getViewConfigFilter()"
                                    :container="''"
-                                   @onApply="onApply"
-                                   @onClear="onClear">
+                                   :boundary="'viewport'"
+                                   @onChangeSort="onChangeSort($event, column.field)"
+                                   @onApply="onApply($event, column.field)"
+                                   @onClear="onClear(column.field)"
+                                   @onUpdate="onUpdate($event, column.field)">
             </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
@@ -41,7 +40,22 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+              >
+                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+              >
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+              </b-tooltip>
+            </template>
             <template v-else>
               <template v-if="isComponent(row[header.field])">
                 <component
@@ -56,13 +70,13 @@
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
-                  {{ row[header.field] }}
+                  {{ getNestedPropertyValue(row, header.field) }}
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header.field) }}
                   </b-tooltip>
                 </div>
               </template>
@@ -71,6 +85,14 @@
         </template>
       </filter-table>
     </div>
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/requests\?page|results\?page/"
+      :empty="$t('No results have been found')"
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+Please consider trying a different search. Thank you`)"
+      empty-icon="noData"
+    />
     <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -89,7 +111,11 @@ import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
 import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
+import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -99,8 +125,10 @@ export default {
   components: {
     PMColumnFilterPopover,
     paginationTable,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
   },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
     filter: {},
     columns: {},
@@ -114,7 +142,6 @@ export default {
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
-      advanced_filter: [],
       sortOrder: [
         {
           field: "id",
@@ -126,6 +153,7 @@ export default {
       previousFilter: "",
       previousPmql: "",
       tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -138,7 +166,9 @@ export default {
     },
   },
   mounted() {
+    this.getParticipants("");
     this.setupColumns();
+    this.getFilterConfiguration("requestFilter");
   },
   methods: {
     setupColumns() {
@@ -198,21 +228,22 @@ export default {
       }
       return [
         {
-          label: "CASE #",
+          label: this.$t("Case #"),
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
         },
         {
-          label: "CASE TITLE",
+          label: this.$t("Case title"),
           field: "case_title",
           sortable: true,
           default: true,
+          truncate: true,
           width: 220,
         },
         {
-          label: "PROCESS NAME",
+          label: this.$t("Process"),
           field: "name",
           sortable: true,
           default: true,
@@ -220,7 +251,7 @@ export default {
           truncate: true,
         },
         {
-          label: "TASK NAME",
+          label: this.$t("Task"),
           field: "active_tasks",
           sortable: false,
           default: true,
@@ -228,7 +259,7 @@ export default {
           truncate: true,
         },
         {
-          label: "PARTICIPANTS",
+          label: this.$t("Participants"),
           field: "participants",
           sortable: true,
           default: true,
@@ -236,15 +267,14 @@ export default {
           truncate: true,
         },
         {
-          label: "STATUS",
+          label: this.$t("Status"),
           field: "status",
           sortable: true,
           default: true,
-          width: 160,
-          truncate: true,
+          width: 100,
         },
         {
-          label: "STARTED",
+          label: this.$t("Started"),
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -252,7 +282,7 @@ export default {
           width: 160,
         },
         {
-          label: "COMPLETED",
+          label: this.$t("Completed"),
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -332,6 +362,7 @@ export default {
           size: "25",
           "input-data": participants,
           "hide-name": false,
+          vertical: true,
         },
       };
     },
@@ -345,7 +376,9 @@ export default {
         //format Status
         record["case_number"] = this.formatCaseNumber(record);
         record["case_title"] = this.formatCaseTitle(record);
-        record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        if (record["active_tasks"]) {
+          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
       }
@@ -404,7 +437,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            (this.advanced_filter.length >= 0 ? "&advanced_filter=" + JSON.stringify(this.advanced_filter) : ""),
+            this.getAdvancedFilter(),
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -414,6 +447,7 @@ export default {
           .then((response) => {
             this.data = this.transform(response.data);
           }).catch((error) => {
+            this.data = [];
             if (error.code === "ERR_CANCELED") {
               return;
             }
@@ -430,127 +464,96 @@ export default {
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);
     },
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return ["In Progress", "Completed", "Error", "Canceled"];
     },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      by = this.getAliasColumnForOrderBy(by);
+      this.orderBy = by;
+      this.orderDirection = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
     },
-    sanitize(html) {
+    sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(
-        /<(?!b|\/b|br|img|a|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi,
-        "",
-      );
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
     },
-    changePage(page) {
-      this.page = page;
-      this.fetch();
-    },
-    onApply(json) {
-      this.advanced_filter = json;
-      this.fetch();
-    },
-    onClear() {
-      this.advanced_filter = [];
-      this.fetch();
-    },
-    getFormat(column) {
-      let format = "string";
-      if (column.format) {
-        format = column.format;
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    storeFilterConfiguration() {
+      let url = "users/store_filter_configuration/requestFilter";
+      if (this.$props.columns) {
+        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
       }
-      if (column.field === "status" || column.field === "participants") {
-        format = "stringSelect";
-      }
-      return format;
+      let config = {
+        filter: this.advancedFilter,
+        order: {
+          by: this.orderBy,
+          direction: this.orderDirection
+        },
+      };
+      ProcessMaker.apiClient.put(url, config);
+      window.Processmaker.filter_user = config;
     },
-    getFormatRange(column) {
-      let formatRange = [];
-      if (column.field === "status") {
-        formatRange = ["In Progress", "Completed", "Error", "Canceled"];
+    getTypeColumnFilter(value) {
+      let type = "Field";
+      if (value === "case_number" || value === "case_title") {
+        type = "Request";
       }
-      if (column.field === "participants") {
-        formatRange = ["user1", "user2", "user3", "user4"];
+      if (value === "process") {
+        type = "Process";
       }
-      return formatRange;
+      if (value === "active_tasks") {
+        type = "Task";
+      }
+      if (value === "participants") {
+        type = "Participants";
+      }
+      if (value === "status") {
+        type = "Status";
+      }
+      return type;
     },
-    getOperators(column) {
-      let operators = [];
-      if (column.field === "status" || column.field === "participants") {
-        operators = ["=", "in"];
+    getAliasColumnForFilter(value) {
+      if (value === "active_tasks") {
+        value = "id";
       }
-      return operators;
+      return value;
     },
-    getViewConfigFilter() {
-      return [
-        {
-          "type": "string",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpInput",
-          "input": ""
-        },
-        {
-          "type": "string",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetween",
-          "input": []
-        },
-        {
-          "type": "string",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpIn",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
-          "control": "PMColumnFilterOpDatetime",
-          "input": ""
-        },
-        {
-          "type": "datetime",
-          "includes": ["between"],
-          "control": "PMColumnFilterOpBetweenDatepicker",
-          "input": []
-        },
-        {
-          "type": "datetime",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpInDatepicker",
-          "input": []
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["="],
-          "control": "PMColumnFilterOpSelect",
-          "input": ""
-        },
-        {
-          "type": "stringSelect",
-          "includes": ["in"],
-          "control": "PMColumnFilterOpSelectMultiple",
-          "input": []
-        },
-        {
-          "type": "boolean",
-          "includes": ["="],
-          "control": "PMColumnFilterOpBoolean",
-          "input": false
-        }
-      ];
+    getAliasColumnForOrderBy(value) {
+      if (value === "process") {
+        value = "process.name";
+      }
+      if (value === "active_tasks") {
+        value = "id";
+      }
+      if (value === "participants") {
+        value = "id";
+      }
+      return value;
     }
-  },
+  }
 };
 </script>
 <style>
-
+  .pm-table-ellipsis-column{
+    text-transform: uppercase;
+  }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

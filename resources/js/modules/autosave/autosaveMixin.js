@@ -5,7 +5,7 @@ export default {
     };
   },
   methods: {
-    async handleAutosave(force = false) {
+    async handleAutosave(force = false, generatingAssets = false) {
       if (this.isVersionsInstalled === false) {
         return;
       }
@@ -15,14 +15,14 @@ export default {
       }
 
       if (force) {
-        this.autosaveApiCall();
+        this.autosaveApiCall(generatingAssets);
       } else {
         if (this.debounceTimeout) {
           clearTimeout(this.debounceTimeout);
         }
 
         this.debounceTimeout = setTimeout(() => {
-          this.autosaveApiCall();
+          this.autosaveApiCall(generatingAssets);
         }, this.autoSaveDelay);
       }
     },

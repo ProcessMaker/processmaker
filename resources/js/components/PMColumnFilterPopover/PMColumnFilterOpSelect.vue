@@ -12,7 +12,7 @@
     ],
     data() {
       return {
-        input: ""
+        input: null
       };
     },
     watch: {
@@ -25,7 +25,7 @@
       input() {
         this.$emit("input", this.input);
       }
-    },
+    }
   };
 </script>
 

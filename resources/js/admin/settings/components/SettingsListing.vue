@@ -56,6 +56,7 @@
             <component
               :is="component(row.item)"
               v-if="row.item && !isSwitch(row.item)"
+              v-show="!savingSetting || savingSetting.id !== settings[row.index].id"
               :ref="`settingComponent_${row.index}`"
               :key="row.item.key"
               v-model="row.item.config"
@@ -63,6 +64,10 @@
               @saved="onChange"
             />
           </keep-alive>
+          <i
+            v-if="savingSetting && savingSetting.id === settings[row.index].id"
+            class="fas fa-cog fa-spin text-secondary"
+          />
         </template>
         <template v-slot:cell(actions)="row">
           <keep-alive>
@@ -211,6 +216,7 @@ export default {
   props: ['group'],
   data() {
     return {
+      savingSetting: null,
       tableKey: 0,
       bottomButtons: [],
       topButtons: [],
@@ -296,7 +302,7 @@ export default {
       return ProcessMaker.apiClient.get(this.pageUrl(this.currentPage));
     },
     apiPut(setting) {
-      return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
+      return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting, { timeout: 0 });
     },
     isSwitch(setting) {
       return setting.format === "boolean";
@@ -397,6 +403,7 @@ export default {
     },
     onChange(setting) {
       this.$nextTick(() => {
+        this.savingSetting = setting;
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
@@ -406,7 +413,9 @@ export default {
               this.refresh();
             }
           }
-        })
+        }).finally(() => {
+          this.savingSetting = null;
+        });
       });
     },
     onCopy(row) {

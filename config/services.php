@@ -46,11 +46,11 @@ return [
         'template_categories' => env('DEFAULT_TEMPLATE_CATEGORIES', 'accounting-and-finance,customer-success,human-resources,marketing-and-sales,operations,it'),
     ],
 
-    'wizard_templates_github' => [
+    'guided_templates_github' => [
         'base_url' => 'https://raw.githubusercontent.com/processmaker/',
-        'wizard_repo' => env('WIZARD_TEMPLATE_REPO', 'wizard-templates'),
-        'wizard_branch' => env('WIZARD_TEMPLATE_BRANCH', 'main'),
-        'wizard_categories' => env('WIZARD_TEMPLATE_CATEGORIES', 'all'),
+        'template_repo' => env('GUIDED_TEMPLATE_REPO', 'wizard-templates'),
+        'template_branch' => env('GUIDED_TEMPLATE_BRANCH', '2023-winter'),
+        'template_categories' => env('GUIDED_TEMPLATE_CATEGORIES', 'all'),
     ],
 
 ];

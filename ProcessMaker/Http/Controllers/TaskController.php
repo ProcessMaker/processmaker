@@ -3,14 +3,17 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Jobs\MarkNotificationAsRead;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -38,7 +41,9 @@ class TaskController extends Controller
             return view('tasks.mobile', compact('title'));
         }
 
-        return view('tasks.index', compact('title'));
+        $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
+
+        return view('tasks.index', compact('title', 'userFilter'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
@@ -103,6 +108,8 @@ class TaskController extends Controller
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 ]);
             }
+
+            UserResourceView::setViewed(Auth::user(), $task);
 
             return view('tasks.edit', [
                 'task' => $task,

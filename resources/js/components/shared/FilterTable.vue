@@ -1,8 +1,12 @@
 <template>
-  <div class="pm-table-container">
+  <div
+    id="table-container"
+    class="pm-table-container"
+  >
     <table
       class="pm-table-filter"
       aria-label="custom-pm-table"
+      @mouseleave="handleRowMouseleave"
     >
       <thead>
         <tr>
@@ -26,7 +30,7 @@
             </div>
             <div class="pm-table-filter-button">
               <slot :name="`filter-${column.field}`">
-                
+
               </slot>
             </div>
             <div
@@ -45,14 +49,32 @@
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
+          :id="`row-${row.id}`"
+          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row)"
+          @mouseover="handleRowMouseover(row)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in headers"
               :key="index"
             >
-              <div v-if="containsHTML(row[header.field])" v-html="sanitize(row[header.field])"></div>
+              <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+                <div
+                  :id="`element-${rowIndex}-${index}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                </div>
+                <b-tooltip
+                  v-if="header.truncate"
+                  :target="`element-${rowIndex}-${index}`"
+                  custom-class="pm-table-tooltip"
+                >
+                  {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                </b-tooltip>
+              </template>
               <template v-else>
                 <template v-if="isComponent(row[header.field])">
                   <component
@@ -62,7 +84,20 @@
                   </component>
                 </template>
                 <template v-else>
-                  {{ row[header.field] }}
+                  <div
+                    :id="`element-${rowIndex}-${index}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ getNestedPropertyValue(row, header.field) }}
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${index}`"
+                      custom-class="pm-table-tooltip"
+                    >
+                      {{ getNestedPropertyValue(row, header.field) }}
+                    </b-tooltip>
+                  </div>
                 </template>
               </template>
             </td>
@@ -71,15 +106,17 @@
       </tbody>
     </table>
   </div>
-  </template>
+</template>
 
 <script>
 
 import moment from "moment";
+import FilterTableBodyMixin from "./FilterTableBodyMixin";
 
 export default {
   components: {
   },
+  mixins: [FilterTableBodyMixin],
   props: {
     headers: {
       type: Array,
@@ -88,6 +125,12 @@ export default {
       }
     },
     data: [],
+    unread: {
+      type: String,
+      default: function () {
+        return "";
+      }
+    },
   },
   data() {
     return {
@@ -103,9 +146,11 @@ export default {
       this.headers.forEach((column) => {
         if (column.format) {
           if (column.format === 'datetime' || column.format === 'date') {
-            this.data.data.forEach((element) => {
-              element[column.field] = this.formatDate(element[column.field], column.format);
-            });
+            if (this.data?.data?.forEach) {
+              this.data.data.forEach((element) => {
+                element[column.field] = this.formatDate(element[column.field], column.format);
+              });
+            }
           }
         }
       });
@@ -121,16 +166,6 @@ export default {
     });
   },
   methods: {
-    containsHTML(text) {
-      const doc = new DOMParser().parseFromString(text, 'text/html');
-      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
-    },
-    isComponent(content) {
-      if (content && typeof content === 'object') {
-        return content.component && typeof content.props === 'object';
-      }
-      return false;
-    },
     startResize(index) {
       this.isResizing = true;
       this.resizingColumnIndex = index;
@@ -170,13 +205,22 @@ export default {
     handleRowClick(row) {
       this.$emit('table-row-click', row);
     },
-    sanitize(html) {
+    handleRowMouseover(row) {
+      this.$emit('table-row-mouseover', row);
+    },
+    handleRowMouseleave() {
+      this.$emit('table-row-mouseleave', false);
+    },
+    sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!br|img|input|hr|link|meta|time|button|select|textarea|datalist|progress|meter|span)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
+    },
+    isUnread(row, unreadColumnName) {
+      return row[unreadColumnName] === null;
     },
   },
 };
@@ -185,12 +229,13 @@ export default {
 <style>
 .pm-table-container {
   overflow-x: auto;
-  max-height: 400px;
   overflow-y: auto;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 5px;
+  scrollbar-width: 8px;
+  scrollbar-color: #6C757D;
 }
 
 .pm-table-container th {
@@ -208,7 +253,7 @@ export default {
   right: -5px;
   top: 50%;
   transform: translateY(-50%);
-  height: 30px;
+  height: 85%;
   width: 10px;
   cursor: col-resize;
   border-left: 1px solid rgba(0, 0, 0, 0.125);
@@ -223,9 +268,11 @@ export default {
 .pm-table-filter td {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 10px 16px;
+  height: 56px;
 }
 .pm-table-ellipsis-column {
   padding: 10px 16px;
+  height: 56px;
 }
 .pm-table-filter th:hover {
   background-color: #FAFBFC;
@@ -258,7 +305,7 @@ export default {
 }
 .pm-table-filter-button {
   position: absolute;
-  top: 10%;
+  top: 20%;
   right: 7px;
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
@@ -291,6 +338,10 @@ export default {
 }
 .pm-table-filter-applied {
   color: #1572C2;
+  background-color: #F2F8FE !important;
+}
+.pm-table-unread-row {
+  font-weight: bold;
 }
 .status-success {
   background-color: rgba(78, 160, 117, 0.2);
@@ -309,5 +360,20 @@ export default {
   color: rgba(21, 114, 194, 1);
   width: 100px;
   border-radius: 5px;
+}
+@-moz-document url-prefix() {
+  .pm-table-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.pm-table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.pm-table-container::-webkit-scrollbar-thumb {
+  background-color: #6C757D;
+  border-radius: 20px;
 }
 </style>

@@ -2,9 +2,11 @@
   <div>
     <div v-for="(item, index) in input" 
          :key="index"
+         :data-cy="'pm-column-filter-op-in' + index"
          class="pm-column-filter-op-in">
       <b-form-input v-model="input[index]"
                     :placeholder="$t('input ') + (index + 1)"
+                    :data-cy="'pm-column-filter-op-in-input' + (index + 1)"
                     size="sm"
                     class="pm-column-filter-op-in-input"
                     @input="onInput">
@@ -80,5 +82,6 @@
   }
   .pm-column-filter-op-in-input{
     width: auto;
+    margin-bottom: 5px;
   }
 </style>

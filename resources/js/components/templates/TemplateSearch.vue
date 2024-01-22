@@ -58,7 +58,7 @@
           </p>
         </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
+          <b-card-group id="template-options" deck class="small-deck-margin template-options" :class="type !== 'wizard' ?  'd-flex' : ''">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
@@ -141,6 +141,11 @@ export default {
       showWizardTemplateDetails: false,
     };
   },
+  computed: {
+    hasGuidedTemplateParams() {
+      return window.location.search.includes('?guided_templates=true&template=');
+    }
+  },
   watch: {
     currentPage() {
       this.fetch();
@@ -150,72 +155,106 @@ export default {
     },
   },
   methods: {
-    showDetails($event) {
-      if ($event.type === "wizard") {
-        this.template = $event.template;
-        this.showWizardTemplateDetails = true;
-        this.$nextTick(() => {
-          this.$refs.wizardTemplateDetails.show();
-        });
-      } else {
-        this.$emit('show-details', {
-          'id': $event.template.id, 
-          'name': $event.template.name, 
-          'description': $event.template.description,
-          'category_id': $event.template.process_category_id,
-          'version' : $event.template.version,
-        });
-        this.template = $event.template;
+    async loadData() {
+      await this.fetch();
+
+      // After fetch is completed, check if guided template params exist in the URL.
+      // This is used when the URL is directly loaded, and we need to target the specified template to show.
+      if (this.hasGuidedTemplateParams) {
+        this.showDetails();
       }
     },
-    fetch() {
-        this.loading = true;
-        this.apiDataLoading = true;
-        this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+    async fetch() {
+      this.loading = true;
+      this.apiDataLoading = true;
+      this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-        let url =
-            this.status === null || this.status === "" || this.status === undefined
-                ? "templates/" + this.type.toLowerCase() +"?"
-                : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
+      let url =
+          this.status === null || this.status === "" || this.status === undefined
+              ? "templates/" + this.type.toLowerCase() +"?"
+              : "templates/" + this.type.toLowerCase() + "?status=" + this.status + "&";
 
-        // If the type is 'wizard', override the URL to fetch guided templates
-        if (this.type === 'wizard') {
-          url = 'wizard-templates?';
+      // If the type is 'wizard', override the URL to fetch guided templates
+      if (this.type === 'wizard') {
+        url = 'wizard-templates?';
+      }
+      // Load from our api client
+      await ProcessMaker.apiClient
+        .get(
+            url +
+            "page=" +
+            this.currentPage +
+            "&per_page=" +
+            this.perPage + 
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection +
+            "&include=user,categories,category"
+        )
+        .then(response => {
+          if(response.data.data.length === 0) {
+            this.noResults = true;
+          } else {
+            this.templates = response.data.data;
+            this.totalRow = response.data.meta.total;
+            this.apiDataLoading = false;
+            this.apiNoResults = false;
+            this.noResults = false;
+            }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    showDetails($event = null) {
+      if (!$event) {
+        // Load details directly from the URL template parameter
+        const params = new URL(window.location).searchParams;
+        const templateId = params.get("template");
+
+        if (templateId) {
+          this.loadTemplateDetails(templateId);
         }
-        // Load from our api client
-        ProcessMaker.apiClient
-            .get(
-                url +
-                "page=" +
-                this.currentPage +
-                "&per_page=" +
-                this.perPage + 
-                "&filter=" +
-                this.filter +
-                "&order_by=" +
-                this.orderBy +
-                "&order_direction=" +
-                this.orderDirection +
-                "&include=user,categories,category"
-            )
-            .then(response => {
-              if(response.data.data.length === 0) {
-                this.noResults = true;
-              } else {
-                this.templates = response.data.data;
-                this.totalRow = response.data.meta.total;
-                this.apiDataLoading = false;
-                this.apiNoResults = false;
-                this.noResults = false;
-                }
-            })
-            .finally(() => {
-              this.loading = false;
-            });
+      } else if ($event && $event.type === "wizard") {  // Handle different scenarios based on $event type 
+        // Add template parameter to the URL if guided templates are selected
+        let url = new URL(window.location.href);
+        if (url.search.includes('?guided_templates=true')) {
+          url.searchParams.append('template', $event.template.unique_template_id);
+          history.pushState(null, '', url); // Update the URL without triggering a page reload
         }
+
+        // Direct selection of a wizard template card
+        this.loadTemplateDetails($event.template.unique_template_id);
+      } else {
+        // Direct selection of a default template card
+        this.emitTemplateDetails($event.template);
+      }
+    },
+    loadTemplateDetails(uniqueTemplateId) {
+      this.template = this.templates.find(template => template.unique_template_id === uniqueTemplateId);
+      this.showWizardTemplateDetails = true;
+
+      this.$nextTick(() => {
+        this.$refs.wizardTemplateDetails.show();
+      });
+    },
+    emitTemplateDetails(template) {
+      this.$emit('show-details', {
+        'id': template.id,
+        'name': template.name,
+        'description': template.description,
+        'category_id': template.process_category_id,
+        'version': template.version,
+      });
+
+      this.template = template;
+    }
   },
-  mounted() {
-    this.fetch();
+  beforeMount() {
+    this.loadData();
   }
 };
 </script>

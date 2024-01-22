@@ -1,17 +1,20 @@
 <template>
   <div :id="id">
     <b-button :id="'pm-cff-button-'+id" 
-              variant="light"
-              size="sm">
+              variant="link"
+              size="sm"
+              class="pm-filter-popover-button">
       <PMColumnFilterIconThreeDots></PMColumnFilterIconThreeDots>
     </b-button>
     <b-popover :container="container"
+               :boundary="boundary"
                :target="'pm-cff-button-'+id"
                :show.sync="popoverShow"
                triggers="click"
                placement="bottom"
                custom-class="pm-filter-popover"
-               @show="onShow">
+               @show="onShow"
+               @shown="onShown">
       <PMColumnFilterForm ref="pmColumnFilterForm"
                           :type="type"
                           :value="value"
@@ -19,8 +22,8 @@
                           :formatRange="formatRange"
                           :operators="operators"
                           :viewConfig="viewConfig"
-                          @onSortAscending="onSortAscending"
-                          @onSortDescending="onSortDescending"
+                          :sort="sort"
+                          @onChangeSort="onChangeSort"
                           @onApply="onApply"
                           @onClear="onClear"
                           @onCancel="onCancel">
@@ -38,7 +41,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "id", "type", "value", "format", "formatRange", "operators", "viewConfig"],
+    props: ["container", "boundary", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
     data() {
       return {
         popoverShow: false
@@ -48,14 +51,16 @@
       this.$emit("onUpdate", this);
     },
     methods: {
+      onShown() {
+        this.focusCancelButton();
+        this.closeOnBlur();
+      },
       onShow() {
         this.$root.$emit("bv::hide::popover");
       },
-      onSortAscending() {
-        this.$emit("onSortAscending", "asc");
-      },
-      onSortDescending() {
-        this.$emit("onSortDescending", "desc");
+      onChangeSort(value) {
+        this.$emit("onChangeSort", value);
+        this.popoverShow = false;
       },
       onApply(json) {
         this.popoverShow = false;
@@ -68,6 +73,19 @@
       onCancel() {
         this.popoverShow = false;
         this.$emit("onCancel");
+      },
+      closeOnBlur() {
+        let area = this.$refs.pmColumnFilterForm.$el.parentNode;
+        area.addEventListener('mouseenter', () => {
+          window.removeEventListener('click', this.onCancel);
+        });
+        area.addEventListener('mouseleave', () => {
+          window.addEventListener('click', this.onCancel);
+        });
+      },
+      focusCancelButton() {
+        let cancel = this.$refs.pmColumnFilterForm.$el.getElementsByClassName("pm-filter-form-button-cancel");
+        cancel[0].focus();
       }
     }
   };
@@ -76,6 +94,9 @@
 <style>
   .pm-filter-popover .popover-body{
     padding: 0.5rem 0.75rem !important;
+  }
+  .pm-filter-popover-button{
+    color: #1572C2 !important;
   }
 </style>
 <style scoped>

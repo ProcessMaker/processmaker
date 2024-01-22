@@ -21,7 +21,7 @@ class AddSessionControlSettings extends Upgrade
                     'format' => 'choice',
                     'config' => 0,
                     'name' => 'IP restriction',
-                    'helper' => 'Restricts logins made by the same user from different IPs.',
+                    'helper' => 'Restrict logins made by the same user from the same IP.',
                     'group' => Setting::SESSION_CONTROL_GROUP,
                     'hidden' => false,
                     'ui' => [

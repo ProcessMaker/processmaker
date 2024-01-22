@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Query\BaseField;
+use ProcessMaker\Query\Expression;
 
 class Filter
 {
@@ -16,6 +18,8 @@ class Filter
     const TYPE_FIELD = 'Field';
 
     const TYPE_PROCESS = 'Process';
+
+    const TYPE_RELATIONSHIP = 'Relationship';
 
     public string|null $subjectValue;
 
@@ -30,6 +34,11 @@ class Filter
     public static function filter(Builder $query, string $filterDefinitions)
     {
         $filterDefinitions = json_decode($filterDefinitions, true);
+        if (!isset($filterDefinitions)) {
+            // If the value is incorrect, we return a filter that produces an empty result.
+            $default = '{"subject":{"type":"Field","value":"id"},"operator":"=","value":""}';
+            $filterDefinitions = [json_decode($default, true)];
+        }
         $query->where(function ($query) use ($filterDefinitions) {
             foreach ($filterDefinitions as $filter) {
                 (new self($filter))->addToQuery($query);
@@ -63,6 +72,8 @@ class Filter
             $this->valueAliasAdapter($valueAliasMethod, $query);
         } elseif ($this->subjectType === self::TYPE_PROCESS) {
             $this->filterByProcessId($query);
+        } elseif ($this->subjectType === self::TYPE_RELATIONSHIP) {
+            $this->filterByRelationship($query);
         } else {
             $this->applyQueryBuilderMethod($query);
         }
@@ -98,6 +109,10 @@ class Filter
     {
         if ($this->operator === 'contains' || $this->operator === 'starts_with') {
             return 'like';
+        }
+
+        if ($this->operator === 'regex') {
+            $this->operator = 'REGEXP';
         }
 
         return $this->operator;
@@ -141,7 +156,16 @@ class Filter
             return 'process_id';
         }
 
+        if ($this->subjectType === self::TYPE_RELATIONSHIP) {
+            return $this->relationshipSubjectTypeParts()[1];
+        }
+
         return $this->subjectValue;
+    }
+
+    private function relationshipSubjectTypeParts()
+    {
+        return explode('.', $this->subjectValue);
     }
 
     private function value()
@@ -207,7 +231,9 @@ class Filter
     private function convertUserIdsToUsernames($values)
     {
         return array_map(function ($value) {
-            return User::find($value)?->username;
+            $username = User::find($value)?->username;
+
+            return isset($username) ? $username : $value;
         }, $values);
     }
 
@@ -221,5 +247,13 @@ class Filter
         } else {
             $this->applyQueryBuilderMethod($query);
         }
+    }
+
+    private function filterByRelationship(Builder $query)
+    {
+        $relationshipName = $this->relationshipSubjectTypeParts()[0];
+        $query->whereHas($relationshipName, function ($rel) {
+            $this->applyQueryBuilderMethod($rel);
+        });
     }
 }

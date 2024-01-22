@@ -26,7 +26,7 @@ class WizardTemplate extends ProcessMakerModel implements HasMedia
         'description',
         'media_collection',
         'template_details',
-        'config_collection_id',
+        'unique_template_id',
     ];
 
     protected $appends = [

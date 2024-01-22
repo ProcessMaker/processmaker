@@ -13,7 +13,8 @@
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
-      :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks') }}"
+      :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
+      :current-user="{{ \Auth::user() }}"
       is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
     >
   </processes-catalogue>
@@ -21,5 +22,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
+  <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
 @endsection

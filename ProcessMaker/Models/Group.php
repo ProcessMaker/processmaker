@@ -50,6 +50,11 @@ class Group extends ProcessMakerModel
         'description',
         'manager_id',
         'status',
+        'enabled_2fa',
+    ];
+
+    protected $casts = [
+        'enabled_2fa' => 'boolean',
     ];
 
     public static function rules($existing = null)

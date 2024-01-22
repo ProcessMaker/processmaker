@@ -22,10 +22,10 @@
               {{ labelButton }}
             </button>
             <b-tab :title="labelTab">
-              <b-card v-if="showVersionInfo">
+              <b-card v-show="showVersionInfo">
                 <b-row>
                   <b-col>
-                    <label class="label-text mt-2">
+                    <label class="mt-2">
                       {{ $t("Description of Process") }}
                     </label>
                     <textarea
@@ -36,12 +36,16 @@
                       rows="5"
                       :aria-label="$t('Description')"
                     />
-                    <label class="label-text mt-2">
+                    <span v-if="!processDescription" class="error-message">
+                      {{ $t("The Description field is required.") }}
+                      <br>
+                    </span>
+                    <label class="mt-2">
                       {{ $t("Launchpad Icon") }}
                     </label>
                     <icon-dropdown ref="icon-dropdown" />
-                    <label class="label-text mt-2">{{ $t("Chart") }}</label>
-                    <div class="dropdown mt-2">
+                    <label class="mt-2">{{ $t("Chart") }}</label>
+                    <div class="dropdown">
                       <button
                         id="statusDropdown"
                         class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
@@ -52,7 +56,7 @@
                       >
                         <div class="d-flex align-items-center">
                           <i class="far fa-chart-bar" />
-                          <span class="ml-2">{{ selectedSavedChart || 'Select Chart' }}</span>
+                          <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
                         </div>
                       </button>
                       <div
@@ -65,7 +69,7 @@
                           class="dropdown-item"
                           @click="selectOption(item)"
                         >
-                          <i class="far fa-chart-bar" />
+                          <i class="far fa-chart-bar custom-text" />
                           {{ item.title || 'Select Chart' }}
                         </a>
                       </div>
@@ -77,11 +81,7 @@
                       class="no-padding"
                     >
                       <div class="d-flex align-items-center w-100 mt-2">
-                        <label
-                          class="label-text"
-                          for="name"
-                        >{{ $t("Images for carousel") }}
-                        </label>
+                        <label>{{ $t("Images for carousel") }}</label>
                         <input
                           ref="fileInput"
                           type="file"
@@ -191,7 +191,7 @@
                   </b-col>
                 </b-row>
               </b-card>
-              <b-card v-if="!showVersionInfo">
+              <b-card v-show="!showVersionInfo">
                 <label for="name">{{ $t("Version Name") }} </label>
                 <input
                   id="name"
@@ -282,6 +282,7 @@ export default {
       dropdownSavedCharts: [],
       maxImages: 4,
       processDescription: "",
+      processDescriptionInitial: "",
       selectedLaunchpadIcon: "",
       selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
@@ -309,6 +310,7 @@ export default {
       this.showModal();
     });
     this.retrieveSavedSearchCharts();
+    this.getDescriptionInitial();
     this.getProcessDescription();
 
     // Receives selected Option from launchpad Icons multiselect
@@ -327,7 +329,6 @@ export default {
           const launchpadProperties = JSON.parse(
             firstResponse?.launchpad_properties,
           );
-
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title
               ? launchpadProperties.saved_chart_title
@@ -340,7 +341,6 @@ export default {
             this.selectedSavedChart = "";
             this.selectedSavedChartId = "";
           }
-
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
           mediaArray.forEach((media) => {
@@ -464,8 +464,10 @@ export default {
     },
     /**
      * Initial method to retrieve Saved Search Charts and populate dropdown
+     * Package Collections and Package SavedSearch always go together
      */
     retrieveSavedSearchCharts() {
+      if (!ProcessMaker.packages.includes("package-collections")) return;
       ProcessMaker.apiClient
         .get(
           "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
@@ -491,17 +493,35 @@ export default {
         });
     },
     /**
+     * Method to store initial data from process description field
+     */
+    getDescriptionInitial() {
+      if (this.origin !== "core") {
+        if (ProcessMaker.modeler?.process) {
+          this.processDescriptionInitial = ProcessMaker.modeler.process.description;
+        }
+      } else {
+        this.processDescriptionInitial = this.descriptionSettings;
+      }
+    },
+    /**
      * Method to retrieve data from process description field
      */
     getProcessDescription() {
       if (this.origin !== "core") {
-        if (ProcessMaker.modeler && ProcessMaker.modeler.process) {
+        if (ProcessMaker.modeler?.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
           this.processId = ProcessMaker.modeler.process.id;
-        }
+          if(ProcessMaker.modeler.process.description === "") {
+            this.processDescription = this.processDescriptionInitial;
+          }
+        } 
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
+          if(!this.processDescription) {
+            this.processDescription = this.processDescriptionInitial;
+          }
       }
     },
     /**
@@ -520,6 +540,7 @@ export default {
           this.$t("It is not possible to include more than four images."),
           "danger",
         );
+        this.$refs.fileInput.value = "";
         return;
       }
       const { files } = event.target;
@@ -609,6 +630,7 @@ export default {
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
+          this.types[this.options.type] === "modeler-save" ? false : null,
         );
       });
 
@@ -620,9 +642,6 @@ export default {
               description: this.description,
               versionable_id: this.options.id,
               versionable_type: this.options.type,
-            })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
             })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
@@ -645,6 +664,7 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
+      if (!this.processDescription) return;
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
@@ -666,6 +686,7 @@ export default {
             type: "add",
           };
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+          ProcessMaker.EventBus.$emit("getChartId");
           this.hideModal();
         })
         .catch((error) => {
@@ -691,6 +712,10 @@ export default {
      * Method to store version info from Launchpad Window
      */
     saveFromEditLaunchpad() {
+      if (!this.processDescription) {
+        ProcessMaker.alert(this.$t("The Description field is required."), "danger");
+        return; 
+      }
       ProcessMaker.apiClient
         .post("/version_histories", {
           subject: this.subject,
@@ -723,8 +748,8 @@ $multiselect-height: 38px;
 }
 
 .dropdown-toggle {
-  font-size: 12px;
-  padding: 5px 10px;
+  font-size: 14px;
+  padding: 4px 10px;
 }
 
 .dropdown-item {
@@ -745,10 +770,6 @@ $multiselect-height: 38px;
   margin-bottom: 10px;
 }
 
-.label-text {
-  font-size: 12px;
-}
-
 .image-thumbnails-container {
   border: 1px solid #ccc;
   padding: 5px;
@@ -764,13 +785,6 @@ $multiselect-height: 38px;
 .delete-icon i {
   font-size: 18px;
   color: darkgray;
-}
-
-.icon-square {
-  color: #788793;
-  font-size: $iconSize;
-  padding: calc($iconSize / 1.5);
-  text-align: center;
 }
 
 .btn-custom {
@@ -806,11 +820,11 @@ $multiselect-height: 38px;
   text-transform: none;
   border-color: rgba(35, 118, 200, 0.33);
   background-color: white;
-  color: black;
+  color: #212529;
 }
 
 .text-black {
-  color: #000000;
+  color: #212529;
 }
 
 .cursor-default {
@@ -835,5 +849,18 @@ $multiselect-height: 38px;
 
 .custom-dropdown {
   width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  transform: none;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+.custom-text {
+  font-size: 16px;
 }
 </style>

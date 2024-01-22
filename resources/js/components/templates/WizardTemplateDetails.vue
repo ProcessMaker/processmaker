@@ -26,7 +26,7 @@
               <p class="wizard-details-description">{{ templateDetails['modal-description'] | str_limit(150) }}</p>
               <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
                 <i class="fas fa-play-circle mr-1" />
-                {{ $t('Use Now') }}
+                {{ $t('Get Started') }}
               </button>
             </div>
           </div>
@@ -47,6 +47,7 @@
           :user-id="currentUserId"
           @task-updated="taskUpdated"
           @submit="submit"
+          @completed="completed"
       ></task>
     </modal>
   </div>
@@ -93,8 +94,16 @@ export default {
     },
     close() {
       this.$bvModal.hide("wizardTemplateDetails");
+      
+      // Remove template parameter from the URL
+      let url = new URL(window.location.href);
+      if (url.search.includes('?guided_templates=true&template=')) {
+        url.searchParams.delete('template');
+        history.pushState(null, '', url); // Update the URL without triggering a page reload
+      }
+      
+      // Cancels the associated process request to prevent orphaned processes.
       if (this.showHelperProcess) {
-        // Cancels the associated process request to prevent orphaned processes.
         this.cancelHelperProcessRequest();
       }
     },

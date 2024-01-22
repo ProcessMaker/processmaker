@@ -67,6 +67,7 @@ class ProcessRequestObserver
         if ($request->isDirty('data')) {
             $dm = new DataManager();
             $data = $dm->getRequestData($request);
+            $data = $dm->updateRequestMagicVariable($data, $request);
             // If request is a parent process, inherit the case title to the child requests
             if (!$request->parent_request_id) {
                 $mustacheTitle = $request->getCaseTitleFromProcess();
@@ -103,7 +104,7 @@ class ProcessRequestObserver
                 ->select('case_number')
                 ->first()
                 ->case_number;
-            
+
             $request->save();
 
             return;

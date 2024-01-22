@@ -18,7 +18,6 @@
                 @task-updated="taskUpdated"
                 @submit="submit"
                 @completed="completed"
-                @@error="error"
             ></task>
         </modal>
     </div>

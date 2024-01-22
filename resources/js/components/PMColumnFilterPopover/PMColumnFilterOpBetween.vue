@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-form-input v-model="value1" placeholder="input 1" size="sm"></b-form-input>
-    <b-form-input v-model="value2" placeholder="input 2" size="sm"></b-form-input>
+    <b-form-input v-model="value1" placeholder="input 1" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
+    <b-form-input v-model="value2" placeholder="input 2" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
   </div>
 </template>
 
@@ -42,4 +42,7 @@
 </script>
 
 <style scoped>
+  .pm-column-filter-op-between-input{
+    margin-bottom: 5px;
+  }
 </style>

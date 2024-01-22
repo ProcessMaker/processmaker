@@ -18,7 +18,11 @@
       </b-col>
     </div>
     <b-col cols="12">
-      <process-tab />
+      <hr class="my-12">
+      <process-tab
+        :current-user="currentUser"
+        :process="process"
+      />
     </b-col>
   </div>
 </template>
@@ -36,7 +40,7 @@ export default {
     ProcessesCarousel,
     ProcessTab,
   },
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],
   data() {
     return {
       listCategories: [],
@@ -51,7 +55,9 @@ export default {
     };
   },
   methods: {
-    /** Rerun a process cards */
+    /**
+     * Return a process cards
+     */
     goBackCategory() {
       this.$emit("goBackCategory");
     },

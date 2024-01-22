@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -124,6 +126,7 @@ class User extends Authenticatable implements HasMedia
         'force_change_password',
         'password_changed_at',
         'connected_accounts',
+        'preferences_2fa',
     ];
 
     protected $appends = [
@@ -135,6 +138,7 @@ class User extends Authenticatable implements HasMedia
         'meta' => 'object',
         'active_at' => 'datetime',
         'schedule' => 'array',
+        'preferences_2fa' => 'array',
     ];
 
     /**
@@ -512,5 +516,46 @@ class User extends Authenticatable implements HasMedia
             ->where('name', 'script-runner')
             ->where('created_at', '<', now()->subWeek())
             ->delete();
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    public function getValid2FAPreferences(): array
+    {
+        // Get global and user values
+        $global2FAEnabled = config('password-policies.2fa_method', []);
+        $user2FAEnabled = !is_null($this->preferences_2fa) ? $this->preferences_2fa : [];
+
+        // Get valid values
+        $aux = array_intersect($global2FAEnabled, $user2FAEnabled);
+
+        return !empty($aux) ? array_values($aux) : $global2FAEnabled;
+    }
+
+    public function in2FAGroupOrIndependent()
+    {
+        $userGroups = $this->groups;
+        $groupCount = $userGroups->count();
+
+        if ($groupCount === 0) {
+            return true;
+        }
+
+        $groupsWith2fa = $userGroups->where('enabled_2fa', true);
+
+        // Check if the only group has 2fa enabled, if so, ask for 2fa
+        $hasSingleGroupWith2fa = $groupCount === 1 && $groupsWith2fa->count() === 1;
+        // Check if at least one group has 2fa enabled, if so, ask for 2fa
+        $hasMultipleGroupsWithAtLeastOne2fa = $groupCount > 1 && $groupsWith2fa->count() > 0;
+        // Check if all groups don't have 2fa enabled, if so, ask for 2fa if the 2fa setting is enabled
+        $independent = $groupCount === 0;
+
+        if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $independent) {
+            return true;
+        }
+        return false;
     }
 }

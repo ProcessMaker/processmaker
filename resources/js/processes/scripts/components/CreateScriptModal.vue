@@ -345,18 +345,13 @@ export default {
     },
   },
   mounted() {
-    this.selectedUser = this.runAsUserDefault ? this.runAsUserDefault : null;
+    this.$nextTick(() => {
+      this.selectedUser = this.runAsUserDefault ? this.runAsUserDefault : null;
+    });
   },
   methods: {
     show() {
       this.$bvModal.show("createScript");
-    },
-    getAdminUser() {
-      ProcessMaker.apiClient
-        .get(`/users/${this.userRunScript}`)
-        .then((response) => {
-          this.selectedUser = response.data;
-        });
     },
     onClose() {
       this.title = "";
@@ -370,7 +365,6 @@ export default {
       this.retry_attempts = 0;
       this.retry_wait_time = 5;
       this.addError = {};
-      this.getAdminUser();
       this.projects = [];
       this.close();
     },
@@ -429,14 +423,14 @@ export default {
         this.$emit("script-created-from-modeler", url, data.id, data.title);
       } else if (this.copyAssetMode) {
         this.close();
-      } else if (this.isQuickCreate === true) {
-        channel.postMessage({
-          assetType: "script",
-          asset: data,
-        });
-        const urlScripts = new URL(`/designer/scripts/`, window.location.origin);
-        window.location.href = urlScripts;
       } else {
+        if (this.isQuickCreate === true) {
+          channel.postMessage({
+            assetType: "script",
+            asset: data,
+          });
+        }
+
         window.location.href = url;
       }
     },

@@ -1,15 +1,28 @@
 <template>
   <div>
+    <SearchCategories
+      ref="searchCategory"
+      :filter-pmql="onFilter"
+    />
     <div
       v-b-toggle.category-menu
       block
       variant="light"
       class="m-1"
+      @click="onToggleCatalogue"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <i :class="preicon" />
-        {{ $t(title) }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <i
+            class="mr-3"
+            :class="preicon"
+          />
+          {{ $t(title) }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="{'fa-sort-up': showCatalogue, 'fa-sort-down': !showCatalogue,}"
+        />
       </div>
     </div>
     <b-collapse
@@ -20,24 +33,36 @@
         <b-list-group-item
           v-for="item in data"
           :key="item.id"
-          :ref="item.name"
+          ref="processItems"
+          :class="{ 'list-item-selected': isSelectedProcess(item) }"
           class="list-item"
-          @click="selectItem(item)"
+          @click="selectProcessItem(item)"
         >
           {{ item.name }}
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+    <hr class="my-12">
     <div
       v-b-toggle.collapse-3
       block
       variant="light"
       class="m-1"
+      @click="onToggleTemplates"
     >
-      <div class="d-flex justify-content-between pl-3 pr-3">
-        <img src="../../../img/template-icon.svg" alt="Template Icon">
-        {{ $t("Add From Templates") }}
-        <i class="fas fa-sort-down" />
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-3">
+        <div class="d-flex align-items-center">
+          <img
+            class="mr-3"
+            src="../../../img/template-icon.svg"
+            alt="Template Icon"
+          >
+          {{ $t("Add From Templates") }}
+        </div>
+        <i
+          class="fas fa-sort-down"
+          :class="{'fa-sort-up': showGuidedTemplates, 'fa-sort-down': !showGuidedTemplates,}"
+        />
       </div>
     </div>
     <b-collapse
@@ -46,26 +71,93 @@
     >
       <b-list-group>
         <b-list-group-item
+          v-for="(item, index) in filteredTemplateOptions"
+          :key="index"
+          ref="templateItems"
+          :class="{ 'list-item-selected': isSelectedTemplate(item) }"
           class="list-item"
-          @click="wizardLinkSelected"
+          @click="selectTemplateItem(item)"
         >
-          {{ $t("Guided Templates") }}
+          {{ item.label }}
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+
+    <select-template-modal
+      ref="addProcessModal"
+      :type="$t('Process')"
+      :count-categories="categoryCount"
+      :package-ai="hasPackageAI"
+      hide-add-btn="true"
+    >
+    </select-template-modal>
   </div>
 </template>
 
 <script>
+import SearchCategories from "./utils/SearchCategories.vue";
+import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
+
 export default {
-  props: ["data", "select", "title", "preicon"],
+  components: {
+    SearchCategories,
+    SelectTemplateModal,
+  },
+  props: [
+    "data",
+    "select",
+    "title",
+    "preicon",
+    "filterCategories",
+    "fromProcessList",
+    "categoryCount",
+    "permission",
+  ],
+  data() {
+    return {
+      hasPackageAI: 0,
+      showTemplateModal: true,
+      assetName: null,
+      assetId: null,
+      modalProcess: true,
+      countCategories: 0,
+      showCatalogue: false,
+      showGuidedTemplates: false,
+      selectedProcessItem: null,
+      selectedTemplateItem: null,
+      templateOptions: [
+        {
+          label: this.$t("All Templates"),
+          selected: false,
+          id: "all_templates",
+        },
+        {
+          label: this.$t("Guided Templates"),
+          selected: false,
+          id: "guided_templates",
+        },
+      ],
+      comeFromProcess: false,
+    };
+  },
+  computed: {
+    /**
+     * Filters options regarding user permissions
+     */
+    filteredTemplateOptions() {
+      return this.templateOptions.filter(item => this.shouldShowTemplateItem(item));
+    },
+  },
   mounted() {
     const listElm = document.querySelector("#infinite-list");
     listElm.addEventListener("scroll", () => {
-      if (listElm.scrollTop + listElm.clientHeight >= listElm.scrollHeight) {
+      if (listElm.scrollTop + listElm.clientHeight + 2 >= listElm.scrollHeight) {
         this.loadMore();
       }
     });
+    this.selectDefault();
+    this.comeFromProcess = this.fromProcessList;
+    this.checkPackageAiInstalled();
   },
   methods: {
     /**
@@ -74,29 +166,85 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
-    selectItem(item) {
-      this.setSelectItem(item.name || item);
+    markCategory(item) {
+      this.comeFromProcess = true;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
+      this.$refs.searchCategory.fillFilter(item.name);
+    },
+    selectProcessItem(item) {
+      this.comeFromProcess = false;
+      this.selectedProcessItem = item;
+      this.selectedTemplateItem = null;
       this.select(item);
     },
-    setSelectItem(item) {
-      for (const item in this.$refs) {
-        this.$refs[item][0].className = "list-item";
-      }
-      this.$refs[item][0].className = "list-item list-item-selected";
+    /**
+     * Enables All Templates option only if user has create-processes permission
+     */
+    shouldShowTemplateItem(item) {
+      return !(item.id === "all_templates" && !this.hasPermission());
     },
-    wizardLinkSelected() {
-      this.$emit("wizardLinkSelect");
+    selectTemplateItem(item) {
+      if (item.id === "all_templates") {
+          this.addNewProcess();
+          return;
+      }
+        this.selectedTemplateItem = item;
+        this.selectedProcessItem = null;
+        this.select(item);
+        this.$emit("wizardLinkSelect");
+    },
+    /**
+     * This method opens New Process modal window
+     */
+    addNewProcess() {
+      this.$nextTick(() => {
+        this.$refs["addProcessModal"].show();
+      });
+    },
+    isSelectedProcess(item) {
+      return this.selectedProcessItem === item;
+    },
+    isSelectedTemplate(index) {
+      return this.selectedTemplateItem === index;
+    },
+    onToggleCatalogue() {
+      this.showCatalogue = !this.showCatalogue;
+    },
+    onToggleTemplates() {
+      this.showGuidedTemplates = !this.showGuidedTemplates;
+    },
+    /**
+     * Filter categories
+     */
+    onFilter(value) {
+      this.filterCategories(value);
+    },
+    hasPermission() {
+      return this.permission.includes("create-processes")
+    },
+    checkPackageAiInstalled() {
+      this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
+    },
+    /**
+     * Select Default Option
+     */
+    selectDefault() {
+      if (window.location.pathname === "/processes-catalogue") {
+        this.selectProcessItem(this.data[0]);
+      }
     },
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import url("../../../sass/_scrollbar.scss");
 i {
   font-size: 20px;
-  color: #6A7888;
+  color: #6a7888;
 }
-.list-group {
+#category-menu > .list-group {
   max-height: 37vh;
   min-height: 37vh;
   overflow-y: auto;
@@ -107,26 +255,26 @@ i {
 }
 .list-item {
   cursor: pointer;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
-  padding-left: 1rem;
+  padding: 12px 14px 12px 20px;
   margin-left: 1rem;
-  margin-bottom: 0.25rem;
-  color: #4F606D;
+  color: #4f606d;
+  font-size: 15px;
   font-weight: 400;
 }
 .list-item:hover {
-  background: #E5EDF3;
+  background: #e5edf3;
 }
 .list-item-selected {
-  background: #E5EDF3;
-  color: #1572C2;
+  background: #e5edf3;
+  color: #1572c2;
   font-weight: 700;
 }
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
-  opacity: 0
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

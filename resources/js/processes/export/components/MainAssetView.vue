@@ -96,7 +96,7 @@
                 :password-protect="passwordProtect"
             />
             <import-process-modal ref="import-process-modal" :existingAssets="existingAssets" :processName="processName" :userHasEditPermissions="true" @import-new="setCopyAll" @update-process="setUpdateAll"></import-process-modal>                            
-            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" :info="groups"/>
+            <export-success-modal ref="export-success-modal" :processName="processName" :processId="processId" :exportInfo="exportInfo" :info="groups" :projectId="projectId"/>
             <import-log :log-entries="$root.queueLog" :allow-download-debug="$root.allowDownloadDebug"></import-log>
         </div>
     </div>
@@ -118,7 +118,8 @@ export default {
     "processName",
     "groups",
     "processId",
-    "processInfo"
+    "processInfo",
+    "projectId",
     ],
     components: {
         DataCard,
