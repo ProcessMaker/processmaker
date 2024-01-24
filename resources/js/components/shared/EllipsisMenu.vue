@@ -10,6 +10,7 @@
     class="ellipsis-dropdown-main"
     @show="onShow"
     @hide="onHide"
+    boundary="viewport"
   >
     <template v-if="customButton" #button-content>
       <i
