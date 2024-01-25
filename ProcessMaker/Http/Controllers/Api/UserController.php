@@ -312,6 +312,7 @@ class UserController extends Controller
 
         $request->validate(User::rules($user));
         $fields = $request->json()->all();
+
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
             $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
@@ -536,7 +537,7 @@ class UserController extends Controller
      * @param User $user
      * @param Request $request
      *
-     * @throws \Exception
+     * @throws \Exception|\Throwable
      */
     private function uploadAvatar(User $user, Request $request)
     {
@@ -548,8 +549,13 @@ class UserController extends Controller
             return;
         }
 
+        // A bool value of false here set for the user's avatar indicates we're clearing
+        // the avatar both by deleting the image itself from the filesystem and emptying
+        // the "avatar" column for this user in the database
         if ($data['avatar'] === false) {
             $user->clearMediaCollection(User::COLLECTION_PROFILE);
+            $user->setAttribute('avatar', '');
+            $user->save();
 
             return;
         }
