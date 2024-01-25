@@ -21,6 +21,7 @@
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
+        "@babel/preset-env": "^7.23.9",
         "accounting": "^0.4.1",
         "babel-plugin-istanbul": "^6.1.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
