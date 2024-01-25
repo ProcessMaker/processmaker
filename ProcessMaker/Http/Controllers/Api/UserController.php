@@ -312,7 +312,6 @@ class UserController extends Controller
 
         $request->validate(User::rules($user));
         $fields = $request->json()->all();
-
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
             $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
