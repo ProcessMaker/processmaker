@@ -132,7 +132,7 @@ mix
   .js("resources/js/app.js", "public/js")
   .polyfill({
     enabled: true,
-    useBuiltIns: "usage",
+    useBuiltIns: false,
     targets: "> 0.25%, not dead"
   });
 
