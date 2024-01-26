@@ -195,6 +195,8 @@ export default {
       pmBlockName: "",
       assetName: "",
       processData: {},
+      previousFilter: "",
+      previousPmql: "",
       sortOrder: [
         {
           field: "name",
