@@ -21,6 +21,7 @@
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.15.8",
+        "@babel/preset-env": "^7.23.9",
         "accounting": "^0.4.1",
         "babel-plugin-istanbul": "^6.1.1",
         "chartjs-plugin-colorschemes": "^0.4.0",
@@ -40,7 +41,9 @@
         "vue-loader": "^15.10.0"
     },
     "dependencies": {
+        "@babel/runtime": "^7.23.8",
         "@braintree/sanitize-url": "^6.0.2",
+        "@chantouchsek/validatorjs": "1.2.3",
         "@fontsource/poppins": "^5.0.8",
         "@fortawesome/fontawesome-free": "^5.15.1",
         "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -48,11 +51,12 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.43.19",
+        "@processmaker/modeler": "1.44.0",
         "@processmaker/processmaker-bpmn-moddle": "0.14.1",
-        "@processmaker/screen-builder": "2.80.0",
-        "@processmaker/vue-form-elements": "0.50.2",
-        "@processmaker/vue-multiselect": "2.2.0",
+        "@processmaker/screen-builder": "2.81.0",
+        "@processmaker/vue-form-elements": "0.51.0",
+        "@processmaker/vue-multiselect": "2.3.0",
+        "@tinymce/tinymce-vue": "2.0.0",
         "autoprefixer": "10.4.5",
         "axios": "^0.27.2",
         "bootstrap": "^4.5.3",
@@ -68,10 +72,12 @@
         "imports-loader": "^0.8.0",
         "laravel-echo": "^1.9.0",
         "laravel-echo-server": "^1.6.1",
+        "laravel-mix-polyfill": "^3.0.1",
         "lodash": "^4.17.21",
         "luxon": "^1.25.0",
         "monaco-editor": "^0.34.0",
         "monaco-editor-webpack-plugin": "^7.0.1",
+        "mustache": "3.2.1",
         "npm-font-open-sans": "^1.1.0",
         "phpunserialize": "^1.0.1",
         "popper.js": "^1.16.1",
@@ -81,6 +87,7 @@
         "svg-pan-zoom": "^3.6.1",
         "timezones.json": "^1.5.2",
         "tinycolor2": "^1.4.2",
+        "tinymce": "5.10.0",
         "tooltip.js": "^1.3.3",
         "v-tooltip": "^2.0.3",
         "vue": "^2.6.14",
@@ -131,7 +138,7 @@
         "coverageDirectory": "<rootDir>/tests/js/coverage"
     },
     "engines": {
-        "npm": "~8.19",
-        "node": "~16.18"
+        "npm": ">=8",
+        "node": ">=16"
     }
 }

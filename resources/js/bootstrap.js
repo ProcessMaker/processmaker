@@ -76,7 +76,8 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
 window.VueMonaco = require("vue-monaco");
-window.ScreenBuilder = require("@processmaker/screen-builder");
+
+window.ScreenBuilder = ScreenBuilder;
 window.VueFormElements = require("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
@@ -238,7 +239,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };
