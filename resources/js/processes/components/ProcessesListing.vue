@@ -23,6 +23,7 @@
           #[`filter-${column.field}`]
         >
           <div
+            v-if="column.sortable"
             :key="index"
             @click="handleEllipsisClick(column)"
           >
