@@ -6,6 +6,6 @@ global.Dispatcher = () => {
     return {}
 };
 
-global.$ = require("jquery")
-global.Vue = require("vue")
-global._ = require("lodash")
+import $ from "jquery"
+import Vue from "vue"
+import _ from "lodash"
