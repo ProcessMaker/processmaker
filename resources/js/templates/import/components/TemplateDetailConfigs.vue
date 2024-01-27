@@ -25,7 +25,7 @@
                                    required
                                ></b-form-input>
                            </b-form-group>
-   
+
                            <b-form-group
                            required
                            :label="$t('Description')"
@@ -41,7 +41,7 @@
                                    name="description"
                                ></b-form-textarea>
                            </b-form-group>
-   
+
                            <!-- <category-select :label="$t('Category')" api-get="process_categories"
                            api-list="process_categories" v-model="process_category_id"
                            :errors="addError.process_category_id"
@@ -61,9 +61,9 @@
            </div>
        </div>
    </template>
-   
+
    <script>
-   import { FormErrorsMixin, Required } from "SharedComponents";
+   import { FormErrorsMixin, Required } from "../../../components/shared";
    export default {
        components: {Required},
        mixins: [FormErrorsMixin],
@@ -85,7 +85,7 @@
                // formData.append('name', this.name);
                // formData.append('description', this.description);
                // formData.append('process_category_id', this.process_category_id);
-   
+
                // ProcessMaker.apiClient
                // .post('update-process', formData)
                // .then(response => {
@@ -100,7 +100,7 @@
                //     });
                // });
                console.log('IMPORT FILE', this.name, this.description, this.process_category_id, this.file);
-             
+
            }
        },
        mounted() {
@@ -110,7 +110,7 @@
        }
    }
    </script>
-   
+
    <style>
-   
+
    </style>

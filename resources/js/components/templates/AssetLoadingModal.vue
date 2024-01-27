@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Modal } from "SharedComponents";
+import { Modal } from "../shared";
 
 export default {
   components: { Modal },

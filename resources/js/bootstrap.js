@@ -17,12 +17,12 @@ import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
-import Pagination from "./components/common/Pagination";
+import Pagination from "./components/common/Pagination.vue";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
-import translator from "./modules/lang.js";
+import translator from "./modules/lang";
 import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
-import Modal from "./components/shared/Modal";
+import Modal from "./components/shared/Modal.vue";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
@@ -37,26 +37,26 @@ window.Popper = require("popper.js").default;
 /**
  * Give node plugins access to our custom screen builder components
  */
-import ProcessmakerComponents from "./processes/screen-builder/components";
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
 window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-import SharedComponents from "./components/shared";
+import * as SharedComponents from "./components/shared";
 window.SharedComponents = SharedComponents;
 
-import ProcessesComponents from "./processes/components";
+import * as ProcessesComponents from "./processes/components";
 window.ProcessesComponents = ProcessesComponents;
-import ScreensComponents from "./processes/screens/components";
+import * as ScreensComponents from "./processes/screens/components";
 window.ScreensComponents = ScreensComponents;
-import ScriptsComponents from "./processes/scripts/components";
+import * as ScriptsComponents from "./processes/scripts/components";
 window.ScriptsComponents = ScriptsComponents;
 
 /**
  * Exporting Modeler inspector components
  */
-import ModelerInspector from "./processes/modeler/components/inspector";
+import * as ModelerInspector from "./processes/modeler/components/inspector";
 window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -64,7 +64,7 @@ window.ModelerInspector = ModelerInspector;
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = require("jquery");
+window.$ = window.jQuery = import("jquery");
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -219,8 +219,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-import ProcessMaker.apiClient from "axios";
-window.ProcessMaker.apiClient = ProcessMaker.apiClient;
+import axios from "axios";
+window.ProcessMaker.apiClient = axios;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 

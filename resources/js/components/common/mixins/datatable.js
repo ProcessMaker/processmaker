@@ -3,8 +3,8 @@
  * pagination transformers, etc.
  *
  */
-import Vuetable from "vuetable-2/src/components/Vuetable";
-import Pagination from "../../../components/common/Pagination";
+import Vuetable from "vuetable-2/src/components/Vuetable.vue";
+import Pagination from "../../../components/common/Pagination.vue";
 
 export default {
   components: {

@@ -17,9 +17,9 @@
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable" 
-                                   :key="index" 
-                                   :id="'pm-table-column-'+index" 
+            <PMColumnFilterPopover v-if="column.sortable"
+                                   :key="index"
+                                   :id="'pm-table-column-'+index"
                                    :type="'Field'"
                                    :value="column.field"
                                    :format="getFormat(column)"
@@ -89,7 +89,7 @@
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
-      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
@@ -102,16 +102,13 @@ Please consider trying a different search. Thank you`)"
 
 <script>
 import Vue from "vue";
-import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage.vue";
-import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
-import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
@@ -436,7 +433,7 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams + 
+            this.additionalParams +
             this.getAdvancedFilter(),
             {
               cancelToken: new CancelToken((c) => {

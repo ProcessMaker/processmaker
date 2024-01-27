@@ -20,9 +20,9 @@
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable" 
-                                   :key="index" 
-                                   :id="'pm-table-column-'+index" 
+            <PMColumnFilterPopover v-if="column.sortable"
+                                   :key="index"
+                                   :id="'pm-table-column-'+index"
                                    :type="'Field'"
                                    :value="column.field"
                                    :format="getFormat(column)"
@@ -144,14 +144,12 @@ import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import AvatarImage from "../../components/AvatarImage.vue";
-import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
-import { FilterTable } from "../../components/shared";
 import TasksPreview from "./TasksPreview.vue";
 import ListMixin from "./ListMixin";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";

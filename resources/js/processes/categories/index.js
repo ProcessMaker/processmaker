@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Required from "SharedComponents";
+import { Required } from "../../components/shared";
 import CategoriesListing from "./components/CategoriesListing";
 
 Vue.component("CategoriesListing", CategoriesListing);

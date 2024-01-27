@@ -40,7 +40,7 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal } from "SharedComponents";
+  import { FormErrorsMixin, Modal } from "../shared";
 
   export default {
     components: { Modal },
@@ -63,7 +63,7 @@
       }
     },
     // watch: {
-      
+
     // },
     beforeMount() {
         if (this.userHasEditPermissions) {
