@@ -20,7 +20,7 @@
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
-    <script src="{{mix('js/processes/screens/preview.js')}}"></script>
+    @vite('resources/js/processes/screens/preview.js')
     <script>
         new Vue({
             el: '#screenPreview',

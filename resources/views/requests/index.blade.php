@@ -111,7 +111,7 @@
     window.Processmaker.status = '{{ $type }}';
     window.Processmaker.filter_user = @json($userFilter);
 </script>
-<script src="{{mix('js/requests/index.js')}}"></script>
+@vite('resources/js/requests/index.js')
 @endsection
 
 @section('css')

@@ -40,5 +40,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/environment-variables/index.js')}}"></script>
+    @vite('resources/js/processes/environment-variables/index.js')
 @endsection

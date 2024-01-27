@@ -83,7 +83,7 @@
     <script>
       window.Processmaker.filter_user = @json($userFilter);
     </script>
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    @vite('resources/js/tasks/index.js')
 @endsection
 
 @section('css')

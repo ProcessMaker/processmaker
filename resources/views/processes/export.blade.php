@@ -31,5 +31,5 @@
 @endsection
 
 @section('js')
-    <script src="{{ mix('js/processes/export/index.js') }}"></script>
+    @vite('resources/js/processes/export/index.js')
 @endsection
