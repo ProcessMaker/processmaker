@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime"
+  import PMColumnFilterOpDatetime from "./PMColumnFilterOpDatetime.vue"
   export default {
     components: {
       PMColumnFilterOpDatetime

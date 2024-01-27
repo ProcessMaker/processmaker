@@ -75,13 +75,13 @@
 
 <script>
 const importingCode = window.location.hash.match(/#code=(.+)/);
-import DraggableFileUpload from '../../../components/shared/DraggableFileUpload';
+import DraggableFileUpload from '../../../components/shared/DraggableFileUpload.vue';
 import EnterPasswordModal from '../components/EnterPasswordModal.vue';
 import ImportProcessModal from '../components/ImportProcessModal.vue';
-import OldProcessImporter from '../components/OldProcessImporter';
+import OldProcessImporter from '../components/OldProcessImporter.vue';
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import DataProvider from '../../export/DataProvider';
-import ImportLog from '../components/ImportLog';
+import ImportLog from '../components/ImportLog.vue';
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {

@@ -103,7 +103,7 @@
 <script>
 import moment from "moment";
 import datatableMixin from "../../components/common/mixins/datatable";
-import AvatarImage from "../../components/AvatarImage";
+import AvatarImage from "../../components/AvatarImage.vue";
 import NotificationMessage from "./notification-message";
 import NotificationUser from "./notification-user";
 
