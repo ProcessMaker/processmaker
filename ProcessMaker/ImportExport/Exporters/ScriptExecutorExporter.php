@@ -27,7 +27,7 @@ class ScriptExecutorExporter extends ExporterBase
         switch ($this->mode) {
             case 'copy':
             case 'new':
-                BuildScriptExecutor::dispatch($this->model->id, $userId);
+                BuildScriptExecutor::dispatchSync($this->model->id, $userId);
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {
@@ -38,7 +38,7 @@ class ScriptExecutorExporter extends ExporterBase
                     } else {
                         $user = User::where('is_administrator', 1)->first();
                     }
-                    BuildScriptExecutor::dispatch($this->model->id, $user->id);
+                    BuildScriptExecutor::dispatchSync($this->model->id, $user->id);
                 }
                 break;
 
