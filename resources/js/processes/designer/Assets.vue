@@ -9,7 +9,7 @@
       </b-navbar-brand>
     </b-navbar>
 
-    <div class="m-2">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsCore"
@@ -166,7 +166,7 @@ export default {
   background-color: #f9f9f9;
 }
 .card {
-  margin: 6px;
+  margin: 8px;
   border: none;
   padding: 0;
   border-radius: 8px;

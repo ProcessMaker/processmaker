@@ -37,4 +37,8 @@ export default {
 i {
   font-size: 32px;
 }
+p {
+  font-size: 16px;
+  font-weight: 400;
+}
 </style>
