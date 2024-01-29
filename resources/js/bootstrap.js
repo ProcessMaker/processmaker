@@ -28,6 +28,7 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
 window._ = require("lodash");
