@@ -165,10 +165,12 @@ export default {
 .assets {
   background-color: #f9f9f9;
 }
-.b-card {
+.card {
   margin: 5px;
   border: none;
   padding: 0;
+  border-radius: 8px;
+  box-shadow: 0px 0px 11px 0px rgba(98, 124, 144, 0.20);
 }
 .b-card-group {
   display: flex;
