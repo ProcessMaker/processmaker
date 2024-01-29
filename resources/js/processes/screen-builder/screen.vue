@@ -323,7 +323,6 @@ import {
   ComputedProperties,
   CustomCSS,
 } from "@processmaker/screen-builder";
-import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
