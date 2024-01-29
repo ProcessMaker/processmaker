@@ -1,7 +1,7 @@
 const PMColumnFilterCommonMixin = {
   data() {
     return {
-      advancedFilter: [],
+      advancedFilter: {},
       userId: window.Processmaker.userId,
       viewAssignee: [],
       viewParticipants: [],
@@ -76,7 +76,7 @@ const PMColumnFilterCommonMixin = {
         json[i].subject.type = type;
         json[i].subject.value = value;
       }
-      this.advancedFilterInit(this.tableHeaders.length);
+      this.advancedFilterInit();
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
@@ -96,14 +96,13 @@ const PMColumnFilterCommonMixin = {
     },
     onUpdate(object, index) {
       if (object.$refs.pmColumnFilterForm &&
-              this.advancedFilter.length > 0 &&
-              this.advancedFilter[index] &&
+              index in this.advancedFilter &&
               this.advancedFilter[index].length > 0) {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
     getAdvancedFilter() {
-      let flat = this.advancedFilter.flat(1);
+      let flat = this.json2Array(this.advancedFilter).flat(1);
       return flat.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(flat)) : "";
     },
     getUrlUsers(filter) {
@@ -182,10 +181,10 @@ const PMColumnFilterCommonMixin = {
         }
       });
     },
-    advancedFilterInit(size) {
-      for (let i = 0; i < size; i++) {
-        if (!(i in this.advancedFilter)) {
-          this.advancedFilter[i] = [];
+    advancedFilterInit() {
+      for (let i in this.tableHeaders) {
+        if (!(this.tableHeaders[i].field in this.advancedFilter)) {
+          this.advancedFilter[this.tableHeaders[i].field] = [];
         }
       }
     },
@@ -202,8 +201,9 @@ const PMColumnFilterCommonMixin = {
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
         }
       }
-      for (let i in this.advancedFilter) {
-        if (i in this.tableHeaders && this.advancedFilter[i].length > 0) {
+      for (let i in this.tableHeaders) {
+        if (this.tableHeaders[i].field in this.advancedFilter &&
+                this.advancedFilter[this.tableHeaders[i].field].length > 0) {
           this.tableHeaders[i].filterApplied = true;
         }
       }
@@ -219,13 +219,23 @@ const PMColumnFilterCommonMixin = {
       });
     },
     setFilterPropsFromConfig(config) {
-      if (config.filter && config.filter instanceof Array) {
+      if (typeof config !== "object") {
+        config = {};
+      }
+      if ("filter" in config && typeof config.filter === "object") {
         this.advancedFilter = config.filter;
       }
       if (config?.order?.by && config?.order?.direction) {
         this.setOrderByProps(config.order.by, config.order.direction);
       }
       this.markStyleWhenColumnSetAFilter();
+    },
+    json2Array(json) {
+      let result = [];
+      for (let i in json) {
+        result.push(json[i]);
+      }
+      return result;
     }
   }
 };

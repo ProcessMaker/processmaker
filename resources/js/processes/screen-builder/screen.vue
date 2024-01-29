@@ -31,9 +31,7 @@
           :process-id="processId"
           @change="updateConfig"
         >
-          <data-loading-basic
-            :is-loaded="false"
-          />
+          <data-loading-basic :is-loaded="false" />
         </vue-form-builder>
 
         <!-- Preview -->
@@ -63,7 +61,10 @@
             />
             <div
               v-else
-              :class="{ 'device-mobile': deviceScreen === 'mobile', 'device-screen': deviceScreen !== 'mobile' }"
+              :class="{
+                'device-mobile': deviceScreen === 'mobile',
+                'device-screen': deviceScreen !== 'mobile',
+              }"
             >
               <component
                 :is="renderComponent"
@@ -104,7 +105,7 @@
                   @click="showDataInput = !showDataInput"
                 >
                   <i class="fas fa-file-import mr-2" />
-                  {{ $t('Data Input') }}
+                  {{ $t("Data Input") }}
                   <i
                     class="fas ml-auto"
                     :class="showDataInput ? 'fa-angle-right' : 'fa-angle-down'"
@@ -128,7 +129,9 @@
                     class="pl-3"
                   >
                     <i class="fas text-danger fa-times-circle mr-1" />
-                    <small class="text-muted text-capitalize">{{ $t('Invalid JSON Data Object') }}</small>
+                    <small class="text-muted text-capitalize">{{
+                      $t("Invalid JSON Data Object")
+                    }}</small>
                   </div>
                 </b-collapse>
 
@@ -139,7 +142,7 @@
                   @click="showDataPreview = !showDataPreview"
                 >
                   <i class="fas fa-file-code mr-2" />
-                  {{ $t('Data Preview') }}
+                  {{ $t("Data Preview") }}
                   <b-button
                     v-b-modal.data-preview
                     squared
@@ -151,7 +154,9 @@
                   </b-button>
                   <i
                     class="fas ml-auto"
-                    :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"
+                    :class="
+                      showDataPreview ? 'fa-angle-right' : 'fa-angle-down'
+                    "
                   />
                 </b-button>
 
@@ -175,13 +180,15 @@
       </b-card-body>
 
       <!-- Card Footer -->
-      <b-card-footer class="d-flex d-flex justify-content-end align-items-center">
+      <b-card-footer
+        class="d-flex d-flex justify-content-end align-items-center"
+      >
         <b-form-checkbox
           v-model="toggleValidation"
           name="check-button"
           switch
         >
-          {{ $t('Screen Validation') }}
+          {{ $t("Screen Validation") }}
         </b-form-checkbox>
 
         <div
@@ -193,26 +200,26 @@
             class="btn btn-sm text-capitalize"
           >
             <i class="fas fa-angle-double-up" />
-            {{ $t('Open Console') }}
+            {{ $t("Open Console") }}
             <span
               v-if="allErrors === 0 && allWarnings === 0"
               class="badge badge-success"
             >
-              <i class="fas fa-check-circle " />
+              <i class="fas fa-check-circle" />
             </span>
 
             <span
               v-if="allErrors > 0"
               class="badge badge-danger"
             >
-              <i class="fas fa-times-circle " />
+              <i class="fas fa-times-circle" />
               {{ $t(allErrors) }}
             </span>
             <span
               v-if="allWarnings > 0"
               class="badge badge-warning"
             >
-              <i class="fas fa-exclamation-triangle " />
+              <i class="fas fa-exclamation-triangle" />
               {{ $t(allWarnings) }}
             </span>
           </button>
@@ -221,10 +228,12 @@
         <div
           v-if="showValidationErrors"
           class="validation-panel position-absolute border-top border-left overflow-auto"
-          :class="{'d-block':showValidationErrors && validationErrors.length}"
+          :class="{
+            'd-block': showValidationErrors && validationErrors.length,
+          }"
         >
           <b-button
-            v-for="(validation,index) in warnings"
+            v-for="(validation, index) in warnings"
             :key="index"
             variant="link"
             class="validation__message d-flex align-items-center p-3"
@@ -233,13 +242,13 @@
             <i class="fas fa-exclamation-triangle text-warning d-block mr-3" />
             <span class="ml-2 text-dark font-weight-bold text-left">
               {{ validation.reference }}
-              <span
-                class="d-block font-weight-normal"
-              >{{ validation.message }}</span>
+              <span class="d-block font-weight-normal">{{
+                validation.message
+              }}</span>
             </span>
           </b-button>
           <b-button
-            v-for="(validation,index) in validationErrors"
+            v-for="(validation, index) in validationErrors"
             :key="index"
             variant="link"
             class="validation__message d-flex align-items-center p-3 text-capitalize"
@@ -248,15 +257,15 @@
             <i class="fas fa-times-circle text-danger d-block mr-3" />
             <span class="ml-2 text-dark font-weight-bold text-left">
               {{ validation.item && validation.item.component }}
-              <span
-                class="d-block font-weight-normal"
-              >{{ validation.message }}</span>
+              <span class="d-block font-weight-normal">{{
+                validation.message
+              }}</span>
             </span>
           </b-button>
           <span
             v-if="!allErrors && !allWarnings"
             class="d-flex justify-content-center align-items-center h-100 text-capitalize"
-          >{{ $t('No Errors') }}</span>
+          >{{ $t("No Errors") }}</span>
         </div>
       </b-card-footer>
     </b-card>
@@ -307,38 +316,24 @@
 </template>
 
 <script>
-import { VueFormBuilder, VueFormRenderer } from "@processmaker/screen-builder";
-import WatchersPopup from "@processmaker/screen-builder/src/components/watchers-popup.vue";
-import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties.vue";
-import CustomCSS from "@processmaker/screen-builder/src/components/custom-css.vue";
-import "@processmaker/screen-builder/dist/vue-form-builder.css";
+import {
+  VueFormBuilder,
+  VueFormRenderer,
+  WatchersPopup,
+  ComputedProperties,
+  CustomCSS,
+} from "@processmaker/screen-builder";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import MonacoEditor from "vue-monaco";
 import _, { cloneDeep, debounce } from "lodash";
 import { mapMutations } from "vuex";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import Validator from "validatorjs";
+import Validator from "@chantouchsek/validatorjs";
 import TopMenu from "../../components/Menu.vue";
 import mockMagicVariables from "./mockMagicVariables";
 import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import autosaveMixins from "../../modules/autosave/mixins";
-
-// To include another language in the Validator with variable processmaker
-if (
-  window.ProcessMaker
-  && window.ProcessMaker.user
-  && window.ProcessMaker.user.lang
-) {
-  Validator.useLang(window.ProcessMaker.user.lang);
-}
-
-Validator.register(
-  "attr-value",
-  (value) => value.match(/^[a-zA-Z0-9-_]+$/),
-  "Must be letters, numbers, underscores or dashes",
-);
 
 export default {
   components: {
@@ -602,17 +597,22 @@ export default {
     warnings() {
       const warnings = [];
       // Check if screen has watchers that use scripts
-      const watchersWithScripts = this.watchers
-        .filter((watcher) => watcher.script.id.substr(0, 7) === "script-").length;
+      const watchersWithScripts = this.watchers.filter(
+        (watcher) => watcher.script.id.substr(0, 7) === "script-",
+      ).length;
       if (watchersWithScripts > 0) {
         warnings.push({
-          message: this.$t("Using watchers with Scripts can slow the performance of your screen."),
+          message: this.$t(
+            "Using watchers with Scripts can slow the performance of your screen.",
+          ),
         });
       }
       // Count form elements
       if (this.numberOfElements >= 25) {
         warnings.push({
-          message: this.$t("We recommend using fewer than 25 form elements in your screen for optimal performance."),
+          message: this.$t(
+            "We recommend using fewer than 25 form elements in your screen for optimal performance.",
+          ),
         });
       }
       return warnings;
@@ -657,6 +657,16 @@ export default {
     },
   },
   mounted() {
+    // To include another language in the Validator with variable processmaker
+    if (window.ProcessMaker?.user?.lang) {
+      Validator.useLang(window.ProcessMaker.user.lang);
+    }
+
+    Validator.register(
+      "attr-value",
+      (value) => value.match(/^[a-zA-Z0-9-_]+$/),
+      "Must be letters, numbers, underscores or dashes",
+    );
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
@@ -689,9 +699,12 @@ export default {
       }
       this.editor.updateOptions({ readOnly: false });
       setTimeout(() => {
-        this.editor.getAction("editor.action.formatDocument").run().then(() => {
-          this.editor.updateOptions({ readOnly: true });
-        });
+        this.editor
+          .getAction("editor.action.formatDocument")
+          .run()
+          .then(() => {
+            this.editor.updateOptions({ readOnly: true });
+          });
       }, 300);
     },
     countElements() {
@@ -730,10 +743,13 @@ export default {
         }
         warnings.push(
           // eslint-disable-next-line max-len
-          this.$t("{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.", {
-            name: item.config.name,
-            pageName,
-          }),
+          this.$t(
+            "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
+            {
+              name: item.config.name,
+              pageName,
+            },
+          ),
         );
       });
 
@@ -793,9 +809,12 @@ export default {
         that.previewInput = "{}";
         that.preview.custom_css = that.customCSS;
         ProcessMaker.EventBus.$emit("screen-builder-start", that);
-        ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
-          that.saveScreen(value, onSuccess, onError);
-        });
+        ProcessMaker.EventBus.$on(
+          "save-screen",
+          (value, onSuccess, onError) => {
+            that.saveScreen(value, onSuccess, onError);
+          },
+        );
         ProcessMaker.EventBus.$on("screen-change", () => {
           this.handleAutosave();
         });
@@ -832,7 +851,9 @@ export default {
       }
       this.mode = mode;
       this.setStoreMode(this.mode);
-      this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
+      this.previewData = this.previewInputValid
+        ? JSON.parse(this.previewInput)
+        : {};
       this.rendererKey += 1;
       if (mode === "preview") {
         this.$dataProvider.flushScreenCache();
@@ -882,7 +903,11 @@ export default {
 
         item.inspector.forEach((property) => {
           if (property.config.validation) {
-            if (property.config.validation.includes("regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*(?<![.])$/")) {
+            if (
+              property.config.validation.includes(
+                "regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*(?<![.])$/",
+              )
+            ) {
               const validationRuleArray = property.config.validation.split("|");
               validationRuleArray[0] = "regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*[^.]$/";
               rules[property.field] = validationRuleArray.join("|");
@@ -971,12 +996,15 @@ export default {
     ) {
       this.translateControl(control);
       // Add it to the renderer
-      if (!this.$refs.renderer) { return; }
-      this.$refs.renderer.$options.components[
-        rendererBinding
-      ] = rendererComponent;
+      if (!this.$refs.renderer) {
+        return;
+      }
+      this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
       // Add it to the form builder
       this.$refs.builder.addControl(control, builderComponent, builderBinding);
+    },
+    setGroupOrder(config) {
+      this.$refs.builder.setGroupOrder(config);
     },
     translateControl(inputControl) {
       const control = { ...inputControl };
@@ -1086,41 +1114,50 @@ export default {
     setVersionIndicator(isDraft = null) {
       if (this.isVersionsInstalled) {
         this.$refs.menuScreen.removeItem("VersionIndicator");
-        this.$refs.menuScreen.addItem({
-          id: "VersionIndicator",
-          type: "VersionIndicator",
-          section: "right",
-          options: {
-            is_draft: isDraft ?? this.isDraft,
+        this.$refs.menuScreen.addItem(
+          {
+            id: "VersionIndicator",
+            type: "VersionIndicator",
+            section: "right",
+            options: {
+              is_draft: isDraft ?? this.isDraft,
+            },
           },
-        }, 0);
+          0,
+        );
       }
     },
     setLoadingState(isLoading = false) {
       if (this.isVersionsInstalled) {
         this.$refs.menuScreen.removeItem("SavedNotification");
-        this.$refs.menuScreen.addItem({
-          id: "SavedNotification",
-          type: "SavedNotification",
-          section: "right",
-          options: {
-            is_loading: isLoading,
+        this.$refs.menuScreen.addItem(
+          {
+            id: "SavedNotification",
+            type: "SavedNotification",
+            section: "right",
+            options: {
+              is_loading: isLoading,
+            },
           },
-        }, 1);
+          1,
+        );
       }
     },
     setEllipsisMenu() {
       if (this.isVersionsInstalled) {
-        this.$refs.menuScreen.addItem({
-          id: "EllipsisMenu",
-          type: "EllipsisMenu",
-          section: "right",
-          options: {
-            actions: [...this.ellipsisMenuOptions.actions],
-            data: {},
-            divider: false,
+        this.$refs.menuScreen.addItem(
+          {
+            id: "EllipsisMenu",
+            type: "EllipsisMenu",
+            section: "right",
+            options: {
+              actions: [...this.ellipsisMenuOptions.actions],
+              data: {},
+              divider: false,
+            },
           },
-        }, 4);
+          4,
+        );
       }
     },
   },
@@ -1128,55 +1165,55 @@ export default {
 </script>
 
 <style lang="scss">
-    $validation-panel-bottom: 3.5rem;
-    $validation-panel-right: 0;
-    $validation-panel-height: 10rem;
-    $validation-panel-width: 41rem;
-    $primary-white: #f7f7f7;
+$validation-panel-bottom: 3.5rem;
+$validation-panel-right: 0;
+$validation-panel-height: 10rem;
+$validation-panel-width: 41rem;
+$primary-white: #f7f7f7;
 
-    html,
-    body {
-        height: 100%;
-        min-height: 100%;
-        max-height: 100%;
-        overflow: hidden;
-    }
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
 
-    .header-bg {
-      background: #f7f7f7;
-    }
+.header-bg {
+  background: #f7f7f7;
+}
 
-    .validation-panel {
-      background: $primary-white;
-      height: $validation-panel-height;
-      width: $validation-panel-width;
-      bottom: $validation-panel-bottom;
-      right: $validation-panel-right;
-    }
+.validation-panel {
+  background: $primary-white;
+  height: $validation-panel-height;
+  width: $validation-panel-width;
+  bottom: $validation-panel-bottom;
+  right: $validation-panel-right;
+}
 
-    .validation-panel button {
-      text-transform: none!important;
-    }
+.validation-panel button {
+  text-transform: none !important;
+}
 
-    .preview-inspector {
-      max-width: 265px;
-    }
+.preview-inspector {
+  max-width: 265px;
+}
 
-    .data-collapse {
-      height: 225px;
-    }
-    .editor {
-      height: 30em;
-    }
-    .tree-button {
-      box-shadow: 2px 2px rgba($color: #000000, $alpha: 1.0);
-    }
-    .device-mobile {
-      width: 480px;
-      border: 1px solid rgba(0,0,0,.125);
-      margin: 0px auto;
-    }
-    .device-screen {
-      width: 100%;
-    }
+.data-collapse {
+  height: 225px;
+}
+.editor {
+  height: 30em;
+}
+.tree-button {
+  box-shadow: 2px 2px rgba($color: #000000, $alpha: 1);
+}
+.device-mobile {
+  width: 480px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  margin: 0px auto;
+}
+.device-screen {
+  width: 100%;
+}
 </style>

@@ -55,7 +55,6 @@
 
   import Vue from 'vue'
   import {VueFormRenderer} from '@processmaker/screen-builder';
-  import '@processmaker/screen-builder/dist/vue-form-builder.css';
 
   Vue.component('vue-form-renderer', VueFormRenderer);
 

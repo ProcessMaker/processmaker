@@ -138,6 +138,12 @@ class GroupController extends Controller
     public function store(Request $request)
     {
         $request->validate(Group::rules());
+
+        // Check if 2FA is enabled and set the enabled_2fa flag
+        if (config('password-policies.2fa_enabled', false)) {
+            $request->merge(['enabled_2fa' => true]);
+        }
+
         $group = new Group();
         $group->fill($request->input());
         $group->saveOrFail();

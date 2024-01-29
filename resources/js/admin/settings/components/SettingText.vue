@@ -83,13 +83,14 @@ export default {
       return '•'.repeat(this.input.length);
     },
     state() {
-      if (this.setting.ui?.isNotEmpty) {
+      if (this.setting?.ui?.isNotEmpty) {
         return this.transformed !== '' && this.transformed !== null;
       }
+
       return true;
     },
     invalidFeedback() {
-      if (this.setting.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
+      if (this.setting?.ui?.isNotEmpty && (this.transformed === '' || this.transformed === null)) {
         return this.$t("The current value is empty but a value is required. Please provide a valid value.");
       }
     }

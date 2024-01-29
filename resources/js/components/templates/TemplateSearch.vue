@@ -8,6 +8,15 @@
           </b-btn>
         </b-input-group-prepend>
         <b-form-input v-model="filter" id="search-box" class="pl-0" :placeholder="$t('Search Templates')"></b-form-input>
+        <b-input-group-append v-if="filter">
+          <b-btn
+            class="px-1"
+            variant="outline-secondary"
+            @click="clearSearch()"
+          >
+            <b-icon icon="x" />
+          </b-btn>
+        </b-input-group-append>
       </b-input-group>
     </div>
     <div class="cards-container" :class="type !== 'wizard' ? 'fixed-height' : '' ">
@@ -58,7 +67,7 @@
           </p>
         </template>
         <template v-else>
-          <b-card-group id="template-options" deck class="d-flex small-deck-margin template-options">
+          <b-card-group id="template-options" deck class="small-deck-margin template-options" :class="type !== 'wizard' ?  'd-flex' : ''">
             <template-select-card
               v-show="component === 'template-select-card'"
               v-for="(template, index) in templates"
@@ -208,6 +217,10 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    clearSearch() {
+      this.filter = "";
+      this.fetch();
     },
     showDetails($event = null) {
       if (!$event) {

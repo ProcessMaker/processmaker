@@ -7,7 +7,7 @@
                   readonly
                   size="sm">
     </b-form-input>
-    <b-form-datepicker v-model="input"
+    <b-form-datepicker v-model="selectedDate"
                        button-only
                        right
                        size="sm"
@@ -17,6 +17,15 @@
                        button-variant="outline-secondary"
                        class="pm-column-filter-op-button">
     </b-form-datepicker>
+    <b-form-timepicker v-model="selectedTime"
+                       button-only
+                       show-seconds
+                       right
+                       size="sm"
+                       boundary="window"
+                       button-variant="outline-secondary"
+                       class="pm-column-filter-op-button">
+    </b-form-timepicker>
   </div>
 </template>
 
@@ -27,44 +36,62 @@
     ],
     data() {
       return {
-        input: ""
+        input: "",
+        selectedDate: "",
+        selectedTime: ""
       };
     },
     watch: {
       value: {
         handler(newValue) {
           this.input = newValue;
-          this.dateToDatetime();
         },
         immediate: true
       },
       input() {
         this.emitInput();
+      },
+      selectedDate() {
+        this.setInput();
+      },
+      selectedTime() {
+        this.setInput();
       }
     },
     mounted() {
-      if (this.input === "") {
-        this.input = this.currentDate();
-      }
+      this.selectedDate = this.getCurrentDate(this.input);
+      this.selectedTime = this.getCurrentTime(this.input);
     },
     methods: {
       emitInput() {
-        this.dateToDatetime();
         this.$emit("input", this.input);
       },
-      dateToDatetime() {
-        if (this.input && this.input !== "" && !/\d{2}:\d{2}:\d{2}/.test(this.input)) {
-          this.input = this.input + " 00:00:00";
-        }
+      setInput() {
+        this.input = this.selectedDate + " " + this.selectedTime;
       },
       currentDate() {
         let date = new Date();
-        let year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        month = month < 10 ? "0" + month : month;
-        day = day < 10 ? "0" + day : day;
-        return year + "-" + month + "-" + day;
+        return date.toISOString().split("T")[0];
+      },
+      isDatetime(string) {
+        const date = new Date(string);
+        return !isNaN(date.getTime()) && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(string);
+      },
+      getCurrentDate(newValue) {
+        if (this.isDatetime(newValue)) {
+          let s = newValue.trim().split(" ");
+          return s[0];
+        } else {
+          return this.currentDate();
+        }
+      },
+      getCurrentTime(newValue) {
+        if (this.isDatetime(newValue)) {
+          let s = newValue.trim().split(" ");
+          return s.length > 1 ? s[1] : "00:00:00";
+        } else {
+          return "00:00:00";
+        }
       }
     }
   };

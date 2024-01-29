@@ -281,6 +281,13 @@
         return bubbleColor[status];
       },
       handleEllipsisClick(categoryColumn) {
+        this.fields.forEach(column => {
+          if (column.field !== categoryColumn.field) {
+            column.direction = "none";
+            column.filterApplied = false;
+          }
+        });
+
         if (categoryColumn.direction === "asc") {
           categoryColumn.direction = "desc";
         } else if (categoryColumn.direction === "desc") {
