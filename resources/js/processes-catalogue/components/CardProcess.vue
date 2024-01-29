@@ -22,9 +22,12 @@
     </div>
     <div
       v-if="loading"
-      class="d-flex justify-content-center align-items-center my-5"
+      class="d-flex justify-content-center align-items-center m-5"
     >
-      <b-spinner variant="custom" />
+      <data-loading
+        v-show="shouldShowLoader"
+        empty-icon="beach"
+      />
     </div>
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
@@ -38,12 +41,14 @@
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
 
 export default {
   components: {
     pagination, CatalogueEmpty, SearchCards, Card,
   },
+  mixins: [dataLoadingMixin],
   props: ["category"],
   data() {
     return {
@@ -101,6 +106,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
       if (this.category.id === 0) {

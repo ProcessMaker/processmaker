@@ -109,7 +109,7 @@
       </div>
     </div>
 </template>
-  
+
 <script>
   Vue.filter('str_limit', function (value, size) {
     if (!value) return '';
@@ -136,6 +136,7 @@
       data() {
         return {
           orderBy: "name",
+          previousFilter: "",
           sortOrder: [
             {
               field: "name",
@@ -297,7 +298,11 @@
               this.status === null || this.status === "" || this.status === undefined
                   ? "templates/process?"
                   : "templates?status=" + this.status + "&";
-  
+          let filter = this.filter;
+          if (this.previousFilter !== filter) {
+            this.page = 1;
+          }
+          this.previousFilter = filter;
           // Load from our api client
           ProcessMaker.apiClient
               .get(
@@ -337,6 +342,13 @@
           return data;
         },
         handleEllipsisClick(templateColumn) {
+          this.fields.forEach(column => {
+            if (column.field !== templateColumn.field) {
+              column.direction = "none";
+              column.filterApplied = false;
+            }
+          });
+
           if (templateColumn.direction === "asc") {
             templateColumn.direction = "desc";
           } else if (templateColumn.direction === "desc") {

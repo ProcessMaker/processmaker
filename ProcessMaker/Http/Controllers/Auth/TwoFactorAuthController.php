@@ -213,4 +213,21 @@ class TwoFactorAuthController extends Controller
 
         return true;
     }
+
+    /**
+     * Check if 2FA is enabled for the current user based on the groups he belongs to
+     *
+     * @return bool
+     */
+    public static function check2faByGroups()
+    {
+        try {
+            $user = Auth::user();
+            return $user->in2FAGroupOrIndependent();
+        } catch (Exception $e) {
+            session()->put(self::TFA_ERROR, $e->getMessage());
+        }
+
+        return false;
+    }
 }

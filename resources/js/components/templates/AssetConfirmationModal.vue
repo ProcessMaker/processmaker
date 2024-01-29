@@ -19,10 +19,10 @@
       </modal>
     </div>
   </template>
-    
+
   <script>
   import { Modal } from "SharedComponents";
-    
+
   export default {
     components: { Modal },
     props: ["templateName", "submitResponse", "processName", "redirectTo"],
@@ -50,7 +50,8 @@
       },
       goToModeler() {
         this.processId = this.submitResponse.processId;
-        if (this.redirectTo !== null) {
+
+        if (undefined !== this.redirectTo && null !== this.redirectTo) {
           if (this.redirectTo === 'process-launchpad') {
             window.location = `/processes-catalogue/${this.processId}`;
           }
@@ -61,12 +62,11 @@
     },
   };
   </script>
-  
+
   <style>
-  
+
     #assetConfirmation___BV_modal_footer_ {
       margin-top: 0 !important;
     }
-  
+
   </style>
-  

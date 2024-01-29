@@ -11,6 +11,8 @@ new Vue({
       name: "",
       responseId: null,
       request: {},
+      redirectTo: null,
+      wizardTemplateUuid: null,
     };
   },
   mounted() {

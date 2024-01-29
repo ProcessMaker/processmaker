@@ -41,7 +41,7 @@
             @isset($tabs[2])
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
-                        role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
+                        role="tab" onclick="loadArchivedProcess()" aria-controls="nav-archived" aria-selected="true">
                         {{ $tabs[3] ?? __('Archived Processes') }}
                     </a>
                 </li>
@@ -58,7 +58,7 @@
             @isset($tabs[2])
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
-                    role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
+                    role="tab" onclick="loadArchivedProcess()" aria-controls="nav-archived" aria-selected="true">
                         {{ $tabs[2] ?? __('Archived Processes') }}
                     </a>
                 </li>
@@ -118,6 +118,9 @@
       };
       loadProcess = function () {
         ProcessMaker.EventBus.$emit("api-data-process");
+      };
+      loadArchivedProcess = function () {
+        ProcessMaker.EventBus.$emit("api-data-archived-process");
       };
       loadTemplates = function () {
         ProcessMaker.EventBus.$emit("api-data-process-templates");

@@ -1,6 +1,6 @@
 <template>
   <div class="settings-listing data-table">
-    <pmql-input 
+    <pmql-input
       class="mb-2"
       :search-type="'settings'"
       :value="pmql"
@@ -125,20 +125,20 @@
               </span>
 
               <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
-                <b-button 
+                <b-button
                   :aria-label="$t('Clear')"
                   v-uni-aria-describedby="row.item.id.toString()"
-                  :disabled="disableClear(row.item)" 
-                  @click="onClear(row)" 
-                  variant="link" 
+                  :disabled="disableClear(row.item)"
+                  @click="onClear(row)"
+                  variant="link"
                   class="settings-listing-button"
                   >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
                 </b-button>
               </span>
               <span v-else class="invisible">
-                <b-button 
-                  variant="link" 
+                <b-button
+                  variant="link"
                   class="settings-listing-button"
                   v-uni-aria-describedby="row.item.id.toString()">
                   <i class="fas fa-trash-alt settings-listing-button"></i>
@@ -279,12 +279,12 @@ export default {
       sortable: false,
       tdClass: "align-middle settings-listing-td3",
     });
-    
+
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
       this.shouldDisplayNoDataMessage = false;
       this.$nextTick(() => {
         this.$emit('refresh-all');
-      });  
+      });
     });
   },
   methods: {
@@ -354,7 +354,7 @@ export default {
         if (!this.shouldDisplayNoDataMessage) {
           this.settings = otherSettings; // Use the other settings
         }
-        
+
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
@@ -366,9 +366,7 @@ export default {
         }
         this.orderByPrevious = this.orderBy;
         this.orderDescPrevious = this.orderDesc;
-        this.$nextTick(() => {
-          callback(this.settings);
-        });
+        this.$nextTick(() => callback(this.settings));
       });
     },
     separateSettings(settings) {
@@ -386,13 +384,14 @@ export default {
       return { noDataSettings, otherSettings };
     },
     shouldDisplayNoData(noDataSettings, allSettings) {
+      // All settings are 'no-data' settings
       if (noDataSettings.length === allSettings.length) {
-        return true; // All settings are 'no-data' settings
-      } else if (noDataSettings.length > 0) {
-        return false; // Some settings are 'no-data' settings
-      } else {
-        return false; // No 'no-data' settings found, display all configured settings
+        // and noDataSettings has a value
+        return noDataSettings.length > 0;
       }
+
+      // No 'no-data' settings found, display all configured settings
+      return false;
     },
     getTooltip(row) {
       if (row.item.readonly) {
@@ -560,7 +559,7 @@ export default {
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
         return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
-      } 
+      }
       // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
       return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
     },
@@ -568,7 +567,7 @@ export default {
       const authMethod = groupData.find(data => data.key.includes("abe_imap_auth_method"));
       const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
       const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
-      
+
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons
         return btn.ui.props.position === 'top';

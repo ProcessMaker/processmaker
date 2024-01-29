@@ -464,6 +464,19 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         });
     }
 
+    /**
+     * Scope a query to include a specific category
+     * @param string $status
+     */
+    public function scopeCategoryStatus($query, $status)
+    {
+        if (!empty($status)) {
+            return $query->whereHas('categories', function ($query) use ($status) {
+                $query->where('process_categories.status', $status);
+            });
+        }
+    }
+
     public function getCollaborations()
     {
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
@@ -1702,8 +1715,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $query->where('processes.name', 'like', $filter)
                  ->orWhere('processes.description', 'like', $filter)
                  ->orWhere('processes.status', '=', $filterStr)
-                 ->orWhere('user.firstname', 'like', $filter)
-                 ->orWhere('user.lastname', 'like', $filter)
+                 ->orWhereHas('user', function ($query) use ($filter) {
+                    $query->where('firstname', 'like', $filter)
+                        ->orWhere('lastname', 'like', $filter);
+                })
                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
                      $qry->select('assignable_id')
                          ->from('category_assignments')

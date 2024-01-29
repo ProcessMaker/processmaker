@@ -1,11 +1,14 @@
 import json
 import os
 import openai
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"],
+    organization=os.environ["OPENAI_ORG"]
+)
 import sys
 import time
-
-openai.api_key = os.environ["OPENAI_API_KEY"]
-openai.organization = os.environ["OPENAI_ORG"]
 
 # Supported languages dictionary
 languages = {
@@ -50,19 +53,17 @@ def main():
             while retry_count < max_retries:
                 try:
                     start_time = time.time()
-                    response=openai.ChatCompletion.create(
-                        model='gpt-4',
-                        messages=[
-                          {
-                            "role": "user",
-                            "content": prompt
-                          }
-                        ],
-                        temperature=0.3,
-                        max_tokens=500,
-                        n=1,
-                        stop=None
-                    )
+                    response=client.chat.completions.create(model='gpt-4',
+                    messages=[
+                      {
+                        "role": "user",
+                        "content": prompt
+                      }
+                    ],
+                    temperature=0.3,
+                    max_tokens=500,
+                    n=1,
+                    stop=None)
                     elapsed_time = time.time() - start_time
                     if elapsed_time < timeout:
                         translated_data[key] = response.choices[0].message.content.strip('"')
