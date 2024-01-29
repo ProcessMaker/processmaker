@@ -38,7 +38,7 @@
         </b-card>
       </b-card-group>
     </div>
-    <div class="m-2">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
