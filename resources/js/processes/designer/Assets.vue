@@ -9,7 +9,7 @@
       </b-navbar-brand>
     </b-navbar>
 
-    <div class="mt-3">
+    <div class="m-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsCore"
@@ -38,7 +38,7 @@
         </b-card>
       </b-card-group>
     </div>
-    <div class="mt-3">
+    <div class="m-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
@@ -166,7 +166,7 @@ export default {
   background-color: #f9f9f9;
 }
 .card {
-  margin: 5px;
+  margin: 6px;
   border: none;
   padding: 0;
   border-radius: 8px;
@@ -176,6 +176,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  padding: 10px;
 }
 .card-body {
   display: flex;
