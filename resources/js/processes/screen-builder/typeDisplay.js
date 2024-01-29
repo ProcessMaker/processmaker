@@ -17,6 +17,9 @@ const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendere
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
 
+// Modify record list description when used in a display screen
+FormRecordList.control.popoverContent = "Format content in a table structure";
+
 const controlsDisplay = [
   RichTextControl,
   TableControl,
