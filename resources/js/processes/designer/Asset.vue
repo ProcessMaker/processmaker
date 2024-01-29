@@ -5,7 +5,7 @@
         :class="icon"
         :style="{color: color}"
       />
-      <p>{{ $t(asset_name) }}</p>
+      <p class="m-0">{{ $t(asset_name) }}</p>
     </span>
   </b-card-text>
 </template>
@@ -32,7 +32,7 @@ export default {
   gap: 4px;
   flex: 1 0 0;
   align-self: stretch;
-  margin-bottom: 10px;
+  margin: 10px 0px;
 }
 i {
   font-size: 32px;

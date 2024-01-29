@@ -175,4 +175,9 @@ export default {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+.card-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 </style>
