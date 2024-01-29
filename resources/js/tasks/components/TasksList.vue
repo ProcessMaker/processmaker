@@ -376,14 +376,15 @@ export default {
     formatStatus(props) {
       let color;
       let label;
+      const isSelfService = props.is_self_service;
 
-      if (props.status === "ACTIVE" && props.isSelfService) {
+      if (props.status === "ACTIVE" && isSelfService) {
         color = "danger";
         label = "Self Service";
-      } if (props.status === "ACTIVE") {
+      } else if (props.status === "ACTIVE") {
         color = "success";
         label = "In Progress";
-      } if (props.status === "CLOSED") {
+      } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
       }
