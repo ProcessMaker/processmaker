@@ -2,7 +2,7 @@
   <div class="project">
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
-        {{ $t("Recent Assets from my Projects") }}
+        {{ $t("RECENT ASSETS") }}
       </b-navbar-brand>
       <div class="d-flex" align="end">
         <div class="dropdown">
