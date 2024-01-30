@@ -377,5 +377,13 @@ export default {
 .pm-table-container::-webkit-scrollbar-thumb {
   background-color: #6C757D;
   border-radius: 20px;
+} 
+.pm-table-container {
+  height: calc(100vh - 150px);
+  min-height: 400px;
+}
+.ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
+  max-height: 250px;
+  overflow-y: auto;
 }
 </style>
