@@ -404,7 +404,7 @@ export default {
       };
     },
     formatDueDate(date) {
-      return moment(date).format("MM/DD/YY HH:mm");
+      return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
     formatColorBadge(date) {
       const days = this.remainingTime(date);
@@ -425,6 +425,10 @@ export default {
       return `${daysRemaining}D`;
     },
     remainingTime(date) {
+      if (date === "-" || date === null) {
+        return 0;
+      }
+
       const currentDate = new Date();
       const formatDate = moment(date).format("YYYY-MM-DD");
       const endDate = new Date(formatDate);
@@ -446,13 +450,7 @@ export default {
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
-      let elementHeight = tasksAlert ? tasksAlert.clientHeight - 14 : 0;
-
-      const savedSearch = this.verifyURL("saved-searches");
-      if (savedSearch) {
-        elementHeight += 36;
-      }
+      let elementHeight = 36;
 
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
