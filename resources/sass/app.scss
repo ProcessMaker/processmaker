@@ -698,6 +698,8 @@ h1.page-title {
 
 .alertBox {
   width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .avatar-circle-list {
