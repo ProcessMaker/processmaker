@@ -124,7 +124,7 @@ export default {
     submitAssets() {
       const formData = new FormData();
       formData.append("id", this.responseId);
-      formData.append("request", this.request);
+      formData.append("request", JSON.stringify(this.request));
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
       if (this.wizardTemplateUuid !== null) {
         formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
@@ -134,6 +134,9 @@ export default {
           this.$nextTick(() => {
             this.$refs.assetLoadingModal.close();
           });
+          // Remove the state from local storage.
+          localStorage.removeItem("templateAssetsState");
+
           this.processName = response.data.processName;
           this.submitResponse = response.data;
           this.postComplete = true;
