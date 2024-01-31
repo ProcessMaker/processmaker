@@ -121,21 +121,18 @@ export default {
       });
     },
     handleExistingAssets(data) {
-      const assets = JSON.stringify(data.existingAssets);
-      const responseId = data.id;
-      const request = JSON.stringify(data.request);
-      window.history.pushState(
-        {
-          assets,
-          name: this.template.name,
-          responseId,
-          request,
-          redirectTo: "process-launchpad",
-          wizardTemplateUuid: this.template.uuid,
-        },
-        "",
-        "/template/assets",
-      );
+      // Use local storage to pass the data to the assets page.
+      const stateData = {
+        assets: JSON.stringify(data.existingAssets),
+        name: this.template.name,
+        responseId: data.id,
+        request: JSON.stringify(data.request),
+        redirectTo: "process-launchpad",
+        wizardTemplateUuid: this.template.uuid,
+      };
+      localStorage.setItem("templateAssetsState", JSON.stringify(stateData));
+
+      // Redirect to the assets page.
       window.location = "/template/assets";
     },
   },

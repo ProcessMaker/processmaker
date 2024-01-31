@@ -2,7 +2,7 @@ import Vue from "vue";
 import TemplateAssetsView from "../components/templates/TemplateAssetsView.vue";
 
 new Vue({
-  el: '#template-asset-manager',
+  el: "#template-asset-manager",
   components: { TemplateAssetsView },
   props: [],
   data() {
@@ -16,13 +16,16 @@ new Vue({
     };
   },
   mounted() {
-    this.name = window.history.state.name;
-    this.assets = JSON.parse(window.history.state.assets);
-    this.responseId = window.history.state.responseId;
-    this.request = window.history.state.request;
+    if (localStorage.getItem("templateAssetsState")) {
+      const stateData = JSON.parse(localStorage.getItem("templateAssetsState"));
+      this.name = stateData.name;
+      this.assets = JSON.parse(stateData.assets);
+      this.responseId = stateData.responseId;
+      this.request = stateData.request;
+    }
 
-    window.addEventListener('popstate', function(event) {
-      window.location.href = '/processes';
+    window.addEventListener("popstate", (event) => {
+      window.location.href = "/processes";
     });
   },
 });
