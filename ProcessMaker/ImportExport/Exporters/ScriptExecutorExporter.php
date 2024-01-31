@@ -27,7 +27,8 @@ class ScriptExecutorExporter extends ExporterBase
         switch ($this->mode) {
             case 'copy':
             case 'new':
-                BuildScriptExecutor::dispatch($this->model->id, $userId);
+                \Log::debug('========== build executor modal =====', ['model' => $this->model]);
+                // BuildScriptExecutor::dispatch($this->model->id, $userId);
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {
