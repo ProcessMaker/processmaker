@@ -11,7 +11,7 @@
           <filter-table
             :headers="fields"
             :data="data"
-            style="height: calc(100vh - 350px);"
+            style="height: calc(100vh - 355px);"
           >
          <!-- Slot Table Header filter Button -->
             <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
@@ -116,6 +116,7 @@
     props: ["filter", "permissions", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
+        fetchFlag: 0, 
         localLoadOnStart: !!this.loadOnStart,
         orderBy: "name",
         sortOrder: [
@@ -235,6 +236,13 @@
             "&include=" + this.include
           )
           .then(response => {
+            if (response.data.data.length === 0 && this.fetchFlag === 0){
+              this.page = 1;
+              this.fetch();
+              this.fetchFlag = 1;
+            } else {
+              this.fetchFlag = 0;
+            }
             if (response.data.data.length === 0 && !this.filter) {
               $("#createCategory")
                 .modal("show");

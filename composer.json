@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.9.0",
+    "version": "4.9.1+nightly-20240130",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -102,7 +102,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "656a99d1",
+            "build": "b2120d72",
             "custom": {
                 "package-ellucian-ethos": "1.15.1",
                 "package-plaid": "1.5.0",
@@ -153,8 +153,8 @@
                 "package-dynamic-ui": "1.17.0",
                 "package-files": "1.13.0",
                 "package-googleplaces": "1.11.0",
-                "package-photo-video": "1.4.0",
-                "package-pm-blocks": "1.5.0",
+                "package-photo-video": "1.4.1",
+                "package-pm-blocks": "1.5.1",
                 "package-process-documenter": "1.9.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.8",
@@ -177,7 +177,7 @@
             "microservices": {
                 "pmai": "fall-2023"
             },
-            "release": "Winter 2024"
+            "release": "Winter 2024 Pre-Release"
         }
     },
     "scripts": {
