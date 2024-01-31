@@ -356,12 +356,30 @@
               this.selectedPermissions.push(sibling);
             }
             Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
+
+            this.checkProcessCategoryView(sibling, self);
           },
           checkEdit(sibling, $event) {
             let self = $event.target.value;
             if (!this.selectedPermissions.includes(self)) {
               this.selectedPermissions = this.selectedPermissions.filter(function (el) {
                 return el !== sibling;
+              });
+            }
+            if (sibling.includes('processes') || self.includes('processes')) {
+              this.checkProcessCategoryView(sibling, self);
+            }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
+          },
+          checkProcessCategoryView(sibling, self) {
+            const viewProcessCategoriesPermission = 'view-process-categories';
+            if (this.selectedPermissions.includes(self)) {
+              this.selectedPermissions.push(viewProcessCategoriesPermission);
+            }
+
+            if (!this.selectedPermissions.includes(self) && !this.selectedPermissions.includes(sibling)) {
+              this.selectedPermissions = this.selectedPermissions.filter(function (el) {
+                return el !== viewProcessCategoriesPermission;
               });
             }
             Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
