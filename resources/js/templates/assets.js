@@ -1,7 +1,7 @@
 import Vue from "vue";
 import TemplateAssetsView from "../components/templates/TemplateAssetsView.vue";
 
-new Vue({
+const app = new Vue({
   el: "#template-asset-manager",
   components: { TemplateAssetsView },
   props: [],
@@ -24,8 +24,10 @@ new Vue({
       this.request = stateData.request;
     }
 
-    window.addEventListener("popstate", (event) => {
+    window.addEventListener("popstate", () => {
       window.location.href = "/processes";
     });
   },
 });
+
+export default app;
