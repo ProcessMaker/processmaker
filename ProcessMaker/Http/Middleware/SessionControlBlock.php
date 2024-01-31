@@ -99,7 +99,10 @@ class SessionControlBlock
         $ip = $request->getClientIp() ?? $request->ip();
         // Get the active user sessions
         $sessions = $user->sessions()
-            ->where('is_active', true)
+            ->where([
+                ['is_active', true],
+                ['expired_date', null],
+            ])
             ->orderBy('created_at', 'desc')
             ->get();
 
