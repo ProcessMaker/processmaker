@@ -22,10 +22,10 @@
     <template-assets-view
       :assets="assets"
       :name="name"
-      :responseId="responseId"
+      :response-id="responseId"
       :request="request"
-      :redirectTo="redirectTo"
-      :wizardTemplateUuid="wizardTemplateUuid"
+      :redirect-to="redirectTo"
+      :wizard-template-uuid="wizardTemplateUuid"
     />
   </div>
 @endsection

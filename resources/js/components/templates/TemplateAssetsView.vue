@@ -81,8 +81,17 @@ export default {
       required: true,
     },
     request: {
+      type: Object,
+      required: true,
+    },
+    redirectTo: {
       type: String,
       required: true,
+    },
+    wizardTemplateUuid: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -94,11 +103,7 @@ export default {
       submitResponse: {},
       postComplete: false,
       processName: "",
-      redirectTo: null,
-      wizardTemplateUuid: null,
     };
-  },
-  computed: {
   },
   watch: {
     assets() {
@@ -108,8 +113,6 @@ export default {
   mounted() {
     this.templateAssets = this.assets;
     this.templateName = this.name;
-    this.redirectTo = window.history.state?.redirectTo;
-    this.wizardTemplateUuid = window.history.state?.wizardTemplateUuid;
   },
   methods: {
     reload() {
@@ -120,13 +123,13 @@ export default {
     },
     submitAssets() {
       const formData = new FormData();
-      formData.append("id", this.$root.responseId);
+      formData.append("id", this.responseId);
       formData.append("request", this.request);
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
       if (this.wizardTemplateUuid !== null) {
         formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
       }
-      ProcessMaker.apiClient.post(`/template/create/${this.assetType}/${this.$root.responseId}`, formData)
+      ProcessMaker.apiClient.post(`/template/create/${this.assetType}/${this.responseId}`, formData)
         .then((response) => {
           this.$nextTick(() => {
             this.$refs.assetLoadingModal.close();

@@ -9,9 +9,9 @@ const app = new Vue({
     return {
       assets: [],
       name: "",
-      responseId: null,
+      responseId: "",
       request: {},
-      redirectTo: null,
+      redirectTo: "",
       wizardTemplateUuid: null,
     };
   },
@@ -21,7 +21,9 @@ const app = new Vue({
       this.name = stateData.name;
       this.assets = JSON.parse(stateData.assets);
       this.responseId = stateData.responseId;
-      this.request = stateData.request;
+      this.request = JSON.parse(stateData.request);
+      this.redirectTo = stateData.redirectTo;
+      this.wizardTemplateUuid = stateData.wizardTemplateUuid;
     }
 
     window.addEventListener("popstate", () => {
