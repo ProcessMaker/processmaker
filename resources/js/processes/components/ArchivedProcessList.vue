@@ -15,6 +15,7 @@
       <filter-table
         :headers="fields"
         :data="data"
+        style="height: calc(100vh - 350px);"
       >
         <!-- Slot Table Body -->
         <template
