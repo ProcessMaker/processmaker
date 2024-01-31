@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="hasPermission()"
-    class="assets p-3 mb-3"
+    class="assets mb-3"
   >
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
@@ -9,7 +9,7 @@
       </b-navbar-brand>
     </b-navbar>
 
-    <div class="mt-3">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsCore"
@@ -38,7 +38,7 @@
         </b-card>
       </b-card-group>
     </div>
-    <div class="mt-3">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
@@ -164,15 +164,24 @@ export default {
 <style scoped>
 .assets {
   background-color: #f9f9f9;
+  padding: 0rem 1rem 1rem 1rem;
 }
-.b-card {
-  margin: 5px;
+.card {
+  margin: 8px;
   border: none;
   padding: 0;
+  border-radius: 8px;
+  box-shadow: 0px 0px 11px 0px rgba(98, 124, 144, 0.20);
 }
 .b-card-group {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  padding: 10px;
+}
+.card-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

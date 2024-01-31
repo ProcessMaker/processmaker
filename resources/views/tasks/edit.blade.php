@@ -465,7 +465,8 @@
           window.ProcessMaker.isSelfService = this.isSelfService;
         }
       });
-      window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+      window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
+      window.Processmaker.user = @json($currentUser);
     </script>
 @endsection
 
