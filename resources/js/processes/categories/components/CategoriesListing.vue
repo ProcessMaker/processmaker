@@ -16,6 +16,8 @@
          <!-- Slot Table Header filter Button -->
             <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
               <div
+                v-if="column.sortable"
+                :key="index"
                 @click="handleEllipsisClick(column)"
               >
                 <i
