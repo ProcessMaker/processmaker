@@ -357,7 +357,9 @@
             }
             Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
 
-            this.checkProcessCategoryView(sibling, self);
+            if (sibling.includes('processes') || self.includes('processes')) {
+              this.checkProcessCategoryView(sibling, self);
+            }
           },
           checkEdit(sibling, $event) {
             let self = $event.target.value;
