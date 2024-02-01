@@ -1,7 +1,7 @@
 <template>
   <div class="project border">
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
+      <b-navbar-brand class="title-designer">
         {{ $t("RECENT ASSETS") }}
       </b-navbar-brand>
       <div class="d-flex" align="end">
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import RecentAssetsList from './RecentAssetsList.vue';
+import RecentAssetsList from "./RecentAssetsList.vue";
 
 Vue.component("RecentAssetsList", RecentAssetsList);
 

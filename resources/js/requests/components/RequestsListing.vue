@@ -20,7 +20,7 @@
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
-                                   :type="'Field'"
+                                   :type="getTypeColumnFilter(column.field)"
                                    :value="column.field"
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
