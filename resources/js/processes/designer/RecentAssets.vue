@@ -1,5 +1,5 @@
 <template>
-  <div class="project">
+  <div class="project border">
     <b-navbar type="faded">
       <b-navbar-brand class="title-designer">
         {{ $t("RECENT ASSETS") }}
@@ -10,7 +10,7 @@
             v-if="!showInput"
             id="dropdownMenu"
             type="button"
-            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
+            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle button-color"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
@@ -47,7 +47,7 @@
         </div>
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-outline-primary border-0 ml-1"
+            class="btn btn-outline-primary border-0 ml-1 button-color"
             @click="toggleInput"
           >
             <i class="fas fa-search" />
@@ -142,6 +142,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  border-radius: 8px;
 }
 .card {
   border-radius: 8px;
@@ -182,5 +183,16 @@ export default {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: -1.28px;
+}
+.button-color {
+  color: #6C8498;
+}
+.btn-outline-primary:hover {
+  color: #6C8498;
+  background-color: #f9f9f9;
+}
+.btn-outline-primary.dropdown-toggle {
+  color: #6C8498;
+  background-color: #f9f9f9;
 }
 </style>
