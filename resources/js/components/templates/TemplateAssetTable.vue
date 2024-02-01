@@ -52,14 +52,13 @@
               :name="`${group.type}-${action.value}`"
               @change="setGroupAction(group, action)"
             />
-            </b-form-group>
           </b-td>
         </b-tr>
       </b-thead>
       <b-tbody>
         <b-tr
           v-for="asset in group.items"
-          :key="asset.name"
+          :key="asset.uuid"
           class="border-left border-right border-bottom"
         >
           <b-td
@@ -70,14 +69,14 @@
           </b-td>
           <b-td
             v-for="action in actions"
-            :key="`${group.type}-${asset.name}-${action.value}`"
+            :key="`${group.type}-${asset.uuid}-${action.value}`"
             class="text-center align-middle"
           >
             <b-form-group>
               <b-form-radio
                 v-model="asset.mode"
                 :value="action.value"
-                :name="`${group.type}-${asset.name}-${action.value}`"
+                :name="`${group.type}-${asset.uuid}-${action.value}`"
                 @change="setAssetAction(group, asset, action)"
               />
             </b-form-group>
