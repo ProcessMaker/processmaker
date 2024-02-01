@@ -2019,11 +2019,16 @@
   "Zoom Out": "Zoom Out",
   "Pan Tool": "Pan Tool",
   "Type value": "Type value",
-  "No new notifications at the moment.": "No new notifications at the moment.",
-  "All Clear": "All Clear",
-  "Notifications, No New Messages": "Notifications, No New Messages",
   "Case #": "Case #",
   "Case title": "Case title",
   "Task name": "Task name",
-  "Due date": "Due date"
+  "Due date": "Due date",
+  "AI Generated": "AI Generated",
+  "Photo/Video": "Photo/Video",
+  "Bootstrap Component": "Bootstrap Component",
+  "Bootstrap Wrapper": "Bootstrap Wrapper",
+  "Captcha": "Captcha",
+  "Google Places": "Google Places",
+  "Add an action to submit your form or update a field": "Add an action to submit your form or update a field",
+  "Add special buttons that link between subpages within this Form": "Add special buttons that link between subpages within this Form"
 }

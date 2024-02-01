@@ -15,9 +15,9 @@
 @endsection
 @section('content')
 
-<div id="new-designer" class="px-3 page-content mb-0">
+<div id="new-designer" class="p-3 page-content mb-0 bg-white">
     <welcome-designer></welcome-designer>
-    <div class="card card-body">
+    <div class="card card-body border-0">
         <div class="row">
             <div class="col-6">
                 <div class="row">
