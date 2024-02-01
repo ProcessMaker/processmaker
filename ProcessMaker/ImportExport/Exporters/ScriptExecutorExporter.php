@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ScriptExecutorUpdated;
 use ProcessMaker\Jobs\BuildScriptExecutor;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 
 class ScriptExecutorExporter extends ExporterBase
@@ -23,12 +24,11 @@ class ScriptExecutorExporter extends ExporterBase
     {
         $authenticatedUser = Auth::user();
         $userId = $authenticatedUser ? $authenticatedUser->id : User::where('username', 'admin')->pluck('id');
-
         switch ($this->mode) {
             case 'copy':
             case 'new':
-                \Log::debug('========== build executor modal =====', ['model' => $this->model]);
-                // BuildScriptExecutor::dispatch($this->model->id, $userId);
+                // afterCommit is needed because we are in a db transaction
+                BuildScriptExecutor::dispatch($this->model->id, $userId)->afterCommit();
                 break;
             case 'update':
                 if (!empty($this->model->getChanges())) {
@@ -39,7 +39,8 @@ class ScriptExecutorExporter extends ExporterBase
                     } else {
                         $user = User::where('is_administrator', 1)->first();
                     }
-                    BuildScriptExecutor::dispatch($this->model->id, $user->id);
+                    // afterCommit is needed because we are in a db transaction
+                    BuildScriptExecutor::dispatch($this->model->id, $user->id)->afterCommit();
                 }
                 break;
 
