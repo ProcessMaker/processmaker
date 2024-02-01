@@ -131,4 +131,12 @@ export default {
 .button-color {
   color: #6C8498;
 }
+.btn-outline-primary:hover {
+  color: #6C8498;
+  background-color: #f9f9f9;
+}
+.active {
+  color:#6C8498;
+  background-color: #f9f9f9;
+}
 </style>
