@@ -191,4 +191,8 @@ export default {
   color: #6C8498;
   background-color: #f9f9f9;
 }
+.btn-outline-primary.dropdown-toggle {
+  color: #6C8498;
+  background-color: #f9f9f9;
+}
 </style>
