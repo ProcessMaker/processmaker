@@ -1,5 +1,5 @@
 <template>
-  <div class="project mt-3">
+  <div class="project mt-3 border">
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
         {{ $t("My Projects") }}
@@ -86,6 +86,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  border-radius: 8px;
   height: 500px;
 }
 .card {

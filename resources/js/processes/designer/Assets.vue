@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="hasPermission()"
-    class="assets mb-3"
+    class="assets mb-3 border"
   >
     <b-navbar type="faded">
       <b-navbar-brand class="text-uppercase">
@@ -164,6 +164,7 @@ export default {
 <style scoped>
 .assets {
   background-color: #f9f9f9;
+  border-radius: 8px;
   padding: 0rem 1rem 1rem 1rem;
 }
 .card {
