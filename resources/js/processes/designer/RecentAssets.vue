@@ -99,10 +99,6 @@ export default {
   mounted() {
     this.getOptionsType();
   },
-  updated() {
-    this.performSearch();
-    this.$refs.recentAssetsList.fetch(this.pmql);
-  },
   methods: {
     getOptionsType() {
       if (this.project) {
@@ -130,6 +126,7 @@ export default {
      */
     performSearch() {
       this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
+      this.$refs.recentAssetsList.fetch(this.pmql);
     },
     clearSearch() {
       this.searchCriteria = "";
