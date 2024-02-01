@@ -85,8 +85,8 @@ export default {
       required: true,
     },
     redirectTo: {
-      type: String,
-      required: true,
+      type: [String, null],
+      default: null,
     },
     wizardTemplateUuid: {
       type: String,
