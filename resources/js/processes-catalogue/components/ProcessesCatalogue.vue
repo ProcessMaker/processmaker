@@ -202,8 +202,8 @@ export default {
       this.showWizardTemplates = false;
 
       // Remove guided_templates and template parameters from the URL
-      const url = new URL(window.location.href);
-      if (url.search.includes("?guided_templates=true")) {
+      if (value !== undefined) {
+        const url = new URL(window.location.href);
         url.searchParams.delete("guided_templates");
         url.searchParams.delete("template");
         history.pushState(null, "", url); // Update the URL without triggering a page reload
