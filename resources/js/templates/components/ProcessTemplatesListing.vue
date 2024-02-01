@@ -11,11 +11,13 @@
         <filter-table
           :headers="fields"
           :data="data"
-          style="height: calc(100vh - 350px);"
+          style="height: calc(100vh - 355px);"
         >
           <!-- Slot Table Header filter Button -->
           <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
             <div
+              v-if="column.sortable"
+              :key="index"
               @click="handleEllipsisClick(column)"
             >
             <i

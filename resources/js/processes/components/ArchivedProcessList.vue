@@ -15,6 +15,7 @@
       <filter-table
         :headers="fields"
         :data="data"
+        style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Body -->
         <template
@@ -172,32 +173,32 @@ export default {
 
       fields: [
         {
-          label: "NAME",
+          label: this.$t("Name"),
           field: "name",
           width: 200,
           sortable: true,
         },
         {
-          label: "CATEGORY",
+          label: this.$t("Category"),
           field: "category_list",
           width: 160,
           sortable: true,
         },
         {
-          label: "OWNER",
+          label: this.$t("Owner"),
           field: "owner",
           width: 160,
           sortable: true,
         },
         {
-          label: "MODIFIED",
+          label: this.$t("Modified"),
           field: "updated_at",
           format: "datetime",
           width: 160,
           sortable: true,
         },
         {
-          label: "CREATED",
+          label: this.$t("Created"),
           field: "created_at",
           format: "datetime",
           width: 160,

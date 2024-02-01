@@ -1,7 +1,7 @@
 <template>
-  <div class="project">
+  <div class="project mt-3">
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
+      <b-navbar-brand class="title-designer">
         {{ $t("My Projects") }}
       </b-navbar-brand>
       <b-navbar-nav align="end">
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import ProjectsLastModifiedListing from './ProjectsLastModifiedListing';
+import ProjectsLastModifiedListing from "./ProjectsLastModifiedListing.vue";
 
 Vue.component("ProjectsLastModifiedListing", ProjectsLastModifiedListing);
 
