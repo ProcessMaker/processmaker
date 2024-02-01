@@ -134,7 +134,7 @@
           {
             name: "__slot:name",
             sortField: "name",
-            label: "NAME",
+            label: this.$t('Name'),
             field: "name",
             width: 200,
             sortable: true,
@@ -144,7 +144,7 @@
           {
             name: "status",
             sortField: "status",
-            label: "STATUS",
+            label: this.$t('Status'),
             field: "status",
             width: 160,
             sortable: true,
@@ -163,7 +163,7 @@
           {
             name: "updated_at",
             sortField: "updated_at",
-            label: "MODIFIED",
+            label: this.$t('Modified'),
             field: "updated_at",
             width: 160,
             sortable: true,
@@ -174,7 +174,7 @@
           {
             name: "created_at",
             sortField: "created_at",
-            label: "CREATED",
+            label: this.$t('Created'),
             field: "created_at",
             width: 160,
             sortable: true,
