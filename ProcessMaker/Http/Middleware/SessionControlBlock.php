@@ -97,21 +97,28 @@ class SessionControlBlock
         $requestDevice = $this->formatDeviceInfo($agentDevice, $agent->deviceType(), $agent->platform());
         // Get the user's current IP address
         $ip = $request->getClientIp() ?? $request->ip();
-        // Get the user's most recent session
-        $session = $user->sessions()
-            ->where('is_active', true)
+        // Get the active user sessions
+        $sessions = $user->sessions()
+            ->where([
+                ['is_active', true],
+                ['expired_date', null],
+            ])
             ->orderBy('created_at', 'desc')
-            ->first();
+            ->get();
 
-        if ($session) {
+        $openSessions = $sessions->reduce(function ($carry, $session) use ($requestDevice, $ip) {
             $sessionDevice = $this->formatDeviceInfo(
                 $session->device_name, $session->device_type, $session->device_platform
             );
 
-            return $requestDevice !== $sessionDevice || $session->ip_address !== $ip;
-        }
+            if ($requestDevice !== $sessionDevice || $session->ip_address !== $ip) {
+                return $carry + 1;
+            } else {
+                return $carry - 1;
+            }
+        }, 0);
 
-        return false;
+        return $openSessions > 0;
     }
 
     private function formatDeviceInfo(string $deviceName, string $deviceType, string $devicePlatform): string
