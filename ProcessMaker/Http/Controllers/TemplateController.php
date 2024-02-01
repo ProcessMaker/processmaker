@@ -59,6 +59,9 @@ class TemplateController extends Controller
         return view('processes.modeler.showTemplate')->with('id', $response['id']);
     }
 
+    /**
+     * Renders the view for choosing template assets.
+     */
     public function chooseTemplateAssets()
     {
         return view('templates.assets');

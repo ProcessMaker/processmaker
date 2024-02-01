@@ -34,13 +34,17 @@ class SessionControlKill
 
             $session = $this->getActiveSession($user, $userSession);
 
-            // Checks if the session has expired based on the IP address
-            if ($session && $configIP === '2' && $this->isSessionExpiredByIP($session, $request)) {
-                return $this->killSessionAndRedirect($session);
-            }
-            // Checks if the session has expired based on the device
-            if ($session && $configDevice === '2' && $this->isSessionExpiredByDevice($session)) {
-                return $this->killSessionAndRedirect($session);
+            if ($session) {
+                // Checks if the session has expired based on the IP address
+                $isSessionExpiredByIP = $configIP === '2' && $this->isSessionExpiredByIP($session, $request);
+                // Checks if the session has expired based on the device
+                $isSessionExpiredByDevice = $configDevice === '2' && $this->isSessionExpiredByDevice($session);
+                // Checks if the session has expired except the one within the active device
+                $isAnyRestrictionEnabled = $configIP === '1' || $configDevice === '1';
+
+                if ($isSessionExpiredByIP || $isSessionExpiredByDevice || $isAnyRestrictionEnabled) {
+                    return $this->killSessionAndRedirect($session);
+                }
             }
         }
 

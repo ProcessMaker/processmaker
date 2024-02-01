@@ -14,9 +14,12 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Traits\ProjectAssetTrait;
 
 class TemplateController extends Controller
 {
+    use ProjectAssetTrait;
+
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
     ];
@@ -142,6 +145,11 @@ class TemplateController extends Controller
                 ];
             } else {
                 $response = $this->template->create($type, $request);
+            }
+            if ($request->has('projects')) {
+                // Update 'updated_at' field for the project
+                $projectIds = explode(',', $request->input('projects'));
+                $this->updateProjectUpdatedAt($projectIds);
             }
         } elseif ($type === 'update-assets') {
             $request['request'] = json_decode($request['request'], true);

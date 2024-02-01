@@ -4,7 +4,7 @@
     class="assets mb-3"
   >
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
+      <b-navbar-brand class="title-designer">
         {{ $t("Assets") }}
       </b-navbar-brand>
     </b-navbar>
