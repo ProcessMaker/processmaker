@@ -192,12 +192,6 @@
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ]
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/ProcessMaker/SocialiteProviders"
-        }
-    ],
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
