@@ -10,7 +10,7 @@
             v-if="!showInput"
             id="dropdownMenu"
             type="button"
-            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
+            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle button-color"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
@@ -47,7 +47,7 @@
         </div>
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-outline-primary border-0 ml-1"
+            class="btn btn-outline-primary border-0 ml-1 button-color"
             @click="toggleInput"
           >
             <i class="fas fa-search" />
@@ -183,5 +183,8 @@ export default {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: -1.28px;
+}
+.button-color {
+  color: #6C8498;
 }
 </style>

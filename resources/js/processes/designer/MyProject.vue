@@ -7,7 +7,7 @@
       <b-navbar-nav align="end">
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-outline-primary border-0 mr-1"
+            class="btn btn-outline-primary border-0 mr-1 button-color"
             @click="toggleInput"
           >
             <i class="fas fa-search" />
@@ -32,7 +32,7 @@
           v-if="!showInput"
           href="/designer/projects"
         >
-          <i class="fas fa-external-link-alt" />
+          <i class="fas fa-external-link-alt button-color" />
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
@@ -127,5 +127,8 @@ export default {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: -1.28px;
+}
+.button-color {
+  color: #6C8498;
 }
 </style>
