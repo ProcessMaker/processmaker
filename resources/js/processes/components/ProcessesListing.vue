@@ -207,7 +207,7 @@ export default {
 
       fields: [
         {
-          label: "NAME",
+          label: this.$t("Name"),
           field: "name",
           width: 200,
           sortable: true,
@@ -215,7 +215,7 @@ export default {
           direction: "none",
         },
         {
-          label: "CATEGORY",
+          label: this.$t("Category"),
           field: "category_list",
           width: 160,
           sortable: true,
@@ -223,7 +223,7 @@ export default {
           sortField: "category.name",
         },
         {
-          label: "OWNER",
+          label: this.$t("Owner"),
           field: "owner",
           width: 160,
           sortable: true,
@@ -231,7 +231,7 @@ export default {
           sortField: "user.username",
         },
         {
-          label: "MODIFIED",
+          label: this.$t("Modified"),
           field: "updated_at",
           format: "datetime",
           width: 160,
@@ -239,7 +239,7 @@ export default {
           direction: "none",
         },
         {
-          label: "CREATED",
+          label: this.$t("Created"),
           field: "created_at",
           format: "datetime",
           width: 160,
