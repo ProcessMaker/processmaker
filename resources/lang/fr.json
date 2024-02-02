@@ -2025,5 +2025,13 @@
   "You have made no requests of this process.": "Vous n'avez fait aucune demande à ce processus.",
   "You have no tasks from this process.": "Vous n'avez aucune tâche de ce processus.",
   "You seem to be missing access to this feature. Please contact ProcessMaker Support.": "Il semble que vous n'ayez pas accès à cette fonctionnalité. Veuillez contacter le support de ProcessMaker.",
-  "Pan Tool": "Outil Pan"
+  "Pan Tool": "Outil Pan",
+  "AI Generated": "Généré par IA",
+  "Photo/Video": "Photo/Vidéo",
+  "Bootstrap Component": "Composant Bootstrap",
+  "Bootstrap Wrapper": "Enveloppe Bootstrap",
+  "Captcha": "Captcha",
+  "Google Places": "Google Places",
+  "Add an action to submit your form or update a field": "Ajoutez une action pour soumettre votre formulaire ou mettre à jour un champ",
+  "Add special buttons that link between subpages within this Form": "Ajouter des boutons spéciaux qui lient entre les sous-pages au sein de ce Formulaire"
 }
