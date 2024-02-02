@@ -260,8 +260,8 @@ export default {
       this.calcInputHeight();
     },
     value() {
-      if (!this.query || this.query === "") {
-        this.query = this.value;
+      if (this.query !== this.value) {
+        this.query = this.value || "";
       }
     },
   },
