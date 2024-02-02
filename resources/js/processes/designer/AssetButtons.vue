@@ -49,6 +49,9 @@ export default {
 </script>
 
 <style scoped>
+.card-text {
+  width: 100%;
+}
 .button-container {
   display: block;
   width: 100%;
