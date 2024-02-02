@@ -190,8 +190,9 @@ export default {
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
+        let min = 40;
         this.headers[this.resizingColumnIndex].width = Math.max(
-          40,
+          min,
           this.startWidth + diff,
         );
       }
