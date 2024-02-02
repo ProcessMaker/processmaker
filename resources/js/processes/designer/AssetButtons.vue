@@ -77,7 +77,7 @@ export default {
 }
 .custom-text {
   color: #5e6469;
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
