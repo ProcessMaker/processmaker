@@ -143,6 +143,7 @@ export default {
   width: 294px;
   font-size: 16px;
   font-weight: 600;
+  
 }
 
 .scrollable-menu {
