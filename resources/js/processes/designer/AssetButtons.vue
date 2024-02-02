@@ -3,23 +3,23 @@
     <div class="button-container">
       <b-button
         size="sm"
-        class="custom-button custom-text mb-2"
+        class="custom-button mb-2"
         block
         @click="openAsset(urlAsset)"
       >
-        {{ $t(asset_name_new) }}
-        <i class="fas fa-arrow-right ml-2 align-middle" />
+        <p class="custom-text"> {{ $t(asset_name_new) }} </p>
+        <i class="fas fa-arrow-right ml-2 align-middle text-primary" />
       </b-button>
     </div>
     <div class="button-container">
       <b-button
         size="sm"
-        class="custom-button custom-text"
+        class="custom-button"
         block
         @click="callURL()"
       >
-        {{ $t(asset_name_all) }}
-        <i class="fas fa-arrow-right ml-2 align-middle" />
+        <p class="custom-text"> {{ $t(asset_name_all) }} </p>
+        <i class="fas fa-arrow-right ml-2 align-middle text-primary" />
       </b-button>
     </div>
   </b-card-text>
@@ -64,11 +64,15 @@ export default {
   display: flex;
   padding: 8px 12px;
   justify-content: space-between;
+  text-align: start;
   align-items: center;
   flex: 1 0 0;
   align-self: stretch;
   border-radius: 4px;
   border: 1px solid #b7d8ff;
+  background: #edf4ff;
+}
+.custom-button:hover {
   background: #d1e3fe;
 }
 .custom-text {
@@ -79,5 +83,7 @@ export default {
   font-weight: 400;
   line-height: normal;
   letter-spacing: -0.28px;
+  text-transform: capitalize;
+  margin: 0px;
 }
 </style>
