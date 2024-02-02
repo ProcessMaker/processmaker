@@ -2,21 +2,8 @@
 
 namespace ProcessMaker;
 
-use Igaster\LaravelTheme\Facades\Theme;
-use Illuminate\Foundation\Application as IlluminateApplication;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Setting;
-use ProcessMaker\Providers\SettingServiceProvider;
-
-/**
- * Class Application.
- */
-class Application extends IlluminateApplication
+class Application extends \Illuminate\Foundation\Application
 {
-    // ProcessMaker Version
-    public const VERSION = '4.0.0';
-
     /**
      * Sets the timezone for the application and for php with the specified timezone.
      *
@@ -37,37 +24,6 @@ class Application extends IlluminateApplication
     public function getTimezone(): string
     {
         return config('app.timezone');
-    }
-
-    /**
-     * TODO Is this method, getSystemConstants() still necessary?
-     *
-     * Return the System defined constants and Application variables
-     *   Constants: SYS_*
-     *   Sessions : USER_* , URS_*
-     *
-     * @note: This is ported from Gulliver System. This will most likely need to be refactored/removed
-     *
-     * @return array contents of system contents
-     */
-    public function getSystemConstants()
-    {
-        $sysCon = [];
-        $sysCon['SYS_LANG'] = $this->getLocale();
-
-        // Get the current theme
-        $sysCon['SYS_SKIN'] = Theme::get();
-
-        // The following items should be refactored to no longer use $_SESSION
-        // Since these items should be request scope specific and not session specific
-        $sysCon['APPLICATION'] = (isset($_SESSION['APPLICATION'])) ? $_SESSION['APPLICATION'] : '';
-        $sysCon['PROCESS'] = (isset($_SESSION['PROCESS'])) ? $_SESSION['PROCESS'] : '';
-        $sysCon['TASK'] = (isset($_SESSION['TASK'])) ? $_SESSION['TASK'] : '';
-        $sysCon['INDEX'] = (isset($_SESSION['INDEX'])) ? $_SESSION['INDEX'] : '';
-        $sysCon['USER_LOGGED'] = Auth::user() ? Auth::user()->USR_UID : '';
-        $sysCon['USER_USERNAME'] = Auth::user() ? Auth::user()->USR_USERNAME : '';
-
-        return $sysCon;
     }
 
     /**

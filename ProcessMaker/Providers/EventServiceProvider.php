@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use ProcessMaker\Events\Logout;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Events\AuthClientCreated;
@@ -58,6 +59,7 @@ use ProcessMaker\Events\UserDeleted;
 use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
+use ProcessMaker\Listeners\LogoutListener;
 use ProcessMaker\Listeners\SecurityLogger;
 use ProcessMaker\Listeners\SessionControlSettingsUpdated;
 
@@ -84,6 +86,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Illuminate\Database\Events\MigrationsEnded' => [
             'ProcessMaker\Listeners\UpdateDataLakeViews',
+        ],
+        Logout::class => [
+            LogoutListener::class
         ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',

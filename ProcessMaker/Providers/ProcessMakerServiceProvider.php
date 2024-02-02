@@ -49,12 +49,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        // Dusk, if env is appropriate
-        // TODO Remove Dusk references and remove from composer dependencies
-        if (!$this->app->environment('production')) {
-            $this->app->register(DuskServiceProvider::class);
-        }
-
         $this->app->singleton(Managers\PackageManager::class, function () {
             return new Managers\PackageManager();
         });

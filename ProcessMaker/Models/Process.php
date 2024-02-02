@@ -301,26 +301,27 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     public function getNotificationsAttribute()
     {
-        $array = [];
+        $notifications = [];
+
+        $settings = $this->notification_settings()
+                         ->whereNull('element_id')
+                         ->whereIn('notifiable_type', $this->requestNotifiableTypes)
+                         ->whereIn('notification_type', $this->requestNotificationTypes)
+                         ->get();
+
+        $setting_exists = function ($notifiable, $type) use ($settings) {
+            return $settings->where('notifiable_type', $notifiable)
+                            ->where('notification_type', $type)
+                            ->isNotEmpty();
+        };
 
         foreach ($this->requestNotifiableTypes as $notifiable) {
-            foreach ($this->requestNotificationTypes as $notification) {
-                $setting = $this->notification_settings()
-                    ->whereNull('element_id')
-                    ->where('notifiable_type', $notifiable)
-                    ->where('notification_type', $notification)->get();
-
-                if ($setting->count()) {
-                    $value = true;
-                } else {
-                    $value = false;
-                }
-
-                $array[$notifiable][$notification] = $value;
+            foreach ($this->requestNotificationTypes as $type) {
+                $notifications[$notifiable][$type] = $setting_exists($notifiable, $type);
             }
         }
 
-        return (object) $array;
+        return (object) $notifications;
     }
 
     /**

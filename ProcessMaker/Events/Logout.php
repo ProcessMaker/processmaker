@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Events;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -54,6 +55,7 @@ class Logout implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
+            'session_id' => Session::getId(),
             'device_id' => RequestDevice::getId(),
             'device_variable' => RequestDevice::getVariableName(),
         ];
