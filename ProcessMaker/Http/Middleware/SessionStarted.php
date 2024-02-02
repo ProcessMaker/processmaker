@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
@@ -52,44 +53,38 @@ class SessionStarted
     }
 
     /**
-     *  Validates if the remember me token stored in the User table is tha same with the one stored in the cookie
+     * Validates the "remember me" token stored in the user table matches
+     * the one stored in the user's session
+     *
      * @param  \Illuminate\Http\Request  $request
      *
      * @return bool
      */
-    private function userHasValidRememberMe($request): bool
+    private function userHasValidRememberMe(Request $request): bool
     {
         if (!Auth::user() instanceof User) {
             return false;
         }
 
-        $guard = Auth::guard();
-
-        // Remember me is validate only in user session guards
-        if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
+        // Remember me is validated only in guarded sessions
+        if (!is_a($guard = Auth::guard(), SessionGuard::class)) {
             return false;
         }
 
-        // recallerName is the name of the cookie that stores the remember me token
-        $recallerName = $guard->getRecallerName();
+        // $recaller_name is the name of the cookie that stores the remember me token
+        $recaller_name = $guard->getRecallerName();
 
         // Get the sections of the cookie
-        $parts = explode('|', $request->cookies->get($recallerName));
+        $parts = explode('|', $request->cookies->get($recaller_name));
 
         // If the cookie doesn't have the correct parts the remember me token is invalid
-        if (count($parts) < 2) {
-            return false;
-        }
+        if (count($parts) >= 2) {
+            $token = $parts[1];
 
-        $token = $parts[1];
-
-        if ($token === null || $token === '') {
-            return false;
-        }
-
-        // Validate the cookie's remember me token with the one stored in the database
-        if (hash_equals(\Auth::user()->getRememberToken(), $token)) {
-            return true;
+            // Validate the cookie's remember me token with the one stored in the database
+            if ($token !== null && $token !== '') {
+                return hash_equals(Auth::user()->getRememberToken(), $token);
+            }
         }
 
         return false;
