@@ -10,7 +10,7 @@ class LogoutListener
     /**
      * Handle the event.
      */
-    public function handle(object $event): void
+    public function handle($event): void
     {
         if (Cache::has($session = Session::getId())) {
             Cache::forget($session);
