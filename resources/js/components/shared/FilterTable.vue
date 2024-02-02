@@ -168,8 +168,18 @@ export default {
     });
   },
   methods: {
+    calculateColumnWidth() {
+      this.headers.forEach((headerColumn, index) => {
+        const column = document.getElementById(`column-${index}`);
+        const rect = column.getBoundingClientRect();
+        if (rect.width !== 0) {
+          headerColumn.width = rect.width - 32;
+        }
+      });
+    },
     startResize(index) {
       this.isResizing = true;
+      this.calculateColumnWidth();
       this.resizingColumnIndex = index;
       this.startX = event.pageX;
       this.startWidth = this.headers[index].width;
@@ -254,13 +264,13 @@ export default {
 
 .pm-table-column-resizer {
   position: absolute;
-  right: -5px;
+  right: 0px;
   top: 50%;
   transform: translateY(-50%);
   height: 85%;
   width: 10px;
   cursor: col-resize;
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
 }
 .pm-table-filter {
   width: 100%;
@@ -379,7 +389,7 @@ export default {
 .pm-table-container::-webkit-scrollbar-thumb {
   background-color: #6C757D;
   border-radius: 20px;
-} 
+}
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
   overflow-y: auto;
