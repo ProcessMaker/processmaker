@@ -51,15 +51,15 @@
             <li class="nav-item">
                 <a class="{{$secondTab}}" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
                 role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
-                    {{ $tabs[1] ?? __('Categories') }}
+                    {{ $tabs[2] ?? __('Categories') }}
                 </a>
             </li>
             @endif
-            @isset($tabs[2])
+            @isset($tabs[3])
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
                     role="tab" onclick="loadArchivedProcess()" aria-controls="nav-archived" aria-selected="true">
-                        {{ $tabs[2] ?? __('Archived Processes') }}
+                        {{ $tabs[3] ?? __('Archived Processes') }}
                     </a>
                 </li>
             @endisset
