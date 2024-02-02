@@ -65,12 +65,12 @@
         "whichbrowser/parser": "^2.1"
     },
     "require-dev": {
-        "brianium/paratest": "^7.3",
+        "brianium/paratest": "^6.6",
         "dms/phpunit-arraysubset-asserts": "^0.5",
         "filp/whoops": "^2.14",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^10.1",
+        "phpunit/phpunit": "^9.5",
         "spatie/laravel-ignition": "^2.0",
         "squizlabs/php_codesniffer": "^3.8",
         "symfony/dom-crawler": "^7.0"
