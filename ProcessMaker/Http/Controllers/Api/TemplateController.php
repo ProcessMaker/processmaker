@@ -223,8 +223,7 @@ class TemplateController extends Controller
         $existingOptions = [];
 
         foreach ($payload['export'] as $key => $asset) {
-            if (Str::contains($asset['name'], 'Screen Interstitial')
-                || Str::contains($asset['model'], 'CommentConfiguration')
+            if (Str::contains($asset['model'], 'CommentConfiguration')
             ) {
                 unset($payload['export'][$key]);
                 continue;
