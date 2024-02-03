@@ -8,7 +8,27 @@ const PMColumnFilterCommonMixin = {
       viewProcesses: []
     };
   },
+  watch: {
+    advancedFilter() {
+      console.log("Advanced filter set", JSON.stringify(this.advancedFilter));
+    }
+  },
   methods: {
+    storeFilterConfiguration() {
+      const { order, type } = this.filterConfiguration();
+      let url = "users/store_filter_configuration/";
+      if (this.$props.columns) {
+        url += "savedSearch|" + this.savedSearch;
+      } else {
+        url += type;
+      }
+      let config = {
+        filter: this.advancedFilter,
+        order,
+      };
+      ProcessMaker.apiClient.put(url, config);
+      window.Processmaker.filter_user = config;
+    },
     getViewConfigFilter() {
       return [
         {
@@ -67,15 +87,23 @@ const PMColumnFilterCommonMixin = {
         }
       ];
     },
-    onApply(json, index) {
+    addAliases(json) {
       let oldValue, type, value;
       for (let i in json) {
+        console.log("JSON", json[i]);
         oldValue = json[i].subject.value;
         type = this.getTypeColumnFilter(oldValue);
         value = this.getAliasColumnForFilter(oldValue);
         json[i].subject.type = type;
         json[i].subject.value = value;
+
+        if (json[i].or && json[i].or.length > 0) {
+          this.addAliases(json[i].or);
+        }
       }
+    },
+    onApply(json, index) {
+      this.addAliases(json);
       this.advancedFilterInit();
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();

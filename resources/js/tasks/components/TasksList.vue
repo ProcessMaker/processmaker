@@ -516,20 +516,14 @@ export default {
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
-    storeFilterConfiguration() {
-      let url = "users/store_filter_configuration/taskFilter";
-      if (this.$props.columns) {
-        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
-      }
-      let config = {
-        filter: this.advancedFilter,
+    filterConfiguration() {
+      return {
         order: {
           by: this.orderBy,
           direction: this.order_direction
-        }
-      };
-      ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
+        },
+        type: 'taskFilter',
+      }
     },
     getTypeColumnFilter(value) {
       let type = "Field";
