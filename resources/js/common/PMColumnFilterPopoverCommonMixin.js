@@ -8,11 +8,6 @@ const PMColumnFilterCommonMixin = {
       viewProcesses: []
     };
   },
-  watch: {
-    advancedFilter() {
-      console.log("Advanced filter set", JSON.stringify(this.advancedFilter));
-    }
-  },
   methods: {
     storeFilterConfiguration() {
       const { order, type } = this.filterConfiguration();
@@ -90,7 +85,6 @@ const PMColumnFilterCommonMixin = {
     addAliases(json) {
       let oldValue, type, value;
       for (let i in json) {
-        console.log("JSON", json[i]);
         oldValue = json[i].subject.value;
         type = this.getTypeColumnFilter(oldValue);
         value = this.getAliasColumnForFilter(oldValue);
