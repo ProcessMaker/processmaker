@@ -193,6 +193,8 @@ export default {
             break;
           case "case_title":
             field.name = "__slot:case_title";
+            // eslint-disable-next-line no-param-reassign
+            column.truncate = true;
             break;
           default:
             field.name = column.name || column.field;
