@@ -538,11 +538,9 @@ export default {
       if (value === "case_number" || 
           value === "case_title" || 
           value === "processRequest.case_number" || 
-          value === "processRequest.case_title") {
+          value === "processRequest.case_title" ||
+          value === "process") {
         type = "Relationship";
-      }
-      if (value === "process") {
-        type = "Process";
       }
       if (value === "status") {
         type = "Status";
@@ -555,6 +553,9 @@ export default {
       }
       if (value === "case_title") {
         value = "processRequest.case_title";
+      }
+      if (value === "process") {
+        value = "processRequest.name";
       }
       if (value === "task_name") {
         value = "element_name";

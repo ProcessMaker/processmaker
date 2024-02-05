@@ -123,7 +123,7 @@ const PMColumnFilterCommonMixin = {
       if (column.format) {
         format = column.format;
       }
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
         format = "stringSelect";
       }
       return format;
@@ -138,9 +138,6 @@ const PMColumnFilterCommonMixin = {
       }
       if (column.field === "participants") {
         formatRange = this.viewParticipants;
-      }
-      if (column.field === "process") {
-        formatRange = this.viewProcesses;
       }
       return formatRange;
     },
