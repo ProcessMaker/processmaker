@@ -334,7 +334,7 @@ export default {
       let htmlString = '';
       for (const task of value) {
         htmlString += `
-          <div>
+          <div class="text-truncate">
             <a class="text-nowrap" href="${this.openTask(task)}">
               ${task.element_name}
             </a>
