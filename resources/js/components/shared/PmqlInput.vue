@@ -145,11 +145,11 @@
       </div>
 
       <div
-        v-if="filterBadges.length > 0"
+        v-if="showFilters && selectedFilters.length"
         class="selected-filters-bar d-flex pt-2"
       >
         <span
-          v-for="filter in filterBadges"
+          v-for="filter in selectedFilters"
           class="selected-filter-item d-flex align-items-center"
         >
           <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}: </span>
@@ -226,12 +226,6 @@ export default {
   },
 
   computed: {
-    filterBadges() {
-      if (!this.showFilters) {
-        return [];
-      }
-      return [...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
-    },
     showPmqlSection() {
       return (
         !this.hidePmqlSection
@@ -271,6 +265,8 @@ export default {
       }
     },
   },
+
+  mounted() {
     this.query = this.urlPmql ? this.urlPmql : this.value;
     this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
