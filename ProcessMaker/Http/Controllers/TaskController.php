@@ -43,7 +43,12 @@ class TaskController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
-        return view('tasks.index', compact('title', 'userFilter'));
+        $response = response()->view('tasks.index', compact('title', 'userFilter'));
+        //Indicate to the browser not to cache the page.
+        $response->header('Pragma', 'no-cache');
+        $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->header('Expires', '0');
+        return $response;
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
