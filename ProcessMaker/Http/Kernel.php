@@ -34,6 +34,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \ProcessMaker\Http\Middleware\SessionStarted::class,
             \ProcessMaker\Http\Middleware\AuthenticateSession::class,
+            \ProcessMaker\Http\Middleware\SessionControlKill::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
             \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
