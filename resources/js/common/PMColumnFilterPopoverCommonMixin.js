@@ -23,6 +23,8 @@ const PMColumnFilterCommonMixin = {
       };
       ProcessMaker.apiClient.put(url, config);
       window.Processmaker.filter_user = config;
+      window.Processmaker.advanced_filter = this.formattedFilter();
+      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
     getViewConfigFilter() {
       return [
@@ -96,6 +98,9 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
+    findColumnLabel(value) {
+      return this.tableHeaders.find(column.field === value)?.label;
+    },
     onApply(json, index) {
       this.addAliases(json);
       this.advancedFilterInit();
@@ -123,9 +128,12 @@ const PMColumnFilterCommonMixin = {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
+    formattedFilter() {
+      return this.json2Array(this.advancedFilter).flat(1);
+    },
     getAdvancedFilter() {
-      let flat = this.json2Array(this.advancedFilter).flat(1);
-      return flat.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(flat)) : "";
+      let formattedFilter = this.formattedFilter();
+      return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
     getUrlUsers(filter) {
       let page = 1;
@@ -233,12 +241,7 @@ const PMColumnFilterCommonMixin = {
     getFilterConfiguration(name) {
       if ("filter_user" in window.Processmaker) {
         this.setFilterPropsFromConfig(window.Processmaker.filter_user);
-        return;
       }
-      let url = "users/get_filter_configuration/" + name;
-      ProcessMaker.apiClient.get(url).then(response => {
-        this.setFilterPropsFromConfig(response.data.data);
-      });
     },
     setFilterPropsFromConfig(config) {
       if (typeof config !== "object") {
@@ -251,6 +254,9 @@ const PMColumnFilterCommonMixin = {
         this.setOrderByProps(config.order.by, config.order.direction);
       }
       this.markStyleWhenColumnSetAFilter();
+
+      window.Processmaker.advanced_filter = this.formattedFilter();
+      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
     json2Array(json) {
       let result = [];
