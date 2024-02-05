@@ -39,10 +39,10 @@ class Importer
         return Manifest::fromArray($this->payload['export'], $this->options, $this->logger);
     }
 
-    public function doImport($existingAssetInDatabase = null)
+    public function doImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
         $this->logger->log('Starting Transaction');
-        DB::transaction(function () use ($existingAssetInDatabase) {
+        DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
 
@@ -90,7 +90,7 @@ class Importer
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Associating ' . get_class($exporter->model));
-                    $exporter->runImport($existingAssetInDatabase);
+                    $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
                 }
             }
 
