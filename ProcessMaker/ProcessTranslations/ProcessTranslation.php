@@ -229,9 +229,9 @@ class ProcessTranslation
             $targetLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
         }
 
-        $targetLanguage = in_array($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
+        $targetLanguage = array_key_exists($targetLanguage, Languages::ALL) ? $targetLanguage : 'en';
 
-        if (Auth::user()) {
+        if (Auth::user() && Auth::user()->username !== '_pm4_anon_user') {
             $targetLanguage = Auth::user()->language;
         }
 

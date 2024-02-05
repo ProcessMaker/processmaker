@@ -253,19 +253,16 @@ export default {
       )
         .then((response) => {
           if (response.data.existingAssets) {
-            const assets = JSON.stringify(response.data.existingAssets);
-            const responseId = response.data.id;
-            const request = JSON.stringify(response.data.request);
-            window.history.pushState(
-              {
-                assets,
-                name: this.templateData.name,
-                responseId,
-                request,
-              },
-              "",
-              "/template/assets",
-            );
+            // Use local storage to pass the data to the assets page.
+            const stateData = {
+              assets: JSON.stringify(response.data.existingAssets),
+              name: this.templateData.name,
+              responseId: response.data.id,
+              request: JSON.stringify(response.data.request),
+              redirectTo: null,
+            };
+            localStorage.setItem("templateAssetsState", JSON.stringify(stateData));
+            // Redirect to the assets page.
             window.location = "/template/assets";
           } else {
             ProcessMaker.alert(this.$t("The process was created."), "success");
