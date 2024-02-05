@@ -49,6 +49,7 @@
         </tr>
       </thead>
       <tbody>
+        <template v-if="!loading">
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
@@ -105,6 +106,7 @@
             </td>
           </slot>
         </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -131,6 +133,12 @@ export default {
       type: String,
       default: function () {
         return "";
+      }
+    },
+    loading: {
+      type: Boolean,
+      default: function () {
+        return false;
       }
     },
   },
