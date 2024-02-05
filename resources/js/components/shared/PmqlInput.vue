@@ -173,11 +173,9 @@
 <script>
 import { MustacheHelper } from "@processmaker/screen-builder";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
-import advancedFilterMixin from "../../common/advancedFilterStatusMixin";
 
 export default {
   components: { MustacheHelper, PmqlInputFilters },
-  mixins: [advancedFilterMixin],
   props: [
     "searchType",
     "value",
