@@ -265,10 +265,8 @@ export default {
         if (this.query !== this.value) {
           this.query = this.value || "";
         }
-      } else {
-        if (!this.query || this.query === "") {
-          this.query = this.value;
-        }
+      } else if (!this.query || this.query === "") {
+        this.query = this.value;
       }
     },
   },
