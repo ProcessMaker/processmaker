@@ -273,22 +273,6 @@ export default {
       }
     },
   },
-
-  mounted() {
-    console.log("Mouted PmqlInput.vue");
-
-
-
-
-
-
-
-
-
-
-
-
-
     this.query = this.urlPmql ? this.urlPmql : this.value;
     this.filtersPmql = this.filtersValue;
     this.inputAriaLabel = this.ariaLabel;
