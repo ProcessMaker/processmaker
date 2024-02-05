@@ -170,10 +170,8 @@ export default {
   methods: {
     calculateColumnWidth() {
       this.headers.forEach((headerColumn, index) => {
-        const column = document.getElementById(`column-${index}`);
-        const rect = column.getBoundingClientRect();
-        if (rect.width !== 0) {
-          headerColumn.width = rect.width - 32;
+        if (this.calculateContent(index) !== 0) {
+          headerColumn.width = this.calculateContent(index) - 32;
         }
       });
     },
@@ -187,14 +185,19 @@ export default {
       document.addEventListener("mousemove", this.doResize);
       document.addEventListener("mouseup", this.stopResize);
     },
+    calculateContent(index) {
+      const miDiv = document.getElementById(`column-${index}`);
+      return miDiv.scrollWidth;
+    },
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
         let min = 40;
-        this.headers[this.resizingColumnIndex].width = Math.max(
-          min,
-          this.startWidth + diff,
-        );
+        const currentWidth = Math.max(min, this.startWidth + diff);
+        const contentWidth = this.calculateContent(this.resizingColumnIndex);
+        if ((contentWidth - currentWidth) <= 60) {
+          this.headers[this.resizingColumnIndex].width = currentWidth;
+        }
       }
     },
     stopResize() {
