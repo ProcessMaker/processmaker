@@ -46,7 +46,7 @@
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
