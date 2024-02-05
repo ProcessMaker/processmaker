@@ -34,6 +34,9 @@ export default {
       if (result === "name") {
         result = "process";
       }
+      if (result === "element name") {
+        result = "task";
+      }
       return result;
     },
     formatBadgeValue(filter) {
