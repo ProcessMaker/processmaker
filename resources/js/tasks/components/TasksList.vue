@@ -535,11 +535,12 @@ export default {
       let type = "Field";
       //The inclusion of the alias in the comparison is necessary to ensure the correct
       //type is obtained when the column has been modified by the method getAliasColumnForFilter().
-      if (value === "case_number" || 
-          value === "case_title" || 
-          value === "processRequest.case_number" || 
+      if (value === "case_number" ||
+          value === "case_title" ||
+          value === "process" ||
+          value === "processRequest.case_number" ||
           value === "processRequest.case_title" ||
-          value === "process") {
+          value === "processRequest.name") {
         type = "Relationship";
       }
       if (value === "status") {
