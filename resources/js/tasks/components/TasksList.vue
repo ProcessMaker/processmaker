@@ -290,12 +290,6 @@ export default {
     },
     setupColumns() {
       this.tableHeaders = this.getColumns();
-      this.tableHeaders.forEach((column) => {
-        if (column.field === "case_title") {
-          // eslint-disable-next-line no-param-reassign
-          column.truncate = true;
-        }
-      });
     },
     getColumns() {
       if (this.$props.columns) {
