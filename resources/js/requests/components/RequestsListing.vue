@@ -7,6 +7,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -469,7 +470,12 @@ export default {
      * @returns {Array}
      */
     getStatus() {
-      return ["In Progress", "Completed", "Error", "Canceled"];
+      return [
+        {value: "In Progress", text: this.$t("In Progress")},
+        {value: "Completed", text: this.$t("Completed")},
+        {value: "Error", text: this.$t("Error")},
+        {value: "Canceled", text: this.$t("Canceled")}
+      ];
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js

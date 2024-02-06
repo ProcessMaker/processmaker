@@ -1,43 +1,84 @@
 <template>
   <div class="mt-4 mb-5 data-card-container">
-    <b-table-simple  v-for="group in filteredAssetGroups" :key="group.type" :id="'group-' + group.type + 'table' " class="simple-table" :name="group.type + '-table'">
+    <b-table-simple
+      v-for="group in filteredAssetGroups"
+      :id="`group-${group.type}table`"
+      :key="group.type"
+      :name="`${group.type}-table`"
+      class="simple-table"
+    >
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
       <colgroup><col><col></colgroup>
       <b-thead>
         <b-tr>
-          <b-td class="border-top-0 column-width" colspan="2"/>
-          <b-td v-for="action in actions" class="border-top-0 text-center" :key="action.value">
-              {{ action.label }}
+          <b-td
+            class="border-top-0 column-width"
+            colspan="2"
+          />
+          <b-td
+            v-for="action in actions"
+            :key="action.value"
+            class="border-top-0 text-center"
+          >
+            {{ action.label }}
           </b-td>
         </b-tr>
         <b-tr class="card-header border-left border-right">
-          <b-th class="align-middle column-width" colspan="2">
+          <b-th
+            class="align-middle column-width"
+            colspan="2"
+          >
             <div>
-              <i class="d-inline align-middle mr-1 fas" :class="group.icon"/>
-              <h5 class="d-inline align-middle">{{ formatName(group.type) }}</h5>
+              <i
+                class="d-inline align-middle mr-1 fas"
+                :class="group.icon"
+              />
+              <h5 class="d-inline align-middle">
+                {{ formatName(group.type) }}
+              </h5>
             </div>
           </b-th>
-          <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + action.value">
-            <b-form-group :id="'group-' + group.type + '-' + action.value + '-action'">
-              <b-form-radio v-model="group.mode" @change="setGroupAction(group, action)" :value="action.value" :name="group.type + '-' + action.value"></b-form-radio>
-            </b-form-group>
+          <b-td
+            v-for="action in actions"
+            :key="`${group.type}-${action.value}`"
+            class="text-center align-middle"
+          >
+            <b-form-group :id="`group-${group.type}-${action.value}-action`" />
+            <b-form-radio
+              v-model="group.mode"
+              :value="action.value"
+              :name="`${group.type}-${action.value}`"
+              @change="setGroupAction(group, action)"
+            />
           </b-td>
         </b-tr>
       </b-thead>
       <b-tbody>
         <b-tr
           v-for="asset in group.items"
-          :key="asset.name"
+          :key="asset.uuid"
           class="border-left border-right border-bottom"
         >
-          <b-td class="align-middle" colspan="2">
+          <b-td
+            class="align-middle"
+            colspan="2"
+          >
             {{ asset.name }}
           </b-td>
-          <b-td class="text-center align-middle" v-for="action in actions" :key="group.type + '-' + asset.name + '-' + action.value">
+          <b-td
+            v-for="action in actions"
+            :key="`${group.type}-${asset.uuid}-${action.value}`"
+            class="text-center align-middle"
+          >
             <b-form-group>
-              <b-form-radio v-model="asset.mode" @change="setAssetAction(group, asset, action)" :value="action.value" :name="group.type + '-' + asset.name + '-' + action.value"></b-form-radio>
+              <b-form-radio
+                v-model="asset.mode"
+                :value="action.value"
+                :name="`${group.type}-${asset.uuid}-${action.value}`"
+                @change="setAssetAction(group, asset, action)"
+              />
             </b-form-group>
           </b-td>
         </b-tr>
@@ -47,17 +88,22 @@
 </template>
 
 <script>
-import ImportExportIcons from "../../components/shared/ImportExportIcons";
+import ImportExportIcons from "../shared/ImportExportIcons";
 
 export default {
-  props: ["assets"],
+  props: {
+    assets: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       filteredAssetGroups: null,
-      actions: [ 
-        {label: "Update", value: 'update'},
-        {label: "Keep Previous", value: 'discard'},
-        {label: "Duplicate", value: 'copy'},
+      actions: [
+        { label: "Update", value: "update" },
+        { label: "Keep Previous", value: "discard" },
+        { label: "Duplicate", value: "copy" },
       ],
     };
   },
@@ -72,13 +118,13 @@ export default {
       handler() {
         this.$emit("assetChanged", this.filteredAssetGroups);
       },
-    deep: true,
-   },
+      deep: true,
+    },
   },
   methods: {
     setGroupAction(group, action) {
       group.mode = action.value;
-      group.items.forEach(item => {
+      group.items.forEach((item) => {
         item.mode = group.mode;
       });
     },
@@ -89,14 +135,14 @@ export default {
     filterAssetsByGroup() {
       const groupedItems = [];
 
-      this.assets.forEach(asset => {
-        const existingGroup = groupedItems.find(group => group.type === asset.type);
+      this.assets.forEach((asset) => {
+        const existingGroup = groupedItems.find((group) => group.type === asset.type);
 
         if (existingGroup) {
           existingGroup.items.push(asset);
-          existingGroup.mode = 'copy';
+          existingGroup.mode = "copy";
         } else {
-          groupedItems.push({ type: asset.type, mode: 'copy', items: [asset] });
+          groupedItems.push({ type: asset.type, mode: "copy", items: [asset] });
         }
       });
 
@@ -111,7 +157,7 @@ export default {
       return groupedItemsWithIcons;
     },
     formatName(value) {
-      return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+      return value.replace(/([a-z])([A-Z])/g, "$1 $2");
     },
   },
 };

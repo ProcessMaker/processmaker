@@ -109,6 +109,7 @@ export default {
             Object.keys(this.optionsType).forEach((type) => {
               this.selectedTypes.push(this.optionsType[type].asset_type);
             });
+            this.performSearch();
           });
       }
     },

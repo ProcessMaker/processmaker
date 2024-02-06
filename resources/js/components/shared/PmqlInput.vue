@@ -207,6 +207,7 @@ export default {
     "paramProjectCategories",
     "paramName",
     "permission",
+    "updateQuery",
   ],
   data() {
     return {
@@ -271,8 +272,10 @@ export default {
       this.calcInputHeight();
     },
     value() {
-      if (this.query !== this.value) {
+      if (this.updateQuery && this.query !== this.value) {
         this.query = this.value || "";
+      } else if (!this.query || this.query === "") {
+        this.query = this.value;
       }
     },
   },
