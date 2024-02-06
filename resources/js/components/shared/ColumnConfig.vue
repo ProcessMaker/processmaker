@@ -10,16 +10,16 @@
       <b-input v-model="column.label" ref="labelInput"></b-input>
     </b-form-group>
     <b-form-group :label="$t('Field')" class="mb-4">
-      <b-input v-model="column.field"></b-input>
+      <b-input v-model="column.field" :disabled="editOnlyLabel"></b-input>
     </b-form-group>
     <b-form-group :label="$t('Format')" class="mb-4">
-      <data-format-selector v-model="column.format"></data-format-selector>
+      <data-format-selector v-model="column.format" :disabled="editOnlyLabel"></data-format-selector>
     </b-form-group>
     <b-form-group :label="$t('Currency Format')" class="mb-4" v-if="column.format == 'currency'">
       <data-mask-selector v-model="column.mask"></data-mask-selector>
     </b-form-group>
     <b-form-group class="mb-4">
-      <b-form-checkbox v-model="column.sortable" switch>
+      <b-form-checkbox v-model="column.sortable" :disabled="editOnlyLabel" switch>
           {{ $t('Sortable') }}
       </b-form-checkbox>
     </b-form-group>
@@ -43,6 +43,12 @@ export default {
   components: {
     DataFormatSelector,
     DataMaskSelector
+  },
+  props: {
+    editOnlyLabel: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
