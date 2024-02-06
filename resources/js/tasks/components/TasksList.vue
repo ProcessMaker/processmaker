@@ -49,8 +49,8 @@
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
-              >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                  >
+                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -290,7 +290,6 @@ export default {
       </a>`;
     },
     setupColumns() {
-      const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
