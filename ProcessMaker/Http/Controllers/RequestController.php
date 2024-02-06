@@ -61,14 +61,9 @@ class RequestController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
 
-        $response = response()->view('requests.index', compact(
+        return view('requests.index', compact(
             ['type', 'title', 'currentUser', 'userFilter']
         ));
-        //Indicate to the browser not to cache the page.
-        $response->header('Cache-Control', 'no-cache, no-store, must-revalidate');
-        $response->header('Pragma', 'no-cache');
-        $response->header('Expires', '0');
-        return $response;
     }
 
     /**

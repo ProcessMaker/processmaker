@@ -79,6 +79,7 @@ class Kernel extends HttpKernel
         'saml_request' => \ProcessMaker\Http\Middleware\SamlRequest::class,
         'session_block' => \ProcessMaker\Http\Middleware\SessionControlBlock::class,
         'session_kill' => \ProcessMaker\Http\Middleware\SessionControlKill::class,
+        'no-cache' => \ProcessMaker\Http\Middleware\NoCache::class,
     ];
 
     /**
