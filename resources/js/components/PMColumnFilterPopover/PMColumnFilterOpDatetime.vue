@@ -75,7 +75,6 @@
         if (dateString){
           inLocalTimeZone = moment(dateString).tz(window.ProcessMaker.user.timezone).format("YYYY-MM-DD HH:mm:ss");
         }
-        console.log('FROM', `'${dateString}'`, inLocalTimeZone);
         return inLocalTimeZone;
       },
       emitInput() {
