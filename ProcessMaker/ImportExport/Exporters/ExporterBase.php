@@ -213,12 +213,12 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    public function runImport($existingAssetInDatabase = null)
+    public function runImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
         $extensions = app()->make(Extension::class);
         $extensions->runExtensions($this, 'preImport', $this->logger);
         $this->logger->log('Running Import ' . static::class);
-        $this->import($existingAssetInDatabase);
+        $this->import($existingAssetInDatabase, $importingFromTemplate);
         $extensions->runExtensions($this, 'postImport', $this->logger);
     }
 

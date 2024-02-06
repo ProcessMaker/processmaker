@@ -270,7 +270,9 @@ class ProcessTemplate implements TemplateInterface
         $options = new Options($postOptions);
 
         $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
+        $existingAssetsInDatabase = null;
+        $importingFromTemplate = true;
+        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
