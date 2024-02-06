@@ -31,7 +31,7 @@ const PMColumnFilterCommonMixin = {
         },
         {
           "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "includes": ["<", "<=", ">", ">="],
           "control": "PMColumnFilterOpDatetime",
           "input": ""
         },
@@ -149,6 +149,9 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
         operators = ["=", "in"];
       }
+      if (column.field === "initiated_at" || column.field === "completed_at") {
+        operators = ["<", "<=", ">", ">=", "between"];
+      }  
       return operators;
     },
     getAssignee(filter) {
