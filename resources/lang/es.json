@@ -2033,5 +2033,10 @@
   "Captcha": "Captcha",
   "Google Places": "Google Places",
   "Add an action to submit your form or update a field": "Agregue una acción para enviar su formulario o actualizar un campo",
-  "Add special buttons that link between subpages within this Form": "Agregue botones especiales que enlacen entre subpáginas dentro de este Formulario"
+  "Add special buttons that link between subpages within this Form": "Agregue botones especiales que enlacen entre subpáginas dentro de este Formulario",
+  "View All Data Connectors": "Ver Todos los Conectores de Datos",
+  "View All Decision Tables": "Ver Todas las Tablas de Decisión",
+  "View All Processes": "Ver Todos los Procesos",
+  "View All Screens": "Ver Todos los Procesos",
+  "View All Scripts": "Ver Todos los Guiones"
 }
