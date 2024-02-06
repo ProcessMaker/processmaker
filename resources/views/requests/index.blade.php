@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
+                        <requests-listing ref="requestList" :filter="filter" :columns="columns" :pmql="fullPmql"></requests-listing>
                     </div>
 
                 </div>
@@ -110,6 +110,7 @@
     window.Processmaker.user = @json($currentUser);
     window.Processmaker.status = '{{ $type }}';
     window.Processmaker.filter_user = @json($userFilter);
+    window.Processmaker.defaultColumns = @json($defaultColumns);
 </script>
 <script src="{{mix('js/requests/index.js')}}"></script>
 @endsection

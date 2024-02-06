@@ -367,7 +367,8 @@ export default {
         },
       };
     },
-    transform(data) {
+    transform(dataInput) {
+      const data = _.cloneDeep(dataInput);
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
