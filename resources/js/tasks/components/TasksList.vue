@@ -306,6 +306,8 @@ export default {
           sortable: true,
           default: true,
           width: 80,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
+          order_column: 'processRequest.case_number',
         },
         {
           label: this.$t("Case title"),
@@ -315,6 +317,8 @@ export default {
           default: true,
           width: 220,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
+          order_column: 'processRequest.case_title',
         },
         {
           label: this.$t("Process"),
@@ -323,6 +327,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { value: 'process_id' },
+          order_column: 'process_requests.name',
         },
         {
           label: this.$t("Task"),
@@ -331,6 +337,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { value: 'element_name' },
+          order_column: 'element_name',
         },
         {
           label: this.$t("Status"),
@@ -338,6 +346,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { value: 'Status' },
         },
         {
           label: this.$t("Due date"),
@@ -531,55 +540,13 @@ export default {
       }
     },
     getTypeColumnFilter(value) {
-      let type = "Field";
-      //The inclusion of the alias in the comparison is necessary to ensure the correct
-      //type is obtained when the column has been modified by the method getAliasColumnForFilter().
-      if (value === "case_number" || 
-          value === "case_title" || 
-          value === "processRequest.case_number" || 
-          value === "processRequest.case_title") {
-        type = "Relationship";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || "Field";
     },
     getAliasColumnForFilter(value) {
-      if (value === "case_number") {
-        value = "processRequest.case_number";
-      }
-      if (value === "case_title") {
-        value = "processRequest.case_title";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user_id";
-      }
-      return value;
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
     },
     getAliasColumnForOrderBy(value) {
-      if (value === "case_number") {
-        value = "process_requests.case_number";
-      }
-      if (value === "case_title") {
-        value = "process_requests.case_title_formatted";
-      }
-      if (value === "process") {
-        value = "process_requests.name";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user.fullname";
-      }
-      return value;
+      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
     }
   }
 };

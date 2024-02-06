@@ -266,6 +266,7 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+          filter_subject: { type: 'Participants' },
         },
         {
           label: this.$t("Status"),
@@ -273,6 +274,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { type: 'Status' },
         },
         {
           label: this.$t("Started"),
@@ -510,41 +512,13 @@ export default {
       }
     },
     getTypeColumnFilter(value) {
-      let type = "Field";
-      if (value === "case_number" || value === "case_title") {
-        type = "Request";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "active_tasks") {
-        type = "Task";
-      }
-      if (value === "participants") {
-        type = "Participants";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || "Field";
     },
     getAliasColumnForFilter(value) {
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      return value;
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
     },
     getAliasColumnForOrderBy(value) {
-      if (value === "process") {
-        value = "process.name";
-      }
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      if (value === "participants") {
-        value = "id";
-      }
-      return value;
+      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
     }
   }
 };
