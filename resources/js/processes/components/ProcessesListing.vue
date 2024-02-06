@@ -86,9 +86,9 @@
                       class="mr-2"
                       :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
                     />
-                    <span>
+                    <a :href="openModeler(row)" class="text-nowrap">
                       {{ row[header.field] }}
-                    </span>
+                    </a>
                   </div>
                   <b-tooltip
                     v-if="header.truncate"
