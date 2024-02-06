@@ -24,7 +24,7 @@
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
-                                   :type="getTypeColumnFilter(column.field)"
+                                   type="Field"
                                    :value="column.field"
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
@@ -327,7 +327,7 @@ export default {
           default: true,
           width: 140,
           truncate: true,
-          filter_subject: { value: 'process_id' },
+          filter_subject: { type: 'Relationship', value: 'processRequest.name' },
           order_column: 'process_requests.name',
         },
         {

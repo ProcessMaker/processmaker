@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 const PMColumnFilterCommonMixin = {
   data() {
     return {
@@ -102,7 +104,6 @@ const PMColumnFilterCommonMixin = {
       return this.tableHeaders.find(column.field === value)?.label;
     },
     onApply(json, index) {
-      this.addAliases(json);
       this.advancedFilterInit();
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
@@ -129,7 +130,11 @@ const PMColumnFilterCommonMixin = {
       }
     },
     formattedFilter() {
-      return this.json2Array(this.advancedFilter).flat(1);
+      const filterCopy = cloneDeep(this.advancedFilter);
+      Object.keys(filterCopy).forEach((key) => {
+        this.addAliases(filterCopy[key]);
+      })
+      return this.json2Array(filterCopy).flat(1);
     },
     getAdvancedFilter() {
       let formattedFilter = this.formattedFilter();
@@ -153,7 +158,7 @@ const PMColumnFilterCommonMixin = {
       if (column.format) {
         format = column.format;
       }
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
         format = "stringSelect";
       }
       return format;
@@ -176,7 +181,10 @@ const PMColumnFilterCommonMixin = {
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name") {
+        operators = ["=", "in", "contains", "regex"];
+      }
+      if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
         operators = ["=", "in"];
       }
       return operators;
