@@ -25,25 +25,27 @@ class SessionControlKill
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
-        $userSession = $request->session()->get('user_session');
+        if (Auth::check()) {
+            $user = Auth::user();
+            $userSession = $request->session()->get('user_session');
 
-        if ($userSession) {
-            $configIP = Setting::configByKey(self::IP_RESTRICTION_KEY);
-            $configDevice = Setting::configByKey(self::DEVICE_RESTRICTION_KEY);
+            if ($userSession) {
+                $configIP = Setting::configByKey(self::IP_RESTRICTION_KEY);
+                $configDevice = Setting::configByKey(self::DEVICE_RESTRICTION_KEY);
 
-            $session = $this->getActiveSession($user, $userSession);
+                $session = $this->getActiveSession($user, $userSession);
 
-            if ($session) {
-                // Checks if the session has expired based on the IP address
-                $isSessionExpiredByIP = $configIP === '2' && $this->isSessionExpiredByIP($session, $request);
-                // Checks if the session has expired based on the device
-                $isSessionExpiredByDevice = $configDevice === '2' && $this->isSessionExpiredByDevice($session);
-                // Checks if the session has expired except the one within the active device
-                $isAnyRestrictionEnabled = $configIP === '1' || $configDevice === '1';
+                if ($session) {
+                    // Checks if the session has expired based on the IP address
+                    $isSessionExpiredByIP = $configIP === '2' && $this->isSessionExpiredByIP($session, $request);
+                    // Checks if the session has expired based on the device
+                    $isSessionExpiredByDevice = $configDevice === '2' && $this->isSessionExpiredByDevice($session);
+                    // Checks if the session has expired except the one within the active device
+                    $isAnyRestrictionEnabled = $configIP === '1' || $configDevice === '1';
 
-                if ($isSessionExpiredByIP || $isSessionExpiredByDevice || $isAnyRestrictionEnabled) {
-                    return $this->killSessionAndRedirect($session);
+                    if ($isSessionExpiredByIP || $isSessionExpiredByDevice || $isAnyRestrictionEnabled) {
+                        return $this->killSessionAndRedirect($session);
+                    }
                 }
             }
         }
@@ -57,8 +59,8 @@ class SessionControlKill
             ->where([
                 ['is_active', true],
                 ['token', $userSession],
-                ['expired_date', '!=', null],
             ])
+            ->whereNotNull('expired_date')
             ->first();
     }
 

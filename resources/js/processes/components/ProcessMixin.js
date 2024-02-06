@@ -156,5 +156,8 @@ export default {
         this.fetch();
       }
     },
+    openModeler(data) {
+      return `/modeler/${data.id}`;
+    },
   },
 };

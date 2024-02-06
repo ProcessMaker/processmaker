@@ -8,6 +8,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -493,7 +494,11 @@ export default {
       return cleanHtml;
     },
     getStatus() {
-      return ["Self Service", "In Progress", "Completed"];
+      return [
+        {value: "Self Service", text: this.$t("Self Service")},
+        {value: "In Progress", text: this.$t("In Progress")},
+        {value: "Completed", text: this.$t("Completed")}
+      ];
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js

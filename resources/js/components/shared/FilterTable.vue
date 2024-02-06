@@ -49,6 +49,7 @@
         </tr>
       </thead>
       <tbody>
+        <template v-if="!loading">
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
@@ -105,6 +106,7 @@
             </td>
           </slot>
         </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -131,6 +133,12 @@ export default {
       type: String,
       default: function () {
         return "";
+      }
+    },
+    loading: {
+      type: Boolean,
+      default: function () {
+        return false;
       }
     },
   },
@@ -168,8 +176,16 @@ export default {
     });
   },
   methods: {
+    calculateColumnWidth() {
+      this.headers.forEach((headerColumn, index) => {
+        if (this.calculateContent(index) !== 0) {
+          headerColumn.width = this.calculateContent(index) - 32;
+        }
+      });
+    },
     startResize(index) {
       this.isResizing = true;
+      this.calculateColumnWidth();
       this.resizingColumnIndex = index;
       this.startX = event.pageX;
       this.startWidth = this.headers[index].width;
@@ -177,13 +193,19 @@ export default {
       document.addEventListener("mousemove", this.doResize);
       document.addEventListener("mouseup", this.stopResize);
     },
+    calculateContent(index) {
+      const miDiv = document.getElementById(`column-${index}`);
+      return miDiv.scrollWidth;
+    },
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
-        this.headers[this.resizingColumnIndex].width = Math.max(
-          40,
-          this.startWidth + diff,
-        );
+        let min = 40;
+        const currentWidth = Math.max(min, this.startWidth + diff);
+        const contentWidth = this.calculateContent(this.resizingColumnIndex);
+        if ((contentWidth - currentWidth) <= 60) {
+          this.headers[this.resizingColumnIndex].width = currentWidth;
+        }
       }
     },
     stopResize() {
@@ -238,8 +260,7 @@ export default {
   border-radius: 5px;
   scrollbar-width: 8px;
   scrollbar-color: #6C757D;
-  height: calc(100vh - 150px);
-  min-height: 400px;
+  max-height: calc(100vh - 150px);
 }
 
 .pm-table-container th {
@@ -254,13 +275,13 @@ export default {
 
 .pm-table-column-resizer {
   position: absolute;
-  right: -5px;
+  right: 0px;
   top: 50%;
   transform: translateY(-50%);
   height: 85%;
   width: 10px;
   cursor: col-resize;
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
 }
 .pm-table-filter {
   width: 100%;
@@ -379,7 +400,7 @@ export default {
 .pm-table-container::-webkit-scrollbar-thumb {
   background-color: #6C757D;
   border-radius: 20px;
-} 
+}
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
   overflow-y: auto;
