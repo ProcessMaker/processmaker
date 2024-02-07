@@ -374,7 +374,7 @@ export default {
       this.aiLoading = true;
 
       ProcessMaker.apiClient
-        .post("/openai/nlq-to-pmql", params)
+        .post("/package-ai/nlqToPmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;

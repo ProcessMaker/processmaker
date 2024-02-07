@@ -23,6 +23,7 @@
                           :operators="operators"
                           :viewConfig="viewConfig"
                           :sort="sort"
+                          :hideSortingButtons="hideSortingButtons"
                           @onChangeSort="onChangeSort"
                           @onApply="onApply"
                           @onClear="onClear"
@@ -41,7 +42,7 @@
       PMColumnFilterForm,
       PMColumnFilterIconThreeDots
     },
-    props: ["container", "boundary", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
+    props: ["container", "boundary", "id", "type", "value", "format", "formatRange", "operators", "viewConfig", "sort", "hideSortingButtons"],
     data() {
       return {
         popoverShow: false
