@@ -71,7 +71,7 @@ class BuildScriptExecutors extends Command
         $this->userId = $this->argument('user');
         try {
             $this->buildExecutor();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($this->userId) {
                 event(new BuildScriptExecutor($e->getMessage(), $this->userId, 'error'));
             }
@@ -153,7 +153,7 @@ class BuildScriptExecutors extends Command
         $this->info('Building the docker executor');
 
         $image = $scriptExecutor->dockerImageName();
-        $command = Docker::command() . " build --build-arg SDK_DIR=/sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
+        $command = Docker::command() . " build --build-arg SDK_DIR=./sdk -t {$image} -f {$packagePath}/Dockerfile.custom {$packagePath}";
 
         if ($this->userId) {
             $this->runProc(
@@ -229,7 +229,7 @@ class BuildScriptExecutors extends Command
         $instance = config('app.instance');
         foreach ($images as $image) {
             if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
-                throw new \Exception('Not a valid image:' . (string) $image);
+                throw new Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
             $existingExecutor = ScriptExecutor::find($id);
