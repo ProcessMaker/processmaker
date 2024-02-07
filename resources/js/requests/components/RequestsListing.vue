@@ -29,6 +29,7 @@
                                    :viewConfig="getViewConfigFilter()"
                                    :container="''"
                                    :boundary="'viewport'"
+                                   :hideSortingButtons="column.hideSortingButtons"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -266,6 +267,7 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+          hideSortingButtons: true,
         },
         {
           label: this.$t("Status"),
@@ -527,7 +529,7 @@ export default {
         type = "Task";
       }
       if (value === "participants") {
-        type = "Participants";
+        type = "ParticipantsFullName";
       }
       if (value === "status") {
         type = "Status";
