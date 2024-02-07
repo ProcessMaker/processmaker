@@ -15,6 +15,7 @@
       <filter-table
         :headers="fields"
         :data="data"
+        table-name="archived"
         style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Header filter Button -->
