@@ -88,8 +88,8 @@ const PMColumnFilterCommonMixin = {
     addAliases(json, key, label) {
       let type, value;
       for (let i in json) {
-        type = this.getTypeColumnFilter(json[i].subject.type);
-        value = this.getAliasColumnForFilter(json[i].subject.value);
+        type = this.getTypeColumnFilter(key, json[i].subject.type);
+        value = this.getAliasColumnForFilter(key, json[i].subject.value);
         json[i].subject.type = type;
         json[i].subject.value = value;
         json[i]._column_field = key;
@@ -100,11 +100,11 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
-    getTypeColumnFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || value;
+    getTypeColumnFilter(field, defaultType) {
+      return this.tableHeaders.find(column => column.field === field)?.filter_subject?.type || defaultType;
     },
-    getAliasColumnForFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
+    getAliasColumnForFilter(field, defaultValue) {
+      return this.tableHeaders.find(column => column.field === field)?.filter_subject?.value || defaultValue;
     },
     getAliasColumnForOrderBy(value) {
       return this.tableHeaders.find(column => column.field === value)?.order_column || value;
@@ -138,9 +138,12 @@ const PMColumnFilterCommonMixin = {
     formattedFilter() {
       const filterCopy = cloneDeep(this.advancedFilter);
       Object.keys(filterCopy).forEach((key) => {
+        if (filterCopy[key].length === 0) {
+          delete filterCopy[key];
+        }
         const label = this.tableHeaders.find(column => column.field === key)?.label;
         this.addAliases(filterCopy[key], key, label);
-      })
+      });
       return this.json2Array(filterCopy).flat(1);
     },
     getAdvancedFilter() {
@@ -164,6 +167,10 @@ const PMColumnFilterCommonMixin = {
       let format = "string";
       if (column.format) {
         format = column.format;
+        if (format === "int") {
+          // We don't have a field for integers
+          format = "string";
+        }
       }
       if (column.field === "status" || column.field === "assignee" || column.field === "participants") {
         format = "stringSelect";
@@ -260,7 +267,6 @@ const PMColumnFilterCommonMixin = {
         if (!(key in filters)) {
           filters[key] = [];
         }
-        console.log("Setting filter for", key, filter);
         filters[key].push(filter);
       });
       this.advancedFilter = filters;
