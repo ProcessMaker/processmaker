@@ -1,3 +1,5 @@
+import { get } from "lodash";
+
 export default {
   data() {
     return {
@@ -10,12 +12,14 @@ export default {
   },
   methods: {
     setAdvancedFilter() {
-      this.advancedFilter = window.Processmaker.advanced_filter || [];
+      this.advancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
+
+      // console.log("Got advanced filter", JSON.parse(JSON.stringify(this.advancedFilter)));
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {
         result.push([
-          this.formatBadgeSubject(filter.subject.value),
+          this.formatBadgeSubject(filter),
           [{name: this.formatBadgeValue(filter), advanced_filter: true}]
         ]);
 
@@ -24,20 +28,8 @@ export default {
         }
       }
     },
-    formatBadgeSubject(value) {
-      const parts = value.split(".");
-      let result = value;
-      if (parts.length > 1) {
-        result = parts[1];
-      }
-      result = result.replace(/_/g, " ");
-      if (result === "name") {
-        result = "process";
-      }
-      if (result === "element name") {
-        result = "task";
-      }
-      return result;
+    formatBadgeSubject(filter) {
+      return get(filter, '_column_label', '');
     },
     formatBadgeValue(filter) {
       let result = filter.operator;

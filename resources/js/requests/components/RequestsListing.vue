@@ -169,7 +169,7 @@ export default {
   mounted() {
     this.getParticipants("");
     this.setupColumns();
-    this.getFilterConfiguration("requestFilter");
+    this.getFilterConfiguration();
   },
   methods: {
     setupColumns() {
@@ -511,15 +511,6 @@ export default {
         type: 'requestFilter',
       }
     },
-    getTypeColumnFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || "Field";
-    },
-    getAliasColumnForFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
-    },
-    getAliasColumnForOrderBy(value) {
-      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
-    }
   }
 };
 </script>

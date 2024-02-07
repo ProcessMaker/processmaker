@@ -257,7 +257,7 @@ export default {
     this.getAssignee("");
     this.getProcess();
     this.setupColumns();
-    this.getFilterConfiguration("taskFilter");
+    this.getFilterConfiguration();
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -307,7 +307,7 @@ export default {
           default: true,
           width: 80,
           filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
-          order_column: 'processRequest.case_number',
+          order_column: 'process_requests.case_number',
         },
         {
           label: this.$t("Case title"),
@@ -539,15 +539,6 @@ export default {
         type: 'taskFilter',
       }
     },
-    getTypeColumnFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || "Field";
-    },
-    getAliasColumnForFilter(value) {
-      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
-    },
-    getAliasColumnForOrderBy(value) {
-      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
-    }
   }
 };
 </script>

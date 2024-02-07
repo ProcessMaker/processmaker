@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash";
+import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
   data() {
@@ -20,12 +20,11 @@ const PMColumnFilterCommonMixin = {
         url += type;
       }
       let config = {
-        filter: this.advancedFilter,
-        order,
+        filters: this.formattedFilter(),
+        order
       };
       ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
-      window.Processmaker.advanced_filter = this.formattedFilter();
+      window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
     getViewConfigFilter() {
@@ -86,22 +85,29 @@ const PMColumnFilterCommonMixin = {
         }
       ];
     },
-    addAliases(json) {
-      let oldValue, type, value;
+    addAliases(json, key, label) {
+      let type, value;
       for (let i in json) {
-        oldValue = json[i].subject.value;
-        type = this.getTypeColumnFilter(oldValue);
-        value = this.getAliasColumnForFilter(oldValue);
+        type = this.getTypeColumnFilter(json[i].subject.type);
+        value = this.getAliasColumnForFilter(json[i].subject.value);
         json[i].subject.type = type;
         json[i].subject.value = value;
+        json[i]._column_field = key;
+        json[i]._column_label = label;
 
         if (json[i].or && json[i].or.length > 0) {
-          this.addAliases(json[i].or);
+          this.addAliases(json[i].or, key, label);
         }
       }
     },
-    findColumnLabel(value) {
-      return this.tableHeaders.find(column.field === value)?.label;
+    getTypeColumnFilter(value) {
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.type || value;
+    },
+    getAliasColumnForFilter(value) {
+      return this.tableHeaders.find(column => column.field === value)?.filter_subject?.value || value;
+    },
+    getAliasColumnForOrderBy(value) {
+      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
     },
     onApply(json, index) {
       this.advancedFilterInit();
@@ -132,7 +138,8 @@ const PMColumnFilterCommonMixin = {
     formattedFilter() {
       const filterCopy = cloneDeep(this.advancedFilter);
       Object.keys(filterCopy).forEach((key) => {
-        this.addAliases(filterCopy[key]);
+        const label = this.tableHeaders.find(column => column.field === key)?.label;
+        this.addAliases(filterCopy[key], key, label);
       })
       return this.json2Array(filterCopy).flat(1);
     },
@@ -246,24 +253,24 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
-    getFilterConfiguration(name) {
-      if ("filter_user" in window.Processmaker) {
-        this.setFilterPropsFromConfig(window.Processmaker.filter_user);
+    getFilterConfiguration() {
+      const filters = {};
+      get(window, 'ProcessMaker.advanced_filter.filters', []).forEach((filter) => {
+        const key = filter._column_field;
+        if (!(key in filters)) {
+          filters[key] = [];
+        }
+        console.log("Setting filter for", key, filter);
+        filters[key].push(filter);
+      });
+      this.advancedFilter = filters;
+      
+      const order = get(window, 'ProcessMaker.advanced_filter.order');
+      if (order?.by && order?.direction) {
+        this.setOrderByProps(order.by, order.direction);
       }
-    },
-    setFilterPropsFromConfig(config) {
-      if (typeof config !== "object") {
-        config = {};
-      }
-      if ("filter" in config && typeof config.filter === "object") {
-        this.advancedFilter = config.filter;
-      }
-      if (config?.order?.by && config?.order?.direction) {
-        this.setOrderByProps(config.order.by, config.order.direction);
-      }
+      
       this.markStyleWhenColumnSetAFilter();
-
-      window.Processmaker.advanced_filter = this.formattedFilter();
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
     json2Array(json) {

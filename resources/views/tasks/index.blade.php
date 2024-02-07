@@ -81,7 +81,7 @@
 
 @section('js')
     <script>
-      window.Processmaker.filter_user = @json($userFilter);
+      window.ProcessMaker.advanced_filter = @json($userFilter);
     </script>
     <script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection
