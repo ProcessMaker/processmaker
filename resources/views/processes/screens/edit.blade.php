@@ -118,7 +118,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/designer/screens';
+                    window.history.go(-1);
                 },
                 onUpdate() {
                     this.resetErrors();
