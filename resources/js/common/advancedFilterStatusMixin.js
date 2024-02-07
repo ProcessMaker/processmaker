@@ -13,8 +13,6 @@ export default {
   methods: {
     setAdvancedFilter() {
       this.advancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
-
-      // console.log("Got advanced filter", JSON.parse(JSON.stringify(this.advancedFilter)));
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {
