@@ -318,7 +318,7 @@ export default {
           width: 220,
           truncate: true,
           filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
-          order_column: 'processRequest.case_title',
+          order_column: 'process_requests.case_title',
         },
         {
           label: this.$t("Process"),
