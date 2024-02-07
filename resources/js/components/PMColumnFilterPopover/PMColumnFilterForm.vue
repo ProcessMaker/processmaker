@@ -2,7 +2,8 @@
   <div class="pm-filter-form">
     <b-form @submit.prevent="handleSubmit">
       <PMColumnFilterToggleAscDesc v-model="viewSort"
-                                   @onChange="onChangeSort">
+                                   @onChange="onChangeSort"
+                                   v-if="typeof hideSortingButtons === 'boolean' ? !hideSortingButtons : true">
       </PMColumnFilterToggleAscDesc>
 
       <div class="pm-filter-form-area" ref="pmFilterFormArea" data-cy="pmFilterFormArea">
@@ -90,7 +91,7 @@
     components: {
       ...Components
     },
-    props: ["type", "value", "format", "formatRange", "operators", "viewConfig", "sort"],
+    props: ["type", "value", "format", "formatRange", "operators", "viewConfig", "sort", "hideSortingButtons"],
     data() {
       return {
         items: [],
