@@ -158,7 +158,7 @@ export default {
       return `
       <a href="${this.openRequest(processTask, 1)}"
          class="text-nowrap">
-         ${processTask.case_title_formatted || ""} hjgjhgjhg gjhghjg jhgjhghjg jhgjhghjg ghuhj
+         ${processTask.case_title_formatted || ""}
       </a>`;
     },
     formatParticipants(participants) {
