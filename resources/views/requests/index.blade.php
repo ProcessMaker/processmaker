@@ -91,7 +91,10 @@
 
                                     <template v-slot:right-buttons>
                                         @if(Route::has('package.savedsearch.defaults.edit'))
-                                        <b-button class="ml-md-2" href="{{route('package.savedsearch.defaults.edit', ['key'=>'requests'])}}">
+                                        <b-button
+                                            class="ml-md-2"
+                                            href="{{route('package.savedsearch.defaults.edit', ['key'=>'requests'])}}"
+                                        >
                                             <i class="fas fw fa-cog"></i>
                                         </b-button>
                                         @endif
@@ -101,7 +104,12 @@
                                 </div>
                             </div>
                         </div>
-                        <requests-listing ref="requestList" :filter="filter" :columns="columns" :pmql="fullPmql"></requests-listing>
+                        <requests-listing
+                            ref="requestList"
+                            :filter="filter"
+                            :columns="columns"
+                            :pmql="fullPmql"
+                        ></requests-listing>
                     </div>
 
                 </div>
