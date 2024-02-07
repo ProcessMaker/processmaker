@@ -1,5 +1,8 @@
 <template>
-  <div v-if="data.data.length === 0" class="container">
+  <div
+    v-if="data.data.length === 0"
+    class="container"
+  >
     <div class="content">
       <img
         class="image"
@@ -17,7 +20,10 @@
       </div>
     </div>
   </div>
-  <div v-else class="data-table">
+  <div
+    v-else
+    class="data-table"
+  >
     <data-loading
       v-show="shouldShowLoader"
       :for="/projects\?page/"
@@ -41,7 +47,10 @@
         pagination-path="meta"
         :no-data-template="$t('No Data Available')"
       >
-        <template slot="title" slot-scope="props">
+        <template
+          slot="title"
+          slot-scope="props"
+        >
           <a
             v-uni-id="props.rowData.id.toString()"
             :href="`/designer/projects/${props.rowData.id}`"
@@ -50,13 +59,16 @@
           </a>
         </template>
 
-        <template slot="actions" slot-scope="props">
+        <template
+          slot="actions"
+          slot-scope="props"
+        >
           <ellipsis-menu
-            @navigate="onNavigate"
             :actions="actions"
             :data="props.rowData"
             :divider="true"
             data-cy="project-list-ellipsis"
+            @navigate="onNavigate"
           />
         </template>
       </vuetable>
@@ -102,6 +114,7 @@ export default {
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate",
+          width: "auto",
         },
         {
           name: "__slot:actions",
@@ -144,23 +157,23 @@ export default {
         this.apiDataLoading = true;
         this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
 
-        let url = "projects?";
-        let status = this.status ? this.status : "all";
+        const url = "projects?";
+        const status = this.status ? this.status : "all";
 
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-              url +
-              "status=all" +
-              this.status +
-              "&page=1" +
-              "&per_page=10" +
-              "&pmql=" +
-              encodeURIComponent(pmql) +
-              "&order_by=" +
-              this.orderBy +
-              "&order_direction=" +
-              this.orderDirection,
+            `${url
+            }status=all${
+              this.status
+            }&page=1`
+              + "&per_page=10"
+              + `&pmql=${
+                encodeURIComponent(pmql)
+              }&order_by=${
+                this.orderBy
+              }&order_direction=${
+                this.orderDirection}`,
           )
           .then((response) => {
             this.data = this.transform(response.data);
@@ -182,27 +195,27 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-              this.$t("Are you sure you want to delete the project ") +
-              "'" + data.title + "'" +
-              "?",
-              "",
-              () => {
-                window.ProcessMaker.apiClient
+            `${this.$t("Are you sure you want to delete the project ")
+            }'${data.title}'`
+              + "?",
+            "",
+            () => {
+              window.ProcessMaker.apiClient
                 .delete(`projects/${data.id}`)
-                .then(response => {
+                .then((response) => {
                   ProcessMaker.alert(
                     this.$t("The project was deleted."),
-                    "success"
+                    "success",
                   );
                   this.fetch();
-                }).catch(error => {
+                }).catch((error) => {
                   ProcessMaker.alert(
                     this.$t(error.response?.message),
-                    "danger"
+                    "danger",
                   );
                 });
-              }
-            );
+            },
+          );
           break;
       }
     },
