@@ -2039,5 +2039,15 @@
   "View All Decision Tables": "Ver Todas las Tablas de Decisión",
   "View All Processes": "Ver Todos los Procesos",
   "View All Screens": "Ver Todos los Procesos",
-  "View All Scripts": "Ver Todos los Guiones"
+  "View All Scripts": "Ver Todos los Guiones",
+  "Create a Project": "Crea un Proyecto",
+  "New Case": "Nuevo Caso",
+  "No Request to Start": "No hay solicitud para comenzar",
+  "No Requests to Show": "No hay solicitudes para mostrar",
+  "No tasks in sight": "No hay tareas a la vista",
+  "PM Blocks": "Bloques PM",
+  "Projects": "Proyectos",
+  "Recent Projects": "Proyectos Recientes",
+  "View All Tasks": "Ver Todas las Tareas",
+  "Well, it seems nothing in here": "Bueno, parece que no hay nada aquí"
 }
