@@ -76,6 +76,7 @@ export default {
   },
   computed: {
     templateDetails() {
+      
       return JSON.parse(this.template?.template_details);
     },
     templateIcon() {
