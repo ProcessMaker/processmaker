@@ -123,9 +123,9 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Congratulations')"
+        :empty="$t('Well, it seems nothing in here')"
         :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-        empty-icon="beach"
+        empty-icon="noTasks"
       />
       <pagination-table
         :meta="data.meta"
