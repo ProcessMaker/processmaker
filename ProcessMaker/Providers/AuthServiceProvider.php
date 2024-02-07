@@ -135,7 +135,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $allowedEndpoints = [
             'api',
-            'script/',
         ];
 
         $dataSourceClass = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
@@ -161,6 +160,7 @@ class AuthServiceProvider extends ServiceProvider
                 $allowedEndpoints[] = 'designer/screens/' . $assetId . '/edit';
             } elseif ($assetType === Script::class) {
                 $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
+                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/edit';
             }
 
             if (class_exists($dataSourceClass) && $assetType === $dataSourceClass) {
