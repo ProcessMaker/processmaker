@@ -12,6 +12,7 @@
       v-if="createdFromWizardTemplate"
       id="wizardHelperProcessModal" 
       ref="wizardHelperProcessModal"
+      :processLaunchpadId="process.id"
       :wizardTemplateUuid="wizardTemplateUuid"
     />
   </div>

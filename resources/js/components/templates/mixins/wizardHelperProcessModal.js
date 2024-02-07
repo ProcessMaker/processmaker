@@ -30,9 +30,10 @@ export default {
     triggerHelperProcessStartEvent() {
       const startEventId = this.startEvents[0].id;
       const url = `/process_events/${this.helperProcessId}?event=${startEventId}`;
-
       // Start the helper process
-      window.ProcessMaker.apiClient.post(url).then((response) => {
+      window.ProcessMaker.apiClient.post(url, {
+        process_launchpad_id: this.processLaunchpadId ? this.processLaunchpadId : null
+      }).then((response) => {
         const processRequestId = response.data.id;
         this.getFirstTask(processRequestId);
       }).catch((error) => {
