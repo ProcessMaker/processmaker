@@ -158,7 +158,6 @@ export default {
         this.orderBy = this.orderBy === "__slot:updated_at" ? "updated_at" : this.orderBy;
 
         const url = "projects?";
-        const status = this.status ? this.status : "all";
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -191,32 +190,28 @@ export default {
       }
     },
     onNavigate(action, data) {
-      switch (action.value) {
-        case "remove-item":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            `${this.$t("Are you sure you want to delete the project ")
-            }'${data.title}'`
-              + "?",
-            "",
-            () => {
-              window.ProcessMaker.apiClient
-                .delete(`projects/${data.id}`)
-                .then((response) => {
-                  ProcessMaker.alert(
-                    this.$t("The project was deleted."),
-                    "success",
-                  );
-                  this.fetch();
-                }).catch((error) => {
-                  ProcessMaker.alert(
-                    this.$t(error.response?.message),
-                    "danger",
-                  );
-                });
-            },
-          );
-          break;
+      if (action.value === "remove-item") {
+        ProcessMaker.confirmModal(
+          this.$t("Caution!"),
+          `${this.$t("Are you sure you want to delete the project ")}'${data.title}'?`,
+          "",
+          () => {
+            window.ProcessMaker.apiClient
+              .delete(`projects/${data.id}`)
+              .then((response) => {
+                ProcessMaker.alert(
+                  this.$t("The project was deleted."),
+                  "success",
+                );
+                this.fetch();
+              }).catch((error) => {
+                ProcessMaker.alert(
+                  this.$t(error.response?.message),
+                  "danger",
+                );
+              });
+          },
+        );
       }
     },
     reload() {
