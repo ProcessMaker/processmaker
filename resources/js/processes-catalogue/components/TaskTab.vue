@@ -7,6 +7,7 @@
       <filter-table
         :headers="tableHeadersTasks"
         :data="dataTasks"
+        table-name="task-tab"
         @table-row-click="handleRowClick"
       />
       <pagination-table
@@ -157,7 +158,7 @@ export default {
       return `
       <a href="${this.openRequest(processTask, 1)}"
          class="text-nowrap">
-         ${processTask.case_title_formatted || ""}
+         ${processTask.case_title_formatted || ""} hjgjhgjhg gjhghjg jhgjhghjg jhgjhghjg ghuhj
       </a>`;
     },
     formatParticipants(participants) {

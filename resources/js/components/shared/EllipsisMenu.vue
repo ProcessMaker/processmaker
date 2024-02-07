@@ -8,7 +8,7 @@
     lazy
     right
     offset="0"
-    class="ellipsis-dropdown-main"
+    class="ellipsis-dropdown-main static-header"
     @show="onShow"
     @hide="onHide"
     
