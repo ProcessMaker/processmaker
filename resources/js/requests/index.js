@@ -12,7 +12,7 @@ new Vue({
     CounterCard, CounterCardGroup, RequestsListing
   },
   data: {
-    columns: window.Processmaker.defaultColumns || [],
+    columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
     urlPmql: "",
