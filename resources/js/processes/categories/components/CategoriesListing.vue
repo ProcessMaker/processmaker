@@ -11,6 +11,7 @@
           <filter-table
             :headers="fields"
             :data="data"
+            table-name="categories"
             style="height: calc(100vh - 355px);"
           >
          <!-- Slot Table Header filter Button -->

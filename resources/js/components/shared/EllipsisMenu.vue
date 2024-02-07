@@ -2,6 +2,7 @@
   <b-dropdown
     v-if="filterActions.length > 0"
     :variant="variant ? variant : 'ellipsis'"
+    toggle-class="static-header"
     no-caret
     no-flip
     lazy
@@ -278,5 +279,10 @@ export default {
   }
 .search-icon {
   color: #6C757D;
+}
+</style>
+<style>
+.static-header {
+  position: static !important;
 }
 </style>

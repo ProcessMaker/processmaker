@@ -7,6 +7,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -46,7 +47,7 @@
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -332,7 +333,7 @@ export default {
       let htmlString = '';
       for (const task of value) {
         htmlString += `
-          <div>
+          <div class="text-truncate">
             <a class="text-nowrap" href="${this.openTask(task)}">
               ${task.element_name}
             </a>

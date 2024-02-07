@@ -18,7 +18,7 @@
         <tr>
           <th
             v-for="(column, index) in headers"
-            :id="`column-${index}`"
+            :id="`${tableName}-column-${index}`"
             :key="index"
             class="pm-table-ellipsis-column"
             :class="{ 'pm-table-filter-applied': column.filterApplied }"
@@ -49,6 +49,7 @@
         </tr>
       </thead>
       <tbody>
+        <template v-if="!loading">
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
@@ -64,7 +65,7 @@
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
                 <div
-                  :id="`element-${rowIndex}-${index}`"
+                  :id="`${tableName}-element-${rowIndex}-${index}`"
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
@@ -72,7 +73,7 @@
                 </div>
                 <b-tooltip
                   v-if="header.truncate"
-                  :target="`element-${rowIndex}-${index}`"
+                  :target="`${tableName}-element-${rowIndex}-${index}`"
                   custom-class="pm-table-tooltip"
                 >
                   {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
@@ -87,14 +88,14 @@
                 </template>
                 <template v-else>
                   <div
-                    :id="`element-${rowIndex}-${index}`"
+                    :id="`${tableName}-element-${rowIndex}-${index}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
                     {{ getNestedPropertyValue(row, header.field) }}
                     <b-tooltip
                       v-if="header.truncate"
-                      :target="`element-${rowIndex}-${index}`"
+                      :target="`${tableName}-element-${rowIndex}-${index}`"
                       custom-class="pm-table-tooltip"
                     >
                       {{ getNestedPropertyValue(row, header.field) }}
@@ -105,6 +106,7 @@
             </td>
           </slot>
         </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -128,6 +130,18 @@ export default {
     },
     data: [],
     unread: {
+      type: String,
+      default: function () {
+        return "";
+      }
+    },
+    loading: {
+      type: Boolean,
+      default: function () {
+        return false;
+      }
+    },
+    tableName: {
       type: String,
       default: function () {
         return "";
@@ -186,7 +200,7 @@ export default {
       document.addEventListener("mouseup", this.stopResize);
     },
     calculateContent(index) {
-      const miDiv = document.getElementById(`column-${index}`);
+      const miDiv = document.getElementById(`${this.tableName}-column-${index}`);
       return miDiv.scrollWidth;
     },
     doResize(event) {
@@ -252,8 +266,7 @@ export default {
   border-radius: 5px;
   scrollbar-width: 8px;
   scrollbar-color: #6C757D;
-  height: calc(100vh - 150px);
-  min-height: 400px;
+  max-height: calc(100vh - 150px);
 }
 
 .pm-table-container th {

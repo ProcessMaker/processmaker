@@ -203,6 +203,7 @@ export default {
     "paramProjectCategories",
     "paramName",
     "permission",
+    "updateQuery",
   ],
   data() {
     return {
@@ -260,8 +261,10 @@ export default {
       this.calcInputHeight();
     },
     value() {
-      if (this.query !== this.value) {
+      if (this.updateQuery && this.query !== this.value) {
         this.query = this.value || "";
+      } else if (!this.query || this.query === "") {
+        this.query = this.value;
       }
     },
   },
@@ -361,7 +364,7 @@ export default {
       this.aiLoading = true;
 
       ProcessMaker.apiClient
-        .post("/openai/nlq-to-pmql", params)
+        .post("/package-ai/nlqToPmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;
