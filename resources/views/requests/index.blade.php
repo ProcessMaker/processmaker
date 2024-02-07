@@ -93,7 +93,13 @@
                                         @if(Route::has('package.savedsearch.defaults.edit'))
                                         <b-button
                                             class="ml-md-2"
-                                            href="{{route('package.savedsearch.defaults.edit', ['key'=>'requests'])}}"
+                                            href="{{route(
+                                                'package.savedsearch.defaults.edit',
+                                                [
+                                                    'type'=>'request',
+                                                    'key'=>'requests',
+                                                ]
+                                            )}}"
                                         >
                                             <i class="fas fw fa-cog"></i>
                                         </b-button>

@@ -15,6 +15,8 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
@@ -43,7 +45,18 @@ class TaskController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
-        return view('tasks.index', compact('title', 'userFilter'));
+        // Get default Saved search config
+        $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
+            Auth::user(),
+            SavedSearch::KEY_TASKS,
+        );
+        if ($defaultSavedSearch) {
+            $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+        } else {
+            $defaultColumns = null;
+        }
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
