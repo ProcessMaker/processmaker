@@ -73,7 +73,7 @@
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
                     {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
                   </span>
-                  <span>{{ row["due_date"] }}</span>
+                  <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
                 <template v-else>
                   <div
@@ -249,7 +249,6 @@ export default {
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
-          record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
           record["task_name"] = this.formatActiveTask(record);
@@ -406,9 +405,6 @@ export default {
           "hide-name": false,
         },
       };
-    },
-    formatDueDate(date) {
-      return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
     formatColorBadge(date) {
       const days = this.remainingTime(date);
