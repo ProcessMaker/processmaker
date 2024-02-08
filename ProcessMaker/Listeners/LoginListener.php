@@ -8,7 +8,7 @@ use Illuminate\Auth\Events\Login;
 class LoginListener
 {
     /**
-     * Updated the user's loggedin_at attribute
+     * Updated the user "loggedin_at" attribute
      *
      * @param  \Illuminate\Auth\Events\Login  $event
      *
@@ -21,6 +21,8 @@ class LoginListener
         if (!$user instanceof User) {
             return;
         }
+
+        $user->timestamps = false;
 
         $user->setAttribute('loggedin_at', now());
         $user->save();
