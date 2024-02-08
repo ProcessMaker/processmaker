@@ -503,7 +503,7 @@ export default {
      */
     storeFilterConfiguration() {
       let url = "users/store_filter_configuration/requestFilter";
-      if (this.$props.columns) {
+      if (this.$props.columns && this.savedSearch) {
         url = "saved-searches/" + this.savedSearch + "/advanced-filters";
       }
       let config = {
