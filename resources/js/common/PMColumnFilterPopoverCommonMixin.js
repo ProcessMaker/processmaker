@@ -100,7 +100,7 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
-    getTypeColumnFilter(field, defaultType) {
+    getTypeColumnFilter(field, defaultType = 'Field') {
       return this.tableHeaders.find(column => column.field === field)?.filter_subject?.type || defaultType;
     },
     getAliasColumnForFilter(field, defaultValue) {
