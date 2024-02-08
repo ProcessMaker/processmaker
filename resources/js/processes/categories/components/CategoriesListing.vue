@@ -79,7 +79,7 @@
                       <div
                         :style="{ maxWidth: header.width + 'px' }"
                       >
-                        {{ row[header.field] }}
+                        {{ getNestedPropertyValue(row, header) }}
                       </div>
                     </template>
                   </template>
