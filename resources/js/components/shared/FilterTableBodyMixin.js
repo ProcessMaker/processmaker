@@ -47,8 +47,30 @@ export default {
     formatCategory(categories) {
       return categories.map(item => item.name).join(', ');
     },
-    getNestedPropertyValue(obj, path) {
-      return get(obj, path);
+    getNestedPropertyValue(obj, header) {
+      return this.format(get(obj, header.field), header);
+    },
+    format(value, header) {
+      let config = "";
+      if (header.format === "datetime") {
+        config = ProcessMaker.user.datetime_format;
+        value = this.convertUTCToLocal(value, config)
+      }
+      if (header.format === "date") {
+        config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+        value = this.convertUTCToLocal(value, config)
+      }
+      return value;
+    },
+    convertUTCToLocal(value, config) {
+      if (value) {
+        if (moment(value).isValid()) {
+          return window.moment(value)
+            .format(config);
+        }
+        return value;
+      }
+      return "-";
     },
   },
 };
