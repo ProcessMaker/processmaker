@@ -4,7 +4,6 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Twilio\Rest\Autopilot\V1\Assistant\DefaultsList;
 
 class Permission extends ProcessMakerModel
 {
