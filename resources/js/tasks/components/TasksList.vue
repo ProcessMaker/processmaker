@@ -44,20 +44,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -71,7 +71,7 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
                 </template>
@@ -81,13 +81,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ format(getNestedPropertyValue(row, header.field), header.format, header.field, row.data) }}
+                    {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ format(getNestedPropertyValue(row, header.field), header.format, header.field, row.data) }}
+                      {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
                 </template>

@@ -47,18 +47,18 @@ export default {
     formatCategory(categories) {
       return categories.map(item => item.name).join(', ');
     },
-    getNestedPropertyValue(obj, path) {
-      return get(obj, path);
+    getNestedPropertyValue(obj, header) {
+      return this.format(get(obj, header.field), header);
     },
-    format(value, format, column, datax) {
+    format(value, header) {
       let config = "";
-      if (format === "datetime") {
+      if (header.format === "datetime") {
         config = ProcessMaker.user.datetime_format;
-        value = this.checkCustomColumnData(column, datax, config, value);
+        value = this.convertUTCToLocal(value, config)
       }
-      if (format === "date") {
+      if (header.format === "date") {
         config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
-        value = this.checkCustomColumnData(column, datax, config, value);
+        value = this.convertUTCToLocal(value, config)
       }
       return value;
     },
@@ -72,20 +72,5 @@ export default {
       }
       return "-";
     },
-    checkCustomColumnData(columnName, dataColumn, config, originValue) {
-      let columnValue = "";
-      if (columnName.startsWith("data.")) {
-        columnName = columnName.substring("data.".length);
-        for (const key in dataColumn) {
-          if (key === columnName) {
-            columnValue = dataColumn[key];
-            return this.convertUTCToLocal(columnValue, config);
-          }
-        }
-      }
-      else{
-        return originValue;
-      }
-    }
   },
 };
