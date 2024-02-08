@@ -172,7 +172,7 @@ const PMColumnFilterCommonMixin = {
           format = "string";
         }
       }
-      if (column.field === "status" || column.field === "assignee") {
+      if (column.field === "status") {
         format = "stringSelect";
       }
       return format;
@@ -182,17 +182,14 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "status") {
         formatRange = this.getStatus();
       }
-      if (column.field === "assignee") {
-        formatRange = this.viewAssignee;
-      }
       return formatRange;
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants") {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants" || column.field === "assignee") {
         operators = ["=", "in", "contains", "regex"];
       }
-      if (column.field === "status" || column.field === "assignee") {
+      if (column.field === "status") {
         operators = ["=", "in"];
       }
       return operators;

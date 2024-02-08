@@ -759,6 +759,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     }
 
     /**
+     * PMQL value alias for assignee field by fullname.
+     * @param string $value
+     * @return callable
+     */
+    public function valueAliasAssigneeByFullName($value, $expression)
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('user', function ($query) use ($expression, $value) {
+                $query->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . ' ?', [$value]);
+            });
+        };
+    }
+
+    /**
      * PMQL wildcard for process request & data fields
      *
      * @param string $value
