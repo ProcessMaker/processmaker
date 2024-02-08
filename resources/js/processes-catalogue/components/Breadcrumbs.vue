@@ -12,7 +12,7 @@
 
       <li class="breadcrumb-item">
         <a
-          href="/processes-catalogue"
+          href="/process-browser"
           :aria-label="$t('Home')"
         >
           {{ $t('Processes') }}

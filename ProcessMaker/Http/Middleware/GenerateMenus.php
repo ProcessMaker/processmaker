@@ -33,7 +33,7 @@ class GenerateMenus
                 $request_items->add(
                     __('Processes'),
                     ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
-                )->active('processes-catalogue/*');
+                )->active('process-browser/*');
             });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
