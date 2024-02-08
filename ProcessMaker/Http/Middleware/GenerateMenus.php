@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Setting;
 
 class GenerateMenus
@@ -296,10 +297,15 @@ class GenerateMenus
 
         // Fetch the user's permissions and check if the user has the specific permission
         $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
-        if ($user->can($permission) && count($userPermissions) === 1 && $userPermissions[0] === 'Projects') {
+        $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
+
+        // Check if $userPermissions and $defaultPermissions have the same values
+        $userWithDefaultPermissions = empty(array_diff($userPermissions, $defaultPermissions));
+
+        if ($user->can($permission) && count($userPermissions) === 2 && $userWithDefaultPermissions) {
             return false; // Deny UI access if the user has only the 'Projects' permission
         }
 
-        return $user->can($permission);
+        return $user->can($permission) && $user->hasPermission($permission);
     }
 }
