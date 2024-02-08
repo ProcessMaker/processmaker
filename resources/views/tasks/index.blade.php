@@ -64,11 +64,33 @@
                         </div>
                       </template>
 
+                      <template v-slot:right-buttons>
+                          @if(Route::has('package.savedsearch.defaults.edit'))
+                          <b-button
+                            class="ml-md-2"
+                            href="{{route(
+                              'package.savedsearch.defaults.edit',
+                              [
+                                'type'=>'task',
+                                'key'=>'tasks',
+                              ]
+                            )}}"
+                          >
+                            <i class="fas fw fa-cog"></i>
+                          </b-button>
+                          @endif
+                      </template>
                     </pmql-input>
                   </div>
                 </div>
               </div>
-              <tasks-list ref="taskList" :filter="filter" :pmql="fullPmql" @in-overdue="setInOverdueMessage"></tasks-list>
+              <tasks-list
+                ref="taskList"
+                :filter="filter"
+                :pmql="fullPmql"
+                :columns="columns"
+                @in-overdue="setInOverdueMessage"
+              ></tasks-list>
             </div>
 
           </div>
@@ -82,6 +104,7 @@
 @section('js')
     <script>
       window.Processmaker.filter_user = @json($userFilter);
+      window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>
     <script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection

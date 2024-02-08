@@ -12,6 +12,7 @@ new Vue({
     CounterCard, CounterCardGroup, RequestsListing
   },
   data: {
+    columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
     urlPmql: "",
@@ -22,7 +23,7 @@ new Vue({
     additions: [],
   },
   created() {
-    const params = {};
+    let status;
 
     switch (Processmaker.status) {
       case "":
