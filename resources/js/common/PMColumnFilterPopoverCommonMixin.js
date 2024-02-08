@@ -144,7 +144,7 @@ const PMColumnFilterCommonMixin = {
         const label = this.tableHeaders.find(column => column.field === key)?.label;
         this.addAliases(filterCopy[key], key, label);
       });
-      return this.json2Array(filterCopy).flat(1);
+      return Object.values(filterCopy).flat(1);
     },
     getAdvancedFilter() {
       let formattedFilter = this.formattedFilter();
@@ -270,13 +270,6 @@ const PMColumnFilterCommonMixin = {
       this.markStyleWhenColumnSetAFilter();
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
-    json2Array(json) {
-      let result = [];
-      for (let i in json) {
-        result.push(json[i]);
-      }
-      return result;
-    }
   }
 };
 export default PMColumnFilterCommonMixin;
