@@ -4,13 +4,13 @@
       <template #header>
         <div class="header">
           <i class="text-secondary data-card-header fas nav-icon d-inline align-middle" :class="info.icon" />
-          <h5 class="mb-0 data-card-header d-inline align-middle">{{ info.typeHumanPlural }}</h5>
+          <h5 class="mb-0 data-card-header d-inline align-middle">{{ $t(info.typeHumanPlural) }}</h5>
           <b-form-checkbox
             class="data-card-header export-all d-inline align-middle fw-semibold"
             :disabled="disabled"
             v-model="includeAllByGroup"
           >
-            {{ $root.operation }} All
+            {{ $t($root.operation) }} {{ $t('All') }}
           </b-form-checkbox>
         </div>
       </template>
@@ -20,13 +20,13 @@
             <div>
               <small v-if="hasSomeForcePasswordProtectAsset(info.items)" class="fw-semibold form-text text-muted mt-0">
                 <i class="fas fa-exclamation-triangle text-warning p-0"/>
-                {{ info.typeHumanPlural }} may contain sensitive information.
+                {{ $t(info.typeHumanPlural) }} {{ $t('may contain sensitive information.') }}
               </small>
             </div>
-            <span>Status:</span>
+            <span>{{ $t('Status') }}:</span>
             <b-badge v-if="$root.includeAllByGroup[info.type]" pill variant="success">
               <i class="fas fa-check-circle export-status-label" />
-              Full {{ $root.operation }}
+              {{ $t('Full') }} {{ $t($root.operation) }}
             </b-badge>
             <b-badge v-else pill variant="warning">
               <i class="fas fa-exclamation-triangle export-status-label" />
@@ -38,17 +38,17 @@
           <data-tree :data="elementsCount" :collapsable="false" :show-icon="false"/>
         </template>
         <template v-else>
-          Total Elements:
+          {{ $t('Total Elements') }}:
           <span class="fw-semibold">
             {{ info.items.length }}
-            <span v-if="info.items.length > 1">{{ info.typeHumanPlural }}</span>
-            <span v-else>{{ info.typeHuman }}</span>
+            <span v-if="info.items.length > 1">{{ $t(info.typeHumanPlural) }}</span>
+            <span v-else>{{ $t(info.typeHuman) }}</span>
           </span>
         </template>
         <div class="mt-3">
           <b-link v-if="$root.includeAllByGroup[info.type]" @click="onGroupDetailsClick">
             <i class="fas fa-info-circle fa-fw mr-0 pr-0"></i>
-            Details
+            {{ $t('Details') }}
           </b-link>
         </div>
       </b-card-text>
