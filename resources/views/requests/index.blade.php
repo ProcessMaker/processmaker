@@ -90,7 +90,10 @@
                                     </template>
 
                                     <template v-slot:right-buttons>
-                                        @if(Route::has('package.savedsearch.defaults.edit'))
+                                        @if((
+                                            Auth::user()->is_administrator ||
+                                            Auth::user()->hasPermission('edit-screens')
+                                          ) && Route::has('package.savedsearch.defaults.edit'))
                                         <b-button
                                             class="ml-md-2"
                                             href="{{route(
