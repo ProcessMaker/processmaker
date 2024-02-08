@@ -154,20 +154,20 @@ class AuthServiceProvider extends ServiceProvider
 
             // Check asset types and push to $allowedEndpoints
             if ($assetType === Process::class) {
-                $allowedEndpoints[] = 'modeler/' . $assetId;
+                $allowedEndpoints[] = "modeler/{$assetId}";
             } elseif ($assetType === Screen::class) {
-                $allowedEndpoints[] = 'designer/screen-builder/' . $assetId . '/edit';
-                $allowedEndpoints[] = 'designer/screens/' . $assetId . '/edit';
+                $allowedEndpoints[] = "designer/screen-builder/{$assetId}/edit";
+                $allowedEndpoints[] = "designer/screens/{$assetId}/edit";
             } elseif ($assetType === Script::class) {
-                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
-                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/edit';
+                $allowedEndpoints[] = "designer/scripts/{$assetId}/builder";
+                $allowedEndpoints[] = "designer/scripts/{$assetId}/edit";
             }
 
             if (class_exists($dataSourceClass) && $assetType === $dataSourceClass) {
-                $allowedEndpoints[] = 'designer/data-sources/' . $assetId . '/edit';
+                $allowedEndpoints[] = "designer/data-sources/{$assetId}/edit";
             }
             if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
-                $allowedEndpoints[] = 'decision-tables/table-builder/' . $assetId . '/edit';
+                $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
             }
         }
 
