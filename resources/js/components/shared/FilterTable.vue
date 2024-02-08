@@ -174,6 +174,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      this.calculateColumnWidth();
       const ellipsisColumn = document.querySelectorAll(".pm-table-ellipsis-column");
 
       ellipsisColumn.forEach((column) => {
@@ -209,7 +210,7 @@ export default {
         let min = 40;
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
-        if ((contentWidth - currentWidth) <= 60) {
+        if ((contentWidth - currentWidth) <= 80) {
           this.headers[this.resizingColumnIndex].width = currentWidth;
         }
       }

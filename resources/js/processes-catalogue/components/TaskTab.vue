@@ -7,6 +7,7 @@
       <filter-table
         :headers="tableHeadersTasks"
         :data="dataTasks"
+        table-name="task-tab"
         @table-row-click="handleRowClick"
       />
       <pagination-table
