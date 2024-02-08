@@ -8,6 +8,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -49,7 +50,7 @@
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -122,9 +123,9 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Congratulations')"
+        :empty="$t('Well, it seems nothing in here')"
         :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-        empty-icon="beach"
+        empty-icon="noTasks"
       />
       <pagination-table
         :meta="data.meta"
@@ -289,7 +290,6 @@ export default {
       </a>`;
     },
     setupColumns() {
-      const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
