@@ -283,7 +283,7 @@ class GenerateMenus
         return $next($request);
     }
 
-    private function userHasPermission($permission)
+    public static function userHasPermission($permission)
     {
         $user = \Auth::user();
 
@@ -297,9 +297,9 @@ class GenerateMenus
 
         // Fetch the user's permissions and check if the user has the specific permission
         $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
-        $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
 
         // Check if $userPermissions and $defaultPermissions have the same values
+        $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
         $userWithDefaultPermissions = empty(array_diff($userPermissions, $defaultPermissions));
 
         if ($user->can($permission) && count($userPermissions) === 2 && $userWithDefaultPermissions) {
