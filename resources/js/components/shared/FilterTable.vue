@@ -223,15 +223,24 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
-    formatDate(date, mask) {
-      const dateTimeFormat = "MM/DD/YY HH:mm";
-      const dateFormat = "MM/DD/YY";
-      if (mask === "datetime") {
-        return date === null ? "-" : moment(date).format(dateTimeFormat);
+    formatDate(value, format) {
+      let config = "";
+      if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
+        if (format === "datetime") {
+          config = ProcessMaker.user.datetime_format;
+        }
+        if (format === "date") {
+          config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+        }
       }
-      if (mask === "date") {
-        return date === null ? "-" : moment(date).format(dateFormat);
+      if (value) {
+        if (moment(value).isValid()) {
+          return window.moment(value)
+            .format(config);
+        }
+        return value;
       }
+      return "-";
     },
     handleRowClick(row) {
       this.$emit("table-row-click", row);
