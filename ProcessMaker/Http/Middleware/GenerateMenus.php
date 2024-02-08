@@ -297,7 +297,7 @@ class GenerateMenus
         // Fetch the user's permissions and check if the user has the specific permission
         $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
 
-        if ($user->can($permission) && in_array('Projects', $userPermissions)) {
+        if ($user->can($permission) && count($userPermissions) === 1 && $userPermissions[0] === 'Projects') {
             return false; // Deny UI access if the user has only the 'Projects' permission
         }
 
