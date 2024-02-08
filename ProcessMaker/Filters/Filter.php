@@ -13,6 +13,8 @@ class Filter
 {
     const TYPE_PARTICIPANTS = 'Participants';
 
+    const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
+
     const TYPE_STATUS = 'Status';
 
     const TYPE_FIELD = 'Field';
@@ -194,6 +196,9 @@ class Filter
         switch ($this->subjectType) {
             case self::TYPE_PARTICIPANTS:
                 $method = 'valueAliasParticipant';
+                break;
+            case self::TYPE_PARTICIPANTS_FULLNAME:
+                $method = 'valueAliasParticipantByFullName';
                 break;
             case self::TYPE_STATUS:
                 $method = 'valueAliasStatus';
