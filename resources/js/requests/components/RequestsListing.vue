@@ -29,6 +29,7 @@
                                    :viewConfig="getViewConfigFilter()"
                                    :container="''"
                                    :boundary="'viewport'"
+                                   :hideSortingButtons="column.hideSortingButtons"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -47,7 +48,7 @@
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -266,6 +267,7 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+          hideSortingButtons: true,
         },
         {
           label: this.$t("Status"),
@@ -333,7 +335,7 @@ export default {
       let htmlString = '';
       for (const task of value) {
         htmlString += `
-          <div>
+          <div class="text-truncate">
             <a class="text-nowrap" href="${this.openTask(task)}">
               ${task.element_name}
             </a>
@@ -527,7 +529,7 @@ export default {
         type = "Task";
       }
       if (value === "participants") {
-        type = "Participants";
+        type = "ParticipantsFullName";
       }
       if (value === "status") {
         type = "Status";

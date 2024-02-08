@@ -123,7 +123,7 @@ const PMColumnFilterCommonMixin = {
       if (column.format) {
         format = column.format;
       }
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "status" || column.field === "assignee") {
         format = "stringSelect";
       }
       return format;
@@ -136,17 +136,14 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "assignee") {
         formatRange = this.viewAssignee;
       }
-      if (column.field === "participants") {
-        formatRange = this.viewParticipants;
-      }
-      if (column.field === "process") {
-        formatRange = this.viewProcesses;
-      }
       return formatRange;
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants") {
+        operators = ["=", "in", "contains", "regex"];
+      }
+      if (column.field === "status" || column.field === "assignee") {
         operators = ["=", "in"];
       }
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
