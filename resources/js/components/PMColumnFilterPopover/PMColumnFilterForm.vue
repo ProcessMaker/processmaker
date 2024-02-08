@@ -202,12 +202,13 @@
         return root;
       },
       addItem(index) {
+        let operator = (this.format === "datetime") ? ">" : "=";
         let item = {
           subject: {
             type: this.type,
             value: this.value
           },
-          operator: "=",
+          operator: operator,
           value: "",
           logical: "and",
           viewControl: "PMColumnFilterOpInput"

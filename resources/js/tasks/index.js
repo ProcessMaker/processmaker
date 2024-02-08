@@ -5,6 +5,7 @@ new Vue({
   el: "#tasks",
   components: { TasksList },
   data: {
+    columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
     urlPmql: "",

@@ -14,7 +14,7 @@ const PMColumnFilterCommonMixin = {
     storeFilterConfiguration() {
       const { order, type } = this.filterConfiguration();
       let url = "users/store_filter_configuration/";
-      if (this.$props.columns) {
+      if (this.$props.columns && this.savedSearch) {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
@@ -49,7 +49,7 @@ const PMColumnFilterCommonMixin = {
         },
         {
           "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "includes": ["<", "<=", ">", ">="],
           "control": "PMColumnFilterOpDatetime",
           "input": ""
         },
@@ -192,6 +192,9 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "status") {
         operators = ["=", "in"];
       }
+      if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
+        operators = ["<", "<=", ">", ">=", "between"];
+      }  
       return operators;
     },
     getAssignee(filter) {

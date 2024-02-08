@@ -161,6 +161,8 @@ class AuthServiceProvider extends ServiceProvider
                 $allowedEndpoints[] = 'designer/screen-builder/' . $assetId . '/edit';
             } elseif ($assetType === Script::class) {
                 $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
+                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/edit';
+                $allowedEndpoints[] = 'designer/scripts/preview';
             }
         }
 

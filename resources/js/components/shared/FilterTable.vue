@@ -174,6 +174,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      this.calculateColumnWidth();
       const ellipsisColumn = document.querySelectorAll(".pm-table-ellipsis-column");
 
       ellipsisColumn.forEach((column) => {
@@ -209,7 +210,7 @@ export default {
         let min = 40;
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
-        if ((contentWidth - currentWidth) <= 60) {
+        if ((contentWidth - currentWidth) <= 80) {
           this.headers[this.resizingColumnIndex].width = currentWidth;
         }
       }
@@ -222,15 +223,24 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
-    formatDate(date, mask) {
-      const dateTimeFormat = "MM/DD/YY HH:mm";
-      const dateFormat = "MM/DD/YY";
-      if (mask === "datetime") {
-        return date === null ? "-" : moment(date).format(dateTimeFormat);
+    formatDate(value, format) {
+      let config = "";
+      if (typeof ProcessMaker !== "undefined" && ProcessMaker.user && ProcessMaker.user.datetime_format) {
+        if (format === "datetime") {
+          config = ProcessMaker.user.datetime_format;
+        }
+        if (format === "date") {
+          config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+        }
       }
-      if (mask === "date") {
-        return date === null ? "-" : moment(date).format(dateFormat);
+      if (value) {
+        if (moment(value).isValid()) {
+          return window.moment(value)
+            .format(config);
+        }
+        return value;
       }
+      return "-";
     },
     handleRowClick(row) {
       this.$emit("table-row-click", row);

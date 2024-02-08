@@ -47,11 +47,35 @@
                 </li>
             @endisset
         @else
-            @if ($catConfig->permissions['view'])
+            @if ($catConfig->permissions['view'] && $catConfig->routes->itemsIndexWeb !== "data-sources.index")
             <li class="nav-item">
                 <a class="{{$secondTab}}" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
                 role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
                     {{ $tabs[2] ?? __('Categories') }}
+                </a>
+            </li>
+            @endif
+            @if (
+                array_key_exists('view', $catConfig->permissions) &&
+                $catConfig->permissions['view'] &&
+                $catConfig->routes->itemsIndexWeb === "data-sources.index"
+            )
+            <li class="nav-item">
+                <a class="{{$secondTab}}" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
+                role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
+                    {{ $tabs[1] ?? __('Categories') }}
+                </a>
+            </li>
+            @endif
+            @if (
+                array_key_exists('view-data-sources', $catConfig->permissions) &&
+                $catConfig->permissions['view-data-sources'] &&
+                $catConfig->routes->itemsIndexWeb === "data-sources.index"
+            )
+            <li class="nav-item">
+                <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
+                role="tab" onclick="loadArchivedProcess()" aria-controls="nav-archived" aria-selected="true">
+                    {{ $tabs[2] ?? __('Logs') }}
                 </a>
             </li>
             @endif
