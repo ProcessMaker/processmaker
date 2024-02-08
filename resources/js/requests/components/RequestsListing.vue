@@ -170,7 +170,7 @@ export default {
   mounted() {
     this.getParticipants("");
     this.setupColumns();
-    this.getFilterConfiguration("requestFilter");
+    this.getFilterConfiguration();
   },
   methods: {
     setupColumns() {
@@ -267,6 +267,7 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+          filter_subject: { type: 'ParticipantsFullName' },
           hideSortingButtons: true,
         },
         {
@@ -275,6 +276,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { type: 'Status' },
         },
         {
           label: this.$t("Started"),
@@ -503,58 +505,15 @@ export default {
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
-    storeFilterConfiguration() {
-      let url = "users/store_filter_configuration/requestFilter";
-      if (this.$props.columns && this.savedSearch) {
-        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
-      }
-      let config = {
-        filter: this.advancedFilter,
+    filterConfiguration() {
+      return {
         order: {
           by: this.orderBy,
           direction: this.orderDirection
         },
-      };
-      ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
+        type: 'requestFilter',
+      }
     },
-    getTypeColumnFilter(value) {
-      let type = "Field";
-      if (value === "case_number" || value === "case_title") {
-        type = "Request";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "active_tasks") {
-        type = "Task";
-      }
-      if (value === "participants") {
-        type = "ParticipantsFullName";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
-    },
-    getAliasColumnForFilter(value) {
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      return value;
-    },
-    getAliasColumnForOrderBy(value) {
-      if (value === "process") {
-        value = "process.name";
-      }
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      if (value === "participants") {
-        value = "id";
-      }
-      return value;
-    }
   }
 };
 </script>

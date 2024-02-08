@@ -131,8 +131,9 @@ class TaskController extends Controller
                 'lastname',
                 'avatar',
                 'timezone',
-                'datetime_format'
+                'datetime_format',
             ]);
+
             return view('tasks.edit', [
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,

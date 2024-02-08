@@ -131,7 +131,7 @@
     //Data needed for default search
     window.Processmaker.user = @json($currentUser);
     window.Processmaker.status = '{{ $type }}';
-    window.Processmaker.filter_user = @json($userFilter);
+    window.ProcessMaker.advanced_filter = @json($userFilter);
     window.Processmaker.defaultColumns = @json($defaultColumns);
 </script>
 <script src="{{mix('js/requests/index.js')}}"></script>

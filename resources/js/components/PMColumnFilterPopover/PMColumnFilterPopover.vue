@@ -48,11 +48,9 @@
         popoverShow: false
       };
     },
-    updated() {
-      this.$emit("onUpdate", this);
-    },
     methods: {
       onShown() {
+        this.$emit("onUpdate", this);
         this.focusCancelButton();
         this.closeOnBlur();
       },
