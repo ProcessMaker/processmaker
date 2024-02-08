@@ -258,6 +258,7 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          tooltip: this.$t("This column doesn't have a filter"),
         },
         {
           label: this.$t("Participants"),

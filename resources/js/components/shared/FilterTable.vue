@@ -39,6 +39,14 @@
               class="pm-table-column-resizer"
               @mousedown="startResize(index)"
             />
+            <b-tooltip
+              v-if="column.tooltip"
+              placement="top"
+              :target="`${tableName}-column-${index}`"
+              custom-class="pm-table-tooltip-header"
+            >
+              {{ column.tooltip }}
+            </b-tooltip>
           </th>
         </tr>
         <tr>
@@ -366,6 +374,21 @@ export default {
 .pm-table-tooltip .arrow::before {
   border-bottom-color: #F2F8FE !important;
   border-top-color: #F2F8FE !important;
+}
+.pm-table-tooltip-header {
+  opacity: 1 !important;
+}
+.pm-table-tooltip-header .tooltip-inner {
+  background-color: #deebff;
+  color: #104a75;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  max-width: 250px;
+  padding: 14px;
+  border-radius: 7px;
+}
+.pm-table-tooltip-header .arrow::before {
+  border-bottom-color: #deebff !important;
+  border-top-color: #deebff !important;
 }
 .pm-table-filter-applied {
   color: #1572C2;
