@@ -31,7 +31,7 @@ import wizardHelperProcessModalMixin from "./mixins/wizardHelperProcessModal";
 export default {
     mixins: [wizardHelperProcessModalMixin],
     components: { Modal, Task},
-    props: ["wizardTemplateUuid"],
+    props: ["wizardTemplateUuid", "processLaunchpadId"],
     data() {
         return {
             helperProcessId: null,
