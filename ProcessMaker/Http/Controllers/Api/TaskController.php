@@ -185,8 +185,30 @@ class TaskController extends Controller
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
         foreach ($orderColumns as $column) {
+            $parts = explode('.', $column);
+            $table = count($parts) > 1 ? array_shift($parts) : 'process_request_tokens';
+            $columnName = array_pop($parts);
             if (!Str::contains($column, '.')) {
                 $query->orderBy($column, $request->input('order_direction', 'asc'));
+            } elseif ($table === 'process_request' || $table === 'processRequest') {
+                if ($columnName === 'id') {
+                    $query->orderBy(
+                        'process_request_id',
+                        $request->input('order_direction', 'asc')
+                    );
+                } else {
+                    // Raw sort by (select column from process_requests ...)
+                    $query->orderBy(
+                        DB::raw("(select
+                                $columnName
+                            from
+                                process_requests
+                            where
+                                process_requests.id = process_request_tokens.process_request_id
+                        )"),
+                        $request->input('order_direction', 'asc')
+                    );
+                }
             }
         }
 
