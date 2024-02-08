@@ -2,24 +2,27 @@
 
 namespace ProcessMaker\Listeners;
 
-use Carbon\Carbon;
+use ProcessMaker\Models\User;
 use Illuminate\Auth\Events\Login;
 
 class LoginListener
 {
     /**
-     * Handle the event.
+     * Updated the user's loggedin_at attribute
      *
-     * @param  Illuminate\Auth\Events\Login  $user
+     * @param  \Illuminate\Auth\Events\Login  $event
+     *
      * @return void
      */
-    public function handle(Login $event)
+    public function handle(Login $event): void
     {
-        // Grab our user that was logged in
         $user = $event->user;
-        // Update the last_login
-        $user->timestamps = false;
-        $user->loggedin_at = Carbon::now();
+
+        if (!$user instanceof User) {
+            return;
+        }
+
+        $user->setAttribute('loggedin_at', now());
         $user->save();
     }
 }
