@@ -149,7 +149,7 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
         operators = ["=", "in"];
       }
-      if (column.field === "initiated_at" || column.field === "completed_at") {
+      if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];
       }  
       return operators;
