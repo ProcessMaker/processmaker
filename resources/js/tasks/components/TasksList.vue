@@ -81,13 +81,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ format(getNestedPropertyValue(row, header.field), header.format, header.field, row.data) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ getNestedPropertyValue(row, header.field) }}
+                      {{ format(getNestedPropertyValue(row, header.field), header.format, header.field, row.data) }}
                     </b-tooltip>
                   </div>
                 </template>
