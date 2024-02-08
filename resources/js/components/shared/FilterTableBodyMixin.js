@@ -50,5 +50,42 @@ export default {
     getNestedPropertyValue(obj, path) {
       return get(obj, path);
     },
+    format(value, format, column, datax) {
+      let config = "";
+      if (format === "datetime") {
+        config = ProcessMaker.user.datetime_format;
+        value = this.checkCustomColumnData(column, datax, config, value);
+      }
+      if (format === "date") {
+        config = ProcessMaker.user.datetime_format.replace(/[\sHh:msaAzZ]/g, "");
+        value = this.checkCustomColumnData(column, datax, config, value);
+      }
+      return value;
+    },
+    convertUTCToLocal(value, config) {
+      if (value) {
+        if (moment(value).isValid()) {
+          return window.moment(value)
+            .format(config);
+        }
+        return value;
+      }
+      return "-";
+    },
+    checkCustomColumnData(columnName, dataColumn, config, originValue) {
+      let columnValue = "";
+      if (columnName.startsWith("data.")) {
+        columnName = columnName.substring("data.".length);
+        for (const key in dataColumn) {
+          if (key === columnName) {
+            columnValue = dataColumn[key];
+            return this.convertUTCToLocal(columnValue, config);
+          }
+        }
+      }
+      else{
+        return originValue;
+      }
+    }
   },
 };
