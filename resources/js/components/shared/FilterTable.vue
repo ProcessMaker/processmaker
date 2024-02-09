@@ -43,6 +43,8 @@
               v-if="column.tooltip"
               :target="`${tableName}-column-${index}`"
               custom-class="pm-table-tooltip-header"
+              placement="bottom"
+              delay="600"
             >
               {{ column.tooltip }}
             </b-tooltip>
@@ -82,6 +84,7 @@
                   v-if="header.truncate"
                   :target="`${tableName}-element-${rowIndex}-${index}`"
                   custom-class="pm-table-tooltip"
+                  @show="checkIfTooltipIsNeeded"
                 >
                   {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
                 </b-tooltip>
@@ -104,6 +107,7 @@
                       v-if="header.truncate"
                       :target="`${tableName}-element-${rowIndex}-${index}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>

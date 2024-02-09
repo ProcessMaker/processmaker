@@ -56,6 +56,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -86,6 +87,7 @@
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>

@@ -54,6 +54,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -77,6 +78,7 @@
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -259,7 +261,7 @@ export default {
           default: true,
           width: 140,
           truncate: true,
-          tooltip: this.$t("This column doesn't have a filter"),
+          tooltip: this.$t("This column can not be sorted or filtered."),
         },
         {
           label: this.$t("Participants"),
@@ -335,16 +337,13 @@ export default {
       );
     },
     formatActiveTasks(value) {
-      let htmlString = '';
-      for (const task of value) {
-        htmlString += `
-          <div class="text-truncate">
-            <a class="text-nowrap" href="${this.openTask(task)}">
-              ${task.element_name}
-            </a>
-          </div>
+      return value.map((task) => {
+        return `
+          <a href="${this.openTask(task)}">
+            ${task.element_name}
+          </a>
         `;
-      }
+      }).join('<br/>');
       return htmlString;
     },
     formatCaseNumber(value) {
