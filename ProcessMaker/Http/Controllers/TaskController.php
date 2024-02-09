@@ -46,7 +46,7 @@ class TaskController extends Controller
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
         // Get default Saved search config
-        if (!class_exists(SavedSearch::class)) {
+        if (class_exists(SavedSearch::class)) {
             $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
                 Auth::user(),
                 SavedSearch::KEY_TASKS,
