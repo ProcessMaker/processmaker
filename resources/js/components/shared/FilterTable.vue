@@ -41,7 +41,6 @@
             />
             <b-tooltip
               v-if="column.tooltip"
-              placement="top"
               :target="`${tableName}-column-${index}`"
               custom-class="pm-table-tooltip-header"
             >
