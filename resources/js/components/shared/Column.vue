@@ -10,7 +10,7 @@
                   <span class="column-label" :class="{'without-format': withoutFormat}">{{ item.label }}</span>
               </div>
               <div>
-                <a v-show="!withoutConfig" class="text-primary column-button" v-b-modal.column-modal v-if="! item.default" @click="onConfig"><i class="fa fa-cog fa-fw"></i></a>
+                <a v-show="!withoutConfig" class="text-primary column-button" v-b-modal.column-modal v-if="! item.default || forceEnableConfig" @click="onConfig"><i class="fa fa-cog fa-fw"></i></a>
                 <a v-show="!withoutRemove" class="text-primary column-button" @click="onRemove"><i class="fa fa-times fa-fw"></i></a>
               </div>
           </div>
@@ -22,7 +22,7 @@
 import DataFormats from '../../data-formats';
 
 export default {
-  props: ["column","withoutConfig","withoutRemove","withoutFormat"],
+  props: ["column","withoutConfig","withoutRemove","withoutFormat","forceEnableConfig"],
   data() {
     return {
       item: this.column
