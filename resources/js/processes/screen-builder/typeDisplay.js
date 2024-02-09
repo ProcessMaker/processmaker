@@ -9,6 +9,7 @@ const TableControl = FormBuilderControls.find((control) => control.rendererBindi
 const RichTextControl = FormBuilderControls.find((control) => control.rendererBinding === "FormHtmlEditor");
 const FormRecordList = FormBuilderControls.find((control) => control.rendererBinding === "FormRecordList");
 const FormImage = FormBuilderControls.find((control) => control.rendererBinding === "FormImage");
+const FormAvatar = FormBuilderControls.find((control) => control.rendererBinding === "FormAvatar");
 const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
 const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
 const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
@@ -25,6 +26,7 @@ const controlsDisplay = [
   TableControl,
   FormRecordList,
   FormImage,
+  FormAvatar,
   FormLoop,
   FormNestedScreen,
   FileDownloadControl,
