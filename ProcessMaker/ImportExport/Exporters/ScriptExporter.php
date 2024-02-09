@@ -36,14 +36,9 @@ class ScriptExporter extends ExporterBase
 
         foreach ($this->getDependents('user', true) as $dependent) {
             $scriptUser = $dependent->model;
-            if (!is_null($scriptUser->id)) {
-                // Assign the user ID to run the script
-                $this->model->run_as_user_id = $scriptUser->id;
-            } else {
-                // If the user is not set in the dependent modal, default to the admin user
-                $adminUser = User::where('is_administrator', true)->first();
-                $this->model->run_as_user_id = $adminUser->id;
-            }
+            // Assign the user ID to run the script
+            // If the user is not set in the dependent modal, default to the admin user
+            $this->model->run_as_user_id = $scriptUser?->id ?? User::where('is_administrator', true)->first()->id;
         }
 
         foreach ($this->getDependents('executor', true) as $dependent) {
