@@ -158,9 +158,11 @@ class AuthServiceProvider extends ServiceProvider
             } elseif ($assetType === Screen::class) {
                 $allowedEndpoints[] = "designer/screen-builder/{$assetId}/edit";
                 $allowedEndpoints[] = "designer/screens/{$assetId}/edit";
+                $allowedEndpoints[] = 'designer/screens/preview';
             } elseif ($assetType === Script::class) {
                 $allowedEndpoints[] = "designer/scripts/{$assetId}/builder";
                 $allowedEndpoints[] = "designer/scripts/{$assetId}/edit";
+                $allowedEndpoints[] = 'designer/scripts/preview';
             }
 
             if (class_exists($dataSourceClass) && $assetType === $dataSourceClass) {
@@ -168,9 +170,6 @@ class AuthServiceProvider extends ServiceProvider
             }
             if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
                 $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
-                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
-                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/edit';
-                $allowedEndpoints[] = 'designer/scripts/preview';
             }
         }
 
