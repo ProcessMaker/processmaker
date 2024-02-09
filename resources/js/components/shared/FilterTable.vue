@@ -165,9 +165,16 @@ export default {
       ellipsisColumn.forEach((column) => {
         column.addEventListener("click", this.handleEllipsisClick);
       });
+      window.addEventListener("resize", this.handleWindowResize);
     });
   },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.handleWindowResize);
+  },
   methods: {
+    handleWindowResize() {
+      this.calculateColumnWidth();
+    },
     calculateColumnWidth() {
       this.headers.forEach((headerColumn, index) => {
         if (this.calculateContent(index) !== 0) {
