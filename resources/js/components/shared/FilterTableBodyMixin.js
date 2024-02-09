@@ -73,7 +73,6 @@ export default {
       return "-";
     },
     checkIfTooltipIsNeeded(e,v){
-      console.log(e.target, e.target.offsetWidth, e.target.scrollWidth);
       if (e.target.offsetWidth >= e.target.scrollWidth) {
         e.preventDefault();
       }
