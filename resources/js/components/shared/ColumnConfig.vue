@@ -10,16 +10,16 @@
       <b-input v-model="column.label" ref="labelInput"></b-input>
     </b-form-group>
     <b-form-group :label="$t('Field')" class="mb-4">
-      <b-input v-model="column.field"></b-input>
+      <b-input v-model="column.field" :disabled="editOnlyLabel && column.default"></b-input>
     </b-form-group>
     <b-form-group :label="$t('Format')" class="mb-4">
-      <data-format-selector v-model="column.format"></data-format-selector>
+      <data-format-selector v-model="column.format" :disabled="editOnlyLabel && column.default"></data-format-selector>
     </b-form-group>
     <b-form-group :label="$t('Currency Format')" class="mb-4" v-if="column.format == 'currency'">
       <data-mask-selector v-model="column.mask"></data-mask-selector>
     </b-form-group>
     <b-form-group class="mb-4">
-      <b-form-checkbox v-model="column.sortable" switch>
+      <b-form-checkbox v-model="column.sortable" :disabled="editOnlyLabel && column.default" switch>
           {{ $t('Sortable') }}
       </b-form-checkbox>
     </b-form-group>
@@ -43,6 +43,12 @@ export default {
   components: {
     DataFormatSelector,
     DataMaskSelector
+  },
+  props: {
+    editOnlyLabel: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -102,6 +108,7 @@ export default {
     onShow() {
       this.index = this.$parent.columnToConfig.index;
       
+      this.original.default = this.$parent.columnToConfig.data.default;
       this.original.label = this.$parent.columnToConfig.data.label;
       this.original.field = this.$parent.columnToConfig.data.field;
       this.original.sortable = this.$parent.columnToConfig.data.sortable;
@@ -114,6 +121,7 @@ export default {
         this.title = this.$t('Configure {{name}}', {name: this.original.label});
       }
       
+      this.column.default = this.original.default;
       this.column.label = this.original.label;
       this.column.field = this.original.field;
       this.column.sortable = this.original.sortable;

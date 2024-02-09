@@ -44,7 +44,7 @@
     watch: {
       value: {
         handler(newValue) {
-          this.input = newValue;
+          this.input = this.convertFromISOString(newValue);
         },
         immediate: true
       },
@@ -63,8 +63,22 @@
       this.selectedTime = this.getCurrentTime(this.input);
     },
     methods: {
+      convertToISOString(dateString) {
+        let inUTCTimeZone = ''
+        if (dateString){
+          inUTCTimeZone = moment(dateString).tz('UTC').toISOString();
+        }
+        return inUTCTimeZone;
+      },
+      convertFromISOString(dateString) {
+        let inLocalTimeZone = dateString;
+        if (dateString){
+          inLocalTimeZone = moment(dateString).tz(window.ProcessMaker.user.timezone).format("YYYY-MM-DD HH:mm:ss");
+        }
+        return inLocalTimeZone;
+      },
       emitInput() {
-        this.$emit("input", this.input);
+        this.$emit("input", this.convertToISOString(this.input));
       },
       setInput() {
         this.input = this.selectedDate + " " + this.selectedTime;

@@ -39,7 +39,9 @@ class SaveSession
     {
         $key = self::getKey($user, $name);
 
-        return self::get($key, []);
+        $default = ['filters' => []];
+
+        return self::get($key, $default);
     }
 
     /**

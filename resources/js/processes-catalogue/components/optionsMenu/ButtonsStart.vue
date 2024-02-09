@@ -116,7 +116,7 @@ export default {
           this.spin = 0;
           const instance = response.data;
           this.$cookies.set("fromTriggerStartEvent", true, "1min");
-          window.location = `/requests/${instance.id}`;
+          window.location = `/requests/${instance.id}?fromTriggerStartEvent=`;
         }).catch((err) => {
           const { data } = err.response;
           if (data.message) {

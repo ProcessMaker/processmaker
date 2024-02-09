@@ -145,14 +145,14 @@
       </div>
 
       <div
-        v-if="showFilters && selectedFilters.length"
+        v-if="filterBadges.length > 0"
         class="selected-filters-bar d-flex pt-2"
       >
         <span
-          v-for="filter in selectedFilters"
+          v-for="filter in filterBadges"
           class="selected-filter-item d-flex align-items-center"
         >
-          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}: </span>
+          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
           {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
           <span
             v-if="filter[1].length > 1"
@@ -164,6 +164,7 @@
             role="button"
             class="fa fa-times pl-2 pr-0"
             @click="removeFilter(filter)"
+            v-if="!get(filter, '1.0.advanced_filter', false)"
           />
         </span>
       </div>
@@ -173,9 +174,12 @@
 <script>
 import { MustacheHelper } from "@processmaker/screen-builder";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
+import advancedFilterStatusMixin from "../../common/advancedFilterStatusMixin";
+import { get } from "lodash";
 
 export default {
   components: { MustacheHelper, PmqlInputFilters },
+  mixins: [advancedFilterStatusMixin],
   props: [
     "searchType",
     "value",
@@ -223,10 +227,17 @@ export default {
         promptTokens: 0,
         totalTokens: 0,
       },
+      get,
     };
   },
 
   computed: {
+    filterBadges() {
+      if (!this.showFilters) {
+        return [];
+      }
+      return [...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
+    },
     showPmqlSection() {
       return (
         !this.hidePmqlSection
@@ -268,7 +279,6 @@ export default {
       }
     },
   },
-
   mounted() {
     this.query = this.urlPmql ? this.urlPmql : this.value;
     this.filtersPmql = this.filtersValue;

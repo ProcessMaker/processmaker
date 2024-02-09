@@ -168,6 +168,9 @@ class AuthServiceProvider extends ServiceProvider
             }
             if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
                 $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
+                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
+                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/edit';
+                $allowedEndpoints[] = 'designer/scripts/preview';
             }
         }
 

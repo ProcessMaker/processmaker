@@ -41,7 +41,10 @@ trait ProjectAssetTrait
             $projectIds = $input->input('projects', '');
         } elseif (is_int($input)) {
             $projectIds = $input;
-        } else {
+        } elseif (is_string($input)) {
+            $projectIds = $input;
+        }
+        else {
             return [];
         }
 
