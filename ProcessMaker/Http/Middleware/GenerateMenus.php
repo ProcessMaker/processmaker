@@ -287,10 +287,6 @@ class GenerateMenus
     {
         $user = \Auth::user();
 
-        if (!$user) {
-            return false;
-        }
-
         if ($user->is_administrator) {
             return true;
         }
@@ -302,7 +298,7 @@ class GenerateMenus
         $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
         $userWithDefaultPermissions = empty(array_diff($userPermissions, $defaultPermissions));
 
-        if ($user->can($permission) && count($userPermissions) === 2 && $userWithDefaultPermissions) {
+        if (!$user || $user->can($permission) && count($userPermissions) === 2 && $userWithDefaultPermissions) {
             return false; // Deny UI access if the user has only the 'Projects' permission
         }
 
