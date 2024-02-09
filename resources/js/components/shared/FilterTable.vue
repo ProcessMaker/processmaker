@@ -37,14 +37,14 @@
             <div
               v-if="index !== headers.length - 1"
               class="pm-table-column-resizer"
-              @mousedown="startResize(index)"
+              @mousedown="startResize($event, index)"
             />
             <b-tooltip
               v-if="column.tooltip"
               :target="`${tableName}-column-${index}`"
               custom-class="pm-table-tooltip-header"
               placement="bottom"
-              delay="600"
+              delay="500"
             >
               {{ column.tooltip }}
             </b-tooltip>
@@ -186,7 +186,7 @@ export default {
         }
       });
     },
-    startResize(index) {
+    startResize(event, index) {
       this.isResizing = true;
       this.calculateColumnWidth();
       this.resizingColumnIndex = index;
