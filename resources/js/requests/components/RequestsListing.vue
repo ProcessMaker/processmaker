@@ -409,7 +409,7 @@ export default {
 
         if (filter && filter.length) {
           if (filter.isPMQL()) {
-            pmql = `(${pmql}) and (${filter})`;
+            pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
             filter = '';
           }
         }
