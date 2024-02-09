@@ -90,7 +90,7 @@ export default {
         this.importProcessTemplate();
       } else {
         this.showHelperProcess = false;
-        this.close();
+        this.$bvModal.hide("processWizard");
       }
     },
     submit(task) {
