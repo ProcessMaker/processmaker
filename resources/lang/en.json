@@ -1768,6 +1768,7 @@
   "There is a validation error in your form.": "There is a validation error in your form.",
   "These credentials do not match our records.": "These credentials do not match our records.",
   "This application installs a new version of ProcessMaker.": "This application installs a new version of ProcessMaker.",
+  "This column doesn't have a filter": "This column doesn't have a filter",
   "This control is hidden until this expression is true": "This control is hidden until this expression is true",
   "This environment already contains a newer version of the {{ item }} named '{{ name }}.'":"This environment already contains a newer version of the {{ item }} named '{{ name }}.'",
   "This environment already contains an older version of the {{ item }} named '{{ name }}.'":"This environment already contains an older version of the {{ item }} named '{{ name }}.'",
