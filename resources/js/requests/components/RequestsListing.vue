@@ -42,20 +42,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -72,13 +72,13 @@
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
-                  {{ getNestedPropertyValue(row, header.field) }}
+                  {{ getNestedPropertyValue(row, header) }}
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
                 </div>
               </template>
