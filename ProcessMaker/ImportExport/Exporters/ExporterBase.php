@@ -509,21 +509,32 @@ abstract class ExporterBase implements ExporterInterface
             })
             ->first();
 
+        // If the process has a set category, we need to verify the "Uncategorized"
+        // category exists for this model and if it doesn't, recreate it
+        $uncategorizedCategory = function () use ($categoryClass) {
+            return $categoryClass::where('name', 'Uncategorized')->firstOrCreate([
+                'name' => __('Uncategorized'),
+                'status' => 'ACTIVE',
+                'is_system' => false,
+            ]);
+        };
+
         // If a template is being used and an associated category is present, add that category to the collection.
         // Otherwise, if the collection is empty and there's an uncategorized reference, add the uncategorized category.
         if ($isTemplate && isset($this->model->process_category_id)) {
             if ($this->getReference('uncategorized-category')) {
-                $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
+                $categories->push($uncategorizedCategory());
             } else {
-                $categorFind = $categoryClass::find($this->model->process_category_id);
-                if (!$categorFind) {
-                    $categorFind = $categoryClass::where('name', 'Uncategorized')->firstOrFail();
-                    \Log::debug($categoryClass . ' ID: ' . $this->model->process_category_id . ' not found. Changing category toUncategorize.');
+                $foundCategory = $categoryClass::find($this->model->process_category_id);
+
+                if (!$foundCategory instanceof $categoryClass) {
+                    Log::warning("Import/Export: Unable to find ".$categoryClass::class." with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
                 }
-                $categories->push($categorFind);
+
+                $categories->push($foundCategory ?? $uncategorizedCategory());
             }
         } elseif ($categories->empty() && $this->getReference('uncategorized-category')) {
-            $categories->push($categoryClass::where('name', 'Uncategorized')->firstOrFail());
+            $categories->push($uncategorizedCategory());
         }
 
         $categoriesString = $categories->map(fn ($c) => $c->id)->unique()->join(',');

@@ -15,6 +15,8 @@ class Filter
 
     const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
 
+    const TYPE_ASSIGNEES_FULLNAME = 'AssigneesFullName';
+
     const TYPE_STATUS = 'Status';
 
     const TYPE_FIELD = 'Field';
@@ -199,6 +201,9 @@ class Filter
                 break;
             case self::TYPE_PARTICIPANTS_FULLNAME:
                 $method = 'valueAliasParticipantByFullName';
+                break;
+            case self::TYPE_ASSIGNEES_FULLNAME:
+                $method = 'valueAliasAssigneeByFullName';
                 break;
             case self::TYPE_STATUS:
                 $method = 'valueAliasStatus';

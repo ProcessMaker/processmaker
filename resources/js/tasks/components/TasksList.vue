@@ -24,7 +24,7 @@
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
-                                   :type="getTypeColumnFilter(column.field)"
+                                   type="Field"
                                    :value="column.field"
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
@@ -44,20 +44,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <span v-html="sanitize(getNestedPropertyValue(row, header.field))"></span>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -71,7 +71,7 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
                 </template>
@@ -81,13 +81,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ getNestedPropertyValue(row, header.field) }}
+                      {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
                 </template>
@@ -261,7 +261,7 @@ export default {
     this.getAssignee("");
     this.getProcess();
     this.setupColumns();
-    this.getFilterConfiguration("taskFilter");
+    this.getFilterConfiguration();
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -309,6 +309,8 @@ export default {
           sortable: true,
           default: true,
           width: 80,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
+          order_column: 'process_requests.case_number',
         },
         {
           label: this.$t("Case title"),
@@ -318,6 +320,8 @@ export default {
           default: true,
           width: 220,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
+          order_column: 'process_requests.case_title',
         },
         {
           label: this.$t("Process"),
@@ -326,6 +330,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.name' },
+          order_column: 'process_requests.name',
         },
         {
           label: this.$t("Task"),
@@ -334,6 +340,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { value: 'element_name' },
+          order_column: 'element_name',
         },
         {
           label: this.$t("Status"),
@@ -341,6 +349,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { value: 'Status' },
         },
         {
           label: this.$t("Due date"),
@@ -524,72 +533,15 @@ export default {
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
-    storeFilterConfiguration() {
-      let url = "users/store_filter_configuration/taskFilter";
-      if (this.$props.columns && this.savedSearch) {
-        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
-      }
-      let config = {
-        filter: this.advancedFilter,
+    filterConfiguration() {
+      return {
         order: {
           by: this.orderBy,
           direction: this.order_direction
-        }
-      };
-      ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
+        },
+        type: 'taskFilter',
+      }
     },
-    getTypeColumnFilter(value) {
-      let type = "Field";
-      //The inclusion of the alias in the comparison is necessary to ensure the correct
-      //type is obtained when the column has been modified by the method getAliasColumnForFilter().
-      if (value === "case_number" || 
-          value === "case_title" || 
-          value === "processRequest.case_number" || 
-          value === "processRequest.case_title") {
-        type = "Relationship";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
-    },
-    getAliasColumnForFilter(value) {
-      if (value === "case_number") {
-        value = "processRequest.case_number";
-      }
-      if (value === "case_title") {
-        value = "processRequest.case_title";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user_id";
-      }
-      return value;
-    },
-    getAliasColumnForOrderBy(value) {
-      if (value === "case_number") {
-        value = "process_requests.case_number";
-      }
-      if (value === "case_title") {
-        value = "process_requests.case_title_formatted";
-      }
-      if (value === "process") {
-        value = "process_requests.name";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user.fullname";
-      }
-      return value;
-    }
   }
 };
 </script>
