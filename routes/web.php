@@ -96,6 +96,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'redirect'])
         ->name('processes.catalogue.index')
         ->middleware('can:view-process-catalog');
+    Route::get('process-catalogue/{process?}', [ProcessesCatalogueController::class, 'redirect'])
+        ->name('process.catalogue.index')
+        ->middleware('can:view-process-catalog');
     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
         ->name('process.browser.index')
         ->middleware('can:view-process-catalog');
