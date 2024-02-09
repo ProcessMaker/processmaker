@@ -64,12 +64,16 @@ class RequestController extends Controller
         $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
 
         // Get default Saved search config
-        $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
-            Auth::user(),
-            SavedSearch::KEY_REQUESTS,
-        );
-        if ($defaultSavedSearch) {
-            $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+        if (class_exists(SavedSearch::class)) {
+            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_REQUESTS,
+            );
+            if ($defaultSavedSearch) {
+                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+            } else {
+                $defaultColumns = null;
+            }
         } else {
             $defaultColumns = null;
         }
