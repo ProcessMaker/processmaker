@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.9.2+nightly-20240209",
+    "version": "4.9.2+next-20240209B",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
