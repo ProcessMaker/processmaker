@@ -19,9 +19,4 @@ class ProcessesCatalogueController extends Controller
     {
         return view('processes-catalogue.index', compact('process'));
     }
-    
-    public function redirect(Request $request)
-    {
-        return redirect()->route('process.browser.index');
-    }
 }
