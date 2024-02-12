@@ -46,6 +46,21 @@
                     </a>
                 </li>
             @endisset
+        @elseif (isset($myScreenTemplates))
+            @if ($catConfig->permissions['view'])
+                <li class="nav-item">
+                    <a class="nav-item nav-link" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
+                    role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
+                        {{ $tabs[1] ?? __('Categories') }}
+                    </a>
+                </li>
+            @endif
+            <li class="nav-item">
+                <a class="{{$secondTab}}" id="nav-myTemplates-tab" data-toggle="tab" href="#nav-myTemplates"
+                role="tab" onclick="loadMyTemplates()" aria-controls="nav-myTemplates" aria-selected="true">
+                    {{ $tabs[2] ?? __('My Templates') }}
+                </a>
+            </li>
         @else
             @if ($catConfig->permissions['view'] && $catConfig->routes->itemsIndexWeb !== "data-sources.index")
             <li class="nav-item">
@@ -105,10 +120,15 @@
                     </div>
                 </div>
                 @endcan
-                <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-                <div class="card card-body p-3 border-top-0">
-                    {{ $categoryList }}
-                </div>
+                <div
+                    class="{{$secondContent}}"
+                    id="nav-categories"
+                    role="tabpanel"
+                    aria-labelledby="nav-categories-tab"
+                >
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $categoryList }}
+                    </div>
                 </div>
                 @isset($tabs[3])
                     <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
@@ -117,8 +137,31 @@
                         </div>
                     </div>
                 @endisset
+            @elseif(isset($myScreenTemplates))
+                <div
+                    class="{{$secondContent}}"
+                    id="nav-categories"
+                    role="tabpanel"
+                    aria-labelledby="nav-categories-tab"
+                >
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $categoryList }}
+                    </div>
+                </div>
+                @isset($tabs[3])
+                <div class="tab-pane fade" id="nav-myTemplates" role="tabpanel" aria-labelledby="nav-myTemplates-tab">
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $myTemplatesList }}
+                    </div>
+                </div>
+                @endisset
             @else
-                <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
+                <div
+                    class="{{$secondContent}}"
+                    id="nav-categories"
+                    role="tabpanel"
+                    aria-labelledby="nav-categories-tab"
+                >
                     <div class="card card-body p-3 border-top-0">
                         {{ $categoryList }}
                     </div>
