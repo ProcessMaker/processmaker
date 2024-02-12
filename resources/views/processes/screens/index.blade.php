@@ -21,10 +21,12 @@
             __('Screens'),
             __('Categories'),
             __('My Templates'),
+            __('Public Templates'),
         ],
         'listConfig' => $listConfig,
         'catConfig' => $catConfig,
         'myScreenTemplates' => $myScreenTemplates,
+        'publicScreenTemplates' => $publicScreenTemplates,
     ])
         @slot('itemList')
             @component('processes.screens.list', ['config' => $listConfig])
@@ -38,6 +40,11 @@
 
         @slot('myTemplatesList')
             @component('processes.screens.myTemplates', ['config' => $myScreenTemplates])
+            @endcomponent
+        @endslot
+
+        @slot('publicTemplatesList')
+            @component('processes.screens.publicTemplates', ['config' => $publicScreenTemplates])
             @endcomponent
         @endslot
     @endcomponent
