@@ -56,7 +56,11 @@ class ScreenController extends Controller
             'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
 
-        return view('processes.screens.index', compact('listConfig', 'catConfig'));
+        $myScreenTemplates = (object) [
+
+        ];
+
+        return view('processes.screens.index', compact('listConfig', 'catConfig', 'myScreenTemplates'));
     }
 
     /**
