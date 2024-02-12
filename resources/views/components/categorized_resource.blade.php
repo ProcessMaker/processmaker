@@ -61,6 +61,12 @@
                     {{ $tabs[2] ?? __('My Templates') }}
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-item nav-link" id="nav-publicTemplates-tab" data-toggle="tab" href="#nav-publicTemplates"
+                role="tab" onclick="loadPublicTemplates()" aria-controls="nav-publicTemplates" aria-selected="true">
+                    {{ $tabs[3] ?? __('Public Templates') }}
+                </a>
+            </li>
         @else
             @if ($catConfig->permissions['view'] && $catConfig->routes->itemsIndexWeb !== "data-sources.index")
             <li class="nav-item">
@@ -152,6 +158,18 @@
                 <div class="tab-pane fade" id="nav-myTemplates" role="tabpanel" aria-labelledby="nav-myTemplates-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $myTemplatesList }}
+                    </div>
+                </div>
+                @endisset
+                @isset($tabs[4])
+                <div
+                    class="tab-pane fade"
+                    id="nav-publicTemplates"
+                    role="tabpanel"
+                    aria-labelledby="nav-publicTemplates-tab"
+                >
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $publicTemplatesList }}
                     </div>
                 </div>
                 @endisset
