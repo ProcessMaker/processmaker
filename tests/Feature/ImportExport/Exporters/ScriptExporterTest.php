@@ -3,7 +3,9 @@
 namespace Tests\Feature\ImportExport\Exporters;
 
 use Database\Seeders\CategorySystemSeeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use ProcessMaker\ImportExport\Exporters\ScriptExporter;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -49,7 +51,7 @@ class ScriptExporterTest extends TestCase
     {
         DB::beginTransaction();
         (new CategorySystemSeeder)->run();
-        $uncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+        $uncategorizedCategory = ScriptCategory::first();
 
         $script = Script::factory()->create(['title' => 'test']);
         $script->categories()->sync([$uncategorizedCategory->id]);
@@ -57,7 +59,7 @@ class ScriptExporterTest extends TestCase
         DB::rollBack(); // Delete all created items since DB::beginTransaction
 
         (new CategorySystemSeeder)->run();
-        $existingUncategorizedCategory = \ProcessMaker\Models\ScriptCategory::first();
+        $existingUncategorizedCategory = ScriptCategory::first();
         $existingUuid = $existingUncategorizedCategory->uuid;
 
         $this->import($payload);
@@ -114,17 +116,24 @@ class ScriptExporterTest extends TestCase
 
     public function testNoMatchingRunAsUser()
     {
+        $admin_user = User::factory()->create([
+            'username' => 'admin.' . Str::random(6),
+            'is_administrator' => 1,
+        ]);
+
         DB::beginTransaction();
+
         $user = User::factory()->create(['username' => 'test']);
         $script = Script::factory()->create(['title' => 'test', 'run_as_user_id' => $user->id]);
-
         $payload = $this->export($script, ScriptExporter::class, null, false);
+
         DB::rollBack(); // Delete all created items since DB::beginTransaction
 
         $this->import($payload);
 
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertNull($script->run_as_user_id);
+        $admin_user->delete();
     }
 
     public function testRunAsUserIdNull()
