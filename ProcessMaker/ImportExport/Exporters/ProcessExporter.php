@@ -75,7 +75,7 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
     }
 
-    public function import($existingAssetInDatabase = null) : bool
+    public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
     {
         if ($existingAssetInDatabase) {
             $this->model = Process::where('id', $existingAssetInDatabase)->first();
@@ -90,7 +90,11 @@ class ProcessExporter extends ExporterBase
             $process->manager_id = $dependent->model->id;
         }
 
-        $this->associateCategories(ProcessCategory::class, 'process_category_id');
+        // Avoid associating the category from the manifest with processes imported from templates.
+        // Use the user-selected category instead.
+        if (!$importingFromTemplate) {
+            $this->associateCategories(ProcessCategory::class, 'process_category_id');
+        }
 
         $this->importSignals();
 

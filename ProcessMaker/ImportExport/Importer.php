@@ -39,47 +39,22 @@ class Importer
         return Manifest::fromArray($this->payload['export'], $this->options, $this->logger);
     }
 
-    public function doImport($existingAssetInDatabase = null)
+    public function doImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
         $this->logger->log('Starting Transaction');
-        DB::transaction(function () use ($existingAssetInDatabase) {
+        DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
             // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
 
             $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
             $this->logger->log("Importing $count assets");
-
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Importing ' . get_class($exporter->model));
                     if ($exporter->disableEventsWhenImporting) {
                         $exporter->model->saveQuietly();
                     } else {
-                        $exporterClass = get_class($exporter->model);
-                        if ($exporterClass === 'ProcessMaker\Packages\Connectors\DataSources\Models\Script') {
-                            switch ($exporter->mode) {
-                                case 'copy':
-                                    $exporter->model->script_id = $this->newScriptId;
-                                    break;
-                                case 'update':
-                                    $script = Script::find($exporter->model->script_id);
-                                    if ($script) {
-                                        $script->fill($exporter->model->getAttributes());
-                                        $script->save();
-                                    }
-                                    break;
-
-                                default:
-                                    // code...
-                                    break;
-                            }
-                        }
-
                         $exporter->model->save();
-
-                        if ($exporterClass === 'ProcessMaker\Models\Script') {
-                            $this->newScriptId = $exporter->model->id;
-                        }
                     }
                     $exporter->log('newId', $exporter->model->id);
                 }
@@ -90,7 +65,7 @@ class Importer
             foreach ($this->manifest->all() as $exporter) {
                 if ($exporter->mode !== 'discard') {
                     $this->logger->log('Associating ' . get_class($exporter->model));
-                    $exporter->runImport($existingAssetInDatabase);
+                    $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
                 }
             }
 

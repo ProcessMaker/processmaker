@@ -11,6 +11,7 @@
       :searchable="true"
       :internal-search="true"
       :allow-empty="false"
+      :disabled="disabled"
       >
     </multiselect>
   </div>
@@ -24,7 +25,11 @@ export default {
     value: {
       type: String,
       default: 'string'
-    }
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

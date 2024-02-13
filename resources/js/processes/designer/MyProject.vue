@@ -1,13 +1,13 @@
 <template>
-  <div class="project">
+  <div class="project mt-3 border">
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
+      <b-navbar-brand class="title-designer">
         {{ $t("My Projects") }}
       </b-navbar-brand>
       <b-navbar-nav align="end">
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-outline-primary border-0 mr-1"
+            class="btn btn-outline-primary border-0 mr-1 button-color"
             @click="toggleInput"
           >
             <i class="fas fa-search" />
@@ -32,7 +32,7 @@
           v-if="!showInput"
           href="/designer/projects"
         >
-          <i class="fas fa-external-link-alt" />
+          <i class="fas fa-external-link-alt button-color" />
         </b-nav-item>
       </b-navbar-nav>
     </b-navbar>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import ProjectsLastModifiedListing from './ProjectsLastModifiedListing';
+import ProjectsLastModifiedListing from "./ProjectsLastModifiedListing.vue";
 
 Vue.component("ProjectsLastModifiedListing", ProjectsLastModifiedListing);
 
@@ -86,6 +86,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  border-radius: 8px;
   height: 500px;
 }
 .card {
@@ -126,5 +127,16 @@ export default {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: -1.28px;
+}
+.button-color {
+  color: #6C8498;
+}
+.btn-outline-primary:hover {
+  color: #6C8498;
+  background-color: #f9f9f9;
+}
+.active {
+  color:#6C8498;
+  background-color: #f9f9f9;
 }
 </style>

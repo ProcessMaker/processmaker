@@ -1,8 +1,8 @@
 <template>
-  <div class="project">
+  <div class="project border">
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
-        {{ $t("Recent Assets from my Projects") }}
+      <b-navbar-brand class="title-designer">
+        {{ $t("RECENT ASSETS") }}
       </b-navbar-brand>
       <div class="d-flex" align="end">
         <div class="dropdown">
@@ -10,7 +10,7 @@
             v-if="!showInput"
             id="dropdownMenu"
             type="button"
-            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle"
+            class="btn btn-outline-primary border-0 text-capitalize dropdown-toggle button-color"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
@@ -47,7 +47,7 @@
         </div>
         <div class="d-flex justify-content-end">
           <button
-            class="btn btn-outline-primary border-0 ml-1"
+            class="btn btn-outline-primary border-0 ml-1 button-color"
             @click="toggleInput"
           >
             <i class="fas fa-search" />
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import RecentAssetsList from './RecentAssetsList.vue';
+import RecentAssetsList from "./RecentAssetsList.vue";
 
 Vue.component("RecentAssetsList", RecentAssetsList);
 
@@ -99,10 +99,6 @@ export default {
   mounted() {
     this.getOptionsType();
   },
-  updated() {
-    this.performSearch();
-    this.$refs.recentAssetsList.fetch(this.pmql);
-  },
   methods: {
     getOptionsType() {
       if (this.project) {
@@ -113,6 +109,7 @@ export default {
             Object.keys(this.optionsType).forEach((type) => {
               this.selectedTypes.push(this.optionsType[type].asset_type);
             });
+            this.performSearch();
           });
       }
     },
@@ -130,6 +127,7 @@ export default {
      */
     performSearch() {
       this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
+      this.$refs.recentAssetsList.fetch(this.pmql);
     },
     clearSearch() {
       this.searchCriteria = "";
@@ -142,6 +140,7 @@ export default {
 <style scoped>
 .project {
   background-color: #F9F9F9;
+  border-radius: 8px;
 }
 .card {
   border-radius: 8px;
@@ -182,5 +181,16 @@ export default {
   font-weight: 600;
   line-height: 38px;
   letter-spacing: -1.28px;
+}
+.button-color {
+  color: #6C8498;
+}
+.btn-outline-primary:hover {
+  color: #6C8498;
+  background-color: #f9f9f9;
+}
+.btn-outline-primary.dropdown-toggle {
+  color: #6C8498;
+  background-color: #f9f9f9;
 }
 </style>

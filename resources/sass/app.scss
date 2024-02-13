@@ -698,6 +698,8 @@ h1.page-title {
 
 .alertBox {
   width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .avatar-circle-list {
@@ -982,6 +984,7 @@ nav {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.29) 0%, rgba(255, 255, 255, 0.62) 100%), var(--borders, #CDDDEE);
   padding: 50px;
   color: #556271;
+  min-height: 450px;
 }
 
 #wizardTemplateDetails___BV_modal_header_,
@@ -995,4 +998,14 @@ nav {
 #processWizard___BV_modal_body_ .card {
   background-color: inherit;
   border: none;
+}
+
+.title-designer {
+  color: var(--Black-for-icons, #57646F);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.28px;
+  text-transform: uppercase;
 }

@@ -137,6 +137,7 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool',
         'meta' => 'object',
         'active_at' => 'datetime',
+        'loggedin_at' => 'datetime',
         'schedule' => 'array',
         'preferences_2fa' => 'array',
     ];

@@ -62,6 +62,18 @@ export default {
           }
         }
 
+        if (this.previousFilter !== filter) {
+          this.page = 1;
+        }
+
+        this.previousFilter = filter;
+
+        if (this.previousPmql !== pmql) {
+          this.page = 1;
+        }
+
+        this.previousPmql = pmql;
+
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -143,6 +155,9 @@ export default {
       } else {
         this.fetch();
       }
+    },
+    openModeler(data) {
+      return `/modeler/${data.id}`;
     },
   },
 };

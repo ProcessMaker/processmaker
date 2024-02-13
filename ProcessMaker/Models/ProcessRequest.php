@@ -726,6 +726,26 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * PMQL value alias for participant field by fullname.
+     * @param string $value
+     * @return callable
+     */
+    public function valueAliasParticipantByFullName($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $query->whereIn('id', function ($subquery) use ($value, $expression) {
+                $subquery->select('process_request_id')->from('process_request_tokens')
+                    ->whereIn('user_id', function ($subquery) use ($value, $expression) {
+                        $subquery->select('id')
+                            ->from('users')
+                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . " ?", [$value]);
+                    })
+                    ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+            });
+        };
+    }
+
+    /**
      * Get the process version used by this request
      *
      * @return ProcessVersion

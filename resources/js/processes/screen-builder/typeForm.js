@@ -1,8 +1,7 @@
 import Vue from "vue";
-import globalProperties from "@processmaker/screen-builder/src/global-properties";
 import VueFormElements from "@processmaker/vue-form-elements";
-import { FormBuilderControls as initialControls } from "@processmaker/screen-builder";
-import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
+import { FormBuilderControls as initialControls, globalProperties } from "@processmaker/screen-builder";
+import { Multiselect } from "@processmaker/vue-multiselect";
 
 Vue.use(VueFormElements);
 Vue.component("Multiselect", Multiselect);
@@ -17,7 +16,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   initialControls.forEach((config) => {
     config.control.inspector.push(...globalProperties[0].inspector);
 
-    if (config.control.component !== "FormListTable" && config.control.component !== "FormAnalyticsChart") {
+    if (config.control.component !== "FormListTable" && config.control.component !== "FormAnalyticsChart" && config.control.component !== "FormAvatar") {
       manager.addControl(
         config.control,
         config.rendererComponent,

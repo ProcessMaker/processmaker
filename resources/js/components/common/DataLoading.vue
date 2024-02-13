@@ -11,6 +11,9 @@
                     <div v-if="emptyIconType() === 'noData'">
                         <img src="../../../img/no-results.svg" class="no-results-img" alt="no-results">
                     </div>
+                    <div v-if="emptyIconType() === 'noTasks'">
+                        <img src="../../../img/no-tasks.svg" class="no-results-img" alt="no-results">
+                    </div>
                 </div>
                 <p class="empty-desc">{{ emptyDescText() }}</p>
             </div>

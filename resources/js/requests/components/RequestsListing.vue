@@ -7,6 +7,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
       >
         <!-- Slot Table Header -->
@@ -20,7 +21,7 @@
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
-                                   :type="'Field'"
+                                   :type="getTypeColumnFilter(column.field)"
                                    :value="column.field"
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
@@ -28,6 +29,7 @@
                                    :viewConfig="getViewConfigFilter()"
                                    :container="''"
                                    :boundary="'viewport'"
+                                   :hideSortingButtons="column.hideSortingButtons"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -40,20 +42,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
               >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -70,13 +72,13 @@
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
-                  {{ getNestedPropertyValue(row, header.field) }}
+                  {{ getNestedPropertyValue(row, header) }}
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
                 </div>
               </template>
@@ -168,7 +170,7 @@ export default {
   mounted() {
     this.getParticipants("");
     this.setupColumns();
-    this.getFilterConfiguration("requestFilter");
+    this.getFilterConfiguration();
   },
   methods: {
     setupColumns() {
@@ -265,6 +267,8 @@ export default {
           default: true,
           width: 160,
           truncate: true,
+          filter_subject: { type: 'ParticipantsFullName' },
+          hideSortingButtons: true,
         },
         {
           label: this.$t("Status"),
@@ -272,6 +276,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { type: 'Status' },
         },
         {
           label: this.$t("Started"),
@@ -332,7 +337,7 @@ export default {
       let htmlString = '';
       for (const task of value) {
         htmlString += `
-          <div>
+          <div class="text-truncate">
             <a class="text-nowrap" href="${this.openTask(task)}">
               ${task.element_name}
             </a>
@@ -366,7 +371,8 @@ export default {
         },
       };
     },
-    transform(data) {
+    transform(dataInput) {
+      const data = _.cloneDeep(dataInput);
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
@@ -469,7 +475,12 @@ export default {
      * @returns {Array}
      */
     getStatus() {
-      return ["In Progress", "Completed", "Error", "Canceled"];
+      return [
+        {value: "In Progress", text: this.$t("In Progress")},
+        {value: "Completed", text: this.$t("Completed")},
+        {value: "Error", text: this.$t("Error")},
+        {value: "Canceled", text: this.$t("Canceled")}
+      ];
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
@@ -494,58 +505,15 @@ export default {
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
-    storeFilterConfiguration() {
-      let url = "users/store_filter_configuration/requestFilter";
-      if (this.$props.columns) {
-        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
-      }
-      let config = {
-        filter: this.advancedFilter,
+    filterConfiguration() {
+      return {
         order: {
           by: this.orderBy,
           direction: this.orderDirection
         },
-      };
-      ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
+        type: 'requestFilter',
+      }
     },
-    getTypeColumnFilter(value) {
-      let type = "Field";
-      if (value === "case_number" || value === "case_title") {
-        type = "Request";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "active_tasks") {
-        type = "Task";
-      }
-      if (value === "participants") {
-        type = "Participants";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
-    },
-    getAliasColumnForFilter(value) {
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      return value;
-    },
-    getAliasColumnForOrderBy(value) {
-      if (value === "process") {
-        value = "process.name";
-      }
-      if (value === "active_tasks") {
-        value = "id";
-      }
-      if (value === "participants") {
-        value = "id";
-      }
-      return value;
-    }
   }
 };
 </script>

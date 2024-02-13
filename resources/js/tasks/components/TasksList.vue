@@ -8,6 +8,7 @@
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
+        :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -23,7 +24,7 @@
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
-                                   :type="'Field'"
+                                   type="Field"
                                    :value="column.field"
                                    :format="getFormat(column)"
                                    :formatRange="getFormatRange(column)"
@@ -43,20 +44,20 @@
             v-for="(header, colIndex) in tableHeaders"
             :key="colIndex"
           >
-            <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
                   >
-                <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
               >
-                {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
             </template>
             <template v-else>
@@ -70,7 +71,7 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(getNestedPropertyValue(row, header.field)) }}
+                    {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
                 </template>
@@ -80,13 +81,13 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ getNestedPropertyValue(row, header.field) }}
+                      {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
                 </template>
@@ -122,9 +123,9 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Congratulations')"
+        :empty="$t('Well, it seems nothing in here')"
         :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
-        empty-icon="beach"
+        empty-icon="noTasks"
       />
       <pagination-table
         :meta="data.meta"
@@ -239,8 +240,12 @@ export default {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
           //format Status
-          record["case_number"] = this.formatCaseNumber(record.process_request);
-          record["case_title"] = this.formatCaseTitle(record.process_request);
+          record["case_number"] = this.formatCaseNumber(record.process_request, record);
+          record["case_title"] = this.formatCaseTitle(record.process_request, record);
+          if (record.process_request) {
+            record.process_request["case_number"] = record["case_number"];
+            record.process_request["case_title"] = record["case_title"];
+          }
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
@@ -256,7 +261,7 @@ export default {
     this.getAssignee("");
     this.getProcess();
     this.setupColumns();
-    this.getFilterConfiguration("taskFilter");
+    this.getFilterConfiguration();
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -267,18 +272,18 @@ export default {
     openRequest(data) {
       return `/requests/${data.id}`;
     },
-    formatCaseNumber(processRequest) {
+    formatCaseNumber(processRequest, record) {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         # ${processRequest.case_number}
+         # ${processRequest.case_number || record.case_number}
       </a>`;
     },
-    formatCaseTitle(processRequest) {
+    formatCaseTitle(processRequest, record) {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         ${processRequest.case_title_formatted || ""}
+         ${processRequest.case_title_formatted || record.case_title || ""}
       </a>`;
     },
     formatActiveTask(row) {
@@ -289,7 +294,6 @@ export default {
       </a>`;
     },
     setupColumns() {
-      const columns = this.getColumns();
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
@@ -305,6 +309,8 @@ export default {
           sortable: true,
           default: true,
           width: 80,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
+          order_column: 'process_requests.case_number',
         },
         {
           label: this.$t("Case title"),
@@ -314,6 +320,8 @@ export default {
           default: true,
           width: 220,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
+          order_column: 'process_requests.case_title',
         },
         {
           label: this.$t("Process"),
@@ -322,6 +330,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.name' },
+          order_column: 'process_requests.name',
         },
         {
           label: this.$t("Task"),
@@ -330,6 +340,8 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { value: 'element_name' },
+          order_column: 'element_name',
         },
         {
           label: this.$t("Status"),
@@ -337,6 +349,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
+          filter_subject: { value: 'Status' },
         },
         {
           label: this.$t("Due date"),
@@ -376,14 +389,15 @@ export default {
     formatStatus(props) {
       let color;
       let label;
+      const isSelfService = props.is_self_service;
 
-      if (props.status === "ACTIVE" && props.isSelfService) {
+      if (props.status === "ACTIVE" && isSelfService) {
         color = "danger";
         label = "Self Service";
-      } if (props.status === "ACTIVE") {
+      } else if (props.status === "ACTIVE") {
         color = "success";
         label = "In Progress";
-      } if (props.status === "CLOSED") {
+      } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
       }
@@ -403,7 +417,7 @@ export default {
       };
     },
     formatDueDate(date) {
-      return moment(date).format("MM/DD/YY HH:mm");
+      return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
     formatColorBadge(date) {
       const days = this.remainingTime(date);
@@ -424,6 +438,10 @@ export default {
       return `${daysRemaining}D`;
     },
     remainingTime(date) {
+      if (date === "-" || date === null) {
+        return 0;
+      }
+
       const currentDate = new Date();
       const formatDate = moment(date).format("YYYY-MM-DD");
       const endDate = new Date(formatDate);
@@ -445,13 +463,7 @@ export default {
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      const tasksAlert = document.querySelector('[data-cy="tasks-alert"]');
-      let elementHeight = tasksAlert ? tasksAlert.clientHeight - 14 : 0;
-
-      const savedSearch = this.verifyURL("saved-searches");
-      if (savedSearch) {
-        elementHeight += 36;
-      }
+      let elementHeight = 36;
 
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
@@ -495,7 +507,11 @@ export default {
       return cleanHtml;
     },
     getStatus() {
-      return ["Self Service", "In Progress", "Completed"];
+      return [
+        {value: "Self Service", text: this.$t("Self Service")},
+        {value: "In Progress", text: this.$t("In Progress")},
+        {value: "Completed", text: this.$t("Completed")}
+      ];
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
@@ -517,67 +533,15 @@ export default {
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js
      */
-    storeFilterConfiguration() {
-      let url = "users/store_filter_configuration/taskFilter";
-      if (this.$props.columns) {
-        url = "saved-searches/" + this.savedSearch + "/advanced-filters";
-      }
-      let config = {
-        filter: this.advancedFilter,
+    filterConfiguration() {
+      return {
         order: {
           by: this.orderBy,
           direction: this.order_direction
-        }
-      };
-      ProcessMaker.apiClient.put(url, config);
-      window.Processmaker.filter_user = config;
+        },
+        type: 'taskFilter',
+      }
     },
-    getTypeColumnFilter(value) {
-      let type = "Field";
-      if (value === "case_number" || value === "case_title") {
-        type = "Relationship";
-      }
-      if (value === "process") {
-        type = "Process";
-      }
-      if (value === "status") {
-        type = "Status";
-      }
-      return type;
-    },
-    getAliasColumnForFilter(value) {
-      if (value === "case_number") {
-        value = "processRequest.case_number";
-      }
-      if (value === "case_title") {
-        value = "processRequest.case_title";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user_id";
-      }
-      return value;
-    },
-    getAliasColumnForOrderBy(value) {
-      if (value === "case_number") {
-        value = "process_requests.case_number";
-      }
-      if (value === "case_title") {
-        value = "process_requests.case_title_formatted";
-      }
-      if (value === "process") {
-        value = "process_requests.name";
-      }
-      if (value === "task_name") {
-        value = "element_name";
-      }
-      if (value === "assignee") {
-        value = "user.fullname";
-      }
-      return value;
-    }
   }
 };
 </script>

@@ -135,12 +135,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $allowedEndpoints = [
             'api',
-            'script/',
-            'designer/screens',
-            'processes/',
-            'designer/decision-tables',
-            'designer/data-sources',
         ];
+
+        $dataSourceClass = 'ProcessMaker\Packages\Connectors\DataSources\Models\DataSource';
+        $decisionTableClass = 'ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable';
 
         // Get the assets associated with the user's projects
         $projectAssets = DB::table('project_assets')
@@ -156,11 +154,22 @@ class AuthServiceProvider extends ServiceProvider
 
             // Check asset types and push to $allowedEndpoints
             if ($assetType === Process::class) {
-                $allowedEndpoints[] = 'modeler/' . $assetId;
+                $allowedEndpoints[] = "modeler/{$assetId}";
             } elseif ($assetType === Screen::class) {
-                $allowedEndpoints[] = 'designer/screen-builder/' . $assetId . '/edit';
+                $allowedEndpoints[] = "designer/screen-builder/{$assetId}/edit";
+                $allowedEndpoints[] = "designer/screens/{$assetId}/edit";
+                $allowedEndpoints[] = 'designer/screens/preview';
             } elseif ($assetType === Script::class) {
-                $allowedEndpoints[] = 'designer/scripts/' . $assetId . '/builder';
+                $allowedEndpoints[] = "designer/scripts/{$assetId}/builder";
+                $allowedEndpoints[] = "designer/scripts/{$assetId}/edit";
+                $allowedEndpoints[] = 'designer/scripts/preview';
+            }
+
+            if (class_exists($dataSourceClass) && $assetType === $dataSourceClass) {
+                $allowedEndpoints[] = "designer/data-sources/{$assetId}/edit";
+            }
+            if (class_exists($decisionTableClass) && $assetType === $decisionTableClass) {
+                $allowedEndpoints[] = "decision-tables/table-builder/{$assetId}/edit";
             }
         }
 

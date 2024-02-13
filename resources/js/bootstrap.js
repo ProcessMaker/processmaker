@@ -28,6 +28,7 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -76,6 +77,7 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
 window.VueMonaco = require("vue-monaco");
+
 window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
 
@@ -181,6 +183,7 @@ window.ProcessMaker = {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
+  fallbackLng: false,
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {
@@ -238,7 +241,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };

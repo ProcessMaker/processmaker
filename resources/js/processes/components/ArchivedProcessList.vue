@@ -15,7 +15,28 @@
       <filter-table
         :headers="fields"
         :data="data"
+        table-name="archived"
+        style="height: calc(100vh - 355px);"
       >
+        <!-- Slot Table Header filter Button -->
+        <template
+          v-for="(column, index) in fields"
+          #[`filter-${column.field}`]
+        >
+          <div
+            v-if="column.sortable"
+            :key="index"
+            @click="handleEllipsisClick(column)"
+          >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            />
+          </div>
+        </template>
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
@@ -32,39 +53,52 @@
               v-html="sanitize(row[header.field])"
             />
             <template v-else>
-              <template v-if="isComponent(row[header.field])">
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`process-table-component-${rowIndex}-${colIndex}`"
+              >
                 <component
                   :is="row[header.field].component"
-                  :data-cy="`process-table-component-${rowIndex}-${colIndex}`"
                   v-bind="row[header.field].props"
                 />
               </template>
-              <template v-else>
-                <div
-                  v-if="header.field === 'name'"
-                  :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
-                >
-                  <i
-                    v-b-tooltip
-                    tabindex="0"
-                    :title="row.warningMessages.join(' ')"
-                    class="text-warning fa fa-exclamation-triangle"
-                    :class="{'invisible': row.warningMessages.length == 0}"
-                  />
-                  <i
-                    v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
-                    v-b-tooltip
-                    tabindex="0"
-                    :title="row.status"
-                    class="mr-2"
-                    :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
-                  />
-                  <span
-                    v-uni-id="row.id.toString()"
+              <template
+                v-else
+                :data-cy="`process-table-field-${rowIndex}-${colIndex}`"
+              >
+                <template v-if="header.field === 'name'">
+                  <div
+                    :id="`element-archived-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <i
+                      v-b-tooltip
+                      tabindex="0"
+                      :title="row.warningMessages.join(' ')"
+                      class="text-warning fa fa-exclamation-triangle"
+                      :class="{'invisible': row.warningMessages.length == 0}"
+                    />
+                    <i
+                      v-if="row.status == 'ACTIVE' || row.status == 'INACTIVE'"
+                      v-b-tooltip
+                      tabindex="0"
+                      :title="row.status"
+                      class="mr-2"
+                      :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
+                    />
+                    <span>
+                      {{ row[header.field] }}
+                    </span>
+                  </div>
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-archived-${row.id}`"
+                    custom-class="pm-table-tooltip"
                   >
                     {{ row[header.field] }}
-                  </span>
-                </div>
+                  </b-tooltip>
+                </template>
                 <ellipsis-menu
                   v-if="header.field === 'actions'"
                   class="process-table"
@@ -79,7 +113,7 @@
                   <div
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
               </template>
@@ -172,36 +206,44 @@ export default {
 
       fields: [
         {
-          label: "NAME",
+          label: this.$t("Name"),
           field: "name",
           width: 200,
           sortable: true,
+          truncate: true,
+          direction: "none",
         },
         {
-          label: "CATEGORY",
+          label: this.$t("Category"),
           field: "category_list",
           width: 160,
           sortable: true,
+          direction: "none",
+          sortField: "category.name",
         },
         {
-          label: "OWNER",
+          label: this.$t("Owner"),
           field: "owner",
           width: 160,
           sortable: true,
+          direction: "none",
+          sortField: "user.username",
         },
         {
-          label: "MODIFIED",
+          label: this.$t("Modified"),
           field: "updated_at",
           format: "datetime",
           width: 160,
           sortable: true,
+          direction: "none",
         },
         {
-          label: "CREATED",
+          label: this.$t("Created"),
           field: "created_at",
           format: "datetime",
           width: 160,
           sortable: true,
+          direction: "none",
         },
         {
           name: "__slot:actions",

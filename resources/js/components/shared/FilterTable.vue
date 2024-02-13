@@ -10,14 +10,17 @@
     >
       <thead>
         <tr>
-          <th class="pm-table-border" :colspan="headers.length"></th>
+          <th
+            class="pm-table-border"
+            :colspan="headers.length"
+          />
         </tr>
         <tr>
           <th
-            class="pm-table-ellipsis-column"
             v-for="(column, index) in headers"
+            :id="`${tableName}-column-${index}`"
             :key="index"
-            :id="`column-${index}`"
+            class="pm-table-ellipsis-column"
             :class="{ 'pm-table-filter-applied': column.filterApplied }"
           >
             <div
@@ -29,23 +32,24 @@
               </slot>
             </div>
             <div class="pm-table-filter-button">
-              <slot :name="`filter-${column.field}`">
-
-              </slot>
+              <slot :name="`filter-${column.field}`" />
             </div>
             <div
               v-if="index !== headers.length - 1"
               class="pm-table-column-resizer"
               @mousedown="startResize(index)"
-            >
-            </div>
+            />
           </th>
         </tr>
         <tr>
-          <th class="pm-table-border" :colspan="headers.length"></th>
+          <th
+            class="pm-table-border"
+            :colspan="headers.length"
+          />
         </tr>
       </thead>
       <tbody>
+        <template v-if="!loading">
         <tr
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
@@ -59,20 +63,20 @@
               v-for="(header, index) in headers"
               :key="index"
             >
-              <template v-if="containsHTML(getNestedPropertyValue(row, header.field))">
+              <template v-if="containsHTML(getNestedPropertyValue(row, header))">
                 <div
-                  :id="`element-${rowIndex}-${index}`"
+                  :id="`${tableName}-element-${rowIndex}-${index}`"
                   :class="{ 'pm-table-truncate': header.truncate }"
                   :style="{ maxWidth: header.width + 'px' }"
                 >
-                  <div v-html="sanitize(getNestedPropertyValue(row, header.field))"></div>
+                  <div v-html="sanitize(getNestedPropertyValue(row, header))"></div>
                 </div>
                 <b-tooltip
                   v-if="header.truncate"
-                  :target="`element-${rowIndex}-${index}`"
+                  :target="`${tableName}-element-${rowIndex}-${index}`"
                   custom-class="pm-table-tooltip"
                 >
-                  {{ sanitizeTooltip(getNestedPropertyValue(row, header.field)) }}
+                  {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
                 </b-tooltip>
               </template>
               <template v-else>
@@ -80,22 +84,21 @@
                   <component
                     :is="row[header.field].component"
                     v-bind="row[header.field].props"
-                  >
-                  </component>
+                  />
                 </template>
                 <template v-else>
                   <div
-                    :id="`element-${rowIndex}-${index}`"
+                    :id="`${tableName}-element-${rowIndex}-${index}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ getNestedPropertyValue(row, header.field) }}
+                    {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
-                      :target="`element-${rowIndex}-${index}`"
+                      :target="`${tableName}-element-${rowIndex}-${index}`"
                       custom-class="pm-table-tooltip"
                     >
-                      {{ getNestedPropertyValue(row, header.field) }}
+                      {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
                 </template>
@@ -103,6 +106,7 @@
             </td>
           </slot>
         </tr>
+        </template>
       </tbody>
     </table>
   </div>
@@ -120,12 +124,24 @@ export default {
   props: {
     headers: {
       type: Array,
-      default: function () {
+      default() {
         return [];
-      }
+      },
     },
     data: [],
     unread: {
+      type: String,
+      default: function () {
+        return "";
+      }
+    },
+    loading: {
+      type: Boolean,
+      default: function () {
+        return false;
+      }
+    },
+    tableName: {
       type: String,
       default: function () {
         return "";
@@ -141,69 +157,59 @@ export default {
       resizingColumnIndex: -1,
     };
   },
-  watch: {
-    data() {
-      this.headers.forEach((column) => {
-        if (column.format) {
-          if (column.format === 'datetime' || column.format === 'date') {
-            if (this.data?.data?.forEach) {
-              this.data.data.forEach((element) => {
-                element[column.field] = this.formatDate(element[column.field], column.format);
-              });
-            }
-          }
-        }
-      });
-    },
-  },
   mounted() {
     this.$nextTick(() => {
-      const ellipsisColumn = document.querySelectorAll('.pm-table-ellipsis-column');
+      this.calculateColumnWidth();
+      const ellipsisColumn = document.querySelectorAll(".pm-table-ellipsis-column");
 
       ellipsisColumn.forEach((column) => {
-        column.addEventListener('click', this.handleEllipsisClick);
+        column.addEventListener("click", this.handleEllipsisClick);
       });
     });
   },
   methods: {
+    calculateColumnWidth() {
+      this.headers.forEach((headerColumn, index) => {
+        if (this.calculateContent(index) !== 0) {
+          headerColumn.width = this.calculateContent(index) - 32;
+        }
+      });
+    },
     startResize(index) {
       this.isResizing = true;
+      this.calculateColumnWidth();
       this.resizingColumnIndex = index;
       this.startX = event.pageX;
       this.startWidth = this.headers[index].width;
 
-      document.addEventListener('mousemove', this.doResize);
-      document.addEventListener('mouseup', this.stopResize);
+      document.addEventListener("mousemove", this.doResize);
+      document.addEventListener("mouseup", this.stopResize);
+    },
+    calculateContent(index) {
+      const miDiv = document.getElementById(`${this.tableName}-column-${index}`);
+      return miDiv.scrollWidth;
     },
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
-        this.headers[this.resizingColumnIndex].width = Math.max(
-          40,
-          this.startWidth + diff
-        );
+        let min = 40;
+        const currentWidth = Math.max(min, this.startWidth + diff);
+        const contentWidth = this.calculateContent(this.resizingColumnIndex);
+        if ((contentWidth - currentWidth) <= 80) {
+          this.headers[this.resizingColumnIndex].width = currentWidth;
+        }
       }
     },
     stopResize() {
       if (this.isResizing) {
-        document.removeEventListener('mousemove', this.doResize);
-        document.removeEventListener('mouseup', this.stopResize);
+        document.removeEventListener("mousemove", this.doResize);
+        document.removeEventListener("mouseup", this.stopResize);
         this.isResizing = false;
         this.resizingColumnIndex = -1;
       }
     },
-    formatDate(date, mask) {
-      const dateTimeFormat = "MM/DD/YY HH:mm";
-      const dateFormat = "MM/DD/YY";
-      if (mask === 'datetime') {
-        return date === null ? "-" : moment(date).format(dateTimeFormat);
-      }
-      if (mask === 'date') {
-        return date === null ? "-" : moment(date).format(dateFormat);
-      }
-    },
     handleRowClick(row) {
-      this.$emit('table-row-click', row);
+      this.$emit("table-row-click", row);
     },
     handleRowMouseover(row) {
       this.$emit('table-row-mouseover', row);
@@ -236,6 +242,7 @@ export default {
   border-radius: 5px;
   scrollbar-width: 8px;
   scrollbar-color: #6C757D;
+  max-height: calc(100vh - 150px);
 }
 
 .pm-table-container th {
@@ -250,13 +257,13 @@ export default {
 
 .pm-table-column-resizer {
   position: absolute;
-  right: -5px;
+  right: 0px;
   top: 50%;
   transform: translateY(-50%);
   height: 85%;
   width: 10px;
   cursor: col-resize;
-  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
 }
 .pm-table-filter {
   width: 100%;
@@ -375,5 +382,9 @@ export default {
 .pm-table-container::-webkit-scrollbar-thumb {
   background-color: #6C757D;
   border-radius: 20px;
+}
+.ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
+  max-height: 250px;
+  overflow-y: auto;
 }
 </style>
