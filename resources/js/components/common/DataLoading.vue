@@ -80,7 +80,11 @@
                 if (error && error.code === "ERR_CANCELED") {
                     this.noResults = false;
                     this.error = true;
-                }  else {
+                }
+                if (error && error.response?.data?.message === "The item should not have associated processes") {
+                    this.noResults = false;
+                }
+                else {
                     this.noResults = false;
                     this.error = true;
                 }
