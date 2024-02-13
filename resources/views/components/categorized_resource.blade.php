@@ -210,6 +210,12 @@
       loadTemplates = function () {
         ProcessMaker.EventBus.$emit("api-data-process-templates");
       }
+      loadMyTemplates = function () {
+        console.log('my templates loaded');
+      }
+      loadPublicTemplates = function () {
+        console.log('public templates loaded');
+      }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
 @append
