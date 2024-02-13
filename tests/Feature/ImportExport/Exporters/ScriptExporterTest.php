@@ -126,6 +126,7 @@ class ScriptExporterTest extends TestCase
 
         $script = Script::where('title', 'test')->firstOrFail();
         $this->assertEquals($script->run_as_user_id, $admin_user->id);
+        $admin_user->delete();
     }
 
     public function testRunAsUserIdNull()
