@@ -116,11 +116,7 @@ class ScriptExporterTest extends TestCase
 
     public function testNoMatchingRunAsUser()
     {
-        $admin_user = User::factory()->create([
-            'username' => 'admin.' . Str::random(6),
-            'is_administrator' => 1,
-        ]);
-
+        $admin_user = User::factory()->create(['is_administrator' => true]);
         DB::beginTransaction();
 
         $user = User::factory()->create(['username' => 'test']);
@@ -132,7 +128,7 @@ class ScriptExporterTest extends TestCase
         $this->import($payload);
 
         $script = Script::where('title', 'test')->firstOrFail();
-        $this->assertNull($script->run_as_user_id);
+        $this->assertEquals($script->run_as_user_id, $admin_user->id);
         $admin_user->delete();
     }
 
