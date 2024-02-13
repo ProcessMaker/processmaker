@@ -220,8 +220,19 @@ export default {
         });
     },
     authorizeNoneConnection() {
-      const { driver } = this.setting.config;
-      window.location.href = `${window.location.origin}/external-integrations/${driver}`;
+      ProcessMaker.apiClient
+        .post(`settings/${this.setting.id}/authorize-driver`, this.formData)
+        .then((response) => {
+          window.location = response.data.url;
+          this.showModal = false;
+          this.showAuthorizingModal = true;
+        })
+        .catch((error) => {
+          const errorMessage = error.response?.data?.message || error.message;
+          ProcessMaker.alert(errorMessage, "danger");
+          this.showModal = true;
+          this.showAuthorizingModal = false;
+        });
     },
     onSave() {
       this.formData.name = this.setting.config?.name;
