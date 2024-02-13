@@ -22,9 +22,9 @@ class ScreenTemplatesFactory extends Factory
     public function definition()
     {
         $screen = Screen::factory()->create();
-
-        $response = (new ExportController)->manifest('process', $process->id);
         // TODO: Handle storing screen manifests
+        // $response = (new ExportController)->manifest('process', $process->id);
+
         // $manifest = json_decode($response->getContent(), true);
 
         return [
