@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->uuid('uuid')->unique()->nullable();
             $table->string('name');
             $table->text('description');
+            $table->text('version')->nullable();
             $table->unsignedInteger('user_id')->unsigned()->nullable();
             $table->unsignedInteger('editing_screen_uuid')->nullable()->unique();
             $table->unsignedInteger('screen_category_id');
