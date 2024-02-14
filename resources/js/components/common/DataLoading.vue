@@ -82,7 +82,6 @@
                     this.error = true;
                 }
                 if (error && error.code === "ERR_BAD_REQUEST") {
-                    console.log('error', error);
                     this.noResults = false;
                 }
                 else {
