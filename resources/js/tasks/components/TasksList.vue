@@ -17,7 +17,16 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">
+            <img
+              v-if="column.field === 'is_priority'"
+              src="/img/priority-header.svg"
+              alt="priority-header"
+              width="20"
+              height="20"
+            >
+            <span v-else>{{ column.label }}</span>
+          </div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -74,6 +83,18 @@
                     {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
                   </span>
                   <span>{{ row["due_date"] }}</span>
+                </template>
+                <template v-else-if="header.field === 'is_priority'">
+                  <span v-if="row[header.field]">
+                    <a @click.prevent="togglePriority(row.id, !row[header.field])">
+                      <img
+                        :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
+                        :alt="row[header.field] ? 'priority' : 'no-priority'"
+                        width="20"
+                        height="20"
+                      >
+                    </a>
+                  </span>
                 </template>
                 <template v-else>
                   <div
@@ -269,6 +290,12 @@ export default {
     }
   },
   methods: {
+    togglePriority(taskId, isPriority) {
+      ProcessMaker.apiClient.put(
+        `tasks/${taskId}/setPriority`,
+        { is_priority: isPriority }
+      );
+    },
     openRequest(data) {
       return `/requests/${data.id}`;
     },
@@ -322,6 +349,13 @@ export default {
           truncate: true,
           filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
           order_column: 'process_requests.case_title',
+        },
+        {
+          label: "",
+          field: "is_priority",
+          sortable: false,
+          default: true,
+          width: 40,
         },
         {
           label: this.$t("Process"),
