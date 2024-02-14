@@ -68,12 +68,20 @@ class ScreenTemplateTest extends TestCase
         // Assert response status
         $response->assertStatus(200);
 
-        // Assert that our database has the screen template we need
+        // Assert that our database has the screen template we updated
         $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Update']);
     }
 
-    // public function testDeleteScreenTemplate()
-    // {
+    public function testDeleteScreenTemplate()
+    {
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $route = route('api.template.delete', ['screen', $screenTemplateId]);
 
-    // }
+        $response = $this->apiCall('DELETE', $route);
+        // Assert response status
+        $response->assertStatus(200);
+
+        // Assert that our database is missing the screen template we deleted
+        $this->assertDatabaseMissing('screen_templates', ['id' => $screenTemplateId]);
+    }
 }
