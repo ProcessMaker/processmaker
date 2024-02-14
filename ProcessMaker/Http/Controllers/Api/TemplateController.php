@@ -12,7 +12,11 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\ProjectAssetTrait;
 
@@ -22,6 +26,7 @@ class TemplateController extends Controller
 
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+        'screen' => [Screen::class, ScreenTemplate::class, ScreenCategory::class, 'screen_category_id', 'screen_templates'],
     ];
 
     private $template;
@@ -115,12 +120,17 @@ class TemplateController extends Controller
     public function updateTemplateConfigs(string $type, Request $request)
     {
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
-        $proTemplates = ProcessTemplates::select()->find($request->id);
-        $changes = $request->all();
-        $original = array_intersect_key($proTemplates->getOriginal(), $changes);
+        if ($type === 'process') {
+            $template = ProcessTemplates::select()->find($request->id);
+            $changes = $request->all();
+            $original = array_intersect_key($template->getOriginal(), $changes);
+            //Call event to log Template Config changes
+            TemplateUpdated::dispatch($changes, $original, false, $template);
+        } elseif ($type === 'screen') {
+            $template = ScreenTemplates::select()->find($request->id);
+        }
+
         $response = $this->template->updateTemplateConfigs($type, $request);
-        //Call event to log Template Config changes
-        TemplateUpdated::dispatch($changes, $original, false, $proTemplates);
 
         return $response;
     }
@@ -135,40 +145,12 @@ class TemplateController extends Controller
     public function create(string $type, Request $request)
     {
         if ($type === 'process') {
-            $request->validate(Template::rules($request->id, $this->types[$type][4]));
-            $postOptions = $this->checkIfAssetsExist($request);
-            if (!empty($postOptions)) {
-                $response = [
-                    'id' => $request->id,
-                    'request' => $request->toArray(),
-                    'existingAssets' => $postOptions,
-                ];
-            } else {
-                $response = $this->template->create($type, $request);
-            }
-            if ($request->has('projects')) {
-                // Update 'updated_at' field for the project
-                $projectIds = explode(',', $request->input('projects'));
-                $this->updateProjectUpdatedAt($projectIds);
-            }
+            return $this->createProcess($request);
+        } elseif ($type === 'screen') {
+            return $this->createScreen($request);
         } elseif ($type === 'update-assets') {
-            $request['request'] = json_decode($request['request'], true);
-            $request['existingAssets'] = json_decode($request['existingAssets'], true);
-            $request->validate([
-                'id' => 'required|numeric',
-                'request' => 'required|array',
-                'existingAssets' => 'required|array',
-            ]);
-            $response = $this->template->create($type, $request);
+            return $this->updateAsset($request);
         }
-
-        // Register the Event
-        if (empty($postOptions) && isset($response->getData()->processId)) {
-            $process = Process::find($response->getData()->processId);
-            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
-        }
-
-        return $response;
     }
 
     /**
@@ -179,12 +161,13 @@ class TemplateController extends Controller
      */
     public function delete(string $type, Request $request)
     {
-        $template = ProcessTemplates::find($request->id);
-        $response = $this->template->deleteTemplate($type, $request);
-        //Call event to Store Template Deleted on LOG
-        TemplateDeleted::dispatch($template);
+        if ($type === 'process') {
+            $template = ProcessTemplates::find($request->id);
+            // Call event to Store Template Deleted on LOG
+            TemplateDeleted::dispatch($template);
+        }
 
-        return $response;
+        return $this->template->deleteTemplate($type, $request);
     }
 
     public function preimportValidation(string $type, Request $request)
@@ -248,5 +231,64 @@ class TemplateController extends Controller
         }
 
         return $existingOptions;
+    }
+
+    protected function createProcess(Request $request)
+    {
+        $request->validate(Template::rules($request->id, $this->types['process'][4]));
+        $postOptions = $this->checkIfAssetsExist($request);
+
+        if (!empty($postOptions)) {
+            $response = [
+                'id' => $request->id,
+                'request' => $request->toArray(),
+                'existingAssets' => $postOptions,
+            ];
+        } else {
+            $response = $this->template->create('process', $request);
+        }
+
+        if ($request->has('projects')) {
+            $projectIds = explode(',', $request->input('projects'));
+            $this->updateProjectUpdatedAt($projectIds);
+        }
+
+        $this->dispatchProcessCreatedEvent($response);
+
+        return $response;
+    }
+
+    protected function createScreen(Request $request)
+    {
+        $request->validate(Template::rules($request->id, $this->types['screen'][4]));
+        $response = $this->template->create('screen', $request);
+
+        if ($request->has('projects')) {
+            $projectIds = explode(',', $request->input('projects'));
+            $this->updateProjectUpdatedAt($projectIds);
+        }
+
+        return $response;
+    }
+
+    protected function updateAssets(Request $request)
+    {
+        $request['request'] = json_decode($request['request'], true);
+        $request['existingAssets'] = json_decode($request['existingAssets'], true);
+        $request->validate([
+            'id' => 'required|numeric',
+            'request' => 'required|array',
+            'existingAssets' => 'required|array',
+        ]);
+
+        return $this->template->create('update-assets', $request);
+    }
+
+    protected function dispatchProcessCreatedEvent($response)
+    {
+        if (empty($response['existingAssets']) && isset($response->getData()->processId)) {
+            $process = Process::find($response->getData()->processId);
+            ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
     }
 }
