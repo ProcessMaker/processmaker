@@ -8,9 +8,9 @@ use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Setting;
@@ -54,10 +54,23 @@ class ScreenTemplateTest extends TestCase
         $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Creation']);
     }
 
-    // public function testUpdateScreenTemplate()
-    // {
+    public function testUpdateScreenTemplate()
+    {
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
 
-    // }
+        $route = route('api.template.settings.update', ['screen', $screenTemplateId]);
+        $data = [
+            'name' => 'Test Screen Template Update',
+            'description' => 'Test Screen Template Updated Description',
+            'version' => '1.0.1',
+        ];
+        $response = $this->apiCall('PUT', $route, $data);
+        // Assert response status
+        $response->assertStatus(200);
+
+        // Assert that our database has the screen template we need
+        $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Update']);
+    }
 
     // public function testDeleteScreenTemplate()
     // {

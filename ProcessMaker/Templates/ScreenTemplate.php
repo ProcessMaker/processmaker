@@ -160,7 +160,20 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateConfigs($request) : JsonResponse
     {
-        // TODO: Implement updating a screen template configs
+        $id = (int) $request->id;
+        $template = ScreenTemplates::where('id', $id)->firstOrFail();
+        $template->fill($request->except('id'));
+        $template->user_id = Auth::user()->id;
+
+        try {
+            $template->saveOrFail();
+
+            return response()->json();
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     public function updateTemplateManifest(int $processId, $request)  : JsonResponse
