@@ -96,6 +96,9 @@ if (env('TEST_TOKEN')) {
     Artisan::call('migrate:fresh', []);
     Artisan::call('db:seed', ['--class' => 'AnonymousUserSeeder']);
 
+    // Seed the super administrator user data
+    Artisan::call('db:seed', ['--class' => 'UserSeeder']);
+
     \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = true;
 
     ScriptExecutor::firstOrCreate(
