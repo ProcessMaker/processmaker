@@ -116,7 +116,7 @@ export default {
           this.handleExistingAssets(response.data);
         } else {
           // redirect to the new process launchpad
-          window.location = `/processes-catalogue/${response.data.processId}`;
+          window.location = `/process-browser/${response.data.processId}`;
         }
       }).catch((error) => {
         ProcessMaker.alert(error.message, "danger");
