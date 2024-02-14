@@ -28,7 +28,7 @@
               :style="{ width: column.width + 'px' }"
             >
               <slot :name="column.field">
-                {{ column.label }}
+                {{ $t(column.label) }}
               </slot>
             </div>
             <div class="pm-table-filter-button">
