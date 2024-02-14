@@ -399,32 +399,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        let pmql = '';
-
-        if (this.pmql !== undefined) {
-          pmql = this.pmql;
-        }
-
-        let filter = this.filter;
-
-        if (filter && filter.length) {
-          if (filter.isPMQL()) {
-            pmql = `(${pmql}) and (${filter})`;
-            filter = '';
-          }
-        }
-
-        if (this.previousFilter !== filter) {
-          this.page = 1;
-        }
-
-        this.previousFilter = filter;
-
-        if (this.previousPmql !== pmql) {
-          this.page = 1;
-        }
-
-        this.previousPmql = pmql;
+        const { pmql, filter } = this.buildPmqlAndFilter();
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -466,6 +441,37 @@ export default {
             }
           });
       });
+    },
+    buildPmqlAndFilter() {
+      let pmql = '';
+
+      if (this.pmql !== undefined) {
+        pmql = this.pmql;
+      }
+
+      let filter = this.filter;
+
+      if (filter?.length) {
+        if (filter.isPMQL()) {
+          pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
+          filter = '';
+        }
+      }
+
+      if (this.previousFilter !== filter) {
+        this.page = 1;
+      }
+
+      this.previousFilter = filter;
+
+      if (this.previousPmql !== pmql) {
+        this.page = 1;
+      }
+
+      this.previousPmql = pmql;
+
+      return { pmql, filter };
+
     },
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);
