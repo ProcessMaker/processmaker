@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -59,7 +59,51 @@ class ScreenTemplate implements TemplateInterface
      */
     public function save($request) : JsonResponse
     {
-        // TODO: Implement saving a new screen template
+        $data = $request->all();
+
+        // Find the required screen model
+        $model = (new ExportController)->getModel('screen')->findOrFail($data['asset_id']);
+
+        // Get the screen manifest
+        $response = $this->getManifest('screen', $data['asset_id']);
+
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 400);
+        }
+
+        $uuid = $model->uuid;
+        $screenType = $model->type;
+
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($response['export'] as $key => $asset) {
+            $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
+            if ($key === $uuid) {
+                $mode = 'copy';
+            }
+            $postOptions[$key] = [
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $data['saveAssetsMode'],
+            ];
+        }
+        $options = new Options($postOptions);
+
+        // Create an exporter instance
+        $exporter = new Exporter();
+        $exporter->export($model, ScreenExporter::class, $options);
+        $payload = $exporter->payload();
+
+        // Create a new process template
+        $screenTemplate = ScreenTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'user_id' => \Auth::user()->id,
+            'screen_type' => $screenType,
+        ]);
+
+        $screenTemplate->saveOrFail();
+
+        return response()->json(['model' => $screenTemplate]);
     }
 
     /**
@@ -73,6 +117,7 @@ class ScreenTemplate implements TemplateInterface
     public function create($request) : JsonResponse
     {
         // TODO: Implement creating a screen from a selected screen template
+        dd('create screen template');
     }
 
     /**
@@ -204,7 +249,7 @@ class ScreenTemplate implements TemplateInterface
         $templateId = $request->id;
         $name = $request->name;
 
-        $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
+        $template = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return ['id' => $template->id, 'name' => $name];

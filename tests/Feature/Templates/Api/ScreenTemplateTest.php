@@ -26,5 +26,41 @@ class ScreenTemplateTest extends TestCase
     use HelperTrait;
     use WithFaker;
 
-    // TODO: Create sceen template tests
+    public function testCreateScreenTemplate()
+    {
+        $screenCategoryId = ScreenCategory::factory()->create()->id;
+        $screen = Screen::factory()->create([
+            'title' => 'Test Screen',
+            'type' => 'FORM',
+            'screen_category_id' => $screenCategoryId,
+        ]);
+        $screenId = $screen->id;
+
+        $route = route('api.template.store', ['screen', $screenId]);
+        $data = [
+            'name' => 'Test Screen Template Creation',
+            'description' => 'Test Screen Template Description',
+            'screen_category_id' => $screenCategoryId,
+            'version'   => '1.0.0',
+            'asset_id' => $screenId,
+            'saveAssetsMode' => 'saveAllAssets',
+        ];
+        $response = $this->apiCall('POST', $route, $data);
+
+        // Assert response status
+        $response->assertStatus(200);
+
+        // Assert that our database has the screen template we need
+        $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Creation']);
+    }
+
+    // public function testUpdateScreenTemplate()
+    // {
+
+    // }
+
+    // public function testDeleteScreenTemplate()
+    // {
+
+    // }
 }
