@@ -162,6 +162,9 @@ jobs:
       - name: Export Params
         run: |
           echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Clone repo K8S
         run: |
           echo "IMAGE: ${{ env.IMAGE }}"
@@ -179,3 +182,12 @@ jobs:
           docker-compose down -v
           docker-compose build phpunit
           docker-compose run phpunit
+      - name: Get coverage report
+        run: |          
+          CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
+          docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
+          du -h coverage.xml
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
