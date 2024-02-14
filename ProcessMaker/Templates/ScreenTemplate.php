@@ -36,10 +36,10 @@ class ScreenTemplate implements TemplateInterface
      *
      * @return array An array containing the list of screen templates.
      */
-    public function index(Request $request)
-    {
-        // TODO: Implement screen templates listing
-    }
+    // public function index(Request $request)
+    // {
+    //     // TODO: Implement screen templates listing
+    // }
 
     /**
      * Show screen template in screen builder
@@ -47,20 +47,20 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request Request object
      * @return array Returns an array with the screen ID
      */
-    public function show($request) : array
-    {
-        // TODO: Implement showing selected screen template in screen builder
-    }
+    // public function show($request) : array
+    // {
+    //     // TODO: Implement showing selected screen template in screen builder
+    // }
 
     /**
      * Save new screen template
      * @param mixed $request The HTTP request containing the template data
      * @return JsonResponse The JSON response with the saved template model
      */
-    public function save($request) : JsonResponse
-    {
-        // TODO: Implement saving a new screen template
-    }
+    // public function save($request) : JsonResponse
+    // {
+    //     // TODO: Implement saving a new screen template
+    // }
 
     /**
      * Create a screen from the selected screen template
@@ -70,17 +70,17 @@ class ScreenTemplate implements TemplateInterface
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the screen template is not found
      */
-    public function create($request) : JsonResponse
-    {
-        // TODO: Implement creating a screen from a selected screen template
-    }
+    // public function create($request) : JsonResponse
+    // {
+    //     // TODO: Implement creating a screen from a selected screen template
+    // }
 
     /**
      *  Update process template bpmn.
      * @param mixed $request
      * @return JsonResponse
      */
-    // TODO: May not need this function for with screen templates
+    //  // TODO: May not need this function for with screen templates
     // public function updateTemplate($request) : JsonResponse
     // {
     //     $id = (int) $request->id;
@@ -113,15 +113,15 @@ class ScreenTemplate implements TemplateInterface
      * @param Request
      * @return JsonResponse
      */
-    public function updateTemplateConfigs($request) : JsonResponse
-    {
-        // TODO: Implement updating a screen template configs
-    }
+    // public function updateTemplateConfigs($request) : JsonResponse
+    // {
+    //     // TODO: Implement updating a screen template configs
+    // }
 
-    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
-    {
-        // TODO: Implement updating a screen template manifest when editing template in screen builder
-    }
+    // public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    // {
+    //     // TODO: Implement updating a screen template manifest when editing template in screen builder
+    // }
 
     /**
      * Displays Template Configurations
@@ -130,20 +130,20 @@ class ScreenTemplate implements TemplateInterface
      * @return array An array containing the template object, addons, and categories
      * @throws Illuminate\Database\Eloquent\ModelNotFoundException If no template is found with the given ID
      */
-    public function configure(int $id) : array
-    {
-        // TODO: Implement showing selected screen template configurations
-    }
+    // public function configure(int $id) : array
+    // {
+    //     // TODO: Implement showing selected screen template configurations
+    // }
 
     /**
      *  Delete process template
      * @param mixed $request
      * @return bool
      */
-    public function destroy(int $id) : bool
-    {
-        // TODO: Implement deleting selected screen template
-    }
+    // public function destroy(int $id) : bool
+    // {
+    //     // TODO: Implement deleting selected screen template
+    // }
 
     /**
      * Get process template manifest.
@@ -206,7 +206,8 @@ class ScreenTemplate implements TemplateInterface
 
         $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
-            // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
+            // If same asset has been Saved as Template previously,
+            // offer to choose between “Update Template” and “Save as New Template”
             return ['id' => $template->id, 'name' => $name];
         }
 
