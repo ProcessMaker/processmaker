@@ -143,7 +143,6 @@ export default {
   },
   data() {
     return {
-      fetchFlag: 0,
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
@@ -157,6 +156,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
     };
@@ -400,7 +400,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        const { pmql, filter } = this.buildPmqlAndFilter();
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter();
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -419,7 +419,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            this.getAdvancedFilter(),
+            advancedFilter,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -427,13 +427,6 @@ export default {
             },
           )
           .then((response) => {
-            if (response.data.data.length === 0 && this.fetchFlag === 0){
-              this.page = 1;
-              this.fetch();
-              this.fetchFlag = 1;
-            } else {
-              this.fetchFlag = 0;
-            }
             this.data = this.transform(response.data);
           }).catch((error) => {
             this.data = [];
@@ -478,7 +471,12 @@ export default {
 
       this.previousPmql = pmql;
 
-      return { pmql, filter };
+      const advancedFilter = this.getAdvancedFilter();
+      if (this.previousAdvancedFilter !== advancedFilter) {
+        this.page = 1;
+      }
+
+      return { pmql, filter, advancedFilter };
 
     },
     handleRowClick(row) {
