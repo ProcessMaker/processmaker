@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequestToken;
 class InboxRule extends ProcessMakerModel
@@ -16,8 +17,8 @@ class InboxRule extends ProcessMakerModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function task()
+    public function task(): BelongsTo
     {
-        return $this->belongsTo(ProcessRequestToken::class, 'process_request_id');
+        return $this->belongsTo(ProcessRequestToken::class, 'process_request_token_id');
     }
 }
