@@ -65,6 +65,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -80,9 +81,9 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
+                    {{ formatRemainingTime(row.due_at) }}
                   </span>
-                  <span>{{ row["due_date"] }}</span>
+                  <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
                 <template v-else-if="header.field === 'is_priority'">
                   <span>
@@ -106,6 +107,7 @@
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
@@ -178,6 +180,7 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -247,6 +250,13 @@ export default {
     };
   },
   computed: {
+    now() {
+      const tz = get(window, 'ProcessMaker.user.timezone');
+      if (tz) {
+        return moment().tz(tz);
+      }
+      return moment();
+    },
     endpoint() {
       if (this.savedSearch !== false) {
         return `saved-searches/${this.savedSearch}/results`;
@@ -269,7 +279,6 @@ export default {
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
-          record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
           record["task_name"] = this.formatActiveTask(record);
@@ -473,14 +482,11 @@ export default {
       return `${daysRemaining}D`;
     },
     remainingTime(date) {
-      if (date === "-" || date === null) {
+      date = moment(date);
+      if (!date.isValid()) {
         return 0;
       }
-
-      const currentDate = new Date();
-      const formatDate = moment(date).format("YYYY-MM-DD");
-      const endDate = new Date(formatDate);
-      return endDate - currentDate;
+      return date.diff(this.now);
     },
     formatProcess(request) {
       return request.process.name;

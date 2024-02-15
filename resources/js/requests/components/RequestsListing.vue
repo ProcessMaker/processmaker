@@ -54,6 +54,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -77,6 +78,7 @@
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -259,6 +261,7 @@ export default {
           default: true,
           width: 140,
           truncate: true,
+          tooltip: this.$t("This column can not be sorted or filtered."),
         },
         {
           label: this.$t("Participants"),
@@ -334,16 +337,13 @@ export default {
       );
     },
     formatActiveTasks(value) {
-      let htmlString = '';
-      for (const task of value) {
-        htmlString += `
-          <div class="text-truncate">
-            <a class="text-nowrap" href="${this.openTask(task)}">
-              ${task.element_name}
-            </a>
-          </div>
+      return value.map((task) => {
+        return `
+          <a href="${this.openTask(task)}">
+            ${task.element_name}
+          </a>
         `;
-      }
+      }).join('<br/>');
       return htmlString;
     },
     formatCaseNumber(value) {
@@ -399,32 +399,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        let pmql = '';
-
-        if (this.pmql !== undefined) {
-          pmql = this.pmql;
-        }
-
-        let filter = this.filter;
-
-        if (filter && filter.length) {
-          if (filter.isPMQL()) {
-            pmql = `(${pmql}) and (${filter})`;
-            filter = '';
-          }
-        }
-
-        if (this.previousFilter !== filter) {
-          this.page = 1;
-        }
-
-        this.previousFilter = filter;
-
-        if (this.previousPmql !== pmql) {
-          this.page = 1;
-        }
-
-        this.previousPmql = pmql;
+        const { pmql, filter } = this.buildPmqlAndFilter();
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -466,6 +441,37 @@ export default {
             }
           });
       });
+    },
+    buildPmqlAndFilter() {
+      let pmql = '';
+
+      if (this.pmql !== undefined) {
+        pmql = this.pmql;
+      }
+
+      let filter = this.filter;
+
+      if (filter?.length) {
+        if (filter.isPMQL()) {
+          pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
+          filter = '';
+        }
+      }
+
+      if (this.previousFilter !== filter) {
+        this.page = 1;
+      }
+
+      this.previousFilter = filter;
+
+      if (this.previousPmql !== pmql) {
+        this.page = 1;
+      }
+
+      this.previousPmql = pmql;
+
+      return { pmql, filter };
+
     },
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);

@@ -28,7 +28,7 @@
               :style="{ width: column.width + 'px' }"
             >
               <slot :name="column.field">
-                {{ column.label }}
+                {{ $t(column.label) }}
               </slot>
             </div>
             <div class="pm-table-filter-button">
@@ -37,8 +37,17 @@
             <div
               v-if="index !== headers.length - 1"
               class="pm-table-column-resizer"
-              @mousedown="startResize(index)"
+              @mousedown="startResize($event, index)"
             />
+            <b-tooltip
+              v-if="column.tooltip"
+              :target="`${tableName}-column-${index}`"
+              custom-class="pm-table-tooltip-header"
+              placement="bottom"
+              delay="500"
+            >
+              {{ column.tooltip }}
+            </b-tooltip>
           </th>
         </tr>
         <tr>
@@ -75,6 +84,7 @@
                   v-if="header.truncate"
                   :target="`${tableName}-element-${rowIndex}-${index}`"
                   custom-class="pm-table-tooltip"
+                  @show="checkIfTooltipIsNeeded"
                 >
                   {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
                 </b-tooltip>
@@ -97,6 +107,7 @@
                       v-if="header.truncate"
                       :target="`${tableName}-element-${rowIndex}-${index}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
@@ -165,9 +176,16 @@ export default {
       ellipsisColumn.forEach((column) => {
         column.addEventListener("click", this.handleEllipsisClick);
       });
+      window.addEventListener("resize", this.handleWindowResize);
     });
   },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.handleWindowResize);
+  },
   methods: {
+    handleWindowResize() {
+      this.calculateColumnWidth();
+    },
     calculateColumnWidth() {
       this.headers.forEach((headerColumn, index) => {
         if (this.calculateContent(index) !== 0) {
@@ -175,7 +193,7 @@ export default {
         }
       });
     },
-    startResize(index) {
+    startResize(event, index) {
       this.isResizing = true;
       this.calculateColumnWidth();
       this.resizingColumnIndex = index;
@@ -342,6 +360,21 @@ export default {
 .pm-table-tooltip .arrow::before {
   border-bottom-color: #F2F8FE !important;
   border-top-color: #F2F8FE !important;
+}
+.pm-table-tooltip-header {
+  opacity: 1 !important;
+}
+.pm-table-tooltip-header .tooltip-inner {
+  background-color: #deebff;
+  color: #104a75;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  max-width: 250px;
+  padding: 14px;
+  border-radius: 7px;
+}
+.pm-table-tooltip-header .arrow::before {
+  border-bottom-color: #deebff !important;
+  border-top-color: #deebff !important;
 }
 .pm-table-filter-applied {
   color: #1572C2;
