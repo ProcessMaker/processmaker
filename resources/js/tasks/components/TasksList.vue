@@ -85,15 +85,14 @@
                   <span>{{ row["due_date"] }}</span>
                 </template>
                 <template v-else-if="header.field === 'is_priority'">
-                  <span v-if="row[header.field]">
-                    <a @click.prevent="togglePriority(row.id, !row[header.field])">
-                      <img
-                        :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
-                        :alt="row[header.field] ? 'priority' : 'no-priority'"
-                        width="20"
-                        height="20"
-                      >
-                    </a>
+                  <span>
+                    <img
+                      :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
+                      :alt="row[header.field] ? 'priority' : 'no-priority'"
+                      width="20"
+                      height="20"
+                      @click.prevent="togglePriority(row.id, !row[header.field])"
+                    >
                   </span>
                 </template>
                 <template v-else>
@@ -294,7 +293,9 @@ export default {
       ProcessMaker.apiClient.put(
         `tasks/${taskId}/setPriority`,
         { is_priority: isPriority }
-      );
+      ).then((response) => {
+        this.fetch();
+      });
     },
     openRequest(data) {
       return `/requests/${data.id}`;
@@ -487,8 +488,13 @@ export default {
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
-    handleRowClick(row) {
-      window.location.href = this.openTask(row);
+    handleRowClick(row, event) {
+      const targetElement = event.target;
+      const isPriorityIcon = targetElement.tagName.toLowerCase() === "img"
+      && (targetElement.alt === "priority" || targetElement.alt === "no-priority");
+      if (!isPriorityIcon) {
+        window.location.href = this.openTask(row);
+      }
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
