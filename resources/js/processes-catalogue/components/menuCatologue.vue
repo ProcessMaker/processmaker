@@ -230,7 +230,7 @@ export default {
      * Select Default Option
      */
     selectDefault() {
-      if (window.location.pathname === "/processes-catalogue") {
+      if (window.location.pathname === "/process-browser") {
         this.selectProcessItem(this.data[0]);
       }
     },
