@@ -80,7 +80,11 @@
                 if (error && error.code === "ERR_CANCELED") {
                     this.noResults = false;
                     this.error = true;
-                }  else {
+                }
+                if (error && error.code === "ERR_BAD_REQUEST") {
+                    this.noResults = false;
+                }
+                else {
                     this.noResults = false;
                     this.error = true;
                 }

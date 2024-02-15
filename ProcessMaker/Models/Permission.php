@@ -15,6 +15,8 @@ class Permission extends ProcessMakerModel
         'group',
     ];
 
+    const DEFAULT_PERMISSIONS = ['Projects', 'Process Catalog'];
+
     public function getResourceTitleAttribute()
     {
         $match = preg_match('/(.+)-(.+)/', $this->name, $matches);
