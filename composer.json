@@ -98,7 +98,7 @@
         "processmaker": {
             "build": "a93a06a5",
             "custom": {
-                "package-ellucian-ethos": "1.14.3",
+                "package-ellucian-ethos": "1.14.4",
                 "package-plaid": "1.3.1",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
