@@ -181,13 +181,4 @@ jobs:
           docker pull $IMAGE
           docker-compose down -v
           docker-compose build phpunit
-          docker-compose run phpunit
-      - name: Get coverage report
-        run: |          
-          CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
-          docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
-          du -h coverage.xml
-      - uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN=${{ secrets.SONAR_TOKEN }} SONAR_HOST_URL=${{ secrets.SONAR_HOST_URL }} docker-compose run phpunit
