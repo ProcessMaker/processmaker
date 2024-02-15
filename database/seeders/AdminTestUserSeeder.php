@@ -9,17 +9,17 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\User;
 
-class AdminUserSeeder extends Seeder
+class AdminTestUserSeeder extends Seeder
 {
-    public static $INSTALLER_ADMIN_USERNAME = 'admin_test';
+    public static $INSTALLER_ADMIN_TEST_USERNAME = 'admin_test';
 
-    public static $INSTALLER_ADMIN_PASSWORD = 'admin';
+    public static $INSTALLER_ADMIN_TEST_PASSWORD = 'admin';
 
-    public static $INSTALLER_ADMIN_EMAIL = 'admin_test@processmaker.com';
+    public static $INSTALLER_ADMIN_TEST_EMAIL = 'admin_test@processmaker.com';
 
-    public static $INSTALLER_ADMIN_FIRSTNAME = 'Admin';
+    public static $INSTALLER_ADMIN_TEST_FIRSTNAME = 'Admin';
 
-    public static $INSTALLER_ADMIN_LASTNAME = 'TestUser';
+    public static $INSTALLER_ADMIN_TEST_LASTNAME = 'TestUser';
 
     /**
      * Run the database seeds.
@@ -30,14 +30,14 @@ class AdminUserSeeder extends Seeder
     {
         // Create admin user
         User::updateOrCreate([
-            'username' => self::$INSTALLER_ADMIN_USERNAME,
+            'username' => self::$INSTALLER_ADMIN_TEST_USERNAME,
             'is_administrator' => true,
         ], [
-            'username' => self::$INSTALLER_ADMIN_USERNAME,
-            'password' => Hash::make(env('INSTALL_ADMIN_PASSWORD', self::$INSTALLER_ADMIN_PASSWORD)),
-            'email' => self::$INSTALLER_ADMIN_EMAIL,
-            'firstname' => self::$INSTALLER_ADMIN_FIRSTNAME,
-            'lastname' => self::$INSTALLER_ADMIN_LASTNAME,
+            'username' => self::$INSTALLER_ADMIN_TEST_USERNAME,
+            'password' => Hash::make(self::$INSTALLER_ADMIN_TEST_PASSWORD),
+            'email' => self::$INSTALLER_ADMIN_TEST_EMAIL,
+            'firstname' => self::$INSTALLER_ADMIN_TEST_FIRSTNAME,
+            'lastname' => self::$INSTALLER_ADMIN_TEST_LASTNAME,
             'address' => null,
             'city' => null,
             'state' => null,
