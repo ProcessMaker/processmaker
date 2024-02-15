@@ -143,6 +143,7 @@ export default {
   },
   data() {
     return {
+      fetchFlag: 0,
       orderBy: "id",
       orderDirection: "DESC",
       additionalParams: "",
@@ -426,6 +427,13 @@ export default {
             },
           )
           .then((response) => {
+            if (response.data.data.length === 0 && this.fetchFlag === 0){
+              this.page = 1;
+              this.fetch();
+              this.fetchFlag = 1;
+            } else {
+              this.fetchFlag = 0;
+            }
             this.data = this.transform(response.data);
           }).catch((error) => {
             this.data = [];
