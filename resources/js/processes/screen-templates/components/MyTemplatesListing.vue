@@ -7,86 +7,108 @@
               :empty-desc="$t('')"
               empty-icon="noData"
       />
-      <div v-show="!shouldShowLoader" class="card card-body screen-table-card" data-cy="screens-table">
-        <vuetable
-          :dataManager="dataManager"
-          :noDataTemplate="$t('No Data Available')"
-          :sortOrder="sortOrder"
-          :css="css"
-          :api-mode="false"
-          @vuetable:pagination-data="onPaginationData"
-          :fields="fields"
+      <div v-show="!shouldShowLoader" class="card card-body my-templates-table-card" data-cy="my-templates-table">
+        <filter-table
+          :headers="fields"
           :data="data"
-          data-path="data"
-          pagination-path="meta"
+          table-name="my-screen-templates"
+          style="height: calc(100vh - 355px);"
         >
-          <template slot="title" slot-scope="props">
-            <b-link
-              :href="onScreenNavigate('edit-screen', props.rowData, props.rowIndex)"
-              v-if="permission.includes('edit-screens')"
-            ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
-            <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
-          </template>
-  
-          <template slot="actions" slot-scope="props">
-            <ellipsis-menu
-              :actions="screenActions"
-              :permission="permission"
-              :data="props.rowData"
-              :divider="true"
-              @navigate="onScreenNavigate"
+        <!-- Slot Table Header filter Button -->
+        <template
+          v-for="(column, index) in fields"
+          #[`filter-${column.field}`]
+        >
+          <div
+            v-if="column.sortable"
+            :key="index"
+            @click="handleEllipsisClick(column)"
+          >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
             />
-          </template>
-        </vuetable>
+          </div>
+        </template>
+        <!-- Slot Table Body -->
+        <template
+          v-for="(row, rowIndex) in data.data"
+          #[`row-${rowIndex}`]
+        >
+          <td
+            v-for="(header, colIndex) in fields"
+            :key="`${rowIndex}_${colIndex}`"
+            :data-cy="`my-templates-table-td-${rowIndex}-${colIndex}`"
+          >
+            <div
+              v-if="containsHTML(row[header.field])"
+              :data-cy="`my-templates-table-html-${rowIndex}-${colIndex}`"
+              v-html="sanitize(row[header.field])"
+            />
+            <template v-else>
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`my-templates-table-component-${rowIndex}-${colIndex}`"
+              >
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                />
+              </template>
+              <template
+                v-else
+                :data-cy="`my-templates-table-field-${rowIndex}-${colIndex}`"
+              >
+                <template v-if="header.field === 'name'">
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${row.id}`"
+                    custom-class="pm-table-tooltip"
+                  >
+                    {{ row[header.field] }}
+                  </b-tooltip>
+                </template>
+                <template v-if="header.field === 'actions'">
+                  <ellipsis-menu
+                    class="my-template-table"
+                    :actions="myTemplateActions"
+                    :permission="permission"
+                    :data="row"
+                    :divider="true"
+                    :screen-template="true"
+                    @navigate="onMyTemplateNavigate"
+                  />
+                </template>
+                <template v-if="header.field !== 'name'">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ getNestedPropertyValue(row, header) }}
+                  </div>
+                </template>
+              </template>
+            </template>
+          </td>
+        </template>
+      </filter-table>
   
-        <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
-  
-        <pagination
-          single="Screen"
-          plural="Screens"
-          :perPageSelectEnabled="true"
-          @changePerPage="changePerPage"
-          @vuetable-pagination:change-page="onPageChange"
-          ref="pagination"
-        ></pagination>
+      <pagination-table
+        :meta="data.meta"
+        data-cy="my-templates-pagination"
+        @page-change="changePage"
+      />
+      <pagination
+        ref="pagination"
+        :single="$t('Template')"
+        :plural="$t('Templates')"
+        :per-page-select-enabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+      />
       </div>
-      <b-modal ref="myModalRef" :title="$t('Copy Screen')" centered header-close-content="&times;">
-        <form>
-          <div class="form-group">
-            <label for="title">{{$t('Name')}}<small class="ml-1">*</small></label>
-            <input id="title"
-              type="text"
-              class="form-control"
-              v-model="dupScreen.title"
-              v-bind:class="{ 'is-invalid': errors.title }"
-            />
-            <div class="invalid-feedback" role="alert" v-if="errors.title">{{errors.title[0]}}</div>
-          </div>
-          <div class="form-group">
-            <label for="type">{{$t('Type')}}</label>
-            <select class="form-control" id="type" disabled>
-              <option>{{dupScreen.type}}</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <category-select
-            :label="$t('Category')"
-            api-get="screen_categories"
-            api-list="screen_categories"
-            v-model="dupScreen.screen_category_id"
-            :errors="errors.screen_category_id">
-            </category-select>
-          </div>
-          <div class="form-group">
-            <label for="description">{{$t('Description')}}</label>
-            <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
-          </div>
-        </form>
-        <div slot="modal-footer" class="w-100" align="right">
-          <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
-          <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
-        </div>
-      </b-modal>
     </div>
   </template>
   
@@ -96,14 +118,15 @@
   import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
   import screenNavigationMixin from "../../../components/shared/screenNavigation";
   import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-  
+  import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
+  import paginationTable from "../../../components/shared/PaginationTable.vue";
+
   import { createUniqIdsMixin } from "vue-uniq-ids";
-  import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
   const uniqIdsMixin = createUniqIdsMixin();
   
   export default {
-    components: { EllipsisMenu, AddToProjectModal },
-    mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
+    components: { EllipsisMenu, paginationTable },
+    mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin, FilterTableBodyMixin],
     props: ["filter", "id", "permission"],
     data() {
       return {
@@ -121,130 +144,87 @@
   
         fields: [
           {
-            title: () => this.$t("Name"),
-            name: "__slot:title",
+            label: this.$t("Name"),
             field: "title",
-            sortField: "title"
+            width: 200,
+            sortable: true,
+            truncate: true,
+            direction: "none",
           },
           {
-            title: () => this.$t("Description"),
-            name: "description",
-            sortField: "description"
+            label: this.$t("Description"),
+            field: "description",
+            width: 200,
+            sortable: true,
+            direction: "none",
+            sortField: "description",
           },
           {
-            title: () => this.$t("Category"),
-            name: "categories",
-            sortField: "category.name",
-            callback(categories) {
-              return categories.map(item => item.name).join(', ');
-            }
+            label: this.$t("Type of Screen"),
+            field: "screen_type",
+            width: 160,
+            sortable: true,
+            direction: "none",
+            sortField: "screen_type",
           },
           {
-            title: () => this.$t("Type"),
-            name: "type",
-            sortField: "type",
-            callback: this.formatType
-          },
-          {
-            title: () => this.$t("Modified"),
-            name: "updated_at",
-            sortField: "updated_at",
-            callback: "formatDate"
-          },
-          {
-            title: () => this.$t("Created"),
-            name: "created_at",
-            sortField: "created_at",
-            callback: "formatDate"
+            label: this.$t("Modified"),
+            field: "updated_at",
+            format: "datetime",
+            width: 160,
+            sortable: true,
+            direction: "none",
           },
           {
             name: "__slot:actions",
-            title: ""
+            field: "actions",
+            width: 60,
           }
         ]
       };
     },
   
     methods: {
-      formatType(type) {
-        return this.$t(_.startCase(_.toLower(type)));
-      },
-      showModal() {
-        this.$refs.myModalRef.show();
-      },
-      hideModal() {
-        this.$refs.myModalRef.hide();
-      },
-      onSubmit() {
-        ProcessMaker.apiClient
-          .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
-          .then(response => {
-            ProcessMaker.alert(this.$t("The screen was duplicated."), "success");
-            this.hideModal();
-            this.fetch();
-          })
-          .catch(error => {
-            if (error.response.status && error.response.status === 422) {
-              this.errors = error.response.data.errors;
-            }
-          });
-      },
-      showAddToProjectModal(title, id, projects) {        
-        this.screenId = id;
-        this.assetName = title;
-        this.assignedProjects = projects;
-        this.$refs["add-to-project-modal"].show();
+      onMyTemplateNavigate() {
+        console.log('ellipsis menu action');
       },
       fetch() {
-        this.loading = true;
-        //change method sort by slot name
-        this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
-        // Load from our api client
-        ProcessMaker.apiClient
-          .get(
-            "screens" +
-              "?page=" +
-              this.page +
-              "&per_page=" +
-              this.perPage +
-              "&filter=" +
-              this.filter +
-              "&order_by=" +
-              this.orderBy +
-              "&order_direction=" +
-              this.orderDirection +
-              "&include=categories,category" +
-              "&exclude=config"
-      )
-          .then(response => {
-            this.data = this.transform(response.data);
-            this.loading = false;
-          });
+        //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'MY TEMPLATES' FROM SCREEN TEMPLATES
+          this.loading = true;
+          //change method sort by slot name
+          this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
+          // Load from our api client
+          ProcessMaker.apiClient
+            .get(
+              "screens" +
+                "?page=" +
+                this.page +
+                "&per_page=" +
+                this.perPage +
+                "&filter=" +
+                this.filter +
+                "&order_by=" +
+                this.orderBy +
+                "&order_direction=" +
+                this.orderDirection +
+                "&include=categories,category" +
+                "&exclude=config"
+        )
+            .then(response => {
+              this.data = this.transform(response.data);
+              this.loading = false;
+            });
       },
     },
-  
-    computed: {}
   };
   </script>
   
-  <style lang="scss" scoped>
-  :deep(th#_total_users) {
-    width: 150px;
-    text-align: center;
-  }
-  
-  :deep(th#_description) {
-    width: 250px;
-  }
-  
-  :deep(.rounded-user) {
-    border-radius: 50% !important;
-    height: 1.5em;
-    margin-right: 0.5em;
-  }
-  
-  .screen-table-card {
-      padding: 0;
-  }
-  </style>
-  
+<style lang="scss" scoped>
+:deep(th#_description) {
+  width: 250px;
+}
+
+.my-templates-table-card {
+  padding: 0;
+}
+</style>
