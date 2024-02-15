@@ -28,8 +28,8 @@ class AdminUserSeeder extends Seeder
      */
     public function run(ClientRepository $clients)
     {
-        //Create admin user
-        $user = User::updateOrCreate([
+        // Create admin user
+        User::updateOrCreate([
             'username' => self::$INSTALLER_ADMIN_USERNAME,
             'is_administrator' => true,
         ], [
