@@ -149,7 +149,7 @@ class TemplateController extends Controller
         } elseif ($type === 'screen') {
             return $this->createScreen($request);
         } elseif ($type === 'update-assets') {
-            return $this->updateAsset($request);
+            return $this->updateAssets($request);
         }
     }
 
@@ -252,8 +252,7 @@ class TemplateController extends Controller
             $projectIds = explode(',', $request->input('projects'));
             $this->updateProjectUpdatedAt($projectIds);
         }
-
-        $this->dispatchProcessCreatedEvent($response);
+        $this->dispatchProcessCreatedEvent($postOptions, $response);
 
         return $response;
     }
@@ -284,9 +283,9 @@ class TemplateController extends Controller
         return $this->template->create('update-assets', $request);
     }
 
-    protected function dispatchProcessCreatedEvent($response)
+    protected function dispatchProcessCreatedEvent($postOptions, $response)
     {
-        if (empty($response['existingAssets']) && isset($response->getData()->processId)) {
+        if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
         }
