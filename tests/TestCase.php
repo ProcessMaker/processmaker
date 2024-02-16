@@ -8,12 +8,14 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Hash;
 use PDOException;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -36,12 +38,31 @@ abstract class TestCase extends BaseTestCase
 
         $this->disableSetContentMiddleware();
 
+        $this->createAdministrator();
+
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
         }
+    }
+
+    /**
+     * Creates an admin user for each test if one does not already exist
+     *
+     * @return void
+     */
+    protected function createAdministrator(): void
+    {
+        if (User::where('is_administrator', true)->exists()) {
+            return;
+        }
+
+        User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => true,
+        ]);
     }
 
     /**
