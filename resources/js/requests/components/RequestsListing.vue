@@ -14,7 +14,7 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -232,14 +232,14 @@ export default {
       }
       return [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
           width: 80,
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           sortable: true,
           default: true,
@@ -247,7 +247,7 @@ export default {
           width: 220,
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "name",
           sortable: true,
           default: true,
@@ -255,7 +255,7 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task"),
+          label: "Task",
           field: "active_tasks",
           sortable: false,
           default: true,
@@ -264,7 +264,7 @@ export default {
           tooltip: this.$t("This column can not be sorted or filtered."),
         },
         {
-          label: this.$t("Participants"),
+          label: "Participants",
           field: "participants",
           sortable: true,
           default: true,
@@ -274,7 +274,7 @@ export default {
           hideSortingButtons: true,
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
@@ -282,7 +282,7 @@ export default {
           filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Started"),
+          label: "Started",
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -290,7 +290,7 @@ export default {
           width: 160,
         },
         {
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,

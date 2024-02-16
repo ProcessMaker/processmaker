@@ -52,7 +52,7 @@ class TaskController extends Controller
                 SavedSearch::KEY_TASKS,
             );
             if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns, SavedSearch::TYPE_TASK);
             } else {
                 $defaultColumns = null;
             }
