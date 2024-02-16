@@ -63,6 +63,8 @@ abstract class TestCase extends BaseTestCase
             'password' => Hash::make('password'),
             'is_administrator' => true,
         ]);
+
+        $this->withPersonalAccessClient();
     }
 
     /**
