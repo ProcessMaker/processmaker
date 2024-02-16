@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Hash;
 use PDOException;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
