@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\ImportExport;
 
-use Database\Seeders\AdminTestUserSeeder;
 use Database\Seeders\SignalSeeder;
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
