@@ -72,7 +72,6 @@ export default {
       helperProcessId: null,
       startEvents: null,
       shouldImportProcessTemplate: true,
-      
     };
   },
   computed: {
