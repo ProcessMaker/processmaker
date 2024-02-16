@@ -4,7 +4,6 @@ namespace ProcessMaker\InboxRules;
 
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\InboxRule;
-use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 
 class MatchingTasks
 {
@@ -15,39 +14,53 @@ class MatchingTasks
         $this->inboxRule = $inboxRule;
     }
 
-    public function check(ProcessRequestToken $task) 
+    public function check(ProcessRequestToken $task)
     {
-        if ($task->isNotEmpty() && $task->has('user_id')) {
+        if ($task && $task->user_id) {
+            
+            $this->inboxRule = InboxRule::with(['savedSearch', 'task'])
+                ->select('inbox_rules.*', 'saved_searches.user_id as saved_search_user_id', 'process_request_tokens.user_id as process_request_token_user_id')
+                ->leftJoin('saved_searches', 'inbox_rules.saved_search_id', '=', 'saved_searches.id')
+                ->leftJoin('process_request_tokens', 'inbox_rules.process_request_token_id', '=', 'process_request_tokens.id')
+                ->where('inbox_rules.active', true);
 
-            $this->inboxRule = InboxRule::where('user_id', $task->user_id)->where('active', true)->get();
 
-            $savedSearch = new SavedSearch();
+            if (request()->has('saved_searches.user_id') && request()->get('saved_searches.user_id') !== null) {
+                $this->inboxRule->where('saved_searches.user_id', $task->user_id);
+            }
 
+
+            if (request()->has('process_request_tokens.user_id') && request()->get('process_request_tokens.user_id') !== null) {
+                $this->inboxRule->where('process_request_tokens.user_id', $task->user_id);
+            }
+
+            $this->inboxRule = $this->inboxRule->get();
+
+            //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
             foreach ($this->inboxRule as $rule) {
-                if (property_exists($rule, 'saved_search_id') && $rule->saved_search_id !== null) {
-                    //if ($rule->saved_search)
-                    //then is a save search rule
-                    $result = $savedSearch->query()
-                    ->where('process_request_token.user_id', $this->inboxRule->user_id)
-                    ->where('process_request_token.id', $task->id)
-                    ->exists();
+                if ($rule->getAttribute('saved_search_id') !== null) {
 
-                    if ($result) {
-                        return true;
+                    $res = $rule->savedSearch->query
+                        ->where('process_request_tokens.user_id', $rule->saved_search_user_id)
+                        ->where('process_request_tokens.id', $task->id)
+                        ->exists();
+
+                    if (!$res) {
+                        return $res;
                     }
                 }
-                if (property_exists($rule, 'process_request_token_id') && $rule->process_request_token_id !== null) {
-                    
-                    if(isset($rule->task)) {
+
+                if ($rule->getAttribute('process_request_token_id') !== null) {
+                    if (isset($rule->task)) {
                         if ($task->process_id == $rule->task->process_id && $task->element_id == $rule->task->element_id) {
                             return true;
                         }
                     }
-                    
                 }
-                
             }
             return false;
-        } 
+        } else {
+            return false;
+        }
     }
 }
