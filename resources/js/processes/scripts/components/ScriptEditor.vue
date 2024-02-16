@@ -291,7 +291,7 @@
                       <div class="output text-white">
                         <pre
                           v-if="preview.success"
-                          class="text-white"
+                          class="text-white text-pre-wrap"
                         ><samp>{{ preview.output }}</samp></pre>
                         <div v-if="preview.failure">
                           <div class="text-light bg-danger">
@@ -1112,5 +1112,10 @@ export default {
 }
 .cldr.delete-sign.codicon.codicon-diff-remove {
     background: #fbc7c7 !important;
+}
+
+.text-pre-wrap {
+    overflow-x: hidden;
+    white-space: pre-wrap;
 }
 </style>

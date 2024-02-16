@@ -53,7 +53,7 @@
 
         if (undefined !== this.redirectTo && null !== this.redirectTo) {
           if (this.redirectTo === 'process-launchpad') {
-            window.location = `/processes-catalogue/${this.processId}`;
+            window.location = `/process-browser/${this.processId}`;
           }
         } else  {
           window.location = "/modeler/" + this.processId;

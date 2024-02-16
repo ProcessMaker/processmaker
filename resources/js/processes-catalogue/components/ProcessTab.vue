@@ -5,7 +5,7 @@
       lazy
     >
       <b-tab
-        title="My Requests"
+        :title="$t('My Requests')"
         active
       >
         <request-tab
@@ -15,7 +15,7 @@
       </b-tab>
       <b-tab
         class="bg-white"
-        title="My Tasks"
+        :title="$t('My Tasks')"
       >
         <task-tab
           :currentUser="currentUser"

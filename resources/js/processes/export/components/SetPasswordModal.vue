@@ -13,17 +13,17 @@
         <b-form-group>
           <div v-if="ask">
             <b-form-checkbox class="pt-2" v-model="passwordProtect" switch :disabled="$root.forcePasswordProtect">
-              Password Protect Export
+              {{ $t('Password Protect Export') }}
             </b-form-checkbox>
             <small v-if="$root.forcePasswordProtect" class="text-danger">
-              Password protect is required because some assets may have sensitive data.
+              {{ $t('Password protect is required because some assets may have sensitive data.') }}
             </small>
           </div>
             <template v-if="passwordProtect === true">
               <div class="pt-3">
                 <label for="set-password">Password</label>
                 <vue-password v-model="password" id="set-password" :disable-strength=true />
-                <small v-if="errors.length === true" class="text-danger">{{ 'Password must have at least 8 characters.' }}</small>
+                <small v-if="errors.length === true" class="text-danger">{{ $t('Password must have at least 8 characters.') }}</small>
               </div>
               <div class="pt-3">
                 <label for="confirm-set-password">Verify Password</label>

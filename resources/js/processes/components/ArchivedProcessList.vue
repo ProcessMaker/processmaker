@@ -95,6 +95,7 @@
                     v-if="header.truncate"
                     :target="`element-archived-${row.id}`"
                     custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ row[header.field] }}
                   </b-tooltip>
