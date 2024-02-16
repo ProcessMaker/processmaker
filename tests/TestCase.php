@@ -14,6 +14,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {
