@@ -8,14 +8,12 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Hash;
 use PDOException;
 use ProcessMaker\Jobs\RefreshArtisanCaches;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\Setting;
-use ProcessMaker\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {
