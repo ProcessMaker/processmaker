@@ -55,7 +55,30 @@ class SaveSession
     {
         $key = self::getKey($user, $name);
         Cache::pull($key);
+        $array = self::clearInvalidFilters($array);
 
         return self::get($key, $array);
+    }
+
+    private static function clearInvalidFilters($array)
+    {
+        if (!array_key_exists('filters', $array)) {
+            return $array;
+        }
+
+        $cleanedFilters = [];
+        foreach ($array['filters'] as $filter) {
+            if (
+                array_key_exists('_column_field', $filter) &&
+                $filter['_column_field'] !== 'undefined' &&
+                $filter['_column_field'] !== '' &&
+                $filter['_column_field'] !== null
+            ) {
+                $cleanedFilters[] = $filter;
+            }
+        }
+        $array['filters'] = $cleanedFilters;
+
+        return $array;
     }
 }
