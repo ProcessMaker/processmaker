@@ -13,6 +13,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\SignalData;
+use ProcessMaker\Models\User;
 
 trait HelperTrait
 {
@@ -89,5 +90,10 @@ trait HelperTrait
             'options.json',
             json_encode($options)
         );
+    }
+
+    public function createAdminUser()
+    {
+        User::factory()->create(['is_administrator' => true]);
     }
 }

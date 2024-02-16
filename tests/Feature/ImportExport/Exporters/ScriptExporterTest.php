@@ -17,6 +17,15 @@ class ScriptExporterTest extends TestCase
 {
     use HelperTrait;
 
+    /**
+     *  Init admin user
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createAdminUser();
+    }
+
     public function test()
     {
         DB::beginTransaction();
