@@ -141,10 +141,23 @@ const PMColumnFilterCommonMixin = {
         if (filterCopy[key].length === 0) {
           delete filterCopy[key];
         }
-        const label = this.tableHeaders.find(column => column.field === key)?.label;
+        const label = this.tableHeaders.find((column) => column.field === key)?.label;
         this.addAliases(filterCopy[key], key, label);
       });
-      return Object.values(filterCopy).flat(1);
+      const cleanedFilterCopy = this.clearInvalidFilters(filterCopy);
+      return Object.values(cleanedFilterCopy).flat(1);
+    },
+    clearInvalidFilters(filterCopy) {
+      const cleanedFilter = Object.fromEntries(
+        Object.entries(filterCopy).map(
+          ([key, value]) => [
+            key, value.filter(
+              (element) => element.hasOwnProperty('_column_field')
+            ),
+          ],
+        ),
+      );
+      return cleanedFilter;
     },
     getAdvancedFilter() {
       let formattedFilter = this.formattedFilter();
