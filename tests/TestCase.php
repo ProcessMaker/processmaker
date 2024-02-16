@@ -38,33 +38,12 @@ abstract class TestCase extends BaseTestCase
 
         $this->disableSetContentMiddleware();
 
-        $this->createAdministrator();
-
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
                 $this->$method();
             }
         }
-    }
-
-    /**
-     * Creates an admin user for each test if one does not already exist
-     *
-     * @return void
-     */
-    protected function createAdministrator(): void
-    {
-        if (User::where('is_administrator', true)->exists()) {
-            return;
-        }
-
-        User::factory()->create([
-            'password' => Hash::make('password'),
-            'is_administrator' => true,
-        ]);
-
-        $this->withPersonalAccessClient();
     }
 
     /**
