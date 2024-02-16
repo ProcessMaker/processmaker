@@ -369,6 +369,7 @@ export default {
       const params = {
         question: this.query,
         type: this.searchType,
+        classifySearch: false,
       };
 
       this.aiLoading = true;
