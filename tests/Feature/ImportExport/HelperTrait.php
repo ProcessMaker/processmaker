@@ -50,8 +50,6 @@ trait HelperTrait
 
     public function addGlobalSignalProcess()
     {
-        $this->addTestAdminUser();
-
         ProcessCategory::factory()->create(['is_system'=> true]);
         (new SignalSeeder())->run();
         $this->globalSignal = new SignalData('test_global', 'test_global', '');
@@ -91,10 +89,5 @@ trait HelperTrait
             'options.json',
             json_encode($options)
         );
-    }
-
-    public function addTestAdminUser()
-    {
-        (new AdminTestUserSeeder())->run();
     }
 }
