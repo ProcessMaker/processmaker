@@ -2049,5 +2049,7 @@
   "Projects": "Projets",
   "Recent Projects": "Projets Récents",
   "View All Tasks": "Voir Toutes les Tâches",
-  "Well, it seems nothing in here": "Eh bien, il semble qu'il n'y ait rien ici"
+  "Well, it seems nothing in here": "Eh bien, il semble qu'il n'y ait rien ici",
+  "Inbox Rules act as your personal task manager. You tell them what to look for, and they": "Les règles de la boîte de réception agissent comme votre gestionnaire de tâches personnel. Vous leur dites ce qu'il faut rechercher, et ils",
+  "take care of things automatically.": "s'occupent des choses automatiquement."
 }

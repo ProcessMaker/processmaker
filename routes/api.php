@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Api\FileController;
 use ProcessMaker\Http\Controllers\Api\GroupController;
 use ProcessMaker\Http\Controllers\Api\GroupMemberController;
 use ProcessMaker\Http\Controllers\Api\ImportController;
+use ProcessMaker\Http\Controllers\Api\InboxRulesController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
 use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
@@ -180,6 +181,15 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
     Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:rollback,task');
     Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
+
+    // Inbox Rules
+    Route::prefix('tasks/rules')->group(function () {
+        Route::get('/', [InboxRulesController::class, 'index'])->name('inboxrules.index');
+        Route::get('/{inbox_rule_id}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
+        Route::post('/', [InboxRulesController::class, 'store'])->name('inboxrules.store');
+        Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
+        Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+    });
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller

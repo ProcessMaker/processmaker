@@ -19,6 +19,7 @@ new Vue({
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
+    this.$refs['taskList'].setInbox();
   },
   created() {
     const params = new URL(document.location).searchParams;
@@ -73,6 +74,9 @@ new Vue({
       if (this.$refs.taskList) {
         this.$refs.taskList.fetch(true);
       }
+    },
+    onInboxRules() {
+      window.location.href = "/tasks/rules";
     },
     setInOverdueMessage(inOverdue) {
       let inOverdueMessage = '';
