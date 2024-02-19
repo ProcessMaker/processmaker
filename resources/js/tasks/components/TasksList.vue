@@ -145,8 +145,8 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Well, it seems nothing in here')"
-        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+        :empty="$t('All clear')"
+        :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
       />
       <pagination-table
@@ -241,6 +241,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
       rowPosition: {},
