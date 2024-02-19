@@ -2,44 +2,66 @@
 
 namespace ProcessMaker\InboxRules;
 
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\InboxRule;
+use ProcessMaker\Models\ProcessRequestToken;
 
+/**
+ * This Class is used in 2 ways
+ * 1. After a task is assigned, it checks to see if it matches any active InboxRules in the system and returns the InboxRule models.
+ * 2. The `get` method returns all tasks th  at match a given InboxRule
+ */
 class MatchingTasks
 {
-    protected $inboxRule;
-
-    public function __construct(InboxRule $inboxRule)
+    public function matchingInboxRules(ProcessRequestToken $task) : array
     {
-        $this->inboxRule = $inboxRule;
-    }
+        $matchingInboxRules = [];
 
-    public function check(ProcessRequestToken $task)
-    {
         if ($task && $task->user_id) {
-
-            $this->inboxRule = $this->queryInboxRules($task);
-            
             //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
-            foreach ($this->inboxRule as $rule) {
-                if ($rule->getAttribute('saved_search_id') !== null) {
-                    return $this->loadSavedSearch($rule, $task);
+            foreach ($this->queryInboxRules($task) as $rule) {
+                if ($rule->end_date && $rule->end_date->isPast()) {
+                    continue;
+                }
+
+                if ($rule->saved_search_id !== null) {
+                    if ($this->matchesResultInSavedSearch($rule, $task)) {
+                        $matchingInboxRules[] = $rule;
+                    }
                 }
 
                 if (
-                    $rule->getAttribute('process_request_token_id') !== null &&
+                    $rule->process_request_token_id !== null &&
                     $task->process_id == $rule->task->process_id &&
                     $task->element_id == $rule->task->element_id
                 ) {
-                    return true;
+                    $matchingInboxRules[] = $rule;
                 }
             }
+
+            return $matchingInboxRules;
         } else {
-            return false;
+            return [];
         }
     }
 
-    public function loadSavedSearch($rule, $task) {
+    public function get(InboxRule $inboxRule) : array
+    {
+        if ($savedSearch = $inboxRule->savedSearch) {
+            return $savedSearch->query->get();
+        }
+
+        if ($task = $inboxRule->task) {
+            return ProcessRequestToken::where([
+                'process_id' => $task->process_id,
+                'element_id' => $task->element_id,
+                'user_id' => $inboxRule->user_id,
+                'status' => 'ACTIVE',
+            ])->get();
+        }
+    }
+
+    public function matchesResultInSavedSearch($rule, $task)
+    {
         return $rule->savedSearch->query
                         ->where('process_request_tokens.user_id', $task->user_id)
                         ->where('process_request_tokens.id', $task->id)
@@ -48,21 +70,8 @@ class MatchingTasks
 
     public function queryInboxRules($task)
     {
-        $this->inboxRule = InboxRule::with(['savedSearch', 'task'])
-        ->where('inbox_rules.active', true);
-        if (
-            request()->has('saved_searches.user_id') &&
-            request()->get('saved_searches.user_id') !== null
-        ) {
-            $this->inboxRule->where('saved_searches.user_id', $task->user_id);
-        }
-
-        if (
-            request()->has('process_request_tokens.user_id') &&
-            request()->get('process_request_tokens.user_id') !== null
-        ) {
-            $this->inboxRule->where('process_request_tokens.user_id', $task->user_id);
-        }
-        return $this->inboxRule->get();
+        return InboxRule::where('active', true)
+            ->where('user_id', $task->user_id)
+            ->get();
     }
 }
