@@ -34,6 +34,18 @@
               {{ __('Inbox') }}
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link task-nav-link" id="priority-tab" data-toggle="tab" href="#inbox" role="tab"
+              aria-controls="inbox" aria-selected="true">
+              {{ __('Priority') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link task-nav-link" id="drafts-tab" data-toggle="tab" href="#inbox" role="tab"
+              aria-controls="inbox" aria-selected="true">
+              {{ __('Drafts') }}
+            </a>
+          </li>
         </ul>
 
         <div class="tab-content" id="task-tabContent">
@@ -165,6 +177,7 @@
         .task-nav-link {
             color: #556271;
             font-weight: 400;
+            font-size: 15px;
             border-top-left-radius: 5px !important;
             border-top-right-radius: 5px !important;
         }
