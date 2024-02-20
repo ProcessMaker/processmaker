@@ -11,24 +11,10 @@ use ProcessMaker\Http\Resources\Task as Resource;
 
 class ApplyAction
 {
-    public function applyActionOnTask(ProcessRequestToken $task){
-        $array = [
-                "id" => 14,
-                "name" => "ullam",
-                "user_id" => 56,
-                "active" => 1,
-                "end_date" => null,
-                "saved_search_id" => null,
-                "process_request_token_id" => 10,
-                "mark_as_priority" => 0,
-                "reassign_to_user_id" => null,
-                "fill_data" => 0,
-                "submit_data" => null,
-                "created_at" => "2024-02-20 03:01:41",
-                "updated_at" => "2024-02-20 03:01:41"
-        ];
-        $matchingTasks = MatchingTasks::matchingInboxRules($task);
+    public function applyActionOnTask(ProcessRequestToken $task)
+    {
 
+        $matchingTasks = MatchingTasks::matchingInboxRules($task);
 
         foreach ($matchingTasks as $inputRule) {
         
@@ -37,7 +23,7 @@ class ApplyAction
                 
                 //Fill and save as draft
                 if($inputRule->fill_data === true) {
-                    //here process for draft
+                    //TODO here process for save draft
                 }
                 //Submit the form
                 if($inputRule->submit_data !== null) {
@@ -45,9 +31,9 @@ class ApplyAction
                         return abort(422, __('Task already closed'));
                     }
                     // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
-                    $data = $inputRule->submit_data;
+                    $data = json_decode($inputRule->submit_data, 1);
                     $data = SanitizeHelper::sanitizeData($data['data'], null, $task->processRequest->do_not_sanitize ?? []);
-                    //Call the manager to trigger the start event
+                    // Call the manager to trigger the start event
                     $process = $task->process;
                     $instance = $task->processRequest;
                     WorkflowManager::completeTask($process, $instance, $task, $data);
@@ -72,7 +58,5 @@ class ApplyAction
                 }
             }
         }
-
-
     }
 }
