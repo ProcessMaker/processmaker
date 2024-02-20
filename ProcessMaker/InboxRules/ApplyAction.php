@@ -13,7 +13,6 @@ class ApplyAction
 {
     public function applyActionOnTask(ProcessRequestToken $task)
     {
-
         $matchingTasks = MatchingTasks::matchingInboxRules($task);
 
         foreach ($matchingTasks as $inputRule) {
@@ -33,8 +32,7 @@ class ApplyAction
             } else {
                 //Mark as priority
                 if ($inputRule->mark_as_priority === true) {
-                    ProcessRequestToken::where('process_request_token_id', $inputRule->process_request_token_id)
-                    ->update(['is_priority' => 1]);
+                    $this->markAsPriority($inputRule);
                 }
 
                 //Reassign to user id
@@ -45,7 +43,7 @@ class ApplyAction
         }
     }
 
-    public function submitForm($task, $inputRule) 
+    public function submitForm($task, $inputRule)
     {
         if ($task->status === 'CLOSED') {
             return abort(422, __('Task already closed'));
@@ -64,11 +62,18 @@ class ApplyAction
         return new Resource($task->refresh());
     }
 
-    public function reassignToUserID($task, $inputRule) {
+    public function reassignToUserID($task, $inputRule)
+    {
         $task->authorizeReassignment(Auth::user());
         // Reassign user
         $task->reassignTo($inputRule->reassign_to_user_id);
         $task->persistUserData($inputRule->reassign_to_user_id);
         $task->save();
+    }
+
+    public function markAsPriority($inputRule)
+    {
+        ProcessRequestToken::where('process_request_token_id', $inputRule->process_request_token_id)
+            ->update(['is_priority' => 1]);
     }
 }
