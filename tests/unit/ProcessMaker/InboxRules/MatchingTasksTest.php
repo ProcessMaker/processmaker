@@ -5,6 +5,7 @@ namespace Tests;
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
