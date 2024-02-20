@@ -1045,8 +1045,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         if (!$isMultiInstance) {
             return '';
         }
-        $loopData = $this->token_properties['data'];
-        $index = $loopData['loopCounter'];
+        $loopData = $this->token_properties['data'] ?? [];
+
+        $index = null;
+        if (array_key_exists('loopCounter', $loopData)) {
+            $index = $loopData['loopCounter'];
+        }
         $definition = $this->getDefinition(true);
         if (!$definition instanceof ActivityInterface) {
             return '';
@@ -1059,7 +1063,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return '';
         }
 
-        return $variable . '.' . $index;
+        return $index !== null ?  $variable . '.' . $index : $variable;
     }
 
     /**

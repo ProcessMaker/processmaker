@@ -6,13 +6,13 @@
                 <div class="empty-title">{{ emptyText() }}</div>
                 <div class="img-container">
                     <div v-if="emptyIconType() === 'beach'">
-                        <img src="../../../img/no-results.svg" class="no-results-img" alt="no-results">
+                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
                     </div>
                     <div v-if="emptyIconType() === 'noData'">
-                        <img src="../../../img/no-results.svg" class="no-results-img" alt="no-results">
+                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
                     </div>
                     <div v-if="emptyIconType() === 'noTasks'">
-                        <img src="../../../img/no-tasks.svg" class="no-results-img" alt="no-results">
+                        <img src="/img/all-cleared.svg" class="no-results-img" alt="no-results">
                     </div>
                 </div>
                 <p class="empty-desc">{{ emptyDescText() }}</p>
