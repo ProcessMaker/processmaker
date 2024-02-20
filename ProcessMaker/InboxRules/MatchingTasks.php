@@ -3,6 +3,7 @@
 namespace ProcessMaker\InboxRules;
 
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Calculation\Logical\Boolean;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessRequestToken;
 
@@ -20,7 +21,7 @@ class MatchingTasks
         if ($task && $task->user_id) {
             //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
             foreach ($this->queryInboxRules($task) as $rule) {
-                if ($rule->end_date && Carbon::parse($rule->end_date)->isPast()) {
+                if ($this->isEndDatePast($rule)) {
                     continue;
                 }
 
@@ -73,5 +74,12 @@ class MatchingTasks
         return InboxRule::where('active', true)
             ->where('user_id', $task->user_id)
             ->get();
+    }
+
+    public function isEndDatePast($rule) {
+        if ($rule->end_date && Carbon::parse($rule->end_date)->isPast()) {
+            return true;
+        }
+        return false;
     }
 }

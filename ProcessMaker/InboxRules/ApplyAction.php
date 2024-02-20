@@ -23,22 +23,11 @@ class ApplyAction
                 
                 //Fill and save as draft
                 if($inputRule->fill_data === true) {
-                    //TODO here process for save draft
+                    //here process for save draft
                 }
                 //Submit the form
                 if($inputRule->submit_data !== null) {
-                    if ($task->status === 'CLOSED') {
-                        return abort(422, __('Task already closed'));
-                    }
-                    // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
-                    $data = json_decode($inputRule->submit_data, 1);
-                    $data = SanitizeHelper::sanitizeData($data['data'], null, $task->processRequest->do_not_sanitize ?? []);
-                    // Call the manager to trigger the start event
-                    $process = $task->process;
-                    $instance = $task->processRequest;
-                    WorkflowManager::completeTask($process, $instance, $task, $data);
-        
-                    return new Resource($task->refresh());
+                   $this->submitForm($task, $inputRule);
                 }
 
             } else {
@@ -50,13 +39,36 @@ class ApplyAction
 
                 //Reassign to user id
                 if ($inputRule->reassign_to_user_id !== null) {
-                    $task->authorizeReassignment(Auth::user());
-                    // Reassign user
-                    $task->reassignTo($inputRule->reassign_to_user_id);
-                    $task->persistUserData($inputRule->reassign_to_user_id);
-                    $task->save();
+                    $this->reassignToUserID($task, $inputRule);
                 }
             }
         }
+    }
+
+    public function submitForm($task, $inputRule) 
+    {
+        if ($task->status === 'CLOSED') {
+            return abort(422, __('Task already closed'));
+        }
+        $data = json_decode($inputRule->submit_data, 1);
+        $data = SanitizeHelper::sanitizeData(
+            $data['data'],
+            null,
+            $task->processRequest->do_not_sanitize ?? []
+        );
+        // Call the manager to trigger the start event
+        $process = $task->process;
+        $instance = $task->processRequest;
+        WorkflowManager::completeTask($process, $instance, $task, $data);
+
+        return new Resource($task->refresh());
+    }
+
+    public function reassignToUserID($task, $inputRule) {
+        $task->authorizeReassignment(Auth::user());
+        // Reassign user
+        $task->reassignTo($inputRule->reassign_to_user_id);
+        $task->persistUserData($inputRule->reassign_to_user_id);
+        $task->save();
     }
 }

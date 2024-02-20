@@ -82,7 +82,7 @@ class MatchingTasksTest extends TestCase
             'status' => 'ACTIVE',
         ]);
         
-        $futureEndDate = now()->addDays(1); 
+        $futureEndDate = now()->addDays(1);
         
         $pastEndDate = now()->subDays(1);
         InboxRule::factory()->create([
@@ -104,7 +104,10 @@ class MatchingTasksTest extends TestCase
         $this->assertEmpty($matchingRules);
         $this->assertNotEmpty($notMatchingRules);
         //when end date is not past and we have a task match
-        $this->assertEquals($expectinginboxRule->process_request_token_id, $notMatchingRules[0]->process_request_token_id);
+        $this->assertEquals(
+            $expectinginboxRule->process_request_token_id,
+            $notMatchingRules[0]->process_request_token_id
+        );
         
     }
 }
