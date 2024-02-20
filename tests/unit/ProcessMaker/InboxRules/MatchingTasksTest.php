@@ -75,24 +75,32 @@ class MatchingTasksTest extends TestCase
         // not be returned
 
         $user = User::factory()->create();
-        $completedTask = ProcessRequestToken::factory()->create([
-            'user_id' => $user->id,
-            'status' => 'COMPLETED',
-        ]);
-        $activeTask = ProcessRequestToken::factory()->create([
+    
+        $task = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'ACTIVE',
-            'element_id' => $completedTask->element_id,
-            'process_id' => $completedTask->process_id,
         ]);
-        $inboxRule = InboxRule::factory()->create([
-            'process_request_token_id' => $completedTask->id,
+        
+        $futureEndDate = now()->addDays(1); 
+        
+        $pastEndDate = now()->subDays(1);
+        InboxRule::factory()->create([
+            'process_request_token_id' => $task->id,
+            'end_date' => $pastEndDate,
             'user_id' => $user->id,
         ]);
 
-        $matchingTasks = MatchingTasks::matchingInboxRules($activeTask);
+        $matchingRules = MatchingTasks::matchingInboxRules($task);
 
-        $this->assertCount(1, $matchingTasks);
-        $this->assertEquals($inboxRule->id, $matchingTasks[0]->id);
+        InboxRule::factory()->create([
+            'process_request_token_id' => $task->id,
+            'end_date' => $futureEndDate,
+            'user_id' => $user->id,
+        ]);
+
+        $notMatchingRules = MatchingTasks::matchingInboxRules($task);
+        $this->assertEmpty($matchingRules);
+        $this->assertNotEmpty($notMatchingRules);
+        
     }
 }
