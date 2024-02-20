@@ -17,7 +17,7 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -310,7 +310,7 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
@@ -319,7 +319,7 @@ export default {
           order_column: 'process_requests.case_number',
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
@@ -330,7 +330,7 @@ export default {
           order_column: 'process_requests.case_title',
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "process",
           sortable: true,
           default: true,
@@ -340,7 +340,7 @@ export default {
           order_column: 'process_requests.name',
         },
         {
-          label: this.$t("Task"),
+          label: "Task",
           field: "task_name",
           sortable: true,
           default: true,
@@ -350,15 +350,15 @@ export default {
           order_column: 'element_name',
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
           width: 100,
-          filter_subject: { value: 'Status' },
+          filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Due date"),
+          label: "Due date",
           field: "due_at",
           format: "datetime",
           sortable: true,
@@ -368,7 +368,7 @@ export default {
       ];
       if (isStatusCompletedList) {
         columns.push({
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,

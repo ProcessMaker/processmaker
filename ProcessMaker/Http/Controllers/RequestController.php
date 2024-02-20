@@ -70,7 +70,10 @@ class RequestController extends Controller
                 SavedSearch::KEY_REQUESTS,
             );
             if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_REQUEST
+                );
             } else {
                 $defaultColumns = null;
             }
