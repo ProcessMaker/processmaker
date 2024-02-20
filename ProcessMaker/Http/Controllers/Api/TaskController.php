@@ -482,4 +482,10 @@ class TaskController extends Controller
 
         return new Resource($newTask);
     }
+    public function setPriority(Request $request, ProcessRequestToken $task)
+    {
+        $task->update(['is_priority' => $request->input('is_priority', false)]);
+        return new Resource($task->refresh());
+
+    }
 }
