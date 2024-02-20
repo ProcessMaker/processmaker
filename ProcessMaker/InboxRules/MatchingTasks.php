@@ -38,7 +38,6 @@ class MatchingTasks
                     $matchingInboxRules[] = $rule;
                 }
             }
-
             return $matchingInboxRules;
         } else {
             return [];
