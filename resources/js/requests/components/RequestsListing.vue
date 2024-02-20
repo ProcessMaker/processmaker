@@ -391,7 +391,7 @@ export default {
       }
       return data;
     },
-    fetch() {
+    fetch(navigateToFirstPage = false) {
       Vue.nextTick(() => {
         if (this.cancelToken) {
           this.cancelToken();
@@ -400,7 +400,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter();
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -443,7 +443,7 @@ export default {
           });
       });
     },
-    buildPmqlAndFilter() {
+    buildPmqlAndFilter(navigateToFirstPage) {
       let pmql = '';
 
       if (this.pmql !== undefined) {
@@ -472,7 +472,8 @@ export default {
       this.previousPmql = pmql;
 
       const advancedFilter = this.getAdvancedFilter();
-      if (this.previousAdvancedFilter !== advancedFilter) {
+
+      if (this.previousAdvancedFilter !== advancedFilter && navigateToFirstPage) {
         this.page = 1;
       }
 
