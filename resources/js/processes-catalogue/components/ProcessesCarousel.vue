@@ -104,4 +104,8 @@ export default {
   width: 100%;
   height: 400px;
 }
+.img-fluid {
+  max-width: 100%;
+  height: inherit;
+}
 </style>
