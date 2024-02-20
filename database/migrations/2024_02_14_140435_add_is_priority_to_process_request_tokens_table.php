@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->boolean('is_priority')->default(false);
-        });
+        if (!Schema::hasColumn('process_request_tokens', 'is_priority')) {
+            Schema::table('process_request_tokens', function (Blueprint $table) {
+                $table->boolean('is_priority')->default(false);
+                $table->index('is_priority');
+            });
+        }
     }
 
     /**
@@ -22,6 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
+            $table->dropIndex(['is_priority']);
             $table->dropColumn('is_priority');
         });
     }
