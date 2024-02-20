@@ -146,7 +146,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         'riskchanges_at' => 'datetime',
         'data' => 'array',
         'self_service_groups' => 'array',
-        'token_properties' => 'array',    ];
+        'token_properties' => 'array',
+        'is_priority' => 'boolean',
+    ];
 
     /**
      * Get the indexable data array for the model.
@@ -1063,7 +1065,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return '';
         }
 
-        return $index !== null ?  $variable . '.' . $index : $variable;
+        return $index !== null ? $variable . '.' . $index : $variable;
     }
 
     /**
