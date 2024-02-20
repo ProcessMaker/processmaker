@@ -253,10 +253,6 @@ export default {
           //format Status
           record["case_number"] = this.formatCaseNumber(record.process_request, record);
           record["case_title"] = this.formatCaseTitle(record.process_request, record);
-          if (record.process_request) {
-            record.process_request["case_number"] = record["case_number"];
-            record.process_request["case_title"] = record["case_title"];
-          }
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
@@ -293,7 +289,7 @@ export default {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         ${processRequest.case_title_formatted || record.case_title || ""}
+         ${processRequest.case_title_formatted || processRequest.case_title || record.case_title || ""}
       </a>`;
     },
     formatActiveTask(row) {
