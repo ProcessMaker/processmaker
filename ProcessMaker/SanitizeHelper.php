@@ -197,32 +197,38 @@ class SanitizeHelper
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
                     $elements = array_merge($elements, self::getRichTextElements($item['items'], ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name'])));
-                } elseif (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
-                    // Inside a table ..
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     foreach ($item['items'] as $cell) {
-                        if (
-                            isset($cell['component']) &&
-                            $cell['component'] === 'FormTextArea' &&
-                            isset($cell['config']['richtext']) &&
-                            $cell['config']['richtext'] === true
-                        ) {
-                            $elements[] = $cell['config']['name'];
-                        }
+                        self::getVariableExceptions($cell, null, $elements);
                         if (is_array($cell)) {
                             $elements = array_merge($elements, self::getRichTextElements($cell));
                         }
                     }
+                } else {
+                    self::getVariableExceptions($item, $parent, $elements);
                 }
             } else {
-                if (isset($item['component']) && $item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
-                    $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
-                }
+                self::getVariableExceptions($item, $parent, $elements);
             }
         }
 
         return $elements;
+    }
+
+    private static function getVariableExceptions($item, $parent, &$elements)
+    {
+        if (isset($item['component'])) {
+            if ($item['component'] === 'FormTextArea' && isset($item['config']['richtext']) && $item['config']['richtext'] === true) {
+                $elements[] = ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']);
+            } elseif ($item['component'] === 'FormHtmlViewer' && isset($item['config']['renderVarHtml']) && $item['config']['renderVarHtml'] === true) {
+                preg_match_all("/{{([^{}]*)}}/", $item['config']['content'], $matches);
+                if ($matches && $matches[1]) {
+                    foreach ($matches[1] as $variable) {
+                        $elements[] = ($parent ? $parent . '.' . $variable : $variable);
+                    }
+                }
+            }
+        }
     }
 
     public static function sanitizeEmail($email)
