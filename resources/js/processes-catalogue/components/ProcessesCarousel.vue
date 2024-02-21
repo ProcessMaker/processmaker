@@ -74,7 +74,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 #processes-carousel {
   .carousel-indicators {
     li {
