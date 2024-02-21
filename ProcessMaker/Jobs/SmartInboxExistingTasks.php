@@ -10,6 +10,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use Facades\ProcessMaker\InboxRules\ApplyAction;
+use Facades\ProcessMaker\Models\InboxRule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SmartInboxExistingTasks implements ShouldQueue
 {
@@ -29,9 +31,16 @@ class SmartInboxExistingTasks implements ShouldQueue
      */
     public function handle(): void
     {
-        $matchingTasks = MatchingTasks::get($this->inboxRuleId);
-        foreach ($matchingTasks as $task) {
-            ApplyAction::applyActionOnTask($task);
+        try {
+            //Load InboxRule by ID
+            $inboxRule = InboxRule::findOrFail($this->inboxRuleId);
+            
+            $matchingTasks = MatchingTasks::get($inboxRule);
+            foreach ($matchingTasks as $task) {
+                ApplyAction::applyActionOnTask($task);
+            }
+        } catch (ModelNotFoundException $e) {
+            \Log::error($e->getMessage());
         }
     }
 }
