@@ -34,7 +34,7 @@ class SmartInboxExistingTasks implements ShouldQueue
         try {
             //Load InboxRule by ID
             $inboxRule = InboxRule::findOrFail($this->inboxRuleId);
-            
+
             $matchingTasks = MatchingTasks::get($inboxRule);
             foreach ($matchingTasks as $task) {
                 ApplyAction::applyActionOnTask($task);
