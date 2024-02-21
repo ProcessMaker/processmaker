@@ -237,7 +237,10 @@ class SanitizeHelper
 
     private static function renderHtmlIsEnabled($item, $type, $field)
     {
-        return isset($item['config']) && $item['component'] === $type && isset($item['config'][$field]) && $item['config'][$field] === true;
+        return isset($item['config'])
+            && $item['component'] === $type
+            && isset($item['config'][$field])
+            && $item['config'][$field] === true;
     }
 
     public static function sanitizeEmail($email)
