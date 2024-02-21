@@ -9,30 +9,32 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Facades\ProcessMaker\InboxRules\ApplyAction;
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class SmartInbox implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $incomingTask;
+    public $incomingTaskId;
     /**
      * Create a new job instance.
      */
-    public function __construct(ProcessRequestToken $incomingTask)
+    public function __construct(int $incomingTaskId)
     {
-        $this->incomingTask = $incomingTask;
+        $this->incomingTaskId = $incomingTaskId;
     }
 
     /**
      * Execute the job.
      */
     public function handle(): void
-    {
-        $matchingInboxRules = MatchingTasks::matchingInboxRules($this->incomingTask);
-        if ($matchingInboxRules) {
-            ApplyAction::applyActionOnTask($matchingInboxRules);
+    {   
+        try {
+            $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
+            ApplyAction::applyActionOnTask($incomingTask);
+        } catch (ModelNotFoundException $e) {
+            \Log::error($e->getMessage());
         }
     }
 }

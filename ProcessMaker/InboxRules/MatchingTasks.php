@@ -77,7 +77,7 @@ class MatchingTasks
     }
 
     public function isEndDatePast($rule) {
-        if ($rule->end_date && Carbon::parse($rule->end_date)->isPast()) {
+        if ($rule->end_date && $rule->end_date->isPast()) {
             return true;
         }
         return false;
