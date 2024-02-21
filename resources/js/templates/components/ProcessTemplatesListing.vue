@@ -11,11 +11,14 @@
         <filter-table
           :headers="fields"
           :data="data"
-          style="height: calc(100vh - 350px);"
+          table-name="templates"
+          style="height: calc(100vh - 355px);"
         >
           <!-- Slot Table Header filter Button -->
           <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
             <div
+              v-if="column.sortable"
+              :key="index"
               @click="handleEllipsisClick(column)"
             >
             <i
@@ -67,6 +70,7 @@
                       v-if="header.truncate"
                       :target="`element-${row.id}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ row[header.field] }}
                     </b-tooltip>
@@ -85,7 +89,7 @@
                   <div
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
               </template>
@@ -109,7 +113,7 @@
       </div>
     </div>
 </template>
-  
+
 <script>
   Vue.filter('str_limit', function (value, size) {
     if (!value) return '';
@@ -136,6 +140,7 @@
       data() {
         return {
           orderBy: "name",
+          previousFilter: "",
           sortOrder: [
             {
               field: "name",
@@ -297,7 +302,11 @@
               this.status === null || this.status === "" || this.status === undefined
                   ? "templates/process?"
                   : "templates?status=" + this.status + "&";
-  
+          let filter = this.filter;
+          if (this.previousFilter !== filter) {
+            this.page = 1;
+          }
+          this.previousFilter = filter;
           // Load from our api client
           ProcessMaker.apiClient
               .get(

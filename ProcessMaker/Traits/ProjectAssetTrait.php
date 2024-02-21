@@ -23,6 +23,7 @@ trait ProjectAssetTrait
         try {
             // Sync the project assets with the prepared project IDs
             $this->projectAssets()->syncWithPivotValues($projectIds, ['asset_type' => $assetModelClass]);
+            $this->updateProjectUpdatedAt($projectIds);
         } catch (Exception $e) {
             throw new ProjectAssetSyncException('Error syncing project assets: ' . $e->getMessage());
         }
@@ -40,7 +41,10 @@ trait ProjectAssetTrait
             $projectIds = $input->input('projects', '');
         } elseif (is_int($input)) {
             $projectIds = $input;
-        } else {
+        } elseif (is_string($input)) {
+            $projectIds = $input;
+        }
+        else {
             return [];
         }
 
@@ -80,5 +84,26 @@ trait ProjectAssetTrait
         }
 
         return json_encode([]);
+    }
+
+    /**
+     * Update the 'updated_at' field of projects.
+     *
+     * @param array|int $projectIds
+     * @return void
+     */
+    public function updateProjectUpdatedAt($projectIds)
+    {
+        if (!class_exists(self::PROJECT_MODEL_CLASS)) {
+            return;
+        }
+
+        foreach ((array) $projectIds as $projectId) {
+            $project = self::PROJECT_MODEL_CLASS::find($projectId);
+
+            if ($project) {
+                $project->touch();
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\User;
 
 class ScriptExporter extends ExporterBase
 {
@@ -35,7 +36,9 @@ class ScriptExporter extends ExporterBase
 
         foreach ($this->getDependents('user', true) as $dependent) {
             $scriptUser = $dependent->model;
-            $this->model->run_as_user_id = $scriptUser->id;
+            // Assign the user ID to run the script
+            // If the user is not set in the dependent modal, default to the admin user
+            $this->model->run_as_user_id = $scriptUser?->id ?? User::where('is_administrator', true)->first()->id;
         }
 
         foreach ($this->getDependents('executor', true) as $dependent) {

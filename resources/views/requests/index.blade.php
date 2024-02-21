@@ -89,11 +89,36 @@
                                     </div>
                                     </template>
 
+                                    <template v-slot:right-buttons>
+                                        @if((
+                                            Auth::user()->is_administrator ||
+                                            Auth::user()->hasPermission('edit-screens')
+                                          ) && Route::has('package.savedsearch.defaults.edit'))
+                                        <b-button
+                                            class="ml-md-2"
+                                            href="{{route(
+                                                'package.savedsearch.defaults.edit',
+                                                [
+                                                    'type'=>'request',
+                                                    'key'=>'requests',
+                                                ]
+                                            )}}"
+                                        >
+                                            <i class="fas fw fa-cog"></i>
+                                        </b-button>
+                                        @endif
+                                    </template>
+
                                 </pmql-input>
                                 </div>
                             </div>
                         </div>
-                        <requests-listing ref="requestList" :filter="filter" :pmql="fullPmql"></requests-listing>
+                        <requests-listing
+                            ref="requestList"
+                            :filter="filter"
+                            :columns="columns"
+                            :pmql="fullPmql"
+                        ></requests-listing>
                     </div>
 
                 </div>
@@ -109,7 +134,8 @@
     //Data needed for default search
     window.Processmaker.user = @json($currentUser);
     window.Processmaker.status = '{{ $type }}';
-    window.Processmaker.filter_user = @json($userFilter);
+    window.ProcessMaker.advanced_filter = @json($userFilter);
+    window.Processmaker.defaultColumns = @json($defaultColumns);
 </script>
 @vite('resources/js/requests/index.js')
 @endsection

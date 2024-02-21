@@ -15,6 +15,8 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
@@ -43,7 +45,25 @@ class TaskController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('taskFilter', Auth::user());
 
-        return view('tasks.index', compact('title', 'userFilter'));
+        // Get default Saved search config
+        if (class_exists(SavedSearch::class)) {
+            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_TASKS,
+            );
+            if ($defaultSavedSearch) {
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_TASK
+                );
+            } else {
+                $defaultColumns = null;
+            }
+        } else {
+            $defaultColumns = null;
+        }
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
@@ -110,6 +130,16 @@ class TaskController extends Controller
             }
 
             UserResourceView::setViewed(Auth::user(), $task);
+            $currentUser = Auth::user()->only([
+                'id',
+                'username',
+                'fullname',
+                'firstname',
+                'lastname',
+                'avatar',
+                'timezone',
+                'datetime_format',
+            ]);
 
             return view('tasks.edit', [
                 'task' => $task,
@@ -120,6 +150,7 @@ class TaskController extends Controller
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                'currentUser' => $currentUser,
             ]);
         }
     }

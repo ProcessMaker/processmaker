@@ -1,3 +1,5 @@
+import { get, cloneDeep } from "lodash";
+
 const PMColumnFilterCommonMixin = {
   data() {
     return {
@@ -9,6 +11,22 @@ const PMColumnFilterCommonMixin = {
     };
   },
   methods: {
+    storeFilterConfiguration() {
+      const { order, type } = this.filterConfiguration();
+      let url = "users/store_filter_configuration/";
+      if (this.$props.columns && this.savedSearch) {
+        url += "savedSearch|" + this.savedSearch;
+      } else {
+        url += type;
+      }
+      let config = {
+        filters: this.formattedFilter(),
+        order
+      };
+      ProcessMaker.apiClient.put(url, config);
+      window.ProcessMaker.advanced_filter = config;
+      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+    },
     getViewConfigFilter() {
       return [
         {
@@ -31,7 +49,7 @@ const PMColumnFilterCommonMixin = {
         },
         {
           "type": "datetime",
-          "includes": ["=", "<", "<=", ">", ">=", "contains", "regex"],
+          "includes": ["<", "<=", ">", ">="],
           "control": "PMColumnFilterOpDatetime",
           "input": ""
         },
@@ -67,32 +85,48 @@ const PMColumnFilterCommonMixin = {
         }
       ];
     },
-    onApply(json, index) {
-      let oldValue, type, value;
+    addAliases(json, key, label) {
+      let type, value;
       for (let i in json) {
-        oldValue = json[i].subject.value;
-        type = this.getTypeColumnFilter(oldValue);
-        value = this.getAliasColumnForFilter(oldValue);
+        type = this.getTypeColumnFilter(key, json[i].subject.type);
+        value = this.getAliasColumnForFilter(key, json[i].subject.value);
         json[i].subject.type = type;
         json[i].subject.value = value;
+        json[i]._column_field = key;
+        json[i]._column_label = label;
+
+        if (json[i].or && json[i].or.length > 0) {
+          this.addAliases(json[i].or, key, label);
+        }
       }
+    },
+    getTypeColumnFilter(field, defaultType = 'Field') {
+      return this.tableHeaders.find(column => column.field === field)?.filter_subject?.type || defaultType;
+    },
+    getAliasColumnForFilter(field, defaultValue) {
+      return this.tableHeaders.find(column => column.field === field)?.filter_subject?.value || defaultValue;
+    },
+    getAliasColumnForOrderBy(value) {
+      return this.tableHeaders.find(column => column.field === value)?.order_column || value;
+    },
+    onApply(json, index) {
       this.advancedFilterInit();
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onClear(index) {
       this.advancedFilter[index] = [];
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onChangeSort(value, field) {
       this.setOrderByProps(field, value);
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onUpdate(object, index) {
       if (object.$refs.pmColumnFilterForm &&
@@ -101,9 +135,20 @@ const PMColumnFilterCommonMixin = {
         object.$refs.pmColumnFilterForm.setValues(this.advancedFilter[index]);
       }
     },
+    formattedFilter() {
+      const filterCopy = cloneDeep(this.advancedFilter);
+      Object.keys(filterCopy).forEach((key) => {
+        if (filterCopy[key].length === 0) {
+          delete filterCopy[key];
+        }
+        const label = this.tableHeaders.find(column => column.field === key)?.label;
+        this.addAliases(filterCopy[key], key, label);
+      });
+      return Object.values(filterCopy).flat(1);
+    },
     getAdvancedFilter() {
-      let flat = this.json2Array(this.advancedFilter).flat(1);
-      return flat.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(flat)) : "";
+      let formattedFilter = this.formattedFilter();
+      return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
     getUrlUsers(filter) {
       let page = 1;
@@ -122,8 +167,12 @@ const PMColumnFilterCommonMixin = {
       let format = "string";
       if (column.format) {
         format = column.format;
+        if (format === "int") {
+          // We don't have a field for integers
+          format = "string";
+        }
       }
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "status") {
         format = "stringSelect";
       }
       return format;
@@ -133,22 +182,19 @@ const PMColumnFilterCommonMixin = {
       if (column.field === "status") {
         formatRange = this.getStatus();
       }
-      if (column.field === "assignee") {
-        formatRange = this.viewAssignee;
-      }
-      if (column.field === "participants") {
-        formatRange = this.viewParticipants;
-      }
-      if (column.field === "process") {
-        formatRange = this.viewProcesses;
-      }
       return formatRange;
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "status" || column.field === "assignee" || column.field === "participants" || column.field === 'process') {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants" || column.field === "assignee") {
+        operators = ["=", "in", "contains", "regex"];
+      }
+      if (column.field === "status") {
         operators = ["=", "in"];
       }
+      if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
+        operators = ["<", "<=", ">", ">=", "between"];
+      }  
       return operators;
     },
     getAssignee(filter) {
@@ -208,35 +254,25 @@ const PMColumnFilterCommonMixin = {
         }
       }
     },
-    getFilterConfiguration(name) {
-      if ("filter_user" in window.Processmaker) {
-        this.setFilterPropsFromConfig(window.Processmaker.filter_user);
-        return;
-      }
-      let url = "users/get_filter_configuration/" + name;
-      ProcessMaker.apiClient.get(url).then(response => {
-        this.setFilterPropsFromConfig(response.data.data);
+    getFilterConfiguration() {
+      const filters = {};
+      get(window, 'ProcessMaker.advanced_filter.filters', []).forEach((filter) => {
+        const key = filter._column_field;
+        if (!(key in filters)) {
+          filters[key] = [];
+        }
+        filters[key].push(filter);
       });
-    },
-    setFilterPropsFromConfig(config) {
-      if (typeof config !== "object") {
-        config = {};
+      this.advancedFilter = filters;
+      
+      const order = get(window, 'ProcessMaker.advanced_filter.order');
+      if (order?.by && order?.direction) {
+        this.setOrderByProps(order.by, order.direction);
       }
-      if ("filter" in config && typeof config.filter === "object") {
-        this.advancedFilter = config.filter;
-      }
-      if (config?.order?.by && config?.order?.direction) {
-        this.setOrderByProps(config.order.by, config.order.direction);
-      }
+      
       this.markStyleWhenColumnSetAFilter();
+      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
-    json2Array(json) {
-      let result = [];
-      for (let i in json) {
-        result.push(json[i]);
-      }
-      return result;
-    }
   }
 };
 export default PMColumnFilterCommonMixin;

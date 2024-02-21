@@ -34,12 +34,12 @@ use Throwable;
  * @property string $element_id
  * @property string $element_type
  * @property string $status
- * @property \Carbon\Carbon $completed_at
- * @property \Carbon\Carbon $due_at
- * @property \Carbon\Carbon $initiated_at
- * @property \Carbon\Carbon $riskchanges_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $completed_at
+ * @property Carbon $due_at
+ * @property Carbon $initiated_at
+ * @property Carbon $riskchanges_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
@@ -332,7 +332,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             // It uses a try-catch block to handle any exceptions that might occur, for example in test environments.
             try {
                 $localName = $this->getBpmnDefinition()->localName;
-            } catch (\Throwable $t) {
+            } catch (Throwable $t) {
                 $localName = null;
             }
             $isManualTask = $localName === 'manualTask';
@@ -457,7 +457,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Check if the user has access to reassign this task
      *
-     * @param \ProcessMaker\Models\User $user
+     * @param User $user
      */
     public function authorizeReassignment(User $user)
     {
@@ -616,7 +616,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
 
     public function fieldAliasUser_Id()
     {
-        return 'user_id';
+        return 'process_request_tokens.user_id';
     }
 
     /**
@@ -665,9 +665,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             } elseif (array_key_exists($value, $statusMap)) {
                 $query->where('is_self_service', 0);
                 if ($expression->operator == '=') {
-                    $query->whereIn('status', $statusMap[$value]);
+                    $query->whereIn('process_request_tokens.status', $statusMap[$value]);
                 } elseif ($expression->operator == '!=') {
-                    $query->whereNotIn('status', $statusMap[$value]);
+                    $query->whereNotIn('process_request_tokens.status', $statusMap[$value]);
                 }
             } else {
                 $query->where('status', $expression->operator, $value)
@@ -754,6 +754,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return function ($query) use ($expression, $value) {
             $query->whereHas('processRequest', function ($query) use ($expression, $value) {
                 $query->where('name', $expression->operator, $value);
+            });
+        };
+    }
+
+    /**
+     * PMQL value alias for assignee field by fullname.
+     * @param string $value
+     * @return callable
+     */
+    public function valueAliasAssigneeByFullName($value, $expression)
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('user', function ($query) use ($expression, $value) {
+                $query->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . ' ?', [$value]);
             });
         };
     }
@@ -909,8 +923,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     /**
      * Log an error when executing the token
      *
-     * @param \Throwable $error
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface $bpmnElement
+     * @param Throwable $error
+     * @param FlowElementInterface $bpmnElement
      */
     public function logError(Throwable $error, FlowElementInterface $bpmnElement)
     {
@@ -1031,8 +1045,12 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         if (!$isMultiInstance) {
             return '';
         }
-        $loopData = $this->token_properties['data'];
-        $index = $loopData['loopCounter'];
+        $loopData = $this->token_properties['data'] ?? [];
+
+        $index = null;
+        if (array_key_exists('loopCounter', $loopData)) {
+            $index = $loopData['loopCounter'];
+        }
         $definition = $this->getDefinition(true);
         if (!$definition instanceof ActivityInterface) {
             return '';
@@ -1045,7 +1063,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return '';
         }
 
-        return $variable . '.' . $index;
+        return $index !== null ?  $variable . '.' . $index : $variable;
     }
 
     /**

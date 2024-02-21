@@ -22,6 +22,8 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -61,8 +63,26 @@ class RequestController extends Controller
 
         $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
 
+        // Get default Saved search config
+        if (class_exists(SavedSearch::class)) {
+            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_REQUESTS,
+            );
+            if ($defaultSavedSearch) {
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_REQUEST
+                );
+            } else {
+                $defaultColumns = null;
+            }
+        } else {
+            $defaultColumns = null;
+        }
+
         return view('requests.index', compact(
-            ['type', 'title', 'currentUser', 'userFilter']
+            ['type', 'title', 'currentUser', 'userFilter', 'defaultColumns']
         ));
     }
 

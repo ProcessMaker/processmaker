@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-form-input v-model="value1" placeholder="input 1" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
-    <b-form-input v-model="value2" placeholder="input 2" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
+    <b-form-input v-model="value1" :placeholder="$t('input') + ' ' + 1" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
+    <b-form-input v-model="value2" :placeholder="$t('input') + ' ' + 2" size="sm" class="pm-column-filter-op-between-input"></b-form-input>
   </div>
 </template>
 

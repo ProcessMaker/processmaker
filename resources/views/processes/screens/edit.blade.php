@@ -118,7 +118,9 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/designer/screens';
+                  const queryParams = new URLSearchParams(window.location.search);
+                  const projectId = queryParams.get("project_id");
+                  window.location.href = projectId ? `/designer/projects/${projectId}`: '/designer/screens';
                 },
                 onUpdate() {
                     this.resetErrors();

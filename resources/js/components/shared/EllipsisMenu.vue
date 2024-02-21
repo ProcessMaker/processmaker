@@ -2,15 +2,16 @@
   <b-dropdown
     v-if="filterActions.length > 0"
     :variant="variant ? variant : 'ellipsis'"
+    toggle-class="static-header"
     no-caret
     no-flip
     lazy
     right
     offset="0"
-    class="ellipsis-dropdown-main"
+    class="ellipsis-dropdown-main static-header"
     @show="onShow"
     @hide="onHide"
-    boundary="viewport"
+    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -229,7 +230,7 @@ export default {
     },
     isProcessesCatalogueInUrl() {
       const currentUrl = window.location.href;
-      const isInUrl = currentUrl.includes("processes-catalogue");
+      const isInUrl = currentUrl.includes("process-browser");
       return isInUrl;
     }
   },
@@ -278,5 +279,10 @@ export default {
   }
 .search-icon {
   color: #6C757D;
+}
+</style>
+<style>
+.static-header {
+  position: static !important;
 }
 </style>

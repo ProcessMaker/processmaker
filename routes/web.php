@@ -36,6 +36,7 @@ use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
+use ProcessMaker\Http\Middleware\NoCache;
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
@@ -93,7 +94,16 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-    Route::get('processes-catalogue/{process?}', [ProcessesCatalogueController::class, 'index'])->name('processes.catalogue.index')->middleware('can:view-process-catalog');
+     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
+        ->name('process.browser.index')
+        ->middleware('can:view-process-catalog');
+    //------------------------------------------------------------------------------------------
+    // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
+    //------------------------------------------------------------------------------------------
+    Route::get('processes-catalogue/{process?}', function ($process = null) {
+        return redirect()->route('process.browser.index', [$process]);
+    })->name('processes.catalogue.index');
+    //------------------------------------------------------------------------------------------
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
@@ -126,15 +136,20 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/{type?}', [RequestController::class, 'index'])
         ->where('type', 'all|in_progress|completed')
-        ->name('requests_by_type');
+        ->name('requests_by_type')
+        ->middleware('no-cache');
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
-    Route::get('requests', [RequestController::class, 'index'])->name('requests.index');
+    Route::get('requests', [RequestController::class, 'index'])
+        ->name('requests.index')
+        ->middleware('no-cache');
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
     Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
     Route::get('tasks/search', [TaskController::class, 'search'])->name('tasks.search');
-    Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('tasks', [TaskController::class, 'index'])
+        ->name('tasks.index')
+        ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 

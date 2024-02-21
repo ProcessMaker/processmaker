@@ -145,15 +145,22 @@
       </div>
 
       <div
-        v-if="showFilters && selectedFilters.length"
+        v-if="filterBadges.length > 0"
         class="selected-filters-bar d-flex pt-2"
       >
         <span
-          v-for="filter in selectedFilters"
+          v-for="filter in filterBadges"
           class="selected-filter-item d-flex align-items-center"
         >
-          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}: </span>
-          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
+          {{ filter[1][0].operator ?? '' }}
+          <template v-if="filter[0] === 'Status'">
+            <!-- translate status label -->
+            {{ $t(filter[1][0].name) }}
+          </template>
+          <template v-else>
+            {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          </template>
           <span
             v-if="filter[1].length > 1"
             class="badge badge-pill ml-2 filter-counter"
@@ -164,6 +171,7 @@
             role="button"
             class="fa fa-times pl-2 pr-0"
             @click="removeFilter(filter)"
+            v-if="!get(filter, '1.0.advanced_filter', false)"
           />
         </span>
       </div>
@@ -173,9 +181,12 @@
 <script>
 import { MustacheHelper } from "@processmaker/screen-builder";
 import PmqlInputFilters from "./PmqlInputFilters.vue";
+import advancedFilterStatusMixin from "../../common/advancedFilterStatusMixin";
+import { get } from "lodash";
 
 export default {
   components: { MustacheHelper, PmqlInputFilters },
+  mixins: [advancedFilterStatusMixin],
   props: [
     "searchType",
     "value",
@@ -203,6 +214,7 @@ export default {
     "paramProjectCategories",
     "paramName",
     "permission",
+    "updateQuery",
   ],
   data() {
     return {
@@ -222,10 +234,17 @@ export default {
         promptTokens: 0,
         totalTokens: 0,
       },
+      get,
     };
   },
 
   computed: {
+    filterBadges() {
+      if (!this.showFilters) {
+        return [];
+      }
+      return [...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
+    },
     showPmqlSection() {
       return (
         !this.hidePmqlSection
@@ -260,12 +279,13 @@ export default {
       this.calcInputHeight();
     },
     value() {
-      if (!this.query || this.query === "") {
+      if (this.updateQuery && this.query !== this.value) {
+        this.query = this.value || "";
+      } else if (!this.query || this.query === "") {
         this.query = this.value;
       }
     },
   },
-
   mounted() {
     this.query = this.urlPmql ? this.urlPmql : this.value;
     this.filtersPmql = this.filtersValue;
@@ -361,7 +381,7 @@ export default {
       this.aiLoading = true;
 
       ProcessMaker.apiClient
-        .post("/openai/nlq-to-pmql", params)
+        .post("/package-ai/nlqToPmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;

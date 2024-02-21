@@ -15,7 +15,8 @@
       <filter-table
         :headers="fields"
         :data="data"
-        style="height: calc(100vh - 350px);"
+        table-name="processes"
+        style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -86,14 +87,15 @@
                       class="mr-2"
                       :class="{ 'fas fa-check-circle text-success': row.status == 'ACTIVE', 'far fa-circle': row.status == 'INACTIVE' }"
                     />
-                    <span>
+                    <a :href="openModeler(row)" class="text-nowrap">
                       {{ row[header.field] }}
-                    </span>
+                    </a>
                   </div>
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${row.id}`"
                     custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ row[header.field] }}
                   </b-tooltip>
@@ -112,7 +114,7 @@
                   <div
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                    {{ row[header.field] }}
+                    {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
               </template>
@@ -195,6 +197,8 @@ export default {
       pmBlockName: "",
       assetName: "",
       processData: {},
+      previousFilter: "",
+      previousPmql: "",
       sortOrder: [
         {
           field: "name",
@@ -205,7 +209,7 @@ export default {
 
       fields: [
         {
-          label: "NAME",
+          label: this.$t("Name"),
           field: "name",
           width: 200,
           sortable: true,
@@ -213,7 +217,7 @@ export default {
           direction: "none",
         },
         {
-          label: "CATEGORY",
+          label: this.$t("Category"),
           field: "category_list",
           width: 160,
           sortable: true,
@@ -221,7 +225,7 @@ export default {
           sortField: "category.name",
         },
         {
-          label: "OWNER",
+          label: this.$t("Owner"),
           field: "owner",
           width: 160,
           sortable: true,
@@ -229,7 +233,7 @@ export default {
           sortField: "user.username",
         },
         {
-          label: "MODIFIED",
+          label: this.$t("Modified"),
           field: "updated_at",
           format: "datetime",
           width: 160,
@@ -237,7 +241,7 @@ export default {
           direction: "none",
         },
         {
-          label: "CREATED",
+          label: this.$t("Created"),
           field: "created_at",
           format: "datetime",
           width: 160,

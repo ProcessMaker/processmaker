@@ -9,7 +9,7 @@
       :setCustomButtons="true"
       :customButtons="customModalButtons"
       @onSubmit="onSubmit"
-      @hidden="close"
+      @close="close"
     >
       <div>
         <p class="mt-1">Are you sure you want to proceed with your selection?</p>
@@ -41,8 +41,8 @@ export default {
     return {
       loading: false,
       customModalButtons: [
-        {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-        {"content": "Yes", "action": "onSubmit", "variant": "primary", "disabled": false, "hidden": false},
+        {"content": "Cancel", "action": "close", "variant": "outline-secondary"},
+        {"content": "Yes", "action": "onSubmit", "variant": "primary"},
       ],
     }
   },
@@ -63,8 +63,6 @@ export default {
       this.$emit("submitAssets");
     },
   },
-  mounted() {
-  }
 };
 </script>
 

@@ -74,7 +74,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 #processes-carousel {
   .carousel-indicators {
     li {
@@ -103,5 +103,9 @@ export default {
   background-position: center;
   width: 100%;
   height: 400px;
+}
+.img-fluid {
+  max-width: 100%;
+  height: inherit;
 }
 </style>

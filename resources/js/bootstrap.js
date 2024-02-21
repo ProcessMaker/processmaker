@@ -28,6 +28,7 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
 import _ from "lodash";
@@ -85,9 +86,8 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
 import VueMonaco from "vue-monaco";
 window.VueMonaco = VueMonaco;
 
-window.ScreenBuilder = ScreenBuilder;
-import VueFormElements from "@processmaker/vue-form-elements";
-window.VueFormElements = VueFormElements;
+window.ScreenBuilder = import("@processmaker/screen-builder");
+window.VueFormElements = import("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
 
@@ -191,6 +191,7 @@ window.ProcessMaker = {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
+  fallbackLng: false,
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {

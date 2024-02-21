@@ -7,6 +7,7 @@
       <filter-table
         :headers="tableHeadersRequests"
         :data="dataRequests"
+        table-name="request-tab"
         @table-row-click="handleRowClick"
       />
       <pagination-table

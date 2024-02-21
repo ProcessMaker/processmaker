@@ -17,6 +17,15 @@ class ScriptExporterTest extends TestCase
 {
     use HelperTrait;
 
+    /**
+     *  Init admin user
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createAdminUser();
+    }
+
     public function test()
     {
         DB::beginTransaction();
@@ -116,6 +125,7 @@ class ScriptExporterTest extends TestCase
     {
         DB::beginTransaction();
         $user = User::factory()->create(['username' => 'test']);
+        $admin_user = User::where('is_administrator', true)->first();
         $script = Script::factory()->create(['title' => 'test', 'run_as_user_id' => $user->id]);
 
         $payload = $this->export($script, ScriptExporter::class, null, false);
@@ -124,7 +134,7 @@ class ScriptExporterTest extends TestCase
         $this->import($payload);
 
         $script = Script::where('title', 'test')->firstOrFail();
-        $this->assertNull($script->run_as_user_id);
+        $this->assertEquals($script->run_as_user_id, $admin_user->id);
     }
 
     public function testRunAsUserIdNull()

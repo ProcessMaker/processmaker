@@ -11,11 +11,14 @@
           <filter-table
             :headers="fields"
             :data="data"
-            style="height: calc(100vh - 350px);"
+            table-name="categories"
+            style="height: calc(100vh - 355px);"
           >
          <!-- Slot Table Header filter Button -->
             <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
               <div
+                v-if="column.sortable"
+                :key="index"
                 @click="handleEllipsisClick(column)"
               >
                 <i
@@ -76,7 +79,7 @@
                       <div
                         :style="{ maxWidth: header.width + 'px' }"
                       >
-                        {{ row[header.field] }}
+                        {{ getNestedPropertyValue(row, header) }}
                       </div>
                     </template>
                   </template>
@@ -116,6 +119,7 @@
     props: ["filter", "permissions", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
+        fetchFlag: 0, 
         localLoadOnStart: !!this.loadOnStart,
         orderBy: "name",
         sortOrder: [
@@ -133,7 +137,7 @@
           {
             name: "__slot:name",
             sortField: "name",
-            label: "NAME",
+            label: this.$t('Name'),
             field: "name",
             width: 200,
             sortable: true,
@@ -143,7 +147,7 @@
           {
             name: "status",
             sortField: "status",
-            label: "STATUS",
+            label: this.$t('Status'),
             field: "status",
             width: 160,
             sortable: true,
@@ -162,7 +166,7 @@
           {
             name: "updated_at",
             sortField: "updated_at",
-            label: "MODIFIED",
+            label: this.$t('Modified'),
             field: "updated_at",
             width: 160,
             sortable: true,
@@ -173,7 +177,7 @@
           {
             name: "created_at",
             sortField: "created_at",
-            label: "CREATED",
+            label: this.$t('Created'),
             field: "created_at",
             width: 160,
             sortable: true,
@@ -235,6 +239,13 @@
             "&include=" + this.include
           )
           .then(response => {
+            if (response.data.data.length === 0 && this.fetchFlag === 0){
+              this.page = 1;
+              this.fetch();
+              this.fetchFlag = 1;
+            } else {
+              this.fetchFlag = 0;
+            }
             if (response.data.data.length === 0 && !this.filter) {
               $("#createCategory")
                 .modal("show");
