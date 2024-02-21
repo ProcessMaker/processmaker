@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import Task from "@processmaker/screen-builder";
 import MonacoEditor from "vue-monaco";
-import debounce from "lodash/debounce";
+import {debounce} from "lodash";
 import TaskView from "./components/TaskView.vue";
 import NavbarTaskMobile from "./components/NavbarTaskMobile.vue";
 import AvatarImage from "../components/AvatarImage.vue";

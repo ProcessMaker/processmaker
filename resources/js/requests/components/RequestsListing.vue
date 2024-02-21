@@ -93,7 +93,7 @@
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
-      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
@@ -106,16 +106,13 @@ Please consider trying a different search. Thank you`)"
 
 <script>
 import Vue from "vue";
-import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
-import AvatarImage from "../../components/AvatarImage";
-import isPMQL from "../../modules/isPMQL";
+import AvatarImage from "../../components/AvatarImage.vue";
 import ListMixin from "./ListMixin";
-import { FilterTable } from "../../components/shared";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
-import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";

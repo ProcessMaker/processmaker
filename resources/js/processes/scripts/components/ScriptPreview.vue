@@ -29,7 +29,7 @@
 
 import { debounce } from "lodash";
 import MonacoEditor from "vue-monaco";
-import MenuScript from "../../../components/Menu";
+import MenuScript from "../../../components/Menu.vue";
 
 export default {
   props: ["process", "script", "scriptExecutor", "testData"],

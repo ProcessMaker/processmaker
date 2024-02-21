@@ -53,7 +53,7 @@
 <script>
   import Vue from "vue";
   import datatableMixin from "../../components/common/mixins/datatable";
-  import ScreenDetail from '../components/screenDetail';
+  import ScreenDetail from '../components/screenDetail.vue';
 
   Vue.component('screen-detail', ScreenDetail);
 

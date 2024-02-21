@@ -33,9 +33,9 @@
 <script>
 
 import FormErrorsMixin from "./FormErrorsMixin";
-import Modal from "./Modal";
-import Required from "./Required";
-import ProjectSelect from "./ProjectSelect";
+import Modal from "./Modal.vue";
+import Required from "./Required.vue";
+import ProjectSelect from "./ProjectSelect.vue";
 
 export default {
   components: { Modal, ProjectSelect, Required },

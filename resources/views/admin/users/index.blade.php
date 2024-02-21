@@ -59,5 +59,5 @@
 </script>
 
 @section('js')
-    <script src="{{mix('js/admin/users/index.js')}}"></script>
+    @vite('resources/js/admin/users/index.js')
 @endsection

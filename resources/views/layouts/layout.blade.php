@@ -20,7 +20,7 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-worker" content="{{ Vite::asset('resources/js/timeout.js') }}">
     <meta name="timeout-length" content="{{ Session::has('rememberme') && Session::get('rememberme') ? "Number.MAX_SAFE_INTEGER" : config('session.lifetime') }}">
     <meta name="timeout-warn-seconds" content="{{ config('session.expire_warning') }}">
     @if(Session::has('_alert'))
@@ -36,8 +36,8 @@
     <title>@yield('title',__('Welcome')) - {{ __('ProcessMaker') }}</title>
 
     <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    @vite('resources/sass/app.scss')
+    @vite('resources/sass/sidebar/sidebar.scss')
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
@@ -65,7 +65,7 @@
           enabledTransports: ['ws', 'wss'],
           disableStats: true,
         };
-        
+
         @if(config('broadcasting.connections.pusher.options.host'))
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
@@ -126,13 +126,11 @@
 @if(config('broadcasting.default') == 'redis')
 <script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
-<script src="{{ mix('js/manifest.js') }}"></script>
-<script src="{{ mix('js/vendor.js') }}"></script>
-<script src="{{ mix('js/app.js') }}"></script>
+@vite('resources/js/app.js')
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
-<script src="{{ mix('js/app-layout.js') }}"></script>
+@vite('resources/js/app-layout.js')
 
 @include('shared.monaco')
 
@@ -142,7 +140,7 @@
 @isset($addons)
 @foreach ($addons as $addon)
   @if (!empty($addon['script_mix']))
-    <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+    @vite($addon['script_mix'][0], $addon['script_mix'][1])
   @endif
 @endforeach
 @endisset

@@ -44,5 +44,5 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/scripts/preview.js')}}"></script>
+    @vite('resources/js/processes/scripts/preview.js')
 @endsection

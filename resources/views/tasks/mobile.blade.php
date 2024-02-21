@@ -21,7 +21,7 @@
 @endsection
 
 @section('js')
-<script src="{{mix('js/tasks/mobile.js')}}"></script>
+@vite('resources/js/tasks/mobile.js')
 @endsection
 
 @section('css')

@@ -109,7 +109,7 @@
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>
-    <script src="{{mix('js/tasks/index.js')}}"></script>
+    @vite('resources/js/tasks/index.js')
 @endsection
 
 @section('css')

@@ -17,12 +17,12 @@ import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import VueCookies from "vue-cookies";
-import Pagination from "./components/common/Pagination";
+import Pagination from "./components/common/Pagination.vue";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
-import translator from "./modules/lang.js";
+import translator from "./modules/lang";
 import datetime_format from "./data/datetime_formats.json";
 import RequestChannel from "./tasks/components/ProcessRequestChannel";
-import Modal from "./components/shared/Modal";
+import Modal from "./components/shared/Modal.vue";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
@@ -31,34 +31,41 @@ import FilterTable from "./components/shared/FilterTable.vue";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
-window._ = require("lodash");
+import _ from "lodash";
+window._ = _;
 window.Popper = require("popper.js").default;
 
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.ProcessmakerComponents = require("./processes/screen-builder/components");
+import * as ProcessmakerComponents from "./processes/screen-builder/components";
+window.ProcessmakerComponents = ProcessmakerComponents;
 
 /**
  * Give node plugins access to additional components
  */
-window.SharedComponents = require("./components/shared");
+import * as SharedComponents from "./components/shared";
+window.SharedComponents = SharedComponents;
 
-window.ProcessesComponents = require("./processes/components");
-window.ScreensComponents = require("./processes/screens/components");
-window.ScriptsComponents = require("./processes/scripts/components");
+import * as ProcessesComponents from "./processes/components";
+window.ProcessesComponents = ProcessesComponents;
+import * as ScreensComponents from "./processes/screens/components";
+window.ScreensComponents = ScreensComponents;
+import * as ScriptsComponents from "./processes/scripts/components";
+window.ScriptsComponents = ScriptsComponents;
 
 /**
  * Exporting Modeler inspector components
  */
-window.ModelerInspector = require("./processes/modeler/components/inspector");
+import * as ModelerInspector from "./processes/modeler/components/inspector";
+window.ModelerInspector = ModelerInspector;
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = require("jquery");
+window.$ = window.jQuery = import("jquery");
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -76,10 +83,11 @@ window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
-window.VueMonaco = require("vue-monaco");
+import VueMonaco from "vue-monaco";
+window.VueMonaco = VueMonaco;
 
-window.ScreenBuilder = require("@processmaker/screen-builder");
-window.VueFormElements = require("@processmaker/vue-form-elements");
+window.ScreenBuilder = import("@processmaker/screen-builder");
+window.VueFormElements = import("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
 
@@ -212,7 +220,8 @@ window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true; });
  * REST api endpoints through oauth authentication
  *
  */
-window.ProcessMaker.apiClient = require("axios");
+import axios from "axios";
+window.ProcessMaker.apiClient = axios;
 
 window.ProcessMaker.apiClient.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 

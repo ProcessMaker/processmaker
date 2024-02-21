@@ -29,7 +29,7 @@
 
 <script>
 import Vue from "vue";
-import AvatarImage from "../../components/AvatarImage";
+import AvatarImage from "../../components/AvatarImage.vue";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import DefaultTab from "./DefaultTab.vue";
