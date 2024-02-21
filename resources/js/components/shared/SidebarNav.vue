@@ -31,7 +31,7 @@
               class="text-capitalize"
               @click="onClick(i)"
             >
-              {{ formatAssetName(page.title) }}
+              {{ formatAssetName($t(page.title)) }}
             </sidebar-button>
           </li>
         </b-collapse>

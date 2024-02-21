@@ -153,7 +153,14 @@
           class="selected-filter-item d-flex align-items-center"
         >
           <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
-          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          {{ filter[1][0].operator ?? '' }}
+          <template v-if="filter[0] === 'Status'">
+            <!-- translate status label -->
+            {{ $t(filter[1][0].name) }}
+          </template>
+          <template v-else>
+            {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          </template>
           <span
             v-if="filter[1].length > 1"
             class="badge badge-pill ml-2 filter-counter"

@@ -1,15 +1,15 @@
 <template>
     <div>
-        <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
+        <h2>{{ $t($root.operation) }} {{ $t('Process') }}: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
         <div class="mb-2">
-            <h4>Summary</h4>
+            <h4>{{ $t('Summary') }}</h4>
         </div>
         <div class="mb-2">
             <ul v-if="processInfo" class="process-summary mb-2">
-                <li> Description: <span class="fw-semibold">{{ processInfo.description }}</span></li>
-                <li> Categories: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
-                <li> Process Manager:
+                <li>{{ $t('Description') }}: <span class="fw-semibold">{{ processInfo.description }}</span></li>
+                <li>{{ $t('Categories') }}: <span class="fw-semibold">{{ processInfo.categories }}</span></li>
+                <li>{{ $t('Process Manager') }}:
                     <span class="fw-semibold">
                         <b-link v-if="processInfo.processManagerId"
                             :href="`/profile/${processInfo.processManagerId}`"
@@ -17,10 +17,10 @@
                         <span v-else>{{ processInfo.processManager }}</span>
                     </span>
                 </li>
-                <li> Created: <span class="fw-semibold">{{ processInfo.created_at }}</span></li>
-                <li> Last Modified: 
-                    <span class="fw-semibold">{{ processInfo.updated_at }}</span> 
-                    By:
+                <li>{{ $t('Created') }}: <span class="fw-semibold">{{ processInfo.created_at }}</span></li>
+                <li>{{ $t('Last Modified') }}:
+                    <span class="fw-semibold">{{ processInfo.updated_at }}</span>
+                    {{ $t('By') }}:
                     <span class="fw-semibold">
                         <b-link v-if="processInfo.lastModifiedById"
                             :href="`/profile/${processInfo.lastModifiedById}`"
@@ -47,10 +47,10 @@
                     stacked
                     :disabled="$root.forcePasswordProtect"
                 >
-                Password Protect Export
-                <b-form-text class="process-options-helper-text">Define a password to protect your export file.</b-form-text>
+                {{ $t('Password Protect Export') }}
+                <b-form-text class="process-options-helper-text">{{ $t('Define a password to protect your export file.') }}</b-form-text>
                 <small v-if="$root.forcePasswordProtect" class="text-danger">
-                    Password protect is required because some assets may have sensitive data.
+                    {{ $t('Password protect is required because some assets may have sensitive data.') }}
                 </small>
                 </b-form-checkbox>
                 <b-form-checkbox
@@ -59,15 +59,15 @@
                     class="fw-semibold"
                     stacked
                 >
-                {{ $root.operation }} All Process elements
-                <b-form-text v-if="$root.operation === 'Export'" class="process-options-helper-text">Include all elements related to this process in your export file.</b-form-text>
+                {{ $t($root.operation) }} {{ $t('All Process Elements') }}
+                <b-form-text v-if="$root.operation === 'Export'" class="process-options-helper-text">{{ $t('Include all elements related to this process in your export file.') }}</b-form-text>
                 <b-form-text v-else class="process-options-helper-text">{{ $t('All elements related to this process will be imported.') }}</b-form-text>
                 </b-form-checkbox>
             </b-form-group>
         </div>
         <hr>
         <div class="pb-2" v-if="groups.length === 0">
-            <p class="fw-semibold"> This process contains no dependent assets to {{ $root.operation.toLowerCase() }}. </p>
+            <p class="fw-semibold">{{ $t('This process contains no dependent assets to') }} {{ $t($root.operation.toLowerCase()) }}.</p>
         </div>
         <div v-for="group in groups" :key="group.type">
             <data-card v-if="!group.hidden" :info="group" :isEnabled="$root.hasSomeNotDiscardedByParent(group.items)" :class="!$root.hasSomeNotDiscardedByParent(group.items) ? 'card-disabled' : ''"/>
@@ -284,6 +284,7 @@ export default {
 
 .process-summary {
     padding-left: 0;
+    list-style: none;
 }
 
 .process-options-helper-text {

@@ -25,7 +25,7 @@ export default {
           value: "open-launchpad",
           content: "Open Launchpad",
           link: true,
-          href: "/processes-catalogue/{{id}}",
+          href: "/process-browser/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
           icon: "fas fa-file-export",
           conditional: "if(status == 'ACTIVE', true, false)"
