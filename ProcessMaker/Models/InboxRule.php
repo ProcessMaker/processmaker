@@ -12,13 +12,10 @@ class InboxRule extends ProcessMakerModel
 {
     use HasFactory;
 
-    protected $casts = [
-        'submit_data' => 'array',
-    ];
-
     protected $table = 'inbox_rules';
 
     protected $casts = [
+        'submit_data' => 'array',
         'end_date' => 'datetime',
     ];
 
