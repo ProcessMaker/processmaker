@@ -192,9 +192,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         //Fire job when task is assigned to a user
         Facades\Event::listen(ActivityAssigned::class, function ($event) {
-            $processRequestToken = $event->getProcessRequestToken();
+            $task_id = $event->getProcessRequestToken()->id;
             // Dispatch the SmartInbox job with the processRequestToken as parameter
-            SmartInbox::dispatch($processRequestToken);
+            SmartInbox::dispatch($task_id);
         });
     }
 

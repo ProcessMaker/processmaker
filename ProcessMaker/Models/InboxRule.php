@@ -18,6 +18,10 @@ class InboxRule extends ProcessMakerModel
 
     protected $table = 'inbox_rules';
 
+    protected $casts = [
+        'end_date' => 'datetime',
+    ];
+
     /**
      * Define the relationship with ProcessRequestToken model
      *
