@@ -237,7 +237,7 @@ class SanitizeHelper
 
     private static function renderHtmlIsEnabled($item, $type, $field)
     {
-        return $item['component'] === 'FormTextArea' && isset($item['config'][$type]) && $item['config'][$field] === true;
+        return isset($item['config']) && $item['component'] === $type && isset($item['config'][$field]) && $item['config'][$field] === true;
     }
 
     public static function sanitizeEmail($email)
