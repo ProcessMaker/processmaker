@@ -96,6 +96,9 @@ export default {
   margin-right: 1rem;
   border-radius: 16px;
 }
+.card-body {
+  padding: 32px;
+}
 .card-img {
   border-radius: 16px;
 }
@@ -106,17 +109,20 @@ export default {
 .card-bookmark:hover {
   cursor: pointer;
 }
+.card-text {
+  height: 100%;
+}
 .card-info {
   cursor: pointer;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: baseline;
-  padding-top: 15%;
+  justify-content: end;
 }
 .icon-process {
   width: 75px;
-  height: 75px;;
-  padding-left: 0.5rem;
+  height: 75px;
   margin-bottom: 1rem;
 }
 .marked {
@@ -125,14 +131,15 @@ export default {
 .title-process {
   color: #556271;
   font-family: Poppins, sans-serif;
-  font-size: 20px;
+  font-size: 17px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
+  line-height: 23.15px;
   letter-spacing: -0.4px;
   text-transform: uppercase;
-  -webkit-line-clamp: 2;
   display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-all;
