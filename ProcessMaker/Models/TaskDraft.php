@@ -12,7 +12,7 @@ class TaskDraft extends ProcessMakerModel
     protected $guarded = [
         'id',
         'updated_at',
-        'created_at',        
+        'created_at',
     ];
 
     protected $casts = [
