@@ -89,4 +89,44 @@ class ApplyActionTest extends TestCase
 
         $this->assertTrue($activeTask->is_priority);
     }
+
+    public function testReassignToUserID()
+    {
+        $user = User::factory()->create([
+            'is_administrator' => true,
+            'status' => 'ACTIVE'
+        ]);
+        $this->actingAs($user);
+
+        $userToReassign = User::factory()->create();
+
+        $taskForInboxRule = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+        ]);
+
+        $inboxRule = InboxRule::factory()->create([
+            'process_request_token_id' => $taskForInboxRule->id,
+            'user_id' => $user->id,
+            'reassign_to_user_id' => $userToReassign->id,
+            'submit_data' => null,
+        ]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+            'element_id' => 'UserTaskUID',
+        ]);
+
+        MatchingTasks::shouldReceive('matchingInboxRules')
+            ->once()
+            ->with($activeTask)
+            ->andReturn([$inboxRule]);
+
+        ApplyAction::applyActionOnTask($activeTask);
+        
+        $activeTask->refresh();
+        
+        $this->assertEquals($userToReassign->id,$activeTask->user_id);
+    }
 }
