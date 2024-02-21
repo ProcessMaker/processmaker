@@ -204,6 +204,9 @@ export default {
       if (this.disabled) {
         return;
       }
+      if (this.copyAssetMode) {
+        this.formData.asset_type = null;
+      }
       this.disabled = true;
       ProcessMaker.apiClient
         .post("screens", this.formData)

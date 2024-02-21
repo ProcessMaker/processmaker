@@ -29,6 +29,15 @@ class ProcessExporterTest extends TestCase
 {
     use HelperTrait;
 
+    /**
+     *  Init admin user
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createAdminUser();
+    }
+
     private function fixtures()
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
