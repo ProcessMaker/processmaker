@@ -57,6 +57,7 @@
           :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row)"
           @mouseover="handleRowMouseover(row)"
+          @mouseleave="handleTrMouseleave(row)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
@@ -213,6 +214,9 @@ export default {
     },
     handleRowMouseover(row) {
       this.$emit('table-row-mouseover', row);
+    },
+    handleTrMouseleave(row) {
+      this.$emit('table-tr-mouseleave', row);
     },
     handleRowMouseleave() {
       this.$emit('table-row-mouseleave', false);

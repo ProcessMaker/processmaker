@@ -10,7 +10,9 @@
       <b-tab :title="$t('Rules')" 
              active>
         <FilterTable :headers="columns"
-                     :data="rows">
+                     :data="rows"
+                     @table-row-mouseover="tableRowMouseover"
+                     @table-tr-mouseleave="tableTrMouseleave">
         </FilterTable>
       </b-tab>
       <b-tab :title="$t('Execution Log')">
@@ -24,6 +26,8 @@
 
 <script>
   import { FilterTable } from "../../components/shared";
+  import OptionsRow from "./OptionsRow.vue";
+  Vue.component("OptionsRow", OptionsRow);
   export default {
     components: {
       FilterTable
@@ -62,7 +66,7 @@
         ];
       },
       getRows() {
-        return {
+        let data = {
           data: [
             {
               name: "name1",
@@ -78,6 +82,29 @@
             }
           ]
         };
+        for (let row of data.data) {
+          row["deactivation_date"] = {
+            component: "OptionsRow",
+            props: {
+              value: row["deactivation_date"],
+              name: "deactivation_date",
+              buttonEdit: () => {
+                console.log("edit");
+              },
+              buttonRemove: () => {
+                console.log("remove");
+              },
+              row: row
+            }
+          };
+        }
+        return data;
+      },
+      tableRowMouseover(row) {
+        row["deactivation_date"].target.show();
+      },
+      tableTrMouseleave(row) {
+        row["deactivation_date"].target.close();
       }
     }
   }
