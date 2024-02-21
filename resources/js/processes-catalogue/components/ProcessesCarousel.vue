@@ -12,8 +12,8 @@
       <b-carousel-slide
         v-for="(image, index) in images.length > 0 ? images : defaultImage"
         :key="index"
-        class="custom-style"
         :img-src="image.url"
+        class="custom-style"
       />
     </b-carousel>
   </div>
@@ -98,14 +98,10 @@ export default {
   overflow: hidden;
 }
 
-.custom-style {
+.custom-style img {
   background-size: cover;
   background-position: center;
   width: 100%;
-  height: 400px;
-}
-.img-fluid {
-  max-width: 100%;
   height: inherit;
 }
 </style>
