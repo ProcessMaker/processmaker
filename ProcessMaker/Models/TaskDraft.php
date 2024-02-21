@@ -9,13 +9,13 @@ class TaskDraft extends ProcessMakerModel
 {
     use HasFactory;
 
-    protected $fillable = [
-        'task_id',
-        'data',
+    protected $guarded = [
+        'id',
+        'updated_at',
+        'created_at',        
     ];
 
     protected $casts = [
         'data' => 'array',
     ];
-
 }
