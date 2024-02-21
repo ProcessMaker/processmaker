@@ -17,7 +17,16 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">
+            <img
+              v-if="column.field === 'is_priority'"
+              src="/img/priority-header.svg"
+              alt="priority-header"
+              width="20"
+              height="20"
+            >
+            <span v-else>{{ column.label }}</span>
+          </div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -76,6 +85,17 @@
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
+                <template v-else-if="header.field === 'is_priority'">
+                  <span>
+                    <img
+                      :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
+                      :alt="row[header.field] ? 'priority' : 'no-priority'"
+                      width="20"
+                      height="20"
+                      @click.prevent="togglePriority(row.id, !row[header.field])"
+                    >
+                  </span>
+                </template>
                 <template v-else>
                   <div
                     :id="`element-${rowIndex}-${colIndex}`"
@@ -125,8 +145,8 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Well, it seems nothing in here')"
-        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+        :empty="$t('All clear')"
+        :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
       />
       <pagination-table
@@ -221,6 +241,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
       rowPosition: {},
@@ -252,10 +273,6 @@ export default {
           //format Status
           record["case_number"] = this.formatCaseNumber(record.process_request, record);
           record["case_title"] = this.formatCaseTitle(record.process_request, record);
-          if (record.process_request) {
-            record.process_request["case_number"] = record["case_number"];
-            record.process_request["case_title"] = record["case_title"];
-          }
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
@@ -278,6 +295,14 @@ export default {
     }
   },
   methods: {
+    togglePriority(taskId, isPriority) {
+      ProcessMaker.apiClient.put(
+        `tasks/${taskId}/setPriority`,
+        { is_priority: isPriority }
+      ).then((response) => {
+        this.fetch();
+      });
+    },
     openRequest(data) {
       return `/requests/${data.id}`;
     },
@@ -292,7 +317,7 @@ export default {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         ${processRequest.case_title_formatted || record.case_title || ""}
+         ${processRequest.case_title_formatted || processRequest.case_title || record.case_title || ""}
       </a>`;
     },
     formatActiveTask(row) {
@@ -331,6 +356,13 @@ export default {
           truncate: true,
           filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
           order_column: 'process_requests.case_title',
+        },
+        {
+          label: "",
+          field: "is_priority",
+          sortable: false,
+          default: true,
+          width: 40,
         },
         {
           label: this.$t("Process"),
@@ -459,8 +491,13 @@ export default {
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
-    handleRowClick(row) {
-      window.location.href = this.openTask(row);
+    handleRowClick(row, event) {
+      const targetElement = event.target;
+      const isPriorityIcon = targetElement.tagName.toLowerCase() === "img"
+      && (targetElement.alt === "priority" || targetElement.alt === "no-priority");
+      if (!isPriorityIcon) {
+        window.location.href = this.openTask(row);
+      }
     },
     handleRowMouseover(row) {
       this.clearHideTimer();

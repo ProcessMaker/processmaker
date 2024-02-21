@@ -156,6 +156,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
     };
@@ -390,7 +391,7 @@ export default {
       }
       return data;
     },
-    fetch() {
+    fetch(navigateToFirstPage = false) {
       Vue.nextTick(() => {
         if (this.cancelToken) {
           this.cancelToken();
@@ -399,7 +400,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        const { pmql, filter } = this.buildPmqlAndFilter();
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -418,7 +419,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            this.getAdvancedFilter(),
+            advancedFilter,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -442,7 +443,7 @@ export default {
           });
       });
     },
-    buildPmqlAndFilter() {
+    buildPmqlAndFilter(navigateToFirstPage) {
       let pmql = '';
 
       if (this.pmql !== undefined) {
@@ -470,7 +471,13 @@ export default {
 
       this.previousPmql = pmql;
 
-      return { pmql, filter };
+      const advancedFilter = this.getAdvancedFilter();
+
+      if (this.previousAdvancedFilter !== advancedFilter && navigateToFirstPage) {
+        this.page = 1;
+      }
+
+      return { pmql, filter, advancedFilter };
 
     },
     handleRowClick(row) {

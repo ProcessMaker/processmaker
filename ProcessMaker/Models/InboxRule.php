@@ -12,6 +12,10 @@ class InboxRule extends ProcessMakerModel
 {
     use HasFactory;
 
+    protected $casts = [
+        'submit_data' => 'array',
+    ];
+
     protected $table = 'inbox_rules';
 
     protected $casts = [
@@ -21,7 +25,7 @@ class InboxRule extends ProcessMakerModel
     /**
      * Define the relationship with ProcessRequestToken model
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function task(): BelongsTo
     {
@@ -31,7 +35,7 @@ class InboxRule extends ProcessMakerModel
     /**
      * Define the relationship with SavedSearch model
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function savedSearch(): BelongsTo
     {
