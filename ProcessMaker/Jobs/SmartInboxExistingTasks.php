@@ -28,7 +28,7 @@ class SmartInboxExistingTasks implements ShouldQueue
      * Execute the job.
      */
     public function handle(): void
-    {   
+    {
         $matchingTasks = MatchingTasks::get($this->inboxRuleId);
         foreach ($matchingTasks as $task) {
             ApplyAction::applyActionOnTask($task);
