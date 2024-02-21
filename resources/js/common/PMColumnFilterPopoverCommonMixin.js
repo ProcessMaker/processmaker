@@ -114,19 +114,19 @@ const PMColumnFilterCommonMixin = {
       this.advancedFilter[index] = json;
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onClear(index) {
       this.advancedFilter[index] = [];
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onChangeSort(value, field) {
       this.setOrderByProps(field, value);
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
-      this.fetch();
+      this.fetch(true);
     },
     onUpdate(object, index) {
       if (object.$refs.pmColumnFilterForm &&
