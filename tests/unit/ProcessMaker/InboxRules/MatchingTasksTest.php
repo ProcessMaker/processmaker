@@ -81,7 +81,7 @@ class MatchingTasksTest extends TestCase
             'user_id' => $user->id,
             'status' => 'ACTIVE',
         ]);
-        
+
         $futureEndDate = now()->addDays(1);
         
         $pastEndDate = now()->subDays(1);
