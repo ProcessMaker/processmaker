@@ -125,14 +125,17 @@
   
   export default {
     components: { EllipsisMenu, paginationTable },
-    mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin, FilterTableBodyMixin],
-    props: ["filter", "id", "permission"],
+    mixins: [datatableMixin,
+    dataLoadingMixin,
+    ellipsisMenuMixin,
+    screenNavigationMixin,
+    FilterTableBodyMixin,
+    uniqIdsMixin,
+    ],
+    props: ["permission", "filter", "id"],
     data() {
       return {
         orderBy: "title",
-        screenId: null,
-        assetName: " ",
-        assignedProjects: [],
         sortOrder: [
           {
             field: "title",
@@ -193,7 +196,7 @@
   
     methods: {
       onPublicTemplateNavigate() {
-        console.log('ellipsis menu action');
+        console.log('Hit public template Ellipsis Menu');
       },
       fetch() {
         //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'PUBLIC TEMPLATES' FROM SCREEN TEMPLATES
