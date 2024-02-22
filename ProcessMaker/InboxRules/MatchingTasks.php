@@ -14,6 +14,10 @@ class MatchingTasks
 {
     public function matchingInboxRules(ProcessRequestToken $task) : array
     {
+        if (!$task || !$task->user_id) {
+            return [];
+        }
+
         $matchingInboxRules = [];
 
         if ($task && $task->user_id) {
@@ -23,10 +27,8 @@ class MatchingTasks
                     continue;
                 }
 
-                if ($rule->saved_search_id !== null) {
-                    if ($this->matchesResultInSavedSearch($rule, $task)) {
-                        $matchingInboxRules[] = $rule;
-                    }
+                if ($this->matchesSavedSearch($rule, $task)) {
+                    $matchingInboxRules[] = $rule;
                 }
 
                 if (
@@ -43,6 +45,16 @@ class MatchingTasks
         }
     }
 
+    public function shouldSkipRule($rule): bool
+    {
+        return $this->isEndDatePast($rule);
+    }
+
+    private function matchesSavedSearch($rule, $task): bool
+    {
+        return $rule->saved_search_id !== null && $this->matchesResultInSavedSearch($rule, $task);
+    }
+    
     public function get(InboxRule $inboxRule) : array
     {
         if ($savedSearch = $inboxRule->savedSearch) {
@@ -74,7 +86,8 @@ class MatchingTasks
             ->get();
     }
 
-    public function isEndDatePast($rule) {
+    public function isEndDatePast($rule) : bool
+    {
         if ($rule->end_date && $rule->end_date->isPast()) {
             return true;
         }

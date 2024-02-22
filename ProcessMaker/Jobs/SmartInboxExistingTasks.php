@@ -31,16 +31,11 @@ class SmartInboxExistingTasks implements ShouldQueue
      */
     public function handle(): void
     {
-        try {
-            //Load InboxRule by ID
-            $inboxRule = InboxRule::findOrFail($this->inboxRuleId);
+        //Load InboxRule by ID
+        $inboxRule = InboxRule::findOrFail($this->inboxRuleId);
 
-            $matchingTasks = MatchingTasks::get($inboxRule);
-            foreach ($matchingTasks as $task) {
-                ApplyAction::applyActionOnTask($task);
-            }
-        } catch (ModelNotFoundException $e) {
-            \Log::error($e->getMessage());
+        $matchingTasks = MatchingTasks::get($inboxRule);
+        foreach ($matchingTasks as $task) {
+            ApplyAction::applyActionOnTask($task);
         }
-    }
 }
