@@ -69,7 +69,7 @@ class ApplyAction
     }
 
     public function saveAsDraft($task)
-    { 
+    {
         //Only not null or not empty data is going to be stored
         TaskDraft::updateOrCreate(
             ['task_id' => $task->id],
