@@ -24,7 +24,20 @@
           :src="getIconProcess()"
           :alt="$t(labelIcon)"
         >
-        <span class="title-process">{{ process.name }}</span>
+        <span
+          :id="`title-${process.id}`"
+          class="title-process"
+        >
+          {{ process.name }}
+        </span>
+        <b-popover
+          v-if="process.name.length > 120"
+          :target="`title-${process.id}`"
+          placement="bottom"
+          triggers="hover focus"
+          :content="process.name"
+          variant="custom"
+        />
       </div>
     </b-card-text>
   </b-card>
@@ -143,5 +156,18 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-all;
+}
+.b-popover-custom.popover {
+  background-color: #F6F9FB;
+  border-radius: 4px;
+  border: 1px solid #CDDDEE;
+  box-shadow: 0px 10px 20px 4px #00000021;
+  font-family: Open Sans;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  padding: 20px;
 }
 </style>
