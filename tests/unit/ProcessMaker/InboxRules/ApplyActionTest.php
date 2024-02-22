@@ -30,7 +30,8 @@ class ApplyActionTest extends TestCase
         $inboxRule = InboxRule::factory()->create([
             'process_request_token_id' => $taskForInboxRule->id,
             'user_id' => $user->id,
-            'submit_data' => ['foo' => 'bar'],
+            'submit_data' => true,
+            'data' => ['foo' => 'bar'],
         ]);
 
         $activeTask = ProcessRequestToken::factory()->create([

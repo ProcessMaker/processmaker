@@ -34,7 +34,7 @@ class ApplyAction
                     $this->saveAsDraft($task);
                 }
                 //Submit the form
-                if ($inputRule->submit_data !== null) {
+                if ($inputRule->submit_data === true) {
                     $this->submitForm($task, $inputRule);
                 }
             }
@@ -46,7 +46,7 @@ class ApplyAction
         if ($task->status === 'CLOSED') {
             return abort(422, __('Task already closed'));
         }
-        $data = $inputRule->submit_data;
+        $data = $inputRule->data;
         // Call the manager to trigger the start event
         $process = $task->process;
         $instance = $task->processRequest;
