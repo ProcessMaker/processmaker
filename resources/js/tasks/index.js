@@ -1,5 +1,6 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
+import { cloneDeep } from "lodash";
 
 new Vue({
   el: "#tasks",
@@ -14,8 +15,36 @@ new Vue({
     status: [],
     inOverdueMessage: "",
     additions: [],
+    priorityField: "is_priority",
+    draftField: "draft",
+    priorityFilter: [
+      {
+        "subject": {
+          "type": "Field",
+          "value": "is_priority"
+        },
+        "operator": "=",
+        "value": true,
+        "_column_field": "is_priority",
+        "_column_label": "Priority"
+      }
+    ],
+    draftFilter: [
+      {
+        "subject": {
+          "type": "Relationship",
+          "value": "draft.id"
+        },
+        "operator": ">",
+        "value": 0,
+        "_column_field": "draft",
+        "_column_label": "Draft"
+      }
+    ],
   },
   mounted() {
+    const taskListComponent = this.$refs.taskList;
+    taskListComponent.advancedFilter = {};
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
@@ -56,6 +85,46 @@ new Vue({
     }
   },
   methods: {
+    switchTab(tab) {
+      if (tab === "inbox") {
+        this.onInbox();
+      }
+      if (tab === "priority") {
+        this.removeTabFilter(this.draftField);
+        this.onSwitchTab(this.priorityField);
+      }
+      if (tab === "draft") {
+        this.removeTabFilter(this.priorityField);
+        this.onSwitchTab(this.draftField);
+      }
+    },    
+    onInbox() {
+      const taskListComponent = this.$refs.taskList;
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
+      taskListComponent.fetch(true);
+    },
+    onSwitchTab(field) {
+      let filter;
+      if (field === "is_priority") {
+        filter = this.priorityFilter;
+      }
+      if (field === "draft") {
+        filter = this.draftFilter;
+      }
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[field] = filter;
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      taskListComponent.fetch(true);
+    },
+    removeTabFilter(tab) {
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[tab] = [];
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      taskListComponent.fetch(true);
+    },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
       this.fullPmql = this.getFullPmql();
