@@ -12,29 +12,28 @@ use ProcessMaker\Models\ProcessRequestToken;
  */
 class MatchingTasks
 {
-    public function matchingInboxRules(ProcessRequestToken $task) : array
+    public function matchingInboxRules(ProcessRequestToken $task): array
     {
         if (!$task || !$task->user_id) {
             return [];
         }
 
         $matchingInboxRules = [];
-
-            //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
-            foreach ($this->queryInboxRules($task) as $rule) {
-                if ($this->isEndDatePast($rule)) {
-                    continue;
-                }
-
-                if ($this->matchesSavedSearch($rule, $task)) {
-                    $matchingInboxRules[] = $rule;
-                }
-
-                if ($this->matchesProcessToken($rule, $task)) {
-                    $matchingInboxRules[] = $rule;
-                }
+        //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
+        foreach ($this->queryInboxRules($task) as $rule) {
+            if ($this->isEndDatePast($rule)) {
+                continue;
             }
-            return $matchingInboxRules;
+
+            if ($this->matchesSavedSearch($rule, $task)) {
+                $matchingInboxRules[] = $rule;
+            }
+
+            if ($this->matchesProcessToken($rule, $task)) {
+                $matchingInboxRules[] = $rule;
+            }
+        }
+        return $matchingInboxRules;
     }
 
     public function shouldSkipRule($rule): bool

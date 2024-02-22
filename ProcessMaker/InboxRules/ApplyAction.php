@@ -3,9 +3,11 @@
 namespace ProcessMaker\InboxRules;
 
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
+use ProcessMaker\Models\TaskDraft;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use ProcessMaker\SanitizeHelper;
 
 class ApplyAction
@@ -29,7 +31,7 @@ class ApplyAction
             if ($inputRule->task) {
                 //Fill and save as draft
                 if ($inputRule->fill_data === true) {
-                    //here process for save draft
+                    $this->saveAsDraft($task);                    
                 }
                 //Submit the form
                 if ($inputRule->submit_data !== null) {
@@ -53,7 +55,8 @@ class ApplyAction
 
     public function reassignToUserID($task, $inputRule)
     {
-        $task->authorizeReassignment(Auth::user());
+        $user_id = User::findOrFail($inputRule->user_id);
+        $task->authorizeReassignment($user_id);
         // Reassign user
         $task->reassignTo($inputRule->reassign_to_user_id);
         $task->persistUserData($inputRule->reassign_to_user_id);
@@ -63,5 +66,14 @@ class ApplyAction
     public function markAsPriority($task)
     {
         $task->update(['is_priority' => true]);
+    }
+
+    public function saveAsDraft($task)
+    {  
+        //Only not null or not empty data is going to be stored
+        TaskDraft::updateOrCreate(
+            ['task_id' => $task->id],
+            ['data' => $task->data ?? null]
+        );
     }
 }
