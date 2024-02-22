@@ -131,7 +131,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: baseline;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .icon-process {
   width: 75px;
