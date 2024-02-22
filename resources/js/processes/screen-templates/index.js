@@ -1,26 +1,6 @@
 import Vue from "vue";
-import MyTemplatesListing from "../screen-templates/components/MyTemplatesListing";
+import MyTemplatesListing from "./components/MyTemplatesListing.vue";
+import PublicTemplatesListing from "./components/PublicTemplatesListing.vue";
 
-new Vue({
-  el: "#myTemplatesIndex",
-  components: {
-    MyTemplatesListing,
-  },
-  data: {
-    filter: "",
-    pmql: "",
-    urlPmql: "",
-  },
-  methods: {
-    onNLQConversion(query) {
-        this.onChange(query);
-        this.reload();
-      },
-      onChange(query) {
-        this.pmql = query;
-      },
-      reload() {
-        this.$refs.myTemplatesListing.fetch();
-      },
-  },
-});
+Vue.component("MyTemplatesListing", MyTemplatesListing);
+Vue.component("PublicTemplatesListing", PublicTemplatesListing);
