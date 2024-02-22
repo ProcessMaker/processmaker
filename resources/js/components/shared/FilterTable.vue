@@ -64,7 +64,7 @@
           :key="rowIndex"
           :id="`row-${row.id}`"
           :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
-          @click="handleRowClick(row)"
+          @click="handleRowClick(row, $event)"
           @mouseover="handleRowMouseover(row)"
         >
           <slot :name="`row-${rowIndex}`">
@@ -226,14 +226,14 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
-    handleRowClick(row) {
-      this.$emit("table-row-click", row);
+    handleRowClick(row, event) {
+      this.$emit("table-row-click", row, event);
     },
     handleRowMouseover(row) {
-      this.$emit('table-row-mouseover', row);
+      this.$emit("table-row-mouseover", row);
     },
     handleRowMouseleave() {
-      this.$emit('table-row-mouseleave', false);
+      this.$emit("table-row-mouseleave", false);
     },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");

@@ -504,6 +504,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
     }
 
+    public function draft()
+    {
+        return $this->hasOne(TaskDraft::class, 'task_id');
+    }
+
     /**
      * Get the sub-process request associated to the token.
      */
