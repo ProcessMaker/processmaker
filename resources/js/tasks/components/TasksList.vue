@@ -25,7 +25,7 @@
               width="20"
               height="20"
             >
-            <span v-else>{{ column.label }}</span>
+            <span v-else>{{ $t(column.label) }}</span>
           </div>
         </template>
         <!-- Slot Table Header filter Button -->
@@ -341,7 +341,7 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
@@ -350,7 +350,7 @@ export default {
           order_column: 'process_requests.case_number',
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
@@ -368,7 +368,7 @@ export default {
           width: 40,
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "process",
           sortable: true,
           default: true,
@@ -378,7 +378,7 @@ export default {
           order_column: 'process_requests.name',
         },
         {
-          label: this.$t("Task"),
+          label: "Task",
           field: "task_name",
           sortable: true,
           default: true,
@@ -388,15 +388,15 @@ export default {
           order_column: 'element_name',
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
           width: 100,
-          filter_subject: { value: 'Status' },
+          filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Due date"),
+          label: "Due date",
           field: "due_at",
           format: "datetime",
           sortable: true,
@@ -414,7 +414,7 @@ export default {
       ];
       if (isStatusCompletedList) {
         columns.push({
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,
