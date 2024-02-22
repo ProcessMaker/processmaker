@@ -17,7 +17,6 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
           <div :key="index" style="display: inline-block;">
             <img
               v-if="column.field === 'is_priority'"
@@ -26,7 +25,7 @@
               width="20"
               height="20"
             >
-            <span v-else>{{ column.label }}</span>
+            <span v-else>{{ $t(column.label) }}</span>
           </div>
         </template>
         <!-- Slot Table Header filter Button -->
@@ -359,7 +358,6 @@ export default {
           order_column: 'process_requests.case_title',
         },
         {
-          label: "Process",
           label: "",
           field: "is_priority",
           sortable: false,
@@ -367,7 +365,7 @@ export default {
           width: 40,
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "process",
           sortable: true,
           default: true,
