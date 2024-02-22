@@ -131,8 +131,8 @@ export default {
       const link = event.webEntry.webentryRouteConfig.entryUrl;
       navigator.clipboard.writeText(link);
       if (event.assignment && ["user_group", "user"].includes(event.assignment)) {
-        const msg = this.$t("Please use this link when you're not logged in to ProcessMaker");
-        ProcessMaker.alert(msg, "success", 5, false, false, "", "Anonymous Web Link copied");
+        const msg = this.$t("Please use this link when you are not logged into ProcessMaker");
+        ProcessMaker.alert(msg, "success", 5, false, false, "", "Anonymous Web Link Copied");
       } else {
         this.$t("Link copied", "success");
       }
