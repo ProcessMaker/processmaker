@@ -25,6 +25,6 @@
     </div>
 
 @section('js')
-    <script src="{{mix('js/processes/screen-templates/index.js')}}"></script>
+    <script src="{{mix('js/processes/screen-templates/myTemplates.js')}}"></script>
 
 @append
