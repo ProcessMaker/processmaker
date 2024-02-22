@@ -102,8 +102,8 @@
       />
       <pagination
         ref="pagination"
-        :single="$t('Template')"
-        :plural="$t('Templates')"
+        :single="$t('My Template')"
+        :plural="$t('My Templates')"
         :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
