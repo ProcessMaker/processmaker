@@ -194,7 +194,11 @@ class SanitizeHelper
             if (isset($item['items']) && is_array($item['items'])) {
                 // Inside loop ..
                 if ($item['component'] == 'FormLoop') {
-                    self::getRichTextElements($item['items'], $parent . '.' . $item['config']['name'], $elements);
+                    self::getRichTextElements(
+                        $item['items'],
+                        ($parent ? $parent . '.' . $item['config']['name'] : $item['config']['name']),
+                        $elements
+                    );
                 } elseif ($item['component'] == 'FormMultiColumn') {
                     self::getVariableMultiColumn($item, $parent, $elements);
                 } else {
