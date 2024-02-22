@@ -42,7 +42,7 @@
           v-if="event.webEntry"
           type="button"
           class="btn btn-outline-primary border-0 p-1 text-capitalize"
-          @click="copyLink(event.webEntry)"
+          @click="copyLink(event)"
         >
           <i class="fas fa-link p-1" />
           {{ $t('Copy Link') }}
@@ -127,10 +127,15 @@ export default {
     /**
      * Copy WebEntry Link
      */
-    copyLink(webEntry) {
-      const link = webEntry.webentryRouteConfig.entryUrl;
+    copyLink(event) {
+      const link = event.webEntry.webentryRouteConfig.entryUrl;
       navigator.clipboard.writeText(link);
-      ProcessMaker.alert(this.$t("Link copied"), "success");
+      if (event.assignment && ["user_group", "user"].includes(event.assignment)) {
+        const msg = this.$t("Please use this link when you're not logged in to ProcessMaker");
+        ProcessMaker.alert(msg, "success", 5, false, false, "", "Anonymous Web Link copied");
+      } else {
+        this.$t("Link copied", "success");
+      }
     },
   },
 };
