@@ -1,19 +1,19 @@
 <template>
-    <div class="data-table">
-      <data-loading
-              :for="/screens/"
-              v-show="shouldShowLoader"
-              :empty="$t('No Data Available')"
-              :empty-desc="$t('')"
-              empty-icon="noData"
-      />
-      <div v-show="!shouldShowLoader" class="card card-body public-templates-table-card" data-cy="public-templates-table">
-        <filter-table
-          :headers="fields"
-          :data="data"
-          table-name="public-screen-templates"
-          style="height: calc(100vh - 355px);"
-        >
+  <div class="data-table">
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/screens/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader" class="card card-body public-templates-table-card" data-cy="public-templates-table">
+      <filter-table
+        :headers="fields"
+        :data="data"
+        table-name="public-screen-templates"
+        style="height: calc(100vh - 355px);"
+      >
         <!-- Slot Table Header filter Button -->
         <template
           v-for="(column, index) in fields"
@@ -107,129 +107,127 @@
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
       />
-      </div>
     </div>
-  </template>
-  
-  <script>
-  import datatableMixin from "../../../components/common/mixins/datatable";
-  import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
-  import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
-  import screenNavigationMixin from "../../../components/shared/screenNavigation";
-  import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-  import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
-  import paginationTable from "../../../components/shared/PaginationTable.vue";
+  </div>
+</template>
 
-  import { createUniqIdsMixin } from "vue-uniq-ids";
-  const uniqIdsMixin = createUniqIdsMixin();
-  
-  export default {
-    components: { EllipsisMenu, paginationTable },
-    mixins: [datatableMixin,
+<script>
+import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
+import screenNavigationMixin from "../../../components/shared/screenNavigation";
+import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
+import paginationTable from "../../../components/shared/PaginationTable.vue";
+
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
+
+export default {
+  components: { EllipsisMenu, paginationTable },
+  mixins: [datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
     screenNavigationMixin,
     FilterTableBodyMixin,
     uniqIdsMixin,
-    ],
-    props: ["permission", "filter", "id"],
-    data() {
-      return {
-        orderBy: "title",
-        sortOrder: [
-          {
-            field: "title",
-            sortField: "title",
-            direction: "asc"
-          }
-        ],
-  
-        fields: [
-          {
-            label: this.$t("Name"),
-            field: "title",
-            width: 200,
-            sortable: true,
-            truncate: true,
-            direction: "none",
-          },
-          {
-            label: this.$t("Description"),
-            field: "description",
-            width: 200,
-            sortable: true,
-            direction: "none",
-            sortField: "description",
-          },
-          {
-            label: this.$t("Type of Screen"),
-            field: "screen_type",
-            width: 160,
-            sortable: true,
-            direction: "none",
-            sortField: "screen_type",
-          },
-          {
-            label: this.$t("Owner"),
-            field: "owner",
-            width: 160,
-            sortable: true,
-            direction: "none",
-            sortField: "user_id",
-          },
-          {
-            label: this.$t("Modified"),
-            field: "updated_at",
-            format: "datetime",
-            width: 160,
-            sortable: true,
-            direction: "none",
-          },
-          {
-            name: "__slot:actions",
-            field: "actions",
-            width: 60,
-          }
-        ]
-      };
-    },
-  
-    methods: {
-      onPublicTemplateNavigate() {
-        console.log('Hit public template Ellipsis Menu');
-      },
-      fetch() {
-        //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'PUBLIC TEMPLATES' FROM SCREEN TEMPLATES
-          this.loading = true;
+  ],
+  props: ["permission", "filter", "id"],
+  data() {
+    return {
+      orderBy: "title",
+      sortOrder: [
+        {
+          field: "title",
+          sortField: "title",
+          direction: "asc",
+        }
+      ],
 
-          //change method sort by slot name
-          this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
-          //Load from our api client
-          ProcessMaker.apiClient
-            .get(
-              "screens" +
-                "?page=" +
-                this.page +
-                "&per_page=" +
-                this.perPage +
-                "&filter=" +
-                this.filter +
-                "&order_by=" +
-                this.orderBy +
-                "&order_direction=" +
-                this.orderDirection +
-                "&include=categories,category" +
-                "&exclude=config"
+      fields: [
+        {
+          label: this.$t("Name"),
+          field: "title",
+          width: 200,
+          sortable: true,
+          truncate: true,
+          direction: "none",
+        },
+        {
+          label: this.$t("Description"),
+          field: "description",
+          width: 200,
+          sortable: true,
+          direction: "none",
+          sortField: "description",
+        },
+        {
+          label: this.$t("Type of Screen"),
+          field: "screen_type",
+          width: 160,
+          sortable: true,
+          direction: "none",
+          sortField: "screen_type",
+        },
+        {
+          label: this.$t("Owner"),
+          field: "owner",
+          width: 160,
+          sortable: true,
+          direction: "none",
+          sortField: "user_id",
+        },
+        {
+          label: this.$t("Modified"),
+          field: "updated_at",
+          format: "datetime",
+          width: 160,
+          sortable: true,
+          direction: "none",
+        },
+        {
+          name: "__slot:actions",
+          field: "actions",
+          width: 60,
+        }
+      ]
+    };
+  },
+  methods: {
+    fetch() {
+    //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'PUBLIC TEMPLATES' FROM SCREEN TEMPLATES
+      this.loading = true;
+      this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
+
+      //Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          "screens" +
+            "?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection +
+            "&include=categories,category" +
+            "&exclude=config"
         )
-            .then(response => {
-              this.data = this.transform(response.data);
-              this.loading = false;
-            });
-      },
+        .then(response => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        });
     },
-  };
-  </script>
-  
+    onPublicTemplateNavigate() {
+      console.log('Hit public template Ellipsis Menu');
+    },
+  },
+};
+</script>
+
 <style lang="scss" scoped>
 :deep(th#_description) {
   width: 250px;
