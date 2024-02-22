@@ -162,7 +162,7 @@ export default {
   border-radius: 4px;
   border: 1px solid #CDDDEE;
   box-shadow: 0px 10px 20px 4px #00000021;
-  font-family: 'Open Sans';
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
