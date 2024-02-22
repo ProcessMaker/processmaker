@@ -1,47 +1,40 @@
 <template>
   <div>
-    <h3>Inbox Rules1</h3>
-    Index Rules
-    <router-link :to="{ name: 'edit', params: { id: 1 }}">
-      Edit 1
-    </router-link>
-
+    <h4>Inbox Rules</h4>
     <b-tabs class="m-3" content-class="p-3 pm-tab-content">
       <b-tab :title="$t('Rules')" 
              active>
-        <FilterTable :headers="columns"
-                     :data="rows"
-                     @table-row-mouseover="tableRowMouseover"
-                     @table-tr-mouseleave="tableTrMouseleave">
-        </FilterTable>
+        <PMTable :headers="columns"
+                 :data="rows"
+                 @onRowMouseover="tableRowMouseover"
+                 @onTrMouseleave="tableTrMouseleave">
+        </PMTable>
       </b-tab>
       <b-tab :title="$t('Execution Log')">
         Hi!
       </b-tab>
     </b-tabs>
-
-
   </div>
 </template>
 
 <script>
-  import { FilterTable } from "../../components/shared";
-  import OptionsRow from "./OptionsRow.vue";
-  Vue.component("OptionsRow", OptionsRow);
+  import PMTable from "../../components/PMTable.vue";
+  import PmRowButtons from "./PmRowButtons.vue";
+  Vue.component("PmRowButtons", PmRowButtons);
   export default {
     components: {
-      FilterTable
-    },
-    mounted() {
+      PMTable
     },
     data() {
       return {
-        columns: this.getColumns(),
-        rows: this.getRows()
+        columns: this.getHeaders(),
+        rows: this.getData()
       };
     },
+    mounted() {
+    },
     methods: {
-      getColumns() {
+      getHeaders() {
         return [
           {
             label: this.$t("Name"),
@@ -65,46 +58,55 @@
           }
         ];
       },
-      getRows() {
+      getData() {
+        let rows = [
+          {
+            name: "name1",
+            status: "ok",
+            creation_date: "2024-01-01",
+            deactivation_date: "2024-01-02"
+          },
+          {
+            name: "name2",
+            status: "none",
+            creation_date: "2024-02-01",
+            deactivation_date: "2024-02-02"
+          }
+        ];
         let data = {
-          data: [
-            {
-              name: "name1",
-              status: "ok",
-              creation_date: "2024-01-01",
-              deactivation_date: "2024-01-02"
-            },
-            {
-              name: "name2",
-              status: "none",
-              creation_date: "2024-02-01",
-              deactivation_date: "2024-02-02"
-            }
-          ]
+          data: rows,
+          meta: {}
         };
-        for (let row of data.data) {
-          row["deactivation_date"] = {
-            component: "OptionsRow",
-            props: {
-              value: row["deactivation_date"],
-              name: "deactivation_date",
-              buttonEdit: () => {
-                console.log("edit");
-              },
-              buttonRemove: () => {
-                console.log("remove");
-              },
-              row: row
-            }
-          };
-        }
+        this.formatColumns(data);
         return data;
       },
-      tableRowMouseover(row) {
-        row["deactivation_date"].target.show();
+      formatColumns(data) {
+        for (let row of data.data) {
+          row["deactivation_date"] = this.formatToDeactivationDate(row);
+        }
+      },
+      formatToDeactivationDate(row) {
+        return {
+          component: "PmRowButtons",
+          props: {
+            value: row["deactivation_date"],
+            name: "deactivation_date",
+            row: row,
+            buttonEdit: () => {
+              this.$router.push({name: 'edit', params: {id: 1}});
+            },
+            buttonRemove: () => {
+              console.log("remove");
+            }
+          }
+        };
+      },
+      tableRowMouseover(row, scrolledWidth) {
+        row["deactivation_date"].pmRowButtons.show();
+        row["deactivation_date"].pmRowButtons.setMargin(scrolledWidth);
       },
       tableTrMouseleave(row) {
-        row["deactivation_date"].target.close();
+        row["deactivation_date"].pmRowButtons.close();
       }
     }
   }
