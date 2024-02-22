@@ -20,7 +20,6 @@ class MatchingTasks
 
         $matchingInboxRules = [];
 
-        if ($task && $task->user_id) {
             //The Foreach has only inbox rules ACTIVE=true and user_id = $task->user_id
             foreach ($this->queryInboxRules($task) as $rule) {
                 if ($this->isEndDatePast($rule)) {
@@ -36,9 +35,6 @@ class MatchingTasks
                 }
             }
             return $matchingInboxRules;
-        } else {
-            return [];
-        }
     }
 
     public function shouldSkipRule($rule): bool
