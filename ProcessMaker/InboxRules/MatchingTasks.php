@@ -31,11 +31,7 @@ class MatchingTasks
                     $matchingInboxRules[] = $rule;
                 }
 
-                if (
-                    $rule->process_request_token_id !== null &&
-                    $task->process_id == $rule->task->process_id &&
-                    $task->element_id == $rule->task->element_id
-                ) {
+                if ($this->matchesProcessToken($rule, $task)) {
                     $matchingInboxRules[] = $rule;
                 }
             }
@@ -50,11 +46,18 @@ class MatchingTasks
         return $this->isEndDatePast($rule);
     }
 
-    private function matchesSavedSearch($rule, $task): bool
+    public function matchesSavedSearch($rule, $task): bool
     {
         return $rule->saved_search_id !== null && $this->matchesResultInSavedSearch($rule, $task);
     }
-    
+
+    public function matchesProcessToken($rule, $task): bool
+    {
+        return $rule->process_request_token_id !== null
+            && $task->process_id == $rule->task->process_id
+            && $task->element_id == $rule->task->element_id;
+    }
+
     public function get(InboxRule $inboxRule) : array
     {
         if ($savedSearch = $inboxRule->savedSearch) {
