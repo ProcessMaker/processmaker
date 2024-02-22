@@ -25,6 +25,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\SanitizeHelper;
@@ -102,7 +103,7 @@ class TaskController extends Controller
             $user = Auth::user();
         }
 
-        $query = ProcessRequestToken::with(['processRequest', 'user']);
+        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
         $query->select('process_request_tokens.*');
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
@@ -481,5 +482,11 @@ class TaskController extends Controller
         $newTask = RollbackProcessRequest::rollback($task, $processDefinitions);
 
         return new Resource($newTask);
+    }
+    public function setPriority(Request $request, ProcessRequestToken $task)
+    {
+        $task->update(['is_priority' => $request->input('is_priority', false)]);
+        return new Resource($task->refresh());
+
     }
 }

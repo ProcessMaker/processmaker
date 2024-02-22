@@ -17,7 +17,16 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
+          <div :key="index" style="display: inline-block;">
+            <img
+              v-if="column.field === 'is_priority'"
+              src="/img/priority-header.svg"
+              alt="priority-header"
+              width="20"
+              height="20"
+            >
+            <span v-else>{{ $t(column.label) }}</span>
+          </div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -75,6 +84,17 @@
                     {{ formatRemainingTime(row.due_at) }}
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
+                </template>
+                <template v-else-if="header.field === 'is_priority'">
+                  <span>
+                    <img
+                      :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
+                      :alt="row[header.field] ? 'priority' : 'no-priority'"
+                      width="20"
+                      height="20"
+                      @click.prevent="togglePriority(row.id, !row[header.field])"
+                    >
+                  </span>
                 </template>
                 <template v-else>
                   <div
@@ -275,6 +295,14 @@ export default {
     }
   },
   methods: {
+    togglePriority(taskId, isPriority) {
+      ProcessMaker.apiClient.put(
+        `tasks/${taskId}/setPriority`,
+        { is_priority: isPriority }
+      ).then((response) => {
+        this.fetch();
+      });
+    },
     openRequest(data) {
       return `/requests/${data.id}`;
     },
@@ -328,6 +356,13 @@ export default {
           truncate: true,
           filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
           order_column: 'process_requests.case_title',
+        },
+        {
+          label: "",
+          field: "is_priority",
+          sortable: false,
+          default: true,
+          width: 40,
         },
         {
           label: "Process",
@@ -456,8 +491,13 @@ export default {
     openTask(task) {
       return `/tasks/${task.id}/edit`;
     },
-    handleRowClick(row) {
-      window.location.href = this.openTask(row);
+    handleRowClick(row, event) {
+      const targetElement = event.target;
+      const isPriorityIcon = targetElement.tagName.toLowerCase() === "img"
+      && (targetElement.alt === "priority" || targetElement.alt === "no-priority");
+      if (!isPriorityIcon) {
+        window.location.href = this.openTask(row);
+      }
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
