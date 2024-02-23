@@ -24,7 +24,20 @@
           :src="getIconProcess()"
           :alt="$t(labelIcon)"
         >
-        <span class="title-process">{{ process.name }}</span>
+        <span
+          :id="`title-${process.id}`"
+          class="title-process"
+        >
+          {{ process.name }}
+        </span>
+        <b-popover
+          v-if="process.name.length > 120"
+          :target="`title-${process.id}`"
+          placement="bottom"
+          triggers="hover focus"
+          :content="process.name"
+          variant="custom"
+        />
       </div>
     </b-card-text>
   </b-card>
@@ -96,6 +109,9 @@ export default {
   margin-right: 1rem;
   border-radius: 16px;
 }
+.card-body {
+  padding: 32px;
+}
 .card-img {
   border-radius: 16px;
 }
@@ -106,17 +122,20 @@ export default {
 .card-bookmark:hover {
   cursor: pointer;
 }
+.card-text {
+  height: 100%;
+}
 .card-info {
   cursor: pointer;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: baseline;
-  padding-top: 15%;
+  justify-content: flex-end;
 }
 .icon-process {
   width: 75px;
-  height: 75px;;
-  padding-left: 0.5rem;
+  height: 75px;
   margin-bottom: 1rem;
 }
 .marked {
@@ -125,16 +144,30 @@ export default {
 .title-process {
   color: #556271;
   font-family: Poppins, sans-serif;
-  font-size: 20px;
+  font-size: 17px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
+  line-height: 23.15px;
   letter-spacing: -0.4px;
   text-transform: uppercase;
-  -webkit-line-clamp: 2;
   display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-all;
+}
+.b-popover-custom.popover {
+  background-color: #F6F9FB;
+  border-radius: 4px;
+  border: 1px solid #CDDDEE;
+  box-shadow: 0px 10px 20px 4px #00000021;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  padding: 20px;
 }
 </style>
