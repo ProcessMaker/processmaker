@@ -25,10 +25,6 @@
     <template v-else-if="lauchpad" #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
     </template>
-    <template v-else-if="screenTemplate" #button-content>
-      <i class="fas fa-eye ellipsis-menu-icon pr-2" />
-      <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
-    </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
     </template>
@@ -114,22 +110,7 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: [
-    "actions",
-    "permission",
-    "data",
-    "isDocumenterInstalled",
-    "divider",
-    "lauchpad",
-    "screenTemplate",
-    "customButton",
-    "showProgress",
-    "isPackageInstalled",
-    "searchBar",
-    "variant",
-    "redirectTo",
-    "redirectId",
-  ],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
   data() {
     return {
       active: false,
