@@ -17,6 +17,15 @@ class ScreenExporterTest extends TestCase
 {
     use HelperTrait;
 
+    /**
+     *  Init admin user
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createAdminUser();
+    }
+
     private function fixtures()
     {
         $screen = $this->createScreen('screen_with_nested_screen', ['title' => 'screen'], 'watchers');
