@@ -253,6 +253,31 @@ export default {
           permission: ["delete-decision_tables", "view-additional-asset-actions"]
         },
       ],
+      myTemplateActions: [
+        //TODO: Update My Template Ellipsis Menu Actions
+        {
+          value: "edit-template",
+          content: "Edit Template",
+          link: true,
+          href: "/designer/screen-builder/{{id}}/edit",
+          permission: ["edit-screens", "view-additional-asset-actions"],
+          icon: "fas fa-pen-square",
+        },
+        {
+          value: "make-public",
+          content: "Make Public",
+          link: true,
+          href: "/designer/screens/{{id}}/edit",
+          permission: ["edit-screens", "view-additional-asset-actions"],
+          icon: "fas fa-file-export",
+        },
+        {
+          value: "delete-template",
+          content: "Delete Template",
+          permission: ["delete-screens", "view-additional-asset-actions"],
+          icon: "fas fa-trash-alt",
+        },
+      ],
     };
   },
 };
