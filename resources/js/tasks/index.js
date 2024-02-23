@@ -45,7 +45,6 @@ new Vue({
     ],
   },
   mounted() {
-    const taskListComponent = this.$refs.taskList;
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
