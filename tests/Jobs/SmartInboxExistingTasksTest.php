@@ -23,7 +23,12 @@ class SmartInboxExistingTasksTest extends TestCase
 
         ApplyAction::shouldReceive('applyActionOnTask')
             ->once()
-            ->with(\Mockery::on(fn ($arg) => $arg instanceof ProcessRequestToken && $arg->id === $task->id), [$inboxRule]);
+            ->with(
+                \Mockery::on(function ($arg) use ($task) {
+                    return $arg instanceof ProcessRequestToken && $arg->id === $task->id;
+                }),
+                [$inboxRule]
+            );
 
         SmartInboxExistingTasks::dispatch($inboxRule->id);
     }

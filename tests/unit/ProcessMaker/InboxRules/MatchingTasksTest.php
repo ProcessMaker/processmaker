@@ -118,7 +118,7 @@ class MatchingTasksTest extends TestCase
             'status' => 'COMPLETED',
         ]);
 
-        $activeTask = ProcessRequestToken::factory()->create([
+        ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'ACTIVE',
             'process_id' => $task->process_id,
