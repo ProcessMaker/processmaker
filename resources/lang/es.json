@@ -2091,5 +2091,9 @@
   "will": "voluntad",
   "will be included in this": "será incluido en esto",
   "Task Name": "Nombre de la Tarea",
-  "Due Date": "Fecha de Vencimiento"
+  "Due Date": "Fecha de Vencimiento",
+  "No new tasks at this moment.": "No hay nuevas tareas en este momento.",
+  "Case #": "Caso #",
+  "Case title": "Título del caso",
+  "Case Title": "Título del Caso"
 }

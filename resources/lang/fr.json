@@ -2094,5 +2094,7 @@
   "CASE #": "Cas #",
   "CASE TITLE": "TITRE DE L'AFFAIRE",
   "Task Name": "Nom de la Tâche",
-  "Due Date": "Date d'échéance"
+  "Due Date": "Date d'échéance",
+  "No new tasks at this moment.": "Aucune nouvelle tâche à ce moment.",
+  "Case Title": "Titre du Dossier"
 }

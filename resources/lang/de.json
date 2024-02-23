@@ -2094,5 +2094,7 @@
   "CASE #": "Fall #",
   "CASE TITLE": "FALLTITEL",
   "Task Name": "Aufgabenname",
-  "Due Date": "Fälligkeitsdatum"
+  "Due Date": "Fälligkeitsdatum",
+  "No new tasks at this moment.": "Keine neuen Aufgaben in diesem Moment.",
+  "Case Title": "Falltitel"
 }
