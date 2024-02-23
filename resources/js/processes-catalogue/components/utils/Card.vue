@@ -9,7 +9,7 @@
       <div class="card-bookmark">
         <i
           :ref="`bookmark-${process.id}`"
-          v-b-tooltip.hover
+          v-b-tooltip.hover.bottom
           :title="$t(labelTooltip)"
           :class="bookmarkIcon()"
           @click="checkBookmark(process)"
@@ -82,7 +82,7 @@ export default {
         return "fas fa-bookmark marked";
       }
       this.labelTooltip = this.$t("Add to My Bookmarks");
-      return "far fa-bookmark";
+      return "fas fa-bookmark unmarked";
     },
     /**
      * Open the process
@@ -117,7 +117,7 @@ export default {
 }
 .card-bookmark {
   float: right;
-  font-size: 20px;
+  font-size: 24px;
 }
 .card-bookmark:hover {
   cursor: pointer;
@@ -139,7 +139,16 @@ export default {
   margin-bottom: 1rem;
 }
 .marked {
-  color: #1372c4;
+  color: #f5bC00;
+}
+.unmarked {
+  color: #ebf3f7;
+  -webkit-text-stroke-color: #bed1e5;
+  -webkit-text-stroke-width: 1px;
+}
+.unmarked:hover {
+  color: #ffd445;
+  -webkit-text-stroke-width: 0;
 }
 .title-process {
   color: #556271;
