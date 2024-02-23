@@ -108,7 +108,7 @@ export default {
   margin-top: 1rem;
   margin-right: 1rem;
   border-radius: 16px;
-  background-image: url("/img/launchpad-images/process_background_2.svg");
+  background-image: url("/img/launchpad-images/process_background.svg");
 }
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;
