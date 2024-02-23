@@ -70,6 +70,7 @@
                       v-if="header.truncate"
                       :target="`element-${row.id}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ row[header.field] }}
                     </b-tooltip>

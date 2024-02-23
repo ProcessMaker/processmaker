@@ -14,7 +14,7 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -54,6 +54,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -77,6 +78,7 @@
                     v-if="header.truncate"
                     :target="`element-${rowIndex}-${colIndex}`"
                     custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </b-tooltip>
@@ -154,6 +156,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
     };
@@ -230,14 +233,14 @@ export default {
       }
       return [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
           width: 80,
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           sortable: true,
           default: true,
@@ -245,7 +248,7 @@ export default {
           width: 220,
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "name",
           sortable: true,
           default: true,
@@ -253,15 +256,16 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task"),
+          label: "Task",
           field: "active_tasks",
           sortable: false,
           default: true,
           width: 140,
           truncate: true,
+          tooltip: this.$t("This column can not be sorted or filtered."),
         },
         {
-          label: this.$t("Participants"),
+          label: "Participants",
           field: "participants",
           sortable: true,
           default: true,
@@ -271,7 +275,7 @@ export default {
           hideSortingButtons: true,
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
@@ -279,7 +283,7 @@ export default {
           filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Started"),
+          label: "Started",
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -287,7 +291,7 @@ export default {
           width: 160,
         },
         {
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -334,16 +338,13 @@ export default {
       );
     },
     formatActiveTasks(value) {
-      let htmlString = '';
-      for (const task of value) {
-        htmlString += `
-          <div class="text-truncate">
-            <a class="text-nowrap" href="${this.openTask(task)}">
-              ${task.element_name}
-            </a>
-          </div>
+      return value.map((task) => {
+        return `
+          <a href="${this.openTask(task)}">
+            ${task.element_name}
+          </a>
         `;
-      }
+      }).join('<br/>');
       return htmlString;
     },
     formatCaseNumber(value) {
@@ -390,7 +391,7 @@ export default {
       }
       return data;
     },
-    fetch() {
+    fetch(navigateToFirstPage = false) {
       Vue.nextTick(() => {
         if (this.cancelToken) {
           this.cancelToken();
@@ -399,32 +400,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        let pmql = '';
-
-        if (this.pmql !== undefined) {
-          pmql = this.pmql;
-        }
-
-        let filter = this.filter;
-
-        if (filter && filter.length) {
-          if (filter.isPMQL()) {
-            pmql = `(${pmql}) and (${filter})`;
-            filter = '';
-          }
-        }
-
-        if (this.previousFilter !== filter) {
-          this.page = 1;
-        }
-
-        this.previousFilter = filter;
-
-        if (this.previousPmql !== pmql) {
-          this.page = 1;
-        }
-
-        this.previousPmql = pmql;
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -443,7 +419,7 @@ export default {
             "&order_direction=" +
             this.orderDirection +
             this.additionalParams + 
-            this.getAdvancedFilter(),
+            advancedFilter,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -466,6 +442,43 @@ export default {
             }
           });
       });
+    },
+    buildPmqlAndFilter(navigateToFirstPage) {
+      let pmql = '';
+
+      if (this.pmql !== undefined) {
+        pmql = this.pmql;
+      }
+
+      let filter = this.filter;
+
+      if (filter?.length) {
+        if (filter.isPMQL()) {
+          pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
+          filter = '';
+        }
+      }
+
+      if (this.previousFilter !== filter) {
+        this.page = 1;
+      }
+
+      this.previousFilter = filter;
+
+      if (this.previousPmql !== pmql) {
+        this.page = 1;
+      }
+
+      this.previousPmql = pmql;
+
+      const advancedFilter = this.getAdvancedFilter();
+
+      if (this.previousAdvancedFilter !== advancedFilter && navigateToFirstPage) {
+        this.page = 1;
+      }
+
+      return { pmql, filter, advancedFilter };
+
     },
     handleRowClick(row) {
       window.location.href = this.openRequest(row, 1);
