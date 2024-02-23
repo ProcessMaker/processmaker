@@ -145,15 +145,16 @@ class ApplyActionTest extends TestCase
             'process_request_token_id' => $taskForInboxRule->id,
             'user_id' => $user->id,
             'reassign_to_user_id' => null,
-            'submit_data' => null,
+            'submit_data' => false,
             'fill_data' => true,
+            'data' => ["input" => "some rule text"],
         ]);
 
         $activeTask = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'ACTIVE',
             'element_id' => 'UserTaskUID',
-            'data' => ['input' => 'draft value'],
+            'data' => ['input' => 'active value'],
         ]);
 
         MatchingTasks::shouldReceive('matchingInboxRules')
@@ -166,6 +167,6 @@ class ApplyActionTest extends TestCase
         $taskDraftData = TaskDraft::where('task_id', $activeTask->id)->value('data');
 
         // Check if the expected data is contained in the recovered data
-        $this->assertArraySubset($activeTask->data, $taskDraftData);
+        $this->assertArraySubset($inboxRule->data, $taskDraftData);
     }
 }

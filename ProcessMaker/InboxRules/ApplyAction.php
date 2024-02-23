@@ -31,7 +31,7 @@ class ApplyAction
             if ($inputRule->task) {
                 //Fill and save as draft
                 if ($inputRule->fill_data === true) {
-                    $this->saveAsDraft($task);
+                    $this->saveAsDraft($task, $inputRule);
                 }
                 //Submit the form
                 if ($inputRule->submit_data === true) {
@@ -68,12 +68,12 @@ class ApplyAction
         $task->update(['is_priority' => true]);
     }
 
-    public function saveAsDraft($task)
+    public function saveAsDraft($task, $inputRule)
     {
         //Only not null or not empty data is going to be stored
         TaskDraft::updateOrCreate(
             ['task_id' => $task->id],
-            ['data' => $task->data ?? null]
+            ['data' => $inputRule->data ?? null]
         );
     }
 }
