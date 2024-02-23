@@ -20,7 +20,6 @@ new Vue({
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
-    this.$refs['taskList'].setInbox();
   },
   created() {
     const params = new URL(document.location).searchParams;
