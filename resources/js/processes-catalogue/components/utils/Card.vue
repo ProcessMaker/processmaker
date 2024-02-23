@@ -111,7 +111,7 @@ export default {
   background-image: url("/img/launchpad-images/process_background_2.svg");
 }
 .card-process:hover {
-  box-shadow: 0px 3px 16px 2px #ACBDCF75;
+  box-shadow: 0px 3px 16px 2px #acbdcf75;
 }
 .card-body {
   padding: 32px;
