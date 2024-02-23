@@ -57,7 +57,7 @@ export default {
       currentPage: 1,
       limit: 7,
       totalRow: null,
-      perPage: 9,
+      perPage: 12,
       order_by: "name",
       dir: "asc",
       data: null,
