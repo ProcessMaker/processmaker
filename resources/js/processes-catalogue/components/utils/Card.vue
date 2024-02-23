@@ -1,7 +1,5 @@
 <template>
   <b-card
-    img-src="/img/launchpad-images/process_background_2.svg"
-    img-alt="Card Image"
     overlay
     class="card-process"
   >
@@ -92,10 +90,15 @@ export default {
 .card-process {
   max-width: 343px;
   min-width: 296px;
+  width: 330px;
   height: 232px;
   margin-top: 1rem;
   margin-right: 1rem;
   border-radius: 16px;
+  background-image: url("/img/launchpad-images/process_background_2.svg");
+}
+.card-process:hover {
+  box-shadow: 0px 3px 16px 2px #ACBDCF75;
 }
 .card-body {
   padding: 32px;
@@ -126,7 +129,7 @@ export default {
 .icon-process {
   width: 48px;
   height: 48px;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 .marked {
   color: #1372c4;
