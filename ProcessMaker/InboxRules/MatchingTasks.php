@@ -56,16 +56,19 @@ class MatchingTasks
     public function get(InboxRule $inboxRule) : array
     {
         if ($savedSearch = $inboxRule->savedSearch) {
-            return $savedSearch->query->get();
+            $savedSearches = $savedSearch->query->get();
+            return $savedSearches->toArray();
         }
 
         if ($task = $inboxRule->task) {
-            return ProcessRequestToken::where([
+            $tasks = ProcessRequestToken::where([
                 'process_id' => $task->process_id,
                 'element_id' => $task->element_id,
                 'user_id' => $inboxRule->user_id,
                 'status' => 'ACTIVE',
             ])->get();
+
+            return $tasks->toArray();
         }
     }
 

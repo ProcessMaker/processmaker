@@ -20,12 +20,14 @@ class MatchingTasksTest extends TestCase
             'user_id' => $user->id,
             'status' => 'COMPLETED',
         ]);
+
         $activeTask = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'ACTIVE',
             'element_id' => $completedTask->element_id,
             'process_id' => $completedTask->process_id,
         ]);
+
         $inboxRule = InboxRule::factory()->create([
             'process_request_token_id' => $completedTask->id,
             'user_id' => $user->id,
@@ -47,6 +49,7 @@ class MatchingTasksTest extends TestCase
             'status' => 'ACTIVE',
             'element_name' => 'My Test Task',
         ]);
+        
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'task',
             'pmql' => 'task = "My Test Task"',
@@ -104,5 +107,31 @@ class MatchingTasksTest extends TestCase
         $matchingRules = MatchingTasks::matchingInboxRules($task);
 
         $this->assertNotEmpty($matchingRules);
+    }
+
+    public function testGet()
+    {
+        $user = User::factory()->create();
+    
+        $task = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'COMPLETED',
+        ]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+            'process_id' => $task->process_id,
+            'element_id' => $task->element_id,
+        ]);
+
+        $inboxRule = InboxRule::factory()->create([
+            'process_request_token_id' => $task->id,
+            'user_id' => $user->id,
+        ]);
+
+        $matchingTasks = MatchingTasks::get($inboxRule);
+
+        $this->assertEquals($task->process_id, $matchingTasks[0]["process_id"]);
     }
 }

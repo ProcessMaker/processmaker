@@ -17,7 +17,7 @@ class SmartInboxExistingTasks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $inboxRuleId;
+    public int $inboxRuleId;
     /**
      * Create a new job instance.
      */
@@ -36,6 +36,7 @@ class SmartInboxExistingTasks implements ShouldQueue
 
         $matchingTasks = MatchingTasks::get($inboxRule);
         foreach ($matchingTasks as $task) {
-            ApplyAction::applyActionOnTask($task);
+            ApplyAction::applyActionOnTask($task, $inboxRule->toArray());
         }
+    }
 }
