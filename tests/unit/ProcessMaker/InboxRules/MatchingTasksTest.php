@@ -5,6 +5,7 @@ namespace Tests;
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
@@ -75,24 +76,33 @@ class MatchingTasksTest extends TestCase
         // not be returned
 
         $user = User::factory()->create();
-        $completedTask = ProcessRequestToken::factory()->create([
+    
+        $task = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'COMPLETED',
         ]);
-        $activeTask = ProcessRequestToken::factory()->create([
-            'user_id' => $user->id,
-            'status' => 'ACTIVE',
-            'element_id' => $completedTask->element_id,
-            'process_id' => $completedTask->process_id,
-        ]);
-        $inboxRule = InboxRule::factory()->create([
-            'process_request_token_id' => $completedTask->id,
+
+        //Check with pastEndDate value
+        $pastEndDate = now()->subDays(1);
+        InboxRule::factory()->create([
+            'process_request_token_id' => $task->id,
+            'end_date' => $pastEndDate,
             'user_id' => $user->id,
         ]);
 
-        $matchingTasks = MatchingTasks::matchingInboxRules($activeTask);
+        $matchingRules = MatchingTasks::matchingInboxRules($task);
+        $this->assertEmpty($matchingRules);
 
-        $this->assertCount(1, $matchingTasks);
-        $this->assertEquals($inboxRule->id, $matchingTasks[0]->id);
+        //Check with futureEndDate value
+        $futureEndDate = now()->addDays(1);
+        InboxRule::factory()->create([
+            'process_request_token_id' => $task->id,
+            'end_date' => $futureEndDate,
+            'user_id' => $user->id,
+        ]);
+
+        $matchingRules = MatchingTasks::matchingInboxRules($task);
+
+        $this->assertNotEmpty($matchingRules);
     }
 }

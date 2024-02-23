@@ -14,10 +14,15 @@ class InboxRule extends ProcessMakerModel
 
     protected $table = 'inbox_rules';
 
+    protected $casts = [
+        'data' => 'array',
+        'end_date' => 'datetime',
+    ];
+
     /**
      * Define the relationship with ProcessRequestToken model
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function task(): BelongsTo
     {
@@ -27,7 +32,7 @@ class InboxRule extends ProcessMakerModel
     /**
      * Define the relationship with SavedSearch model
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function savedSearch(): BelongsTo
     {

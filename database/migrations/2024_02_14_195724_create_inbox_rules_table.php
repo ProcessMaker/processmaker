@@ -20,8 +20,9 @@ return new class extends Migration {
             $table->integer('process_request_token_id')->nullable();
             $table->boolean('mark_as_priority')->default(false);
             $table->integer('reassign_to_user_id')->nullable();
-            $table->boolean('fill_data')->default(false);
-            $table->json('submit_data')->nullable();
+            $table->boolean('make_draft')->default(false);
+            $table->boolean('submit_data')->default(false);
+            $table->json('data')->nullable();
             $table->timestamps();
         });
     }
