@@ -15,6 +15,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
 use ProcessMaker\Package\Cdata\Http\Controllers\Api\CdataController;
 use ProcessMaker\Package\PackagePmBlocks\Http\Controllers\Api\PmBlockController;
 use ProcessMaker\PackageHelper;
@@ -52,6 +53,7 @@ class ModelerController extends Controller
         asort($screenTypes);
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
         $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
+        $isPackageAiInstalled = hasPackage('package-ai');
 
         // For create script modal in modeler
         $scriptExecutors = ScriptExecutor::list();
@@ -61,6 +63,8 @@ class ModelerController extends Controller
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
+
+        $runAsUserDefault = User::where('is_administrator', true)->first();
 
         return view('processes.modeler.index', [
             'process' => $process->append('notifications', 'task_notifications'),
@@ -77,6 +81,9 @@ class ModelerController extends Controller
             'countScreenCategories' => $countScreenCategories,
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
+            'isPackageAiInstalled' => $isPackageAiInstalled,
+            'isAiGenerated' => request()->query('ai'),
+            'runAsUserDefault' => $runAsUserDefault,
         ]);
     }
 

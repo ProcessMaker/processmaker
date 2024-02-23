@@ -14,8 +14,11 @@ import EllipsisMenu from "./EllipsisMenu";
 import EnterPasswordModal from "../../processes/import/components/EnterPasswordModal.vue";
 import FileUploadButton from "./FileUploadButton";
 import FormErrorsMixin from "./FormErrorsMixin";
+import AssetRedirectMixin from "./AssetRedirectMixin";
 import IconSelector from "./IconSelector";
+import IconDropdown from "./IconDropdown";
 import Modal from "./Modal";
+import ModalSaveVersion from "./ModalSaveVersion.vue";
 import PmqlInput from "./PmqlInput";
 import PTab from "./PTab";
 import PTabs from "./PTabs";
@@ -41,6 +44,15 @@ import DecisionTableNavigationMixin from "./decisionTableNavigation";
 import CreateTemplateModal from "../templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../pm-blocks/CreatePmBlockModal.vue";
 import TasksHome from "../../tasks/components/TasksHome.vue";
+import RequestsListing from "../../requests/components/RequestsListing.vue";
+import FilterTable from "./FilterTable.vue";
+import TasksList from '../../tasks/components/TasksList';
+import apiDataLoading from '../common/mixins/apiDataLoading';
+import datatableMixin from '../common/mixins/datatable';
+import DataLoading from '../../components/common/DataLoading';
+import AvatarImage from '../../components/AvatarImage';
+import FilterTableBodyMixin from "./FilterTableBodyMixin";
+import PaginationTable from "./PaginationTable.vue";
 
 export {
   AddToProjectModal,
@@ -64,8 +76,11 @@ export {
   EnterPasswordModal,
   FileUploadButton,
   FormErrorsMixin,
+  AssetRedirectMixin,
   IconSelector,
+  IconDropdown,
   Modal,
+  ModalSaveVersion,
   PmqlInput,
   ProjectSelect,
   PTab,
@@ -86,4 +101,13 @@ export {
   ScreenNavigationMixin,
   ScriptNavigationMixin,
   TasksHome,
+  RequestsListing,
+  FilterTable,
+  TasksList,
+  apiDataLoading,
+  datatableMixin,
+  DataLoading,
+  AvatarImage,
+  FilterTableBodyMixin,
+  PaginationTable,
 };

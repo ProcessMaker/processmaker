@@ -59,15 +59,20 @@
                           :errors="errors.projects">
                         </project-select>
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
+                            <label class="typo__label">{{__('Run Script As')}}<small class="ml-1">*</small></label>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
                             </select-user>
                             <div class="invalid-feedback" role="alert" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                         </div>
-
+                        @php
+                            $scriptExecutorsLang = [];
+                            foreach ($scriptExecutors as $key => $value) {
+                                $scriptExecutorsLang[$key] = $value["language"] . " - " . $value["title"];
+                            }
+                        @endphp
                         <div class="form-group">
                             {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
-                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
+                            {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutorsLang, null, ['class'=>
                             'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
                             \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
                             <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
@@ -179,7 +184,9 @@
             });
           },
           onClose() {
-            window.location.href = '/designer/scripts';
+            const queryParams = new URLSearchParams(window.location.search);
+            const projectId = queryParams.get("project_id");
+            window.location.href = projectId ? `/designer/projects/${projectId}`: '/designer/scripts';
           },
           onUpdate() {
             this.resetErrors();

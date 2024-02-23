@@ -567,6 +567,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             where('process_collaboration_id', $instance->process_collaboration_id)
             ->pluck('id')
             ->toArray();
+
         return $ids;
     }
 
@@ -610,6 +611,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
 
             return [
                 'id' => $request->uuid,
+                'request_id' => $request->getKey(),
                 'process_version_id' => $request->process_version_id,
                 'callable_id' => $request->callable_id,
                 'collaboration_uuid' => $request->collaboration_uuid,
@@ -698,6 +700,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
             $accessToken = Cache::remember('script-runner-' . $user->id, $expires, function () use ($user) {
                 $user->removeOldRunScriptTokens();
                 $token = new GenerateAccessToken($user);
+
                 return $token->getToken();
             });
             $environmentVariables['API_TOKEN'] = $accessToken;

@@ -7,6 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessTrait;
 
 class ProcessTemplates extends Template
@@ -14,6 +15,7 @@ class ProcessTemplates extends Template
     use HasFactory;
     use HasCategories;
     use ProcessTrait;
+    use HideSystemResources;
 
     protected $table = 'process_templates';
 

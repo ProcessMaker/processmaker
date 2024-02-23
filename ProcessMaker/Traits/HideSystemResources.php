@@ -107,9 +107,14 @@ trait HideSystemResources
                 $query->where('is_system', false);
             });
         } elseif (static::class === ProcessTemplates::class) {
-            return $query->where('process_templates.is_system', false);
+            return $query->where('process_templates.is_system', false)
+                ->when(Schema::hasColumn('process_templates', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                });
         } elseif (static::class === ScriptExecutor::class) {
             return $query->where('is_system', false);
+        } elseif (static::class === 'ProcessMaker\Plugins\Collections\Models\Collection') {
+            return $query->whereNull('collections.asset_type');
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

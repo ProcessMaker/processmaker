@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +13,12 @@ use ProcessMaker\Events\UserGroupMembershipUpdated;
 use ProcessMaker\Events\UserRestored;
 use ProcessMaker\Events\UserUpdated;
 use ProcessMaker\Exception\ReferentialIntegrityException;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
 use ProcessMaker\Models\User;
+use ProcessMaker\TwoFactorAuthentication;
 
 class UserController extends Controller
 {
@@ -167,9 +170,19 @@ class UserController extends Controller
 
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
 
         $user->fill($fields);
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
+            }
+        }
         $user->setTimezoneAttribute($request->input('timezone', ''));
         $user->saveOrFail();
         // Register the Event
@@ -208,7 +221,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (!Auth::user()->can('view', $user)) {
+        if (!Auth::user()->can('view', $user) && !Auth::user()->can('create-projects')) {
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
@@ -301,9 +314,19 @@ class UserController extends Controller
         $fields = $request->json()->all();
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
+            $fields['password_changed_at'] = Carbon::now()->toDateTimeString();
+
+            // Remove login error message related to password expired if exists
+            session()->forget('login-error');
         }
         $original = $user->getOriginal();
         $user->fill($fields);
+        if (array_key_exists('cell', $fields)) {
+            $response = $this->validateCellPhoneNumber($user, $fields['cell']);
+            if ($response) {
+                return $response;
+            }
+        }
         if (Auth::user()->is_administrator && $request->has('is_administrator')) {
             // user must be an admin to make another user an admin
             $user->is_administrator = $request->get('is_administrator');
@@ -319,6 +342,35 @@ class UserController extends Controller
         }
 
         return response([], 204);
+    }
+
+    /**
+     * Validate the phone number for SMS two-factor authentication.
+     *
+     * @param User $user User to validate
+     * @param mixed $number Number to validate
+     */
+    private function validateCellPhoneNumber(User $user, $number)
+    {
+        $methods = $user->getValid2FAPreferences();
+        $hasSMS2FA = in_array(TwoFactorAuthentication::SMS, $methods);
+        $isValid = !$hasSMS2FA || preg_match('/^[+\.0-9x\)\(\-\s\/]+$/', $number);
+        if (!$isValid) {
+            return response([
+                'message' => __(
+                    'A valid Cell phone number is required for SMS two-factor authentication.'
+                ),
+                'errors' => [
+                    'cell' => [
+                        __(
+                            'A valid Cell phone number is required for SMS two-factor authentication.'
+                        ),
+                    ],
+                ],
+            ], 422);
+        }
+
+        return false;
     }
 
     /**
@@ -484,7 +536,7 @@ class UserController extends Controller
      * @param User $user
      * @param Request $request
      *
-     * @throws \Exception
+     * @throws \Exception|\Throwable
      */
     private function uploadAvatar(User $user, Request $request)
     {
@@ -496,8 +548,13 @@ class UserController extends Controller
             return;
         }
 
+        // A bool value of false here set for the user's avatar indicates we're clearing
+        // the avatar both by deleting the image itself from the filesystem and emptying
+        // the "avatar" column for this user in the database
         if ($data['avatar'] === false) {
             $user->clearMediaCollection(User::COLLECTION_PROFILE);
+            $user->setAttribute('avatar', '');
+            $user->save();
 
             return;
         }
@@ -629,5 +686,75 @@ class UserController extends Controller
 
         // return $deletedUsers;
         return new ApiCollection($response);
+    }
+
+    /**
+     * Get filter configuration.
+     *
+     * @param string $name
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/users/get_filter_configuration/{name}",
+     *     summary="Get filter configuration by name",
+     *     operationId="getFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         in="path",
+     *         name="name",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function getFilterConfiguration(String $name, Request $request)
+    {
+        $filter = SaveSession::getConfigFilter($name, $request->user());
+
+        return response(['data' => $filter], 200);
+    }
+
+    /**
+     * Store filter configuration.
+     *
+     * @param string $name
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/users/store_filter_configuration/{name}",
+     *     summary="Store filter configuration by name",
+     *     operationId="storeFilterConfiguration",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         in="path",
+     *         name="name",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     * )
+     */
+    public function storeFilterConfiguration(String $name, Request $request)
+    {
+        $request->json()->all();
+        $filter = SaveSession::setConfigFilter($name, $request->user(), $request->json()->all());
+
+        return response(['data' => $filter], 200);
     }
 }

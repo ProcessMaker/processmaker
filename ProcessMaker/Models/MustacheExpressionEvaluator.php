@@ -13,9 +13,9 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
 {
     private $engine;
 
-    public function __construct()
+    public function __construct(array $options = [])
     {
-        $this->engine = new Mustache_Engine();
+        $this->engine = new Mustache_Engine($options);
     }
 
     /**
@@ -23,7 +23,7 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
      * is returned
      *
      * @param string $template
-     * @param string $data
+     * @param array $data
      * @return string
      */
     public function render($template, $data)
@@ -35,5 +35,10 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
         }
 
         return $result;
+    }
+
+    public function getEngine(): Mustache_Engine
+    {
+        return $this->engine;
     }
 }

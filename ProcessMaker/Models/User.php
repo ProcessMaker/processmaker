@@ -2,18 +2,20 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Laravel\Passport\HasApiTokens;
 use ProcessMaker\Models\EmptyModel;
 use ProcessMaker\Notifications\ResetPassword as ResetPasswordNotification;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
-use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\HideSystemResources;
@@ -73,7 +75,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="expires_at", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="remember_token", type="string"),
-     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "SCHEDULED", "OUT_OF_OFFICE"}),
+     *   @OA\Property(property="status",type="string",enum={"ACTIVE","INACTIVE","SCHEDULED","OUT_OF_OFFICE","BLOCKED"}),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
@@ -122,6 +124,9 @@ class User extends Authenticatable implements HasMedia
         'manager_id',
         'schedule',
         'force_change_password',
+        'password_changed_at',
+        'connected_accounts',
+        'preferences_2fa',
     ];
 
     protected $appends = [
@@ -132,7 +137,9 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool',
         'meta' => 'object',
         'active_at' => 'datetime',
+        'loggedin_at' => 'datetime',
         'schedule' => 'array',
+        'preferences_2fa' => 'array',
     ];
 
     /**
@@ -169,7 +176,7 @@ class User extends Authenticatable implements HasMedia
             'phone' /*******/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' /********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
+            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED,BLOCKED'],
             'password' /****/ => static::passwordRules($existing),
         ];
     }
@@ -183,13 +190,28 @@ class User extends Authenticatable implements HasMedia
      */
     public static function passwordRules(self $existing = null)
     {
-        return array_filter([
+        // Mandatory policies
+        $passwordPolicies = [
             'required',
             $existing ? 'sometimes' : '',
-            'min:8',
-            new StringHasNumberOrSpecialCharacter(),
-            new StringHasAtLeastOneUpperCaseCharacter(),
-        ]);
+        ];
+        // Configurable policies
+        $passwordRules = Password::min((int) config('password-policies.minimum_length', 8));
+        if (config('password-policies.maximum_length', false)) {
+            $passwordPolicies[] = 'max:' . config('password-policies.maximum_length');
+        }
+        if (config('password-policies.numbers', true)) {
+            $passwordRules->numbers();
+        }
+        if (config('password-policies.uppercase', true)) {
+            $passwordPolicies[] = new StringHasAtLeastOneUpperCaseCharacter();
+        }
+        if (config('password-policies.special', true)) {
+            $passwordRules->symbols();
+        }
+        $passwordPolicies[] = $passwordRules;
+
+        return $passwordPolicies;
     }
 
     /**
@@ -495,5 +517,46 @@ class User extends Authenticatable implements HasMedia
             ->where('name', 'script-runner')
             ->where('created_at', '<', now()->subWeek())
             ->delete();
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    public function getValid2FAPreferences(): array
+    {
+        // Get global and user values
+        $global2FAEnabled = config('password-policies.2fa_method', []);
+        $user2FAEnabled = !is_null($this->preferences_2fa) ? $this->preferences_2fa : [];
+
+        // Get valid values
+        $aux = array_intersect($global2FAEnabled, $user2FAEnabled);
+
+        return !empty($aux) ? array_values($aux) : $global2FAEnabled;
+    }
+
+    public function in2FAGroupOrIndependent()
+    {
+        $userGroups = $this->groups;
+        $groupCount = $userGroups->count();
+
+        if ($groupCount === 0) {
+            return true;
+        }
+
+        $groupsWith2fa = $userGroups->where('enabled_2fa', true);
+
+        // Check if the only group has 2fa enabled, if so, ask for 2fa
+        $hasSingleGroupWith2fa = $groupCount === 1 && $groupsWith2fa->count() === 1;
+        // Check if at least one group has 2fa enabled, if so, ask for 2fa
+        $hasMultipleGroupsWithAtLeastOne2fa = $groupCount > 1 && $groupsWith2fa->count() > 0;
+        // Check if all groups don't have 2fa enabled, if so, ask for 2fa if the 2fa setting is enabled
+        $independent = $groupCount === 0;
+
+        if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $independent) {
+            return true;
+        }
+        return false;
     }
 }

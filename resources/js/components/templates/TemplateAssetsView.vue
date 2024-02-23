@@ -1,19 +1,32 @@
 <template>
-  <div id="importProcess" class="container mb-3" v-cloak>
+  <div
+    v-cloak
+    id="importProcess"
+    class="container mb-3"
+  >
     <div class="card p-4">
       <div class="text-left">
-        <h4 class="pb-4 mb-0">{{ title() }}{{  name }}</h4>
-        <p class="mb-0"><span class="fw-semibold">{{ boldSubtitle() }}</span>
-          {{ subtitle() }}</p>
-        <h4 class="py-4">Choose what to do with the assets:</h4>
+        <h4 class="pb-4 mb-0">
+          {{ title() }}{{ name }}
+        </h4>
+        <p class="mb-0">
+          <span class="fw-semibold">{{ boldSubtitle() }}</span>
+          {{ subtitle() }}
+        </p>
+        <h4 class="py-4">
+          {{ $t("Choose what to do with the assets:") }}
+        </h4>
         <ul class="asset-options list-unstyled">
-          <li><span class="fw-semibold text-primary">Update:</span> {{ updateAsset() }}</li>
-          <li><span class="fw-semibold text-primary">Keep Previous:</span> {{ keepAsset() }}</li>
-          <li><span class="fw-semibold text-primary">Duplicate:</span> {{ duplicateAsset() }}</li>
+          <li><span class="fw-semibold text-primary">{{ $t("Update:") }}</span> {{ updateAsset() }}</li>
+          <li><span class="fw-semibold text-primary">{{ $t("Keep Previous:") }}</span> {{ keepAsset() }}</li>
+          <li><span class="fw-semibold text-primary">{{ $t("Duplicate:") }}</span> {{ duplicateAsset() }}</li>
         </ul>
       </div>
       <div>
-        <template-asset-table :assets="templateAssets" @assetChanged="updateAssets"/>
+        <template-asset-table
+          :assets="templateAssets"
+          @assetChanged="updateAssets"
+        />
       </div>
       <div
         class="card-footer bg-light text-right pr-0"
@@ -29,18 +42,17 @@
     </div>
     <asset-loading-modal
       ref="assetLoadingModal"
-      :templateName="name"
+      :template-name="name"
       @submitAssets="submitAssets"
-    >
-    </asset-loading-modal>
+    />
     <asset-confirmation-modal
       ref="assetConfirmationModal"
-      :templateName="name"
-      :submitResponse="submitResponse"
-      :postComplete="postComplete"
-      :processName="processName"
-    >
-    </asset-confirmation-modal>
+      :template-name="name"
+      :submit-response="submitResponse"
+      :post-complete="postComplete"
+      :process-name="processName"
+      :redirect-to="redirectTo"
+    />
   </div>
 </template>
 
@@ -55,7 +67,33 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: { TemplateAssetTable, AssetConfirmationModal, AssetLoadingModal },
   mixins: [uniqIdsMixin],
-  props: ['assets', 'name', 'responseId', 'request'],
+  props: {
+    assets: {
+      type: Array,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    responseId: {
+      type: String,
+      required: true,
+    },
+    request: {
+      type: Object,
+      required: true,
+    },
+    redirectTo: {
+      type: [String, null],
+      default: null,
+    },
+    wizardTemplateUuid: {
+      type: String,
+      required: false,
+      default: null,
+    },
+  },
   data() {
     return {
       templateAssets: [],
@@ -66,8 +104,6 @@ export default {
       postComplete: false,
       processName: "",
     };
-  },
-  computed: {
   },
   watch: {
     assets() {
@@ -86,20 +122,26 @@ export default {
       this.$refs.assetLoadingModal.show();
     },
     submitAssets() {
-      let formData = new FormData();
-      formData.append("id", this.$root.responseId);
-      formData.append("request", this.request);
+      const formData = new FormData();
+      formData.append("id", this.responseId);
+      formData.append("request", JSON.stringify(this.request));
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
-      ProcessMaker.apiClient.post("/template/create/" + this.assetType + "/" + this.$root.responseId, formData)
-        .then(response => {
+      if (this.wizardTemplateUuid !== null) {
+        formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
+      }
+      ProcessMaker.apiClient.post(`/template/create/${this.assetType}/${this.responseId}`, formData)
+        .then((response) => {
           this.$nextTick(() => {
             this.$refs.assetLoadingModal.close();
           });
+          // Remove the state from local storage.
+          localStorage.removeItem("templateAssetsState");
+
           this.processName = response.data.processName;
           this.submitResponse = response.data;
           this.postComplete = true;
           this.$refs.assetConfirmationModal.show();
-        }).catch(error => {
+        }).catch((error) => {
           const message = error.response?.data?.error;
           ProcessMaker.alert(this.$t(message), "danger");
         });
@@ -123,9 +165,7 @@ export default {
       return this.$t("A new blank asset will be created for the new process, without modifying the previously existing one.");
     },
     updateAssets(assets) {
-      const formattedAssets = assets.reduce((accumulator, group) => {
-        return accumulator.concat(group.items);
-      }, []);
+      const formattedAssets = assets.reduce((accumulator, group) => accumulator.concat(group.items), []);
 
       this.updatedAssets = formattedAssets;
     },
@@ -133,12 +173,12 @@ export default {
 };
 </script>
 
- <style type="text/css" scoped>
-     [v-cloak] {
-         display: none;
-     }
+<style type="text/css" scoped>
+  [v-cloak] {
+      display: none;
+  }
 
-     strong {
-         font-weight: 700;
-     }
- </style>
+  strong {
+      font-weight: 700;
+  }
+</style>

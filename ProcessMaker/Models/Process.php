@@ -47,6 +47,7 @@ use ProcessMaker\Traits\ProjectAssetTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Throwable;
 
 /**
@@ -58,6 +59,7 @@ use Throwable;
  * @property string $bpmn
  * @property string $description
  * @property string $name
+ * @property string $case_title
  * @property string $status
  * @property array $start_events
  * @property int $manager_id
@@ -68,6 +70,7 @@ use Throwable;
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="case_title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "ARCHIVED"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
@@ -381,6 +384,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'status' => 'in:ACTIVE,INACTIVE,ARCHIVED',
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
+            'case_title' => 'nullable|max:200',
         ];
     }
 
@@ -448,6 +452,29 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function scopeArchived($query)
     {
         return $query->where('processes.status', 'ARCHIVED');
+    }
+
+    /**
+     * Scope a query to include a specific category
+     */
+    public function scopeProcessCategory($query, int $id)
+    {
+        return $query->whereHas('categories', function ($query) use ($id) {
+            $query->where('process_categories.id', $id);
+        });
+    }
+
+    /**
+     * Scope a query to include a specific category
+     * @param string $status
+     */
+    public function scopeCategoryStatus($query, $status)
+    {
+        if (!empty($status)) {
+            return $query->whereHas('categories', function ($query) use ($status) {
+                $query->where('process_categories.status', $status);
+            });
+        }
     }
 
     public function getCollaborations()
@@ -1575,6 +1602,26 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * PMQL value alias for owner field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    private function valueAliasOwner($value, $expression)
+    {
+        $user = User::where('username', $value)->get()->first();
+
+        if ($user) {
+            return function ($query) use ($user, $expression) {
+                $query->where('processes.user_id', $expression->operator, $user->id);
+            };
+        } else {
+            throw new PmqlMethodException('owner', 'The specified owner username does not exist.');
+        }
+    }
+
+    /**
      * PMQL value alias for process field
      *
      * @param string $value
@@ -1668,8 +1715,10 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             $query->where('processes.name', 'like', $filter)
                  ->orWhere('processes.description', 'like', $filter)
                  ->orWhere('processes.status', '=', $filterStr)
-                 ->orWhere('user.firstname', 'like', $filter)
-                 ->orWhere('user.lastname', 'like', $filter)
+                 ->orWhereHas('user', function ($query) use ($filter) {
+                    $query->where('firstname', 'like', $filter)
+                        ->orWhere('lastname', 'like', $filter);
+                })
                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
                      $qry->select('assignable_id')
                          ->from('category_assignments')
@@ -1691,5 +1740,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function pmBlock()
     {
         return $this->belongsTo('ProcessMaker\Package\PackagePmBlocks\Models\PmBlock', 'id', 'editing_process_id');
+    }
+
+    /**
+     * This function copies original image and converts into a thumbnail
+     */
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+              ->width(1024)
+              ->height(480)
+              ->sharpen(10);
     }
 }

@@ -39,8 +39,12 @@ use Throwable;
  * @property string $process_collaboration_id
  * @property string $participant_id
  * @property string $name
+ * @property string $case_title
+ * @property int $case_title_formatted
+ * @property string $user_viewed_at
+ * @property int $case_number
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property string $collaboration_uuid
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
@@ -59,6 +63,10 @@ use Throwable;
  *   @OA\Property(property="data", type="object"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED", "ERROR", "CANCELED"}),
  *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="case_title", type="string"),
+ *   @OA\Property(property="case_title_formatted", type="string"),
+ *   @OA\Property(property="user_viewed_at", type="string"),
+ *   @OA\Property(property="case_number", type="integer"),
  *   @OA\Property(property="process_id", type="integer"),
  *   @OA\Property(property="process", type="object"),
  * ),
@@ -152,6 +160,8 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         'process',
         'participants',
     ];
+
+    const DEFAULT_CASE_TITLE = 'Case #{{_request.case_number}}';
 
     /**
      * Determine whether the item should be indexed.
@@ -698,7 +708,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @return callable
      */
-    private function valueAliasParticipant($value, $expression)
+    public function valueAliasParticipant($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
 
@@ -713,6 +723,26 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         } else {
             throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
         }
+    }
+
+    /**
+     * PMQL value alias for participant field by fullname.
+     * @param string $value
+     * @return callable
+     */
+    public function valueAliasParticipantByFullName($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $query->whereIn('id', function ($subquery) use ($value, $expression) {
+                $subquery->select('process_request_id')->from('process_request_tokens')
+                    ->whereIn('user_id', function ($subquery) use ($value, $expression) {
+                        $subquery->select('id')
+                            ->from('users')
+                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . " ?", [$value]);
+                    })
+                    ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+            });
+        };
     }
 
     /**
@@ -919,5 +949,85 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->limit(10)
             ->get()
             ->toArray();
+    }
+
+    /**
+     * Get the case title from the process
+     *
+     * @return string
+     */
+    public function getCaseTitleFromProcess(): string
+    {
+        // check if $this->process relation is loaded
+        if ($this->process && $this->process instanceof Process) {
+            $caseTitle = $this->process->case_title;
+        } else {
+            $caseTitle = $this->process()->select('case_title')->first()->case_title;
+        }
+
+        return $caseTitle ?: self::DEFAULT_CASE_TITLE;
+    }
+
+    /**
+     * Evaluate the case title mustache expression
+     *
+     * @param string $mustacheTitle
+     * @param array $data
+     * @param bool $formatted
+     * @return string
+     */
+    public function evaluateCaseTitle(string $mustacheTitle, array $data, bool $formatted = false): string
+    {
+        if ($formatted) {
+            $mustache = new MustacheExpressionEvaluator([
+                'escape' => function ($value) {
+                    return '<b>' .
+                        htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
+                        '</b>';
+                },
+            ]);
+            $title = $mustache->render($mustacheTitle, $data);
+            // multi-byte 200 characters limit
+            $titleParts = preg_split('/(<b>|<\/b>)/', $title, -1, PREG_SPLIT_DELIM_CAPTURE);
+            $title = '';
+            $size = 200;
+            $len = 0;
+            foreach ($titleParts as $i => $part) {
+                if ($part === '<b>' || $part === '</b>') {
+                    $title .= $part;
+                    continue;
+                }
+                if ($len + mb_strlen($part) >= $size) {
+                    $part = mb_substr($part, 0, $size - $len);
+                    $title .= $part;
+                    $nextPart = $titleParts[$i + 1] ?? '';
+                    if ($nextPart === '</b>') {
+                        $title .= $nextPart;
+                    }
+                    break;
+                }
+                $title .= $part;
+                $len += mb_strlen($part);
+            }
+        } else {
+            $mustache = new MustacheExpressionEvaluator();
+            $title = $mustache->render($mustacheTitle, $data);
+            // multi-byte 200 characters limit
+            $title = mb_substr($title, 0, 200);
+        }
+
+        return $title;
+    }
+
+    public function isSystem()
+    {
+        $systemCategories = ProcessCategory::where('is_system', true)->pluck('id');
+
+        return DB::table('category_assignments')
+            ->where('assignable_type', Process::class)
+            ->where('assignable_id', $this->process_id)
+            ->where('category_type', ProcessCategory::class)
+            ->whereIn('category_id', $systemCategories)
+            ->exists();
     }
 }

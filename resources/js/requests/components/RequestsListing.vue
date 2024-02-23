@@ -1,85 +1,106 @@
 <template>
-  <div class="data-table">
+  <div>
+    <div
+      v-show="true"
+    >
+      <filter-table
+        :headers="tableHeaders"
+        :data="data"
+        :unread="unreadColumnName"
+        :loading="shouldShowLoader"
+        @table-row-click="handleRowClick"
+      >
+        <!-- Slot Table Header -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
+          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
+        </template>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
+            <PMColumnFilterPopover v-if="column.sortable" 
+                                   :key="index" 
+                                   :id="'pm-table-column-'+index" 
+                                   :type="getTypeColumnFilter(column.field)"
+                                   :value="column.field"
+                                   :format="getFormat(column)"
+                                   :formatRange="getFormatRange(column)"
+                                   :operators="getOperators(column)"
+                                   :viewConfig="getViewConfigFilter()"
+                                   :container="''"
+                                   :boundary="'viewport'"
+                                   :hideSortingButtons="column.hideSortingButtons"
+                                   @onChangeSort="onChangeSort($event, column.field)"
+                                   @onApply="onApply($event, column.field)"
+                                   @onClear="onClear(column.field)"
+                                   @onUpdate="onUpdate($event, column.field)">
+            </PMColumnFilterPopover>
+        </template>
+        <!-- Slot Table Body -->
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in tableHeaders"
+            :key="colIndex"
+          >
+            <template v-if="containsHTML(getNestedPropertyValue(row, header))">
+              <div
+                :id="`element-${rowIndex}-${colIndex}`"
+                :class="{ 'pm-table-truncate': header.truncate }"
+                :style="{ maxWidth: header.width + 'px' }"
+              >
+                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
+              </div>
+              <b-tooltip
+                v-if="header.truncate"
+                :target="`element-${rowIndex}-${colIndex}`"
+                custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
+              >
+                {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
+              </b-tooltip>
+            </template>
+            <template v-else>
+              <template v-if="isComponent(row[header.field])">
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template v-else>
+                <div
+                  :id="`element-${rowIndex}-${colIndex}`"
+                  :class="{ 'pm-table-truncate': header.truncate }"
+                  :style="{ maxWidth: header.width + 'px' }"
+                >
+                  {{ getNestedPropertyValue(row, header) }}
+                  <b-tooltip
+                    v-if="header.truncate"
+                    :target="`element-${rowIndex}-${colIndex}`"
+                    custom-class="pm-table-tooltip"
+                    @show="checkIfTooltipIsNeeded"
+                  >
+                    {{ getNestedPropertyValue(row, header) }}
+                  </b-tooltip>
+                </div>
+              </template>
+            </template>
+          </td>
+        </template>
+      </filter-table>
+    </div>
     <data-loading
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
+      :empty="$t('No results have been found')"
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
-    <div
-      v-show="!shouldShowLoader"
-      class="card card-body table-card"
-    >
-      <vuetable
-        :data-manager="dataManager"
-        :sort-order="sortOrder"
-        :css="css"
-        ref="vuetable"
-        :api-mode="false"
-        :fields="fields"
-        :data="data"
-        data-path="data"
-        pagination-path="meta"
-        @vuetable:pagination-data="onPaginationData"
-      >
-        <template
-          slot="ids"
-          slot-scope="props"
-        >
-          <b-link
-            class="text-nowrap"
-            :href="openRequest(props.rowData, props.rowIndex)"
-          >
-            #{{ props.rowData.id }}
-          </b-link>
-        </template>
-        <template
-          slot="name"
-          slot-scope="props"
-        >
-          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
-        </template>
-        <template
-          slot="participants"
-          slot-scope="props"
-        >
-          <avatar-image
-            v-for="participant in props.rowData.participants"
-            :key="participant.id"
-            size="25"
-            hide-name="true"
-            :input-data="participant"
-          />
-        </template>
-        <template
-          slot="actions"
-          slot-scope="props"
-        >
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                v-b-tooltip.hover
-                v-uni-aria-describedby="props.rowData.id.toString()"
-                variant="link"
-                :href="openRequest(props.rowData, props.rowIndex)"
-                :title="$t('Open Request')"
-              >
-                <i class="fas fa-caret-square-right fa-lg fa-fw" />
-              </b-btn>
-            </div>
-          </div>
-        </template>
-      </vuetable>
-      <pagination
-        ref="pagination"
-        :single="$t('Request')"
-        :plural="$t('Requests')"
-        :per-page-select-enabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-      />
-    </div>
+    <pagination-table
+        :meta="data.meta"
+        @page-change="changePage"
+    />
   </div>
 </template>
 
@@ -88,17 +109,30 @@ import Vue from "vue";
 import moment from "moment";
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../components/common/mixins/datatable";
-import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import ListMixin from "./ListMixin";
+import { FilterTable } from "../../components/shared";
+import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
+import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
+import paginationTable from "../../components/shared/PaginationTable.vue";
+import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
+import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
+import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin],
+  components: {
+    PMColumnFilterPopover,
+    paginationTable,
+    PMColumnFilterIconAsc,
+    PMColumnFilterIconDesc
+  },
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ListMixin, PMColumnFilterPopoverCommonMixin, FilterTableBodyMixin],
   props: {
     filter: {},
     columns: {},
@@ -122,6 +156,9 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
+      tableHeaders: [],
+      unreadColumnName: "user_viewed_at",
     };
   },
   computed: {
@@ -134,11 +171,14 @@ export default {
     },
   },
   mounted() {
+    this.getParticipants("");
     this.setupColumns();
+    this.getFilterConfiguration();
   },
   methods: {
     setupColumns() {
       const columns = this.getColumns();
+      this.tableHeaders = this.getColumns();
 
       columns.forEach((column) => {
         const field = {
@@ -156,8 +196,11 @@ export default {
           case "name":
             field.name = "__slot:name";
             break;
+          case "case_title":
+            field.name = "__slot:case_title";
+            break;
           default:
-            field.name = column.field;
+            field.name = column.name || column.field;
         }
 
         if (!field.field) {
@@ -183,11 +226,6 @@ export default {
         name: "__slot:actions",
         title: "",
       });
-
-      // this is needed because fields in vuetable2 are not reactive
-      this.$nextTick(() => {
-        this.$refs.vuetable.normalizeFields();
-      });
     },
     getColumns() {
       if (this.$props.columns) {
@@ -195,28 +233,54 @@ export default {
       }
       return [
         {
-          label: "#",
-          field: "id",
+          label: "Case #",
+          field: "case_number",
           sortable: true,
           default: true,
+          width: 80,
         },
         {
-          label: "Name",
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220,
+        },
+        {
+          label: "Process",
           field: "name",
           sortable: true,
           default: true,
+          width: 220,
+          truncate: true,
+        },
+        {
+          label: "Task",
+          field: "active_tasks",
+          sortable: false,
+          default: true,
+          width: 140,
+          truncate: true,
+          tooltip: this.$t("This column can not be sorted or filtered."),
+        },
+        {
+          label: "Participants",
+          field: "participants",
+          sortable: true,
+          default: true,
+          width: 160,
+          truncate: true,
+          filter_subject: { type: 'ParticipantsFullName' },
+          hideSortingButtons: true,
         },
         {
           label: "Status",
           field: "status",
           sortable: true,
           default: true,
-        },
-        {
-          label: "Participants",
-          field: "participants",
-          sortable: false,
-          default: true,
+          width: 100,
+          filter_subject: { type: 'Status' },
         },
         {
           label: "Started",
@@ -224,6 +288,7 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
+          width: 160,
         },
         {
           label: "Completed",
@@ -231,11 +296,15 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
+          width: 160,
         },
       ];
     },
     openRequest(data, index) {
       return `/requests/${data.id}`;
+    },
+    openTask(task) {
+      return `/tasks/${task.id}/edit`;
     },
     formatStatus(status) {
       let color = "success",
@@ -259,14 +328,52 @@ export default {
           break;
       }
       return (
-        '<i class="fas fa-circle text-' +
+        '<span class="badge badge-' +
         color +
-        '"></i> <span>' +
+        ' status-' +
+        color +
+        '">' +
         this.$t(label) +
         "</span>"
       );
     },
-    transform(data) {
+    formatActiveTasks(value) {
+      return value.map((task) => {
+        return `
+          <a href="${this.openTask(task)}">
+            ${task.element_name}
+          </a>
+        `;
+      }).join('<br/>');
+      return htmlString;
+    },
+    formatCaseNumber(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         # ${value.case_number}
+      </a>`;
+    },
+    formatCaseTitle(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         ${value.case_title_formatted || value.case_title || ""}
+      </a>`;
+    },
+    formatParticipants(participants) {
+      return {
+        component: "AvatarImage",
+        props: {
+          size: "25",
+          "input-data": participants,
+          "hide-name": false,
+          vertical: true,
+        },
+      };
+    },
+    transform(dataInput) {
+      const data = _.cloneDeep(dataInput);
       // Clean up fields for meta pagination so vue table pagination can understand
       data.meta.last_page = data.meta.total_pages;
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
@@ -274,11 +381,17 @@ export default {
       data.data = this.jsonRows(data.data);
       for (let record of data.data) {
         //format Status
+        record["case_number"] = this.formatCaseNumber(record);
+        record["case_title"] = this.formatCaseTitle(record);
+        if (record["active_tasks"]) {
+          record["active_tasks"] = this.formatActiveTasks(record["active_tasks"]);
+        }
         record["status"] = this.formatStatus(record["status"]);
+        record["participants"] = this.formatParticipants(record["participants"]);
       }
       return data;
     },
-    fetch() {
+    fetch(navigateToFirstPage = false) {
       Vue.nextTick(() => {
         if (this.cancelToken) {
           this.cancelToken();
@@ -287,32 +400,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        let pmql = '';
-
-        if (this.pmql !== undefined) {
-          pmql = this.pmql;
-        }
-
-        let filter = this.filter;
-
-        if (filter && filter.length) {
-          if (filter.isPMQL()) {
-            pmql = `(${pmql}) and (${filter})`;
-            filter = '';
-          }
-        }
-
-        if (this.previousFilter !== filter) {
-          this.page = 1;
-        }
-
-        this.previousFilter = filter;
-
-        if (this.previousPmql !== pmql) {
-          this.page = 1;
-        }
-
-        this.previousPmql = pmql;
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -321,7 +409,7 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
-            "&include=process,participants,data" +
+            "&include=process,participants,activeTasks,data" +
             "&pmql=" +
             encodeURIComponent(pmql) +
             "&filter=" +
@@ -330,7 +418,8 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams,
+            this.additionalParams + 
+            advancedFilter,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -340,6 +429,7 @@ export default {
           .then((response) => {
             this.data = this.transform(response.data);
           }).catch((error) => {
+            this.data = [];
             if (error.code === "ERR_CANCELED") {
               return;
             }
@@ -353,8 +443,98 @@ export default {
           });
       });
     },
-  },
+    buildPmqlAndFilter(navigateToFirstPage) {
+      let pmql = '';
+
+      if (this.pmql !== undefined) {
+        pmql = this.pmql;
+      }
+
+      let filter = this.filter;
+
+      if (filter?.length) {
+        if (filter.isPMQL()) {
+          pmql = (pmql ? `${pmql} and ` : '') + `(${filter})`;
+          filter = '';
+        }
+      }
+
+      if (this.previousFilter !== filter) {
+        this.page = 1;
+      }
+
+      this.previousFilter = filter;
+
+      if (this.previousPmql !== pmql) {
+        this.page = 1;
+      }
+
+      this.previousPmql = pmql;
+
+      const advancedFilter = this.getAdvancedFilter();
+
+      if (this.previousAdvancedFilter !== advancedFilter && navigateToFirstPage) {
+        this.page = 1;
+      }
+
+      return { pmql, filter, advancedFilter };
+
+    },
+    handleRowClick(row) {
+      window.location.href = this.openRequest(row, 1);
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @returns {Array}
+     */
+    getStatus() {
+      return [
+        {value: "In Progress", text: this.$t("In Progress")},
+        {value: "Completed", text: this.$t("Completed")},
+        {value: "Error", text: this.$t("Error")},
+        {value: "Canceled", text: this.$t("Canceled")}
+      ];
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     * @param {string} by
+     * @param {string} direction
+     */
+    setOrderByProps(by, direction) {
+      by = this.getAliasColumnForOrderBy(by);
+      this.orderBy = by;
+      this.orderDirection = direction;
+      this.sortOrder[0].sortField = by;
+      this.sortOrder[0].direction = direction;
+    },
+    sanitizeTooltip(html) {
+      let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
+      cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(/\s+/g, " ");
+
+      return cleanHtml;
+    },
+    /**
+     * This method is used in PMColumnFilterPopoverCommonMixin.js
+     */
+    filterConfiguration() {
+      return {
+        order: {
+          by: this.orderBy,
+          direction: this.orderDirection
+        },
+        type: 'requestFilter',
+      }
+    },
+  }
 };
 </script>
 <style>
+  .pm-table-ellipsis-column{
+    text-transform: uppercase;
+  }
+</style>
+<style lang="scss" scoped>
+  @import url("../../../sass/_scrollbar.scss");
 </style>

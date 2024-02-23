@@ -50,11 +50,17 @@ class ProfileController extends Controller
             }
         );
 
+        // Get global and valid 2FA preferences for the user
+        $enabled2FA = config('password-policies.2fa_enabled', false);
+        $global2FAEnabled = config('password-policies.2fa_method', []);
+        $currentUser->preferences_2fa = $currentUser->getValid2FAPreferences();
+        $is2FAEnabledForGroup = $currentUser->in2FAGroupOrIndependent();
+
         $addons = $this->getPluginAddons('edit', []);
 
         return view('profile.edit',
             compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs',
-                'status', 'addons'));
+                'status', 'enabled2FA', 'global2FAEnabled', 'is2FAEnabledForGroup', 'addons'));
     }
 
     /**

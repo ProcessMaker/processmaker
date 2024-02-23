@@ -1,8 +1,8 @@
 import { BNavbar } from "bootstrap-vue";
-import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
-import moment from "moment";
-import moment_timezone from "moment-timezone";
+import { Multiselect } from "@processmaker/vue-multiselect";
+import moment from "moment-timezone";
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import VueHtml2Canvas from "vue-html2canvas";
 import newRequestModal from "./components/requests/requestModal";
 import requestModal from "./components/requests/modal";
 import requestModalMobile from "./components/requests/modalMobile";
@@ -24,7 +24,6 @@ import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
-import VueHtml2Canvas from 'vue-html2canvas';
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -99,6 +98,13 @@ window.ProcessMaker.navbar = new Vue({
     MessageModal,
     NavbarProfile,
     newRequestModal,
+    GlobalSearch: (resolve) => {
+      if (window.ProcessMaker.globalSearchComponent) {
+        resolve(window.ProcessMaker.globalSearchComponent);
+      } else {
+        window.ProcessMaker.globalSearchComponentResolve = resolve;
+      }
+    },
   },
   data() {
     return {
@@ -241,7 +247,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
     alertLink: msgLink,
     alertShow: showValue,
     alertVariant: String(variant),
-    showLoader: showLoader,
+    showLoader,
     stayNextScreen,
     timestamp: Date.now(),
   });

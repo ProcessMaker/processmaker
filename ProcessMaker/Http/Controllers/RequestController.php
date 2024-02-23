@@ -6,8 +6,10 @@ use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use ProcessMaker\Cache\CacheRemember;
 use ProcessMaker\Events\FilesDownloaded;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Filters\SaveSession;
 use ProcessMaker\Helpers\MobileHelper;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\DataManager;
@@ -18,7 +20,10 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
+use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
+use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -56,8 +61,28 @@ class RequestController extends Controller
             ));
         }
 
+        $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
+
+        // Get default Saved search config
+        if (class_exists(SavedSearch::class)) {
+            $defaultSavedSearch = SavedSearch::firstSystemSearchFor(
+                Auth::user(),
+                SavedSearch::KEY_REQUESTS,
+            );
+            if ($defaultSavedSearch) {
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_REQUEST
+                );
+            } else {
+                $defaultColumns = null;
+            }
+        } else {
+            $defaultColumns = null;
+        }
+
         return view('requests.index', compact(
-            ['type', 'title', 'currentUser']
+            ['type', 'title', 'currentUser', 'userFilter', 'defaultColumns']
         ));
     }
 
@@ -179,6 +204,8 @@ class RequestController extends Controller
                 'errorTask',
             ));
         }
+
+        UserResourceView::setViewed(Auth::user(), $request);
 
         return view('requests.show', compact(
             'request',

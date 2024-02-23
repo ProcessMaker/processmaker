@@ -1,5 +1,5 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
@@ -25,9 +25,10 @@ import RequestChannel from "./tasks/components/ProcessRequestChannel";
 import Modal from "./components/shared/Modal";
 import AccessibilityMixin from "./components/common/mixins/accessibility";
 import PmqlInput from "./components/shared/PmqlInput.vue";
-import GlobalSearch from "./components/shared/GlobalSearch.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
+import FilterTable from "./components/shared/FilterTable.vue";
+import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -68,6 +69,7 @@ window.$ = window.jQuery = require("jquery");
 window.Vue = Vue;
 
 window.Vue.use(BootstrapVue);
+window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
@@ -75,7 +77,9 @@ if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
   window.Vue.use(Router);
 }
 window.VueMonaco = require("vue-monaco");
+
 window.ScreenBuilder = require("@processmaker/screen-builder");
+window.VueFormElements = require("@processmaker/vue-form-elements");
 
 window.VueRouter = Router;
 
@@ -86,12 +90,13 @@ window.Vue.component("monaco-editor", MonacoEditor);
 window.Vue.component("screen-select", ScreenSelect);
 window.Vue.component("pm-modal", Modal);
 window.Vue.component("pmql-input", PmqlInput);
-window.Vue.component("global-search", GlobalSearch);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
+window.Vue.component("filter-table", FilterTable);
+
 let translationsLoaded = false;
 const mdates = JSON.parse(
-  document.head.querySelector("meta[name=\"i18n-mdate\"]").content,
+  document.head.querySelector("meta[name=\"i18n-mdate\"]")?.content,
 );
 
 // Make $t available to all vue instances
@@ -178,6 +183,7 @@ window.ProcessMaker = {
 
 window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
   lng: document.documentElement.lang,
+  fallbackLng: false,
   nsSeparator: false,
   keySeparator: false,
   parseMissingKeyHandler(value) {
@@ -235,7 +241,7 @@ window.ProcessMaker.apiClient.defaults.timeout = apiTimeout;
 
 // Default alert functionality
 window.ProcessMaker.alert = function (text, variant) {
-  if ('string' === typeof text) {
+  if (typeof text === "string") {
     window.alert(text);
   }
 };
@@ -268,9 +274,9 @@ if (appUrl) {
 if (userID) {
   window.ProcessMaker.user = {
     id: userID.content,
-    datetime_format: formatDate.content,
-    calendar_format: formatDate.content,
-    timezone: timezone.content,
+    datetime_format: formatDate?.content,
+    calendar_format: formatDate?.content,
+    timezone: timezone?.content,
     fullName: userFullName?.content,
     avatar: userAvatar?.content,
   };
@@ -295,10 +301,10 @@ if (window.Processmaker && window.Processmaker.broadcasting) {
 
 if (userID) {
   // Session timeout
-  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
-  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
-  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
-  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]").content) : 1;
+  const timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]")?.content;
+  window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]")?.content));
+  window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]")?.content);
+  window.ProcessMaker.AccountTimeoutEnabled = document.head.querySelector("meta[name=\"timeout-enabled\"]") ? parseInt(document.head.querySelector("meta[name=\"timeout-enabled\"]")?.content) : 1;
   window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
   window.ProcessMaker.AccountTimeoutWorker.addEventListener("message", (e) => {
     if (e.data.method === "countdown") {

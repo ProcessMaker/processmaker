@@ -17,8 +17,10 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Models\WizardTemplate;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Summary of ProcessTemplate
@@ -247,12 +249,23 @@ class ProcessTemplate implements TemplateInterface
                 $payload['export'][$key]['attributes']['name'] = $requestData['name'];
                 $payload['export'][$key]['attributes']['description'] = $requestData['description'];
                 $payload['export'][$key]['attributes']['process_category_id'] = $requestData['process_category_id'];
+                // Store the wizard template uuid on the process to rerun the helper process
+                if (isset($requestData['wizardTemplateUuid'])) {
+                    $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
+                    $properties['wizardTemplateUuid'] = $requestData['wizardTemplateUuid'];
+                    $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+                }
+                // Store the helper process request id that initiated the process creation
+                if (isset($requestData['helperProcessRequestId'])) {
+                    $properties = json_decode($payload['export'][$key]['attributes']['properties'], true);
+                    $properties['helperProcessRequestId'] = $requestData['helperProcessRequestId'];
+                    $payload['export'][$key]['attributes']['properties'] = json_encode($properties);
+                }
 
                 $payload['export'][$key]['name'] = $requestData['name'];
                 $payload['export'][$key]['description'] = $requestData['description'];
                 $payload['export'][$key]['process_category_id'] = $requestData['process_category_id'];
 
-                // TODO:Check on ['manager_id'] when updating assets
                 if (!isset($existingAssets)) {
                     $payload['export'][$key]['process_manager_id'] = $requestData['manager_id'];
                 }
@@ -265,11 +278,15 @@ class ProcessTemplate implements TemplateInterface
         $options = new Options($postOptions);
 
         $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
+        $existingAssetsInDatabase = null;
+        $importingFromTemplate = true;
+        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
         $rootLog = $manifest[$payload['root']]->log;
         $processId = $rootLog['newId'];
 
         $process = Process::findOrFail($processId);
+
+        $this->syncLaunchpadAssets($request, $process);
 
         if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($requestData['projects'])) {
             $manifest = $this->getManifest('process', $processId);
@@ -494,6 +511,64 @@ class ProcessTemplate implements TemplateInterface
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
             return ['id' => $template->id, 'name' => $name];
+        }
+
+        return null;
+    }
+
+    /**
+     * Syncs launchpad assets from a guided template to the imported process.
+     *
+     * @param  Illuminate\Http\Request  $request
+     * @param  App\Models\Process  $process
+     * @return void
+     */
+    protected function syncLaunchpadAssets($request, $process)
+    {
+        if (empty($request->wizardTemplateUuid)) {
+            return;
+        }
+
+        // Add media collection for the imported process
+        $processMediaCollectionName = $process->uuid . '_images_carousel';
+        $process->addMediaCollection($processMediaCollectionName);
+
+        // Retrieve the guided template by UUID
+        $guidedTemplateUuid = $request->input('wizardTemplateUuid');
+        $template = WizardTemplate::where('uuid', $guidedTemplateUuid)->first();
+
+        // Get launchpad slides media from the guided template
+        $templateLaunchpadSlides = $template->getMedia($template->media_collection, function (Media $media) {
+            return $media->custom_properties['media_type'] === 'launchpadSlides';
+        });
+
+        // Iterate over each launchpad slide and add to the imported process media collection
+        foreach ($templateLaunchpadSlides as $slide) {
+            // Extract order index from file name
+            $orderIndex = $this->extractOrderIndexFromFileName($slide->getPath());
+
+            // Add media to the imported process collection
+            $media = $process->addMedia($slide->getPath())->preservingOriginal()->toMediaCollection($processMediaCollectionName);
+
+            // Set order column if available
+            if (!is_null($orderIndex)) {
+                $media->order_column = $orderIndex;
+                $media->save();
+            }
+        }
+    }
+
+    /**
+     * Extracts order index from the file name.
+     *
+     * @param string $fileName
+     * @return int|null
+     */
+    protected function extractOrderIndexFromFileName($fileName)
+    {
+        preg_match('/\d+/', basename($fileName), $matches);
+        if (!empty($matches)) {
+            return intval($matches[0]) - 1;
         }
 
         return null;

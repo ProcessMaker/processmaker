@@ -16,6 +16,7 @@ use ProcessMaker\Http\Controllers\Auth\ClientController;
 use ProcessMaker\Http\Controllers\Auth\ForgotPasswordController;
 use ProcessMaker\Http\Controllers\Auth\LoginController;
 use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
+use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
 use ProcessMaker\Http\Controllers\NotificationController;
@@ -27,14 +28,17 @@ use ProcessMaker\Http\Controllers\Process\ScreenController;
 use ProcessMaker\Http\Controllers\Process\ScriptController;
 use ProcessMaker\Http\Controllers\Process\SignalController;
 use ProcessMaker\Http\Controllers\ProcessController;
+use ProcessMaker\Http\Controllers\ProcessesCatalogueController;
 use ProcessMaker\Http\Controllers\ProfileController;
 use ProcessMaker\Http\Controllers\RequestController;
+use ProcessMaker\Http\Controllers\Saml\MetadataController;
 use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
+use ProcessMaker\Http\Middleware\NoCache;
 
-Route::middleware('auth', 'sanitize', 'force_change_password')->group(function () {
+Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::prefix('admin')->group(function () {
@@ -89,6 +93,18 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
 
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
+
+     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
+        ->name('process.browser.index')
+        ->middleware('can:view-process-catalog');
+    //------------------------------------------------------------------------------------------
+    // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
+    //------------------------------------------------------------------------------------------
+    Route::get('processes-catalogue/{process?}', function ($process = null) {
+        return redirect()->route('process.browser.index', [$process]);
+    })->name('processes.catalogue.index');
+    //------------------------------------------------------------------------------------------
+
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
     Route::get('processes/{process}/export/{page?}', [ProcessController::class, 'export'])->name('processes.export')->middleware('can:export-processes');
@@ -120,15 +136,20 @@ Route::middleware('auth', 'sanitize', 'force_change_password')->group(function (
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/{type?}', [RequestController::class, 'index'])
         ->where('type', 'all|in_progress|completed')
-        ->name('requests_by_type');
+        ->name('requests_by_type')
+        ->middleware('no-cache');
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
-    Route::get('requests', [RequestController::class, 'index'])->name('requests.index');
+    Route::get('requests', [RequestController::class, 'index'])
+        ->name('requests.index')
+        ->middleware('no-cache');
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
     Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
     Route::get('tasks/search', [TaskController::class, 'search'])->name('tasks.search');
-    Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::get('tasks', [TaskController::class, 'index'])
+        ->name('tasks.index')
+        ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 
@@ -155,6 +176,10 @@ Broadcast::routes();
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'loginWithIntendedCheck']);
 Route::get('logout', [LoginController::class, 'beforeLogout'])->name('logout');
+Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])->name('2fa');
+Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
+Route::get('2fa/send_again', [TwoFactorAuthController::class, 'sendCode'])->name('2fa.send_again');
+Route::get('2fa/auth_app_qr', [TwoFactorAuthController::class, 'displayAuthAppQr'])->name('2fa.auth_app_qr');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -175,3 +200,6 @@ Route::get('password/success', function () {
 })->name('password-success');
 
 Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.unavailable');
+
+// SAML Metadata Route
+Route::resource('/saml/metadata', MetadataController::class)->only('index');

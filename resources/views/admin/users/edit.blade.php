@@ -256,6 +256,7 @@
             userId: @json($user->id),
             image: '',
             status: @json($status),
+            global2FAEnabled: @json($global2FAEnabled),
             errors: {
               username: null,
               firstname: null,
@@ -316,6 +317,10 @@
           states() {
             return this.formatDataSelect(this.statesValues);
           },
+          state2FA() {
+            return typeof this.formData.preferences_2fa != "undefined" && this.formData.preferences_2fa != null
+                && this.formData.preferences_2fa.length > 0;
+          }
         },
         mounted() {
           let created = (new URLSearchParams(window.location.search)).get('created');
@@ -350,6 +355,9 @@
             if (this.selectedPermissions.includes(self)) {
               this.selectedPermissions.push(sibling);
             }
+            if (sibling.includes('processes') || self.includes('processes')) {
+              this.checkProcessCategoryView(sibling, self);
+            }
             Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           checkEdit(sibling, $event) {
@@ -357,6 +365,22 @@
             if (!this.selectedPermissions.includes(self)) {
               this.selectedPermissions = this.selectedPermissions.filter(function (el) {
                 return el !== sibling;
+              });
+            }
+            if (sibling.includes('processes') || self.includes('processes')) {
+              this.checkProcessCategoryView(sibling, self);
+            }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
+          },
+          checkProcessCategoryView(sibling, self) {
+            const viewProcessCategoriesPermission = 'view-process-categories';
+            if (this.selectedPermissions.includes(self)) {
+              this.selectedPermissions.push(viewProcessCategoriesPermission);
+            }
+
+            if (!this.selectedPermissions.includes(self) && !this.selectedPermissions.includes(sibling)) {
+              this.selectedPermissions = this.selectedPermissions.filter(function (el) {
+                return el !== viewProcessCategoriesPermission;
               });
             }
             Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
@@ -396,12 +420,6 @@
               delete this.formData.password;
               return true
             }
-            if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
-              this.errors.password = ['Password must be at least 8 characters']
-              this.password = ''
-              this.submitted = false
-              return false
-            }
             if (this.formData.password !== this.formData.confPassword) {
               this.errors.password = ['Passwords must match']
               this.password = ''
@@ -413,6 +431,8 @@
           profileUpdate($event) {
             this.resetErrors();
             if (!this.validatePassword()) return false;
+            if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
+              this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert(this.$t('User Updated Successfully '), 'success');

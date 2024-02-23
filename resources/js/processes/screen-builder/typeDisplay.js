@@ -1,6 +1,4 @@
-import Vue from "vue";
-import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import { renderer, FormBuilderControls } from "@processmaker/screen-builder";
+import { renderer, FormBuilderControls, globalProperties } from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
 
 const {
@@ -11,6 +9,7 @@ const TableControl = FormBuilderControls.find((control) => control.rendererBindi
 const RichTextControl = FormBuilderControls.find((control) => control.rendererBinding === "FormHtmlEditor");
 const FormRecordList = FormBuilderControls.find((control) => control.rendererBinding === "FormRecordList");
 const FormImage = FormBuilderControls.find((control) => control.rendererBinding === "FormImage");
+const FormAvatar = FormBuilderControls.find((control) => control.rendererBinding === "FormAvatar");
 const FormLoop = FormBuilderControls.find((control) => control.rendererBinding === "FormLoop");
 const FormNestedScreen = FormBuilderControls.find((control) => control.rendererBinding === "FormNestedScreen");
 const FileDownloadControl = FormBuilderControls.find((control) => control.builderBinding === "FileDownload");
@@ -19,11 +18,15 @@ const FormAnalyticsChart = FormBuilderControls.find((control) => control.rendere
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter((prop) => prop.field !== "editable" && prop.field !== "form");
 
+// Modify record list description when used in a display screen
+FormRecordList.control.popoverContent = "Format content in a table structure";
+
 const controlsDisplay = [
   RichTextControl,
   TableControl,
   FormRecordList,
   FormImage,
+  FormAvatar,
   FormLoop,
   FormNestedScreen,
   FileDownloadControl,

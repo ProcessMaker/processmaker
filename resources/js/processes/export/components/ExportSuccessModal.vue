@@ -44,11 +44,12 @@
 
 <script>
 import Modal from "../../../components/shared/Modal";
+import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
 
 export default {
   components: { Modal },
-  props: ["processId", "processName", "exportInfo", "info"],
-  mixins: [],
+  props: ["processId", "processName", "exportInfo", "info", "projectId"],
+  mixins: [ AssetRedirectMixin ],
   data() {
       return {
         disabled: false,
@@ -80,9 +81,15 @@ export default {
     }
   },
 
-  methods: { 
+  methods: {
     onClose() {
+      if (this.redirectUrl) {
+        window.ProcessMaker.EventBus.$emit("redirect");
+      } else if (this.projectId) {
+        window.location = `/designer/projects/${this.projectId}`;
+      } else {
         window.location = "/processes";
+      }
     },
     show() {
       this.$bvModal.show('exportSuccessModal');

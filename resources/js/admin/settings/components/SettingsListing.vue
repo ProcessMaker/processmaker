@@ -1,6 +1,6 @@
 <template>
   <div class="settings-listing data-table">
-    <pmql-input 
+    <pmql-input
       class="mb-2"
       :search-type="'settings'"
       :value="pmql"
@@ -10,17 +10,18 @@
       <template v-slot:right-buttons>
         <div v-if="topButtons" class="d-flex">
           <b-button
-            v-for="(btn,index) in topButtons"
-            :ref="formatGroupName(btn.group)"
-            :key="`btn-${index}`"
-            class="ml-2 nowrap"
+            v-for="(btn, index) in topButtons"
             v-bind="btn.ui.props"
-            @click="handler(btn)"
+            :key="`btn-${index}`"
+            :ref="formatGroupName(btn.group)"
+            :data-cy="btn.key"
             :disabled="false"
-            >
-            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-            {{btn.name}}
+            class="ml-2 nowrap"
+            @click="handler(btn)"
+          >
+            <b-spinner ref="b-spinner" small :hidden="true" />
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon" />
+            {{ btn.name }}
           </b-button>
         </div>
       </template>
@@ -52,64 +53,92 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+            <component
+              :is="component(row.item)"
+              v-if="row.item && !isSwitch(row.item)"
+              v-show="!savingSetting || savingSetting.id !== settings[row.index].id"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
           </keep-alive>
+          <i
+            v-if="savingSetting && savingSetting.id === settings[row.index].id"
+            class="fas fa-cog fa-spin text-secondary"
+          />
         </template>
         <template v-slot:cell(actions)="row">
+          <keep-alive>
+            <component
+              :is="component(row.item)"
+              v-if="isSwitch(row.item)"
+              :ref="`settingComponent_${row.index}`"
+              :key="row.item.key"
+              v-model="row.item.config"
+              :setting="settings[row.index]"
+              @saved="onChange"
+            />
+          </keep-alive>
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button 
-                :aria-label="$t('Edit')" 
+              <b-button
                 v-uni-aria-describedby="row.item.id.toString()"
-                :disabled="row.item.readonly" 
-                @click="onEdit(row)" 
-                variant="link" 
+                variant="link"
                 class="settings-listing-button"
-                >
-                <i class="fa-lg fas fa-edit settings-listing-button mr-1"></i>
+                :data-cy="`edit-${row.item.key}`"
+                :aria-label="$t('Edit')"
+                :disabled="row.item.readonly"
+                @click="onEdit(row)"
+              >
+                <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
               </b-button>
             </span>
             <template v-if="row.item.key !== 'sso.default.login'">
               <b-button
+                v-if="!disabledCopySetting(row)"
                 v-uni-aria-describedby="row.item.id.toString()"
                 v-b-tooltip.hover
                 variant="link"
+                class="settings-listing-button"
+                :data-cy="`copy-${row.item.key}`"
                 :aria-label="$t('Copy to Clipboard')"
                 :disabled="row.item.key.includes('cdata.')"
                 :title="$t('Copy to Clipboard')"
                 @click="onCopy(row)"
-                class="settings-listing-button"
-                >
+              >
                 <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
               </b-button>
 
               <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
-                <b-button 
-                  :aria-label="$t('Delete')"
+                <b-button
                   v-uni-aria-describedby="row.item.id.toString()"
-                  @click="onDelete(row)" 
-                  variant="link" 
+                  variant="link"
                   class="settings-listing-button"
-                  >
+                  :data-cy="`delete-${row.item.key}`"
+                  :aria-label="$t('Delete')"
+                  @click="onDelete(row)"
+                >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
                 </b-button>
               </span>
 
-              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
-                <b-button 
+              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
+                <b-button
                   :aria-label="$t('Clear')"
                   v-uni-aria-describedby="row.item.id.toString()"
-                  :disabled="disableClear(row.item)" 
-                  @click="onClear(row)" 
-                  variant="link" 
+                  :disabled="disableClear(row.item)"
+                  @click="onClear(row)"
+                  variant="link"
                   class="settings-listing-button"
                   >
                   <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
                 </b-button>
               </span>
               <span v-else class="invisible">
-                <b-button 
-                  variant="link" 
+                <b-button
+                  variant="link"
                   class="settings-listing-button"
                   v-uni-aria-describedby="row.item.id.toString()">
                   <i class="fas fa-trash-alt settings-listing-button"></i>
@@ -187,6 +216,7 @@ export default {
   props: ['group'],
   data() {
     return {
+      savingSetting: null,
       tableKey: 0,
       bottomButtons: [],
       topButtons: [],
@@ -249,12 +279,12 @@ export default {
       sortable: false,
       tdClass: "align-middle settings-listing-td3",
     });
-    
+
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
       this.shouldDisplayNoDataMessage = false;
       this.$nextTick(() => {
         this.$emit('refresh-all');
-      });  
+      });
     });
   },
   methods: {
@@ -272,7 +302,10 @@ export default {
       return ProcessMaker.apiClient.get(this.pageUrl(this.currentPage));
     },
     apiPut(setting) {
-      return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
+      return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting, { timeout: 0 });
+    },
+    isSwitch(setting) {
+      return setting.format === "boolean";
     },
     component(setting) {
       switch (setting.format) {
@@ -321,7 +354,7 @@ export default {
         if (!this.shouldDisplayNoDataMessage) {
           this.settings = otherSettings; // Use the other settings
         }
-        
+
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
@@ -333,9 +366,7 @@ export default {
         }
         this.orderByPrevious = this.orderBy;
         this.orderDescPrevious = this.orderDesc;
-        this.$nextTick(() => {
-          callback(this.settings);
-        });
+        this.$nextTick(() => callback(this.settings));
       });
     },
     separateSettings(settings) {
@@ -353,13 +384,14 @@ export default {
       return { noDataSettings, otherSettings };
     },
     shouldDisplayNoData(noDataSettings, allSettings) {
+      // All settings are 'no-data' settings
       if (noDataSettings.length === allSettings.length) {
-        return true; // All settings are 'no-data' settings
-      } else if (noDataSettings.length > 0) {
-        return false; // Some settings are 'no-data' settings
-      } else {
-        return false; // No 'no-data' settings found, display all configured settings
+        // and noDataSettings has a value
+        return noDataSettings.length > 0;
       }
+
+      // No 'no-data' settings found, display all configured settings
+      return false;
     },
     getTooltip(row) {
       if (row.item.readonly) {
@@ -370,6 +402,7 @@ export default {
     },
     onChange(setting) {
       this.$nextTick(() => {
+        this.savingSetting = setting;
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
@@ -379,7 +412,9 @@ export default {
               this.refresh();
             }
           }
-        })
+        }).finally(() => {
+          this.savingSetting = null;
+        });
       });
     },
     onCopy(row) {
@@ -476,8 +511,8 @@ export default {
       this.$refs.table.refresh();
       this.$emit('refresh');
     },
-    formatGroupName(name)  {
-      return name.toLowerCase().replaceAll(" ", '-');
+    formatGroupName(name) {
+      return name.toLowerCase().replaceAll(" ", "-");
     },
     filterTopButtons(buttons) {
       if (!this.settings) {
@@ -524,7 +559,7 @@ export default {
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons except the '+ Mail Server' button for email server tabs
         return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_ADD_MAIL_SERVER_');
-      } 
+      }
       // Returns all 'top' position buttons except the 'Authorize Account' button for email default settings tab
       return btn.ui.props.position === 'top' && !btn.key.includes('EMAIL_CONNECTOR_AUTHORIZE_ACCOUNT');
     },
@@ -532,7 +567,7 @@ export default {
       const authMethod = groupData.find(data => data.key.includes("abe_imap_auth_method"));
       const selectedAuthMethod = authMethod ? authMethod.ui.options[authMethod.config] : null;
       const showAuthAccBtn = selectedAuthMethod && selectedAuthMethod !== 'standard' ? true : false;
-      
+
       if (showAuthAccBtn) {
         // Returns all 'top' position buttons
         return btn.ui.props.position === 'top';
@@ -545,6 +580,12 @@ export default {
     },
     disableClear(item) {
       return item.readonly || item.format === 'choice' ? true : false;
+    },
+    disabledCopySetting(row) {
+      return row.item.ui?.copySettingEnabled === false;
+    },
+    disabledDeleteSetting(row) {
+      return row.item.ui?.deleteSettingEnabled === false;
     },
     enableDeleteSetting(row) {
       return row.item.ui?.deleteSettingEnabled || false;

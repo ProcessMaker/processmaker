@@ -5,18 +5,30 @@
             <div class="flex-grow-1">
                 <div id="search" class="mb-3 mb-md-0">
                     <div class="input-group w-100">
-                        <input id="search-box" v-model="filter" class="form-control" placeholder="{{ __('Search') }}" aria-label="{{__('Search')}}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-white search-text">
                                 <i class="fas fa-search"></i>
-                            </button>
+                            </span>
                         </div>
+                        <input
+                          id="search-box"
+                          v-model="filter"
+                          class="form-control pl-1 search-text search-input"
+                          placeholder="{{__('Search here')}}"
+                          aria-label="{{__('Search')}}"
+                        >
                     </div>
                 </div>
             </div>
             @if ($config->permissions['create'])
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <button type="button" class="btn btn-secondary" @click="showModal()" aria-label="{{ __('Create Category') }}" aria-haspopup="dialog">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      @click="showModal()"
+                      aria-label="{{ __('Create Category') }}"
+                      aria-haspopup="dialog"
+                    >
                         <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 </div>
@@ -147,3 +159,18 @@
     </script>
 @append
 @endif
+@section('css')
+<style>
+.search-text {
+    color: gray;
+    border-color: #CDDDEE;
+}
+.search-text:hover {
+        background-color: #FAFBFC;
+        border-color: #CDDDEE;
+}
+.search-input {
+    border-left: 0;
+}
+</style>
+@endsection

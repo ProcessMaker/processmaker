@@ -1,15 +1,17 @@
 <template>
   <b-dropdown
+    v-if="filterActions.length > 0"
     :variant="variant ? variant : 'ellipsis'"
+    toggle-class="static-header"
     no-caret
     no-flip
     lazy
     right
     offset="0"
-    class="ellipsis-dropdown-main"
+    class="ellipsis-dropdown-main static-header"
     @show="onShow"
     @hide="onHide"
-    v-if="filterActions.length > 0"    
+    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -19,6 +21,9 @@
       <span>
         {{ customButton.content }} <b v-if="showProgress && data && data.batch"> {{ getTotalProgress(data.batch, data.progress) }}%</b>
       </span>
+    </template>
+    <template v-else-if="lauchpad" #button-content>
+      <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
     </template>
     <template v-else #button-content>
       <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
@@ -72,23 +77,25 @@
           />
         </b-input-group>
       </div>
-      <div v-for="action in filterActions">
-        <b-dropdown-divider v-if="action.value == 'divider'"/>
-        <b-dropdown-item v-else
+      <div v-for="action in filterActions" :key="action.value">
+        <div v-if="action.value !== 'edit-launchpad' || isProcessesCatalogueInUrl()">
+          <b-dropdown-divider v-if="action.value == 'divider'"/>
+          <b-dropdown-item
+            v-else
             :key="action.value"
             :href="action.link ? itemLink(action, data) : null"
             class="ellipsis-dropdown-item mx-auto"
             @click="!action.link ? onClick(action, data) : null"
-        >
-          <div class="ellipsis-dropdown-content">
-            <i
+          >
+            <div class="ellipsis-dropdown-content">
+              <i
                 class="pr-1 fa-fw"
                 :class="action.icon"
-            />
-            <span>{{ $t(action.content) }}</span>
-          </div>
-        </b-dropdown-item>
-
+              />
+              <span>{{ $t(action.content) }}</span>
+            </div>
+          </b-dropdown-item>
+        </div>
       </div>
     </div>
   </b-dropdown>
@@ -103,7 +110,7 @@ export default {
   components: { PmqlInput },
   filters: { },
   mixins: [],
-  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant"],
+  props: ["actions", "permission", "data", "isDocumenterInstalled", "divider", "lauchpad", "customButton", "showProgress", "isPackageInstalled", "searchBar", "variant", "redirectTo", "redirectId"],
   data() {
     return {
       active: false,
@@ -137,6 +144,10 @@ export default {
       this.$emit("navigate", action, data);
     },
     itemLink(action, data) {
+      if (this.redirectTo === "projects") {
+        const href = Mustache.render(action.href, data);
+        return `${href}?project_id=${this.redirectId}`;
+      }
       return Mustache.render(action.href, data);
     },
     onShow() {
@@ -165,11 +176,17 @@ export default {
     filterActionsByPermissions() {
       return this.actions.filter(action => {
         // Check if the action has a 'permission' property and it's a non-empty string
-        if (!action.permission || typeof action.permission !== 'string' || action.permission.trim() === '') {
-            return true; // No specific permission required or invalid format, so allow the action.
+        if (!action.permission || typeof action.permission === 'string' && action.permission.trim() === '') {
+          return true; // No specific permission required or invalid format, so allow the action.
+        }
+        let requiredPermissions;
+        // Check if this.permission is of type string
+        if (typeof action.permission === 'string') {
+          requiredPermissions = action.permission.split(',');
+        } else {
+          requiredPermissions = action.permission;
         }
 
-        const requiredPermissions = action.permission.split(',');
         // Check if this.permission is of type object
         if (typeof this.permission === 'object' && this.permission !== null) {
           const keys = Object.keys(this.permission);
@@ -211,6 +228,11 @@ export default {
         }
       });
     },
+    isProcessesCatalogueInUrl() {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes("process-browser");
+      return isInUrl;
+    }
   },
 };
 </script>
@@ -257,5 +279,10 @@ export default {
   }
 .search-icon {
   color: #6C757D;
+}
+</style>
+<style>
+.static-header {
+  position: static !important;
 }
 </style>

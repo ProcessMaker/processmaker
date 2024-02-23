@@ -3,16 +3,19 @@
         <div class="container text-center">
 
             <div v-if="noResults" data-cy="no-results-message">
-                <div class="icon-container">
+                <div class="empty-title">{{ emptyText() }}</div>
+                <div class="img-container">
                     <div v-if="emptyIconType() === 'beach'">
-                        <i class="fas fa-umbrella-beach"></i>
+                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
                     </div>
                     <div v-if="emptyIconType() === 'noData'">
-                        <i class="fas fa-umbrella-beach"></i>
+                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
+                    </div>
+                    <div v-if="emptyIconType() === 'noTasks'">
+                        <img src="/img/all-cleared.svg" class="no-results-img" alt="no-results">
                     </div>
                 </div>
-                <h3 class="display-6">{{ emptyText() }}</h3>
-                <p class="lead">{{ emptyDescText() }}</p>
+                <p class="empty-desc">{{ emptyDescText() }}</p>
             </div>
             <div v-else-if="error" data-cy="error-message">
                 <div class="icon-container">
@@ -77,7 +80,11 @@
                 if (error && error.code === "ERR_CANCELED") {
                     this.noResults = false;
                     this.error = true;
-                }  else {
+                }
+                if (error && error.code === "ERR_BAD_REQUEST") {
+                    this.noResults = false;
+                }
+                else {
                     this.noResults = false;
                     this.error = true;
                 }
@@ -130,5 +137,27 @@
         svg {
             fill: #b7bfc5;
         }
+    }
+    .img-container {
+        display:inline-block;
+        width: 297px;
+        height: 210px;
+        margin-bottom: 1em;
+    }
+    .no-results-img {
+        width: 297px;
+        height: 210px;
+        fill: #b7bfc5;
+    }
+    .empty-title {
+        color: #1572C2;
+        font-weight: 700;
+        font-size: 24px;;
+    }
+    .empty-desc {
+        color: #556271;
+        font-weight: 400;
+        font-size: 20px;
+        white-space: pre-line
     }
 </style>

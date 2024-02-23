@@ -1,15 +1,15 @@
 <template>
   <div
     v-if="hasPermission()"
-    class="assets p-3 mb-3"
+    class="assets mb-3 border"
   >
     <b-navbar type="faded">
-      <b-navbar-brand class="text-uppercase">
+      <b-navbar-brand class="title-designer">
         {{ $t("Assets") }}
       </b-navbar-brand>
     </b-navbar>
 
-    <div class="mt-3">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsCore"
@@ -38,7 +38,7 @@
         </b-card>
       </b-card-group>
     </div>
-    <div class="mt-3">
+    <div class="mx-2">
       <b-card-group deck>
         <b-card
           v-for="(asset, index) in assetsPackage"
@@ -89,7 +89,7 @@ export default {
           icon: "fas fa-play-circle",
           asset_name: "Processes",
           asset_name_all: "View All Processes",
-          asset_name_new: "Create New Process",
+          asset_name_new: "New Process",
           urlPath: "/processes",
           urlAsset: "/processes?new=true",
         },
@@ -98,7 +98,7 @@ export default {
           icon: "fas fa-file-alt",
           asset_name: "Screens",
           asset_name_all: "View All Screens",
-          asset_name_new: "Create New Screen",
+          asset_name_new: "New Screen",
           urlPath: "/designer/screens",
           urlAsset: "/designer/screens?create=true",
         },
@@ -107,7 +107,7 @@ export default {
           icon: "fas fa-code",
           asset_name: "Scripts",
           asset_name_all: "View All Scripts",
-          asset_name_new: "Create New Script",
+          asset_name_new: "New Script",
           urlPath: "/designer/scripts",
           urlAsset: "/designer/scripts?create=true",
         },
@@ -118,7 +118,7 @@ export default {
           icon: "fas fa-table",
           asset_name: "Decision Tables",
           asset_name_all: "View All Decision Tables",
-          asset_name_new: "Create New Decision Table",
+          asset_name_new: "New Decision Table",
           urlPath: "/designer/decision-tables",
           urlAsset: "/designer/decision-tables?create=true",
         },
@@ -127,7 +127,7 @@ export default {
           icon: "fas fa-share-alt",
           asset_name: "Data Connectors",
           asset_name_all: "View All Data Connectors",
-          asset_name_new: "Create New Data Connector",
+          asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
           urlAsset: "/designer/data-sources?create=true",
         },
@@ -164,15 +164,26 @@ export default {
 <style scoped>
 .assets {
   background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 0rem 1rem 1rem 1rem;
 }
-.b-card {
-  margin: 5px;
+.card {
+  margin: 8px;
   border: none;
   padding: 0;
+  border-radius: 8px;
+  box-shadow: 0px 0px 11px 0px rgba(98, 124, 144, 0.20);
 }
 .b-card-group {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  padding: 10px;
+}
+.card-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
 }
 </style>

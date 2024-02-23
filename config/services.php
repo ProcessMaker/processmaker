@@ -46,4 +46,11 @@ return [
         'template_categories' => env('DEFAULT_TEMPLATE_CATEGORIES', 'accounting-and-finance,customer-success,human-resources,marketing-and-sales,operations,it'),
     ],
 
+    'guided_templates_github' => [
+        'base_url' => 'https://raw.githubusercontent.com/processmaker/',
+        'template_repo' => env('GUIDED_TEMPLATE_REPO', 'wizard-templates'),
+        'template_branch' => env('GUIDED_TEMPLATE_BRANCH', '2023-winter'),
+        'template_categories' => env('GUIDED_TEMPLATE_CATEGORIES', 'all'),
+    ],
+
 ];

@@ -7,46 +7,101 @@
               :empty-desc="$t('')"
               empty-icon="noData"
       />
-      <div v-show="!shouldShowLoader" class="card card-body process-template-table-card" data-cy="processes-template-table">
-        <vuetable
-                :dataManager="dataManager"
-                :sortOrder="sortOrder"
-                :css="css"
-                :api-mode="false"
-                @vuetable:pagination-data="onPaginationData"
-                :fields="fields"
-                :data="data"
-                data-path="data"
-                pagination-path="meta"
-                :noDataTemplate="$t('No Data Available')"
+      <div v-show="!shouldShowLoader" class="process-template-table-card" data-cy="processes-template-table">
+        <filter-table
+          :headers="fields"
+          :data="data"
+          table-name="templates"
+          style="height: calc(100vh - 355px);"
         >
-          <template slot="name" slot-scope="props">
-            <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}
-              <small class="text-muted d-block">{{ props.rowData.description | str_limit(70) }}</small>
-            </span>
-          </template>
-
-          <template slot="owner" slot-scope="props">
-            <avatar-image
-                    class="d-inline-flex pull-left align-items-center"
-                    size="25"
-                    :input-data="props.rowData.user"
-                    :hide-name="false"
-            ></avatar-image>
-          </template>
-
-          <template slot="actions" slot-scope="props">
-            <ellipsis-menu 
-              @navigate="onNavigate"
-              :actions="actions"
-              :permission="permission"
-              :data="props.rowData"
-              :is-documenter-installed="isDocumenterInstalled"
-              :divider="true"
-            />
-          </template>
-        </vuetable>
-  
+          <!-- Slot Table Header filter Button -->
+          <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+            <div
+              v-if="column.sortable"
+              :key="index"
+              @click="handleEllipsisClick(column)"
+            >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
+        </template>
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in fields"
+            :key="colIndex"
+            :data-cy="`template-table-td-${rowIndex}-${colIndex}`"
+          >
+            <div
+              v-if="containsHTML(row[header.field])"
+              v-html="sanitize(row[header.field])"
+              :data-cy="`template-table-html-${rowIndex}-${colIndex}`"
+            >
+            </div>
+            <template v-else>
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`template-table-component-${rowIndex}-${colIndex}`"
+              >
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template
+                v-else
+                :data-cy="`template-table-field-${rowIndex}-${colIndex}`"
+              >
+                <template v-if="header.field === 'name'">
+                  <div
+                    :id="`element-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <span v-uni-id="row.id.toString()">{{row.name}}
+                      <small class="text-muted d-block">{{ row.description | str_limit(70) }}</small>
+                    </span>
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${row.id}`"
+                      custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
+                    >
+                      {{ row[header.field] }}
+                    </b-tooltip>
+                  </div>
+                </template>
+                <ellipsis-menu
+                  v-if="header.field === 'actions'"
+                  @navigate="onNavigate"
+                  :actions="actions"
+                  :permission="permission"
+                  :data="row"
+                  :is-documenter-installed="isDocumenterInstalled"
+                  :divider="true"
+                />
+                <template v-if="header.field !== 'name'">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ getNestedPropertyValue(row, header) }}
+                  </div>
+                </template>
+              </template>
+            </template>
+          </td>
+        </template>
+        </filter-table>
+        <pagination-table
+          :meta="data.meta"
+          @page-change="changePage"
+          data-cy="template-pagination"
+        />
         <pagination
           :single="$t('Template')"
           :plural="$t('Templates')"
@@ -58,7 +113,7 @@
       </div>
     </div>
 </template>
-  
+
 <script>
   Vue.filter('str_limit', function (value, size) {
     if (!value) return '';
@@ -73,16 +128,19 @@
     import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
     import { createUniqIdsMixin } from "vue-uniq-ids";
     import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
+    import paginationTable from "../../components/shared/PaginationTable.vue";
+    import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
   
     const uniqIdsMixin = createUniqIdsMixin();
   
     export default {
-      components: {EllipsisMenu},
-      mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
+      components: { EllipsisMenu, paginationTable },
+      mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, FilterTableBodyMixin],
       props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
       data() {
         return {
           orderBy: "name",
+          previousFilter: "",
           sortOrder: [
             {
               field: "name",
@@ -93,44 +151,57 @@
   
           fields: [
             {
-              title: () => this.$t("Name"),
-              name: "__slot:name",
+              label: "NAME",
               field: "name",
-              sortField: "name"
+              width: 200,
+              sortable: true,
+              truncate: true,
+              direction: "none",
             },
             {
-              title: () => this.$t("Category"),
-              name: "categories",
+              label: "CATEGORY",
+              field: "category_list",
+              width: 160,
+              sortable: true,
+              direction: "none",
               sortField: "category.name",
-              callback(categories) {
-                return categories.map(item => item.name).join(', ');
-              }
             },
             {
-              title: () => this.$t("Template Author"),
-              name: "__slot:owner",
-              callback: this.formatUserName
+              label: "TEMPLATE AUTHOR",
+              field: "owner",
+              width: 160,
+              sortable: true,
+              direction: "none",
+              sortField: "user.username",
             },
             {
-              title: () => this.$t("Version"),
-              name: "version",
-              sortField: "version",
+              label: "VERSION",
+              field: "version",
+              width: 100,
+              sortable: true,
+              direction: "none",
             },
             {
-              title: () => this.$t("Version Date"),
-              name: "updated_at",
-              sortField: "updated_at",
-              callback: "formatDate"
+              label: "VERSION DATE",
+              field: "updated_at",
+              format: "datetime",
+              width: 200,
+              sortable: true,
+              direction: "none",
             },
             {
-              title: () => this.$t("Created"),
-              name: "created_at",
-              sortField: "created_at",
-              callback: "formatDate"
+              label: "CREATED",
+              field: "created_at",
+              format: "datetime",
+              width: 200,
+              sortable: true,
+              direction: "none",
             },
             {
               name: "__slot:actions",
-              title: ""
+              field: "actions",
+              title: "",
+              width: 60,
             }
           ],
           actions: [
@@ -148,6 +219,20 @@
         });
       },
       methods: {
+        transform(data) {
+          // Clean up fields for meta pagination so vue table pagination can understand
+          data.meta.last_page = data.meta.total_pages;
+          data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
+          data.meta.to = data.meta.from + data.meta.count;
+          data.data = this.jsonRows(data.data);
+
+          for (let record of data.data) {
+            //format Status
+            record["owner"] = this.formatAvatar(record["user"]);
+            record["category_list"] = this.formatCategory(record["categories"]);
+          }
+          return data;
+        },
         exportTemplate(template) {
           ProcessMaker.apiClient({
             method: 'POST',
@@ -205,41 +290,6 @@
             break;
           }
         },
-        formatStatus(status) {
-          status = status.toLowerCase();
-          let bubbleColor = {
-            active: "text-success",
-            inactive: "text-danger",
-            draft: "text-warning",
-            archived: "text-info"
-          };
-          let response =
-              '<i class="fas fa-circle ' + bubbleColor[status] + ' small"></i> ';
-          status = status.charAt(0).toUpperCase() + status.slice(1);
-          return '<div style="white-space:nowrap">' + response + status + "</div>";
-        },
-        formatUserName(user) {
-          return (
-              (user.avatar
-                  ? this.createImg({
-                    src: user.avatar,
-                    class: "rounded-user"
-                  })
-                  : '<i class="fa fa-user rounded-user"></i>') +
-              "<span>" +
-              user.fullname +
-              "</span>"
-          );
-        },
-        createImg(properties) {
-          let container = document.createElement("div");
-          let node = document.createElement("img");
-          for (let property in properties) {
-            node.setAttribute(property, properties[property]);
-          }
-          container.appendChild(node);
-          return container.innerHTML;
-        },
         fetch() {
           this.loading = true;
           this.apiDataLoading = true;
@@ -252,7 +302,11 @@
               this.status === null || this.status === "" || this.status === undefined
                   ? "templates/process?"
                   : "templates?status=" + this.status + "&";
-  
+          let filter = this.filter;
+          if (this.previousFilter !== filter) {
+            this.page = 1;
+          }
+          this.previousFilter = filter;
           // Load from our api client
           ProcessMaker.apiClient
               .get(
@@ -290,6 +344,36 @@
             return template;
           });
           return data;
+        },
+        handleEllipsisClick(templateColumn) {
+          this.fields.forEach(column => {
+            if (column.field !== templateColumn.field) {
+              column.direction = "none";
+              column.filterApplied = false;
+            }
+          });
+
+          if (templateColumn.direction === "asc") {
+            templateColumn.direction = "desc";
+          } else if (templateColumn.direction === "desc") {
+            templateColumn.direction = "none";
+            templateColumn.filterApplied = false;
+          } else {
+            templateColumn.direction = "asc";
+            templateColumn.filterApplied = true;
+          }
+
+          if (templateColumn.direction !== "none") {
+            const sortOrder = [
+              {
+                sortField: templateColumn.sortField || templateColumn.field,
+                direction: templateColumn.direction,
+              },
+            ];
+            this.dataManager(sortOrder);
+          } else {
+            this.fetch();
+          }
         },
       },
     };

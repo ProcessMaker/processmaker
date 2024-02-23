@@ -3,6 +3,7 @@ import CounterCard from "./components/CounterCard";
 import CounterCardGroup from "./components/CounterCardGroup";
 import RequestsListing from "./components/RequestsListing";
 import AvatarImage from "../components/AvatarImage";
+import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -12,6 +13,7 @@ new Vue({
     CounterCard, CounterCardGroup, RequestsListing
   },
   data: {
+    columns: window.Processmaker.defaultColumns || null,
     filter: "",
     pmql: "",
     urlPmql: "",
@@ -22,7 +24,7 @@ new Vue({
     additions: [],
   },
   created() {
-    const params = {};
+    let status;
 
     switch (Processmaker.status) {
       case "":
@@ -38,18 +40,8 @@ new Vue({
     }
 
     if (status) {
-      this.status.push({
-        name: status,
-        value: status,
-      });
+      setDefaultAdvancedFilterStatus(status, true);
     }
-
-    // translate status labels when available
-    window.ProcessMaker.i18nPromise.then(() => {
-      this.status.forEach((item) => {
-        item.name = this.$t(item.name);
-      });
-    });
 
     const urlParams = new URLSearchParams(window.location.search);
     this.urlPmql = urlParams.get("pmql");

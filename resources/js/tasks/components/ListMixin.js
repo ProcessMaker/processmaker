@@ -47,6 +47,12 @@ const ListMixin = {
         }
 
         this.previousPmql = pmql;
+        
+        let advancedFilter = this.getAdvancedFilter ? this.getAdvancedFilter(): "";
+        if (this.previousAdvancedFilter !== advancedFilter) {
+          this.page = 1;
+        }
+        this.previousAdvancedFilter = advancedFilter;
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -60,7 +66,8 @@ const ListMixin = {
                 this.perPage
               }${filterParams
               }${this.getSortParam()
-              }&non_system=true`,
+              }&non_system=true` +
+              advancedFilter,
           )
           .then((response) => {
             this.data = this.transform(response.data);
