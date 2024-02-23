@@ -26,7 +26,8 @@ new Vue({
         "operator": "=",
         "value": true,
         "_column_field": "is_priority",
-        "_column_label": "Priority"
+        "_column_label": "Priority",
+        "_hide_badge": true
       }
     ],
     draftFilter: [
@@ -38,13 +39,13 @@ new Vue({
         "operator": ">",
         "value": 0,
         "_column_field": "draft",
-        "_column_label": "Draft"
+        "_column_label": "Draft",
+        "_hide_badge": true
       }
     ],
   },
   mounted() {
     const taskListComponent = this.$refs.taskList;
-    taskListComponent.advancedFilter = {};
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
@@ -75,43 +76,43 @@ new Vue({
   },
   methods: {
     switchTab(tab) {
-      if (tab === "inbox") {
-        this.onInbox();
+      switch (tab) {
+        case "inbox":
+          this.onInbox();
+          break;
+        case "priority":
+          this.onSwitchTab("is_priority", this.priorityFilter);
+          break;
+        case "draft":
+          this.onSwitchTab("draft", this.draftFilter);
+          break;
+        default:
+          break;
       }
-      if (tab === "priority") {
-        this.removeTabFilter(this.draftField);
-        this.onSwitchTab(this.priorityField);
-      }
-      if (tab === "draft") {
-        this.removeTabFilter(this.priorityField);
-        this.onSwitchTab(this.draftField);
-      }
-    },    
+    },
     onInbox() {
-      const taskListComponent = this.$refs.taskList;
       this.removeTabFilter(this.priorityField);
       this.removeTabFilter(this.draftField);
-      taskListComponent.fetch(true);
+      this.fetchTasks();
     },
-    onSwitchTab(field) {
-      let filter;
-      if (field === "is_priority") {
-        filter = this.priorityFilter;
-      }
-      if (field === "draft") {
-        filter = this.draftFilter;
-      }
+
+    onSwitchTab(field, filter) {
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
       const taskListComponent = this.$refs.taskList;
       taskListComponent.advancedFilter[field] = filter;
       taskListComponent.markStyleWhenColumnSetAFilter();
       taskListComponent.storeFilterConfiguration();
-      taskListComponent.fetch(true);
+      this.fetchTasks();
     },
     removeTabFilter(tab) {
       const taskListComponent = this.$refs.taskList;
       taskListComponent.advancedFilter[tab] = [];
       taskListComponent.markStyleWhenColumnSetAFilter();
       taskListComponent.storeFilterConfiguration();
+    },
+    fetchTasks() {
+      const taskListComponent = this.$refs.taskList;
       taskListComponent.fetch(true);
     },
     onFiltersPmqlChange(value) {
