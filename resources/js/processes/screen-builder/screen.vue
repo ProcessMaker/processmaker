@@ -1235,4 +1235,18 @@ body {
 .device-screen {
   width: 100%;
 }
+.btn-platform {
+  background-color: #ffff;
+  color: #6a7888;
+  padding: 8px 8px 2px 8px;
+}
+.btn-platform:hover {
+  color: #6a7888;
+}
+.page-dropdown-menu {
+  min-width: 333px;
+  .dropdown-item {
+   font-size: 14px !important; 
+  };
+}
 </style>
