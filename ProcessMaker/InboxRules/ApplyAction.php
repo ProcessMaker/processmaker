@@ -3,20 +3,18 @@
 namespace ProcessMaker\InboxRules;
 
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
-use ProcessMaker\Models\TaskDraft;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\SanitizeHelper;
 
 class ApplyAction
 {
-    public function applyActionOnTask(ProcessRequestToken $task)
+    public function applyActionOnTask(ProcessRequestToken $task, array $inboxRules)
     {
-        $matchingInboxRules = MatchingTasks::matchingInboxRules($task);
-
-        foreach ($matchingInboxRules as $inputRule) {
+        foreach ($inboxRules as $inputRule) {
             //Mark as priority
             if ($inputRule->mark_as_priority === true) {
                 $this->markAsPriority($task);
@@ -30,7 +28,7 @@ class ApplyAction
             //If $savedSearchId is null For Task Rules only
             if ($inputRule->task) {
                 //Fill and save as draft
-                if ($inputRule->fill_data === true) {
+                if ($inputRule->make_draft === true) {
                     $this->saveAsDraft($task, $inputRule);
                 }
                 //Submit the form
@@ -55,12 +53,8 @@ class ApplyAction
 
     public function reassignToUserID($task, $inputRule)
     {
-        $user_id = User::findOrFail($inputRule->user_id);
-        $task->authorizeReassignment($user_id);
-        // Reassign user
-        $task->reassignTo($inputRule->reassign_to_user_id);
-        $task->persistUserData($inputRule->reassign_to_user_id);
-        $task->save();
+        $inboxRuleUser = User::findOrFail($inputRule->user_id);
+        $task->reassign($inputRule->reassign_to_user_id, $inboxRuleUser);
     }
 
     public function markAsPriority($task)

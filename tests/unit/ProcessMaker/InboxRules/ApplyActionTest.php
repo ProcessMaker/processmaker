@@ -3,17 +3,11 @@
 namespace Tests;
 
 use Facades\ProcessMaker\InboxRules\ApplyAction;
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
-use ProcessMaker\Client\Model\ProcessCategory as ModelProcessCategory;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\InboxRule;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
-use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 use Tests\TestCase;
 
 class ApplyActionTest extends TestCase
@@ -40,11 +34,6 @@ class ApplyActionTest extends TestCase
             'element_id' => 'UserTaskUID',
         ]);
 
-        MatchingTasks::shouldReceive('matchingInboxRules')
-            ->once()
-            ->with($activeTask)
-            ->andReturn([$inboxRule]);
-
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(
@@ -54,7 +43,7 @@ class ApplyActionTest extends TestCase
                 ['foo' => 'bar']
             );
 
-        ApplyAction::applyActionOnTask($activeTask);
+        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
     }
 
     public function testMarkAsPriority()
@@ -70,7 +59,7 @@ class ApplyActionTest extends TestCase
             'process_request_token_id' => $taskForInboxRule->id,
             'user_id' => $user->id,
             'mark_as_priority' => true,
-            'submit_data' => null,
+            'submit_data' => false,
         ]);
 
         $activeTask = ProcessRequestToken::factory()->create([
@@ -80,12 +69,7 @@ class ApplyActionTest extends TestCase
             'is_priority' => false,
         ]);
 
-        MatchingTasks::shouldReceive('matchingInboxRules')
-            ->once()
-            ->with($activeTask)
-            ->andReturn([$inboxRule]);
-
-        ApplyAction::applyActionOnTask($activeTask);
+        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
 
         $activeTask->refresh();
 
@@ -96,9 +80,8 @@ class ApplyActionTest extends TestCase
     {
         $user = User::factory()->create([
             'is_administrator' => true,
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
         ]);
-        $this->actingAs($user);
 
         $userToReassign = User::factory()->create();
 
@@ -111,7 +94,7 @@ class ApplyActionTest extends TestCase
             'process_request_token_id' => $taskForInboxRule->id,
             'user_id' => $user->id,
             'reassign_to_user_id' => $userToReassign->id,
-            'submit_data' => null,
+            'submit_data' => false,
         ]);
 
         $activeTask = ProcessRequestToken::factory()->create([
@@ -120,16 +103,14 @@ class ApplyActionTest extends TestCase
             'element_id' => 'UserTaskUID',
         ]);
 
-        MatchingTasks::shouldReceive('matchingInboxRules')
+        // Test that the reassign() method is called with the correct users
+        $activeTask = \Mockery::mock($activeTask)
+            ->shouldReceive('reassign')
             ->once()
-            ->with($activeTask)
-            ->andReturn([$inboxRule]);
+            ->with($userToReassign->id, \Mockery::on(fn ($arg) => $arg->id === $user->id))
+            ->getMock();
 
-        ApplyAction::applyActionOnTask($activeTask);
-        
-        $activeTask->refresh();
-        
-        $this->assertEquals($userToReassign->id,$activeTask->user_id);
+        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
     }
 
     public function testSaveAsDraft()
@@ -146,8 +127,8 @@ class ApplyActionTest extends TestCase
             'user_id' => $user->id,
             'reassign_to_user_id' => null,
             'submit_data' => false,
-            'fill_data' => true,
-            'data' => ["input" => "some rule text"],
+            'make_draft' => true,
+            'data' => ['input' => 'some rule text'],
         ]);
 
         $activeTask = ProcessRequestToken::factory()->create([
@@ -157,12 +138,7 @@ class ApplyActionTest extends TestCase
             'data' => ['input' => 'active value'],
         ]);
 
-        MatchingTasks::shouldReceive('matchingInboxRules')
-            ->once()
-            ->with($activeTask)
-            ->andReturn([$inboxRule]);
-
-        ApplyAction::applyActionOnTask($activeTask);
+        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
 
         $taskDraftData = TaskDraft::where('task_id', $activeTask->id)->value('data');
 

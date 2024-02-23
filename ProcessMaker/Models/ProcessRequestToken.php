@@ -9,6 +9,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ActivityReassignment;
 use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -17,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Managers\WorkflowManagerDefault;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
+use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasUuids;
@@ -1101,5 +1104,52 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     {
         $notifiables = $this->getNotifiables('assigned');
         Notification::send($notifiables, new ActivityActivatedNotification($this));
+    }
+
+    /**
+     * Reassign task
+     *
+     * @param mixed $userId
+     * @param User $requestingUser
+     * @return void
+     */
+    public function reassign($toUserId, User $requestingUser)
+    {
+        $sendActivityActivatedNotifications = false;
+        $reassingAction = false;
+        if ($this->is_self_service && $toUserId == $requestingUser->id && !$this->user_id) {
+            // Claim task
+            $this->is_self_service = 0;
+            $this->user_id = $toUserId;
+            $this->persistUserData($toUserId);
+            $sendActivityActivatedNotifications = true;
+        } elseif ($toUserId === '#manager') {
+            // Reassign to manager
+            $this->authorizeAssigneeEscalateToManager();
+            $toUserId = $this->escalateToManager();
+            $this->persistUserData($toUserId);
+            $reassingAction = true;
+        } else {
+            // Validate if user can reassign
+            $this->authorizeReassignment($requestingUser);
+            // Reassign user
+            $this->reassignTo($toUserId);
+            $this->persistUserData($toUserId);
+            $reassingAction = true;
+        }
+        $this->save();
+
+        if ($sendActivityActivatedNotifications) {
+            $this->sendActivityActivatedNotifications();
+        }
+        // Register the Event
+        if ($reassingAction) {
+            ActivityReassignment::dispatch($this);
+        }
+
+        // Send a notification to the user
+        $notification = new TaskReassignmentNotification($this);
+        $this->user->notify($notification);
+        event(new ActivityAssigned($this));
     }
 }
