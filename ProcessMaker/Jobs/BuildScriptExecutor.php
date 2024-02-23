@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class BuildScriptExecutor implements ShouldQueue
@@ -18,7 +19,7 @@ class BuildScriptExecutor implements ShouldQueue
     protected $userId;
 
     // Do not retry this job if it fails
-    public $tries = 1;
+    public $tries = 20;
 
     // Building can take some time
     public $timeout = 600;
@@ -42,5 +43,13 @@ class BuildScriptExecutor implements ShouldQueue
     public function handle()
     {
         \Artisan::call('processmaker:build-script-executor ' . $this->lang . ' ' . $this->userId . ' --rebuild');
+    }
+
+    /**
+     * Prevent job overlaps
+     */
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping())->releaseAfter(10)];
     }
 }

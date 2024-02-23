@@ -1,31 +1,31 @@
 <template>
     <div class="mb-2">
-        <h2>{{ $root.operation }} Process: <span class="text-capitalize">{{ processName }}</span></h2>
+        <h2>{{ $t($root.operation) }} {{ $t('Process') }}: <span class="text-capitalize">{{ processName }}</span></h2>
         <hr>
         <div>
             <div class="mb-2">
-                <h4>{{ group.typeHumanPlural }}</h4>
+                <h4>{{ $t(group.typeHumanPlural) }}</h4>
             </div>
             <div v-if="$root.includeAllByGroup[group.type]" class="mb-2">
-                <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
+                <h6 class="mb-0 fw-semibold">{{ $t($root.operation) }} {{ $t('Status') }}:
                     <b-badge pill variant="success">
                       <i class="fas fa-check-circle export-status-label" />
-                      Full {{ $root.operation }}
+                      {{ $t('Full') }} {{ $t($root.operation) }}
                     </b-badge>
                 </h6>
-                <small class="text-muted"><span class="font-weight-bold">All</span> {{ group.typeHumanPlural }} will be included in this {{ $root.operation.toLowerCase() }}.</small>
+                <small class="text-muted"><span class="font-weight-bold">{{ $t('All') }}</span> {{ $t(group.typeHumanPlural) }} will be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <div v-else class="mb-2">
-                <h6 class="mb-0 fw-semibold">{{ $root.operation }} Status:
+                <h6 class="mb-0 fw-semibold">{{ $t($root.operation) }} {{ $t('Status') }}:
                 <b-badge pill variant="warning">
                   <i class="fas fa-exclamation-triangle export-status-label" />
                   Not {{ $root.operation }}ing
                 </b-badge>
                 </h6>
-                <small class="text-muted">{{ group.typeHumanPlural }} will <span class="font-weight-bold">Not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
+                <small class="text-muted">{{ $t(group.typeHumanPlural) }} will <span class="font-weight-bold">Not</span> be included in this {{ $root.operation.toLowerCase() }}.</small>
             </div>
             <div class="mb-2">
-                <b-link @click="returnToSummaryClick">Return to Summary</b-link>
+                <b-link @click="returnToSummaryClick">{{ $t('Return to Summary') }}</b-link>
             </div>
         </div>
         <hr>
@@ -42,18 +42,18 @@
                 </template>
                 <b-card-text>
                     <ul class="process-element-metadata">
-                        <li v-if="item.description">Description: <span class="fw-semibold">{{ item.description }}</span></li>
-                        <li>Categories: <span class="fw-semibold">{{ item.categories }}</span></li>
+                        <li v-if="item.description">{{ $t('Description') }}: <span class="fw-semibold">{{ item.description }}</span></li>
+                        <li>{{ $t('Categories') }}: <span class="fw-semibold">{{ item.categories }}</span></li>
                         <li v-for="(attribute, i) in item.extraAttributes" :key="i">
                             <span v-if="i !== 'translatedLanguages'">
                                 {{ i[0].toUpperCase() + i.substring(1) }}: <span class="fw-semibold">{{ attribute }}</span>
                             </span>
                         </li>
                         <!-- <li>Language: <span class="process-metadata"></span></li> -->
-                        <li>Created Date: <span class="fw-semibold">{{ item.createdAt }}</span></li>
-                        <li>Last Modified Date: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
+                        <li>{{ $t('Created Date') }}: <span class="fw-semibold">{{ item.createdAt }}</span></li>
+                        <li>{{ $t('Last Modified Date') }}: <span class="fw-semibold">{{ item.updatedAt }}</span></li>
                         <li>
-                            Translations:
+                            {{ $t('Translations') }}:
                             <small class="mr-1 badge badge-pill badge-primary" v-for="language in item.translatedLanguages">
                                 {{ language }}
                             </small>

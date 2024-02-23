@@ -17,7 +17,7 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
@@ -56,6 +56,7 @@
                 v-if="header.truncate"
                 :target="`element-${rowIndex}-${colIndex}`"
                 custom-class="pm-table-tooltip"
+                @show="checkIfTooltipIsNeeded"
               >
                 {{ sanitizeTooltip(getNestedPropertyValue(row, header)) }}
               </b-tooltip>
@@ -71,9 +72,9 @@
               <template v-else>
                 <template v-if="header.field === 'due_at'">
                   <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
-                    {{ formatRemainingTime(getNestedPropertyValue(row, header)) }}
+                    {{ formatRemainingTime(row.due_at) }}
                   </span>
-                  <span>{{ row["due_date"] }}</span>
+                  <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
                 <template v-else>
                   <div
@@ -86,6 +87,7 @@
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
                     >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
@@ -123,8 +125,8 @@
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
-        :empty="$t('Well, it seems nothing in here')"
-        :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+        :empty="$t('All clear')"
+        :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
       />
       <pagination-table
@@ -158,6 +160,7 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -218,6 +221,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
       rowPosition: {},
@@ -227,6 +231,13 @@ export default {
     };
   },
   computed: {
+    now() {
+      const tz = get(window, 'ProcessMaker.user.timezone');
+      if (tz) {
+        return moment().tz(tz);
+      }
+      return moment();
+    },
     endpoint() {
       if (this.savedSearch !== false) {
         return `saved-searches/${this.savedSearch}/results`;
@@ -242,14 +253,9 @@ export default {
           //format Status
           record["case_number"] = this.formatCaseNumber(record.process_request, record);
           record["case_title"] = this.formatCaseTitle(record.process_request, record);
-          if (record.process_request) {
-            record.process_request["case_number"] = record["case_number"];
-            record.process_request["case_title"] = record["case_title"];
-          }
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
-          record["due_date"] = this.formatDueDate(record["due_at"]);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process"] = this.formatProcess(record);
           record["task_name"] = this.formatActiveTask(record);
@@ -283,7 +289,7 @@ export default {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         ${processRequest.case_title_formatted || record.case_title || ""}
+         ${processRequest.case_title_formatted || processRequest.case_title || record.case_title || ""}
       </a>`;
     },
     formatActiveTask(row) {
@@ -304,7 +310,7 @@ export default {
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
       const columns = [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
@@ -313,7 +319,7 @@ export default {
           order_column: 'process_requests.case_number',
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           name: "__slot:case_number",
           sortable: true,
@@ -324,7 +330,7 @@ export default {
           order_column: 'process_requests.case_title',
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "process",
           sortable: true,
           default: true,
@@ -334,7 +340,7 @@ export default {
           order_column: 'process_requests.name',
         },
         {
-          label: this.$t("Task"),
+          label: "Task",
           field: "task_name",
           sortable: true,
           default: true,
@@ -344,15 +350,15 @@ export default {
           order_column: 'element_name',
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
           width: 100,
-          filter_subject: { value: 'Status' },
+          filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Due date"),
+          label: "Due date",
           field: "due_at",
           format: "datetime",
           sortable: true,
@@ -362,7 +368,7 @@ export default {
       ];
       if (isStatusCompletedList) {
         columns.push({
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -438,14 +444,11 @@ export default {
       return `${daysRemaining}D`;
     },
     remainingTime(date) {
-      if (date === "-" || date === null) {
+      date = moment(date);
+      if (!date.isValid()) {
         return 0;
       }
-
-      const currentDate = new Date();
-      const formatDate = moment(date).format("YYYY-MM-DD");
-      const endDate = new Date(formatDate);
-      return endDate - currentDate;
+      return date.diff(this.now);
     },
     formatProcess(request) {
       return request.process.name;
