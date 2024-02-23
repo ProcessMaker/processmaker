@@ -230,7 +230,7 @@ export default {
     },
     isProcessesCatalogueInUrl() {
       const currentUrl = window.location.href;
-      const isInUrl = currentUrl.includes("processes-catalogue");
+      const isInUrl = currentUrl.includes("process-browser");
       return isInUrl;
     }
   },

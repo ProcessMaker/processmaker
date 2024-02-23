@@ -1,5 +1,6 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
+import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
 new Vue({
   el: "#tasks",
@@ -38,18 +39,7 @@ new Vue({
         status = "In Progress";
         break;
     }
-
-    this.status.push({
-      name: status,
-      value: status,
-    });
-
-    // translate status labels when available
-    window.ProcessMaker.i18nPromise.then(() => {
-      this.status.forEach((item) => {
-        item.name = this.$t(item.name);
-      });
-    });
+    setDefaultAdvancedFilterStatus(status);
 
     if (this.urlPmql && this.urlPmql !== "") {
       this.onSearch();

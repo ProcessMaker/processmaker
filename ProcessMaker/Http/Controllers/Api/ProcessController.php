@@ -1721,9 +1721,11 @@ class ProcessController extends Controller
 
     public function getMediaImages(Request $request, Process $process)
     {
-        $media = Process::with(['media'])
-            ->where('id', $process->id)
-            ->get();
+        $media = Process::with(['media' => function ($query) {
+            $query->orderBy('order_column', 'asc');
+        }])
+        ->where('id', $process->id)
+        ->get();
 
         return new ProcessCollection($media);
     }

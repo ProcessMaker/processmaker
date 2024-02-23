@@ -18,7 +18,7 @@ export default {
       for(const filter of filters) {
         result.push([
           this.formatBadgeSubject(filter),
-          [{name: this.formatBadgeValue(filter), advanced_filter: true}]
+          [{name: filter.value, operator: filter.operator, advanced_filter: true}]
         ]);
 
         if (filter.or && filter.or.length > 0) {
@@ -28,11 +28,6 @@ export default {
     },
     formatBadgeSubject(filter) {
       return get(filter, '_column_label', '');
-    },
-    formatBadgeValue(filter) {
-      let result = filter.operator;
-      result = result + " " + filter.value;
-      return result;
     },
   },
   computed: {

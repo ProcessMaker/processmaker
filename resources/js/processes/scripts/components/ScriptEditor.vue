@@ -184,6 +184,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <ai-tab
+                    v-if="packageAi"
                     ref="aiTab"
                     :user="user"
                     :source-code="code"
@@ -291,7 +292,7 @@
                       <div class="output text-white">
                         <pre
                           v-if="preview.success"
-                          class="text-white"
+                          class="text-white text-pre-wrap"
                         ><samp>{{ preview.output }}</samp></pre>
                         <div v-if="preview.failure">
                           <div class="text-light bg-danger">
@@ -326,6 +327,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <ai-tab
+                    v-if="packageAi"
                     ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
@@ -1112,5 +1114,10 @@ export default {
 }
 .cldr.delete-sign.codicon.codicon-diff-remove {
     background: #fbc7c7 !important;
+}
+
+.text-pre-wrap {
+    overflow-x: hidden;
+    white-space: pre-wrap;
 }
 </style>

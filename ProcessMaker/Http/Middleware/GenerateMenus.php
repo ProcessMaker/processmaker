@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Setting;
 
 class GenerateMenus
@@ -32,8 +33,8 @@ class GenerateMenus
             $menu->group(['prefix' => 'processes'], function ($request_items) {
                 $request_items->add(
                     __('Processes'),
-                    ['route' => 'processes.catalogue.index', 'id' => 'processes-catalogue']
-                )->active('processes-catalogue/*');
+                    ['route' => 'process.browser.index', 'id' => 'process-browser']
+                )->active('process-browser/*');
             });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
@@ -282,24 +283,18 @@ class GenerateMenus
         return $next($request);
     }
 
-    private function userHasPermission($permission)
+    public static function userHasPermission($permission)
     {
         $user = \Auth::user();
 
-        if (!$user) {
-            return false;
+        if (!$user || !$user->is_administrator) {
+            return $user && $user->can($permission) && $user->hasPermission($permission);
         }
 
-        if ($user->is_administrator) {
-            return true;
-        }
-
-        // Fetch the user's permissions and check if the user has the specific permission
         $userPermissions = $user->permissions->pluck('group')->unique()->toArray();
-        if ($user->can($permission) && count($userPermissions) === 1 && $userPermissions[0] === 'Projects') {
-            return false; // Deny UI access if the user has only the 'Projects' permission
-        }
+        $defaultPermissions = Permission::DEFAULT_PERMISSIONS;
+        $userWithDefaultPermissions = empty(array_diff($userPermissions, $defaultPermissions));
 
-        return $user->can($permission);
+        return !($user->can($permission) && count($userPermissions) === 2 && $userWithDefaultPermissions);
     }
 }

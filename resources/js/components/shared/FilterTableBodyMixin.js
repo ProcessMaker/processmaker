@@ -72,5 +72,10 @@ export default {
       }
       return "-";
     },
+    checkIfTooltipIsNeeded(e,v){
+      if (e.target.offsetWidth >= e.target.scrollWidth) {
+        e.preventDefault();
+      }
+    }
   },
 };
