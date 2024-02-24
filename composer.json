@@ -132,7 +132,7 @@
                 "package-zj-nas": "dev-fall"
             },
             "enterprise": {
-                "connector-docusign": "1.8.1",
+                "connector-docusign": "1.8.2",
                 "connector-idp": "1.8.0",
                 "connector-pdf-print": "1.16.1",
                 "connector-send-email": "1.25.3",
