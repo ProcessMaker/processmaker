@@ -40,7 +40,7 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Set image name
+      - name: Set image name 
         run: |
             RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
             echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
