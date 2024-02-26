@@ -1235,6 +1235,9 @@ body {
 .device-screen {
   width: 100%;
 }
+.flat-tabs .h-tab {
+  height: calc(100% - 42px) !important;
+}
 .btn-platform {
   background-color: #ffff;
   color: #6a7888;
