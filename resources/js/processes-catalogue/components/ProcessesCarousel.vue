@@ -13,8 +13,15 @@
         v-for="(image, index) in images.length > 0 ? images : defaultImage"
         :key="index"
         class="custom-style"
-        :img-src="image.url"
-      />
+      >
+        <template #img>
+          <img
+            :src="image.url"
+            :alt="process.name"
+            class="d-block w-100 img-carousel"
+          >
+        </template>
+      </b-carousel-slide>
     </b-carousel>
   </div>
 </template>
@@ -104,7 +111,7 @@ export default {
   width: 100%;
   height: 400px;
 }
-.img-fluid {
+.img-carousel {
   max-width: 100%;
   height: inherit;
 }
