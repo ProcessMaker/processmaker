@@ -126,15 +126,10 @@
                     </div>
                 </div>
                 @endcan
-                <div
-                    class="{{$secondContent}}"
-                    id="nav-categories"
-                    role="tabpanel"
-                    aria-labelledby="nav-categories-tab"
-                >
-                    <div class="card card-body p-3 border-top-0">
-                        {{ $categoryList }}
-                    </div>
+                <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
+                <div class="card card-body p-3 border-top-0">
+                    {{ $categoryList }}
+                </div>
                 </div>
                 @isset($tabs[3])
                     <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
@@ -170,12 +165,7 @@
                     </div>
                 </div>
             @else
-                <div
-                    class="{{$secondContent}}"
-                    id="nav-categories"
-                    role="tabpanel"
-                    aria-labelledby="nav-categories-tab"
-                >
+                <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
                     <div class="card card-body p-3 border-top-0">
                         {{ $categoryList }}
                     </div>
@@ -205,12 +195,6 @@
       };
       loadTemplates = function () {
         ProcessMaker.EventBus.$emit("api-data-process-templates");
-      }
-      loadMyTemplates = function () {
-        console.log('my templates loaded');
-      }
-      loadPublicTemplates = function () {
-        console.log('public templates loaded');
       }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
