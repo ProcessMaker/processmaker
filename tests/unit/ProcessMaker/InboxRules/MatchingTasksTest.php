@@ -5,7 +5,6 @@ namespace Tests;
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
@@ -109,7 +108,7 @@ class MatchingTasksTest extends TestCase
         $this->assertNotEmpty($matchingRules);
     }
 
-    public function testGet()
+    public function testGetForTypeTask()
     {
         $user = User::factory()->create();
     
@@ -133,5 +132,27 @@ class MatchingTasksTest extends TestCase
         $matchingTasks = MatchingTasks::get($inboxRule);
 
         $this->assertEquals($task->process_id, $matchingTasks[0]["process_id"]);
+    }
+
+    public function testGetForTypeSavedSearch()
+    {
+        $user = User::factory()->create();
+        ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
+        $activeTask = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+            'element_name' => 'My Test Task',
+        ]);
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'task',
+            'pmql' => 'task = "My Test Task"',
+        ]);
+        $inboxRule = InboxRule::factory()->create([
+            'user_id' => $user->id,
+            'saved_search_id' => $savedSearch->id,
+        ]);
+        $matchingTasks = MatchingTasks::get($inboxRule);
+        $this->assertCount(1, $matchingTasks);
+        $this->assertEquals($activeTask->process_id, $matchingTasks[0]["process_id"]);
     }
 }
