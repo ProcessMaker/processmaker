@@ -36,7 +36,7 @@ class SmartInboxExistingTasks implements ShouldQueue
 
         $matchingTasks = MatchingTasks::get($inboxRule);
         foreach ($matchingTasks as $task) {
-            ApplyAction::applyActionOnTask($task, $inboxRule->toArray());
+            ApplyAction::applyActionOnTask($task, $inboxRule);
         }
     }
 }

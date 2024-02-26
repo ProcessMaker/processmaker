@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\InboxRules;
 
+use Illuminate\Support\Collection;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessRequestToken;
 
@@ -53,22 +54,19 @@ class MatchingTasks
             && $task->element_id == $rule->task->element_id;
     }
 
-    public function get(InboxRule $inboxRule) : array
+    public function get(InboxRule $inboxRule) : Collection
     {
         if ($savedSearch = $inboxRule->savedSearch) {
-            $savedSearches = $savedSearch->query->get();
-            return $savedSearches->toArray();
+            return $savedSearch->query->get();
         }
 
         if ($task = $inboxRule->task) {
-            $tasks = ProcessRequestToken::where([
+            return ProcessRequestToken::where([
                 'process_id' => $task->process_id,
                 'element_id' => $task->element_id,
                 'user_id' => $inboxRule->user_id,
                 'status' => 'ACTIVE',
             ])->get();
-
-            return $tasks->toArray();
         }
     }
 
