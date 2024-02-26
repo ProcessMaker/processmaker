@@ -84,7 +84,7 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Clone private repository
+      - name: Clone private repository 
         run: |
           git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
       - name: Install pm4-tools
