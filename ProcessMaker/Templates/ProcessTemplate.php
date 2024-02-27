@@ -229,6 +229,15 @@ class ProcessTemplate implements TemplateInterface
                 continue;
             }
 
+            // Exclude the import of process categories if the category already exists in the database
+            if ($asset['model'] === 'ProcessMaker\Models\ProcessCategory') {
+                $processCategory = ProcessCategory::where('uuid', $key)->first();
+                if ($processCategory !== null) {
+                    unset($payload['export'][$key]);
+                    continue;
+                }
+            }
+
             $postOptions[$key] = [
                 'mode' => 'copy',
                 'isTemplate' => false,
