@@ -11,7 +11,7 @@
         :selected-label="$t('Selected')"
         :deselect-label="$t('Press enter to remove')"
         :deselect-group-label="$t('Press enter to remove group')"
-        :placeholder="placeholder"
+        :placeholder="defaultLabel"
         :show-labels="false"
         :options="list"
         :multiple="false"
@@ -27,16 +27,13 @@
           slot="singleLabel"
           slot-scope="props"
         >
-          <span v-if="props.option.value">
+          <span>
             <img
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
             >
             {{ props.option.label }}
-          </span>
-          <span v-else>
-            {{ placeholder }}
           </span>
         </template>
         <template
@@ -75,10 +72,14 @@ export default {
   data() {
     return {
       all: Icons.list(),
-      icon: null,
+      icon: {
+        label: 'Default Icon',
+        value: 'default-icon'
+      },
       list: {},
       loading: true,
-      placeholder: this.$t("Select Icon"),
+      defaultValue: 'default-icon',
+      defaultLabel: this.$t("Default Icon"),
       query: "",
     };
   },
@@ -97,6 +98,10 @@ export default {
   },
   mounted() {
     this.icon = this.value ? this.find(this.value) : this.find(this.default);
+    if(!this.props.option.value) {
+      this.props.option.value = this.defaultValue;
+      this.props.option.label = this.defaultLabel;
+    }
   },
   methods: {
     onSearch(query) {
@@ -111,13 +116,13 @@ export default {
       this.$refs.multiselect.search = this.query;
     },
     onClose() {
-      this.placeholder = this.$t("Select Icon");
+      this.defaultLabel = this.$t("Default Icon");
     },
     find(value) {
       return this.all.find((icon) => icon.value == value);
     },
     onHover(icon) {
-      this.placeholder = icon.label;
+      this.defaultLabel = icon.label;
     },
     onSelect(value) {
       this.$root.$emit("launchpadIcon", value);
