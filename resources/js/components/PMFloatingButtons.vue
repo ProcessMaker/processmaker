@@ -40,8 +40,4 @@
     background-color: white;
     white-space: nowrap;
   }
-  .pm-floating-buttons-separator {
-    display: inline;
-    border-left: 1px solid #dee2e6;
-  }
 </style>
