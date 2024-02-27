@@ -191,6 +191,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
         Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
     });
+    Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller

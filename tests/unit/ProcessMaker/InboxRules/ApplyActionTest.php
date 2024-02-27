@@ -5,6 +5,7 @@ namespace Tests;
 use Facades\ProcessMaker\InboxRules\ApplyAction;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\InboxRule;
+use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
@@ -44,6 +45,11 @@ class ApplyActionTest extends TestCase
             );
 
         ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
+
+        $inboxRuleLog = InboxRuleLog::orderBy('id', 'desc')->first();
+        $this->assertEquals($inboxRuleLog->inbox_rule_attributes, $inboxRule->getAttributes());
+        $this->assertEquals($inboxRuleLog->task_id, $activeTask->id);
+        $this->assertEquals($inboxRuleLog->inbox_rule_id, $inboxRule->id);
     }
 
     public function testMarkAsPriority()

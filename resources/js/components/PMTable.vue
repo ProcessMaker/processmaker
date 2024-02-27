@@ -35,8 +35,6 @@
     data() {
       return {
         shouldShowLoader: false,
-        changePage: () => {
-        }
       };
     },
     methods: {
@@ -44,6 +42,9 @@
         let container = this.$refs.filterTable.$el;
         let scrolledWidth = container.scrollWidth - container.clientWidth;
         this.$emit('onRowMouseover', row, scrolledWidth);
+      },
+      changePage(page) {
+        this.$emit('page-change', page);
       }
     }
   }

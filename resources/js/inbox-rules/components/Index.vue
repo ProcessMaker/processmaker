@@ -2,7 +2,7 @@
   <div>
     <h4>Inbox Rules</h4>
     <b-tabs class="m-3" content-class="p-3 pm-tab-content">
-      <b-tab :title="$t('Rules')" 
+      <b-tab :title="$t('Rules')"
              active>
         <PMTable :headers="columns"
                  :data="rows"
@@ -10,8 +10,8 @@
                  @onTrMouseleave="tableTrMouseleave">
         </PMTable>
       </b-tab>
-      <b-tab :title="$t('Execution Log')">
-        Hi!
+      <b-tab :title="$t('Execution Log')" @click="$refs.executionLog.load()">
+        <ExecutionLog ref="executionLog"></ExecutionLog>
       </b-tab>
     </b-tabs>
   </div>
@@ -20,10 +20,13 @@
 <script>
   import PMTable from "../../components/PMTable.vue";
   import PmRowButtons from "./PmRowButtons.vue";
+  import ExecutionLog from "./ExecutionLog.vue";
+
   Vue.component("PmRowButtons", PmRowButtons);
   export default {
     components: {
-      PMTable
+      PMTable,
+      ExecutionLog,
     },
     data() {
       return {

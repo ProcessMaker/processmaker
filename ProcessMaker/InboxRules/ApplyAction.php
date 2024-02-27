@@ -2,13 +2,11 @@
 
 namespace ProcessMaker\InboxRules;
 
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\InboxRuleLog;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
-use ProcessMaker\SanitizeHelper;
 
 class ApplyAction
 {
@@ -36,6 +34,12 @@ class ApplyAction
                     $this->submitForm($task, $inputRule);
                 }
             }
+
+            InboxRuleLog::create([
+                'inbox_rule_id' => $inputRule->id,
+                'task_id' => $task->id,
+                'inbox_rule_attributes' => $inputRule->getAttributes(),
+            ]);
         }
     }
 

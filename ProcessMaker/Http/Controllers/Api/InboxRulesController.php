@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Models\InboxRuleLog;
 
 class InboxRulesController extends Controller
 {
@@ -31,7 +33,7 @@ class InboxRulesController extends Controller
     /**
      * Store a new inbox rule.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
@@ -42,7 +44,7 @@ class InboxRulesController extends Controller
     /**
      * Update an existing inbox rule.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param int $inbox_rule_id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -60,5 +62,21 @@ class InboxRulesController extends Controller
     public function destroy($inbox_rule_id)
     {
         // Logic to delete an existing inbox rule
+    }
+
+    /**
+     * Retrieve inbox rule log.
+     *
+     * @param int $inbox_rule_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function executionLog(Request $request)
+    {
+        $response = InboxRuleLog::with('task')
+            ->with('task.processRequest')
+            ->orderBy('id', 'DESC')
+            ->paginate($request->input('per_page', 10));
+
+        return new ApiCollection($response);
     }
 }
