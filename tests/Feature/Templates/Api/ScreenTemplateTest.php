@@ -38,7 +38,7 @@ class ScreenTemplateTest extends TestCase
         ];
         $response = $this->apiCall('POST', $route, $data);
 
-        // Assert response status
+        // Assert successful response status
         $response->assertStatus(200);
 
         // Assert that our database has the screen template we need
