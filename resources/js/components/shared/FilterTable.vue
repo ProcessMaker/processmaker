@@ -99,23 +99,22 @@
                 </template>
                 <template v-else>
                   <slot :name="'cell-' + header.field" :row="row" :header="header" :rowIndex="rowIndex">
-                    <!-- default content, use below stuff in here -->
-                  </slot> 
-                  <div
-                    :id="`${tableName}-element-${rowIndex}-${index}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
-                    {{ getNestedPropertyValue(row, header) }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`${tableName}-element-${rowIndex}-${index}`"
-                      custom-class="pm-table-tooltip"
-                      @show="checkIfTooltipIsNeeded"
+                    <div
+                      :id="`${tableName}-element-${rowIndex}-${index}`"
+                      :class="{ 'pm-table-truncate': header.truncate }"
+                      :style="{ maxWidth: header.width + 'px' }"
                     >
                       {{ getNestedPropertyValue(row, header) }}
-                    </b-tooltip>
-                  </div>
+                      <b-tooltip
+                        v-if="header.truncate"
+                        :target="`${tableName}-element-${rowIndex}-${index}`"
+                        custom-class="pm-table-tooltip"
+                        @show="checkIfTooltipIsNeeded"
+                      >
+                        {{ getNestedPropertyValue(row, header) }}
+                      </b-tooltip>
+                    </div>
+                  </slot> 
                 </template>
               </template>
             </td>
