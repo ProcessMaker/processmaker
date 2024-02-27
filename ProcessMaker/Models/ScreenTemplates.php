@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 
@@ -14,6 +15,7 @@ class ScreenTemplates extends Template
     use HasFactory;
     use HasCategories;
     use HideSystemResources;
+    use ExtendedPMQL;
 
     protected $table = 'screen_templates';
 
@@ -49,5 +51,116 @@ class ScreenTemplates extends Template
     public function getScreenCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * PMQL value alias for fulltext field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasFullText($value, $expression)
+    {
+        return function ($query) use ($value) {
+            $this->scopeFilter($query, $value);
+        };
+    }
+
+    /**
+     * PMQL value alias for screen template field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasName($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $templates = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for screen templates field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasScreen($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $templates = self::where('name', $expression->operator, $value)->get();
+            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for id field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasId($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $templates = self::where('id', $expression->operator, $value)->get();
+            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for category field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    public function valueAliasCategory($value, $expression)
+    {
+        return function ($query) use ($value, $expression) {
+            $categoryAssignment = DB::table('category_assignments')->leftJoin('screen_categories', function ($join) {
+                $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                $join->where('category_assignments.assignable_type', '=', self::class);
+            })
+                ->where('name', $expression->operator, $value);
+            $query->whereIn('screen_templates.id', $categoryAssignment->pluck('assignable_id'));
+        };
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filterStr)
+    {
+        $filter = '%' . mb_strtolower($filterStr) . '%';
+        $query->where(function ($query) use ($filter, $filterStr) {
+            $query->where('screen_templates.name', 'like', $filter)
+                 ->orWhere('screen_templates.description', 'like', $filter)
+                 ->orWhereHas('user', function ($query) use ($filter) {
+                     $query->where('firstname', 'like', $filter)
+                         ->orWhere('lastname', 'like', $filter);
+                 })
+                 ->orWhereIn('screen_templates.id', function ($qry) use ($filter) {
+                     $qry->select('assignable_id')
+                         ->from('category_assignments')
+                         ->leftJoin('screen_categories', function ($join) {
+                             $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                             $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                             $join->where('category_assignments.assignable_type', '=', self::class);
+                         })
+                         ->where('screen_categories.name', 'like', $filter);
+                 });
+        });
+
+        return $query;
     }
 }
