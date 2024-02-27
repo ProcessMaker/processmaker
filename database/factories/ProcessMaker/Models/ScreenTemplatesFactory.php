@@ -32,6 +32,7 @@ class ScreenTemplatesFactory extends Factory
             'description' => $this->faker->unique()->name(),
             'user_id' => User::factory()->create()->getKey(),
             'editing_screen_uuid' => null,
+            'screen_type' => 'FORM',
             // 'manifest' => json_encode($manifest),
             'manifest' => '{}',
             'is_system' => false,

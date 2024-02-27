@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -57,10 +57,54 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request The HTTP request containing the template data
      * @return JsonResponse The JSON response with the saved template model
      */
-    // public function save($request) : JsonResponse
-    // {
-    //     // TODO: Implement saving a new screen template
-    // }
+    public function save($request) : JsonResponse
+    {
+        $data = $request->all();
+
+        // Find the required screen model
+        $model = (new ExportController)->getModel('screen')->findOrFail($data['asset_id']);
+
+        // Get the screen manifest
+        $response = $this->getManifest('screen', $data['asset_id']);
+
+        if (array_key_exists('error', $response)) {
+            return response()->json($response, 400);
+        }
+
+        $uuid = $model->uuid;
+        $screenType = $model->type;
+
+        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
+        $postOptions = [];
+        foreach ($response['export'] as $key => $asset) {
+            $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
+            if ($key === $uuid) {
+                $mode = 'copy';
+            }
+            $postOptions[$key] = [
+                'mode' => $mode,
+                'isTemplate' => true,
+                'saveAssetsMode' => $data['saveAssetsMode'],
+            ];
+        }
+        $options = new Options($postOptions);
+
+        // Create an exporter instance
+        $exporter = new Exporter();
+        $exporter->export($model, ScreenExporter::class, $options);
+        $payload = $exporter->payload();
+
+        // Create a new process template
+        $screenTemplate = ScreenTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'user_id' => \Auth::user()->id,
+            'screen_type' => $screenType,
+        ]);
+
+        $screenTemplate->saveOrFail();
+
+        return response()->json(['model' => $screenTemplate]);
+    }
 
     /**
      * Create a screen from the selected screen template
@@ -113,15 +157,28 @@ class ScreenTemplate implements TemplateInterface
      * @param Request
      * @return JsonResponse
      */
-    // public function updateTemplateConfigs($request) : JsonResponse
-    // {
-    //     // TODO: Implement updating a screen template configs
-    // }
+    public function updateTemplateConfigs($request) : JsonResponse
+    {
+        $id = (int) $request->id;
+        $template = ScreenTemplates::where('id', $id)->firstOrFail();
+        $template->fill($request->except('id'));
+        $template->user_id = Auth::user()->id;
 
-    // public function updateTemplateManifest(int $processId, $request)  : JsonResponse
-    // {
-    //     // TODO: Implement updating a screen template manifest when editing template in screen builder
-    // }
+        try {
+            $template->saveOrFail();
+
+            return response()->json();
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    {
+        // TODO: Implement updating a screen template manifest when editing template in screen builder
+    }
 
     /**
      * Displays Template Configurations
@@ -130,20 +187,20 @@ class ScreenTemplate implements TemplateInterface
      * @return array An array containing the template object, addons, and categories
      * @throws Illuminate\Database\Eloquent\ModelNotFoundException If no template is found with the given ID
      */
-    // public function configure(int $id) : array
-    // {
-    //     // TODO: Implement showing selected screen template configurations
-    // }
+    public function configure(int $id) : array
+    {
+        // TODO: Implement showing selected screen template configurations
+    }
 
     /**
      *  Delete process template
      * @param mixed $request
      * @return bool
      */
-    // public function destroy(int $id) : bool
-    // {
-    //     // TODO: Implement deleting selected screen template
-    // }
+    public function destroy(int $id) : bool
+    {
+        return ScreenTemplates::where('id', $id)->delete();
+    }
 
     /**
      * Get process template manifest.
@@ -204,7 +261,7 @@ class ScreenTemplate implements TemplateInterface
         $templateId = $request->id;
         $name = $request->name;
 
-        $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
+        $template = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously,
             // offer to choose between “Update Template” and “Save as New Template”
