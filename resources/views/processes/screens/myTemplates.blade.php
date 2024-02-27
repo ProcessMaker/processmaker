@@ -4,7 +4,7 @@
                 <div class="flex-grow-1">
                     <pmql-input
                         ref="pmql_input"
-                        search-type="processes"
+                        search-type="screen_templates"
                         :value="pmql"
                         :url-pmql="urlPmql"
                         :filters-value="pmql"
