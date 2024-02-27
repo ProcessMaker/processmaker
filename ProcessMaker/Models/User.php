@@ -3,7 +3,6 @@
 namespace ProcessMaker\Models;
 
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
