@@ -193,6 +193,11 @@ export default {
       ]
     };
   },
+  created () {
+    ProcessMaker.EventBus.$on("api-data-public-screen-templates", (val) => {
+      this.fetch();
+    });
+  },
   methods: {
     fetch() {
     //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'PUBLIC TEMPLATES' FROM SCREEN TEMPLATES

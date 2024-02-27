@@ -183,7 +183,11 @@
         ]
       };
     },
-  
+    created () {
+      ProcessMaker.EventBus.$on("api-data-my-screen-templates", (val) => {
+        this.fetch();
+      });
+    },
     methods: {
       onMyTemplateNavigate() {
         console.log('ellipsis menu action');
