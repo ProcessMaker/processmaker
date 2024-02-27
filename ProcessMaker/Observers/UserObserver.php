@@ -37,7 +37,6 @@ class UserObserver
     {
         $perList = [
             'view-process-catalog',
-            'publish-screen-templates',
         ];
         $permissionIds = Permission::whereIn('name', $perList)->pluck('id')->toArray();
         $user->permissions()->attach($permissionIds);
