@@ -36,7 +36,15 @@
             @endcan
         </div>
     </div>
-
+    @php
+    $permissions = \Auth::user()->hasPermissionsFor(
+        'processes',
+        'process-templates',
+        'pm-blocks',
+        'projects',
+        'additional-asset-actions'
+    );
+    @endphp
     <div class="container-fluid">
         <processes-listing
             ref="processListing"
@@ -45,7 +53,7 @@
             status="{{ $config->status }}"
             v-on:edit="edit"
             v-on:reload="reload"
-            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'additional-asset-actions') }}"
+            :permission="{{ $permissions }}"
             :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
