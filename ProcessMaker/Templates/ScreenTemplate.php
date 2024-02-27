@@ -175,10 +175,10 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
-    // public function updateTemplateManifest(int $processId, $request)  : JsonResponse
-    // {
-    //     // TODO: Implement updating a screen template manifest when editing template in screen builder
-    // }
+    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    {
+        // TODO: Implement updating a screen template manifest when editing template in screen builder
+    }
 
     /**
      * Displays Template Configurations
@@ -187,10 +187,10 @@ class ScreenTemplate implements TemplateInterface
      * @return array An array containing the template object, addons, and categories
      * @throws Illuminate\Database\Eloquent\ModelNotFoundException If no template is found with the given ID
      */
-    // public function configure(int $id) : array
-    // {
-    //     // TODO: Implement showing selected screen template configurations
-    // }
+    public function configure(int $id) : array
+    {
+        // TODO: Implement showing selected screen template configurations
+    }
 
     /**
      *  Delete process template
