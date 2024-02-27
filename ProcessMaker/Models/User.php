@@ -250,39 +250,24 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    /**
-     * Returns a collection of the permission names for permission groups
-     *
-     * @param ...$permissionGroups
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function hasPermissionsFor(...$permissionGroups)
+    public function hasPermissionsFor(...$resources)
     {
-        // Setup our query for permissions
-        $permissionsQuery = Permission::query();
-
-        // If the user isn't a super administrator, then we'll
-        // check their session-set permissions
-        if (!$this->is_administrator) {
-            $permissionsQuery->whereIn('name', session('permissions') ?? []);
+        if ($this->is_administrator) {
+            $perms = Permission::all(['name'])->pluck('name');
+        } else {
+            $perms = collect(session('permissions'));
         }
 
-        // Query the permissions and include the
-        // group name for filtering later
-        $permissions = $permissionsQuery->get(['name', 'group']);
+        $filtered = $perms->filter(function ($value) use ($resources) {
+            foreach ($resources as $resource) {
+                $match = preg_match("/(.+)-{$resource}/", $value);
+                if ($match === 1) {
+                    return true;
+                }
+            }
+        });
 
-        // Convert the resource name to headline casing to match
-        // with how we save permission group names
-        $permissionGroups = array_map(static function ($permissionGroup) {
-            return Str::headline($permissionGroup);
-        }, $permissionGroups);
-
-        // Filter down to only the groups of permissions requested
-        $permissions = $permissions->whereIn('group', $permissionGroups);
-
-        // Send back only the names of the permissions themselves.
-        return $permissions->pluck('name')->values();
+        return $filtered->values();
     }
 
     public function groupMembersFromMemberable()

@@ -24,9 +24,9 @@
                         </div>
                     @endcan
                     @can('create-processes')
-                        <select-template-modal 
-                            :type="__('Process')" 
-                            :count-categories="@json($config->countCategories)" 
+                        <select-template-modal
+                            :type="__('Process')"
+                            :count-categories="@json($config->countCategories)"
                             :package-ai="{{ hasPackage('package-ai') ? '1' : '0' }}"
                             is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
                             >
@@ -45,7 +45,7 @@
             status="{{ $config->status }}"
             v-on:edit="edit"
             v-on:reload="reload"
-            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
+            :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects', 'additional-asset-actions') }}"
             :current-user-id="{{ \Auth::user()->id }}"
             is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
