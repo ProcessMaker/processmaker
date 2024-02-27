@@ -92,7 +92,7 @@ class DataManager
             $data['_user'] = $userData;
         }
         // Magic variable: _user is removed when the task is SelfService.
-        if ($token->is_self_service === 1) {
+        if ($token && $token->is_self_service === 1) {
             unset($data['_user']);
         }
 
