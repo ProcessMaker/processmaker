@@ -3,6 +3,7 @@
     <b-tabs
       id="tabs-custom"
       pills
+      lazy
     >
       <b-tab
         :title="$t('My Tasks')"
