@@ -141,7 +141,7 @@
                 "docker-executor-node-ssr": "1.5.0",
                 "package-actions-by-email": "1.16.0",
                 "package-advanced-user-manager": "1.10.0",
-                "package-ai": "1.5.2",
+                "package-ai": "1.6.0",
                 "package-analytics-reporting": "1.5.1",
                 "package-auth": "1.17.1",
                 "package-cdata": "1.2.0",
@@ -166,7 +166,7 @@
                 "package-translations": "2.8.1",
                 "package-versions": "1.9.1",
                 "package-vocabularies": "2.14.1",
-                "package-webentry": "2.20.3",
+                "package-webentry": "2.21.0",
                 "packages": "^0"
             },
             "docker-executors": {
