@@ -8,6 +8,19 @@
                  :data="data"
                  @onRowMouseover="tableRowMouseover"
                  @onTrMouseleave="tableTrMouseleave">
+
+          <template v-slot:cell-deactivation_date="{ row, header, rowIndex }">
+            <PmRowButtons
+              :row="row"
+              name="deactivation_date"
+              :value="row['deactivation_date']"
+              @buttonEdit="$router.push({name: 'edit', params: {id: row.id}})"
+              @buttonRemove="console.log('remove')"
+              :ref="`pmRowButtons-${rowIndex}`"
+            >
+            </PmRowButtons>
+          </template>
+
         </PMTable>
       </b-tab>
       <b-tab :title="$t('Execution Log')">
@@ -24,10 +37,10 @@
 <script>
   import PMTable from "../../components/PMTable.vue";
   import PmRowButtons from "./PmRowButtons.vue";
-  Vue.component("PmRowButtons", PmRowButtons);
   export default {
     components: {
-      PMTable
+      PMTable,
+      PmRowButtons,
     },
     data() {
       return {
@@ -83,7 +96,6 @@
           data: rows,
           meta: {}
         };
-        this.formatColumns(data);
         return data;
       },
       getHeaders2() {
@@ -129,36 +141,14 @@
           data: rows,
           meta: {}
         };
-        this.formatColumns(data);
         return data;
       },
-      formatColumns(data) {
-        for (let row of data.data) {
-          row["deactivation_date"] = this.formatToDeactivationDate(row);
-        }
+      tableRowMouseover(row, scrolledWidth, index) {
+        this.$refs[`pmRowButtons-${index}`].show();
+        this.$refs[`pmRowButtons-${index}`].setMargin(scrolledWidth);
       },
-      formatToDeactivationDate(row) {
-        return {
-          component: "PmRowButtons",
-          props: {
-            value: row["deactivation_date"],
-            name: "deactivation_date",
-            row: row,
-            buttonEdit: () => {
-              this.$router.push({name: 'edit', params: {id: 1}});
-            },
-            buttonRemove: () => {
-              console.log("remove");
-            }
-          }
-        };
-      },
-      tableRowMouseover(row, scrolledWidth) {
-        row["deactivation_date"].pmRowButtons.show();
-        row["deactivation_date"].pmRowButtons.setMargin(scrolledWidth);
-      },
-      tableTrMouseleave(row) {
-        row["deactivation_date"].pmRowButtons.close();
+      tableTrMouseleave(row, index) {
+        this.$refs[`pmRowButtons-${index}`].close();
       }
     }
   }

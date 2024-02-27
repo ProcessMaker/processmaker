@@ -27,7 +27,10 @@
                  :headers="headers"
                  :data="data"
                  @table-row-mouseover="tableRowMouseover"
-                 @table-tr-mouseleave="$emit('onTrMouseleave', $event)">
+                 @table-tr-mouseleave="(row, rowIndex) => $emit('onTrMouseleave', row, rowIndex)">
+      <template v-for="header in headers" v-slot:[getSlotName(header.field)]="slotProps">
+        <slot :name="'cell-' + header.field" v-bind="slotProps" />
+      </template>
     </FilterTable>
     <data-loading v-show="shouldShowLoader"
                   :for="/requests\?page|results\?page/"
@@ -63,10 +66,15 @@
       };
     },
     methods: {
-      tableRowMouseover(row) {
+      tableRowMouseover(row, rowIndex) {
         let container = this.$refs.filterTable.$el;
         let scrolledWidth = container.scrollWidth - container.clientWidth;
-        this.$emit('onRowMouseover', row, scrolledWidth);
+        this.$emit('onRowMouseover', row, scrolledWidth, rowIndex);
+      },
+      getSlotName(field) {
+        // need to use this method because prefixing text to the
+        // dynamic slot name doesn't work in the template
+        return `cell-${field}`
       }
     }
   }

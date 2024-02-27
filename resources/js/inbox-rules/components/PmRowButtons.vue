@@ -41,7 +41,6 @@
       };
     },
     mounted() {
-      this.row[this.name].pmRowButtons = this;
     },
     methods: {
       show() {

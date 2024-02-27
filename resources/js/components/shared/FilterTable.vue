@@ -65,8 +65,8 @@
           :id="`row-${row.id}`"
           :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row, $event)"
-          @mouseover="handleRowMouseover(row)"
-          @mouseleave="handleTrMouseleave(row)"
+          @mouseover="$emit('table-row-mouseover', row, rowIndex)"
+          @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
@@ -98,6 +98,9 @@
                   />
                 </template>
                 <template v-else>
+                  <slot :name="'cell-' + header.field" :row="row" :header="header" :rowIndex="rowIndex">
+                    <!-- default content, use below stuff in here -->
+                  </slot> 
                   <div
                     :id="`${tableName}-element-${rowIndex}-${index}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
@@ -229,12 +232,6 @@ export default {
     },
     handleRowClick(row, event) {
       this.$emit("table-row-click", row, event);
-    },
-    handleRowMouseover(row) {
-      this.$emit("table-row-mouseover", row);
-    },
-    handleTrMouseleave(row) {
-      this.$emit('table-tr-mouseleave', row);
     },
     handleRowMouseleave() {
       this.$emit("table-row-mouseleave", false);
