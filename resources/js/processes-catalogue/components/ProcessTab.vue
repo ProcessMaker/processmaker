@@ -68,9 +68,9 @@ export default {
   width: fit-content;
   border-radius: 10px;
 }
-div:has(ul .nav-pills) {
+#tabs-custom div:has(ul) {
   display: flex;
-  align-items: center;
+  justify-content: center;
 }
 div:has(.tab-pane) {
   width: 100%;
