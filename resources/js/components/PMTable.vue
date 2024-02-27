@@ -1,10 +1,36 @@
 <template>
   <div>
+    <div class="search-bar flex-grow w-100">
+      <div class="d-flex align-items-center">
+        <i class="fa fa-search ml-3 pmql-icons">
+        </i>
+        <textarea  ref="search_input"
+                   type="text"
+                   :aria-label="''"
+                   :placeholder="$t('Search here')"
+                   rows="1"
+                   @keydown.enter.prevent
+                   class="pmql-input">
+        </textarea>
+        <i class="fa fa-times pl-1 pr-3 pmql-icons"
+           role="button">
+        </i>
+        <b-button id="idPopoverInboxRules"
+                  class="ml-md-1 task-inbox-rules"
+                  variant="primary">
+          {{ $t('Create Rule') }}
+        </b-button>
+      </div>  
+    </div>
+
     <FilterTable ref="filterTable"
                  :headers="headers"
                  :data="data"
                  @table-row-mouseover="tableRowMouseover"
-                 @table-tr-mouseleave="$emit('onTrMouseleave', $event)">
+                 @table-tr-mouseleave="(row, rowIndex) => $emit('onTrMouseleave', row, rowIndex)">
+      <template v-for="header in headers" v-slot:[getSlotName(header.field)]="slotProps">
+        <slot :name="'cell-' + header.field" v-bind="slotProps" />
+      </template>
     </FilterTable>
     <data-loading v-show="shouldShowLoader"
                   :for="/requests\?page|results\?page/"
@@ -38,10 +64,15 @@
       };
     },
     methods: {
-      tableRowMouseover(row) {
+      tableRowMouseover(row, rowIndex) {
         let container = this.$refs.filterTable.$el;
         let scrolledWidth = container.scrollWidth - container.clientWidth;
-        this.$emit('onRowMouseover', row, scrolledWidth);
+        this.$emit('onRowMouseover', row, scrolledWidth, rowIndex);
+      },
+      getSlotName(field) {
+        // need to use this method because prefixing text to the
+        // dynamic slot name doesn't work in the template
+        return `cell-${field}`
       },
       changePage(page) {
         this.$emit('page-change', page);
@@ -53,4 +84,17 @@
 <style>
 </style>
 <style scoped>
+  .pmql-icons{
+
+  }
+  .search-bar {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 3px;
+    background: #ffffff;
+
+    &:hover {
+      background-color: #fafbfc;
+      border-color: #cdddee;
+    }
+  }
 </style>

@@ -4,10 +4,23 @@
     <b-tabs class="m-3" content-class="p-3 pm-tab-content">
       <b-tab :title="$t('Rules')"
              active>
-        <PMTable :headers="columns"
-                 :data="rows"
+        <PMTable :headers="headers"
+                 :data="data"
                  @onRowMouseover="tableRowMouseover"
                  @onTrMouseleave="tableTrMouseleave">
+
+          <template v-slot:cell-deactivation_date="{ row, header, rowIndex }">
+            <PmRowButtons
+              :row="row"
+              name="deactivation_date"
+              :value="row['deactivation_date']"
+              @buttonEdit="$router.push({name: 'edit', params: {id: row.id}})"
+              @buttonRemove="console.log('remove')"
+              :ref="`pmRowButtons-${rowIndex}`"
+            >
+            </PmRowButtons>
+          </template>
+
         </PMTable>
       </b-tab>
       <b-tab :title="$t('Execution Log')" @click="$refs.executionLog.load()">
@@ -22,16 +35,18 @@
   import PmRowButtons from "./PmRowButtons.vue";
   import ExecutionLog from "./ExecutionLog.vue";
 
-  Vue.component("PmRowButtons", PmRowButtons);
   export default {
     components: {
       PMTable,
+      PmRowButtons,
       ExecutionLog,
     },
     data() {
       return {
-        columns: this.getHeaders(),
-        rows: this.getData()
+        headers: this.getHeaders(),
+        data: this.getData(),
+        headers2: this.getHeaders2(),
+        data2: this.getData2()
       };
     },
     mounted() {
@@ -80,36 +95,59 @@
           data: rows,
           meta: {}
         };
-        this.formatColumns(data);
         return data;
       },
-      formatColumns(data) {
-        for (let row of data.data) {
-          row["deactivation_date"] = this.formatToDeactivationDate(row);
-        }
-      },
-      formatToDeactivationDate(row) {
-        return {
-          component: "PmRowButtons",
-          props: {
-            value: row["deactivation_date"],
-            name: "deactivation_date",
-            row: row,
-            buttonEdit: () => {
-              this.$router.push({name: 'edit', params: {id: 1}});
-            },
-            buttonRemove: () => {
-              console.log("remove");
-            }
+      getHeaders2() {
+        return [
+          {
+            label: this.$t("Name"),
+            field: "name",
+            width: 10
+          },
+          {
+            label: this.$t("Status"),
+            field: "status",
+            width: 10
+          },
+          {
+            label: this.$t("Creation Date"),
+            field: "creation_date",
+            width: 10
+          },
+          {
+            label: this.$t("Deactivation Date"),
+            field: "deactivation_date",
+            width: 10
           }
+        ];
+      },
+      getData2() {
+        let rows = [
+          {
+            name: "name1",
+            status: "ok",
+            creation_date: "2024-01-01",
+            deactivation_date: "2024-01-02"
+          },
+          {
+            name: "name2",
+            status: "none",
+            creation_date: "2024-02-01",
+            deactivation_date: "2024-02-02"
+          }
+        ];
+        let data = {
+          data: rows,
+          meta: {}
         };
+        return data;
       },
-      tableRowMouseover(row, scrolledWidth) {
-        row["deactivation_date"].pmRowButtons.show();
-        row["deactivation_date"].pmRowButtons.setMargin(scrolledWidth);
+      tableRowMouseover(row, scrolledWidth, index) {
+        this.$refs[`pmRowButtons-${index}`].show();
+        this.$refs[`pmRowButtons-${index}`].setMargin(scrolledWidth);
       },
-      tableTrMouseleave(row) {
-        row["deactivation_date"].pmRowButtons.close();
+      tableTrMouseleave(row, index) {
+        this.$refs[`pmRowButtons-${index}`].close();
       }
     }
   }
