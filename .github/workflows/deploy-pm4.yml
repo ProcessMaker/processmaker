@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} send deploy EKS 🚀
 on:
   push:
     branches:
-      - SCO-1
+      - SCO-21872
   #pull_request:
   #  types: [opened, reopened, synchronize, edited, closed]
   #schedule:
