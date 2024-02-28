@@ -376,12 +376,13 @@ export default {
       const params = {
         question: this.query,
         type: this.searchType,
+        classifySearch: false,
       };
 
       this.aiLoading = true;
 
       ProcessMaker.apiClient
-        .post("/package-ai/nlqToPmql", params)
+        .post("/package-ai/naturalLanguageToPmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;

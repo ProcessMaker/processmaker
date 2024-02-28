@@ -321,9 +321,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
 
-    // OpenAI Translations
-    Route::middleware('throttle:30,1')->post('openai/language-translation', [OpenAIController::class, 'languageTranslation'])->name('openai.language-translation')->middleware('can:view-process-translations');
-
     // 2FA
     Route::post('2fa/test', [TwoFactorAuthController::class, 'testSettings'])->name('2fa.test_settings');
 });

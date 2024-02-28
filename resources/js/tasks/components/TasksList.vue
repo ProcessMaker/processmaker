@@ -14,7 +14,7 @@
         @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
-        <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
+        <template v-for="(column, index) in visibleHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
           <div :key="index" style="display: inline-block;">
@@ -29,7 +29,7 @@
           </div>
         </template>
         <!-- Slot Table Header filter Button -->
-        <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
+        <template v-for="(column, index) in visibleHeaders" v-slot:[`filter-${column.field}`]>
             <PMColumnFilterPopover v-if="column.sortable" 
                                    :key="index" 
                                    :id="'pm-table-column-'+index" 
@@ -50,7 +50,7 @@
         <!-- Slot Table Body -->
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
-            v-for="(header, colIndex) in tableHeaders"
+            v-for="(header, colIndex) in visibleHeaders"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -265,6 +265,9 @@ export default {
 
       return "tasks";
     },
+    visibleHeaders() {
+      return this.tableHeaders.filter((column) => !column.hidden);
+    },
   },
   watch: {
     data(newData) {
@@ -358,7 +361,7 @@ export default {
           order_column: 'process_requests.case_title',
         },
         {
-          label: "",
+          label: "Priority",
           field: "is_priority",
           sortable: false,
           default: true,
@@ -399,7 +402,15 @@ export default {
           sortable: true,
           default: true,
           width: 140,
-        }
+        },
+        {
+          label: "Draft",
+          field: "draft",
+          sortable: false,
+          default: true,
+          hidden: true,
+          width: 40,
+        },
       ];
       if (isStatusCompletedList) {
         columns.push({

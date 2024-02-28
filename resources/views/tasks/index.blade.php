@@ -30,8 +30,20 @@
         <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
           <li class="nav-item">
             <a class="nav-link task-nav-link active" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab"
-              aria-controls="inbox" aria-selected="true">
+              aria-controls="inbox" @click="switchTab('inbox')" aria-selected="true">
               {{ __('Inbox') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link task-nav-link" id="priority-tab" data-toggle="tab" href="#inbox" role="tab"
+              aria-controls="inbox" @click="switchTab('priority')" aria-selected="true">
+              {{ __('Priority') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link task-nav-link" id="drafts-tab" data-toggle="tab" href="#inbox" role="tab"
+              aria-controls="inbox" @click="switchTab('draft')" aria-selected="true">
+              {{ __('Drafts') }}
             </a>
           </li>
         </ul>
@@ -186,6 +198,7 @@
         .task-nav-link {
             color: #556271;
             font-weight: 400;
+            font-size: 15px;
             border-top-left-radius: 5px !important;
             border-top-right-radius: 5px !important;
         }

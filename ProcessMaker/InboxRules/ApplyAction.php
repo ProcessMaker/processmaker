@@ -10,7 +10,7 @@ use ProcessMaker\Models\User;
 
 class ApplyAction
 {
-    public function applyActionOnTask(ProcessRequestToken $task, array $inboxRules)
+    public function applyActionOnTask(ProcessRequestToken $task, $inboxRules)
     {
         foreach ($inboxRules as $inboxRule) {
             //Mark as priority

@@ -12,12 +12,12 @@
         <tr>
           <th
             class="pm-table-border"
-            :colspan="headers.length"
+            :colspan="visibleHeaders.length"
           />
         </tr>
         <tr>
           <th
-            v-for="(column, index) in headers"
+            v-for="(column, index) in visibleHeaders"
             :id="`${tableName}-column-${index}`"
             :key="index"
             class="pm-table-ellipsis-column"
@@ -35,7 +35,7 @@
               <slot :name="`filter-${column.field}`" />
             </div>
             <div
-              v-if="index !== headers.length - 1"
+              v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
               @mousedown="startResize($event, index)"
             />
@@ -53,7 +53,7 @@
         <tr>
           <th
             class="pm-table-border"
-            :colspan="headers.length"
+            :colspan="visibleHeaders.length"
           />
         </tr>
       </thead>
@@ -70,7 +70,7 @@
         >
           <slot :name="`row-${rowIndex}`">
             <td
-              v-for="(header, index) in headers"
+              v-for="(header, index) in visibleHeaders"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -171,6 +171,11 @@ export default {
       resizingColumnIndex: -1,
     };
   },
+  computed: {
+    visibleHeaders() {
+      return this.headers.filter((column) => !column.hidden);
+    },
+  },
   mounted() {
     this.$nextTick(() => {
       this.calculateColumnWidth();
@@ -190,7 +195,7 @@ export default {
       this.calculateColumnWidth();
     },
     calculateColumnWidth() {
-      this.headers.forEach((headerColumn, index) => {
+      this.visibleHeaders.forEach((headerColumn, index) => {
         if (this.calculateContent(index) !== 0) {
           headerColumn.width = this.calculateContent(index) - 32;
         }
@@ -201,7 +206,7 @@ export default {
       this.calculateColumnWidth();
       this.resizingColumnIndex = index;
       this.startX = event.pageX;
-      this.startWidth = this.headers[index].width;
+      this.startWidth = this.visibleHeaders[index].width;
 
       document.addEventListener("mousemove", this.doResize);
       document.addEventListener("mouseup", this.stopResize);
@@ -217,7 +222,7 @@ export default {
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
         if ((contentWidth - currentWidth) <= 80) {
-          this.headers[this.resizingColumnIndex].width = currentWidth;
+          this.visibleHeaders[this.resizingColumnIndex].width = currentWidth;
         }
       }
     },
