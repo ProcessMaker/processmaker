@@ -142,7 +142,7 @@ class ScreenTemplates extends Template
     public function scopeFilter($query, $filterStr)
     {
         $filter = '%' . mb_strtolower($filterStr) . '%';
-        $query->where(function ($query) use ($filter, $filterStr) {
+        $query->where(function ($query) use ($filter) {
             $query->where('screen_templates.name', 'like', $filter)
                  ->orWhere('screen_templates.description', 'like', $filter)
                  ->orWhereHas('user', function ($query) use ($filter) {
