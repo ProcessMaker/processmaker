@@ -11,7 +11,7 @@
         :selected-label="$t('Selected')"
         :deselect-label="$t('Press enter to remove')"
         :deselect-group-label="$t('Press enter to remove group')"
-        :placeholder="defaultLabel"
+        :placeholder="placeholder"
         :show-labels="false"
         :options="list"
         :multiple="false"
@@ -75,8 +75,11 @@ export default {
       icon: null,
       list: {},
       loading: true,
-      defaultValue: 'default-icon',
-      defaultLabel: this.$t("Default Icon"),
+      defaultIcon: {
+        value:'default-icon',
+        label: this.$t("Default Icon"),
+      },
+      placeholder: this.$t("Select Icon"),
       query: "",
     };
   },
@@ -94,7 +97,7 @@ export default {
     this.list = this.all;
   },
   mounted() {
-    this.icon = this.value ? this.find(this.value) : { label: 'Default Icon', value: 'default-icon' };
+    this.icon = this.value ? this.find(this.value) : this.defaultIcon;
   },
   methods: {
     onSearch(query) {
@@ -109,13 +112,13 @@ export default {
       this.$refs.multiselect.search = this.query;
     },
     onClose() {
-      this.defaultLabel = this.$t("Default Icon");
+      this.placeholder = this.$t("Select Icon");
     },
     find(value) {
       return this.all.find((icon) => icon.value == value);
     },
     onHover(icon) {
-      this.defaultLabel = icon.label;
+      this.placeholder = icon.label;
     },
     onSelect(value) {
       this.$root.$emit("launchpadIcon", value);
