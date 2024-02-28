@@ -67,7 +67,15 @@ class ScreenController extends Controller
             'screen-templates' => [],
         ];
 
-        return view('processes.screens.index', compact('listConfig', 'catConfig', 'myScreenTemplates', 'publicScreenTemplates'));
+        return view(
+            'processes.screens.index',
+            compact(
+                'listConfig',
+                'catConfig',
+                'myScreenTemplates',
+                'publicScreenTemplates'
+            )
+        );
     }
 
     /**

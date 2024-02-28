@@ -62,9 +62,16 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-publicTemplates-tab" data-toggle="tab" href="#nav-publicTemplates"
-                role="tab" onclick="loadPublicScreenTemplates()" aria-controls="nav-publicTemplates" aria-selected="true">
-                    {{ $tabs[3] ?? __('Public Templates') }}
+                <a
+                    class="nav-item nav-link"
+                    id="nav-publicTemplates-tab"
+                    data-toggle="tab"
+                    href="#nav-publicTemplates"
+                    role="tab"
+                    onclick="loadPublicScreenTemplates()"
+                    aria-controls="nav-publicTemplates"
+                    aria-selected="true">
+                        {{ $tabs[3] ?? __('Public Templates') }}
                 </a>
             </li>
         @else
