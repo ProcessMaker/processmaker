@@ -72,10 +72,7 @@ export default {
   data() {
     return {
       all: Icons.list(),
-      icon: {
-        label: 'Default Icon',
-        value: 'default-icon'
-      },
+      icon: null,
       list: {},
       loading: true,
       defaultValue: 'default-icon',
@@ -97,11 +94,7 @@ export default {
     this.list = this.all;
   },
   mounted() {
-    this.icon = this.value ? this.find(this.value) : this.find(this.default);
-    if(!this.props.option.value) {
-      this.props.option.value = this.defaultValue;
-      this.props.option.label = this.defaultLabel;
-    }
+    this.icon = this.value ? this.find(this.value) : { label: 'Default Icon', value: 'default-icon' };
   },
   methods: {
     onSearch(query) {
