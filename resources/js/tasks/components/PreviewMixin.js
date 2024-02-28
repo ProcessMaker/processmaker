@@ -19,6 +19,7 @@ const PreviewMixin = {
       showFrame2: false,
       isLoading: "",
       stopFrame: false,
+      isQuick: false,
     };
   },
   methods: {

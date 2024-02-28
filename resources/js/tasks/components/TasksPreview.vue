@@ -22,6 +22,7 @@
           ref="tasks-preview"
           class="h-100 p-3"
         >
+        <template v-if="!isQuick">
           <div>
             <div class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
@@ -30,6 +31,14 @@
                 </a>
               </div>
               <div class="ml-auto mr-0 text-right">
+                <b-button 
+                  class="icon-button"
+                  :aria-label="$t('Quick fill')"
+                  variant="light"
+                  @click="goQuickFill()"
+                >
+                  <img src="../../../img/smartinbox-images/fill.svg">
+                </b-button>
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Previous Tasks')"
@@ -89,6 +98,8 @@
               />
             </div>
           </div>
+        </template>
+        <quick-fill-preview v-if="isQuick" :isQuick="isQuick"></quick-fill-preview>
         </div>
       </pane>
     </splitpanes>
@@ -99,6 +110,7 @@
 import { Splitpanes, Pane } from "splitpanes";
 import TaskLoading from "./TaskLoading.vue";
 import PreviewMixin from "./PreviewMixin";
+//import QuickFillPreview from "./QuickFillPreview.vue"
 import "splitpanes/dist/splitpanes.css";
 
 export default {
@@ -114,6 +126,9 @@ export default {
     }
   },
   methods: {
+    goQuickFill() {
+      this.isQuick = true;
+    },
   },
 };
 </script>
@@ -150,5 +165,22 @@ export default {
   overflow: auto;
   grid-row-start: 1;
   grid-column-start: 1;
+}
+.icon-button {
+  display: inline-block;
+  width: 46px;
+  height: 36px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  vertical-align: unset;
+}
+
+.icon-button img {
+  width: 16px;
+  height: 16px;
 }
 </style>

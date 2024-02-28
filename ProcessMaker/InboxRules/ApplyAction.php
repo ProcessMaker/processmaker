@@ -16,7 +16,6 @@ class ApplyAction
     {
         foreach ($inboxRules as $inputRule) {
             //Mark as priority
-            //if (is_object($inputRule) && $inputRule->mark_as_priority === true) {
             if ($inputRule->mark_as_priority === true) {
                 $this->markAsPriority($task);
             }

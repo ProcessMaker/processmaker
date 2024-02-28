@@ -120,7 +120,7 @@
       </filter-table>
       <task-tooltip
         :position="rowPosition"
-        v-show="isTooltipVisible"
+        v-show="isTooltipVisible && !disableTooltip"
       >
         <template v-slot:task-tooltip-body>
           <div
@@ -155,7 +155,7 @@
       />
     </div>
     <tasks-preview
-      v-if="!verifyURL('saved-searches')"
+      v-if="!verifyURL('saved-searches') && !disableTooltip"
       ref="preview"
     />
   </div>
@@ -180,12 +180,14 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import QuickFillPreview from "./QuickFillPreview.vue"
 import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 Vue.component("TasksPreview", TasksPreview);
+Vue.component("QuickFillPreview", QuickFillPreview);
 
 export default {
   components: {
@@ -206,6 +208,9 @@ export default {
     filter: {},
     columns: {},
     pmql: {},
+    disableTooltip: {
+      default: false
+    },
     savedSearch: {
       default: false,
     },
