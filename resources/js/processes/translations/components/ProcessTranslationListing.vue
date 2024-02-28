@@ -247,18 +247,14 @@ export default {
           promptSessionId: this.promptSessionId,
         };
       }
-      console.log('llamada al url', url);
 
       window.ProcessMaker.apiClient.post(url, params)
         .then(response => {
-          console.log('respuesta', response);
           this.setPromptSessions((response.data.promptSessionId));
           this.promptSessionId = (response.data.promptSessionId);
           localStorage.promptSessionId = (response.data.promptSessionId);
-          console.log('session is', localStorage.promptSessionId)
         })
         .catch((error) => {
-          console.log('error');
           const errorMsg = error.response?.data?.message || error.message;
 
           this.loading = false;
