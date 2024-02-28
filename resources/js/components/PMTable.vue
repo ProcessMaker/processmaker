@@ -50,9 +50,6 @@
     },
     data() {
       return {
-        dataLoading: false,
-        noResults: false,
-        showsSearch: true,
       };
     },
     methods: {
