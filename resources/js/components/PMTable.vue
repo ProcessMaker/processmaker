@@ -2,7 +2,8 @@
   <div>
     <slot name="top-content"></slot>
 
-    <FilterTable ref="filterTable"
+    <FilterTable v-show="!shouldShowLoader"
+                 ref="filterTable"
                  :headers="headers"
                  :data="data"
                  @table-row-mouseover="tableRowMouseover"
@@ -13,10 +14,12 @@
     </FilterTable>
 
     <data-loading v-show="shouldShowLoader"
-                  :for="/requests\?page|results\?page/"
-                  :empty="$t('No results have been found')"
-                  :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
-                  empty-icon="noData">
+                  :for="/rule-execution-log/"
+                  :empty="empty"
+                  :empty-desc="emptyDesc"
+                  :empty-icon="emptyIcon"
+                  ref="dataLoading"
+                  >
     </data-loading>
 
     <pagination-table :meta="data.meta"
@@ -29,21 +32,27 @@
   import FilterTable from "./shared/FilterTable.vue";
   import PaginationTable from "./shared/PaginationTable.vue";
   import DataLoading from "./common/DataLoading.vue";
+  import dataLoadingMixin from "../components/common/mixins/apiDataLoading";
   export default {
     components: {
       FilterTable,
       DataLoading,
       PaginationTable
     },
+    mixins: [dataLoadingMixin],
     props: {
       headers: null,
-      data: null
+      data: null,
+      showSearch: false,
+      empty: null,
+      emptyDesc: null,
+      emptyIcon: null,
     },
     data() {
       return {
-        shouldShowLoader: false,
-        changePage: () => {
-        }
+        dataLoading: false,
+        noResults: false,
+        showsSearch: true,
       };
     },
     methods: {
@@ -56,6 +65,9 @@
         // need to use this method because prefixing text to the
         // dynamic slot name doesn't work in the template
         return `cell-${field}`;
+      },
+      changePage(page) {
+        this.$emit('page-change', page);
       }
     }
   }

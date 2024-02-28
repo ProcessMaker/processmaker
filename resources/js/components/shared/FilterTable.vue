@@ -208,7 +208,7 @@ export default {
     },
     calculateContent(index) {
       const miDiv = document.getElementById(`${this.tableName}-column-${index}`);
-      return miDiv.scrollWidth;
+      return miDiv ? miDiv.scrollWidth : 80;
     },
     doResize(event) {
       if (this.isResizing) {
