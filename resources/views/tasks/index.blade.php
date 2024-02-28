@@ -71,7 +71,7 @@
                                     @click="onInboxRules">
                             {{ __('Inbox Rules') }}
                           </b-button>
-                          <b-popover target="idPopoverInboxRules" 
+                          <b-popover target="idPopoverInboxRules"
                                      triggers="hover focus"
                                      placement="bottomleft">
                             <div class="task-inbox-rules-content">
@@ -82,8 +82,7 @@
                                 </svg>
                               </div>
                               <span class="task-inbox-rules-content-text">
-                              {{ __('Inbox Rules act as your personal task manager. You tell them what to look for, and they') }}
-                              <strong>{{ __('take care of things automatically.') }}</strong>
+                              <!-- //NOSONAR -->{!! __('Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>') !!}
                               </span>
                             </div>
                           </b-popover>

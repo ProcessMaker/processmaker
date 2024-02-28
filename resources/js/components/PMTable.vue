@@ -73,8 +73,6 @@
   }
 </script>
 
-<style>
-</style>
 <style scoped>
   .search-bar {
     border: 1px solid rgba(0, 0, 0, 0.125);

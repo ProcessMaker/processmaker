@@ -96,10 +96,3 @@
     }
   };
 </script>
-
-<style>
-</style>
-<style scoped>
-  .pm-inbox-rule {
-  }
-</style>

@@ -1,6 +1,5 @@
 import Index from './components/Index.vue';
 import Edit from './components/Edit.vue';
-import { name } from 'mustache';
 
 Vue.use(VueRouter);
 const router = new VueRouter({
