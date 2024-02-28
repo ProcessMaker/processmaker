@@ -24,6 +24,8 @@ class SettingController extends Controller
         'name',
         'helper',
         'group',
+        'menu_group',
+        'menu_group_order',
         'format',
         'created_at',
         'updated_at',
@@ -60,6 +62,32 @@ class SettingController extends Controller
         $query->notHidden();
 
         $orderBy = 'group';
+        $orderDirection = 'ASC';
+
+        if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)) {
+            $orderBy = $request->input('order_by');
+        }
+
+        if ($request->has('order_direction')) {
+            $orderDirection = $request->input('order_direction');
+        }
+
+        $response = $query->orderBy($orderBy, $orderDirection)
+            ->paginate($request->input('per_page', 1000));
+
+        return new ApiCollection($response);
+    }
+
+    public function menuGroup(Request $request)
+    {
+        $query = Setting::query();
+
+        $query->select('menu_group', 'menu_group_icon', 'menu_group_order')
+            ->groupBy('menu_group', 'menu_group_icon', 'menu_group_order');
+
+        $query->notHidden();
+
+        $orderBy = 'menu_group';
         $orderDirection = 'ASC';
 
         if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)) {
