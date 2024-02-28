@@ -146,7 +146,19 @@ class ProcessTranslation
             }
         }
 
-        return $strings;
+        // filter out images
+        $result = [];
+        $pattern = '/<img[^>]+src="data:image\/[^;]+;base64,([^"]*)"[^>]*>/';
+        $cont = 0;
+        foreach($strings as $string) {
+            $cont = 0;
+            if (!preg_match($pattern, $string) && $cont == 0) {
+                $result[] = $string;
+            }
+            $cont++;
+        }
+
+        return $result;
     }
 
     private static function getStringElements($items, $parent = null)
