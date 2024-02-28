@@ -12,25 +12,26 @@ class ApplyAction
 {
     public function applyActionOnTask(ProcessRequestToken $task, $inboxRules)
     {
+        \Log::info('Applying action on task ' . $task->id, ['inboxRules' => $inboxRules]);
         foreach ($inboxRules as $inboxRule) {
             //Mark as priority
-            if ($inboxRule->mark_as_priority === true) {
+            if ($inboxRule->mark_as_priority) {
                 $this->markAsPriority($task);
             }
 
             //Reassign to user id
-            if ($inboxRule->reassign_to_user_id !== null) {
+            if ($inboxRule->reassign_to_user_id) {
                 $this->reassignToUserID($task, $inboxRule);
             }
 
             //If $savedSearchId is null For Task Rules only
             if ($inboxRule->task) {
                 //Fill and save as draft
-                if ($inboxRule->make_draft === true) {
+                if ($inboxRule->make_draft) {
                     $this->saveAsDraft($task, $inboxRule);
                 }
                 //Submit the form
-                if ($inboxRule->submit_data === true) {
+                if ($inboxRule->submit_data) {
                     $this->submitForm($task, $inboxRule);
                 }
             }
