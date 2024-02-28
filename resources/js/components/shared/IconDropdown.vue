@@ -76,7 +76,7 @@ export default {
       list: {},
       loading: true,
       defaultIcon: {
-        value:'default-icon',
+        value:'Default Icon',
         label: this.$t("Default Icon"),
       },
       placeholder: this.$t("Select Icon"),
