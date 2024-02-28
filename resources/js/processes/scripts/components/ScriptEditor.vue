@@ -184,6 +184,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <ai-tab
+                    v-if="packageAi"
                     ref="aiTab"
                     :user="user"
                     :source-code="code"
@@ -326,6 +327,7 @@
               <b-card-body class="overflow-hidden p-0">
                 <b-list-group class="w-100 h-100 overflow-auto">
                   <ai-tab
+                    v-if="packageAi"
                     ref="aiTab2"
                     :default-prompt="prompt"
                     :user="user"
