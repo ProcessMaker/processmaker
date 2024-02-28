@@ -22,7 +22,7 @@
           ref="tasks-preview"
           class="h-100 p-3"
         >
-        <template v-if="!isQuick">
+        <template v-if="!showQuickFillPreview">
           <div>
             <div class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
@@ -99,7 +99,7 @@
             </div>
           </div>
         </template>
-        <quick-fill-preview v-if="isQuick" :isQuick="isQuick"></quick-fill-preview>
+        <quick-fill-preview v-if="showQuickFillPreview" :showQuickFillPreview="showQuickFillPreview"></quick-fill-preview>
         </div>
       </pane>
     </splitpanes>
@@ -127,7 +127,7 @@ export default {
   },
   methods: {
     goQuickFill() {
-      this.isQuick = true;
+      this.showQuickFillPreview = true;
     },
     showSideBar(info, data, firstTime = false) {
       this.stopFrame = false;

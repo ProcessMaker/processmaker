@@ -118,34 +118,55 @@
           </td>
         </template>
       </filter-table>
-      <task-tooltip
+      <div v-if="isTooltipVisible && !disableTooltip">
+        <task-tooltip
+          :position="rowPosition"
+        >
+          <template v-slot:task-tooltip-body>
+            <div
+              @mouseover="clearHideTimer"
+              @mouseleave="hideTooltip"
+            >
+            <span>
+              <i
+                v-if="!verifyURL('saved-searches')"
+                class="fa fa-eye py-2"
+                @click="previewTasks(tooltipRowData)"
+              />
+            </span>
+            <ellipsis-menu
+              :actions="actions"
+              :data="tooltipRowData"
+              :divider="false"
+            />
+            </div>
+          </template>
+      </task-tooltip>
+      </div>
+      <div v-if="isTooltipVisible && disableQuickFillTooltip">
+        <task-quick-fill-tooltip
         :position="rowPosition"
-        v-show="isTooltipVisible && !disableTooltip"
       >
-      <!-- <task-tooltip
-        :position="rowPosition"
-        v-show="isTooltipVisible"
-      > -->
-        <template v-slot:task-tooltip-body>
-          <div
+        <template v-slot:task-quickfill-tooltip-body>
+          <div style="display: flex;"
             @mouseover="clearHideTimer"
             @mouseleave="hideTooltip"
+            
           >
           <span>
+            <b-button class="btn-this-data">{{ $t(' USE THIS TASK DATA') }}</b-button>
+          </span>
+         <span>
             <i
               v-if="!verifyURL('saved-searches')"
               class="fa fa-eye py-2"
               @click="previewTasks(tooltipRowData)"
             />
           </span>
-          <ellipsis-menu
-            :actions="actions"
-            :data="tooltipRowData"
-            :divider="false"
-          />
           </div>
         </template>
-      </task-tooltip>
+      </task-quick-fill-tooltip>
+      </div>
       <data-loading
         v-show="shouldShowLoader"
         :for="/tasks\?page|results\?page/"
@@ -181,6 +202,7 @@ import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColu
 import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
+import TaskQuickFillTooltip from "./TaskQuickFillTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
@@ -197,6 +219,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     TaskTooltip,
+    TaskQuickFillTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
   },
@@ -211,6 +234,9 @@ export default {
     columns: {},
     pmql: {},
     disableTooltip: {
+      default: false
+    },
+    disableQuickFillTooltip: {
       default: false
     },
     savedSearch: {
@@ -519,7 +545,7 @@ export default {
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
-
+      
       const tableContainer = document.getElementById("table-container");
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
@@ -622,6 +648,11 @@ export default {
   color: rgba(86, 104, 119, 1);
   font-weight: 600;
   border-radius: 5px;
+}
+.btn-this-data {
+  background-color: #1572C2;
+  width: 197px;
+  height: 40px;
 }
 </style>
 <style lang="scss" scoped>

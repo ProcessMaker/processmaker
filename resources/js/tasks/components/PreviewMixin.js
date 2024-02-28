@@ -19,8 +19,14 @@ const PreviewMixin = {
       showFrame2: false,
       isLoading: "",
       stopFrame: false,
-      isQuick: false,
+      showQuickFillPreview: false,
     };
+  },
+  mounted() {
+    this.$root.$on("cancelQuickFill", (val) => {
+      this.showQuickFillPreview = false;
+      this.frameLoaded();
+    });
   },
   methods: {
     /**
