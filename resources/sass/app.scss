@@ -1009,3 +1009,144 @@ nav {
   letter-spacing: -0.28px;
   text-transform: uppercase;
 }
+
+
+.page-dropdown-menu {
+  min-width: 333px;
+}
+
+/* Setup some colors */
+:root {
+  --tabs-blue: #1572c2;
+  --tabs-light: #c3c9cf;
+  --tabs-grey: #6a7888;
+  --tabs-border: #cdddee;
+  --tabs-scroll-bg: #ebeef2;
+  --tabs-white: #ffffff;
+}
+
+/* Override Bootstrap default tab styles */
+.platform-tab {
+  border-bottom: 1px solid var(--tabs-border) !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+
+
+  .nav-item .nav-link {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Style for individual tabs */
+  .nav-item.show .nav-link,
+  .nav-link.active {
+    border: none;
+    box-shadow: inset 0 -3px 0 0 var(--tabs-blue) !important;
+    /* This sets the blue bottom border for the active tab */
+    background-color: var(--tabs-white);
+    /* This sets the background color for the active tab */
+    border-radius: 0 !important;
+    /* This removes the border-radius */
+    color: var(--tabs-blue) !important;
+    position: relative;
+  }
+
+  /* Style for non-active tabs */
+  .nav-link {
+    border: 1px solid var(--tabs-border) !important;
+    color: var(--tabs-grey);
+    /* This sets the text color for the inactive tabs */
+    border-radius: 0 !important;
+    /* This ensures no border radius for a flat design */
+    padding: 0.5rem 1rem;
+    margin-right: -1px;
+    text-wrap: nowrap !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .nav-item .nav-link:not(.active) {
+    .badge {
+      background-color: #6A7888 !important;
+    }
+
+    span:not(.badge, .close-tab) {
+      color: #556271 !important;
+    }
+  }
+
+  /* Style for the hover effect */
+  .nav-link:hover {
+    border: none;
+    background-color: var(--tabs-white);
+    /* This changes the background color when hovering */
+  }
+
+  /* Adding the 'x' button to the tab */
+  .nav-link .close-tab {
+    font-size: 0.8rem;
+    color: var(--tabs-light);
+    margin-left: 0.5rem;
+    display: inline !important;
+  }
+
+  /* Style adjustments for the 'x' button */
+  .nav-link .close-tab:hover {
+    color: var(--tabs-grey);
+    cursor: pointer;
+  }
+
+  .nav-scroll {
+    position: absolute;
+    top: calc(50% - 0.75rem);
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--tabs-scroll-bg);
+    color: var(--tabs-grey);
+    cursor: pointer;
+    border: 1px solid var(--tabs-border);
+    border-radius: 100%;
+    z-index: 1;
+  }
+
+  .nav-scroll-right {
+    right: 5px;
+  }
+
+  .nav-scroll-left {
+    margin-left: 5px;
+  }
+
+  .tabs-sticky {
+    position: sticky;
+    -webkit-position: sticky;
+    left: 0;
+    right: 0;
+    z-index: 2;
+  }
+
+  .tabs-start {
+    background-color: var(--tabs-white);
+  }
+
+  /* add margin right to the last li element to hide safely the right scroll button */
+  .nav-item:last-of-type {
+    margin-right: 2rem;
+  }
+
+  .btn-platform {
+    background-color: #ffff;
+    color: #6a7888;
+    padding: 8px 8px 2px 8px;
+  }
+  
+  .btn-platform:hover {
+    color: #6a7888;
+  }
+  .dropdown-item {
+    font-size: 14px;
+  }
+}

@@ -1184,6 +1184,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 $validation-panel-bottom: 3.5rem;
 $validation-panel-right: 0;
 $validation-panel-height: 10rem;
