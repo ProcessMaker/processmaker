@@ -2,7 +2,7 @@
   <div class="pm-inbox-rule d-flex">
 
     <div>
-      <h4>{{$t('New Inbox rule')}}</h4> Edit id {{ $route.params.id }}
+      <h4>{{$t('New Inbox Rule')}}</h4> Edit id {{ $route.params.id }}
       <b-form-group>
         <b-form-select v-model="savedSearchSelected" :options="savedSearch">
         </b-form-select>  

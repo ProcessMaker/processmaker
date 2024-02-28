@@ -2096,5 +2096,22 @@
   "CASE #": "Fall #",
   "CASE TITLE": "FALLTITEL",
   "Task Name": "Aufgabenname",
-  "Due Date": "Fälligkeitsdatum"
+  "Due Date": "Fälligkeitsdatum",
+  "Case Title": "Falltitel",
+  "Creation Date": "Erstellungsdatum",
+  "Deactivation Date": "Deaktivierungsdatum",
+  "Case Name": "Fallname",
+  "Run Date": "Ausführungsdatum",
+  "Applied Rule": "Angewandte Regel",
+  "Task due Date": "Fälligkeitsdatum der Aufgabe",
+  "Process Name": "Prozessname",
+  "Inbox Rules": "Posteingangsregeln",
+  "Rules": "Regeln",
+  "Execution Log": "Ausführungsprotokoll",
+  "Create Rule": "Regel erstellen",
+  "We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you": "Wir entschuldigen uns, aber wir konnten keine Ergebnisse finden, die Ihrer Suche entsprechen. Bitte versuchen Sie es mit einer anderen Suche. Vielen Dank",
+  "New Inbox Rule": "Neue Posteingangsregel",
+  "Task Due Date": "Fälligkeitsdatum der Aufgabe",
+  "No rules were executed yet": "Es wurden noch keine Regeln ausgeführt",
+  "Once rules start running, you can see the results here.": "Sobald Regeln ausgeführt werden, können Sie hier die Ergebnisse sehen."
 }
