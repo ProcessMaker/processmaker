@@ -5,8 +5,12 @@
       :class="{ 'message-sm': isMobile }"
       v-html="message"
     />
+    <notification-inbox-rule
+      v-if="isInboxRule"
+      :data="data"
+    />
     <notification-time
-      v-if="showTime"
+      v-if="showTime && !isInboxRule"
       :notification="notification"
     />
     <div
@@ -23,6 +27,7 @@
 import moment from "moment";
 import NotificationTime from "./notification-time";
 import notificationsMixin from "../notifications-mixin";
+import NotificationInboxRule from "./notification-inbox-rule";
 
 const messages = {
   TASK_CREATED: "{{- user }} has been assigned to the task {{- subject }} in the process {{- processName }}",
@@ -38,6 +43,7 @@ const messages = {
 export default {
   components: {
     NotificationTime,
+    NotificationInboxRule,
   },
   mixins: [notificationsMixin],
   props: {
@@ -57,6 +63,9 @@ export default {
   },
   computed: {
     message() {
+      if (this.isInboxRule) {
+        return this.$t('Inbox rules <strong>handled {{ruleCount}} tasks</strong> since your last login', { ruleCount: this.ruleCount });
+      }
       const message = messages[this.data.type] || messages[this.notification.type] || this.data.message;
       return this.$t(message, this.bindings);
     },
@@ -76,6 +85,9 @@ export default {
         case "COMMENT":
           return this.data.message.substring(0, 200);
       }
+    },
+    ruleCount() {
+      return this.data.message?.total
     },
   },
   mounted() {

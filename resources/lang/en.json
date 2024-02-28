@@ -2110,5 +2110,7 @@
   "New Inbox rule": "New Inbox rule",
   "Task Due Date": "Task Due Date",
   "No rules were executed yet": "No rules were executed yet",
-  "Once rules start running, you can see the results here.": "Once rules start running, you can see the results here."
+  "Once rules start running, you can see the results here.": "Once rules start running, you can see the results here.",
+  "Priority": "Priority",
+  "Save As Draft": "Save As Draft"
 }
