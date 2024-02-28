@@ -11,7 +11,8 @@
                         :ai-enabled="false"
                         :show-filters="false"
                         :aria-label="$t('Search')"
-                        @submit="onNLQConversion">
+                        @submit="onNLQConversion"
+                        @pmqlchange="onChange">
                     </pmql-input>
                 </div>
             </div>
@@ -19,6 +20,7 @@
 
         <public-templates-listing ref="publicTemplatesListing"
                         :filter="filter"
+                        :pmql="pmql"
                         :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects') }}"
                         v-on:reload="reload">
         </public-templates-listing>

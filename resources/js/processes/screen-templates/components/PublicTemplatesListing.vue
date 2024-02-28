@@ -132,14 +132,14 @@ export default {
     FilterTableBodyMixin,
     uniqIdsMixin,
   ],
-  props: ["permission", "filter", "id"],
+  props: ["permission", "filter", "pmql", "id"],
   data() {
     return {
-      orderBy: "title",
+      orderBy: "name",
       sortOrder: [
         {
-          field: "title",
-          sortField: "title",
+          field: "name",
+          sortField: "name",
           direction: "asc",
         }
       ],
@@ -147,7 +147,7 @@ export default {
       fields: [
         {
           label: this.$t("Name"),
-          field: "title",
+          field: "name",
           width: 200,
           sortable: true,
           truncate: true,
@@ -196,30 +196,32 @@ export default {
   created () {
     ProcessMaker.EventBus.$on("api-data-public-screen-templates", (val) => {
       this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
     });
   },
   methods: {
     fetch() {
-    //TODO: UPDATE FUNCTIONALITY FOR FETCHING 'PUBLIC TEMPLATES' FROM SCREEN TEMPLATES
       this.loading = true;
-      this.orderBy = this.orderBy === "__slot:title" ? "title" : this.orderBy;
-
-      //Load from our api client
+      //change method sort by slot name
+      this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
+      // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "screens" +
-            "?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&filter=" +
-            this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
-            "&include=categories,category" +
-            "&exclude=config"
+          "templates/screen" +
+          "?page=" +
+          this.page +
+          "&per_page=" +
+          this.perPage +
+          "&filter=" +
+          this.filter +
+          "&pmql=" + 
+          this.pmql +
+          "&order_by=" +
+          this.orderBy +
+          "&order_direction=" +
+          this.orderDirection +
+          "&include=categories,category,user"
         )
         .then(response => {
           this.data = this.transform(response.data);
