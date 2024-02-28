@@ -132,6 +132,9 @@ new Vue({
         this.$refs.taskList.fetch(true);
       }
     },
+    onInboxRules() {
+      window.location.href = "/tasks/rules";
+    },
     setInOverdueMessage(inOverdue) {
       let inOverdueMessage = '';
       if (inOverdue) {

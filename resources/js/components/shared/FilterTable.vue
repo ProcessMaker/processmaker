@@ -65,7 +65,8 @@
           :id="`row-${row.id}`"
           :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
           @click="handleRowClick(row, $event)"
-          @mouseover="handleRowMouseover(row)"
+          @mouseover="$emit('table-row-mouseover', row, rowIndex)"
+          @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
@@ -97,21 +98,23 @@
                   />
                 </template>
                 <template v-else>
-                  <div
-                    :id="`${tableName}-element-${rowIndex}-${index}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
-                    {{ getNestedPropertyValue(row, header) }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`${tableName}-element-${rowIndex}-${index}`"
-                      custom-class="pm-table-tooltip"
-                      @show="checkIfTooltipIsNeeded"
+                  <slot :name="'cell-' + header.field" :row="row" :header="header" :rowIndex="rowIndex">
+                    <div
+                      :id="`${tableName}-element-${rowIndex}-${index}`"
+                      :class="{ 'pm-table-truncate': header.truncate }"
+                      :style="{ maxWidth: header.width + 'px' }"
                     >
                       {{ getNestedPropertyValue(row, header) }}
-                    </b-tooltip>
-                  </div>
+                      <b-tooltip
+                        v-if="header.truncate"
+                        :target="`${tableName}-element-${rowIndex}-${index}`"
+                        custom-class="pm-table-tooltip"
+                        @show="checkIfTooltipIsNeeded"
+                      >
+                        {{ getNestedPropertyValue(row, header) }}
+                      </b-tooltip>
+                    </div>
+                  </slot> 
                 </template>
               </template>
             </td>
@@ -210,7 +213,7 @@ export default {
     },
     calculateContent(index) {
       const miDiv = document.getElementById(`${this.tableName}-column-${index}`);
-      return miDiv.scrollWidth;
+      return miDiv ? miDiv.scrollWidth : 80;
     },
     doResize(event) {
       if (this.isResizing) {
@@ -233,9 +236,6 @@ export default {
     },
     handleRowClick(row, event) {
       this.$emit("table-row-click", row, event);
-    },
-    handleRowMouseover(row) {
-      this.$emit("table-row-mouseover", row);
     },
     handleRowMouseleave() {
       this.$emit("table-row-mouseleave", false);

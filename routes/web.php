@@ -19,6 +19,7 @@ use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
+use ProcessMaker\Http\Controllers\InboxRulesController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
@@ -60,8 +61,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
 
         // temporary, should be removed
-        Route::get('security-logs/download/all', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
-        Route::get('security-logs/download/{user}', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/{user}', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
@@ -152,6 +153,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
+
+    Route::get('tasks/rules/{path?}', [InboxRulesController::class, 'index'])->name('inbox-rules.index')->where('path', '.*');
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
