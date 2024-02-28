@@ -2,9 +2,10 @@ import Vue from "vue";
 import TasksList from "./components/TasksList";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
+Vue.component("TasksList", TasksList);
+
 new Vue({
   el: "#tasks",
-  components: { TasksList },
   data: {
     columns: window.Processmaker.defaultColumns || null,
     filter: "",

@@ -154,10 +154,7 @@
         @page-change="changePage"
       />
     </div>
-    <tasks-preview
-      v-if="!verifyURL('saved-searches') && !disableTooltip"
-      ref="preview"
-    />
+
   </div>
 </template>
 
@@ -180,14 +177,12 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
-import QuickFillPreview from "./QuickFillPreview.vue"
 import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("AvatarImage", AvatarImage);
 Vue.component("TasksPreview", TasksPreview);
-Vue.component("QuickFillPreview", QuickFillPreview);
 
 export default {
   components: {

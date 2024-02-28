@@ -48,10 +48,8 @@
 
 //import { FilterTable } from "../../components/shared";
 import paginationTable from "../../components/shared/PaginationTable.vue";
-import TasksList from "./TasksList.vue";
 export default {
-//components: { paginationTable, TasksList },
-components: { paginationTable, TasksList},
+components: { paginationTable },
 props: ['isQuick'],
 data() {
     return {

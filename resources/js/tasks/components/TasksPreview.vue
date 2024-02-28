@@ -110,11 +110,11 @@
 import { Splitpanes, Pane } from "splitpanes";
 import TaskLoading from "./TaskLoading.vue";
 import PreviewMixin from "./PreviewMixin";
-//import QuickFillPreview from "./QuickFillPreview.vue"
+import QuickFillPreview from "./QuickFillPreview.vue"
 import "splitpanes/dist/splitpanes.css";
 
 export default {
-  components: { Splitpanes, Pane, TaskLoading },
+  components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
