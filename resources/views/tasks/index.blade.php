@@ -88,7 +88,7 @@
                                      placement="bottomleft">
                             <div class="task-inbox-rules-content">
                               <div>
-                                <img src="/img/inbox-rule-suggest.svg">
+                                <img src="/img/inbox-rule-suggest.svg" alt="{{ __('Inbox Rules') }}">
                               </div>
                               <span class="task-inbox-rules-content-text">
                               <!-- //NOSONAR -->{!! __('Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>') !!}

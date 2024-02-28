@@ -34,5 +34,3 @@
     background-color: white;
   }
 </style>
-<style scoped>
-</style>
