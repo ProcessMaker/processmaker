@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="search-bar flex-grow w-100">
+    <div v-if="showSearch" class="search-bar flex-grow w-100">
       <div class="d-flex align-items-center">
         <i class="fa fa-search ml-3 pmql-icons">
         </i>
@@ -23,7 +23,8 @@
       </div>  
     </div>
 
-    <FilterTable ref="filterTable"
+    <FilterTable v-show="!shouldShowLoader"
+                 ref="filterTable"
                  :headers="headers"
                  :data="data"
                  @table-row-mouseover="tableRowMouseover"
@@ -33,10 +34,12 @@
       </template>
     </FilterTable>
     <data-loading v-show="shouldShowLoader"
-                  :for="/requests\?page|results\?page/"
-                  :empty="$t('No results have been found')"
-                  :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
-                  empty-icon="noData">
+                  :for="/rule-execution-log/"
+                  :empty="empty"
+                  :empty-desc="emptyDesc"
+                  :empty-icon="emptyIcon"
+                  ref="dataLoading"
+                  >
     </data-loading>
     <pagination-table :meta="data.meta"
                       @page-change="changePage">
@@ -48,19 +51,27 @@
   import FilterTable from "./shared/FilterTable.vue";
   import PaginationTable from "./shared/PaginationTable.vue";
   import DataLoading from "./common/DataLoading.vue";
+  import dataLoadingMixin from "../components/common/mixins/apiDataLoading";
   export default {
     components: {
       FilterTable,
       DataLoading,
       PaginationTable
     },
+    mixins: [dataLoadingMixin],
     props: {
       headers: null,
-      data: null
+      data: null,
+      showSearch: false,
+      empty: null,
+      emptyDesc: null,
+      emptyIcon: null,
     },
     data() {
       return {
-        shouldShowLoader: false,
+        dataLoading: false,
+        noResults: false,
+        showsSearch: true,
       };
     },
     methods: {

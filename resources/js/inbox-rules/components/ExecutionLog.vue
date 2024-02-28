@@ -1,6 +1,13 @@
 <template>
   <div>
-    <PMTable :headers="columns()" :data="response" @page-change="changePage" />
+    <PMTable
+      :headers="columns()"
+      :data="response"
+      @page-change="changePage"
+      :empty="$t('No rules were executed yet')"
+      :empty-desc="$t('Once rules start running, you can see the results here.')"
+      empty-icon="noData"
+      />
   </div>
 </template>
 

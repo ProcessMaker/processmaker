@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('inbox_rule_logs', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->index();
             $table->integer('inbox_rule_id');
             $table->integer('process_request_token_id');
             $table->json('inbox_rule_attributes');

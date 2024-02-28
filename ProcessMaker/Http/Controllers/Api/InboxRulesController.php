@@ -72,7 +72,8 @@ class InboxRulesController extends Controller
      */
     public function executionLog(Request $request)
     {
-        $response = InboxRuleLog::with('task')
+        $response = InboxRuleLog::where('user_id', $request->user()->id)
+            ->with('task')
             ->with('task.processRequest')
             ->orderBy('id', 'DESC')
             ->paginate($request->input('per_page', 10));

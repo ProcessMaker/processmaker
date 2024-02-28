@@ -6,8 +6,13 @@
              active>
         <PMTable :headers="headers"
                  :data="data"
+                 :show-search="true"
                  @onRowMouseover="tableRowMouseover"
-                 @onTrMouseleave="tableTrMouseleave">
+                 @onTrMouseleave="tableTrMouseleave"
+                 :empty="$t('No results have been found')"
+                 :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
+                 empty-icon="noData"
+                 >
 
           <template v-slot:cell-deactivation_date="{ row, header, rowIndex }">
             <PmRowButtons

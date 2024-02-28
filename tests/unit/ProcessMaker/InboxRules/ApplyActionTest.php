@@ -48,7 +48,7 @@ class ApplyActionTest extends TestCase
 
         $inboxRuleLog = InboxRuleLog::orderBy('id', 'desc')->first();
         $this->assertEquals($inboxRuleLog->inbox_rule_attributes, $inboxRule->getAttributes());
-        $this->assertEquals($inboxRuleLog->task_id, $activeTask->id);
+        $this->assertEquals($inboxRuleLog->process_request_token_id, $activeTask->id);
         $this->assertEquals($inboxRuleLog->inbox_rule_id, $inboxRule->id);
     }
 

@@ -2093,5 +2093,12 @@
   "take care of things automatically.": "take care of things automatically.",
   "Case #": "Case #",
   "Case title": "Case title",
-  "Case Title": "Case Title"
+  "Case Title": "Case Title",
+  "Execution Log": "Execution Log",
+  "Run Date": "Run Date",
+  "Applied Rule": "Applied Rule",
+  "Task Due Date": "Task Due Date",
+  "Process Name": "Process Name",
+  "No rules were executed yet": "No rules were executed yet",
+  "Once rules start running, you can see the results here.": "Once rules start running, you can see the results here."
 }
