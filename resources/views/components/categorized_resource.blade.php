@@ -63,7 +63,7 @@
             </li>
             <li class="nav-item">
                 <a
-                    class="nav-item nav-link" id="nav-publicTemplates-tab" 
+                    class="nav-item nav-link" id="nav-publicTemplates-tab"
                     data-toggle="tab"
                     href="#nav-publicTemplates"
                     role="tab"
