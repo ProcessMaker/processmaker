@@ -24,12 +24,16 @@
                     class="pmql-input">
             </textarea>
         </div>
-        <tasks-list
+        <!-- <tasks-list
             ref="taskList"
             :filter="filter"
             :pmql="fullPmql"
             :columns="columns"
             :disableTooltip="true"
+        ></tasks-list> -->
+        <tasks-list
+            ref="taskList"
+            :disable-tooltip="true"
         ></tasks-list>
         <!-- <filter-table
         :headers="tableHeadersTasks"
@@ -54,23 +58,29 @@ props: ['isQuick'],
 data() {
     return {
         filter: {},
-        columns: {},
+        //columns: {},
         pmql: {},
-        tableHeadersTasks: [
+        fullPmql: {},
+        columns:[
         {
-          label: "CASE #",
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
-          width: 55,
+          width: 80,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
+          order_column: 'process_requests.case_number',
         },
         {
-          label: "CASE TITLE",
+          label: "Case title",
           field: "case_title",
+          name: "__slot:case_number",
           sortable: true,
           default: true,
-          width: 140,
+          width: 220,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
+          order_column: 'process_requests.case_title',
         },
         {
           label: "Priority",
@@ -80,27 +90,48 @@ data() {
           width: 40,
         },
         {
-          label: "TASK NAME",
-          field: "element_name",
+          label: "Process",
+          field: "process",
           sortable: true,
           default: true,
           width: 140,
           truncate: true,
+          filter_subject: { type: 'Relationship', value: 'processRequest.name' },
+          order_column: 'process_requests.name',
         },
         {
-          label: "STATUS",
-          field: "status",
+          label: "Task",
+          field: "task_name",
           sortable: true,
           default: true,
-          width: 100,
+          width: 140,
+          truncate: true,
+          filter_subject: { value: 'element_name' },
+          order_column: 'element_name',
         },
+        // {
+        //   label: "Status",
+        //   field: "status",
+        //   sortable: true,
+        //   default: true,
+        //   width: 100,
+        //   filter_subject: { type: 'Status' },
+        // },
         {
-          label: "DUE DATE",
+          label: "Due date",
           field: "due_at",
           format: "datetime",
           sortable: true,
           default: true,
           width: 140,
+        },
+        {
+          label: "Draft",
+          field: "draft",
+          sortable: false,
+          default: true,
+          hidden: true,
+          width: 40,
         },
       ],
       dataTasks: {},
@@ -108,6 +139,7 @@ data() {
   },
   mounted() {
     //require('../index.js');
+    const isStatusCompletedList = window.location.search.includes("status=CLOSED");
   }
 }
 </script>

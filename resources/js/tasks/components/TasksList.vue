@@ -122,6 +122,10 @@
         :position="rowPosition"
         v-show="isTooltipVisible && !disableTooltip"
       >
+      <!-- <task-tooltip
+        :position="rowPosition"
+        v-show="isTooltipVisible"
+      > -->
         <template v-slot:task-tooltip-body>
           <div
             @mouseover="clearHideTimer"
@@ -154,7 +158,10 @@
         @page-change="changePage"
       />
     </div>
-
+ <tasks-preview
+      v-if="!verifyURL('saved-searches')"
+      ref="preview"
+    />
   </div>
 </template>
 

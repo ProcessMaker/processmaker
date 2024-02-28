@@ -104,6 +104,7 @@
                 :filter="filter"
                 :pmql="fullPmql"
                 :columns="columns"
+                :disable-tooltip="false"
                 @in-overdue="setInOverdueMessage"
               ></tasks-list>
             </div>

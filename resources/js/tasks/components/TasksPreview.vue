@@ -129,6 +129,25 @@ export default {
     goQuickFill() {
       this.isQuick = true;
     },
+    showSideBar(info, data, firstTime = false) {
+      this.stopFrame = false;
+      this.taskTitle = info.element_name;
+      this.showFrame1 = firstTime ? true : this.showFrame1;
+      this.task = info;
+      if (this.showFrame === 1) {
+        this.linkTasks1 = `/tasks/${info.id}/edit/preview`;
+        this.showFrame1 = true;
+      }
+      if (this.showFrame === 2) {
+        this.showFrame2 = true;
+        this.linkTasks2 = `/tasks/${info.id}/edit/preview`;
+      }
+      this.showPreview = true;
+      this.data = data;
+      this.existPrev = false;
+      this.existNext = false;
+      this.defineNextPrevTask();
+    }
   },
 };
 </script>
