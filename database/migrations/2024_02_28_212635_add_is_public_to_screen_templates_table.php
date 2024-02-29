@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('screen_templates', function (Blueprint $table) {
-            $table->boolean('is_public', false)->after('manifest');
+            $table->boolean('is_public')->default('false')->after('manifest');
         });
     }
 
