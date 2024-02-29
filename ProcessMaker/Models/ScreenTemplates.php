@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\Template;
@@ -77,8 +78,8 @@ class ScreenTemplates extends Template
     public function valueAliasName($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('name', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('name', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
@@ -92,8 +93,8 @@ class ScreenTemplates extends Template
     public function valueAliasScreen($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('name', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('name', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
@@ -107,8 +108,8 @@ class ScreenTemplates extends Template
     public function valueAliasId($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('id', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('id', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
@@ -130,6 +131,26 @@ class ScreenTemplates extends Template
                 ->where('name', $expression->operator, $value);
             $query->whereIn('screen_templates.id', $categoryAssignment->pluck('assignable_id'));
         };
+    }
+
+    /**
+     * PMQL value alias for owner field
+     *
+     * @param string $value
+     *
+     * @return callable
+     */
+    private function valueAliasOwner($value, $expression)
+    {
+        $user = User::where('username', $value)->get()->first();
+
+        if ($user) {
+            return function ($query) use ($user, $expression) {
+                $query->where('screen_templates.user_id', $expression->operator, $user->id);
+            };
+        } else {
+            throw new PmqlMethodException('owner', 'The specified owner username does not exist.');
+        }
     }
 
     /**
