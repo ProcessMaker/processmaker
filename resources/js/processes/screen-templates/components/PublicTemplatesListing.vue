@@ -63,6 +63,15 @@
                 :data-cy="`public-templates-table-field-${rowIndex}-${colIndex}`"
               >
                 <template v-if="header.field === 'name'">
+                  <div
+                    :id="`public-templates-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <span>
+                      {{ row[header.field] }}
+                    </span>
+                  </div>
                   <b-tooltip
                     v-if="header.truncate"
                     :target="`element-${row.id}`"
