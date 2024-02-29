@@ -18,4 +18,9 @@ class TaskDraft extends ProcessMakerModel
     protected $casts = [
         'data' => 'array',
     ];
+
+    public function processRequestToken()
+    {
+        return $this->belongsTo(ProcessRequestToken::class);
+    }
 }
