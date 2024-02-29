@@ -159,7 +159,7 @@ export default {
           "&filter=" +
           this.filter +
           "&pmql=" + 
-          this.pmql +
+          encodeURIComponent(this.pmql) +
           "&order_by=" +
           this.orderBy +
           "&order_direction=" +
