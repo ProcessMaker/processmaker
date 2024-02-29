@@ -78,8 +78,8 @@ class ScreenTemplates extends Template
     public function valueAliasName($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('name', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('name', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
@@ -93,8 +93,8 @@ class ScreenTemplates extends Template
     public function valueAliasScreen($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('name', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('name', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
@@ -108,8 +108,8 @@ class ScreenTemplates extends Template
     public function valueAliasId($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $templates = self::where('id', $expression->operator, $value)->get();
-            $query->whereIn('screen_templates.id', $templates->pluck('id'));
+            $templates = self::where('id', $expression->operator, $value)->pluck('id');
+            $query->whereIn('screen_templates.id', $templates);
         };
     }
 
