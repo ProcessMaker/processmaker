@@ -61,7 +61,7 @@ export default {
   background-color: white;
   padding: 0px, 16px, 0px, 16px;
   color: #6a7888;
-  font-family: Open Sans;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
