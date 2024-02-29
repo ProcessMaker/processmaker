@@ -5,7 +5,7 @@
     <FilterTable v-show="!shouldShowLoader"
                  ref="filterTable"
                  :headers="headers"
-                 :data="data"
+                 :data="data?data:defaultData"
                  @table-row-mouseover="tableRowMouseover"
                  @table-tr-mouseleave="(row, rowIndex) => $emit('onTrMouseleave', row, rowIndex)">
       <template v-for="header in headers" v-slot:[getSlotName(header.field)]="slotProps">
@@ -22,7 +22,7 @@
                   >
     </data-loading>
 
-    <pagination-table :meta="data.meta"
+    <pagination-table :meta="data?.meta"
                       @page-change="changePage">
     </pagination-table>
   </div>
@@ -50,6 +50,7 @@
     },
     data() {
       return {
+        defaultData: {data: [], meta: []}
       };
     },
     methods: {
