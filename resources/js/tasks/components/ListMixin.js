@@ -68,6 +68,8 @@ const ListMixin = {
               }${this.getSortParam()
               }&non_system=true` +
               advancedFilter,
+
+              { dataLoadingId: this.dataLoadingId }
           )
           .then((response) => {
             this.data = this.transform(response.data);

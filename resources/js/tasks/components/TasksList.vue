@@ -173,10 +173,10 @@
       </div>
       <data-loading
         v-show="shouldShowLoader"
-        :for="/tasks\?page|results\?page/"
         :empty="$t('All clear')"
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
+        :data-loading-id="dataLoadingId"
       />
       <pagination-table
         :meta="data.meta"

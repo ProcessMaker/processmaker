@@ -8,6 +8,7 @@ export default {
     return {
       apiDataLoading: true,
       apiNoResults: false,
+      dataLoadingId: Math.random(),
     };
   },
   computed: {
