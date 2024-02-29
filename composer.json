@@ -104,7 +104,7 @@
         "processmaker": {
             "build": "ebfefbd2",
             "custom": {
-                "package-ellucian-ethos": "1.15.3",
+                "package-ellucian-ethos": "1.15.5",
                 "package-plaid": "1.5.0",
                 "paypal-package": "dev-fall",
                 "pps-adsync": "dev-fall",
@@ -141,7 +141,7 @@
                 "docker-executor-node-ssr": "1.5.0",
                 "package-actions-by-email": "1.16.0",
                 "package-advanced-user-manager": "1.10.0",
-                "package-ai": "1.5.2",
+                "package-ai": "1.5.3",
                 "package-analytics-reporting": "1.5.1",
                 "package-auth": "1.17.1",
                 "package-cdata": "1.2.0",
@@ -156,7 +156,7 @@
                 "package-photo-video": "1.4.2",
                 "package-pm-blocks": "1.5.5",
                 "package-process-documenter": "1.9.0",
-                "package-process-optimization": "1.10.0",
+                "package-process-optimization": "1.10.1",
                 "package-product-analytics": "1.5.8",
                 "package-projects": "1.2.5",
                 "package-savedsearch": "1.31.8",
@@ -164,7 +164,7 @@
                 "package-signature": "1.12.0",
                 "package-testing": "1.1.1",
                 "package-translations": "2.8.1",
-                "package-versions": "1.9.1",
+                "package-versions": "1.9.2",
                 "package-vocabularies": "2.14.1",
                 "package-webentry": "2.20.3",
                 "packages": "^0"
