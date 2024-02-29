@@ -184,7 +184,7 @@ export default {
           width: 160,
           sortable: true,
           direction: "none",
-          sortField: "user_id",
+          sortField: "user.username",
         },
         {
           label: this.$t("Modified"),
@@ -225,7 +225,7 @@ export default {
           "&filter=" +
           this.filter +
           "&pmql=" + 
-          this.pmql +
+          encodeURIComponent(this.pmql) +
           "&order_by=" +
           this.orderBy +
           "&order_direction=" +
