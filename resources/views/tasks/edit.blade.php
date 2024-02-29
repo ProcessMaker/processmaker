@@ -84,119 +84,154 @@
                 </div>
             </div>
             @if (shouldShow('taskStatusContainer'))
-            <div class="ml-md-3 mt-3 mt-md-0">
-                <div class="card">
-                    <div :class="statusCard">
-                        <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
-                    </div>
-                    <ul class="list-group list-group-flush w-100">
-                        <li v-if="dateDueAt" class="list-group-item" v-if="showDueAtDates">
-                            <i class='far fa-calendar-alt'></i>
-                            <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
-                            </small>
-                            <br>
-                            @{{ moment(dateDueAt).format() }}
-                        </li>
-
-
-                        <li class="list-group-item" v-if="!showDueAtDates">
-                            <i class='far fa-calendar-alt'></i>
-                            <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
-                            </small>
-                            <br>
-                            @{{ moment(completedAt).format() }}
-                        </li>
-
-                        <li class="list-group-item" v-if="task.is_self_service === 0">
-                            <h5>{{__('Assigned To')}}</h5>
-                            <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
-                                          :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
-                            <br>
-                            <span>
-                                <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
-                                        @click="show">
-                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                </button>
-                              <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
-                                      @hide="cancelReassign"
-                                      header-close-content="&times;"
-                                      v-cloak>
-                                <div class="form-group">
-                                    {!!Form::label('user', __('User'))!!}
-                                    <select-from-api id='user'
-                                                  v-model="selectedUser"
-                                                  placeholder="{{__('Select the user to reassign to the task')}}"
-                                                  api="users"
-                                                  :multiple="false"
-                                                  :show-labels="false"
-                                                  :searchable="true"
-                                                  :store-id="false"
-                                                  label="fullname">
-                                          <template slot="noResult">
-                                            {{ __('No elements found. Consider changing the search query.') }}
-                                        </template>
-                                        <template slot="noOptions">
-                                            {{ __('No Data Available') }}
-                                        </template>
-                                        <template slot="tag" slot-scope="props">
-                                            <span class="multiselect__tag  d-flex align-items-center"
-                                                  style="width:max-content;">
-                                                <span class="option__desc mr-1">
-                                                    <span class="option__title">@{{ props.option.fullname }}</span>
-                                                </span>
-                                                <i aria-hidden="true" tabindex="1"
-                                                    @click="props.remove(props.option)"
-                                                    class="multiselect__tag-icon"></i>
-                                            </span>
-                                        </template>
-
-                                        <template slot="option" slot-scope="props">
-                                            <div class="option__desc d-flex align-items-center">
-                                                <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                                            </div>
-                                        </template>
-                                    </select-from-api>
-                                </div>
-                                <div slot="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
-                                        {{__('Cancel')}}
-                                    </button>
-                                    <button type="button" class="btn btn-secondary ml-2" @click="reassignUser"
-                                            :disabled="disabled">
-                                        {{__('Reassign')}}
-                                    </button>
-                                </div>
-                              </b-modal>
-                            </span>
-                          </div>
-                          @isset($assignedToAddons)
-                              @foreach ($assignedToAddons as $addon)
+              <div>
+                <button
+                  role="button"
+                  class="btn d-block mr-0 ml-auto button-collapse"
+                  data-toggle="collapse"
+                  data-target="#collapse-info"
+                  @click="showTabs = !showTabs"
+                >
+                  <i class="fas fa-angle-right"></i>
+                </button>
+                <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+                      @{{ __('Details') }}
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="true">
+                      @{{ __('Comments') }}
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content">
+                  <div id="collapse-info" class="collapse show width">
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                      <div class="ml-md-3 mt-3 mt-md-0" style="min-width:0px; max-width:400px; width:300px;">
+                        <div class="card">
+                          <ul class="list-group list-group-flush w-100">
+                            <li class="list-group-item">
+                              <!-- ADD THE OTHER BUTTONS -->
+                              <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
+                                @click="show">
+                                <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                              </button>
+                            </li>
+                            <li class="list-group-item">
+                              <!-- Section to Add Now What? -->
+                            </li>
+                            <div :class="statusCard">
+                              <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
+                            </div>
+                            <li v-if="dateDueAt" class="list-group-item" v-if="showDueAtDates">
+                              <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
+                              @{{ moment(dateDueAt).format() }}
+                            </li>
+                            <li class="list-group-item" v-if="!showDueAtDates">
+                              <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
+                              @{{ moment(completedAt).format() }}
+                            </li>
+                            <li class="list-group-item">
+                              <p class="section-title">
+                                <i class="fas fa-check-circle" style="color: #00875a;"></i>
+                                {{__('Autosave')}}
+                              </p>
+                              <span>{{__('Last save')}}: </span> @{{ moment(completedAt).format() }}
+                            </li>
+                            <li class="list-group-item" v-if="task.is_self_service === 0">
+                              <p class="section-title">{{__('Assigned To')}}:</p>
+                              <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
+                                            :input-data="task.user"></avatar-image>
+                              <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
+                                <span>
+                                </span>
+                              </div>
+                              @isset($assignedToAddons)
+                                @foreach ($assignedToAddons as $addon)
                                   {!! $addon['content'] ?? '' !!}
-                              @endforeach
-                          @endisset
-                        </li>
-                        <li class="list-group-item">
-                            <i class="far fa-calendar-alt"></i>
-                            <small> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</small>
-                            <br>
-                            @{{ moment(createdAt).format() }}
-                        </li>
-                        <li class="list-group-item">
-                            <h5>{{__('Request')}}</h5>
-                            <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
-                                #{{$task->process_request_id}} {{$task->process->name}}
-                            </a>
-                            <br><br>
-                            <h5>{{__('Requested By')}}</h5>
-                            <avatar-image v-if="task.requestor" size="32"
-                                          class="d-inline-flex pull-left align-items-center"
-                                          :input-data="task.requestor"></avatar-image>
-                            <p v-if="!task.requestor">{{__('Web Entry')}}</p>
-                        </li>
-                    </ul>
+                                @endforeach
+                              @endisset
+                            </li>
+                            <li class="list-group-item">
+                              <p class="section-title"> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</p>
+                              @{{ moment(createdAt).format() }}
+                            </li>
+                            <li class="list-group-item">
+                              <p class="section-title">{{__('Request')}}</p>
+                              <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
+                                  #{{$task->process_request_id}} {{$task->process->name}}
+                              </a>
+                            </li>
+                            <li class="list-group-item">
+                            <p class="section-title">{{__('Requested By')}}:</p>
+                              <avatar-image v-if="task.requestor" size="32"
+                                            class="d-inline-flex pull-left align-items-center"
+                                            :input-data="task.requestor"></avatar-image>
+                              <p v-if="!task.requestor">{{__('Web Entry')}}</p>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">...2</div>
+                  </div>
                 </div>
-            </div>
+                <b-modal
+                  v-model="showReassignment"
+                  size="md"
+                  centered title="{{__('Reassign to')}}"
+                  header-close-content="&times;"
+                  v-cloak
+                  @hide="cancelReassign"
+                >
+                  <div class="form-group">
+                    {!!Form::label('user', __('User'))!!}
+                    <select-from-api
+                      id='user'
+                      v-model="selectedUser"
+                      placeholder="{{__('Select the user to reassign to the task')}}"
+                      api="users"
+                      :multiple="false"
+                      :show-labels="false"
+                      :searchable="true"
+                      :store-id="false"
+                      label="fullname"
+                    >
+                      <template slot="noResult">
+                        {{ __('No elements found. Consider changing the search query.') }}
+                      </template>
+                      <template slot="noOptions">
+                        {{ __('No Data Available') }}
+                      </template>
+                      <template slot="tag" slot-scope="props">
+                        <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                          <span class="option__desc mr-1">
+                            <span class="option__title">@{{ props.option.fullname }}</span>
+                          </span>
+                          <i aria-hidden="true" tabindex="1"
+                            @click="props.remove(props.option)"
+                            class="multiselect__tag-icon"></i>
+                        </span>
+                      </template>
+                      <template slot="option" slot-scope="props">
+                        <div class="option__desc d-flex align-items-center">
+                          <span class="option__title mr-1">@{{ props.option.fullname }}</span>
+                        </div>
+                      </template>
+                    </select-from-api>
+                  </div>
+                  <div slot="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
+                      {{__('Cancel')}}
+                    </button>
+                    <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+                      {{__('Reassign')}}
+                    </button>
+                  </div>
+                </b-modal>
+              </div>
             @endif
             <div v-if="panCommentInVueOptionsComponents">
                 <pan-comment :commentable_id="task.id"
@@ -259,7 +294,7 @@
           showReassignment: false,
           task,
           userHasAccessToTask,
-          statusCard: "card-header text-capitalize text-white bg-success",
+          statusCard: "card-header text-capitalize text-white text-status bg-success",
           selectedUser: [],
           hasErrors: false,
           redirectInProcess: false,
@@ -268,6 +303,7 @@
           userIsAdmin,
           userIsProcessManager,
           showTree: false,
+          showTabs: true,
         },
         watch: {
           task: {
@@ -471,48 +507,76 @@
 @endsection
 
 @section('css')
-    <style>
-        .inline-input {
-            margin-right: 6px;
-        }
-
-        .inline-button {
-            background-color: rgb(109, 124, 136);
-            font-weight: 100;
-        }
-
-        .input-and-select {
-            width: 212px;
-        }
-
-        .multiselect__element span img {
-            border-radius: 50%;
-            height: 20px;
-        }
-
-        .multiselect__tags-wrap img {
-            height: 15px;
-            border-radius: 50%;
-        }
-
-        .multiselect__tag-icon:after {
-            color: white !important;
-        }
-
-        .multiselect__option--highlight {
-            background: #00bf9c !important;
-        }
-
-        .multiselect__option--selected.multiselect__option--highlight {
-            background: #00bf9c !important;
-        }
-
-        .multiselect__tag {
-            background: #788793 !important;
-        }
-
-        .multiselect__tag-icon:after {
-            color: white !important;
-        }
-    </style>
+<style>
+  .inline-input {
+    margin-right: 6px;
+  }
+  .inline-button {
+    background-color: rgb(109, 124, 136);
+    font-weight: 100;
+  }
+  .input-and-select {
+    width: 212px;
+  }
+  .multiselect__element span img {
+    border-radius: 50%;
+    height: 20px;
+  }
+  .multiselect__tags-wrap img {
+    height: 15px;
+    border-radius: 50%;
+  }
+  .multiselect__tag-icon:after {
+    color: white !important;
+  }
+  .multiselect__option--highlight {
+    background: #00bf9c !important;
+  }
+  .multiselect__option--selected.multiselect__option--highlight {
+    background: #00bf9c !important;
+  }
+  .multiselect__tag {
+    background: #788793 !important;
+  }
+  .multiselect__tag-icon:after {
+    color: white !important;
+  }
+  .btn-outline-custom {
+    border-radius: 4px;
+    border: 1px solid var(--borders, #CDDDEE);
+    background: linear-gradient(180deg, #fff 0%, rgb(255 255 255 / 0%) 100%), #fbfbfb;
+    box-shadow: 0px 0px 3px -2px rgba(0, 0, 0, 0.10);
+    color: var(--text-only, #556271);
+  }
+  .text-status {
+    display: flex;
+    height: 48px;
+    padding: 12px 16px;
+    align-items: center;
+    gap: 16px;
+    margin: 16px;
+  }
+  .nav-collapse {
+    padding: 0 16px;
+    border: none;
+  }
+  .section-title {
+    color: var(--text-only, #556271);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.28px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .button-collapse {
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 4px;
+    border: 1px solid var(--borders, #CDDDEE);
+    background: var(--white-w24, #FFF);
+    color: #6a7888;
+  }
+</style>
 @endsection
