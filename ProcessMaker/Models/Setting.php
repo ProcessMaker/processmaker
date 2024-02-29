@@ -70,14 +70,6 @@ class Setting extends ProcessMakerModel implements HasMedia
 
     public const SESSION_CONTROL_GROUP = 'Session Control';
 
-    public const EMAIL_MENU_GROUP = 'Email';
-
-    public const INTEGRATIONS_MENU_GROUP = 'Integrations';
-
-    public const LOG_IN_AUTH_MENU_GROUP = 'Log-In & Auth';
-
-    public const USER_SETTINGS_MENU_GROUP = 'User Settings';
-
     /**
      * The attributes that aren't mass assignable.
      *

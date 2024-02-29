@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->string('menu_group')->nullable()->default('Undefined');
-            $table->string('menu_group_icon')->nullable()->default('start');
-            $table->integer('menu_group_order')->default(0);
+            $table->unsignedInteger('group_id')->nullable()->after('group');
+            //Indexes
+            $table->index('group_id');
+            //Foreign keys
+            $table->foreign('group_id')->references('id')->on('settings_menus')->onDelete('cascade');
         });
     }
 
@@ -24,9 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropColumn('menu_group');
-            $table->dropColumn('menu_group_icon');
-            $table->dropColumn('menu_group_order');
+            $table->dropColumn('group_id');
         });
     }
 };
