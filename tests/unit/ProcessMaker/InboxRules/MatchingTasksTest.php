@@ -48,7 +48,7 @@ class MatchingTasksTest extends TestCase
             'status' => 'ACTIVE',
             'element_name' => 'My Test Task',
         ]);
-        
+
         $savedSearch = SavedSearch::factory()->create([
             'type' => 'task',
             'pmql' => 'task = "My Test Task"',
@@ -61,7 +61,9 @@ class MatchingTasksTest extends TestCase
             'type' => 'task',
             'pmql' => 'task = "Something Else"',
         ]);
-        $nonMatchingInboxRule = InboxRule::factory()->create([
+
+        // Non-matching inbox rule
+        InboxRule::factory()->create([
             'user_id' => $user->id,
             'saved_search_id' => $nonMatchingSavedSearch->id,
         ]);
@@ -74,11 +76,8 @@ class MatchingTasksTest extends TestCase
 
     public function testInboxRuleEndDate()
     {
-        // TODO test if the end date has passed, then the inbox rule should
-        // not be returned
-
         $user = User::factory()->create();
-    
+
         $task = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'COMPLETED',
@@ -111,7 +110,7 @@ class MatchingTasksTest extends TestCase
     public function testGetForTypeTask()
     {
         $user = User::factory()->create();
-    
+
         $task = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
             'status' => 'COMPLETED',
@@ -131,7 +130,7 @@ class MatchingTasksTest extends TestCase
 
         $matchingTasks = MatchingTasks::get($inboxRule);
 
-        $this->assertEquals($task->process_id, $matchingTasks[0]["process_id"]);
+        $this->assertEquals($task->process_id, $matchingTasks[0]['process_id']);
     }
 
     public function testGetForTypeSavedSearch()
@@ -153,6 +152,6 @@ class MatchingTasksTest extends TestCase
         ]);
         $matchingTasks = MatchingTasks::get($inboxRule);
         $this->assertCount(1, $matchingTasks);
-        $this->assertEquals($activeTask->process_id, $matchingTasks[0]["process_id"]);
+        $this->assertEquals($activeTask->process_id, $matchingTasks[0]['process_id']);
     }
 }

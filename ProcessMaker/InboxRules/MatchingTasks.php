@@ -8,7 +8,8 @@ use ProcessMaker\Models\ProcessRequestToken;
 
 /**
  * This Class is used in 2 ways
- * 1. After a task is assigned, it checks to see if it matches any active InboxRules in the system and returns the InboxRule models.
+ * 1. After a task is assigned, it checks to see if it matches any active
+ *    InboxRules in the system and returns the InboxRule models.
  * 2. The `get` method returns all tasks that match a given InboxRule
  */
 class MatchingTasks
@@ -34,6 +35,7 @@ class MatchingTasks
                 $matchingInboxRules[] = $rule;
             }
         }
+
         return $matchingInboxRules;
     }
 
@@ -90,6 +92,7 @@ class MatchingTasks
         if ($rule->end_date && $rule->end_date->isPast()) {
             return true;
         }
+
         return false;
     }
 }
