@@ -20,13 +20,8 @@ const PreviewMixin = {
       isLoading: "",
       stopFrame: false,
       showQuickFillPreview: false,
+      isSelectedTask: false,
     };
-  },
-  mounted() {
-    this.$root.$on("cancelQuickFill", (val) => {
-      this.showQuickFillPreview = false;
-      this.showSideBar(val.task, val.data.data, true);
-    });
   },
   methods: {
     /**
@@ -50,6 +45,9 @@ const PreviewMixin = {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+    },
+    goQuickFill() {
+      this.showQuickFillPreview = true;
     },
     onClose() {
       this.showPreview = false;

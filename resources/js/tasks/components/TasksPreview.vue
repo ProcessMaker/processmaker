@@ -24,7 +24,7 @@
         >
         <template v-if="!showQuickFillPreview">
           <div>
-            <div class="d-flex w-100 h-100 mb-3">
+            <div v-show="!isSelectedTask" class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
@@ -75,6 +75,20 @@
                 </b-button>
               </div>
             </div>
+            <div v-show="isSelectedTask">
+              <div class="d-flex w-100 h-100 mb-3">
+                <div class="my-1">
+                  <a class="lead text-secondary font-weight-bold">
+                    {{ task.element_name }}
+                  </a>
+                </div>
+                <b-button 
+                  class="btn-this-data"
+                  @click="$emit('selected', tooltipRowData)" 
+                >{{ $t(' USE THIS TASK DATA') }}
+                </b-button>
+              </div>
+            </div>
             <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
@@ -121,6 +135,19 @@ import "splitpanes/dist/splitpanes.css";
 export default {
   components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
+  // mounted() {
+  //   this.$root.$on("fillData", (arg) => {
+  //     this.setDataInPreview(arg.data);
+  //   });
+  // },
+  mounted() {
+    this.$root.$on("selectedTaskForQuickFill", (val) => {
+      this.showQuickFillPreview = false;
+      this.isSelectedTask = true;
+      console.log("Valor isSelectedTask: ", this.isSelectedTask);
+      this.showSideBar(val.task, val.data.data, false);
+    });
+  },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -131,9 +158,18 @@ export default {
     }
   },
   methods: {
-    goQuickFill() {
-      this.showQuickFillPreview = true;
-    },
+    setDataInPreview(data){
+      console.log("en setDataPreview: ", this.$refs);
+      //if(this.$refs.tasksFrame1) {
+      if(this.$refs) {
+        console.log("en tasksFrame1");
+        this.$refs.tasksFrame1.contentWindow.postMessage(data, "*");
+      }
+      if(this.$refs.tasksFrame2) {
+        console.log("en tasksFrame2");
+        this.$refs.tasksFrame2.contentWindow.postMessage(data, "*");
+      }
+    }
   },
 };
 </script>

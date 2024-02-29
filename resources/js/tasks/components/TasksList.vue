@@ -154,7 +154,11 @@
             
           >
           <span>
-            <b-button class="btn-this-data">{{ $t(' USE THIS TASK DATA') }}</b-button>
+            <b-button 
+              class="btn-this-data"
+              @click="$emit('selected', tooltipRowData)" 
+            >{{ $t(' USE THIS TASK DATA') }}
+            </b-button>
           </span>
          <span>
             <i

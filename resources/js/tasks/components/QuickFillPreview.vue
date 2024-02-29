@@ -23,10 +23,11 @@
         </div>
         <div class="container">
         <tasks-list
-            ref="taskList"
+            ref="taskList2"
             :disable-tooltip="true"
             :disable-quick-fill-tooltip="true"
             :columns="columns"
+            @selected="selected"
         ></tasks-list>
         </div>
     </div>
@@ -34,9 +35,7 @@
 </template>
 <script>
 
-//import paginationTable from "../../components/shared/PaginationTable.vue";
 export default {
-//components: { paginationTable },
 props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
@@ -72,57 +71,18 @@ data() {
           default: true,
           width: 160,
         },
-        // {
-        //   label: "Process",
-        //   field: "process",
-        //   sortable: true,
-        //   default: true,
-        //   width: 140,
-        //   truncate: true,
-        //   filter_subject: { type: 'Relationship', value: 'processRequest.name' },
-        //   order_column: 'process_requests.name',
-        // },
-        // {
-        //   label: "Task",
-        //   field: "task_name",
-        //   sortable: true,
-        //   default: true,
-        //   width: 140,
-        //   truncate: true,
-        //   filter_subject: { value: 'element_name' },
-        //   order_column: 'element_name',
-        // },
-        // {
-        //   label: "Status",
-        //   field: "status",
-        //   sortable: true,
-        //   default: true,
-        //   width: 100,
-        //   filter_subject: { type: 'Status' },
-        // },
-        // {
-        //   label: "Due date",
-        //   field: "due_at",
-        //   format: "datetime",
-        //   sortable: true,
-        //   default: true,
-        //   width: 140,
-        // },
-        // {
-        //   label: "Draft",
-        //   field: "draft",
-        //   sortable: false,
-        //   default: true,
-        //   hidden: true,
-        //   width: 40,
-        // },
       ],
       dataTasks: {},
     }
   },
   methods: {
     cancelQuickFill() {
-      this.$root.$emit("cancelQuickFill", { task: this.task, data: this.data });
+      //here logic for cancel buton
+    },
+    selected(taskData) {
+      console.log("En QuickFill metodo selected desde TasksList: ", taskData);
+      //this.$root.$emit("fillData", taskData);
+      this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data });
     }
   }
 }
