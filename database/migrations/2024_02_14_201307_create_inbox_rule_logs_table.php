@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,10 @@ return new class extends Migration
     {
         Schema::create('inbox_rule_logs', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->index();
             $table->integer('inbox_rule_id');
-            $table->integer('task_id');
-            $table->json('inbox_rule_data');
+            $table->integer('process_request_token_id');
+            $table->json('inbox_rule_attributes');
             $table->timestamps();
         });
     }

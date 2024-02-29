@@ -77,6 +77,24 @@
                       </template>
 
                       <template v-slot:right-buttons>
+                          <b-button id="idPopoverInboxRules"
+                                    class="ml-md-1 task-inbox-rules"
+                                    variant="primary"
+                                    @click="onInboxRules">
+                            {{ __('Inbox Rules') }}
+                          </b-button>
+                          <b-popover target="idPopoverInboxRules"
+                                     triggers="hover focus"
+                                     placement="bottomleft">
+                            <div class="task-inbox-rules-content">
+                              <div>
+                                <img src="/img/inbox-rule-suggest.svg" alt="{{ __('Inbox Rules') }}">
+                              </div>
+                              <span class="task-inbox-rules-content-text">
+                              <!-- //NOSONAR -->{!! __('Inbox Rules act as your personal task manager. You tell them what to look for, and they <strong>take care of things automatically.</strong>') !!}
+                              </span>
+                            </div>
+                          </b-popover>
                           @if((
                               Auth::user()->is_administrator ||
                               Auth::user()->hasPermission('edit-screens')
@@ -186,5 +204,22 @@
         .task-list-body {
             border-radius: 5px;
         }
+        .task-inbox-rules {
+          width: max-content;
+        }
+        .task-inbox-rules-content {
+          display: flex;
+          justify-content: space-between;
+          padding: 15px;
+        }
+        .task-inbox-rules-content-text {
+          width: 310px;
+          padding-left: 10px;
+        }
+    </style>
+    <style scoped>
+      .popover{
+        max-width: 450px;
+      }
     </style>
 @endsection
