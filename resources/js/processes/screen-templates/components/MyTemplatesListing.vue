@@ -27,6 +27,15 @@
               </template>
               <template v-else :data-cy="`my-templates-table-field-${rowIndex}-${colIndex}`">
                 <template v-if="header.field === 'name'">
+                  <div
+                    :id="`my-templates-${row.id}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    <span>
+                      {{ row[header.field] }}
+                    </span>
+                  </div>
                   <b-tooltip v-if="header.truncate" :target="`element-${row.id}`" custom-class="pm-table-tooltip">
                     {{ row[header.field] }}
                   </b-tooltip>
@@ -150,7 +159,7 @@ export default {
           "&filter=" +
           this.filter +
           "&pmql=" + 
-          this.pmql +
+          encodeURIComponent(this.pmql) +
           "&order_by=" +
           this.orderBy +
           "&order_direction=" +

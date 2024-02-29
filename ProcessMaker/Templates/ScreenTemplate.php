@@ -18,6 +18,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
 
 /**
@@ -26,6 +27,7 @@ use SebastianBergmann\CodeUnit\Exception;
 class ScreenTemplate implements TemplateInterface
 {
     use HasControllerAddons;
+    use HideSystemResources;
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
