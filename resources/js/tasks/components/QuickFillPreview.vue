@@ -34,10 +34,10 @@
 </template>
 <script>
 
-import paginationTable from "../../components/shared/PaginationTable.vue";
+//import paginationTable from "../../components/shared/PaginationTable.vue";
 export default {
-components: { paginationTable },
-props: ['showQuickFillPreview'],
+//components: { paginationTable },
+props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
         filter: {},
@@ -122,7 +122,7 @@ data() {
   },
   methods: {
     cancelQuickFill() {
-        this.$root.$emit("cancelQuickFill");
+      this.$root.$emit("cancelQuickFill", { task: this.task, data: this.data });
     }
   }
 }

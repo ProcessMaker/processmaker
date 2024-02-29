@@ -99,7 +99,12 @@
             </div>
           </div>
         </template>
-        <quick-fill-preview v-if="showQuickFillPreview" :showQuickFillPreview="showQuickFillPreview"></quick-fill-preview>
+        <quick-fill-preview 
+          v-if="showQuickFillPreview" 
+          :showQuickFillPreview="showQuickFillPreview"
+          :task="task"
+          :data="data"
+        ></quick-fill-preview>
         </div>
       </pane>
     </splitpanes>

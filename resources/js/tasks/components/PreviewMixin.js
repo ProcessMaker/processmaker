@@ -25,7 +25,7 @@ const PreviewMixin = {
   mounted() {
     this.$root.$on("cancelQuickFill", (val) => {
       this.showQuickFillPreview = false;
-      this.frameLoaded();
+      this.showSideBar(val.task, val.data.data, true);
     });
   },
   methods: {
