@@ -89,9 +89,9 @@ export default {
       this.$emit("openProcessInfo", process);
     },
     getIconProcess() {
-      let icon = "default-icon";
+      let icon = "Default Icon";
       if (this.process.launchpad_properties) {
-        icon = JSON.parse(this.process.launchpad_properties).icon || "default-icon";
+        icon = JSON.parse(this.process.launchpad_properties).icon || "Default Icon";
       }
       return `/img/launchpad-images/icons/${icon}.svg`;
     },
