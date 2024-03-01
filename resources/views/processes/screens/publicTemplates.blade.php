@@ -21,7 +21,7 @@
         <public-templates-listing ref="publicTemplatesListing"
                         :filter="filter"
                         :pmql="pmql"
-                        :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects') }}"
+                        :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects', 'screen-templates') }}"
                         v-on:reload="reload">
         </public-templates-listing>
     </div>
