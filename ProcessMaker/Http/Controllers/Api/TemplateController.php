@@ -185,6 +185,17 @@ class TemplateController extends Controller
         return $result;
     }
 
+    /**
+     * Set a template as a Public Template
+     *
+     * @param  \ProcessMaker\Models\Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function publishTemplate(string $type, Request $request)
+    {
+        return $this->template->publishTemplate($type, $request);
+    }
+
     private function validateImportedFile($content, $request)
     {
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);

@@ -5,8 +5,10 @@
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
+import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
 
 export default {
+  mixins:[FilterTableBodyMixin],
   components: {
     Vuetable,
     Pagination,
@@ -81,6 +83,12 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
+
+      for (const record of data.data) {
+        // format owner avatar and category
+        record.owner = this.formatAvatar(record.user);
+        record.category_list = this.formatCategory(record.categories);
+      }
       return data;
     },
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
