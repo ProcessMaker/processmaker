@@ -225,6 +225,7 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataRequests = this.transform(response.data);
+          this.showTabRequests = false;
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&

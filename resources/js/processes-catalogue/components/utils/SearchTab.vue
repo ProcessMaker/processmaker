@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     fetch() {
-      this.filterPmql(this.filter, true);
+      this.filterPmql(this.filter);
     },
     clearSearch() {
       this.filter = "";

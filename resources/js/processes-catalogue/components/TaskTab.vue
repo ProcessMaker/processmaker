@@ -253,6 +253,7 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataTasks = this.transform(response.data);
+          this.showTabTasks = false;
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&
