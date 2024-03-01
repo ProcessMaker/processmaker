@@ -97,7 +97,7 @@
                 <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
                   <li class="nav-item" role="presentation">
                     <button
-                      id="details-tab"  
+                      id="details-tab"
                       class="nav-link active"
                       data-toggle="tab"
                       data-target="#details"
@@ -186,9 +186,7 @@
                             </li>
                             <li class="list-group-item">
                               <p class="section-title">{{__('Request')}}</p>
-                              <a
-                                href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}"
-                              >
+                              <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
                                 #{{$task->process_request_id}} {{$task->process->name}}
                               </a>
                             </li>
