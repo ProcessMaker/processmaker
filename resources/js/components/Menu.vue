@@ -1,7 +1,7 @@
 <template>
   <b-card-header>
     <b-row>
-      <b-col>
+      <b-col v-if="!renderTop">
         <template v-for="(item, index) in section.left">
           <b-button-group
             v-if="isVisible(item, 'group')"
@@ -48,7 +48,7 @@
         v-if="sectionRight"
         class="text-right"
       >
-        <template v-for="(item, index) in section.right">
+        <template v-for="(item, index) in rightMenus">
           <b-button-group
             v-if="isVisible(item, 'group')"
             :key="index"
@@ -58,7 +58,7 @@
               v-for="(button, indexButton) in visibleItems(item)"
               :key="`group-${indexButton}`"
               :variant="button.variant || 'secondary'"
-              class="text-capitalize"
+              class="text-capitalize screen-toolbar-button"
               :title="button.title"
               @click="executeFunction(button.action)"
             >
@@ -72,7 +72,7 @@
             :key="index"
             size="sm"
             :variant="item.variant || 'secondary'"
-            class="text-capitalize"
+            class="text-capitalize screen-toolbar-button"
             :title="item.title"
             @click="executeFunction(item.action)"
           >
@@ -82,7 +82,7 @@
 
           <component
             :is="item.type"
-            v-if="item.type !== 'group' && item.type !== 'button'"
+            v-if="item.type !== 'group' && item.type !== 'button' && !item.hide"
             :ref="item.id"
             v-bind="{
               ...item.options
@@ -108,20 +108,32 @@ export default {
       type: Object,
       default: () => {},
     },
+    renderTop: {
+      type: Boolean,
+      default: false,
+    },
+    initialNewItems: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       changeItems: {},
-      newItems: [],
+      newItems: this.initialNewItems,
       sectionRight: true,
       items: [],
     };
   },
   computed: {
+    rightMenus() {
+      return this.renderTop ? this.section.rightTop : this.section.right;
+    },
     section() {
       const response = {};
       response.left = [];
       response.right = [];
+      response.rightTop = [];
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.items = [];
 
@@ -153,6 +165,9 @@ export default {
           window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
           break;
         default:
+          if (action.action) {
+            this.executeFunction(action.action);
+          }
           break;
       }
     },
@@ -204,3 +219,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.screen-toolbar-button {
+  color: #556271;
+}
+</style>
