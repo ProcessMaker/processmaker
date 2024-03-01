@@ -5,8 +5,8 @@
         id="header"
         class="card card-body"
       >
-        <div class="d-flex justify-content-between mb-3">
-          <h4 class="d-flex align-items-center">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex align-items-center">
             <i
               class="fas fa-arrow-left text-secondary mr-2 iconTitle"
               @click="goBack"
@@ -22,7 +22,7 @@
             >
               {{ buttonCollapseTitle }}
             </button>
-          </h4>
+          </div>
           <div class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
               <i
@@ -42,7 +42,7 @@
                 @click="checkBookmark(process)"
               />
             </div>
-            <span class="rounded-circle ellipsis-border">
+            <span class="ellipsis-border">
               <ellipsis-menu
                 v-if="showEllipsis"
                 :actions="processLaunchpadActions"
@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="collapse" id="collapseProcessInfo">
-        <div class="card card-body">
+        <div class="info-collapse">
           <p class="title-process">
             {{ process.name }}
           </p>
@@ -149,7 +149,7 @@ export default {
       assetName: "",
       processLaunchpadActions: [],
       optionsData: {},
-      infoCollapsed: true,
+      infoCollapsed: 'true',
       largeDescription: false,
       readActivated: false,
       showEllipsis: false,
@@ -172,9 +172,10 @@ export default {
      */
     toogleInfoCollapsed() {
       if(this.infoCollapsed) {
-        return this.buttonCollapseTitle = this.$t('Process Info');
+        this.buttonCollapseTitle = this.$t('Process Info');
+      } else {
+        this.buttonCollapseTitle = this.process.name;
       }
-      return this.process.name;
     },
     /**
      * Verify if the process is marked
@@ -288,6 +289,10 @@ export default {
   font-weight: 600;
   letter-spacing: -0.42px;
 }
+.info-collapse {
+  padding: 32px;
+  background-color: white;
+}
 .title-process {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
@@ -312,6 +317,7 @@ export default {
   align-items: center;
   background-color: white;
   border: 1px;
+  border-radius: 19px;
   border-color: #CDDDEE;
   width: 32px;
   height: 32px;
@@ -329,6 +335,8 @@ export default {
   cursor: pointer;
 }
 #header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #CDDDEE;
   box-shadow: 0px 6px 18px 0px #EFF1F4;
 }
 </style>
