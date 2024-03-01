@@ -2,7 +2,7 @@
   <div>
 
     <b-col cols="12">
-      <process-map
+      <process-collapse-info
           :process="process"
           :permission="permission"
           :current-user-id="currentUserId"
@@ -32,14 +32,14 @@
 
 <script>
 import ProcessesCarousel from "./ProcessesCarousel.vue";
-import ProcessMap from "./ProcessMap.vue";
+import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import ProcessTab from "./ProcessTab.vue";
 
 export default {
   components: {
     ProcessOptions,
-    ProcessMap,
+    ProcessCollapseInfo,
     ProcessesCarousel,
     ProcessTab,
   },

@@ -1,72 +1,89 @@
 <template>
-  <div id="processMap">
+  <div id="processCollapseInfo">
     <div id="processData">
-      <div
+      <div 
         id="header"
-        class="d-flex justify-content-between mb-3"
+        class="card card-body"
       >
-        <h4 class="d-flex align-items-center">
-          <i
-            class="fas fa-arrow-circle-left text-secondary mr-2 iconTitle"
-            @click="goBack"
-          />
-          <span class="ml-2 title-process">{{ process.name }}</span>
-        </h4>
-        <div class="d-flex align-items-center">
-          <div class="card-bookmark mx-2">
+        <div class="d-flex justify-content-between mb-3">
+          <h4 class="d-flex align-items-center">
             <i
-              v-if="bookmarkIcon()"
-              :ref="`bookmark-${process.id}-marked`"
-              v-b-tooltip.hover.bottom
-              :title="$t(labelTooltip)"
-              class="fas fa-bookmark marked"
-              @click="checkBookmark(process)"
+              class="fas fa-arrow-left text-secondary mr-2 iconTitle"
+              @click="goBack"
             />
-            <i
-              v-else
-              :ref="`bookmark-${process.id}-unmarked`"
-              v-b-tooltip.hover.bottom
-              :title="$t(labelTooltip)"
-              class="fas fa-bookmark unmarked"
-              @click="checkBookmark(process)"
-            />
+            <button
+              class="btn btn-outline-secondary border-0 title-process-button"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseProcessInfo"
+              :aria-expanded="infoCollapsed"
+              aria-controls="collapseProcessInfo"
+              @click="toogleInfoCollapsed()"
+            >
+              {{ buttonCollapseTitle }}
+            </button>
+          </h4>
+          <div class="d-flex align-items-center">
+            <div class="card-bookmark mx-2">
+              <i
+                v-if="bookmarkIcon()"
+                :ref="`bookmark-${process.id}-marked`"
+                v-b-tooltip.hover.bottom
+                :title="$t(labelTooltip)"
+                class="fas fa-bookmark marked"
+                @click="checkBookmark(process)"
+              />
+              <i
+                v-else
+                :ref="`bookmark-${process.id}-unmarked`"
+                v-b-tooltip.hover.bottom
+                :title="$t(labelTooltip)"
+                class="fas fa-bookmark unmarked"
+                @click="checkBookmark(process)"
+              />
+            </div>
+            <span class="rounded-circle ellipsis-border">
+              <ellipsis-menu
+                v-if="showEllipsis"
+                :actions="processLaunchpadActions"
+                :permission="permission"
+                :data="process"
+                :is-documenter-installed="isDocumenterInstalled"
+                :divider="false"
+                :lauchpad="true"
+                variant="none"
+                @navigate="onProcessNavigate"
+              />
+            </span>
+            <buttons-start :process="process" />
           </div>
-          <span class="border bg-white rounded-circle d-flex align-items-center justify-content-center p-0 ellipsis-border mx-2">
-            <ellipsis-menu
-              v-if="showEllipsis"
-              :actions="processLaunchpadActions"
-              :permission="permission"
-              :data="process"
-              :is-documenter-installed="isDocumenterInstalled"
-              :divider="false"
-              :lauchpad="true"
-              variant="none"
-              @navigate="onProcessNavigate"
-            />
-          </span>
-          <buttons-start :process="process" />
         </div>
       </div>
-      <div>
-        <p
-          v-if="readActivated || !largeDescription"
-          class="description"
-        >
-          {{ process.description }}
-        </p>
-        <p
-          v-if="!readActivated && largeDescription"
-          class="description"
-        >
-          {{ process.description.slice(0,300) }}
-          <a
-            v-if="!readActivated"
-            class="read-more"
-            @click="activateReadMore"
+      <div class="collapse" id="collapseProcessInfo">
+        <div class="card card-body">
+          <p class="title-process">
+            {{ process.name }}
+          </p>
+          <p
+            v-if="readActivated || !largeDescription"
+            class="description"
           >
-            ...
-          </a>
-        </p>
+            {{ process.description }}
+          </p>
+          <p
+            v-if="!readActivated && largeDescription"
+            class="description"
+          >
+            {{ process.description.slice(0,300) }}
+            <a
+              v-if="!readActivated"
+              class="read-more"
+              @click="activateReadMore"
+            >
+              ...
+            </a>
+          </p>  
+        </div>
       </div>
     </div>
     <create-template-modal
@@ -132,10 +149,12 @@ export default {
       assetName: "",
       processLaunchpadActions: [],
       optionsData: {},
+      infoCollapsed: true,
       largeDescription: false,
       readActivated: false,
       showEllipsis: false,
-      labelTooltip: ""
+      labelTooltip: "",
+      buttonCollapseTitle: this.$t('Process Info'),
     };
   },
   mounted() {
@@ -148,6 +167,15 @@ export default {
     this.verifyDescription();
   },
   methods: {
+    /** 
+     * Change button title
+     */
+    toogleInfoCollapsed() {
+      if(this.infoCollapsed) {
+        return this.buttonCollapseTitle = this.$t('Process Info');
+      }
+      return this.process.name;
+    },
     /**
      * Verify if the process is marked
      */
@@ -251,23 +279,43 @@ export default {
 
 <style scoped>
 .iconTitle {
-  font-size: 32px;
+  font-size: 18px;
   cursor: pointer;
 }
-.title-process {
+.title-process-button {
   color: #556271;
   font-size: 21px;
   font-weight: 600;
   letter-spacing: -0.42px;
 }
+.title-process {
+  color: #556271;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
 .description {
-  color: #4F606D;
+  color: #4f606d;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  letter-spacing: -0.32px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
 }
 .ellipsis-border{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px;
   border-color: #CDDDEE;
+  width: 32px;
+  height: 32px;
+  margin: 0px 8px;
 }
 .read-more {
   cursor: pointer;
@@ -279,5 +327,8 @@ export default {
 }
 .card-bookmark:hover {
   cursor: pointer;
+}
+#header {
+  box-shadow: 0px 6px 18px 0px #EFF1F4;
 }
 </style>
