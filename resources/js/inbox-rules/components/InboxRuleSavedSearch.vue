@@ -1,47 +1,31 @@
 <template>
   <div class="d-flex justify-content-center">
     <b-card class="w-75">
-      
 
-          <div class="mb-3">
-                    <pmql-input
-                      ref="pmql_input"
-                      search-type="tasks"
-                      :value="'foo'"
-                      :url-pmql="'foo'"
-                      :filters-value="'foo'"
-                      :ai-enabled="false"
-                      :show-filters="true"
-                      :aria-label="$t('Advanced Search (PMQL)')"
-                      >
+      columsn: {{columns}}
 
-                      <template v-slot:right-buttons>
-                          <b-button
-                            class="ml-md-2"
-                            v-b-modal.columns
-                          >
-                          <i class="fas fw fa-cog"></i>
-                          </b-button>
-                      </template>
-                    </pmql-input>
-              </div>
+      <div class="mb-3">
+        <pmql-input ref="pmql_input" search-type="tasks" :value="'foo'" :url-pmql="'foo'" :filters-value="'foo'"
+          :ai-enabled="false" :show-filters="true" :aria-label="$t('Advanced Search (PMQL)')">
 
-              <tasks-list
-                ref="taskList"
-                :filter="''"
-                :pmql="pmql"
-              ></tasks-list>
+          <template v-slot:right-buttons>
+            <b-button class="ml-md-2" v-b-modal.columns>
+              <i class="fas fw fa-cog"></i>
+            </b-button>
+          </template>
+        </pmql-input>
+      </div>
 
-              <b-modal id="columns" title="BootstrapVue">
-                <p class="my-4">Hello from modal!</p>
-              </b-modal>
+      <tasks-list ref="taskList" :filter="''" :pmql="pmql"></tasks-list>
 
-              <column-selector
-                ref="columnSelector"
-                :pmql="pmql"
-              ></column-selector>
-
-
+      <b-modal
+        id="columns"
+        :title="$t('Columns')"
+        size="lg"
+        @ok="saveColumns"
+      >
+        <column-chooser-adapter ref="columnChooserAdapter" :pmql="pmql" />
+      </b-modal>
 
 
     </b-card>
@@ -49,13 +33,25 @@
 </template>
 
 <script>
-// resources/js/tasks/components/TasksList.vue
 import TasksList from "../../tasks/components/TasksList.vue";
-import ColumnSelector from "./ColumnSelector.vue";
+import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
 export default {
+  data() {
+    return {
+      columns: []
+    }
+  },
   components: {
     TasksList,
-    ColumnSelector
+    ColumnChooserAdapter,
+  },
+  methods: {
+    saveColumns() {
+      // this.columns = _.cloneDeep(this.$refs.columnChooserAdapter.currentColumns);
+
+      console.log(_.cloneDeep(this.$refs.columnChooserAdapter.currentColumns));
+
+    }
   },
   computed: {
     pmql() {

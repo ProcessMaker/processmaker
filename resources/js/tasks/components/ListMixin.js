@@ -81,8 +81,8 @@ const ListMixin = {
             this.$emit("in-overdue", response.data.meta.in_overdue);
           })
           .catch((error) => {
-            window.ProcessMaker.alert(error.response.data.message, "danger");
-            this.data = [];
+            // window.ProcessMaker.alert(error.response.data.message, "danger");
+            // this.data = [];
           });
       });
     },
