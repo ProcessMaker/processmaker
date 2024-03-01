@@ -16,7 +16,9 @@ const app = new Vue({
   methods: {
     onNLQConversion(query) {
       this.onChange(query);
-      this.reload();
+      this.$nextTick(() => {
+        this.reload();
+      });
     },
     onChange(query) {
       this.pmql = query;

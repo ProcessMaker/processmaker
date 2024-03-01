@@ -18,6 +18,7 @@ use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
 
 /**
@@ -26,6 +27,7 @@ use SebastianBergmann\CodeUnit\Exception;
 class ScreenTemplate implements TemplateInterface
 {
     use HasControllerAddons;
+    use HideSystemResources;
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
@@ -36,10 +38,45 @@ class ScreenTemplate implements TemplateInterface
      *
      * @return array An array containing the list of screen templates.
      */
-    // public function index(Request $request)
-    // {
-    //     // TODO: Implement screen templates listing
-    // }
+    public function index(Request $request)
+    {
+        $orderBy = $this->getRequestSortBy($request, 'name');
+        $include = $this->getRequestInclude($request);
+        $templates = ScreenTemplates::nonSystem()->with($include);
+        $pmql = $request->input('pmql', '');
+        $filter = $request->input('filter');
+
+        if (!empty($pmql)) {
+            try {
+                $templates->pmql($pmql);
+            } catch (\ProcessMaker\Query\SyntaxError $e) {
+                return response(['error' => 'PMQL error'], 400);
+            }
+        }
+
+        $templates = $templates->select('screen_templates.*')
+            ->leftJoin('screen_categories as category', 'screen_templates.screen_category_id', '=', 'category.id')
+            ->leftJoin('users as user', 'screen_templates.user_id', '=', 'user.id')
+            ->orderBy(...$orderBy)
+            ->where(function ($query) use ($filter) {
+                $query->where('screen_templates.name', 'like', '%' . $filter . '%')
+                    ->orWhere('screen_templates.description', 'like', '%' . $filter . '%')
+                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                    ->orWhereIn('screen_templates.id', function ($qry) use ($filter) {
+                        $qry->select('assignable_id')
+                            ->from('category_assignments')
+                            ->leftJoin('screen_categories', function ($join) {
+                                $join->on('screen_categories.id', '=', 'category_assignments.category_id');
+                                $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                                $join->where('category_assignments.assignable_type', '=', ScreenTemplates::class);
+                            })
+                            ->where('screen_categories.name', 'like', '%' . $filter . '%');
+                    });
+            })->get();
+
+        return $templates;
+    }
 
     /**
      * Show screen template in screen builder
