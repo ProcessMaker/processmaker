@@ -1,12 +1,12 @@
 <template>
   <div>
+    <search-tab
+      :filter-pmql="onFilter"
+    />
     <div
       class="bg-white"
       v-if="!showTabTasks"
     >
-      <search-tab
-        :filter-pmql="onFilter"
-      />
       <filter-table
         :headers="tableHeadersTasks"
         :data="dataTasks"
