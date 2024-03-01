@@ -1,14 +1,17 @@
 <template>
   <div>
-    <div class="d-flex">
-      <b-col cols="9">
-        <process-map
+
+    <b-col cols="12">
+      <process-map
           :process="process"
           :permission="permission"
           :current-user-id="currentUserId"
           :is-documenter-installed="isDocumenterInstalled"
           @goBackCategory="goBackCategory"
         />
+    </b-col>
+    <div class="d-flex">
+      <b-col cols="9">
         <processes-carousel
           :process="process"
         />

@@ -12,19 +12,40 @@
           />
           <span class="ml-2 title-process">{{ process.name }}</span>
         </h4>
-        <span class="border bg-white rounded-circle d-flex align-items-center p-0 ellipsis-border">
-          <ellipsis-menu
-            v-if="showEllipsis"
-            :actions="processLaunchpadActions"
-            :permission="permission"
-            :data="process"
-            :is-documenter-installed="isDocumenterInstalled"
-            :divider="false"
-            :lauchpad="true"
-            variant="none"
-            @navigate="onProcessNavigate"
-          />
-        </span>
+        <div class="d-flex align-items-center">
+          <div class="card-bookmark mx-2">
+            <i
+              v-if="bookmarkIcon()"
+              :ref="`bookmark-${process.id}-marked`"
+              v-b-tooltip.hover.bottom
+              :title="$t(labelTooltip)"
+              class="fas fa-bookmark marked"
+              @click="checkBookmark(process)"
+            />
+            <i
+              v-else
+              :ref="`bookmark-${process.id}-unmarked`"
+              v-b-tooltip.hover.bottom
+              :title="$t(labelTooltip)"
+              class="fas fa-bookmark unmarked"
+              @click="checkBookmark(process)"
+            />
+          </div>
+          <span class="border bg-white rounded-circle d-flex align-items-center justify-content-center p-0 ellipsis-border mx-2">
+            <ellipsis-menu
+              v-if="showEllipsis"
+              :actions="processLaunchpadActions"
+              :permission="permission"
+              :data="process"
+              :is-documenter-installed="isDocumenterInstalled"
+              :divider="false"
+              :lauchpad="true"
+              variant="none"
+              @navigate="onProcessNavigate"
+            />
+          </span>
+          <buttons-start :process="process" />
+        </div>
       </div>
       <div>
         <p
@@ -83,6 +104,7 @@
 </template>
 
 <script>
+import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
@@ -93,6 +115,7 @@ import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
 
 export default {
   components: {
+    ButtonsStart,
     EllipsisMenu,
     CreateTemplateModal,
     CreatePmBlockModal,
@@ -111,7 +134,8 @@ export default {
       optionsData: {},
       largeDescription: false,
       readActivated: false,
-      showEllipsis: false
+      showEllipsis: false,
+      labelTooltip: ""
     };
   },
   mounted() {
@@ -124,6 +148,34 @@ export default {
     this.verifyDescription();
   },
   methods: {
+    /**
+     * Verify if the process is marked
+     */
+    bookmarkIcon() {
+      this.labelTooltip = this.process.bookmark_id !== 0 ? 
+        this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
+      return this.process.bookmark_id !== 0;
+    },
+    /**
+     * Check the bookmark to add bookmarked list or remove it
+     */
+    checkBookmark(process) {
+      if (process.bookmark_id) {
+        ProcessMaker.apiClient
+          .delete(`process_bookmarks/${process.bookmark_id}`)
+          .then(() => {
+            ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
+            this.$parent.loadCard();
+          });
+        return;
+      }
+      ProcessMaker.apiClient
+        .post(`process_bookmarks/${process.id}`)
+        .then(() => {
+          ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
+          this.$parent.loadCard();
+        });
+    },
     showCreateTemplateModal(name, id) {
       this.processId = id;
       this.processTemplateName = name;
@@ -220,5 +272,12 @@ export default {
 .read-more {
   cursor: pointer;
   color: #1572C2;
+}
+.card-bookmark {
+  float: right;
+  font-size: 24px;
+}
+.card-bookmark:hover {
+  cursor: pointer;
 }
 </style>

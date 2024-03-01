@@ -1,23 +1,25 @@
 <template>
-  <div id="start-events btn-group">
+  <div id="start-events btn-group mx-2">
     <button
       v-if="havelessOneStartEvent"
-      class="btn btn-success btn-lg start-button p-3"
+      class="btn btn-success start-button"
       type="button"
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
+      <i class="fa fa-play-circle"></i>
       <span class="px-3"> {{ $t('Start this process') }} </span>
     </button>
     <button
       v-else
-      class="btn btn-success btn-lg dropdown-toggle start-button p-3"
+      class="btn btn-success dropdown-toggle start-button"
       type="button"
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
       @click="getStartEvents()"
     >
+      <i class="fa fa-play-circle"></i>
       <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
     </button>
     <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
@@ -140,11 +142,17 @@ export default {
 .start-button {
   background: #4EA075;
   border: 0px;
+  border-radius: 8px;
+  height: 40px;
   width: 294px;
-  font-size: 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-}
-
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  padding: auto;
+}s
 .scrollable-menu {
     height: auto;
     max-height: 280px;
