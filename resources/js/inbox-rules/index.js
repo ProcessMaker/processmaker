@@ -1,5 +1,6 @@
 import Index from './components/Index.vue';
 import Edit from './components/Edit.vue';
+import InboxRuleSavedSearch from './components/InboxRuleSavedSearch.vue';
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -12,6 +13,11 @@ const router = new VueRouter({
             name: "index",
             path: "/",
             component: Index,
+        },
+        {
+            name: "saved-search",
+            path: "/saved-search",
+            component: InboxRuleSavedSearch,
         },
         {
             name: "edit",

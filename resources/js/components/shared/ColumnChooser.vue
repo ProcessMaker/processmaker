@@ -99,7 +99,9 @@ export default {
     props: {
         value: {
             type: Array,
-            default: [],
+            default: function () {
+                return [];
+            },
         },
         defaultColumns: {
             default: null,
