@@ -7,7 +7,7 @@
     </div>
 
     <div class="pl-3">
-      <h4>Self Service1</h4>
+      <h4>{{$t('Self Service')}}</h4>
       <PMSearchBar>
       </PMSearchBar>
       <PMTable>

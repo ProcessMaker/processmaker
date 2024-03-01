@@ -2,11 +2,12 @@
   <div>
     <PMTable :headers="headers"
              :data="response"
-             @onRowMouseover="onRowMouseover"
-             @onTrMouseleave="onTrMouseleave"
+             :partialURLString="partialURLString"
              :empty="$t('No results have been found')"
              :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
-             empty-icon="noData">
+             empty-icon="noData"
+             @onRowMouseover="onRowMouseover"
+             @onTrMouseleave="onTrMouseleave">
 
       <template v-slot:top-content>
         <PMSearchBar>
@@ -21,9 +22,9 @@
         </PMSearchBar>
       </template>
 
-      <template v-slot:cell-deactivation_date="{ row, header, rowIndex }">
-        <PmRowButtons :ref="`pmRowButtons-${rowIndex}`"
-                      :value="row['deactivation_date']"
+      <template v-slot:cell-end_date="{ row, header, rowIndex }">
+        <PmRowButtons :ref="'pmRowButtons-'+rowIndex"
+                      :value="row['end_date']"
                       :row="row"
                       @onEditRule="onEditRule"
                       @onRemoveRule="onRemoveRule">
@@ -46,15 +47,17 @@
     },
     data() {
       return {
+        partialURLString: "",
         headers: this.columns(),
         response: {
-          data: this.getData(),
+          data: [],
           meta: {}
         },
         page: 1
       };
     },
     mounted() {
+      this.getData();
     },
     methods: {
       columns() {
@@ -66,46 +69,42 @@
           },
           {
             label: this.$t("Status"),
-            field: "status",
+            field: "active",
             width: 10
           },
           {
             label: this.$t("Creation Date"),
-            field: "creation_date",
+            field: "created_at",
             width: 10
           },
           {
             label: this.$t("Deactivation Date"),
-            field: "deactivation_date",
+            field: "end_date",
             width: 10
           }
         ];
       },
       getData() {
-        let rows = [
-          {
-            id: "1",
-            name: "name1",
-            status: "ok",
-            creation_date: "2024-01-01",
-            deactivation_date: "2024-01-02"
-          },
-          {
-            id: "2",
-            name: "name2",
-            status: "none",
-            creation_date: "2024-02-01",
-            deactivation_date: "2024-02-02"
-          }
-        ];
-        return rows;
+        let url = "tasks/rules";
+        this.partialURLString = url;
+        let params = {
+          order: "desc",
+          per_page: 10
+        };
+        ProcessMaker.apiClient
+                .get(url, params)
+                .then((response) => {
+                  this.response = response.data;
+                })
+                .catch((error) => {
+                });
       },
       onRowMouseover(row, scrolledWidth, index) {
-        this.$refs[`pmRowButtons-${index}`].show();
-        this.$refs[`pmRowButtons-${index}`].setMargin(scrolledWidth);
+        this.$refs["pmRowButtons-" + index].show();
+        this.$refs["pmRowButtons-" + index].setMargin(scrolledWidth);
       },
       onTrMouseleave(row, index) {
-        this.$refs[`pmRowButtons-${index}`].close();
+        this.$refs["pmRowButtons-" + index].close();
       },
       onCreateRule() {
         this.$router.push({name: 'edit', params: {id: 1}});

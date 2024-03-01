@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\InboxRuleLog;
 
 class InboxRulesController extends Controller
@@ -14,9 +15,13 @@ class InboxRulesController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Logic to retrieve all inbox rules
+        $order = $request->input('order', 'DESC');
+        $per_page = $request->input('per_page', 10);
+        $response = InboxRule::orderBy('id', $order)
+            ->get();
+        return new ApiCollection($response);
     }
 
     /**
