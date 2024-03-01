@@ -105,14 +105,4 @@ abstract class TestCase extends BaseTestCase
             Artisan::call('passport:install');
         }
     }
-
-    /**
-     * Connections transacts
-     *
-     * @return array
-     */
-    protected function connectionsToTransact()
-    {
-        return ['processmaker', 'data'];
-    }
 }

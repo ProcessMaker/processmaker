@@ -44,7 +44,7 @@ class CreateTestDBs extends Command
             throw new Exception('PARALLEL_TEST_PROCESSES not set');
         }
 
-        $dbConnectionArgs = '-h ' . env('DB_HOSTNAME') . ' -P ' . env('DB_PORT') . ' -u ' . env('DB_USERNAME') . " -p'" . env('DB_PASSWORD') . "'";
+        $dbConnectionArgs = '-h ' . env('DB_HOST') . ' -P ' . env('DB_PORT') . ' -u ' . env('DB_USERNAME') . " -p'" . env('DB_PASSWORD') . "'";
         $file = tempnam(sys_get_temp_dir(), 'dump');
         $cmd = "mysqldump $dbConnectionArgs " . env('DB_DATABASE') . " > $file";
         (new Process($cmd))->mustRun();

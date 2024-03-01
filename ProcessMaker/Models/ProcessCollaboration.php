@@ -16,8 +16,6 @@ class ProcessCollaboration extends ProcessMakerModel
 {
     use HasUuids;
 
-    protected $connection = 'processmaker';
-
     /**
      * The attributes that aren't mass assignable.
      *

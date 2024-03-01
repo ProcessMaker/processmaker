@@ -11,8 +11,6 @@ class ScheduledTask extends ProcessMakerModel
 {
     use SerializeToIso8601;
 
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'process_id', 'process_request_id', 'process_request_token_id', 'configuration',
     ];

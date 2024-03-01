@@ -163,35 +163,6 @@ class Install extends Command
         do {
             $this->fetchDatabaseCredentials();
         } while (!$this->testLocalConnection());
-        // Configure the DATA connection
-        // $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
-
-        // if ($this->interactive()) {
-        //     $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker
-        //     connection?'), ['different', 'same']);
-        // } else {
-        //     if ($this->option('data-driver') !== 'none') {
-        //         $dataConnection = 'different';
-        //     } else {
-        //         $dataConnection = 'same';
-        //     }
-        // }
-        // if ($dataConnection === 'same') {
-        $this->env['DATA_DB_DRIVER'] = 'mysql';
-        $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
-        $this->env['DATA_DB_PORT'] = $this->env['DB_PORT'];
-        $this->env['DATA_DB_DATABASE'] = $this->env['DB_DATABASE'];
-        $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
-        $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
-        $this->env['DATA_DB_ENGINE'] = 'InnoDB';
-        // }
-        // do {
-        //     $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
-        // } while (!$this->testDataConnection());
-
-        if (!$this->pretending()) {
-            $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;
-        }
 
         // Ask for URL and validate
         $invalid = false;
@@ -417,96 +388,11 @@ class Install extends Command
     private function fetchDatabaseCredentials()
     {
         $this->infoIfInteractive(__('ProcessMaker requires a MySQL database.'));
-        $this->env['DB_HOSTNAME'] = $this->anticipateOptional('db-host', __('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DB_HOST'] = $this->anticipateOptional('db-host', __('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
         $this->env['DB_PORT'] = $this->anticipateOptional('db-port', __('Enter your MySQL port (usually 3306)'), [3306], 3306);
         $this->env['DB_DATABASE'] = $this->anticipateOptional('db-name', __('Enter your MySQL database name'), ['processmaker'], 'processmaker');
         $this->env['DB_USERNAME'] = $this->askOptional('db-username', __('Enter your MySQL username'));
         $this->env['DB_PASSWORD'] = $this->secretOptional('db-password', __('Enter your MySQL password (input hidden)'));
-    }
-
-    /**
-     * Setup DATA connection
-     *
-     * @return void
-     */
-    private function fetchDataConnectionCredentials()
-    {
-        $this->infoIfInteractive(__('Configure the DATA connection.'));
-        $this->env['DATA_DB_DRIVER'] = $this->choiceOptional('data-driver', __('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
-
-        switch ($this->env['DATA_DB_DRIVER']) {
-            case 'pgsql':
-                $this->fetchPostgreCredentials();
-                break;
-            case 'sqlsrv':
-                $this->fetchSqlServerCredentials();
-                break;
-            case 'mysql':
-            default:
-                $this->fetchMysqlCredentials();
-                break;
-        }
-    }
-
-    /**
-     * Configure POSTGRE DATA connection
-     *
-     * @return void
-     */
-    private function fetchPostgreCredentials()
-    {
-        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1'], '127.0.0.1');
-        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 5432)'), [5432], 5432);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
-        $this->env['DATA_DB_SCHEMA'] = $this->anticipateOptional('data-schema', __('Enter your DB Schema'), ['public'], 'public');
-    }
-
-    /**
-     * Setup MYSQL DATA connection
-     *
-     * @return void
-     */
-    private function fetchMysqlCredentials()
-    {
-        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 3306)'), [3306], 3306);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
-        $this->env['DATA_DB_ENGINE'] = 'InnoDB';
-    }
-
-    /**
-     * Setup SQLSRV DATA connection
-     *
-     * @return void
-     */
-    private function fetchSqlServerCredentials()
-    {
-        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 1433)'), [1433], 1433);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
-    }
-
-    /**
-     * Check SQLSRV date format
-     *
-     * @return void
-     */
-    private function checkDateFormatSqlServer()
-    {
-        $sqlServerGrammar = new SqlServerGrammar;
-        $format = $sqlServerGrammar->getDateFormat();
-        $date = DB::connection('data')->select('select getdate() as date')[0]->date;
-        if (substr($date, 19, 1) === '.') {
-            substr($format, 11, 1) !== '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s.v"' : '';
-        } else {
-            substr($format, 11, 1) === '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s"' : '';
-        }
     }
 
     /**
@@ -520,9 +406,9 @@ class Install extends Command
             $this->env['DB_DRIVER'] = 'mysql';
         }
         // Setup Laravel Database Configuration
-        config(['database.connections.processmaker' => [
+        config(['database.connections.mysql' => [
             'driver' => $this->env['DB_DRIVER'],
-            'host' => $this->env['DB_HOSTNAME'],
+            'host' => $this->env['DB_HOST'],
             'port' => $this->env['DB_PORT'],
             'database' => $this->env['DB_DATABASE'],
             'username' => $this->env['DB_USERNAME'],
@@ -532,42 +418,9 @@ class Install extends Command
         if (!$this->pretending()) {
             try {
                 DB::reconnect();
-                $pdo = DB::connection('processmaker')->getPdo();
+                $pdo = DB::connection('mysql')->getPdo();
             } catch (Exception $e) {
                 $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Test DATA connection
-     *
-     * @return void
-     */
-    private function testDataConnection()
-    {
-        // Setup Laravel Database Configuration
-        config(['database.connections.data' => [
-            'driver' => $this->env['DATA_DB_DRIVER'],
-            'host' => $this->env['DATA_DB_HOST'],
-            'port' => $this->env['DATA_DB_PORT'],
-            'database' => $this->env['DATA_DB_DATABASE'],
-            'username' => $this->env['DATA_DB_USERNAME'],
-            'password' => $this->env['DATA_DB_PASSWORD'],
-            'schema' => isset($this->env['DATA_DB_SCHEMA']) ? $this->env['DATA_DB_SCHEMA'] : '',
-            'engine' => isset($this->env['DATA_DB_ENGINE']) ? $this->env['DATA_DB_ENGINE'] : '',
-        ]]);
-        if (!$this->pretending()) {
-            // Attempt to connect
-            try {
-                DB::connection('data')->reconnect();
-                $pdo = DB::connection('data')->getPdo();
-            } catch (Exception $e) {
-                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
 
                 return false;
             }

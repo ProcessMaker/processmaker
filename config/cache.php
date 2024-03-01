@@ -58,7 +58,7 @@ return [
         'global_variables' => [
             'driver' => 'database',
             'table' => 'global_variables',
-            'connection' => 'processmaker',
+            'connection' => 'mysql',
         ],
 
         'memcached' => [

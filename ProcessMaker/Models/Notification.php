@@ -50,8 +50,6 @@ class Notification extends ProcessMakerModel
 {
     use SerializeToIso8601;
 
-    protected $connection = 'processmaker';
-
     public $incrementing = false;
 
     protected $fillable = [

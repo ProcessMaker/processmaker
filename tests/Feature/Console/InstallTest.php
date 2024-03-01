@@ -47,7 +47,7 @@ class InstallTest extends TestCase
         $params->push(new Param('--password', null, $faker->word()));
         $params->push(new Param('--email', null, $faker->safeEmail()));
         $params->push(new Param('--telescope', 'TELESCOPE_ENABLED', $faker->boolean()));
-        $params->push(new Param('--db-host', 'DB_HOSTNAME', $faker->ipv4()));
+        $params->push(new Param('--db-host', 'DB_HOST', $faker->ipv4()));
         $params->push(new Param('--db-port', 'DB_PORT', $faker->numberBetween(1, 9999)));
         $params->push(new Param('--db-name', 'DB_DATABASE', $faker->word()));
         $params->push(new Param('--db-username', 'DB_USERNAME', $faker->userName()));

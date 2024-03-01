@@ -162,8 +162,6 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
     const ASSIGNMENT_PROCESS = 'Assignment process';
 
-    protected $connection = 'processmaker';
-
     /**
      * The attributes that aren't mass assignable.
      *

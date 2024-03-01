@@ -29,8 +29,6 @@ namespace ProcessMaker\Models;
  */
 class ProcessTaskAssignment extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'process_id',
         'process_task_id',
