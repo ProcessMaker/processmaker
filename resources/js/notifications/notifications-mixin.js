@@ -1,7 +1,7 @@
 export default {
   computed: {
     displayUser() {
-      if ("user_id" in this.data) {
+      if ("user_id" in this.data && !this.isInboxRule) {
         return this.data.user?.fullname || this.$t("Unknown User");
       }
       return null;
@@ -23,6 +23,9 @@ export default {
     },
     commentsCount() {
       return this.messages.filter(this.commentFilterFn(true)).length;
+    },
+    isInboxRule() {
+      return this.data.type === "INBOX_RULE";
     },
   },
   methods: {
