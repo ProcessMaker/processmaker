@@ -153,18 +153,18 @@
             @mouseleave="hideTooltip"
             
           >
-          <span>
+          <!-- <span>
             <b-button 
               class="btn-this-data"
               @click="$emit('selected', tooltipRowData)" 
             >{{ $t(' USE THIS TASK DATA') }}
             </b-button>
-          </span>
+          </span> -->
          <span>
             <i
               v-if="!verifyURL('saved-searches')"
               class="fa fa-eye py-2"
-              @click="previewTasks(tooltipRowData)"
+              @click="$emit('selected', tooltipRowData)"
             />
           </span>
           </div>
@@ -210,7 +210,7 @@ import TaskQuickFillTooltip from "./TaskQuickFillTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
-import { get } from "lodash";
+import { get, cloneDeep } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -246,6 +246,9 @@ export default {
     savedSearch: {
       default: false,
     },
+    clone: {
+      default: false,
+    }
   },
   data() {
     return {

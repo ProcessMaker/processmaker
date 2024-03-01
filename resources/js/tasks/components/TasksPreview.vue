@@ -24,7 +24,7 @@
         >
         <template v-if="!showQuickFillPreview">
           <div>
-            <div v-show="!isSelectedTask" class="d-flex w-100 h-100 mb-3">
+            <div v-if="!isSelectedTask" class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
@@ -75,18 +75,23 @@
                 </b-button>
               </div>
             </div>
-            <div v-show="isSelectedTask">
-              <div class="d-flex w-100 h-100 mb-3">
+            <div v-else>
+              <div class="d-flex w-100 h-100 mb-3" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="my-1">
+                  <b-button
+                  variant="secondary"
+                >
+                  <i class="fas fa-arrow-left"></i>
+                </b-button>
                   <a class="lead text-secondary font-weight-bold">
-                    {{ task.element_name }}
+                    {{ task.data._request.case_title }}
                   </a>
                 </div>
                 <b-button 
                   class="btn-this-data"
-                  @click="$emit('selected', tooltipRowData)" 
-                >{{ $t(' USE THIS TASK DATA') }}
+                >{{ $t('USE THIS TASK DATA') }}
                 </b-button>
+                
               </div>
             </div>
             <div class="frame-container">
@@ -144,8 +149,8 @@ export default {
     this.$root.$on("selectedTaskForQuickFill", (val) => {
       this.showQuickFillPreview = false;
       this.isSelectedTask = true;
-      console.log("Valor isSelectedTask: ", this.isSelectedTask);
-      this.showSideBar(val.task, val.data.data, false);
+      console.log("val.task: ", val.task, " val.data.data: ", val.data.data);
+      this.showSideBar(val.task, val.data.data, true);
     });
   },
   updated() {
@@ -169,7 +174,7 @@ export default {
         console.log("en tasksFrame2");
         this.$refs.tasksFrame2.contentWindow.postMessage(data, "*");
       }
-    }
+    },
   },
 };
 </script>

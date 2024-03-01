@@ -23,7 +23,7 @@
         </div>
         <div class="container">
         <tasks-list
-            ref="taskList2"
+            ref="taskList"
             :disable-tooltip="true"
             :disable-quick-fill-tooltip="true"
             :columns="columns"
@@ -34,11 +34,11 @@
     </div>
 </template>
 <script>
-
 export default {
 props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
+        //filter: [{"subject":{"type":"Status"},"operator":"=","value":"Completed","_column_field":"status","_column_label":"Status"}],
         filter: {},
         pmql: {},
         fullPmql: {},
@@ -80,9 +80,8 @@ data() {
       //here logic for cancel buton
     },
     selected(taskData) {
-      console.log("En QuickFill metodo selected desde TasksList: ", taskData);
-      //this.$root.$emit("fillData", taskData);
-      this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data });
+      //this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data });
+      this.$root.$emit("selectedTaskForQuickFill", { task: taskData, data: this.data });
     }
   }
 }

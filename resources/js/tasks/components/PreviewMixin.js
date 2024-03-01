@@ -46,6 +46,12 @@ const PreviewMixin = {
       this.existNext = false;
       this.defineNextPrevTask();
     },
+    showButton() {
+      this.isMouseOver = true;
+    },
+    hideButton() {
+      this.isMouseOver = false;
+    },
     goQuickFill() {
       this.showQuickFillPreview = true;
     },

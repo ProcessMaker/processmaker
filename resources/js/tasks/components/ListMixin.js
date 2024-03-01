@@ -71,6 +71,7 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];
               this.data.data.forEach((element) => {
