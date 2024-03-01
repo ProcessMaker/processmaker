@@ -96,12 +96,30 @@
                 </button>
                 <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+                    <button
+                      id="details-tab"  
+                      class="nav-link active"
+                      data-toggle="tab"
+                      data-target="#details"
+                      type="button"
+                      role="tab"
+                      aria-controls="details"
+                      aria-selected="true"
+                    >
                       @{{ __('Details') }}
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="true">
+                    <button
+                      id="comments-tab"
+                      class="nav-link active"
+                      data-toggle="tab"
+                      data-target="#comments"
+                      type="button"
+                      role="tab"
+                      aria-controls="comments"
+                      aria-selected="true"
+                    >
                       @{{ __('Comments') }}
                     </button>
                   </li>
@@ -114,8 +132,12 @@
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
-                              <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
-                                @click="show">
+                              <button
+                                v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                type="button"
+                                class="btn btn-outline-secondary btn-block"
+                                @click="show"
+                              >
                                 <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                               </button>
                             </li>
@@ -142,8 +164,12 @@
                             </li>
                             <li class="list-group-item" v-if="task.is_self_service === 0">
                               <p class="section-title">{{__('Assigned To')}}:</p>
-                              <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
-                                            :input-data="task.user"></avatar-image>
+                              <avatar-image
+                                v-if="task.user"
+                                size="32"
+                                class="d-inline-flex pull-left align-items-center"
+                                :input-data="task.user"
+                              ></avatar-image>
                               <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
                                 <span>
                                 </span>
@@ -160,8 +186,10 @@
                             </li>
                             <li class="list-group-item">
                               <p class="section-title">{{__('Request')}}</p>
-                              <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
-                                  #{{$task->process_request_id}} {{$task->process->name}}
+                              <a
+                                href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}"
+                              >
+                                #{{$task->process_request_id}} {{$task->process->name}}
                               </a>
                             </li>
                             <li class="list-group-item">

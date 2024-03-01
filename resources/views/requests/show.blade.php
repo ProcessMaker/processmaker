@@ -288,12 +288,30 @@
           </button>
           <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+              <button
+                id="details-tab"
+                class="nav-link active"
+                data-toggle="tab"
+                data-target="#details"
+                type="button"
+                role="tab"
+                aria-controls="details"
+                aria-selected="true"
+              >
                 @{{ __('Details') }}
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="true">
+              <button
+                id="comments-tab"
+                class="nav-link active"
+                data-toggle="tab"
+                data-target="#comments"
+                type="button"
+                role="tab"
+                aria-controls="comments"
+                aria-selected="true"
+              >
                 @{{ __('Comments') }}
               </button>
             </li>
@@ -331,9 +349,13 @@
                         @if ($request->user_id)
                           <li class="list-group-item">
                             <p class="section-title">{{ __('Requested By') }}:</p>
-                            <avatar-image v-if="userRequested" size="32"
-                              class="d-inline-flex pull-left align-items-center" :input-data="requestBy" display-name="true">
-                            </avatar-image>
+                            <avatar-image
+                              v-if="userRequested"
+                              size="32"
+                              class="d-inline-flex pull-left align-items-center"
+                              :input-data="requestBy"
+                              display-name="true"
+                            ></avatar-image>
                             <span v-if="!userRequested">{{ __('Web Entry') }}</span>
                           </li>
                         @endif
@@ -359,8 +381,13 @@
                           @can('rollback', $errorTask)
                             <li class="list-group-item">
                               <p class="section-title">{{ __('Rollback Request') }}</p>
-                              <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                                data-toggle="modal" @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')">
+                              <button
+                                id="retryRequestButton"
+                                type="button"
+                                class="btn btn-outline-info btn-block"
+                                data-toggle="modal"
+                                @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
+                              >
                                 <i class="fas fa-undo"></i> {{ __('Rollback') }}
                               </button>
                               <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
