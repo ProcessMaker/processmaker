@@ -14,6 +14,7 @@
               :variant="button.variant || 'secondary'"
               class="text-capitalize"
               :title="button.title"
+              :data-cy="`toolbar-${button.id}`"
               tabindex="1"
               @click="executeFunction(button.action)"
             >
@@ -60,6 +61,7 @@
               :variant="button.variant || 'secondary'"
               class="text-capitalize screen-toolbar-button"
               :title="button.title"
+              :data-cy="`toolbar-${button.id}`"
               @click="executeFunction(button.action)"
             >
               <i :class="button.icon" />

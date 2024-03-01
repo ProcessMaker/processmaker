@@ -441,18 +441,18 @@ export default {
         section: "right",
         items: [
           {
-            id: "button_undo",
+            id: "undo",
             type: "button",
-            title: this.$t("Calculated Properties"),
+            title: this.$t("Undo"),
             name: this.$t("Undo"),
             variant: "link",
             icon: "fas fa-undo",
             action: "undoAction()",
           },
           {
-            id: "button_redo",
+            id: "redo",
             type: "button",
-            title: this.$t("Calculated Properties"),
+            title: this.$t("Redo"),
             name: this.$t("Redo"),
             variant: "link",
             icon: "fas fa-redo",
