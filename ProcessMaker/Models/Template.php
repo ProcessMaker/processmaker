@@ -85,6 +85,11 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->destroy($id);
     }
 
+    public function publishTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->publishTemplate($request);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

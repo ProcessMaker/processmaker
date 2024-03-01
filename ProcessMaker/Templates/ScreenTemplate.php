@@ -120,37 +120,19 @@ class ScreenTemplate implements TemplateInterface
     // }
 
     /**
-     *  Update process template bpmn.
+     *  Publish a Screen Template to display in the Public Templates tab
      * @param mixed $request
      * @return JsonResponse
      */
-    //  // TODO: May not need this function for with screen templates
-    // public function updateTemplate($request) : JsonResponse
-    // {
-    //     $id = (int) $request->id;
-    //     $template = ProcessTemplates::where('id', $id)->firstOrFail();
+    public function publishTemplate($request) : JsonResponse
+    {
+        $id = (int) $request->id;
+        $template = ScreenTemplates::where('id', $id)->firstOrFail();
+        $template->is_public = true;
+        $template->saveOrFail();
 
-    //     $manifest = $this->getManifest('process', $request->process_id);
-    //     $rootUuid = Arr::get($manifest, 'root');
-    //     $export = Arr::get($manifest, 'export');
-    //     $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
-
-    //     $template->fill($request->all());
-    //     $template->svg = $svg;
-    //     $template->manifest = json_encode($manifest);
-
-    //     try {
-    //         $template->saveOrFail();
-
-    //         return response()->json();
-    //     } catch (Exception $e) {
-    //         return response(
-    //             ['message' => $e->getMessage(),
-    //                 'errors' => ['bpmn' => $e->getMessage()], ],
-    //             422
-    //         );
-    //     }
-    // }
+        return response()->json();
+    }
 
     /**
      *  Update process template configurations
