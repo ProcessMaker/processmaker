@@ -247,7 +247,7 @@ export default {
       if (val) {
         this.selectedLanguage = val;
         this.manualTranslation = true;
-        this.translate();
+        this.translate(false);
       }
     },
 
@@ -316,7 +316,7 @@ export default {
 
       return '';
     },
-    translate() {
+    translate(includeImages = true) {
       this.step = "translating";
       this.headerButtons[0].hidden = true;
       this.customModalButtons[1].hidden = true;
@@ -331,6 +331,7 @@ export default {
         manualTranslation: this.manualTranslation,
         promptSessionId: this.getPromptSessionForUser(),
         nonce: localStorage.getItem("currentNonce"),
+        includeImages: includeImages,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)

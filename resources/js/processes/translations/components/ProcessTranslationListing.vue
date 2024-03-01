@@ -404,6 +404,7 @@ export default {
         option: "empty",
         promptSessionId: this.getPromptSessionForUser(),
         nonce: localStorage.getItem("currentNonce"),
+        includeImages: true,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
