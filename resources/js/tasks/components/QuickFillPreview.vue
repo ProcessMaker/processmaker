@@ -28,6 +28,8 @@
             :disable-quick-fill-tooltip="true"
             :columns="columns"
             @selected="selected"
+            :pmql="pmql"
+            :advanced-filter-prop="filter"
         ></tasks-list>
         </div>
     </div>
@@ -38,10 +40,16 @@ export default {
 props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
-        //filter: [{"subject":{"type":"Status"},"operator":"=","value":"Completed","_column_field":"status","_column_label":"Status"}],
-        filter: {},
-        pmql: {},
-        fullPmql: {},
+        filter: [
+            {
+                "subject": { "type": "Status" },
+                "operator": "=",
+                "value": "Completed",
+                "_column_field": "status",
+                "_column_label": "Status"
+            }
+        ],
+        pmql: '(user_id = 1)',
         columns:[
         {
           label: "Case #",
