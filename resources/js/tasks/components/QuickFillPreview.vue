@@ -39,7 +39,7 @@ props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
         //filter: [{"subject":{"type":"Status"},"operator":"=","value":"Completed","_column_field":"status","_column_label":"Status"}],
-        filter: {},
+        //filter: {},
         pmql: {},
         fullPmql: {},
         columns:[
@@ -80,8 +80,8 @@ data() {
       //here logic for cancel buton
     },
     selected(taskData) {
-      //this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data });
       this.$root.$emit("selectedTaskForQuickFill", { task: taskData, data: this.data });
+      console.log("taskData: ", taskData);
     }
   }
 }
