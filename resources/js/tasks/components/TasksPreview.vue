@@ -2,16 +2,15 @@
   <div>
     <splitpanes
       v-if="showPreview"
-      id="splitpane"
       ref="inspectorSplitPanes"
-      class="default-theme"
+      class="splitpane default-theme"
       :dbl-click-splitter="false"
     >
       <pane style="opacity: 0;">
         <div />
       </pane>
       <pane
-        id="pane-task-preview"
+        class="pane-task-preview"
         :min-size="paneMinSize"
         size="50"
         max-size="99"
@@ -79,10 +78,11 @@
               <div class="d-flex w-100 h-100 mb-3" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="my-1">
                   <b-button
-                  variant="secondary"
-                >
-                  <i class="fas fa-arrow-left"></i>
-                </b-button>
+                    variant="secondary"
+                    @click="onClose()"
+                  >
+                    <i class="fas fa-arrow-left"></i>
+                  </b-button>
                   <a class="lead text-secondary font-weight-bold">
                     {{ task.data._request.case_title }}
                   </a>
@@ -180,13 +180,13 @@ export default {
 </script>
 
 <style>
-#splitpane {
+.splitpane {
   top: 0;
   min-height: 80vh;
   width: 99%;
   position: absolute;
 }
-#pane-task-preview {
+.pane-task-preview {
   flex-grow: 1;
   overflow-y: auto;
 }
