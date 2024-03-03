@@ -49,7 +49,7 @@ data() {
                 "_column_label": "Status"
             }
         ],
-        pmql: '(user_id = 1)',
+        pmql: '(user_id = 1 and status="Completed")',
         columns:[
         {
           label: "Case #",
@@ -88,8 +88,10 @@ data() {
       //here logic for cancel buton
     },
     selected(taskData) {
-      this.$root.$emit("selectedTaskForQuickFill", { task: taskData, data: this.data });
+      let selTask= `/tasks/${taskData.id}/edit/preview`
+      this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data, selectedTask: selTask });
       console.log("taskData: ", taskData);
+      ;
     }
   }
 }

@@ -21,6 +21,8 @@ const PreviewMixin = {
       stopFrame: false,
       showQuickFillPreview: false,
       isSelectedTask: false,
+      selectedTaskLink: "",
+      showFrame3: false,
     };
   },
   methods: {

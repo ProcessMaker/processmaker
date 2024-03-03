@@ -89,10 +89,20 @@
                 </div>
                 <b-button 
                   class="btn-this-data"
+                  @click="copyFormData()"
                 >{{ $t('USE THIS TASK DATA') }}
                 </b-button>
-                
+                <!-- <div style="display: none;"> -->
+
+              <b-embed
+                    v-if="showFrame3"
+                    id="tasksFrame3"
+                    width="100%"
+                    :src="selectedTaskLink"
+                  />
               </div>
+              
+              <!-- </div> -->
             </div>
             <div class="frame-container">
               <b-embed
@@ -111,6 +121,7 @@
                 :src="linkTasks2"
                 @load="frameLoaded()"
               />
+              
               <task-loading
                 v-show="stopFrame"
                 class="load-frame"
@@ -149,6 +160,9 @@ export default {
     this.$root.$on("selectedTaskForQuickFill", (val) => {
       this.showQuickFillPreview = false;
       this.isSelectedTask = true;
+      this.selectedTaskLink = val.selectedTask;
+                this.showFrame3=true;
+      console.log("nuevo task: ", this.selectedTaskLink);
       console.log("val.task: ", val.task, " val.data.data: ", val.data.data);
       this.showSideBar(val.task, val.data.data, true);
     });
@@ -165,7 +179,7 @@ export default {
   methods: {
     setDataInPreview(data){
       console.log("en setDataPreview: ", this.$refs);
-      //if(this.$refs.tasksFrame1) {
+      //if(this.$refs.tasksFrame1){
       if(this.$refs) {
         console.log("en tasksFrame1");
         this.$refs.tasksFrame1.contentWindow.postMessage(data, "*");
@@ -173,6 +187,78 @@ export default {
       if(this.$refs.tasksFrame2) {
         console.log("en tasksFrame2");
         this.$refs.tasksFrame2.contentWindow.postMessage(data, "*");
+      }
+    },
+    copyFormData() {
+      const frame1 = document.getElementById("tasksFrame3");
+      const frame3 = document.getElementById("tasksFrame1");
+      
+      if (frame1 && frame3) {
+        const iframeDoc1 = frame1.contentDocument || frame1.contentWindow.document;
+        const iframeDoc2 = frame3.contentDocument || frame3.contentWindow.document;
+
+        if (iframeDoc1 && iframeDoc2) {
+          // Copiar valores de los inputs
+          const inputsFrame1 = iframeDoc1.querySelectorAll('input:not([readonly])');
+          const inputsFrame3 = iframeDoc2.querySelectorAll('input:not([readonly])');
+console.log("inputsFrame3.length: ", inputsFrame3.length);
+console.log("inputsFrame1.length: ", inputsFrame1.length);
+          if (inputsFrame3.length === inputsFrame1.length) {
+            inputsFrame3.forEach((input, index) => {
+              input.value = inputsFrame1[index].value;
+            });
+          } else {
+            console.error("La cantidad de inputs en ambos iframes no es la misma.");
+          }
+
+          // Copiar valores de otros tipos de campos (si los hubiera)
+          // Puedes hacer lo mismo para otros tipos de campos (select, textarea, etc.) si es necesario
+        } else {
+          console.error("No se pudo acceder al contenido de uno de los iframes.");
+        }
+      } else {
+        console.error("No se encontraron uno o ambos iframes.");
+      }
+    },
+    copyFormDataAll() {
+      const frame1 = document.getElementById("tasksFrame1");
+      const frame3 = document.getElementById("tasksFrame3");
+      
+      if (frame1 && frame3) {
+        const iframeDoc1 = frame1.contentDocument || frame1.contentWindow.document;
+        const iframeDoc2 = frame3.contentDocument || frame3.contentWindow.document;
+
+        if (iframeDoc1 && iframeDoc2) {
+          // Copiar valores de los inputs
+          const inputsFrame1 = iframeDoc1.querySelectorAll('input:not([readonly]), textarea:not([readonly]), select:not([readonly])');
+          const inputsFrame3 = iframeDoc2.querySelectorAll('input:not([readonly]), textarea:not([readonly]), select:not([readonly])');
+
+          if (inputsFrame3.length === inputsFrame1.length) {
+            inputsFrame3.forEach((input, index) => {
+              if (input.type === 'checkbox') {
+                input.checked = inputsFrame1[index].checked;
+              } else if (input.type === 'select-one' || input.type === 'select-multiple') {
+                // Copiar opciones seleccionadas para los elementos select
+                inputsFrame3[index].querySelectorAll('option').forEach(option => {
+                  if (option.selected) {
+                    input.querySelector(`option[value="${option.value}"]`).selected = true;
+                  }
+                });
+              } else {
+                input.value = inputsFrame3[index].value;
+              }
+            });
+          } else {
+            console.error("La cantidad de campos en ambos iframes no es la misma.");
+          }
+
+          // Copiar valores de otros tipos de campos
+          // Puedes agregar más lógica aquí para copiar otros tipos de campos si es necesario
+        } else {
+          console.error("No se pudo acceder al contenido de uno de los iframes.");
+        }
+      } else {
+        console.error("No se encontraron uno o ambos iframes.");
       }
     },
   },
