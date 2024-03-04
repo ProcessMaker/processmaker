@@ -1,7 +1,5 @@
 <template>
   <div>
-
-    <b-col cols="12">
       <process-collapse-info
           :process="process"
           :permission="permission"
@@ -9,38 +7,20 @@
           :is-documenter-installed="isDocumenterInstalled"
           @goBackCategory="goBackCategory"
         />
-    </b-col>
-    <div class="d-flex">
-      <b-col cols="9">
-        <processes-carousel
-          :process="process"
-        />
-      </b-col>
-      <b-col cols="3">
-        <process-options :process="process" />
-      </b-col>
-    </div>
-    <b-col cols="12">
-      <hr class="my-12">
       <process-tab
         :current-user="currentUser"
         :process="process"
       />
-    </b-col>
   </div>
 </template>
 
 <script>
-import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
-import ProcessOptions from "./ProcessOptions.vue";
 import ProcessTab from "./ProcessTab.vue";
 
 export default {
   components: {
-    ProcessOptions,
     ProcessCollapseInfo,
-    ProcessesCarousel,
     ProcessTab,
   },
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],

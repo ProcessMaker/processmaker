@@ -12,21 +12,36 @@
               @click="goBack"
             />
             <button
-              class="btn btn-outline-secondary border-0 title-process-button"
+              v-if="infoCollapsed"
+              class="btn border-0 title-process-button"
               type="button"
               data-toggle="collapse"
               data-target="#collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
+              aria-expanded="true"
               aria-controls="collapseProcessInfo"
               @click="toogleInfoCollapsed()"
             >
-              {{ buttonCollapseTitle }}
+              {{ $t('Process Info') }}
+              <i class="fas fa-angle-up pl-2" />
+            </button>
+            <button
+              v-else
+              class="btn border-0 title-process-button"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseProcessInfo"
+              aria-expanded="false"
+              aria-controls="collapseProcessInfo"
+              @click="toogleInfoCollapsed()"
+            >
+              {{ process.name }}
+              <i class="fas fa-angle-down pl-2" />
             </button>
           </div>
           <div class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
               <i
-                v-if="bookmarkIcon()"
+                v-if="showBookmarkIcon"
                 :ref="`bookmark-${process.id}-marked`"
                 v-b-tooltip.hover.bottom
                 :title="$t(labelTooltip)"
@@ -59,7 +74,7 @@
           </div>
         </div>
       </div>
-      <div class="collapse" id="collapseProcessInfo">
+      <div class="collapse show" id="collapseProcessInfo">
         <div class="info-collapse">
           <p class="title-process">
             {{ process.name }}
@@ -83,6 +98,18 @@
               ...
             </a>
           </p>  
+          <div
+            class="d-flex"
+          >
+            <b-col cols="9">
+              <processes-carousel
+                :process="process"
+              />
+            </b-col>
+            <b-col cols="3">
+              <process-options :process="process" />
+            </b-col>
+          </div>
         </div>
       </div>
     </div>
@@ -129,6 +156,8 @@ import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
+import ProcessesCarousel from "./ProcessesCarousel.vue";
+import ProcessOptions from "./ProcessOptions.vue";
 
 export default {
   components: {
@@ -138,6 +167,8 @@ export default {
     CreatePmBlockModal,
     AddToProjectModal,
     ModalSaveVersion,
+    ProcessOptions,
+    ProcessesCarousel,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
@@ -149,12 +180,13 @@ export default {
       assetName: "",
       processLaunchpadActions: [],
       optionsData: {},
-      infoCollapsed: 'true',
+      infoCollapsed: true,
       largeDescription: false,
       readActivated: false,
       showEllipsis: false,
       labelTooltip: "",
-      buttonCollapseTitle: this.$t('Process Info'),
+      showBookmarkIcon: false,
+      auxBookmarkId: this.process.bookmark_id,
     };
   },
   mounted() {
@@ -165,17 +197,14 @@ export default {
       type: "Process",
     };
     this.verifyDescription();
+    this.bookmarkIcon();
   },
   methods: {
     /** 
      * Change button title
      */
     toogleInfoCollapsed() {
-      if(this.infoCollapsed) {
-        this.buttonCollapseTitle = this.$t('Process Info');
-      } else {
-        this.buttonCollapseTitle = this.process.name;
-      }
+      this.infoCollapsed = !this.infoCollapsed;
     },
     /**
      * Verify if the process is marked
@@ -183,26 +212,30 @@ export default {
     bookmarkIcon() {
       this.labelTooltip = this.process.bookmark_id !== 0 ? 
         this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
-      return this.process.bookmark_id !== 0;
+      this.showBookmarkIcon = this.process.bookmark_id !== 0;
     },
     /**
      * Check the bookmark to add bookmarked list or remove it
      */
     checkBookmark(process) {
-      if (process.bookmark_id) {
+      if (this.auxBookmarkId) {
         ProcessMaker.apiClient
-          .delete(`process_bookmarks/${process.bookmark_id}`)
+          .delete(`process_bookmarks/${this.auxBookmarkId}`)
           .then(() => {
             ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
-            this.$parent.loadCard();
+            this.labelTooltip = this.$t("Add to My Bookmarks");
+            this.showBookmarkIcon = false;
+            this.auxBookmarkId = 0;
           });
         return;
       }
       ProcessMaker.apiClient
         .post(`process_bookmarks/${process.id}`)
-        .then(() => {
+        .then(($response) => {
           ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
-          this.$parent.loadCard();
+          this.labelTooltip = this.$t("Remove from My Bookmarks");
+          this.showBookmarkIcon = true;
+          this.auxBookmarkId = $response.data.newId;
         });
     },
     showCreateTemplateModal(name, id) {
@@ -284,13 +317,21 @@ export default {
   cursor: pointer;
 }
 .title-process-button {
-  color: #556271;
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: -0.42px;
+  color: #6a7888;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  background-color: white;
+}
+.title-process-button:hover {
+  color: #1572c2;
 }
 .info-collapse {
   padding: 32px;
+  padding-bottom: 0px;
   background-color: white;
 }
 .title-process {
@@ -316,9 +357,8 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: white;
-  border: 1px;
+  border: 1px solid #CDDDEE;
   border-radius: 19px;
-  border-color: #CDDDEE;
   width: 32px;
   height: 32px;
   margin: 0px 8px;
@@ -338,5 +378,17 @@ export default {
   padding: 12px 16px;
   border-bottom: 1px solid #CDDDEE;
   box-shadow: 0px 6px 18px 0px #EFF1F4;
+}
+.marked {
+  color: #f5bC00;
+}
+.unmarked {
+  color: #ebf3f7;
+  -webkit-text-stroke-color: #bed1e5;
+  -webkit-text-stroke-width: 1px;
+}
+.unmarked:hover {
+  color: #ffd445;
+  -webkit-text-stroke-width: 0;
 }
 </style>

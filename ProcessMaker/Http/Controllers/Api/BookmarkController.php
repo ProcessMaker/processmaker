@@ -48,6 +48,7 @@ class BookmarkController extends Controller
                 'process_id' => $process->id,
                 'user_id' => Auth::user()->id,
             ]);
+            $bookmark->newId = Bookmark::getBookmarked($bookmark, $process->id, Auth::user()->id);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

@@ -7,7 +7,7 @@
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <i class="fa fa-play-circle" style="font-size: 16px;"></i>
+      <i class="fa fa-play-circle" style="font-size: 16px;" />
       <span class="pl-2"> {{ $t('Start this process') }} </span>
     </button>
     <button
