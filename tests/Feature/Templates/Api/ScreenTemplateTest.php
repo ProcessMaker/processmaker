@@ -5,6 +5,7 @@ namespace Tests\Feature\Templates\Api;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Http\Controllers\Api\ExportController;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
@@ -32,6 +33,7 @@ class ScreenTemplateTest extends TestCase
             'name' => 'Test Screen Template Creation',
             'description' => 'Test Screen Template Description',
             'screen_category_id' => $screenCategoryId,
+            'is_public' => false,
             'version'   => '1.0.0',
             'asset_id' => $screenId,
             'saveAssetsMode' => 'saveAllAssets',
@@ -74,5 +76,39 @@ class ScreenTemplateTest extends TestCase
 
         // Assert that our database is missing the screen template we deleted
         $this->assertDatabaseMissing('screen_templates', ['id' => $screenTemplateId]);
+    }
+
+    public function testPublishScreenTemplateWithoutPermissions()
+    {
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $user = User::factory()->create(['is_administrator' => false]);
+        $route = route('api.template.publishTemplate', ['screen', $screenTemplateId]);
+
+        // Our user should not have permissions, so this should return 403.
+        $this->assertFalse($user->hasPermission('publish-screen-templates'));
+        $response = $this->actingAs($user, 'api')->call('POST', $route);
+        $response->assertStatus(403);
+    }
+
+    public function testPublishScreenTemplateWithPermissions()
+    {
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $user = User::factory()->create(['is_administrator' => false]);
+        $permission = 'publish-screen-templates';
+        $route = route('api.template.publishTemplate', ['screen', $screenTemplateId]);
+
+        // Attach the permission to our user.
+        $user->permissions()->sync([Permission::byName($permission)->id]);
+        $user->save();
+        $user->refresh();
+
+        // Our user now has permission, so this should return 200.
+        $this->assertTrue($user->hasPermission($permission));
+        $response = $this->actingAs($user, 'api')->call('POST', $route);
+        $response->assertStatus(200);
+
+        // Check that the screen template was updated successfully
+        $screenTemplate = ScreenTemplates::where('id', $screenTemplateId)->first();
+        $this->assertSame($screenTemplate->is_public, 1);
     }
 }
