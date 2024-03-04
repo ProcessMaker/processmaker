@@ -64,6 +64,7 @@
                               @@error="error"
                               @closed="closed"
                               @redirect="redirectToTask"
+                              @form-data-changed="autoSave"
                           ></task>
                           @endcan
                           <div v-if="taskHasComments">
@@ -458,7 +459,10 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
+          autoSave(formData) {
+            console.log("Hola", formData);
+          },
         },
         mounted() {
           this.prepareData();

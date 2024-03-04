@@ -107,6 +107,7 @@
                           @@error="error"
                           @closed="closed"
                           @redirect="redirectToTask"
+                          @form-data-changed="autoSave"
                           :task-preview="true"
                         ></task>
                     </div>
@@ -373,7 +374,10 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
+          autoSave(formData) {
+            console.log("Hola", formData);
+          },
         },
         mounted() {
           this.prepareData();
