@@ -86,6 +86,7 @@
         blur: '2px',
         isPhotoVideo: false,
         cardStyles: 'pointer-events: none;',
+        iFramePostedData: null,
       }
     },
     computed: {
@@ -94,6 +95,9 @@
         return this.disableForm(json);
       },
       formData() {
+        if(this.iFramePostedData) {
+          return this.iFramePostedData;
+        }
         return this.rowData.data ? this.rowData.data : {};
       },
       printablePages() {
@@ -113,6 +117,12 @@
       }
     },
     mounted() {
+      //listen for data from iframe parent
+      window.addEventListener("data", function(event){
+        this.iFramePostedData = event;
+        console.log("get mounted on screenDetail data eventListener");
+      });
+
       $('#cover-spin').show(0);
       window.ProcessMaker.apiClient.requestCount = 0;
       window.ProcessMaker.apiClient.requestCountFlag = true;

@@ -2,16 +2,15 @@
   <div>
     <splitpanes
       v-if="showPreview"
-      id="splitpane"
       ref="inspectorSplitPanes"
-      class="default-theme"
+      class="splitpane default-theme"
       :dbl-click-splitter="false"
     >
       <pane style="opacity: 0;">
         <div />
       </pane>
       <pane
-        id="pane-task-preview"
+        class="pane-task-preview"
         :min-size="paneMinSize"
         size="50"
         max-size="99"
@@ -22,14 +21,23 @@
           ref="tasks-preview"
           class="h-100 p-3"
         >
+        <template v-if="!showQuickFillPreview">
           <div>
-            <div class="d-flex w-100 h-100 mb-3">
+            <div v-if="!isSelectedTask" class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
                 </a>
               </div>
               <div class="ml-auto mr-0 text-right">
+                <b-button 
+                  class="icon-button"
+                  :aria-label="$t('Quick fill')"
+                  variant="light"
+                  @click="goQuickFill()"
+                >
+                  <img src="../../../img/smartinbox-images/fill.svg">
+                </b-button>
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Previous Tasks')"
@@ -66,6 +74,26 @@
                 </b-button>
               </div>
             </div>
+            <div v-else>
+              <div class="d-flex w-100 h-100 mb-3" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="my-1">
+                  <b-button
+                    variant="secondary"
+                    @click="onClose()"
+                  >
+                    <i class="fas fa-arrow-left"></i>
+                  </b-button>
+                  <a class="lead text-secondary font-weight-bold">
+                    {{ task.data._request.case_title }}
+                  </a>
+                </div>
+                <b-button 
+                  class="btn-this-data"
+                >{{ $t('USE THIS TASK DATA') }}
+                </b-button>
+                
+              </div>
+            </div>
             <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
@@ -89,6 +117,13 @@
               />
             </div>
           </div>
+        </template>
+        <quick-fill-preview 
+          v-if="showQuickFillPreview" 
+          :showQuickFillPreview="showQuickFillPreview"
+          :task="task"
+          :data="data"
+        ></quick-fill-preview>
         </div>
       </pane>
     </splitpanes>
@@ -99,11 +134,25 @@
 import { Splitpanes, Pane } from "splitpanes";
 import TaskLoading from "./TaskLoading.vue";
 import PreviewMixin from "./PreviewMixin";
+import QuickFillPreview from "./QuickFillPreview.vue"
 import "splitpanes/dist/splitpanes.css";
 
 export default {
-  components: { Splitpanes, Pane, TaskLoading },
+  components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
+  // mounted() {
+  //   this.$root.$on("fillData", (arg) => {
+  //     this.setDataInPreview(arg.data);
+  //   });
+  // },
+  mounted() {
+    this.$root.$on("selectedTaskForQuickFill", (val) => {
+      this.showQuickFillPreview = false;
+      this.isSelectedTask = true;
+      console.log("val.task: ", val.task, " val.data.data: ", val.data.data);
+      this.showSideBar(val.task, val.data.data, true);
+    });
+  },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -114,18 +163,30 @@ export default {
     }
   },
   methods: {
+    setDataInPreview(data){
+      console.log("en setDataPreview: ", this.$refs);
+      //if(this.$refs.tasksFrame1) {
+      if(this.$refs) {
+        console.log("en tasksFrame1");
+        this.$refs.tasksFrame1.contentWindow.postMessage(data, "*");
+      }
+      if(this.$refs.tasksFrame2) {
+        console.log("en tasksFrame2");
+        this.$refs.tasksFrame2.contentWindow.postMessage(data, "*");
+      }
+    },
   },
 };
 </script>
 
 <style>
-#splitpane {
+.splitpane {
   top: 0;
   min-height: 80vh;
   width: 99%;
   position: absolute;
 }
-#pane-task-preview {
+.pane-task-preview {
   flex-grow: 1;
   overflow-y: auto;
 }
@@ -150,5 +211,22 @@ export default {
   overflow: auto;
   grid-row-start: 1;
   grid-column-start: 1;
+}
+.icon-button {
+  display: inline-block;
+  width: 46px;
+  height: 36px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  vertical-align: unset;
+}
+
+.icon-button img {
+  width: 16px;
+  height: 16px;
 }
 </style>
