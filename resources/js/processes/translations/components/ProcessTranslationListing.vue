@@ -168,6 +168,8 @@ export default {
   },
 
   mounted() {
+    this.getNonce();
+    this.fetchHistory();
     window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification((response) => {
       if (response.processId === this.processId) {
         this.fetchPending();
@@ -177,6 +179,95 @@ export default {
   },
 
   methods: {
+    getNonce() {
+      const max = 999999999999999;
+      const nonce = Math.floor(Math.random() * max);
+      this.currentNonce = nonce;
+      localStorage.currentNonce = this.currentNonce;
+    },
+    removePromptSessionForUser() {
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+
+      let item = promptSessions.find(item => item.userId === window.ProcessMaker?.modeler?.process?.user_id && item.server === window.location.host);
+
+      if (item) {
+        item.promptSessionId = '';
+      }
+
+      localStorage.setItem('promptSessions', JSON.stringify(promptSessions));
+    },
+    setPromptSessions(promptSessionId) {
+      let index = 'userId';
+      let id = this.process_id;
+
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+
+      let item = promptSessions.find(item => item[index] === id && item.server === window.location.host);
+
+      if (item) {
+        item.promptSessionId = promptSessionId;
+      } else {
+        promptSessions.push({ [index]: id, server: window.location.host, promptSessionId });
+      }
+
+      localStorage.setItem('promptSessions', JSON.stringify(promptSessions));
+    },
+    getPromptSessionForUser() {
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+      let item = promptSessions.find(item => item.userId === window.ProcessMaker?.modeler?.process?.user_id && item.server === window.location.host);
+
+      if (item) {
+        return item.promptSessionId;
+      }
+
+      return '';
+    },
+    fetchHistory() {
+      let url = '/package-ai/getPromptSessionHistory';
+
+      let params = {
+        server: window.location.host,
+        processId: null,
+      };
+
+      if (this.promptSessionId && this.promptSessionId !== null && this.promptSessionId !== '') {
+        params = {
+          promptSessionId: this.promptSessionId,
+        };
+      }
+
+      window.ProcessMaker.apiClient.post(url, params)
+        .then(response => {
+          this.setPromptSessions((response.data.promptSessionId));
+          this.promptSessionId = (response.data.promptSessionId);
+          localStorage.promptSessionId = (response.data.promptSessionId);
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          this.loading = false;
+          if (error.response.status === 404) {
+            this.removePromptSessionForUser();
+            localStorage.promptSessionId = '';
+            this.promptSessionId = '';
+            this.fetchHistory();
+          } else {
+            window.ProcessMaker.alert(errorMsg, 'danger');
+          }
+        });
+    },
     onNavigate(action, data, index) {
       switch (action.value) {
         case "edit-translation":
@@ -311,6 +402,9 @@ export default {
         language: data,
         processId: this.processId,
         option: "empty",
+        promptSessionId: this.getPromptSessionForUser(),
+        nonce: localStorage.getItem("currentNonce"),
+        includeImages: true,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
