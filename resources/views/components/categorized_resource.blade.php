@@ -46,7 +46,7 @@
                     </a>
                 </li>
             @endisset
-        @elseif (isset($myScreenTemplates) && isset($publicScreenTemplates))
+        @elseif (isset($listScreenTemplates))
             @if ($catConfig->permissions['view'])
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
@@ -145,7 +145,7 @@
                         </div>
                     </div>
                 @endisset
-            @elseif(isset($myScreenTemplates) && isset($publicScreenTemplates))
+            @elseif(isset($listScreenTemplates))
                 <div
                     class="{{$secondContent}}"
                     id="nav-categories"
