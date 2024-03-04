@@ -182,7 +182,6 @@ class ScreenCategoriesTest extends TestCase
     {
         $perPage = 10;
         $initialActiveCount = ScreenCategory::nonSystem()->where('status', 'ACTIVE')->count();
-        $initialInactiveCount = ScreenCategory::nonSystem()->where('status', 'INACTIVE')->count();
 
         // Create some screens
         $screenActive = [
