@@ -30,6 +30,7 @@ class ScreenTemplateTest extends TestCase
 
         $route = route('api.template.store', ['screen', $screenId]);
         $data = [
+            'uniquie_template_id' => '',
             'name' => 'Test Screen Template Creation',
             'description' => 'Test Screen Template Description',
             'screen_category_id' => $screenCategoryId,
