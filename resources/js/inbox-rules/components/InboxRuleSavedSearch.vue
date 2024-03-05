@@ -3,9 +3,16 @@
     <b-card class="w-75">
 
       <div class="mb-3">
-        <pmql-input ref="pmql_input" search-type="tasks" :value="'foo'" v-model="pmql" :filters-value="'foo'"
-          :ai-enabled="false" :show-filters="true" :aria-label="$t('Advanced Search (PMQL)')">
-
+        <pmql-input ref="pmql_input"
+          search-type="tasks"
+          :value="'foo'"
+          v-model="pmql"
+          :filters-value="'foo'"
+          :ai-enabled="false"
+          :show-filters="true"
+          :aria-label="$t('Advanced Search (PMQL)')"
+          :input-advanced-filter="savedSearchAdvancedFilter"
+        >
           <template v-slot:right-buttons>
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
@@ -107,7 +114,7 @@ export default {
       return pmqls.join(' AND ');
     },
     savedSearchAdvancedFilter() {
-      return this.savedSearch?.advanced_filter?.filter;
+      return this.savedSearch?.advanced_filter?.filters;
     }
   },
   mounted() {
