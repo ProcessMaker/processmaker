@@ -22,16 +22,18 @@ const PreviewMixin = {
       showQuickFillPreview: false,
       isSelectedTask: false,
       selectedTaskId: null,
+      useThisDataButton: false,
     };
   },
   methods: {
     /**
      * Show the sidebar
      */
-    showSideBar(info, data, firstTime = false, task_id = null, aux) {
+    showSideBar(info, data, firstTime = false, task_id = null) {
       let param = "";
-      if(task_id !== null && aux !== null){
+      if(task_id !== null){
         param="/" + task_id;
+        this.buttonFillPressed = true;
       }
       this.stopFrame = false;
       this.taskTitle = info.element_name;
@@ -140,6 +142,7 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded() {
+      ProcessMaker.alert(successMessage, 'success');
       this.loading = false;
       clearTimeout(this.isLoading);
       this.stopFrame = false;
@@ -152,6 +155,10 @@ const PreviewMixin = {
       this.showFrame2 = true;
       this.showFrame1 = false;
       this.showFrame = 1;
+      const successMessage = this.$t('Task Filled successfully');
+      if(this.useThisDataButton) {
+        this.useThisDataButton = false;
+      }
     },
   },
 };

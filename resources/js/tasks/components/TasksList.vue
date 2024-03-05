@@ -203,7 +203,7 @@ import TaskQuickFillTooltip from "./TaskQuickFillTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
-import { get, cloneDeep } from "lodash";
+import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -471,7 +471,7 @@ export default {
       return link;
     },
     previewTasks(info) {
-      this.$refs.preview.showSideBar(info, this.data.data, true, null, null);
+      this.$refs.preview.showSideBar(info, this.data.data, true, null);
     },
     formatStatus(props) {
       let color;

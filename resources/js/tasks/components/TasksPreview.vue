@@ -36,7 +36,7 @@
                   variant="light"
                   @click="goQuickFill()"
                 >
-                  <img src="../../../img/smartinbox-images/fill.svg">
+                  <img src="../../../img/smartinbox-images/fill.svg" :alt="$t('No Image')">
                 </b-button>
                 <b-button
                   class="btn-light text-secondary"
@@ -79,7 +79,7 @@
                 <div class="my-1">
                   <b-button
                     variant="secondary"
-                    @click="onClose()"
+                    @click="goQuickFill()"
                   >
                     <i class="fas fa-arrow-left"></i>
                   </b-button>
@@ -89,7 +89,7 @@
                 </div>
                 <b-button 
                   class="btn-this-data"
-                  @click="buttonThisData('fromPreview')"
+                  @click="buttonThisData()"
                 >{{ $t('USE THIS TASK DATA') }}
                 </b-button>
                 </div>
@@ -146,7 +146,7 @@ export default {
       this.showQuickFillPreview = false;
       this.isSelectedTask = true;
       this.selectedTaskId = val.taskDataSelectedId;
-      this.showSideBar(val.task, val.data.data, true, null, null);
+      this.showSideBar(val.task, val.data.data, true, null);
     });
   },
   updated() {
@@ -159,20 +159,10 @@ export default {
     }
   },
   methods: {
-    buttonThisData(aux) {
-      this.showSideBar(this.task, this.data, true, this.selectedTaskId, aux);
-    },
-    setDataInPreview(data){
-      console.log("en setDataPreview: ", this.$refs);
-      //if(this.$refs.tasksFrame1){
-      if(this.$refs) {
-        console.log("en tasksFrame1");
-        this.$refs.tasksFrame1.contentWindow.postMessage(data, "*");
-      }
-      if(this.$refs.tasksFrame2) {
-        console.log("en tasksFrame2");
-        this.$refs.tasksFrame2.contentWindow.postMessage(data, "*");
-      }
+    buttonThisData() {
+      //const successMessage = this.$t('Task Filled successfully');
+      this.showSideBar(this.task, this.data, true, this.selectedTaskId);
+      //ProcessMaker.alert(successMessage, 'success');
     },
   },
 };
