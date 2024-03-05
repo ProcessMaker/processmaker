@@ -1,11 +1,8 @@
 <template>
   <div>
     <h4>{{$t('New Inbox Rule')}}</h4> <!--Edit id {{ $route.params.id }}-->
-    <b-form-group>
-      <b-form-select v-model="savedSearchSelected" :options="savedSearch">
-      </b-form-select>  
-    </b-form-group>
-
+    
+    
 
     <b-form-group label="What do we do with tasks that fit this filter?">
       <b-form-radio v-model="markAsPriority" name="actionsTask" value="false">

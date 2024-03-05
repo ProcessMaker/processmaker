@@ -7,7 +7,7 @@
       <div class="d-flex align-items-center">
         <i class="fa fa-search ml-3"
            role="button"
-           @click="$emit('onClikSearch', $event)"></i>
+           @click="onSearch"></i>
         <textarea type="text"
                   :aria-label="''"
                   :placeholder="$t('Search here')"
@@ -18,7 +18,7 @@
         </textarea>
         <i class="fa fa-times pl-1 pr-3"
            role="button"
-           @click="$emit('onClikClear', $event)"></i>
+           @click="onClear"></i>
       </div>
     </div>
     <div>
@@ -51,6 +51,13 @@
       }
     },
     methods: {
+      onSearch(event) {
+        this.$emit('onClikSearch', event);
+      },
+      onClear(event) {
+        this.$emit('onClikClear', event);
+        this.input = "";
+      }
     }
   }
 </script>

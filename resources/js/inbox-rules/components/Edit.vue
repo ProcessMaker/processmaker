@@ -2,16 +2,16 @@
   <div class="pm-inbox-rule d-flex">
 
     <div class="pl-3">
-      <NewInboxRule>
-      </NewInboxRule>
-    </div>
-
-    <div class="pl-3">
       <h4>{{$t('Self Service')}}</h4>
       <PMSearchBar>
       </PMSearchBar>
       <PMTable>
       </PMTable>
+    </div>
+
+    <div class="pl-3">
+      <NewInboxRule>
+      </NewInboxRule>
     </div>
 
   </div>

@@ -23,9 +23,20 @@
         </PMSearchBar>
       </template>
 
+      <template v-slot:cell-active="{ row, header, rowIndex }">
+        <b-form-checkbox v-model="row['active']" 
+                         :disabled="true"
+                         switch>
+        </b-form-checkbox>
+      </template>
+
+      <template v-slot:cell-created_at="{ row, header, rowIndex }">
+        {{ convertUTCToLocal(row['created_at']) }}
+      </template>
+
       <template v-slot:cell-end_date="{ row, header, rowIndex }">
         <PmRowButtons :ref="'pmRowButtons-'+rowIndex"
-                      :value="row['end_date']"
+                      :value="convertUTCToLocal(row['end_date'])"
                       :row="row"
                       @onEditRule="onEditRule"
                       @onRemoveRule="onRemoveRule">
@@ -127,6 +138,13 @@
         this.$router.push({name: 'edit', params: {id: row.id}});
       },
       onRemoveRule(row) {
+      },
+      convertUTCToLocal(value) {
+        if (!moment(value).isValid()) {
+          return "N/A";
+        }
+        let config = ProcessMaker.user.datetime_format;
+        return moment(value).format(config);
       }
     }
   };

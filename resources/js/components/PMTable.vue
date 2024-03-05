@@ -49,7 +49,6 @@
     },
     data() {
       return {
-        //shouldShowLoader: false,
         defaultData: {data: [], meta: []}
       };
     },
