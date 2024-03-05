@@ -380,7 +380,11 @@ dd(json_encode($dataTemplate));
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;          
+          window.ProcessMaker.isSelfService = this.isSelfService;       
+          window.onmessage = function(e) {
+            console.log('Iframe data received');
+              this.formData = e.data;
+          };
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

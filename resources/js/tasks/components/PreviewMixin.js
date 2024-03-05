@@ -62,6 +62,7 @@ const PreviewMixin = {
     },
     goQuickFill() {
       this.showQuickFillPreview = true;
+      this.isSelectedTask = false;
     },
     onClose() {
       this.showPreview = false;

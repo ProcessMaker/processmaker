@@ -97,6 +97,7 @@
             <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
+                ref="embedFrame1"
                 id="tasksFrame1"
                 width="100%"
                 :class="showFrame2 ? 'loadingFrame' : ''"
@@ -105,6 +106,7 @@
               />
               <b-embed
                 v-if="showFrame2"
+                ref="embedFrame2"
                 id="tasksFrame2"
                 width="100%"
                 :class="showFrame1 ? 'loadingFrame' : ''"
@@ -124,6 +126,7 @@
           :showQuickFillPreview="showQuickFillPreview"
           :task="task"
           :data="data"
+          @quick-fill-data="fillWithQuickFillData"
         ></quick-fill-preview>
         </div>
       </pane>
@@ -141,14 +144,6 @@ import "splitpanes/dist/splitpanes.css";
 export default {
   components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
-  mounted() {
-    this.$root.$on("selectedTaskForQuickFill", (val) => {
-      this.showQuickFillPreview = false;
-      this.isSelectedTask = true;
-      this.selectedTaskId = val.taskDataSelectedId;
-      this.showSideBar(val.task, val.data.data, true, null);
-    });
-  },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -159,6 +154,22 @@ export default {
     }
   },
   methods: {
+    fillWithQuickFillData(data) {
+
+      //old logic
+       this.showQuickFillPreview = false;
+       this.isSelectedTask = true;
+       this.selectedTaskId = data.taskDataSelectedId;
+       this.showSideBar(data.task, data.data.data, true, null);
+
+      //New logic
+      // if(this.$refs.embedFrame1){
+      //   this.$refs.embedFrame1.contentWindow.postMessage(data.data);
+      // }
+      // if(this.$refs.embedFrame2) {
+      //   this.$refs.embedFrame2.contentWindow.postMessage(data.data);
+      // }
+    },
     buttonThisData() {
       this.showSideBar(this.task, this.data, true, this.selectedTaskId);
     },

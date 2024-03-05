@@ -91,7 +91,7 @@ data() {
     },
     selected(taskData) {
       let selTask= `/tasks/${taskData.id}/edit/preview`
-      this.$root.$emit("selectedTaskForQuickFill", { 
+      this.$emit("quick-fill-data", { 
         task: this.task, 
         data: this.data, 
         selectedTask: selTask, 
