@@ -6,94 +6,104 @@
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
       class="mb-3 mb-md-0 ml-md-2"
+      variant="primary"
     >
-      <i class="fas fa-plus" /> {{ $t("Screen") }}
+      <i class="fas fa-plus" /> {{ $t("Create Screen") }}
     </b-button>
     <modal
       id="createScreen"
       :ok-disabled="disabled"
       :title="modalSetUp"
+      :subtitle="subtitle"
+      size="xl"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
-      <template v-if="countCategories">
-        <required />
-        <b-form-group
-          :description="
-            formDescription('The screen name must be unique.', 'title', errors)
-          "
-          :invalid-feedback="errorMessage('title', errors)"
-          :label="$t('Name')"
-          :state="errorState('title', errors)"
-          required
-        >
-          <b-form-input
-            v-model="formData.title"
-            :state="errorState('title', errors)"
-            autocomplete="off"
-            autofocus
-            name="title"
-            required
-          />
-        </b-form-group>
-        <b-form-group
-          :invalid-feedback="errorMessage('description', errors)"
-          :label="$t('Description')"
-          :state="errorState('description', errors)"
-          required
-        >
-          <b-form-textarea
-            v-model="formData.description"
-            :state="errorState('description', errors)"
-            autocomplete="off"
-            name="description"
-            required
-            rows="3"
-          />
-        </b-form-group>
-        <b-form-group
-          :invalid-feedback="errorMessage('type', errors)"
-          :label="$t('Type')"
-          :state="errorState('type', errors)"
-          required
-        >
-          <b-form-select
-            v-model="formData.type"
-            :options="screenTypes"
+      <b-row>
+        <b-col cols="8" class="type-style-col">
+          <screen-type-dropdown></screen-type-dropdown>
+          <!-- <b-form-group
+            :invalid-feedback="errorMessage('type', errors)"
+            :label="$t('Type')"
             :state="errorState('type', errors)"
-            :disabled="copyAssetMode"
-            name="type"
             required
-          />
-        </b-form-group>
-        <category-select
-          v-model="formData.screen_category_id"
-          :errors="errors.screen_category_id"
-          :label="$t('Category')"
-          api-get="screen_categories"
-          api-list="screen_categories"
-          name="category"
-        />
-        <project-select
-          v-if="isProjectsInstalled"
-          v-model="formData.projects"
-          :errors="errors.projects"
-          :project-id="projectId"
-          :label="$t('Project')"
-          :required="isProjectSelectionRequired"
-          api-get="projects"
-          api-list="projects"
-        />
-      </template>
-      <template v-else>
-        <div>{{ $t("Categories are required to create a screen") }}</div>
-        <a
-          class="btn btn-primary container mt-2"
-          href="/designer/screens/categories"
-        >
-          {{ $t("Add Category") }}
-        </a>
-      </template>
+          >
+            <b-form-select
+              v-model="formData.type"
+              :options="screenTypes"
+              :state="errorState('type', errors)"
+              :disabled="copyAssetMode"
+              name="type"
+              required
+            /> -->
+          </b-form-group>
+        </b-col>
+        <b-col cols="4">
+          <template v-if="countCategories">
+            <required />
+            <b-form-group
+              :description="
+                formDescription('The screen name must be unique.', 'title', errors)
+              "
+              :invalid-feedback="errorMessage('title', errors)"
+              :label="$t('Name')"
+              :state="errorState('title', errors)"
+              required
+            >
+              <b-form-input
+                v-model="formData.title"
+                :state="errorState('title', errors)"
+                autocomplete="off"
+                autofocus
+                name="title"
+                required
+              />
+            </b-form-group>
+            <b-form-group
+              :invalid-feedback="errorMessage('description', errors)"
+              :label="$t('Description')"
+              :state="errorState('description', errors)"
+              required
+            >
+              <b-form-textarea
+                v-model="formData.description"
+                :state="errorState('description', errors)"
+                autocomplete="off"
+                name="description"
+                required
+                rows="3"
+              />
+            </b-form-group>
+            <category-select
+              v-model="formData.screen_category_id"
+              :errors="errors.screen_category_id"
+              :label="$t('Category')"
+              api-get="screen_categories"
+              api-list="screen_categories"
+              name="category"
+            />
+            <project-select
+              v-if="isProjectsInstalled"
+              v-model="formData.projects"
+              :errors="errors.projects"
+              :project-id="projectId"
+              :label="$t('Project')"
+              :required="isProjectSelectionRequired"
+              api-get="projects"
+              api-list="projects"
+            />
+          </template>
+          <template v-else>
+            <div>{{ $t("Categories are required to create a screen") }}</div>
+            <a
+              class="btn btn-primary container mt-2"
+              href="/designer/screens/categories"
+            >
+              {{ $t("Add Category") }}
+            </a>
+          </template>
+        </b-col>
+      </b-row>
     </modal>
   </div>
 </template>
@@ -103,6 +113,7 @@ import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
+import ScreenTypeDropdown from "./ScreenTypeDropdown.vue";
 import {
   isQuickCreate as isQuickCreateFunc,
   screenSelectId,
@@ -117,6 +128,7 @@ export default {
     Modal,
     Required,
     ProjectSelect,
+    ScreenTypeDropdown,
   },
   mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
@@ -155,7 +167,10 @@ export default {
         return this.$t("Copy of Asset");
       }
       this.formData.title = "";
-      return this.$t("Create Screen");
+      return this.$t("New Screen");
+    },
+    subtitle() {
+      return this.$t("Select the Screen type and style");
     },
   },
   mounted() {
@@ -243,3 +258,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.type-style-col {
+  background-color: #F6F9FB;
+}
+
+</style>
