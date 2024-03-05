@@ -314,7 +314,7 @@ export default {
         manualTranslation: this.manualTranslation,
       };
 
-      ProcessMaker.apiClient.post("/openai/language-translation", params)
+      ProcessMaker.apiClient.post("/package-ai/language-translation", params)
         .then((response) => {
           if (response.data.error) {
             window.ProcessMaker.alert(response.data.error, "danger");
@@ -357,7 +357,7 @@ export default {
         screenId: this.selectedScreen.id,
         option,
       };
-      ProcessMaker.apiClient.post("/openai/language-translation", params)
+      ProcessMaker.apiClient.post("/package-ai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;
           this.aiLoading = false;
