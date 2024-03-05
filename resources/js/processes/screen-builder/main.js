@@ -10,4 +10,8 @@ new Vue({
   store,
   el: "#screen-container",
   components: { ScreenBuilder },
+  mounted() {
+    // used to reference the ScreenBuilder
+    window.ProcessMaker.ScreenBuilder = this.$refs.screenBuilder;
+  }
 });

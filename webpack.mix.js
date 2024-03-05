@@ -106,6 +106,8 @@ mix
   .js("resources/js/processes/screens/index.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/edit.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/preview.js", "public/js/processes/screens")
+  .js("resources/js/processes/screen-templates/myTemplates.js", "public/js/processes/screen-templates")
+  .js("resources/js/processes/screen-templates/publicTemplates.js", "public/js/processes/screen-templates")
   .js("resources/js/processes/signals/index.js", "public/js/processes/signals")
   .js("resources/js/processes/signals/edit.js", "public/js/processes/signals")
   .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
@@ -126,6 +128,7 @@ mix
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
+  .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
