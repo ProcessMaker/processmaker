@@ -168,7 +168,7 @@ jobs:
           #Drop image harbor
           echo ${{env.IMAGE_TAG}}
           echo "curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}""
-          #curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}"
+          curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "https://${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}"
           if kubectl get namespace/ci-$deploy-ns-pm4 ; then
             echo "Deleting Instace :: ci-$deploy"
             helm delete ci-$deploy
