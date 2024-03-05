@@ -14,7 +14,7 @@
     </FilterTable>
 
     <DataLoading v-show="shouldShowLoader"
-                 :for="new RegExp(partialURLString)"
+                 :for="new RegExp(baseURL)"
                  :empty="empty"
                  :empty-desc="emptyDesc"
                  :empty-icon="emptyIcon">
@@ -45,7 +45,7 @@
       empty: null,
       emptyDesc: null,
       emptyIcon: null,
-      partialURLString: null
+      baseURL: null
     },
     data() {
       return {
@@ -65,7 +65,7 @@
         return `cell-${field}`;
       },
       changePage(page) {
-        this.$emit('page-change', page);
+        this.$emit('onPageChange', page);
       }
     }
   }

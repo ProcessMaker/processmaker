@@ -1,16 +1,17 @@
 <template>
   <div>
     <PMTable :headers="headers"
-             :data="response"
-             :partialURLString="partialURLString"
+             :data="responseData"
+             :baseURL="baseURL"
              :empty="$t('No results have been found')"
              :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
              empty-icon="noData"
              @onRowMouseover="onRowMouseover"
-             @onTrMouseleave="onTrMouseleave">
+             @onTrMouseleave="onTrMouseleave"
+             @onPageChange="onPageChange">
 
       <template v-slot:top-content>
-        <PMSearchBar>
+        <PMSearchBar v-model="filter">
           <template v-slot:right-content>
             <b-button class="ml-md-1 d-flex align-items-center text-nowrap"
                       variant="primary"
@@ -47,17 +48,26 @@
     },
     data() {
       return {
-        partialURLString: "",
+        responseData: {data: [], meta: {}},
         headers: this.columns(),
-        response: {
-          data: [],
-          meta: {}
-        },
-        page: 1
+        baseURL: "tasks/rules",
+        page: 1,
+        per_page: 10,
+        order_by: "id",
+        order_direction: "asc",
+        filter: ""
       };
     },
     mounted() {
-      this.getData();
+      this.requestData();
+    },
+    watch: {
+      page() {
+        this.requestData();
+      },
+      filter() {
+        this.requestData();
+      }
     },
     methods: {
       columns() {
@@ -84,20 +94,24 @@
           }
         ];
       },
-      getData() {
-        let url = "tasks/rules";
-        this.partialURLString = url;
-        let params = {
-          order: "desc",
-          per_page: 10
-        };
+      requestData() {
+        let url = this.baseURL + "?"
+                + "page=" + this.page + "&"
+                + "per_page=" + this.per_page + "&"
+                + "order_by=" + this.order_by + "&"
+                + "order_direction=" + this.order_direction + "&"
+                + "filter=" + this.filter;
+
         ProcessMaker.apiClient
-                .get(url, params)
+                .get(url)
                 .then((response) => {
-                  this.response = response.data;
+                  this.responseData = response.data;
                 })
                 .catch((error) => {
                 });
+      },
+      onPageChange(page) {
+        this.page = page;
       },
       onRowMouseover(row, scrolledWidth, index) {
         this.$refs["pmRowButtons-" + index].show();

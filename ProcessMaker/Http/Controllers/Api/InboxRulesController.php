@@ -17,10 +17,22 @@ class InboxRulesController extends Controller
      */
     public function index(Request $request)
     {
-        $order = $request->input('order', 'DESC');
-        $per_page = $request->input('per_page', 10);
-        $response = InboxRule::orderBy('id', $order)
-            ->get();
+        $order_by = $request->input("order_by", "id");
+        $order_direction = $request->input("order_direction", "desc");
+        $per_page = $request->input("per_page", 10);
+        $filter = $request->input("filter", "");
+
+        $query = InboxRule::query();
+
+        if (!empty($filter)) {
+            $query->where(function($query) use ($filter) {
+                $query->where("name", "like", "%" . $filter . "%");
+            });
+        }
+
+        $response = $query->orderBy($order_by, $order_direction)
+            ->paginate($per_page);
+
         return new ApiCollection($response);
     }
 
@@ -77,11 +89,11 @@ class InboxRulesController extends Controller
      */
     public function executionLog(Request $request)
     {
-        $response = InboxRuleLog::where('user_id', $request->user()->id)
-            ->with('task')
-            ->with('task.processRequest')
-            ->orderBy('id', 'DESC')
-            ->paginate($request->input('per_page', 10));
+        $response = InboxRuleLog::where("user_id", $request->user()->id)
+            ->with("task")
+            ->with("task.processRequest")
+            ->orderBy("id", "DESC")
+            ->paginate($request->input("per_page", 10));
 
         return new ApiCollection($response);
     }
