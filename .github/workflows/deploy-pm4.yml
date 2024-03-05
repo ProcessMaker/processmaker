@@ -158,7 +158,7 @@ jobs:
           deploy2=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
           echo $deploy2    
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-          deploy=`pm4_ci-"$deploy"`
+          deploy=\`pm4_ci-$deploy\`
           echo $deploy
           #Drop database   
           mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e 'DROP DATABASE `pm4_ci-$deploy`' -h ${{ secrets.RDS_ENG }}
