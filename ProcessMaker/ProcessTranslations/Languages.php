@@ -16,7 +16,6 @@ abstract class Languages
         'bn' => 'Bengali',
         'bs' => 'Bosnian',
         'bg' => 'Bulgarian',
-        'my' => 'Burmese',
         'ca' => 'Catalan',
         'ceb' => 'Cebuano',
         'zh' => 'Chinese (Simplified)',

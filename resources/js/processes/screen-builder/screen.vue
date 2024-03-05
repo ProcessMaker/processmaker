@@ -441,11 +441,29 @@ export default {
         section: "right",
         items: [
           {
+            id: "button_undo",
+            type: "button",
+            title: this.$t("Calculated Properties"),
+            name: this.$t("Undo"),
+            variant: "link",
+            icon: "fas fa-undo",
+            action: "undoAction()",
+          },
+          {
+            id: "button_redo",
+            type: "button",
+            title: this.$t("Calculated Properties"),
+            name: this.$t("Redo"),
+            variant: "link",
+            icon: "fas fa-redo",
+            action: "redoAction()",
+          },
+          {
             id: "button_calcs",
             type: "button",
             title: this.$t("Calculated Properties"),
             name: this.$t("Calcs"),
-            variant: "secondary",
+            variant: "link",
             icon: "fas fa-flask",
             action: "openComputedProperties()",
           },
@@ -454,7 +472,7 @@ export default {
             type: "button",
             title: this.$t("Custom CSS"),
             name: this.$t("CSS"),
-            variant: "secondary",
+            variant: "link",
             icon: "fab fa-css3",
             action: "openCustomCSS()",
           },
@@ -463,21 +481,11 @@ export default {
             type: "button",
             title: this.$t("Watchers"),
             name: this.$t("Watchers"),
-            variant: "secondary",
+            variant: "link",
             icon: "fas fa-mask",
             action: "openWatchersPopup()",
           },
         ],
-      },
-      {
-        id: "button_export",
-        section: "right",
-        type: "button",
-        title: this.$t("Export Screen"),
-        name: "",
-        variant: "secondary",
-        icon: "fas fa-file-export",
-        action: "beforeExportScreen()",
       },
       {
         id: "button_save",
@@ -485,7 +493,7 @@ export default {
         type: "button",
         title: this.$t("Save Screen"),
         name: "",
-        variant: "secondary",
+        variant: "link",
         icon: "fas fa-save",
         action: () => {
           ProcessMaker.EventBus.$emit("save-screen", false);
@@ -549,9 +557,16 @@ export default {
       ellipsisMenuOptions: {
         actions: [
           {
+            content: this.$t("Export Screen"),
+            icon: "fas fa-file-export",
+            value: "export-screen",
+            action: "beforeExportScreen()",
+          },
+          {
             value: "discard-draft",
             content: this.$t("Discard Draft"),
-            icon: "",
+            icon: "fas fa-angle-double-down",
+            hide: this.isVersionsInstalled,
           },
         ],
       },
@@ -968,6 +983,12 @@ export default {
     openWatchersPopup() {
       this.$refs.watchersPopup.show();
     },
+    undoAction() {
+      this.$refs.builder.undo();
+    },
+    redoAction() {
+      this.$refs.builder.redo();
+    },
     openComputedProperties() {
       this.$refs.computedProperties.show();
     },
@@ -1118,7 +1139,7 @@ export default {
           {
             id: "VersionIndicator",
             type: "VersionIndicator",
-            section: "right",
+            section: "rightTop",
             options: {
               is_draft: isDraft ?? this.isDraft,
             },
@@ -1144,21 +1165,19 @@ export default {
       }
     },
     setEllipsisMenu() {
-      if (this.isVersionsInstalled) {
-        this.$refs.menuScreen.addItem(
-          {
-            id: "EllipsisMenu",
-            type: "EllipsisMenu",
-            section: "right",
-            options: {
-              actions: [...this.ellipsisMenuOptions.actions],
-              data: {},
-              divider: false,
-            },
+      this.$refs.menuScreen.addItem(
+        {
+          id: "EllipsisMenu",
+          type: "EllipsisMenu",
+          section: "right",
+          options: {
+            actions: [...this.ellipsisMenuOptions.actions],
+            data: {},
+            divider: false,
           },
-          4,
-        );
-      }
+        },
+        4,
+      );
     },
   },
 };
@@ -1215,5 +1234,19 @@ body {
 }
 .device-screen {
   width: 100%;
+}
+.btn-platform {
+  background-color: #ffff;
+  color: #6a7888;
+  padding: 8px 8px 2px 8px;
+}
+.btn-platform:hover {
+  color: #6a7888;
+}
+.page-dropdown-menu {
+  min-width: 333px;
+  .dropdown-item {
+   font-size: 14px !important; 
+  };
 }
 </style>

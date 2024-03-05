@@ -313,7 +313,7 @@ export default {
         option: "empty",
       };
 
-      ProcessMaker.apiClient.post("/openai/language-translation", params)
+      ProcessMaker.apiClient.post("/package-ai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;
           this.fetch();
