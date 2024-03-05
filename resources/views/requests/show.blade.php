@@ -276,98 +276,150 @@
             :timeline="false" />
       </div>
       @if (shouldShow('requestStatusContainer'))
-        <div class="ml-md-3 mt-md-0 mt-3">
-          <template v-if="statusLabel">
-            <div class="card">
-              <div :class="classStatusCard">
-                <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
-              </div>
-              <ul class="list-group list-group-flush w-100">
-                @if ($request->user_id)
-                  <li class="list-group-item">
-                    <h5>{{ __('Requested By') }}</h5>
-                    <avatar-image v-if="userRequested" size="32"
-                      class="d-inline-flex pull-left align-items-center" :input-data="requestBy" display-name="true">
-                    </avatar-image>
-                    <span v-if="!userRequested">{{ __('Web Entry') }}</span>
-                  </li>
-                @endif
-                @if ($canCancel == true && $request->status === 'ACTIVE')
-                  <template>
-                    <li class="list-group-item">
-                      <h5>{{ __('Cancel Request') }}</h5>
-                      <button type="button" class="btn btn-outline-danger btn-block" @click="onCancel"
-                        aria-haspopup="dialog">
-                        <i class="fas fa-stop-circle"></i> {{ __('Cancel') }}
-                      </button>
-                    </li>
+        <div>
+          <button
+            role="button"
+            class="btn d-block mr-0 ml-auto button-collapse"
+            data-toggle="collapse"
+            data-target="#collapse-info"
+            @click="showTabs = !showTabs"
+          >
+          <i class="fas fa-angle-right"></i>
+          </button>
+          <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                id="details-tab"
+                class="nav-link active"
+                data-toggle="tab"
+                data-target="#details"
+                type="button"
+                role="tab"
+                aria-controls="details"
+                aria-selected="true"
+              >
+                @{{ __('Details') }}
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                id="comments-tab"
+                class="nav-link active"
+                data-toggle="tab"
+                data-target="#comments"
+                type="button"
+                role="tab"
+                aria-controls="comments"
+                aria-selected="true"
+              >
+                @{{ __('Comments') }}
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div id="collapse-info" class="collapse show width">
+              <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                  <template v-if="statusLabel">
+                    <div class="card">
+                      <ul class="list-group list-group-flush w-100">
+                        @if ($canCancel == true && $request->status === 'ACTIVE')
+                          <li class="list-group-item">
+                            <button type="button" class="btn btn-outline-custom btn-block" @click="onCancel"
+                              aria-haspopup="dialog">
+                              {{ __('Cancel Request') }}
+                            </button>
+                          </li>
+                        @endif
+                        <div :class="classStatusCard">
+                          <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
+                        </div>
+                        @if ($request->participants->count())
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Participants') }}:</p>
+                            <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                              :input-data="participants" hide-name="true"></avatar-image>
+                          </li>
+                        @endif
+                        <li class="list-group-item">
+                          <p class="section-title">{{ __('In Progress Since') }}:</p>
+                          <i class="far fa-calendar-alt"></i>
+                          <small>@{{ moment(statusDate).format() }}</small>
+                        </li>
+                        @if ($request->user_id)
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Requested By') }}:</p>
+                            <avatar-image
+                              v-if="userRequested"
+                              size="32"
+                              class="d-inline-flex pull-left align-items-center"
+                              :input-data="requestBy"
+                              display-name="true"
+                            ></avatar-image>
+                            <span v-if="!userRequested">{{ __('Web Entry') }}</span>
+                          </li>
+                        @endif
+                        @if ($canManuallyComplete == true)
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Manually Complete Request') }}</p>
+                            <button type="button" class="btn btn-outline-success btn-block" data-toggle="modal"
+                              @click="completeRequest">
+                              <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
+                            </button>
+                          </li>
+                        @endif
+                        @if ($canRetry === true)
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Retry Request') }}</p>
+                            <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
+                              data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
+                              <i class="fas fa-sync"></i> {{ __('Retry') }}
+                            </button>
+                          </li>
+                        @endif
+                        @if ($eligibleRollbackTask)
+                          @can('rollback', $errorTask)
+                            <li class="list-group-item">
+                              <p class="section-title">{{ __('Rollback Request') }}</p>
+                              <button
+                                id="retryRequestButton"
+                                type="button"
+                                class="btn btn-outline-info btn-block"
+                                data-toggle="modal"
+                                @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')"
+                              >
+                                <i class="fas fa-undo"></i> {{ __('Rollback') }}
+                              </button>
+                              <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
+                            </li>
+                          @endcan
+                        @endif
+                        @if ($request->parentRequest)
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Parent Request') }}</p>
+                            <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
+                            <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
+                          </li>
+                        @endif
+                        @if (count($request->childRequests))
+                          <li class="list-group-item">
+                            <p class="section-title">{{ __('Child Requests') }}</p>
+                            @foreach ($request->childRequests as $childRequest)
+                              <div>
+                                <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
+                                <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
+                              </div>
+                            @endforeach
+                          </li>
+                        @endif
+                      </ul>
+                    </div>
                   </template>
-                @endif
-                @if ($canManuallyComplete == true)
-                  <li class="list-group-item">
-                    <h5>{{ __('Manually Complete Request') }}</h5>
-                    <button type="button" class="btn btn-outline-success btn-block" data-toggle="modal"
-                      @click="completeRequest">
-                      <i class="fas fa-stop-circle"></i> {{ __('Complete') }}
-                    </button>
-                  </li>
-                @endif
-                @if ($canRetry === true)
-                  <li class="list-group-item">
-                    <h5>{{ __('Retry Request') }}</h5>
-                    <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                      data-toggle="modal" :disabled="retryDisabled" @click="retryRequest">
-                      <i class="fas fa-sync"></i> {{ __('Retry') }}
-                    </button>
-                  </li>
-                @endif
-                @if ($eligibleRollbackTask)
-                  @can('rollback', $errorTask)
-                    <li class="list-group-item">
-                      <h5>{{ __('Rollback Request') }}</h5>
-                      <button id="retryRequestButton" type="button" class="btn btn-outline-info btn-block"
-                        data-toggle="modal" @click="rollback({{ $errorTask->id }}, '{{ $eligibleRollbackTask->element_name }}')">
-                        <i class="fas fa-undo"></i> {{ __('Rollback') }}
-                      </button>
-                      <small>{{ __('Rollback to task') }}: <b>{{ $eligibleRollbackTask->element_name }}</b> ({{ $eligibleRollbackTask->element_id }})</small>
-                    </li>
-                  @endcan
-                @endif
-                @if ($request->parentRequest)
-                  <li class="list-group-item">
-                    <h5>{{ __('Parent Request') }}</h5>
-                    <i :class="requestStatusClass('{{ $request->parentRequest->status }}')"></i>
-                    <a href="/requests/{{ $request->parentRequest->getKey() }}">{{ $request->parentRequest->name }}</a>
-                  </li>
-                @endif
-                @if (count($request->childRequests))
-                  <li class="list-group-item">
-                    <h5>{{ __('Child Requests') }}</h5>
-                    @foreach ($request->childRequests as $childRequest)
-                      <div>
-                        <i :class="requestStatusClass('{{ $childRequest->status }}')"></i>
-                        <a href="/requests/{{ $childRequest->getKey() }}">{{ $childRequest->name }}</a>
-                      </div>
-                    @endforeach
-                  </li>
-                @endif
-                @if ($request->participants->count())
-                  <li class="list-group-item">
-                    <h5>{{ __('Participants') }}</h5>
-                    <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
-                      :input-data="participants" hide-name="true"></avatar-image>
-                  </li>
-                @endif
-                <li class="list-group-item">
-                  <h5>@{{ statusLabel }}</h5>
-                  <i class="far fa-calendar-alt"></i>
-                  <small>@{{ moment(statusDate).format() }}</small>
-                  <br>
-
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
-          </template>
+            <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">...2</div>
+          </div>
         </div>
       @endif
       <div v-if="panCommentInVueOptionsComponents">
@@ -433,6 +485,7 @@
           canViewComments: @json($canViewComments),
           isObjectLoading: false,
           showTree: false,
+          showTabs: true,
         };
       },
       computed: {
@@ -513,7 +566,7 @@
             'CANCELED': 'bg-danger',
             'ERROR': 'bg-danger',
           };
-          return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
+          return 'card-header text-capitalize text-white text-status ' + header[this.request.status.toUpperCase()];
         },
         labelDate() {
           let label = {
@@ -754,6 +807,43 @@
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
+  }
+  .btn-outline-custom {
+    border-radius: 4px;
+    border: 1px solid var(--borders, #CDDDEE);
+    background: linear-gradient(180deg, #fff 0%, rgb(255 255 255 / 0%) 100%), #fbfbfb;
+    box-shadow: 0px 0px 3px -2px rgba(0, 0, 0, 0.10);
+    color: var(--text-only, #556271);
+  }
+  .text-status {
+    display: flex;
+    height: 48px;
+    padding: 12px 16px;
+    align-items: center;
+    gap: 16px;
+    margin: 16px;
+  }
+  .nav-collapse {
+    padding: 0 16px;
+    border: none;
+  }
+  .button-collapse {
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 4px;
+    border: 1px solid var(--borders, #CDDDEE);
+    background: var(--white-w24, #FFF);
+    color: #6a7888;
+  }
+  .section-title {
+    color: var(--text-only, #556271);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.28px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
   }
 </style>
 @endsection
