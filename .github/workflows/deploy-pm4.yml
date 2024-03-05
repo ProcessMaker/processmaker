@@ -150,7 +150,13 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Delete instance EKS
-        run: |           
+        run: |    
+          echo ${{env.IMAGE_TAG}}
+          deploy1=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          echo $deploy1
+          echo $IMAGE_TAG
+          deploy2=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
+          echo $deploy2    
           deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
           if kubectl get namespace/ci-$deploy-ns-pm4 ; then
             echo "Deleting Instace :: ci-$deploy"
