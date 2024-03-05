@@ -33,7 +33,7 @@ const PreviewMixin = {
       let param = "";
       if(task_id !== null){
         param="/" + task_id;
-        this.buttonFillPressed = true;
+        this.useThisDataButton = true;
       }
       this.stopFrame = false;
       this.taskTitle = info.element_name;
@@ -142,7 +142,7 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded() {
-      ProcessMaker.alert(successMessage, 'success');
+      const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
       this.stopFrame = false;
@@ -155,8 +155,8 @@ const PreviewMixin = {
       this.showFrame2 = true;
       this.showFrame1 = false;
       this.showFrame = 1;
-      const successMessage = this.$t('Task Filled successfully');
       if(this.useThisDataButton) {
+        ProcessMaker.alert(successMessage, 'success');
         this.useThisDataButton = false;
       }
     },

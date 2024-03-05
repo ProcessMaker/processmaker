@@ -160,9 +160,7 @@ export default {
   },
   methods: {
     buttonThisData() {
-      //const successMessage = this.$t('Task Filled successfully');
       this.showSideBar(this.task, this.data, true, this.selectedTaskId);
-      //ProcessMaker.alert(successMessage, 'success');
     },
   },
 };
