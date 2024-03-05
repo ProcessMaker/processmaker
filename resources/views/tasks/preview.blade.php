@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-{{-- @php
-dd(json_encode($dataTemplate));
-@endphp --}}
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -388,6 +385,10 @@ dd(json_encode($dataTemplate));
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+
+
+        
+    
     </script>
 
 

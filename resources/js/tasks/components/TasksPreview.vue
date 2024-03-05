@@ -153,25 +153,45 @@ export default {
       resizeOb.observe(this.$refs.inspectorSplitPanes.container);
     }
   },
+  mounted () {
+    window.parent.postMessage('hello world from TaskPreview', '*');
+
+    // Escucha los mensajes enviados desde el contenedor
+    window.addEventListener('message', (event) => {
+      // Verifica si el mensaje recibido es 'hello world from preview.blade.php'
+      if (event.data === 'hello world from preview.blade.php') {
+        alert('Mensaje recibido desde preview.blade.php: ' + event.data);
+      }
+    });
+  },
   methods: {
     fillWithQuickFillData(data) {
 
-      //old logic
+      //current logic
        this.showQuickFillPreview = false;
        this.isSelectedTask = true;
        this.selectedTaskId = data.taskDataSelectedId;
-       this.showSideBar(data.task, data.data.data, true, null);
+       this.showSideBar(data.task, data.data.data);
 
-      //New logic
-      // if(this.$refs.embedFrame1){
-      //   this.$refs.embedFrame1.contentWindow.postMessage(data.data);
+      //Tests to send data with postMessage
+      // const iframe = document.getElementById('tasksFrame1');
+      // console.log("iframe: ", iframe);
+      // if (iframe) {
+      //   console.log("gets iframe");
+      //   iframe.contentWindow.postMessage(data, '*');
+      // }
+
+
+      // if(this.$refs.embedFrame1.$el){
+      //   console.log("in embed 1");
+      //   this.$refs.embedFrame1.$el.postMessage(data.data);
       // }
       // if(this.$refs.embedFrame2) {
       //   this.$refs.embedFrame2.contentWindow.postMessage(data.data);
       // }
     },
     buttonThisData() {
-      this.showSideBar(this.task, this.data, true, this.selectedTaskId);
+      this.showSideBar(this.task, this.data, false, this.selectedTaskId);
     },
   },
 };
