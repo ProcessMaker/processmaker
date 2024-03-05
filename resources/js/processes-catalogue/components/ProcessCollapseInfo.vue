@@ -41,19 +41,11 @@
           <div class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
               <i
-                v-if="showBookmarkIcon"
                 :ref="`bookmark-${process.id}-marked`"
                 v-b-tooltip.hover.bottom
                 :title="$t(labelTooltip)"
-                class="fas fa-bookmark marked"
-                @click="checkBookmark(process)"
-              />
-              <i
-                v-else
-                :ref="`bookmark-${process.id}-unmarked`"
-                v-b-tooltip.hover.bottom
-                :title="$t(labelTooltip)"
-                class="fas fa-bookmark unmarked"
+                class="fas fa-bookmark"
+                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon  }"
                 @click="checkBookmark(process)"
               />
             </div>
@@ -186,7 +178,7 @@ export default {
       showEllipsis: false,
       labelTooltip: "",
       showBookmarkIcon: false,
-      auxBookmarkId: this.process.bookmark_id,
+      auxBookmarkId: this.process.bookmark_id ?? 0,
     };
   },
   mounted() {
