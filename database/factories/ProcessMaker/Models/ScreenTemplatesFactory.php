@@ -35,6 +35,7 @@ class ScreenTemplatesFactory extends Factory
             'screen_type' => 'FORM',
             // 'manifest' => json_encode($manifest),
             'manifest' => '{}',
+            'is_public' => false,
             'is_system' => false,
             'asset_type' => null,
             'version' => '1.0.0',

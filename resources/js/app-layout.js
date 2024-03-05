@@ -24,6 +24,7 @@ import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
+import Menu from "./components/Menu.vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -90,6 +91,7 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 window.ProcessMaker.navbar = new Vue({
   el: "#navbar",
   components: {
+    TopMenu: Menu,
     "b-navbar": BNavbar,
     requestModal,
     notifications,
@@ -108,6 +110,7 @@ window.ProcessMaker.navbar = new Vue({
   },
   data() {
     return {
+      screenBuilder: null,
       messages: ProcessMaker.notifications,
       alerts: this.loadLocalAlerts(),
       confirmTitle: "",
@@ -148,6 +151,12 @@ window.ProcessMaker.navbar = new Vue({
             document.querySelector("meta[name='alertVariant']").getAttribute("content"),
           );
         }
+        const findSB = setInterval(() => {
+          this.screenBuilder = window.ProcessMaker.ScreenBuilder;
+          if (this.screenBuilder) {
+            clearInterval(findSB);
+          }
+        }, 80);
       });
   },
   methods: {

@@ -46,7 +46,7 @@
                     </a>
                 </li>
             @endisset
-        @elseif (isset($myScreenTemplates) && isset($publicScreenTemplates))
+        @elseif (isset($listScreenTemplates))
             @if ($catConfig->permissions['view'])
                 <li class="nav-item">
                     <a class="nav-item nav-link" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
@@ -57,14 +57,21 @@
             @endif
             <li class="nav-item">
                 <a class="{{$secondTab}}" id="nav-myTemplates-tab" data-toggle="tab" href="#nav-myTemplates"
-                role="tab" onclick="loadMyTemplates()" aria-controls="nav-myTemplates" aria-selected="true">
+                role="tab" onclick="loadMyScreenTemplates()" aria-controls="nav-myTemplates" aria-selected="true">
                     {{ $tabs[2] ?? __('My Templates') }}
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-publicTemplates-tab" data-toggle="tab" href="#nav-publicTemplates"
-                role="tab" onclick="loadPublicTemplates()" aria-controls="nav-publicTemplates" aria-selected="true">
-                    {{ $tabs[3] ?? __('Public Templates') }}
+                <a
+                    class="nav-item nav-link"
+                    id="nav-publicTemplates-tab"
+                    data-toggle="tab"
+                    href="#nav-publicTemplates"
+                    role="tab"
+                    onclick="loadPublicScreenTemplates()"
+                    aria-controls="nav-publicTemplates"
+                    aria-selected="true">
+                        {{ $tabs[3] ?? __('Public Templates') }}
                 </a>
             </li>
         @else
@@ -138,7 +145,7 @@
                         </div>
                     </div>
                 @endisset
-            @elseif(isset($myScreenTemplates) && isset($publicScreenTemplates))
+            @elseif(isset($listScreenTemplates))
                 <div
                     class="{{$secondContent}}"
                     id="nav-categories"
@@ -197,5 +204,11 @@
         ProcessMaker.EventBus.$emit("api-data-process-templates");
       }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
+      loadMyScreenTemplates = function () {
+        ProcessMaker.EventBus.$emit("api-data-my-screen-templates");
+      };
+      loadPublicScreenTemplates = function () {
+        ProcessMaker.EventBus.$emit("api-data-public-screen-templates");
+      };
     </script>
 @append
