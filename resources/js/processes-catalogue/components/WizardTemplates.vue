@@ -21,6 +21,7 @@ export default {
     return {
       currentComponent: "template-select-card",
       templateData: {},
+      
     };
   },
   methods: {
