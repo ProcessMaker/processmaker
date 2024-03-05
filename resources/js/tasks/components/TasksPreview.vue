@@ -154,15 +154,15 @@ export default {
     }
   },
   mounted () {
-    window.parent.postMessage('hello world from TaskPreview', '*');
+    // window.parent.postMessage('hello world from TaskPreview', '*');
 
-    // Escucha los mensajes enviados desde el contenedor
-    window.addEventListener('message', (event) => {
-      // Verifica si el mensaje recibido es 'hello world from preview.blade.php'
-      if (event.data === 'hello world from preview.blade.php') {
-        alert('Mensaje recibido desde preview.blade.php: ' + event.data);
-      }
-    });
+    // // Escucha los mensajes enviados desde el contenedor
+    // window.addEventListener('message', (event) => {
+    //   // Verifica si el mensaje recibido es 'hello world from preview.blade.php'
+    //   if (event.data === 'hello world from preview.blade.php') {
+    //     alert('Mensaje recibido desde preview.blade.php: ' + event.data);
+    //   }
+    // });
   },
   methods: {
     fillWithQuickFillData(data) {
