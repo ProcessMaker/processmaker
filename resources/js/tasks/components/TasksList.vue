@@ -310,6 +310,9 @@ export default {
     },
   },
   watch: {
+    columns() {
+      this.setupColumns();
+    },
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {

@@ -18,6 +18,13 @@ const router = new VueRouter({
             name: "saved-search",
             path: "/saved-search",
             component: InboxRuleSavedSearch,
+            props(route) {
+                return {
+                    savedSearchId: parseInt(route.query.saved_search_id),
+                    processId: parseInt(route.query.process_id),
+                    elementId: route.query.element_id,
+                };
+            }
         },
         {
             name: "edit",

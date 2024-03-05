@@ -2,10 +2,8 @@
   <div class="d-flex justify-content-center">
     <b-card class="w-75">
 
-      columsn: {{columns}}
-
       <div class="mb-3">
-        <pmql-input ref="pmql_input" search-type="tasks" :value="'foo'" :url-pmql="'foo'" :filters-value="'foo'"
+        <pmql-input ref="pmql_input" search-type="tasks" :value="'foo'" v-model="pmql" :filters-value="'foo'"
           :ai-enabled="false" :show-filters="true" :aria-label="$t('Advanced Search (PMQL)')">
 
           <template v-slot:right-buttons>
@@ -16,15 +14,29 @@
         </pmql-input>
       </div>
 
-      <tasks-list ref="taskList" :filter="''" :pmql="pmql"></tasks-list>
+      <tasks-list
+        v-if="savedSearch"
+        ref="taskList"
+        :pmql="pmql"
+        :advanced-filter-prop="savedSearchAdvancedFilter"
+        :saved-search="savedSearch.id"
+        :columns="columns"
+        @submit=""
+      >
+      </tasks-list>
 
       <b-modal
         id="columns"
         :title="$t('Columns')"
         size="lg"
-        @ok="saveColumns"
+        @ok="applyColumns"
       >
-        <column-chooser-adapter ref="columnChooserAdapter" :pmql="pmql" />
+        <column-chooser-adapter
+          ref="columnChooserAdapter"
+          :pmql="pmql"
+          :columns="columns"
+          :default-columns="defaultColumns"
+      />
       </b-modal>
 
 
@@ -36,9 +48,25 @@
 import TasksList from "../../tasks/components/TasksList.vue";
 import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
 export default {
+  props: {
+    savedSearchId: {
+      type: Number,
+      required: true
+    },
+    processId: {
+      type: Number,
+      default: null
+    },
+    elementId: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
-      columns: []
+      savedSearch: null,
+      columns: [],
+      defaultColumns: [],
     }
   },
   components: {
@@ -46,17 +74,44 @@ export default {
     ColumnChooserAdapter,
   },
   methods: {
-    saveColumns() {
-      // this.columns = _.cloneDeep(this.$refs.columnChooserAdapter.currentColumns);
-
-      console.log(_.cloneDeep(this.$refs.columnChooserAdapter.currentColumns));
-
+    applyColumns() {
+      this.columns = this.$refs.columnChooserAdapter.currentColumns;
+    },
+    loadSavedSearch() {
+      window.ProcessMaker.apiClient
+        .get("saved-searches/" + this.savedSearchId)
+        .then(response => {
+          this.savedSearch = response.data;
+          this.columns = this.defaultColumns = response.data._adjusted_columns.filter(c => c.field !== 'is_priority');
+        });
     }
   },
   computed: {
     pmql() {
-      return 'process_id = 22 AND element_id = "node_2"';
+
+      const pmqls = [];
+
+      if (this.savedSearch?.key === 'tasks') {
+        // The default saved search does not have the user filter in the pmql
+        pmqls.push("(user_id = " + window.ProcessMaker.user.id + ")");
+      }
+
+      if (this.processId && this.elementId) {
+        pmqls.push('(process_id = ' + this.processId + ' AND element_id = "' + this.elementId + '")');
+      }
+
+      if (this.savedSearch?.pmql) {
+        pmqls.push(this.savedSearch.pmql);
+      }
+
+      return pmqls.join(' AND ');
     },
+    savedSearchAdvancedFilter() {
+      return this.savedSearch?.advanced_filter?.filter;
+    }
   },
+  mounted() {
+    this.loadSavedSearch();
+  }
 }
 </script>

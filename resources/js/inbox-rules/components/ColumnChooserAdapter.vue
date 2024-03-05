@@ -1,16 +1,15 @@
 <template>
-  <div class="tab-content">
-    <div class="tab-content-columns">
-      current columns: {{currentColumns}}
-      <column-chooser ref="columnChooser" v-model="currentColumns" :available-columns="availableColumns"
-        :default-columns="defaultColumns" :data-columns="dataColumns" @input="updated">
-      </column-chooser>
-    </div>
+  <div>
+    <column-chooser v-model="currentColumns" :available-columns="availableColumns"
+      :default-columns="defaultColumns" :data-columns="dataColumns">
+    </column-chooser>
   </div>
 </template>
 
 <script>
 import ColumnChooser from '../../components/shared/ColumnChooser.vue';
+import cloneDeep from "lodash/cloneDeep";
+
 export default {
   components: {
     ColumnChooser
@@ -24,48 +23,59 @@ export default {
       default() {
         return [];
       }
+    },
+    defaultColumns: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data() {
     return {
       availableColumns: [],
       dataColumns: [],
-      defaultColumns: [],
-      currentColumns: []
+      currentColumns: [],
     }
   },
-  methods: {
-    updated() {
-      console.log("Updated");
+  watch: {
+    columns() {
+      this.currentColumns = cloneDeep(this.columns);
     },
   },
   mounted() {
+    this.currentColumns = cloneDeep(this.columns);
+    this.test = cloneDeep(this.columns);
+
     let savedSearchIdRoute = '';
     if (this.savedSearchId) {
       savedSearchIdRoute = this.savedSearchId + '/';
     }
     window.ProcessMaker.apiClient
-      .get("saved-searches/" + savedSearchIdRoute + "columns", {
+      .get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
         params: {
           pmql: this.pmql
         }
       })
       .then(response => {
-        this.availableColumns = response.data.available;
+        this.availableColumns = response.data.available.filter(this.filterAvailable);
         this.dataColumns = response.data.data;
-        this.defaultColumns = response.data.default;
       });
+  },
+  methods: {
+    filterAvailable(column) {
+      return !this.currentColumns.find(c => c.field === column.field);
+    },
   }
 }
 </script>
 
 <style>
-.tab-content {
-  max-height: 500px;
-}
 .column-container {
-  max-height: 500px;
+  height: 500px;
 }
+
+/* Copied from Collections package */
 
 .bg-muted {
   background-color: #fafafa;

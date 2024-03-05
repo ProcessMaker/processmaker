@@ -200,6 +200,9 @@ export default {
                 });
         },
         resizeColumns() {
+          if(!document.querySelector('.tab-content')) {
+            return;
+          }
           this.resizeColumnTabPane();
           this.resizeColumnContainer();
         },
@@ -299,6 +302,8 @@ export default {
                     } else {
                         this.availableColumnsDirect = [];
                     }
+
+                    this.$emit('input', this.currentColumns);
                 }
             );
         },
