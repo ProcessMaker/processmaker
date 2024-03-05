@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-
+{{-- @php
+dd(json_encode($dataTemplate));
+@endphp --}}
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -99,6 +101,7 @@
                           :initial-task-id="{{ $task->id }}"
                           :initial-request-id="{{ $task->process_request_id }}"
                           :user-id="{{ Auth::user()->id }}"
+                          :quick-fill-selected-task="{{ json_encode($dataTemplate) }}"
                           csrf-token="{{ csrf_token() }}"
                           initial-loop-context="{{ $task->getLoopContext() }}"
                           @task-updated="taskUpdated"
@@ -373,11 +376,11 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;
+          window.ProcessMaker.isSelfService = this.isSelfService;          
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

@@ -153,19 +153,12 @@
             @mouseleave="hideTooltip"
             
           >
-          <!-- <span>
-            <b-button 
-              class="btn-this-data"
-              @click="$emit('selected', tooltipRowData)" 
-            >{{ $t(' USE THIS TASK DATA') }}
-            </b-button>
-          </span> -->
          <span>
             <i
-              v-if="!verifyURL('saved-searches')"
-              class="fa fa-eye py-2"
-              @click="$emit('selected', tooltipRowData)"
-            />
+               v-if="!verifyURL('saved-searches')"
+               class="fa fa-eye py-2"
+               @click="$emit('selected', tooltipRowData)"
+             />
           </span>
           </div>
         </template>
@@ -331,11 +324,13 @@ export default {
     this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration();
+    
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
+    
   },
   methods: {
     togglePriority(taskId, isPriority) {
@@ -476,7 +471,7 @@ export default {
       return link;
     },
     previewTasks(info) {
-      this.$refs.preview.showSideBar(info, this.data.data, true);
+      this.$refs.preview.showSideBar(info, this.data.data, true, null, null);
     },
     formatStatus(props) {
       let color;

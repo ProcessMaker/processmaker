@@ -40,6 +40,8 @@ export default {
 props: ['showQuickFillPreview', 'task', 'data'],
 data() {
     return {
+        taskData: {},
+        processID: 27,
         filter: [
             {
                 "subject": { "type": "Status" },
@@ -49,7 +51,7 @@ data() {
                 "_column_label": "Status"
             }
         ],
-        pmql: '(user_id = 1 and status="Completed")',
+        pmql: '(user_id = 1 and status="Completed" and process_id='+this.task.process_id+')',
         columns:[
         {
           label: "Case #",
@@ -89,8 +91,12 @@ data() {
     },
     selected(taskData) {
       let selTask= `/tasks/${taskData.id}/edit/preview`
-      this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data, selectedTask: selTask });
-      console.log("taskData: ", taskData);
+      this.$root.$emit("selectedTaskForQuickFill", { 
+        task: this.task, 
+        data: this.data, 
+        selectedTask: selTask, 
+        taskDataSelectedId: taskData.id 
+        });
       ;
     }
   }
