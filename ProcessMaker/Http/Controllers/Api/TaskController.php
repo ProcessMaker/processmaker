@@ -24,6 +24,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -102,7 +103,7 @@ class TaskController extends Controller
             $user = Auth::user();
         }
 
-        $query = ProcessRequestToken::with(['processRequest', 'user']);
+        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
         $query->select('process_request_tokens.*');
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
@@ -379,42 +380,7 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
-            $sendActivityActivatedNotifications = false;
-            $reassingAction = false;
-            if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
-                // Claim task
-                $task->is_self_service = 0;
-                $task->user_id = $userToAssign;
-                $task->persistUserData($userToAssign);
-                $sendActivityActivatedNotifications = true;
-            } elseif ($userToAssign === '#manager') {
-                // Reassign to manager
-                $task->authorizeAssigneeEscalateToManager();
-                $userToAssign = $task->escalateToManager();
-                $task->persistUserData($userToAssign);
-                $reassingAction = true;
-            } else {
-                // Validate if user can reassign
-                $task->authorizeReassignment(Auth::user());
-                // Reassign user
-                $task->reassignTo($userToAssign);
-                $task->persistUserData($userToAssign);
-                $reassingAction = true;
-            }
-            $task->save();
-
-            if ($sendActivityActivatedNotifications) {
-                $task->sendActivityActivatedNotifications();
-            }
-            // Register the Event
-            if ($reassingAction) {
-                ActivityReassignment::dispatch($task);
-            }
-
-            // Send a notification to the user
-            $notification = new TaskReassignmentNotification($task);
-            $task->user->notify($notification);
-            event(new ActivityAssigned($task));
+            $task->reassign($userToAssign, $request->user());
 
             return new Resource($task->refresh());
         } else {
@@ -481,5 +447,12 @@ class TaskController extends Controller
         $newTask = RollbackProcessRequest::rollback($task, $processDefinitions);
 
         return new Resource($newTask);
+    }
+
+    public function setPriority(Request $request, ProcessRequestToken $task)
+    {
+        $task->update(['is_priority' => $request->input('is_priority', false)]);
+
+        return new Resource($task->refresh());
     }
 }
