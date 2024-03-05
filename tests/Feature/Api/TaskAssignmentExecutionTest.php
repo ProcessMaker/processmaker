@@ -29,7 +29,7 @@ class TaskAssignmentExecutionTest extends TestCase
     protected $task;
 
     /**
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     protected $assigned;
 

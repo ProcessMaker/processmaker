@@ -52,7 +52,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     /**
      * Register in the database any Timer Start Event of a process
      *
-     * @param \ProcessMaker\Models\Process $process
+     * @param Process $process
      * @return void
      * @internal param string $script Path to the javascript to load
      */

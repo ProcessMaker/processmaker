@@ -14,7 +14,7 @@ class ProcessVersionPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -27,8 +27,8 @@ class ProcessVersionPolicy
     /**
      * Determine whether the user can cancel the process version.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     * @param  User  $user
+     * @param  ProcessVersion  $processVersion
      *
      * @return bool
      */
@@ -57,8 +57,8 @@ class ProcessVersionPolicy
     /**
      * Determine whether the user can edit data
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     * @param  User  $user
+     * @param  ProcessVersion  $processVersion
      *
      * @return bool
      */

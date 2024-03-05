@@ -31,14 +31,14 @@ abstract class Base
     /**
      * Set the user to run this script as
      *
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     private $user;
 
     /**
      * Set the script executor
      *
-     * @var \ProcessMaker\Models\User
+     * @var User
      */
     private $scriptExecutor;
 
@@ -54,10 +54,10 @@ abstract class Base
      * @param array $data
      * @param array $config
      * @param int $timeout
-     * @param \ProcessMaker\Models\User $user
+     * @param User $user
      *
      * @return array
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
     {

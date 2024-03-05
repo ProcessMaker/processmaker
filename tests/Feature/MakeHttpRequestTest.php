@@ -162,7 +162,7 @@ class MakeHttpRequestTest extends TestCase
 
         // Verify that the endpoint maps an attribute
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -174,7 +174,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => '', 'key' => 'allData', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"id" : "11", "name": "testName"}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);
@@ -186,7 +186,7 @@ class MakeHttpRequestTest extends TestCase
             ['value' => 'data.code', 'key' => 'responseCode', 'format' => 'dotNotation'],
         ];
         $stream = \GuzzleHttp\Psr7\Utils::streamFor('{"data": {"user": {"id" : "11", "name": "testName"}, "code":99}}');
-        $response = new \GuzzleHttp\Psr7\Response(200, ['Content-Type' => 'application/json'], $stream);
+        $response = new Response(200, ['Content-Type' => 'application/json'], $stream);
         $mapped = $this->callMethod($testStub,
             'responseWithHeaderData',
             [$response, $requestData, $endpointConfig]);

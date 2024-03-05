@@ -43,8 +43,7 @@ trait ProjectAssetTrait
             $projectIds = $input;
         } elseif (is_string($input)) {
             $projectIds = $input;
-        }
-        else {
+        } else {
             return [];
         }
 

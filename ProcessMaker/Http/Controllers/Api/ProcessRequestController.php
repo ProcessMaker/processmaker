@@ -240,12 +240,12 @@ class ProcessRequestController extends Controller
     /**
      * Retry the service, script, and other tasks for a given request
      *
-     * @param  \ProcessMaker\Models\ProcessRequest  $request
-     * @param  \Illuminate\Http\Request  $httpRequest
+     * @param  ProcessRequest  $request
+     * @param  Request  $httpRequest
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     * @throws \Illuminate\Validation\ValidationException
+     * @return JsonResponse
+     * @throws AuthorizationException
+     * @throws ValidationException
      */
     public function retry(ProcessRequest $request, Request $httpRequest): JsonResponse
     {
@@ -571,7 +571,7 @@ class ProcessRequestController extends Controller
      * Cancel all tokens of request.
      *
      * @param ProcessRequest $request
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
@@ -587,7 +587,7 @@ class ProcessRequestController extends Controller
      * Manually complete a request
      *
      * @param ProcessRequest $request
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function completeRequest(ProcessRequest $request)
     {

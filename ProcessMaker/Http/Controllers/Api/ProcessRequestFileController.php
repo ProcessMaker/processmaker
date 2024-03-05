@@ -85,7 +85,7 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        $media = \ProcessMaker\Models\Media::getFilesRequest($request);
+        $media = Media::getFilesRequest($request);
 
         //Retrieve input filter variables
         $name = $laravel_request->get('name');
@@ -123,7 +123,7 @@ class ProcessRequestFileController extends Controller
      * Display the specified resource.
      *
      * @param Media $file
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @OA\Get(
      *     path="/requests/{request_id}/files/{file_id}",
@@ -208,8 +208,8 @@ class ProcessRequestFileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      *
      * @OA\Post(
      *     path="/requests/{request_id}/files",
@@ -329,7 +329,7 @@ class ProcessRequestFileController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Media $file
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @internal param int $id
      *
@@ -365,7 +365,7 @@ class ProcessRequestFileController extends Controller
      */
     public function destroy(Request $laravel_request, ProcessRequest $request, $fileId)
     {
-        $file = \ProcessMaker\Models\Media::getFilesRequest($request)->find($fileId);
+        $file = Media::getFilesRequest($request)->find($fileId);
 
         if (!$file) {
             return abort(response(__('File ID does not exist'), 404));

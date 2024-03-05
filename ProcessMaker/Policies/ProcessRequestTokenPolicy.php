@@ -17,7 +17,7 @@ class ProcessRequestTokenPolicy
      * Run before all methods to determine if the
      * user is an admin and can do everything.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function before(User $user)
@@ -30,8 +30,8 @@ class ProcessRequestTokenPolicy
     /**
      * Determine whether the user can view the process request token.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
+     * @param  User  $user
+     * @param  ProcessRequestToken  $processRequestToken
      * @return mixed
      */
     public function view(User $user, ProcessRequestToken $processRequestToken)
@@ -49,8 +49,8 @@ class ProcessRequestTokenPolicy
     /**
      * Determine whether the user can update the process request token.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
+     * @param  User  $user
+     * @param  ProcessRequestToken  $processRequestToken
      * @return mixed
      */
     public function update(User $user, ProcessRequestToken $processRequestToken)
@@ -70,9 +70,9 @@ class ProcessRequestTokenPolicy
     /**
      * Determine if the user can view a screen associated with the task
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
-     * @param  \ProcessMaker\Models\Screen  $screen
+     * @param  User  $user
+     * @param  ProcessRequestToken  $processRequestToken
+     * @param  Screen  $screen
      * @return mixed
      */
     public function viewScreen(User $user, ProcessRequestToken $task, Screen $screen)
@@ -92,8 +92,8 @@ class ProcessRequestTokenPolicy
     /**
      * Determine if a user can rollback the process request.
      *
-     * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
+     * @param  User  $user
+     * @param  ProcessRequestToken  $processRequestToken
      *
      * @return bool
      */

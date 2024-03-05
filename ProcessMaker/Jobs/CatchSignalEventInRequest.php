@@ -27,7 +27,7 @@ class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param \ProcessMaker\Models\ProcessRequest $instance
+     * @param ProcessRequest $instance
      * @param array $data
      * @param string $signalRef
      */

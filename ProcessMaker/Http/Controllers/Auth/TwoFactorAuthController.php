@@ -223,6 +223,7 @@ class TwoFactorAuthController extends Controller
     {
         try {
             $user = Auth::user();
+
             return $user->in2FAGroupOrIndependent();
         } catch (Exception $e) {
             session()->put(self::TFA_ERROR, $e->getMessage());

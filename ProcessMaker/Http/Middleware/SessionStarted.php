@@ -16,7 +16,7 @@ class SessionStarted
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -48,11 +48,11 @@ class SessionStarted
      */
     private function userHasValidRememberMe($request)
     {
-        if (\Auth::user() === null) {
+        if (Auth::user() === null) {
             return false;
         }
 
-        $guard = \Auth::guard();
+        $guard = Auth::guard();
 
         // Remember me is validate only in user session guards
         if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
@@ -77,7 +77,7 @@ class SessionStarted
         }
 
         // Validate the cookie's remember me token with the one stored in the database
-        if (hash_equals(\Auth::user()->getRememberToken(), $token)) {
+        if (hash_equals(Auth::user()->getRememberToken(), $token)) {
             return true;
         }
 

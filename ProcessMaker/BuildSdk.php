@@ -58,7 +58,7 @@ class BuildSdk
     public function setUserId($userId)
     {
         if (!is_numeric($userId)) {
-            throw new \Exception('User id must be a number');
+            throw new Exception('User id must be a number');
         }
         $this->userId = $userId;
     }

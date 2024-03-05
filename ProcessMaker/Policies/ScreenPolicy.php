@@ -15,7 +15,7 @@ class ScreenPolicy
     /**
      * Determine whether the user can view the screen.
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      * @param  \ProcessMaker\Screen  $screen
      * @return mixed
      */

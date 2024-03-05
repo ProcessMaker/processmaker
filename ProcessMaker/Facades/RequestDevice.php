@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Models\RequestDevice as RequestDeviceModel;
 
 /**
- * @see \ProcessMaker\Models\RequestDevice
+ * @see RequestDeviceModel
  *
  * @method static string getVariableName()
  * @method static string getId()
