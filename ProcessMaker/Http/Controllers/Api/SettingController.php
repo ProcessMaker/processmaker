@@ -81,12 +81,12 @@ class SettingController extends Controller
     {
         $query = SettingsMenus::query();
 
-        $query->select('menu_group', 'menu_group_icon');
+        $query->select('menu_group', 'ui');
 
         $orderBy = 'menu_group';
         $orderDirection = 'ASC';
 
-        if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)) {
+        if ($request->has('order_by')) {
             $orderBy = $request->input('order_by');
         }
 
