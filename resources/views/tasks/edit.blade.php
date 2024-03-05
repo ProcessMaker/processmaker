@@ -64,7 +64,7 @@
                               @@error="error"
                               @closed="closed"
                               @redirect="redirectToTask"
-                              @form-data-changed="autoSave"
+                              @form-data-changed="handleAutosave()"
                           ></task>
                           @endcan
                           <div v-if="taskHasComments">
@@ -269,6 +269,8 @@
           userIsAdmin,
           userIsProcessManager,
           showTree: false,
+          is_loading: false,
+          autoSaveDelay: 5000,
         },
         watch: {
           task: {
@@ -460,8 +462,15 @@
           taskUpdated(task) {
             this.task = task;
           },
-          autoSave(formData) {
-            console.log("Hola", formData);
+          autosaveApiCall() {
+            return ProcessMaker.apiClient
+            .put("drafts/" + this.task.id, this.formData)
+            .then(() => {
+              this.is_loading = true;
+            })
+            .finally(() => {
+              this.is_loading = false;
+            });
           },
         },
         mounted() {

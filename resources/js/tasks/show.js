@@ -8,6 +8,7 @@ import NavbarTaskMobile from "./components/NavbarTaskMobile.vue";
 import AvatarImage from "../components/AvatarImage.vue";
 import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
+import autosaveMixins from "../modules/autosave/autosaveMixin";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -17,6 +18,8 @@ Vue.component("AvatarImage", AvatarImage);
 Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
+
+Vue.mixin(autosaveMixins);
 
 window.debounce = debounce;
 window.Vuex = Vuex;

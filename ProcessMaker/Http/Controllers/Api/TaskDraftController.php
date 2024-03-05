@@ -7,14 +7,16 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Models\ProcessRequestToken;
+use Illuminate\Support\Arr;
 
 class TaskDraftController extends Controller
 {
     public function update(Request $request, ProcessRequestToken $task)
     {
         $search = ['task_id' => $task->id];
-
-        $draft = TaskDraft::updateOrCreate($search, $request);
+        $filteredData = Arr::except($request->all(), ['_user', '_request']);
+        $draft = TaskDraft::updateOrCreate($search,['data' => $filteredData]);
 
         return new ApiResource($draft);
     }

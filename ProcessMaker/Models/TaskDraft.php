@@ -15,6 +15,11 @@ class TaskDraft extends ProcessMakerModel
         'created_at',
     ];
 
+    protected $fillable = [
+        'task_id',
+        'data',
+    ];
+
     protected $casts = [
         'data' => 'array',
     ];
