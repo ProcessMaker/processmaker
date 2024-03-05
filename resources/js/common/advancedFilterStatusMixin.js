@@ -18,6 +18,9 @@ export default {
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {
+        if (filter._hide_badge) {
+          continue;
+        }
         result.push([
           this.formatBadgeSubject(filter),
           [{name: filter.value, operator: filter.operator, advanced_filter: true}]
