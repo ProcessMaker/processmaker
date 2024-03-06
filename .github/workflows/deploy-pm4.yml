@@ -145,11 +145,19 @@ jobs:
     steps:
       - name: Delete instance EKS
         run: |           
-          deploy=$(echo -n $IMAGE_TAG | md5sum | head -c 10)
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           if kubectl get namespace/ci-$deploy-ns-pm4 ; then
             echo "Deleting Instace :: ci-$deploy"
             helm delete ci-$deploy
             kubectl delete namespace ci-$deploy-ns-pm4
+            #Drop database
+            deploy_db="\`pm4_ci-$deploy\`"
+            deploy_ai="\`pm4_ci-${deploy}_ai\`" 
+            mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_db" -h ${{ secrets.RDS_ENG }}
+            mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_ai" -h ${{ secrets.RDS_ENG }}
+            #Drop image Harbor        
+            curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "https://${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}"
+            echo "The instance [https://ci-$deploy.engk8s.processmaker.net] was deleted!!"
           else
             echo "The pull request does not have an instance on K8s [https://ci-$deploy.engk8s.processmaker.net] not found!!"
           fi
