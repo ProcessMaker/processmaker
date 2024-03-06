@@ -497,8 +497,8 @@ export default {
       }
       return link;
     },
-    previewTasks(info) {
-      this.$refs.preview.showSideBar(info, this.data.data, true, null);
+    previewTasks(info, size) {
+      this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
       let color;

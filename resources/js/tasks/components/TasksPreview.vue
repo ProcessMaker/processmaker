@@ -124,6 +124,11 @@ import "splitpanes/dist/splitpanes.css";
 export default {
   components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
+  mounted () {
+    window.addEventListener('message', (event) => {
+      this.data = event.data;
+    });
+  },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -146,7 +151,7 @@ export default {
           .contentWindow.postMessage(data, "*");
       }
     },
-  },
+  }
 };
 </script>
 

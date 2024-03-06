@@ -193,6 +193,12 @@
               }
             }
           },
+          formData: {
+            deep: true,
+            handler(formData) {
+              window.top.postMessage(this.formData, "*");
+            }
+          }
         },
         computed: {
           taskDefinitionConfig () {
@@ -377,7 +383,6 @@
         mounted() {
           this.prepareData();
           window.addEventListener('message', message => {
-            console.log("escuchando desde blade");
             this.formData = _.merge(this.formData, message.data);
           });
         }
