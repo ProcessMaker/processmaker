@@ -24,7 +24,15 @@
       </div>
       <div class="third-container">
         <div class="suggested-task">
-          <span>Suggested Task</span>
+          <img
+            src="../../../img/smartinbox-images/fill.svg"
+            :alt="$t('No Image')"
+          />
+          <div class="text-container">
+            <span class="main-text">Quick fill task with:</span>
+            <span class="sub-text">Credit requested by Matthew Harris for  $US 4.900  |  Process: Client Request  |  Task: Loan Cre...</span>
+          </div>
+          
         </div>
         <tasks-list
           ref="taskList"
@@ -154,11 +162,17 @@ export default {
   border: none;
 }
 .suggested-task {
-  border: 1px solid #f1e4ba;
+  display: flex;
+  align-items: center;
+  border: 1px solid #fef7e2;
   margin: 20px 0;
   padding: 10px 20px;
-  background-color: #fef7e2;
+  background-color: #f1e4ba;
   height: 64px;
+}
+
+.suggested-task img {
+  margin-right: 5px; 
 }
 
 .suggested-task span {
@@ -215,11 +229,35 @@ export default {
   color: #556271;
 }
 
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+}
+
+.main-text {
+  color: #556271;
+  font-size: 16px;
+}
+
+.sub-text {
+  color: #556271;
+  font-size: 14px;
+  margin-left: -30px;
+}
+
 .span-message {
   background-color: #f6f9fb;
   font-size: 16px;
   color: #556271;
   padding: 10px;
   margin-top: 5px;
+}
+
+img {
+  align-self: flex-start;
+  margin-right: 2px;
+  margin-top: 3px;
 }
 </style>
