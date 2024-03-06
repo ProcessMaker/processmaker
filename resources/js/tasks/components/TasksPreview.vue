@@ -117,9 +117,14 @@ export default {
     }
   },
   mounted() {
-    this.formDataListener();
+    window.addEventListener("message", (event) => {
+      this.data = event.data;
+    });
   },
   methods: {
+    fillWithQuickFillData(data) {
+      document.getElementById("tasksFrame1").contentWindow.postMessage(data, "*");
+    },
   },
 };
 </script>
