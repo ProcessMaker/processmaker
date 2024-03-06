@@ -330,6 +330,7 @@ export default {
           record["task_name"] = this.formatActiveTask(record);
         }
       }
+      this.$emit('count', newData.meta?.count);
     },
   },
   mounted: function mounted() {

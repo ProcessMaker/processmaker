@@ -1,16 +1,20 @@
 <template>
   <div class="pm-inbox-rule d-flex">
 
-    <div class="pl-3">
-      <h4>{{$t('Self Service')}}</h4>
-      <PMSearchBar>
-      </PMSearchBar>
-      <PMTable>
-      </PMTable>
+    <div class="pl-3 filters">
+      <InboxRuleFilters
+        :saved-search-id="savedSearchId"
+        :process-id="processId"
+        :element-id="elementId"
+        @count="count = $event"
+      >
+      </InboxRuleFilters>
     </div>
 
-    <div class="pl-3">
-      <NewInboxRule>
+    <div class="pl-3 pr-3 actions">
+      <NewInboxRule
+        :count="count"
+      >
       </NewInboxRule>
     </div>
 
@@ -19,18 +23,29 @@
 
 <script>
   import NewInboxRule from "./NewInboxRule.vue";
-  import PMTable from "../../components/PMTable.vue";
-  import PMSearchBar from "../../components/PMSearchBar.vue";
+  import InboxRuleFilters from "./InboxRuleFilters.vue";
   export default {
     components: {
       NewInboxRule,
-      PMSearchBar,
-      PMTable
+      InboxRuleFilters
     },
     props: {
+      savedSearchId: {
+        type: Number,
+        default: null,
+      },
+      processId: {
+        type: Number,
+        default: null,
+      },
+      elementId: {
+        type: String,
+        default: null,
+      }
     },
     data() {
       return {
+        count: 0,
       };
     },
     mounted() {
@@ -39,3 +54,14 @@
     }
   };
 </script>
+
+<style scoped>
+.filters {
+  flex-grow: 1;
+  width: 50%;
+}
+
+.actions {
+  width: 400px;
+}
+</style>

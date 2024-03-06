@@ -1,6 +1,9 @@
 <template>
-  <div class="d-flex justify-content-center">
-    <b-card class="w-75">
+  <div>
+    <b-card v-if="!savedSearchId && (!processId || !elementId)">
+      <p>No saved search or task parameters provided</p>
+    </b-card>
+    <b-card v-else>
       <div class="mb-3">
         <pmql-input ref="pmql_input"
           :value="pmql"
@@ -29,6 +32,7 @@
         :saved-search="savedSearch?.id"
         :columns="columns"
         @submit=""
+        @count="$emit('count', $event)"
       >
       </tasks-list>
 
@@ -63,7 +67,7 @@ export default {
   props: {
     savedSearchId: {
       type: Number,
-      required: true
+      default: null
     },
     processId: {
       type: Number,

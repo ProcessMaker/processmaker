@@ -25,7 +25,7 @@
                              name="ruleBehavior"
                              stacked >
         <b-form-checkbox value="true">
-          {{ $t('Apply to current inbox matching tasks (8)') }}
+          {{ $t('Apply to current inbox matching tasks') }} ({{ count }})
         </b-form-checkbox>
         <b-form-checkbox value="true">
           {{ $t('Apply to Future tasks') }}
@@ -69,6 +69,10 @@
       PMDatetimePicker
     },
     props: {
+      count: {
+        type: Number,
+        default: 0
+      }
     },
     data() {
       return {

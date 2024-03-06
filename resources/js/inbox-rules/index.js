@@ -30,6 +30,13 @@ const router = new VueRouter({
             name: "edit",
             path: "/:id",
             component: Edit,
+            props(route) {
+                return {
+                    savedSearchId: parseInt(route.query.saved_search_id) || null,
+                    processId: parseInt(route.query.process_id) || null,
+                    elementId: route.query.element_id || null,
+                };
+            }
         },
     ],
 });
