@@ -13,10 +13,16 @@ const app = new Vue({
     pmql: "",
     urlPmql: "",
   },
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.urlPmql = urlParams.get("pmql");
+  },
   methods: {
     onNLQConversion(query) {
       this.onChange(query);
-      this.reload();
+      this.$nextTick(() => {
+        this.reload();
+      });
     },
     onChange(query) {
       this.pmql = query;

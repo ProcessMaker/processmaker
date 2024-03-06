@@ -118,43 +118,72 @@
           </td>
         </template>
       </filter-table>
-      <task-tooltip
+      <div v-if="isTooltipVisible && !disableTooltip">
+        <task-tooltip
+          :position="rowPosition"
+        >
+          <template v-slot:task-tooltip-body>
+            <div
+              @mouseover="clearHideTimer"
+              @mouseleave="hideTooltip"
+            >
+            <span>
+              <i
+                v-if="!verifyURL('saved-searches')"
+                class="fa fa-eye py-2"
+                @click="previewTasks(tooltipRowData)"
+              />
+            </span>
+            <ellipsis-menu
+              :actions="actions"
+              :data="tooltipRowData"
+              :divider="false"
+            />
+            </div>
+          </template>
+      </task-tooltip>
+      </div>
+      <div v-if="isTooltipVisible && disableQuickFillTooltip">
+        <task-quick-fill-tooltip
         :position="rowPosition"
-        v-show="isTooltipVisible"
       >
-        <template v-slot:task-tooltip-body>
-          <div
+        <template v-slot:task-quickfill-tooltip-body>
+          <div style="display: flex;"
             @mouseover="clearHideTimer"
             @mouseleave="hideTooltip"
+            
           >
-          <span>
+          <!-- <span>
+            <b-button 
+              class="btn-this-data"
+              @click="$emit('selected', tooltipRowData)" 
+            >{{ $t(' USE THIS TASK DATA') }}
+            </b-button>
+          </span> -->
+         <span>
             <i
               v-if="!verifyURL('saved-searches')"
               class="fa fa-eye py-2"
-              @click="previewTasks(tooltipRowData)"
+              @click="$emit('selected', tooltipRowData)"
             />
           </span>
-          <ellipsis-menu
-            :actions="actions"
-            :data="tooltipRowData"
-            :divider="false"
-          />
           </div>
         </template>
-      </task-tooltip>
+      </task-quick-fill-tooltip>
+      </div>
       <data-loading
         v-show="shouldShowLoader"
-        :for="/tasks\?page|results\?page/"
         :empty="$t('All clear')"
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
+        :data-loading-id="dataLoadingId"
       />
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
       />
     </div>
-    <tasks-preview
+ <tasks-preview
       v-if="!verifyURL('saved-searches')"
       ref="preview"
     />
@@ -177,10 +206,11 @@ import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColu
 import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
+import TaskQuickFillTooltip from "./TaskQuickFillTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
-import { get } from "lodash";
+import { get, cloneDeep } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -193,6 +223,7 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     TaskTooltip,
+    TaskQuickFillTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
   },
@@ -204,11 +235,20 @@ export default {
     FilterTableBodyMixin],
   props: {
     filter: {},
-    columns: {},
+    columns: [],
     pmql: {},
+    disableTooltip: {
+      default: false
+    },
+    disableQuickFillTooltip: {
+      default: false
+    },
     savedSearch: {
       default: false,
     },
+    clone: {
+      default: false,
+    }
   },
   data() {
     return {
@@ -270,6 +310,12 @@ export default {
     },
   },
   watch: {
+    columns: {
+      deep: true,
+      handler() {
+        this.setupColumns();
+      }
+    },
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
@@ -334,8 +380,8 @@ export default {
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
-      if (this.$props.columns) {
-        return this.$props.columns;
+      if (this.columns && this.columns.length > 0) {
+        return this.columns;
       }
       // from query string status=CLOSED
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");
@@ -512,7 +558,7 @@ export default {
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
-
+      
       const tableContainer = document.getElementById("table-container");
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
@@ -615,6 +661,11 @@ export default {
   color: rgba(86, 104, 119, 1);
   font-weight: 600;
   border-radius: 5px;
+}
+.btn-this-data {
+  background-color: #1572C2;
+  width: 197px;
+  height: 40px;
 }
 </style>
 <style lang="scss" scoped>

@@ -19,6 +19,8 @@ const PreviewMixin = {
       showFrame2: false,
       isLoading: "",
       stopFrame: false,
+      showQuickFillPreview: false,
+      isSelectedTask: false,
     };
   },
   methods: {
@@ -43,6 +45,15 @@ const PreviewMixin = {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+    },
+    showButton() {
+      this.isMouseOver = true;
+    },
+    hideButton() {
+      this.isMouseOver = false;
+    },
+    goQuickFill() {
+      this.showQuickFillPreview = true;
     },
     onClose() {
       this.showPreview = false;
