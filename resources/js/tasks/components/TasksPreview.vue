@@ -25,6 +25,7 @@
           <div>
             <div class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
+                <task-save-notification></task-save-notification>
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
                 </a>
@@ -99,11 +100,13 @@
 import { Splitpanes, Pane } from "splitpanes";
 import TaskLoading from "./TaskLoading.vue";
 import PreviewMixin from "./PreviewMixin";
+import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
+import TaskSaveNotification from "./TaskSaveNotification.vue";
 import "splitpanes/dist/splitpanes.css";
 
 export default {
-  components: { Splitpanes, Pane, TaskLoading },
-  mixins: [PreviewMixin],
+  components: { Splitpanes, Pane, TaskLoading, TaskSaveNotification },
+  mixins: [PreviewMixin, autosaveMixins],
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -112,6 +115,9 @@ export default {
     if (this.$refs.inspectorSplitPanes) {
       resizeOb.observe(this.$refs.inspectorSplitPanes.container);
     }
+  },
+  mounted() {
+    this.formDataListener();
   },
   methods: {
   },
