@@ -21,9 +21,8 @@
           ref="tasks-preview"
           class="h-100 p-3"
         >
-        <template v-if="!showQuickFillPreview">
-          <div>
-            <div v-if="!isSelectedTask" class="d-flex w-100 h-100 mb-3">
+          <div v-show="!showQuickFillPreview">
+            <div class="d-flex w-100 h-100 mb-3">
               <div class="my-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
@@ -74,30 +73,10 @@
                 </b-button>
               </div>
             </div>
-            <div v-else>
-              <div class="d-flex w-100 h-100 mb-3" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="my-1">
-                  <b-button
-                    variant="secondary"
-                    @click="goQuickFill()"
-                  >
-                    <i class="fas fa-arrow-left"></i>
-                  </b-button>
-                  <a class="lead text-secondary font-weight-bold">
-                    {{ task.data._request.case_title }}
-                  </a>
-                </div>
-                <b-button 
-                  class="btn-this-data"
-                  @click="buttonThisData()"
-                >{{ $t('USE THIS TASK DATA') }}
-                </b-button>
-                </div>
-            </div>
             <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
-                ref="embedFrame1"
+                ref="tasksFrame1"
                 id="tasksFrame1"
                 width="100%"
                 :class="showFrame2 ? 'loadingFrame' : ''"
@@ -106,7 +85,7 @@
               />
               <b-embed
                 v-if="showFrame2"
-                ref="embedFrame2"
+                ref="tasksFrame2"
                 id="tasksFrame2"
                 width="100%"
                 :class="showFrame1 ? 'loadingFrame' : ''"
@@ -120,13 +99,13 @@
               />
             </div>
           </div>
-        </template>
         <quick-fill-preview 
           v-if="showQuickFillPreview" 
-          :showQuickFillPreview="showQuickFillPreview"
+          class="quick-fill-preview"
           :task="task"
           :data="data"
           @quick-fill-data="fillWithQuickFillData"
+          @close="showQuickFillPreview = false"
         ></quick-fill-preview>
         </div>
       </pane>
@@ -166,12 +145,13 @@ export default {
   },
   methods: {
     fillWithQuickFillData(data) {
+      document.getElementById("tasksFrame1").contentWindow.postMessage(data, "*");
 
       //current logic
-       this.showQuickFillPreview = false;
-       this.isSelectedTask = true;
-       this.selectedTaskId = data.taskDataSelectedId;
-       this.showSideBar(data.task, data.data.data);
+      //  this.showQuickFillPreview = false;
+      //  this.isSelectedTask = true;
+      //  this.selectedTaskId = data.taskDataSelectedId;
+      //  this.showSideBar(data.task, data.data.data);
 
       //Tests to send data with postMessage
       // const iframe = document.getElementById('tasksFrame1');
@@ -189,9 +169,6 @@ export default {
       // if(this.$refs.embedFrame2) {
       //   this.$refs.embedFrame2.contentWindow.postMessage(data.data);
       // }
-    },
-    buttonThisData() {
-      this.showSideBar(this.task, this.data, false, this.selectedTaskId);
     },
   },
 };

@@ -1,10 +1,10 @@
 <template>
-    <div v-show="showQuickFillPreview">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center;" class="h-100">
             <span style="flex-grow: 1;">{{ $t('Quick Fill') }}</span>
             <b-button 
                 class="btn-cancel"
-                @click="cancelQuickFill()"
+                @click="$emit('close')"
             >{{ $t('CANCEL') }}
             </b-button>
         </div>
@@ -30,14 +30,22 @@
             @selected="selected"
             :pmql="pmql"
             :advanced-filter-prop="filter"
-        ></tasks-list>
+        >
+        <template v-slot:tooltip="{ tooltipRowData }">
+          <b-button 
+            class="btn-this-data"
+            @click="buttonThisData(tooltipRowData)"
+          >{{ $t('Use This Task Data') }}
+          </b-button>
+        </template>
+      </tasks-list>
         </div>
     </div>
     </div>
 </template>
 <script>
 export default {
-props: ['showQuickFillPreview', 'task', 'data'],
+props: ['task', 'data'],
 data() {
     return {
         taskData: {},
@@ -86,19 +94,21 @@ data() {
     }
   },
   methods: {
-    cancelQuickFill() {
-      //here logic for cancel buton
-    },
     selected(taskData) {
-      let selTask= `/tasks/${taskData.id}/edit/preview`
-      this.$emit("quick-fill-data", { 
-        task: this.task, 
-        data: this.data, 
-        selectedTask: selTask, 
-        taskDataSelectedId: taskData.id 
-        });
-      ;
-    }
+      // console.log("HERE");
+      // let selTask= `/tasks/${taskData.id}/edit/preview`
+      // this.$emit("quick-fill-data", { 
+      //   task: this.task, 
+      //   data: this.data, 
+      //   selectedTask: selTask, 
+      //   taskDataSelectedId: taskData.id 
+      //   });
+      // ;
+    },
+    buttonThisData(tooltipRowData) {
+      this.$emit("quick-fill-data", tooltipRowData.data);
+      this.$emit("close");
+    },
   }
 }
 </script>

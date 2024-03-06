@@ -146,48 +146,32 @@
           </td>
         </template>
       </filter-table>
-      <div v-if="isTooltipVisible && !disableTooltip">
-        <task-tooltip :position="rowPosition">
-          <template v-slot:task-tooltip-body>
-            <div
-              @mouseover="clearHideTimer"
-              @mouseleave="hideTooltip"
-            >
-              <span>
-                <i
-                  v-if="!verifyURL('saved-searches')"
-                  class="fa fa-eye py-2"
-                  @click="previewTasks(tooltipRowData)"
-                />
-              </span>
-              <ellipsis-menu
-                :actions="actions"
-                :data="tooltipRowData"
-                :divider="false"
+      <task-tooltip
+        :position="rowPosition"
+        v-show="isTooltipVisible"
+      >
+        <template v-slot:task-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData">
+            <span>
+              <i
+                v-if="!verifyURL('saved-searches')"
+                class="fa fa-eye py-2"
+                @click="previewTasks(tooltipRowData)"
               />
-            </div>
-          </template>
-        </task-tooltip>
-      </div>
-      <div v-if="isTooltipVisible && disableQuickFillTooltip">
-        <task-quick-fill-tooltip :position="rowPosition">
-          <template v-slot:task-quickfill-tooltip-body>
-            <div
-              style="display: flex"
-              @mouseover="clearHideTimer"
-              @mouseleave="hideTooltip"
-            >
-              <span>
-                <i
-                  v-if="!verifyURL('saved-searches')"
-                  class="fa fa-eye py-2"
-                  @click="$emit('selected', tooltipRowData)"
-                />
-              </span>
-            </div>
-          </template>
-        </task-quick-fill-tooltip>
-      </div>
+            </span>
+            <ellipsis-menu
+              :actions="actions"
+              :data="tooltipRowData"
+              :divider="false"
+            />
+          </slot>
+          </div>
+        </template>
+      </task-tooltip>
       <data-loading
         v-show="shouldShowLoader"
         :empty="$t('All clear')"
@@ -223,7 +207,6 @@ import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColu
 import PMColumnFilterPopoverCommonMixin from "../../common/PMColumnFilterPopoverCommonMixin.js";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import TaskTooltip from "./TaskTooltip.vue";
-import TaskQuickFillTooltip from "./TaskQuickFillTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
@@ -240,7 +223,6 @@ export default {
     PMColumnFilterPopover,
     paginationTable,
     TaskTooltip,
-    TaskQuickFillTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
   },

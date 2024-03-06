@@ -95,9 +95,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
-        ->name('process.browser.index')
-        ->middleware('can:view-process-catalog');
+    Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
+       ->name('process.browser.index')
+       ->middleware('can:view-process-catalog');
     //------------------------------------------------------------------------------------------
     // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
     //------------------------------------------------------------------------------------------
@@ -153,7 +153,6 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
-    Route::get('tasks/{task}/edit/{preview}/{task_id}', [TaskController::class, 'edit'])->name('tasks.preview');
 
     Route::get('tasks/rules/{path?}', [InboxRulesController::class, 'index'])->name('inbox-rules.index')->where('path', '.*');
 

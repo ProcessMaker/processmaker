@@ -377,11 +377,9 @@
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;       
-          window.onmessage = function(e) {
-            console.log('Iframe data received');
-              this.formData = e.data;
-          };
+          window.addEventListener('message', message => {
+            this.formData = _.merge(this.formData, message.data);
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
