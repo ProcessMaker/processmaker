@@ -170,6 +170,7 @@ export default {
   mounted() {
     this.getNonce();
     this.fetchHistory();
+    this.subscribeToTranslationEvent();
     window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification((response) => {
       if (response.processId === this.processId) {
         this.fetchPending();
@@ -179,6 +180,20 @@ export default {
   },
 
   methods: {
+    subscribeToTranslationEvent() {
+      const channel = `ProcessMaker.Models.User.${window.ProcessMaker?.user?.id}`;
+      const translationEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateTranslationProgressEvent";
+      if (!window.Echo) {
+        return;
+      }
+      window.Echo.private(channel).listen(
+        translationEvent,
+        (response) => {
+          this.fetchPending();
+          this.fetch();
+        },
+      );
+    },
     getNonce() {
       const max = 999999999999999;
       const nonce = Math.floor(Math.random() * max);
