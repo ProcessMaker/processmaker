@@ -24,7 +24,7 @@
     </template>
     <template slot="option" slot-scope="props">
       <div class="type-container">
-        <i class="type-icon pr-3" :class="props.option.icon" />
+        <i class="type-icon p-3" :class="props.option.icon" />
         <span class="type-desc">
           <span class="type-title-option">{{ props.option.type }}</span>
           <span class="type-desc-option">{{ props.option.description }}</span>
@@ -95,10 +95,6 @@ export default {
   .type-desc {
     display: flex;
     flex-direction: column;
-  }
-
-  .type-title-placeholder {
-    font-size: 16px;
   }
 
   .type-title-option {
