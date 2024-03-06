@@ -1,6 +1,5 @@
 <template>
   <div>
-    <buttons-start :process="process" />
     <process-counter :process="process" />
     <b-button v-if="createdFromWizardTemplate" class="mt-2 wizard-link" variant="link" @click="getHelperProcess">
       <img src="../../../img/wizard-icon.svg" :alt="$t('Guided Template Icon')" />
@@ -19,13 +18,12 @@
 </template>
 
 <script>
-import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 import ChartSaveSearch from "./optionsMenu/ChartSaveSearch.vue";
 import WizardHelperProcessModal from '../../components/templates/WizardHelperProcessModal.vue';
 
 export default {
-  components: { ButtonsStart, ProcessCounter, ChartSaveSearch, WizardHelperProcessModal },
+  components: { ProcessCounter, ChartSaveSearch, WizardHelperProcessModal },
   props: ["process"],
   computed: {
     createdFromWizardTemplate() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3">
+  <div class="tab-style">
     <b-tabs
       id="tabs-custom"
       pills
@@ -45,6 +45,10 @@ export default {
 };
 </script>
 <style>
+.tab-style {
+  background-color: white;
+  padding-top: 32px;
+}
 .nav-pills .nav-link.active {
   background-color: white;
   color: #6a7888;

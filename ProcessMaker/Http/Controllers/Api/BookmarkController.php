@@ -44,10 +44,11 @@ class BookmarkController extends Controller
     {
         $bookmark = new Bookmark();
         try {
-            $bookmark->updateOrCreate([
+            $newBookmark = $bookmark->updateOrCreate([
                 'process_id' => $process->id,
                 'user_id' => Auth::user()->id,
             ]);
+            $bookmark->newId = $newBookmark->id;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
