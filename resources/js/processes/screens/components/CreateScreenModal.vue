@@ -14,6 +14,7 @@
       :ok-disabled="disabled"
       :title="modalSetUp"
       :subtitle="subtitle"
+      :hide-footer="true"
       size="xl"
       @hidden="onClose"
       @ok.prevent="onSubmit"
@@ -76,6 +77,14 @@
               api-get="projects"
               api-list="projects"
             />
+            <div class="footer-btns w-100 m-0 d-flex">
+              <button type="button" class="btn btn-outline-secondary ml-auto" @click="close">
+                {{ $t('Cancel') }}
+              </button>
+              <a class="btn btn-secondary ml-3" @click="onSubmit">
+                {{ $t('Save') }}
+              </a>
+            </div>
           </template>
           <template v-else>
             <div>{{ $t("Categories are required to create a screen") }}</div>
@@ -195,6 +204,7 @@ export default {
     close() {
       this.$bvModal.hide("createScreen");
       this.disabled = false;
+      this.onClose();
       this.$emit("reload");
     },
     onSubmit() {
@@ -246,6 +256,10 @@ export default {
 <style scoped>
 .type-style-col {
   background-color: #F6F9FB;
+}
+
+.footer-btns {
+  padding-top: 100px;
 }
 
 </style>
