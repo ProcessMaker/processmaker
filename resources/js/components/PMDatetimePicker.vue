@@ -1,54 +1,97 @@
 <template>
-  <div class="pm-column-filter-op-datetime">
+  <b-input-group class="pm-datetime-picker">
+
     <b-form-input v-model="input"
                   type="text"
-                  placeholder="YYYY-MM-DD"
                   autocomplete="off"
                   readonly
-                  size="sm">
+                  :placeholder="placeholder"
+                  :size="size"
+                  class="pm-datetime-picker-input">
     </b-form-input>
-    <b-form-datepicker v-model="selectedDate"
-                       button-only
-                       right
-                       size="sm"
-                       label-help=""
-                       boundary="window"
-                       :hide-header="true"
-                       button-variant="outline-secondary"
-                       class="pm-column-filter-op-button">
-      <template v-slot:button-content>
-        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0.375 6H13.625C13.8313 6 14 6.16875 14 6.375V14.5C14 15.3281 13.3281 16 12.5 16H1.5C0.671875 16 0 15.3281 0 14.5V6.375C0 6.16875 0.16875 6 0.375 6ZM14 4.625V3.5C14 2.67188 13.3281 2 12.5 2H11V0.375C11 0.16875 10.8313 0 10.625 0H9.375C9.16875 0 9 0.16875 9 0.375V2H5V0.375C5 0.16875 4.83125 0 4.625 0H3.375C3.16875 0 3 0.16875 3 0.375V2H1.5C0.671875 2 0 2.67188 0 3.5V4.625C0 4.83125 0.16875 5 0.375 5H13.625C13.8313 5 14 4.83125 14 4.625Z" fill="#6A7888"/>
-        </svg>
-      </template>
-    </b-form-datepicker>
-    <b-form-timepicker v-model="selectedTime"
-                       button-only
-                       show-seconds
-                       right
-                       size="sm"
-                       boundary="window"
-                       button-variant="outline-secondary"
-                       class="pm-column-filter-op-button">
-    </b-form-timepicker>
-  </div>
+
+    <b-input-group-append>
+      <b-form-datepicker v-model="selectedDate"
+                         button-only
+                         right
+                         :size="size"
+                         boundary="window"
+                         button-variant="light"
+                         class="pm-datetime-picker-button-datetime"
+                         :class="{'pm-datetime-picker-button-border-right': !withTime}"
+                         label-help=""
+                         :hide-header="true"
+                         @shown="onShow"
+                         @context="onContext">
+        <template v-slot:button-content
+                  v-if="$slots['button-content-datepicker']">
+          <slot name="button-content-datepicker"></slot>
+        </template>
+      </b-form-datepicker>
+    </b-input-group-append>
+
+    <b-input-group-append v-if="withTime">
+      <b-form-timepicker v-model="selectedTime"
+                         button-only
+                         right
+                         :size="size"
+                         boundary="window"
+                         button-variant="light"
+                         class="pm-datetime-picker-button-datetime"
+                         :class="{'pm-datetime-picker-button-border-right': withTime}"
+                         show-seconds
+                         @shown="onShow"
+                         @context="onContext">
+        <template v-slot:button-content
+                  v-if="$slots['button-content-timepicker']">
+          <slot name="button-content-timepicker"></slot>
+        </template>
+      </b-form-timepicker>
+    </b-input-group-append>
+
+  </b-input-group>
 </template>
 
 <script>
   export default {
-    props: [
-      "value"
-    ],
+    props: {
+      value: {
+        type: null,
+        default: ""
+      },
+      placeholder: {
+        type: null,
+        default: "YYYY-MM-DD"
+      },
+      size: {
+        type: null,
+        default: ""
+      },
+      withTime: {
+        type: null,
+        default: true
+      },
+      currentDatetime: {
+        type: null,
+        default: true
+      },
+      format: {
+        type: null,
+        default: "YYYY-MM-DD HH:mm:ss"
+      }
+    },
     data() {
       return {
         input: "",
         selectedDate: "",
-        selectedTime: ""
+        selectedTime: "",
+        onMounted: true
       };
     },
     watch: {
       value: {
         handler(newValue) {
+          console.log("value", newValue);
           this.input = this.convertFromISOString(newValue);
         },
         immediate: true
@@ -56,84 +99,97 @@
       input() {
         this.emitInput();
       },
-      selectedDate() {
+      selectedDate(a, b) {
+        console.log("selectedDate", a, b, this.onMounted);
+        if (this.onMounted) {
+          return;
+        }
         this.setInput();
       },
-      selectedTime() {
+      selectedTime(a, b) {
+        console.log("selectedTime", a, b, this.onMounted);
+        if (this.onMounted) {
+          return;
+        }
         this.setInput();
       }
     },
     mounted() {
-      this.selectedDate = this.getCurrentDate(this.input);
-      this.selectedTime = this.getCurrentTime(this.input);
+      console.log("mounted");
+      this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
+      this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
     },
     methods: {
       emitInput() {
         this.$emit("input", this.convertToISOString(this.input));
       },
+      onShow() {
+        console.log("onShow");
+        this.onMounted = false;
+      },
+      onContext() {
+        console.log("onContext");
+      },
       setInput() {
-        this.input = this.selectedDate + " " + this.selectedTime;
+        let datetime = this.selectedDate + " " + this.selectedTime;
+        this.input = moment(datetime).format(this.format);
+      },
+      getValueFromFormat(string, format, defaultValue) {
+        let timezone = moment.tz.guess();
+        if (this.isDatetime(string)) {
+          return moment(string).tz(timezone).format(format);
+        } else {
+          if (defaultValue !== undefined) {
+            return defaultValue;
+          }
+          return moment().tz(timezone).format(format);
+        }
       },
 
-      convertToISOString(dateString) {
-        let inUTCTimeZone = "";
-        if (dateString) {
-          inUTCTimeZone = moment(dateString).tz('UTC').toISOString();
-        }
-        return inUTCTimeZone;
-      },
       convertFromISOString(dateString) {
-        let inLocalTimeZone = dateString;
-        if (dateString) {
-          inLocalTimeZone = moment(dateString).tz(window.ProcessMaker.user.timezone).format("YYYY-MM-DD HH:mm:ss");
+        if (!this.isDatetime(dateString)) {
+          return dateString;
         }
-        return inLocalTimeZone;
+        return moment(dateString).tz(window.ProcessMaker.user.timezone).format(this.format);
       },
-
-      getCurrentDate(newValue) {
-        if (this.isDatetime(newValue)) {
-          let s = newValue.trim().split(" ");
-          return s[0];
-        } else {
-          return this.currentDate();
+      convertToISOString(dateString) {
+        if (!this.isDatetime(dateString)) {
+          return dateString;
         }
-      },
-      getCurrentTime(newValue) {
-        if (this.isDatetime(newValue)) {
-          let s = newValue.trim().split(" ");
-          return s.length > 1 ? s[1] : "00:00:00";
-        } else {
-          return "00:00:00";
-        }
+        return moment(dateString).tz("UTC").toISOString();
       },
 
       isDatetime(string) {
-        const date = new Date(string);
-        return !isNaN(date.getTime()) && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(string);
-      },
-      currentDate() {
-        let date = new Date();
-        return date.toISOString().split("T")[0];
+        if (!string) {
+          return false;
+        }
+        let date = new Date(string);
+        return !isNaN(date) && isFinite(date);
       }
     }
   };
 </script>
 
 <style>
-  .pm-column-filter-op-button > button{
-    border-color: #ced4da;
+  .pm-datetime-picker-button-datetime > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #b6bfc6;
+    border-bottom: 1px solid #b6bfc6;
     border-left: 0px;
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
-    padding: 2px;
+  }
+  .pm-datetime-picker-button-border-right > button {
+    border-right: 1px solid #b6bfc6;
+    border-top-right-radius: 2px !important;
+    border-bottom-right-radius: 2px !important;
   }
 </style>
 <style scoped>
-  .pm-column-filter-op-datetime{
+  .pm-datetime-picker {
     display: inline-flex;
   }
-  .pm-column-filter-op-datetime > input{
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
+  .pm-datetime-picker-input {
+    background-color: white;
   }
 </style>
