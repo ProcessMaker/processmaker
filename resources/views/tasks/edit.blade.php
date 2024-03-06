@@ -98,13 +98,14 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="details-tab"
-                      class="nav-link active"
-                      data-toggle="tab"
-                      data-target="#details"
+                      :class="{'nav-link': true, active: showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#details"
                       type="button"
                       role="tab"
                       aria-controls="details"
                       aria-selected="true"
+                      @click="switchTabInfo('details')"
                     >
                       @{{ __('Details') }}
                     </button>
@@ -112,13 +113,14 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="comments-tab"
-                      class="nav-link active"
-                      data-toggle="tab"
-                      data-target="#comments"
+                      :class="{'nav-link': true, active: !showInfo }"
+                      data-bs-toggle="tab"
+                      data-bs-target="#comments"
                       type="button"
                       role="tab"
                       aria-controls="comments"
-                      aria-selected="true"
+                      aria-selected="false"
+                      @click="switchTabInfo('comments')"
                     >
                       @{{ __('Comments') }}
                     </button>
@@ -126,7 +128,7 @@
                 </ul>
                 <div class="tab-content">
                   <div id="collapse-info" class="collapse show width">
-                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                  <div v-if="showInfo" id="details" v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }" role="tabpanel" aria-labelledby="details-tab">
                       <div class="ml-md-3 mt-3 mt-md-0" style="min-width:0px; max-width:400px; width:300px;">
                         <div class="card">
                           <ul class="list-group list-group-flush w-100">
@@ -201,8 +203,20 @@
                         </div>
                       </div>
                     </div>
-                    <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">...2</div>
                   </div>
+                  <div v-if="!showInfo" id="comments" v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }" role="tabpanel" aria-labelledby="comments-tab">
+                    <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                      <template v-if="panCommentInVueOptionsComponents">
+                        <comment-container
+                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                          :commentable_id="task.id"
+                          :readonly="task.status === 'CLOSED'"
+                          :name="task.element_name"
+                          :header="false"
+                        />
+                      </template>
+                    </div>
+                  </div>    
                 </div>
                 <b-modal
                   v-model="showReassignment"
@@ -330,6 +344,7 @@
           userIsProcessManager,
           showTree: false,
           showTabs: true,
+          showInfo: true,
         },
         watch: {
           task: {
@@ -520,7 +535,10 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
+          switchTabInfo(tab) {
+            this.showInfo = !this.showInfo;
+          },
         },
         mounted() {
           this.prepareData();
