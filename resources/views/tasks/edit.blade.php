@@ -128,7 +128,13 @@
                 </ul>
                 <div class="tab-content">
                   <div id="collapse-info" class="collapse show width">
-                  <div v-if="showInfo" id="details" v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }" role="tabpanel" aria-labelledby="details-tab">
+                  <div
+                    v-if="showInfo"
+                    id="details"
+                    v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                    role="tabpanel"
+                    aria-labelledby="details-tab"
+                  >
                       <div class="ml-md-3 mt-3 mt-md-0" style="min-width:0px; max-width:400px; width:300px;">
                         <div class="card">
                           <ul class="list-group list-group-flush w-100">
@@ -204,7 +210,13 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="!showInfo" id="comments" v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }" role="tabpanel" aria-labelledby="comments-tab">
+                  <div
+                    v-if="!showInfo"
+                    id="comments"
+                    v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                    role="tabpanel"
+                    aria-labelledby="comments-tab"
+                  >
                     <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
                       <template v-if="panCommentInVueOptionsComponents">
                         <comment-container
