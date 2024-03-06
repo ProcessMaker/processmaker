@@ -13,6 +13,7 @@
     :prevent-autofocus="true"
     :disabled="isDisabled"
     class="screen-type-select mt-2"
+    @input="emitSelectedType"
   >
     <template slot="singleLabel" slot-scope="props">
       <div class="type-container">
@@ -75,6 +76,14 @@ export default {
     if (this.copyAssetMode) {
       this.isDisabled = true;
     }
+
+    this.selectedType.type = "Form";
+    this.$emit("input", this.selectedType.type);
+  },
+  methods: {
+    emitSelectedType() {
+      this.$emit("input", this.selectedType.type);
+    },
   },
 };
 

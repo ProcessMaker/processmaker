@@ -188,7 +188,7 @@ export default {
     resetFormData() {
       this.formData = {
         title: null,
-        type: "",
+        type: null,
         description: null,
         projects: [],
       };
