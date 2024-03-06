@@ -170,7 +170,7 @@ export default {
       return this.$t("New Screen");
     },
     subtitle() {
-      return this.$t("Select the Screen type and style");
+      return this.$t("Select the screen type and style.");
     },
   },
   mounted() {
