@@ -37,7 +37,11 @@
       <template v-slot:label>
         <b>{{ $t('Deactivation date') }}</b>
       </template>
-      <PMDatetimePicker v-model="deactivationDate">
+      <PMDatetimePicker v-model="deactivationDate"
+                        :withTime="true">
+        <template v-slot:button-content-datepicker>
+          <img src="/img/calendar2-fill.svg">
+        </template>
       </PMDatetimePicker>
     </b-form-group>
 
@@ -82,7 +86,7 @@
     },
     watch: {
       deactivationDate(a, b) {
-        console.log(a, b);
+        console.log("deactivationDate", a, b);
       }
     },
     mounted() {
