@@ -1,19 +1,26 @@
 <template>
   <div>
     <h4>{{$t('New Inbox Rule')}}</h4> <!--Edit id {{ $route.params.id }}-->
-    
-    
 
-    <b-form-group label="What do we do with tasks that fit this filter?">
+    <b-form-group>
+      <template v-slot:label>
+        <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
+      </template>
       <b-form-radio v-model="markAsPriority" name="actionsTask" value="false">
-        {{ $t('Mark as Priority') }}
+        <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
+          {{ $t('Mark as Priority') }}
       </b-form-radio>
       <b-form-radio v-model="reassing" name="actionsTask" value="false">
-        {{ $t('Reassing') }}
+        <img src="/img/people-fill.svg" :alt="$t('Reassing')">
+          {{ $t('Reassing') }}
       </b-form-radio>
     </b-form-group>
 
-    <b-form-group label="Rule Behavior">
+    <b-form-group>
+      <template v-slot:label>
+        <b>{{ $t('Rule Behavior') }}</b>
+      </template>
+
       <b-form-checkbox-group v-model="checkboxValues"
                              name="ruleBehavior"
                              stacked >
@@ -26,12 +33,18 @@
       </b-form-checkbox-group>
     </b-form-group>
 
-    <b-form-group label="Deactivation date">
-      <b-form-datepicker v-model="deactivationDate">
-      </b-form-datepicker>
+    <b-form-group>
+      <template v-slot:label>
+        <b>{{ $t('Deactivation date') }}</b>
+      </template>
+      <PMDatetimePicker v-model="deactivationDate">
+      </PMDatetimePicker>
     </b-form-group>
 
-    <b-form-group label="Give this rule a name*">
+    <b-form-group>
+      <template v-slot:label>
+        <b>{{ $t('Give this rule a name *') }}</b>
+      </template>
       <b-form-input v-model="ruleName" placeholder="Enter your name"></b-form-input>
     </b-form-group>
 
@@ -50,8 +63,10 @@
 </template>
 
 <script>
+  import PMDatetimePicker from "../../components/PMDatetimePicker.vue";
   export default {
     components: {
+      PMDatetimePicker
     },
     props: {
     },
@@ -62,15 +77,13 @@
         checkboxValues: [],
 
         deactivationDate: null,
-        ruleName: null,
-        savedSearchSelected: null,
-        savedSearch: [
-          {value: 1, text: "saved search 1"},
-          {value: 2, text: "saved search 2"},
-          {value: 3, text: "saved search 3"},
-          {value: 4, text: "saved search 4"}
-        ]
+        ruleName: null
       };
+    },
+    watch: {
+      deactivationDate(a, b) {
+        console.log(a, b);
+      }
     },
     mounted() {
     },
