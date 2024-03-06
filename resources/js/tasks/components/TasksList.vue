@@ -235,7 +235,7 @@ export default {
     FilterTableBodyMixin],
   props: {
     filter: {},
-    columns: {},
+    columns: [],
     pmql: {},
     disableTooltip: {
       default: false
@@ -310,8 +310,11 @@ export default {
     },
   },
   watch: {
-    columns() {
-      this.setupColumns();
+    columns: {
+      deep: true,
+      handler() {
+        this.setupColumns();
+      }
     },
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
@@ -377,8 +380,8 @@ export default {
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
-      if (this.$props.columns) {
-        return this.$props.columns;
+      if (this.columns && this.columns.length > 0) {
+        return this.columns;
       }
       // from query string status=CLOSED
       const isStatusCompletedList = window.location.search.includes("status=CLOSED");

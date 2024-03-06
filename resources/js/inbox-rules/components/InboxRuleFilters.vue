@@ -1,19 +1,18 @@
 <template>
   <div class="d-flex justify-content-center">
     <b-card class="w-75">
-
       <div class="mb-3">
         <pmql-input ref="pmql_input"
+          :value="pmql"
           search-type="tasks"
-          :value="'foo'"
-          v-model="pmql"
-          :filters-value="'foo'"
           :ai-enabled="false"
           :show-filters="true"
           :aria-label="$t('Advanced Search (PMQL)')"
-          :input-advanced-filter="savedSearchAdvancedFilter"
+          :advanced-filter-prop="savedSearchAdvancedFilter"
+          :show-search-bar="false"
+          :show-pmql-badge="!!savedSearchId"
         >
-          <template v-slot:right-buttons>
+          <template v-slot:right-of-badges>
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
             </b-button>
@@ -22,11 +21,12 @@
       </div>
 
       <tasks-list
-        v-if="savedSearch"
+        v-if="ready"
         ref="taskList"
         :pmql="pmql"
         :advanced-filter-prop="savedSearchAdvancedFilter"
-        :saved-search="savedSearch.id"
+        @advanced-filter-updated="savedSearchAdvancedFilter = $event"
+        :saved-search="savedSearch?.id"
         :columns="columns"
         @submit=""
       >
@@ -54,6 +54,11 @@
 <script>
 import TasksList from "../../tasks/components/TasksList.vue";
 import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
+
+const defaultFilter = {
+  filters: [],
+  order: { by: 'id', dir: 'desc' },
+};
 export default {
   props: {
     savedSearchId: {
@@ -74,6 +79,8 @@ export default {
       savedSearch: null,
       columns: [],
       defaultColumns: [],
+      savedSearchAdvancedFilter: defaultFilter,
+      ready: false,
     }
   },
   components: {
@@ -81,16 +88,32 @@ export default {
     ColumnChooserAdapter,
   },
   methods: {
+    emitSavedSearchData() {
+      this.$emit('saved-search-data', {
+        pmql: this.pmql,
+        advanced_filter: this.savedSearchAdvancedFilter,
+      });
+    },
     applyColumns() {
       this.columns = this.$refs.columnChooserAdapter.currentColumns;
+      this.savedSearchAdvancedFilter = _.cloneDeep(defaultFilter);
     },
     loadSavedSearch() {
-      window.ProcessMaker.apiClient
+      return window.ProcessMaker.apiClient
         .get("saved-searches/" + this.savedSearchId)
         .then(response => {
           this.savedSearch = response.data;
           this.columns = this.defaultColumns = response.data._adjusted_columns.filter(c => c.field !== 'is_priority');
+          this.savedSearchAdvancedFilter = response.data.advanced_filter
         });
+    }
+  },
+  watch: {
+    savedSearchAdvancedFilter: {
+      deep: true,
+      handler() {
+        this.emitSavedSearchData();
+      }
     }
   },
   computed: {
@@ -113,12 +136,22 @@ export default {
 
       return pmqls.join(' AND ');
     },
-    savedSearchAdvancedFilter() {
-      return this.savedSearch?.advanced_filter?.filters;
-    }
   },
   mounted() {
-    this.loadSavedSearch();
+    if (this.savedSearchId) {
+      
+      this.loadSavedSearch().then(() => {
+         this.ready = true
+      });
+
+    } else if (this.processId && this.elementId) {
+
+      this.columns = this.defaultColumns =
+        _.get(window, 'Processmaker.defaultColumns', [])
+        .filter(c => c.field !== 'is_priority');
+
+      this.ready = true;
+    }
   }
 }
 </script>

@@ -3,7 +3,7 @@ import { get, cloneDeep } from "lodash";
 const PMColumnFilterCommonMixin = {
   props: {
     advancedFilterProp: {
-      type: Array,
+      type: Object,
       default: null
     }
   },
@@ -16,16 +16,29 @@ const PMColumnFilterCommonMixin = {
       viewProcesses: []
     };
   },
+  watch: {
+    advancedFilterProp: {
+      deep: true,
+      handler() {
+        this.getFilterConfiguration();
+        this.fetch();
+      }
+    }
+  },
   methods: {
     storeFilterConfiguration() {
+      const { order, type } = this.filterConfiguration();
+      
       // If advanced filter was provided as a prop, do not save the filter
       // or overwrite the global advanced_filter, instead emit the filter.
       if (this.advancedFilterProp !== null) {
-        this.$emit("advanced-filter", this.formattedFilter());
+        this.$emit("advanced-filter-updated", {
+          filters: this.formattedFilter(),
+          order
+        });
         return;
       }
 
-      const { order, type } = this.filterConfiguration();
       let url = "users/store_filter_configuration/";
       if (this.$props.columns && this.savedSearch) {
         url += "savedSearch|" + this.savedSearch;
@@ -273,7 +286,8 @@ const PMColumnFilterCommonMixin = {
       let order = null;
 
       if (this.advancedFilterProp !== null) {
-        inputAdvancedFilter = this.advancedFilterProp;
+        inputAdvancedFilter = this.advancedFilterProp.filters;
+        order = this.advancedFilterProp.order;
       } else {
         inputAdvancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
         order = get(window, 'ProcessMaker.advanced_filter.order');
@@ -292,7 +306,9 @@ const PMColumnFilterCommonMixin = {
         this.setOrderByProps(order.by, order.direction);
       }
       
-      this.markStyleWhenColumnSetAFilter();
+      this.$nextTick(() => {
+        this.markStyleWhenColumnSetAFilter();
+      });
       
       if (this.advancedFilterProp === null) {
         window.ProcessMaker.EventBus.$emit("advanced-filter-updated");

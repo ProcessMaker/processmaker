@@ -2,8 +2,8 @@ import { get } from "lodash";
 
 export default {
   props: {
-    inputAdvancedFilter: {
-      type: Array,
+    advancedFilterProp: {
+      type: Object,
       default: null
     }
   },
@@ -17,13 +17,16 @@ export default {
     window.ProcessMaker.EventBus.$on('advanced-filter-updated', this.setAdvancedFilter);
   },
   watch: {
-    inputAdvancedFilter() {
-      this.setAdvancedFilter();
+    advancedFilterProp: {
+      deep: true,
+      handler() {
+        this.setAdvancedFilter();
+      }
     }
   },
   methods: {
     setAdvancedFilter() {
-      this.advancedFilter = this.inputAdvancedFilter || get(window, 'ProcessMaker.advanced_filter.filters', []);
+      this.advancedFilter = get(this.advancedFilterProp, 'filters') || get(window, 'ProcessMaker.advanced_filter.filters', []);
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {
