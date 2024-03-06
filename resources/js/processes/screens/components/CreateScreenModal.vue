@@ -6,9 +6,8 @@
       v-b-modal.createScreen
       :aria-label="$t('Create Screen')"
       class="mb-3 mb-md-0 ml-md-2"
-      variant="primary"
     >
-      <i class="fas fa-plus" /> {{ $t("Create Screen") }}
+      <i class="fas fa-plus" /> {{ $t("Screen") }}
     </b-button>
     <modal
       id="createScreen"
