@@ -1010,6 +1010,25 @@ nav {
   text-transform: uppercase;
 }
 
+//New Screen modal styling
+#createScreen___BV_modal_body_.modal-body {
+  background-color: #F6F9FB;
+  padding: 0 15px !important;
+}
+
+#createScreen___BV_modal_body_ .row {
+  height: 100%;
+}
+
+#createScreen___BV_modal_body_ .row .col-8 {
+  padding: 15px;
+}
+
+#createScreen___BV_modal_body_ .row .col-4 {
+  background-color: #ffffff;
+  padding: 15px;
+}
+
 //New Screen modal, Screen Type Dropdown styling
 .type-style-col .multiselect:focus {
   box-shadow: none !important;
