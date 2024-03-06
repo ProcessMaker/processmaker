@@ -98,7 +98,6 @@
                           :initial-task-id="{{ $task->id }}"
                           :initial-request-id="{{ $task->process_request_id }}"
                           :user-id="{{ Auth::user()->id }}"
-                          :quick-fill-selected-task="{{ json_encode($dataTemplate) }}"
                           csrf-token="{{ csrf_token() }}"
                           initial-loop-context="{{ $task->getLoopContext() }}"
                           @task-updated="taskUpdated"
@@ -378,6 +377,7 @@
         mounted() {
           this.prepareData();
           window.addEventListener('message', message => {
+            console.log("escuchando desde blade");
             this.formData = _.merge(this.formData, message.data);
           });
         }

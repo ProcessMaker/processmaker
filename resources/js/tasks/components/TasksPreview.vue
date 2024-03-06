@@ -6,7 +6,7 @@
       class="splitpane default-theme"
       :dbl-click-splitter="false"
     >
-      <pane style="opacity: 0;">
+      <pane style="opacity: 0">
         <div />
       </pane>
       <pane
@@ -14,7 +14,7 @@
         :min-size="paneMinSize"
         size="50"
         max-size="99"
-        style="background-color: white;"
+        style="background-color: white"
       >
         <div
           id="tasks-preview"
@@ -23,37 +23,38 @@
         >
           <div v-show="!showQuickFillPreview">
             <div class="d-flex w-100 h-100 mb-3">
+              <b-button
+                class="arrow-button"
+                variant="outline-secondary"
+                :disabled="!existPrev"
+                @click="goPrevNext('Prev')"
+              >
+                <i class="fas fa-chevron-left" />
+              </b-button>
+              <b-button
+                class="arrow-button"
+                variant="outline-secondary"
+                :disabled="!existNext"
+                @click="goPrevNext('Next')"
+              >
+                <i class="fas fa-chevron-right" />
+              </b-button>
               <div class="my-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
                 </a>
               </div>
               <div class="ml-auto mr-0 text-right">
-                <b-button 
+                <b-button
                   class="icon-button"
                   :aria-label="$t('Quick fill')"
                   variant="light"
                   @click="goQuickFill()"
                 >
-                  <img src="../../../img/smartinbox-images/fill.svg" :alt="$t('No Image')">
-                </b-button>
-                <b-button
-                  class="btn-light text-secondary"
-                  :aria-label="$t('Previous Tasks')"
-                  :disabled="!existPrev"
-                  @click="goPrevNext('Prev')"
-                >
-                  <i class="fas fa-chevron-left" />
-                  {{ $t("Prev") }}
-                </b-button>
-                <b-button
-                  class="btn-light text-secondary"
-                  :aria-label="$t('Next Tasks')"
-                  :disabled="!existNext"
-                  @click="goPrevNext('Next')"
-                >
-                  {{ $t("Next") }}
-                  <i class="fas fa-chevron-right" />
+                  <img
+                    src="../../../img/smartinbox-images/fill.svg"
+                    :alt="$t('No Image')"
+                  />
                 </b-button>
                 <a class="text-secondary">|</a>
                 <b-button
@@ -92,21 +93,21 @@
                 :src="linkTasks2"
                 @load="frameLoaded()"
               />
-              
+
               <task-loading
                 v-show="stopFrame"
                 class="load-frame"
               />
             </div>
           </div>
-        <quick-fill-preview 
-          v-if="showQuickFillPreview" 
-          class="quick-fill-preview"
-          :task="task"
-          :data="data"
-          @quick-fill-data="fillWithQuickFillData"
-          @close="showQuickFillPreview = false"
-        ></quick-fill-preview>
+          <quick-fill-preview
+            v-if="showQuickFillPreview"
+            class="quick-fill-preview"
+            :task="task"
+            :data="data"
+            @quick-fill-data="fillWithQuickFillData"
+            @close="showQuickFillPreview = false"
+          ></quick-fill-preview>
         </div>
       </pane>
     </splitpanes>
@@ -132,43 +133,18 @@ export default {
       resizeOb.observe(this.$refs.inspectorSplitPanes.container);
     }
   },
-  mounted () {
-    // window.parent.postMessage('hello world from TaskPreview', '*');
-
-    // // Escucha los mensajes enviados desde el contenedor
-    // window.addEventListener('message', (event) => {
-    //   // Verifica si el mensaje recibido es 'hello world from preview.blade.php'
-    //   if (event.data === 'hello world from preview.blade.php') {
-    //     alert('Mensaje recibido desde preview.blade.php: ' + event.data);
-    //   }
-    // });
-  },
   methods: {
     fillWithQuickFillData(data) {
-      document.getElementById("tasksFrame1").contentWindow.postMessage(data, "*");
-
-      //current logic
-      //  this.showQuickFillPreview = false;
-      //  this.isSelectedTask = true;
-      //  this.selectedTaskId = data.taskDataSelectedId;
-      //  this.showSideBar(data.task, data.data.data);
-
-      //Tests to send data with postMessage
-      // const iframe = document.getElementById('tasksFrame1');
-      // console.log("iframe: ", iframe);
-      // if (iframe) {
-      //   console.log("gets iframe");
-      //   iframe.contentWindow.postMessage(data, '*');
-      // }
-
-
-      // if(this.$refs.embedFrame1.$el){
-      //   console.log("in embed 1");
-      //   this.$refs.embedFrame1.$el.postMessage(data.data);
-      // }
-      // if(this.$refs.embedFrame2) {
-      //   this.$refs.embedFrame2.contentWindow.postMessage(data.data);
-      // }
+      if (this.showFrame1) {
+        document
+          .getElementById("tasksFrame1")
+          .contentWindow.postMessage(data, "*");
+      }
+      if (this.showFrame2) {
+        document
+          .getElementById("tasksFrame2")
+          .contentWindow.postMessage(data, "*");
+      }
     },
   },
 };
@@ -213,7 +189,7 @@ export default {
   height: 36px;
   border: 1px solid #ccc;
   background-color: #fff;
-  padding: 10px;
+  padding: 0px;
   border-radius: 5px;
   justify-content: center;
   align-items: center;
@@ -223,5 +199,14 @@ export default {
 .icon-button img {
   width: 16px;
   height: 16px;
+}
+
+.arrow-button {
+  width: 46px;
+  height: 36px;
+}
+
+.arrow-button[disabled] {
+  background-color: #ccc;
 }
 </style>

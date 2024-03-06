@@ -99,12 +99,6 @@ class TaskController extends Controller
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
         $element = $task->getDefinition(true);
-        $dataTemplate = [];
-        if($task_id !== 0){
-            $dataTaskTemplate =  ProcessRequestToken::find($task_id);
-            $dataTemplate = $dataTaskTemplate->data;
-        }
-
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -119,7 +113,6 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
-                    'dataTemplate' => $dataTemplate,
                 ]);
             }
 
