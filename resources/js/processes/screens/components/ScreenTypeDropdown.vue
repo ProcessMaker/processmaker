@@ -11,6 +11,7 @@
     :option-height="100"
     :show-labels="false"
     :prevent-autofocus="true"
+    :disabled="isDisabled"
     class="screen-type-select mt-2"
   >
     <template slot="singleLabel" slot-scope="props">
@@ -37,8 +38,10 @@
 <script>
 
 export default {
+  props: ["copyAssetMode"],
   data() {
     return {
+      isDisabled: false,
       selectedType: {
         type: "Form",
         icon: "fas fa-file",
@@ -67,6 +70,11 @@ export default {
         },
       ],
     };
+  },
+  mounted() {
+    if (this.copyAssetMode) {
+      this.isDisabled = true;
+    }
   },
 };
 

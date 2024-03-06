@@ -21,7 +21,10 @@
     >
       <b-row>
         <b-col cols="8" class="type-style-col">
-          <screen-type-dropdown />
+          <screen-type-dropdown
+            v-model="formData.type"
+            :copy-asset-mode="copyAssetMode"
+          />
         </b-col>
         <b-col cols="4">
           <template v-if="countCategories">

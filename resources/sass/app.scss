@@ -1056,3 +1056,7 @@ nav {
 .type-style-col .multiselect .multiselect__content-wrapper .multiselect__option {
   padding: 8px;
 }
+
+.type-style-col .multiselect--disabled .multiselect__select {
+  background-color: transparent;
+}
