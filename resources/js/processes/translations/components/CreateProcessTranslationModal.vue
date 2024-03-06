@@ -332,6 +332,7 @@ export default {
         promptSessionId: this.getPromptSessionForUser(),
         nonce: localStorage.getItem("currentNonce"),
         includeImages: includeImages,
+        justStored: !includeImages,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
