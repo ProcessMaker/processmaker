@@ -133,42 +133,13 @@ export default {
     }
   },
   mounted () {
-    // window.parent.postMessage('hello world from TaskPreview', '*');
-
-    // // Escucha los mensajes enviados desde el contenedor
-    // window.addEventListener('message', (event) => {
-    //   // Verifica si el mensaje recibido es 'hello world from preview.blade.php'
-    //   if (event.data === 'hello world from preview.blade.php') {
-    //     alert('Mensaje recibido desde preview.blade.php: ' + event.data);
-    //   }
-    // });
+    window.addEventListener('message', (event) => {
+      this.data = event.data;
+    });
   },
   methods: {
     fillWithQuickFillData(data) {
       document.getElementById("tasksFrame1").contentWindow.postMessage(data, "*");
-
-      //current logic
-      //  this.showQuickFillPreview = false;
-      //  this.isSelectedTask = true;
-      //  this.selectedTaskId = data.taskDataSelectedId;
-      //  this.showSideBar(data.task, data.data.data);
-
-      //Tests to send data with postMessage
-      // const iframe = document.getElementById('tasksFrame1');
-      // console.log("iframe: ", iframe);
-      // if (iframe) {
-      //   console.log("gets iframe");
-      //   iframe.contentWindow.postMessage(data, '*');
-      // }
-
-
-      // if(this.$refs.embedFrame1.$el){
-      //   console.log("in embed 1");
-      //   this.$refs.embedFrame1.$el.postMessage(data.data);
-      // }
-      // if(this.$refs.embedFrame2) {
-      //   this.$refs.embedFrame2.contentWindow.postMessage(data.data);
-      // }
     },
   },
 };

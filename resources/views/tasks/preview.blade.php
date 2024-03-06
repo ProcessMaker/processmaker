@@ -194,6 +194,12 @@
               }
             }
           },
+          formData: {
+            deep: true,
+            handler(formData) {
+              window.top.postMessage(this.formData, "*");
+            }
+          }
         },
         computed: {
           taskDefinitionConfig () {
