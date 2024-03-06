@@ -63,8 +63,8 @@ class SettingsMenus extends ProcessMakerModel
      */
     protected $fillable = [
         'menu_group',
-        'menu_group_icon',
         'menu_group_order',
+        'ui',
     ];
 
     public static function rules(): array
