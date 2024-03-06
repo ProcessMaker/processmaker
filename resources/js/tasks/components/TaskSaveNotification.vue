@@ -1,15 +1,9 @@
 <template>
   <div
-    class="btn text-black text-capitalize cursor-default mr-3 p-0"
-    :style="{ width: '60px' }"
+    class="btn text-black text-capitalize cursor-default"
+    :style="{ width: '20px' }"
   >
     <div class="toolbar-item d-flex justify-content-center align-items-center">
-      <span
-        class="mr-1"
-        :style="{ fontWeight: 400 }"
-      >
-        {{ status }}
-      </span>
       <span>
         <FontAwesomeIcon class="text-success" :icon="icon" :spin="isLoading" />
       </span>

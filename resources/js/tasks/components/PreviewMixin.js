@@ -19,8 +19,11 @@ const PreviewMixin = {
       showFrame2: false,
       isLoading: "",
       stopFrame: false,
-      is_loading: false,
-      autoSaveDelay: 5000,
+      formData: {},
+      options: {
+        is_loading: false,
+      },
+      autoSaveDelay: 2000,
     };
   },
   methods: {

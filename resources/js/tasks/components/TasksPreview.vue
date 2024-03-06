@@ -24,12 +24,22 @@
         >
           <div>
             <div class="d-flex w-100 h-100 mb-3">
-              <div class="my-1">
-                <task-save-notification></task-save-notification>
+              <div id="saved-status" class="my-1">
+                <task-save-notification
+                  :options="options"
+                />
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
                 </a>
               </div>
+              <b-tooltip
+                target="saved-status"
+                custom-class="pm-table-tooltip"
+              >
+                <div class="">
+                  {{ task.process_request.case_title }}
+                </div>
+              </b-tooltip>
               <div class="ml-auto mr-0 text-right">
                 <b-button
                   class="btn-light text-secondary"
@@ -118,12 +128,25 @@ export default {
   },
   mounted() {
     window.addEventListener("message", (event) => {
-      this.data = event.data;
+      if (event.data.typeData === "form-data") {
+        this.formData = event.data.data;
+        this.handleAutosave();
+      }
     });
   },
   methods: {
     fillWithQuickFillData(data) {
       document.getElementById("tasksFrame1").contentWindow.postMessage(data, "*");
+    },
+    autosaveApiCall() {
+      this.options.is_loading = true;
+      return ProcessMaker.apiClient
+        .put("drafts/" + this.task.id, this.formData)
+        .then(() => {
+        })
+        .finally(() => {
+          this.options.is_loading = false;
+        });
     },
   },
 };
@@ -161,5 +184,20 @@ export default {
   overflow: auto;
   grid-row-start: 1;
   grid-column-start: 1;
+}
+.pm-table-tooltip {
+  opacity: 1 !important;
+}
+.pm-table-tooltip .tooltip-inner {
+  background-color: #FFFFFF;
+  color: #566877;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  max-width: 250px;
+  padding: 14px;
+  border-radius: 7px;
+}
+.pm-table-tooltip .arrow::before {
+  border-bottom-color: #F2F8FE !important;
+  border-top-color: #F2F8FE !important;
 }
 </style>

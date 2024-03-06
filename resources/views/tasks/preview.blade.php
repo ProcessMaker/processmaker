@@ -107,7 +107,6 @@
                           @@error="error"
                           @closed="closed"
                           @redirect="redirectToTask"
-                          @form-data-changed="handleAutosave()"
                           :task-preview="true"
                         ></task>
                     </div>
@@ -200,7 +199,12 @@
           formData: {
             deep: true,
             handler(formData) {
-              window.top.postMessage(this.formData, "*");
+              window.top.postMessage(
+                {
+                  typeData: "form-data",
+                  data: this.formData,
+                },
+                "*");
             }
           }
         },
