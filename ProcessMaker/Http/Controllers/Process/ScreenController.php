@@ -57,14 +57,9 @@ class ScreenController extends Controller
             'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
 
-        $myScreenTemplates = (object) [
-            // 'screen-templates' => ScreenTemplates::all(),
-            'screen-templates' => [],
-        ];
-
-        $publicScreenTemplates = (object) [
-            // 'screen-templates' => ScreenTemplates::all(),
-            'screen-templates' => [],
+        $listScreenTemplates = (object) [
+            'myScreenTemplates' => ScreenTemplates::nonSystem()->get(),
+            'publicScreenTemplates' => ScreenTemplates::nonSystem()->get(),
         ];
 
         return view(
@@ -72,8 +67,7 @@ class ScreenController extends Controller
             compact(
                 'listConfig',
                 'catConfig',
-                'myScreenTemplates',
-                'publicScreenTemplates'
+                'listScreenTemplates',
             )
         );
     }

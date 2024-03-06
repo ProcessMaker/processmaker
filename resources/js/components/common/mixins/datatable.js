@@ -84,11 +84,18 @@ export default {
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
 
-      for (const record of data.data) {
-        // format owner avatar and category
-        record.owner = this.formatAvatar(record.user);
-        record.category_list = this.formatCategory(record.categories);
-      }
+      data.data.forEach((record) => {
+        // format owner avatar if exists
+        if (Object.hasOwn(record, "user")) {
+          // eslint-disable-next-line no-param-reassign
+          record.owner = this.formatAvatar(record.user);
+        }
+        // format category if exists
+        if (Object.hasOwn(record, "category")) {
+          // eslint-disable-next-line no-param-reassign
+          record.category_list = this.formatCategory(record.categories);
+        }
+      });
       return data;
     },
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
