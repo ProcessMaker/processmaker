@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use ProcessMaker\Managers\DockerManager;
 
 /**
- * @see DockerManager
+ * @see \ProcessMaker\Managers\DockerManager
  *
  * @method bool hasRemoteDocker()
  * @method string getDockerHost()

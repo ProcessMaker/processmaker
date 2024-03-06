@@ -49,7 +49,7 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Creates an instance of Token.
      *
-     * @return TokenInterface
+     * @return \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface
      */
     public function createTokenInstance(): TokenInterface
     {
@@ -578,9 +578,9 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Persists instance and token data when a token is consumed in a event based gateway
      *
-     * @param EventBasedGatewayInterface $eventBasedGateway
-     * @param TokenInterface $passedToken
-     * @param CollectionInterface $consumedTokens
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface $eventBasedGateway
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $passedToken
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface $consumedTokens
      *
      * @return mixed
      */

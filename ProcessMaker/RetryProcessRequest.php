@@ -111,7 +111,7 @@ class RetryProcessRequest
     /**
      * Clear previous ProcessRequestToken errors off of its parent ProcessRequest(s)
      *
-     * @param  ProcessRequestToken  $token
+     * @param  \ProcessMaker\Models\ProcessRequestToken  $token
      *
      * @return void
      */

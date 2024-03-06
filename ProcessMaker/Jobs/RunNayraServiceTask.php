@@ -25,7 +25,7 @@ class RunNayraServiceTask implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param ProcessRequestToken $token
+     * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
     public function __construct(TokenInterface $token)

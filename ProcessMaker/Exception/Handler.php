@@ -26,10 +26,10 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthenticationException::class,
+        \Illuminate\Auth\AuthenticationException::class,
         \Illuminate\Auth\Access\AuthorizationException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        ModelNotFoundException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
     ];
@@ -62,8 +62,8 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Throwable  $exception
-     * @return Response
+     * @param  \Throwable  $exception
+     * @return \Illuminate\Http\Response
      */
     public function render($request, Throwable $exception)
     {
@@ -86,7 +86,7 @@ class Handler extends ExceptionHandler
     /**
      * Determine which fallback route should be used.
      *
-     * @param  Route  $route
+     * @param  \Illuminate\Routing\Route  $route
      * @return string
      */
     private function getFallbackRoute(Route $route)
@@ -112,8 +112,8 @@ class Handler extends ExceptionHandler
      * Convert an authentication exception into an unauthenticated response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  AuthenticationException  $exception
-     * @return Response
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Illuminate\Http\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
@@ -128,7 +128,7 @@ class Handler extends ExceptionHandler
      * Convert the given exception to an array.
      * @note This is overridding Laravel's default exception handler in order to handle binary data in message
      *
-     * @param  Throwable  $e
+     * @param  \Throwable  $e
      * @return array
      */
     protected function convertExceptionToArray(Throwable $e)
@@ -152,7 +152,7 @@ class Handler extends ExceptionHandler
      * exit status of 0, which it does by default surprisingly.
      *
      * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @param  Throwable  $e
+     * @param  \Throwable  $e
      * @return void
      */
     public function renderForConsole($output, Throwable $e)

@@ -86,7 +86,7 @@ class FileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Post(
@@ -292,7 +292,7 @@ class FileController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  Request $request
+     * @param  \Illuminate\Http\Request $request
      * @param Media $file
      *
      * @return \Illuminate\Http\Response

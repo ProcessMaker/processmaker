@@ -22,7 +22,7 @@ trait ResourceAssertionsTrait
      * @param type $query
      * @param type $expectedMeta
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelListing($query, $expectedMeta = [])
     {
@@ -56,7 +56,7 @@ trait ResourceAssertionsTrait
      * @param string $modelClass
      * @param array $attributes
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelCreation($modelClass, array $attributes = [])
     {
@@ -84,7 +84,7 @@ trait ResourceAssertionsTrait
      * @param array $attributes
      * @param array $errors
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelCreationFails($modelClass, array $attributes = [], array $errors = [])
     {
@@ -105,7 +105,7 @@ trait ResourceAssertionsTrait
      * @param string $id
      * @param array $includes
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelShow($id, array $includes = [])
     {
@@ -127,7 +127,7 @@ trait ResourceAssertionsTrait
      *
      * @param type $id
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertCorrectModelDeletion($id)
     {
@@ -144,7 +144,7 @@ trait ResourceAssertionsTrait
      *
      * @param type $id
      *
-     * @return TestResponse
+     * @return \Illuminate\Testing\TestResponse
      */
     protected function assertModelDeletionFails($id, array $errors = [])
     {
@@ -236,7 +236,7 @@ trait ResourceAssertionsTrait
      * Assert that the response has the given status code.
      *
      * @param string $expected
-     * @param TestResponse $response
+     * @param \Illuminate\Testing\TestResponse $response
      */
     protected function assertStatus($expected, TestResponse $response)
     {

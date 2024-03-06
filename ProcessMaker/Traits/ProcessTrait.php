@@ -14,7 +14,7 @@ trait ProcessTrait
     /**
      * Parsed process BPMN definitions.
      *
-     * @var BpmnDocumentInterface
+     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
     private $bpmnDefinitions;
 

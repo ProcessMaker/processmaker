@@ -33,7 +33,7 @@ class UpgradeMakeCommand extends BaseCommand
     /**
      * The Composer instance.
      *
-     * @var Composer
+     * @var \Illuminate\Support\Composer
      */
     protected $composer;
 
@@ -41,7 +41,7 @@ class UpgradeMakeCommand extends BaseCommand
      * Create a new migration install command instance.
      *
      * @param  \Illuminate\Database\Migrations\MigrationCreator  $creator
-     * @param  Composer  $composer
+     * @param  \Illuminate\Support\Composer  $composer
      * @return void
      */
     public function __construct(UpgradeCreator $creator, Composer $composer)

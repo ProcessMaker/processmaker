@@ -37,7 +37,7 @@ trait PluginServiceProviderTrait
     /**
      * Executed during modeler starting
      *
-     * @param  ModelerStarting  $event
+     * @param  \ProcessMaker\Events\ModelerStarting  $event
      *
      * @throws \Exception
      */
@@ -154,7 +154,7 @@ trait PluginServiceProviderTrait
     /**
      * Executed during script builder starting
      *
-     * @param  ScriptBuilderStarting  $event
+     * @param  \ProcessMaker\Events\ScriptBuilderStarting  $event
      *
      * @throws \Exception
      */

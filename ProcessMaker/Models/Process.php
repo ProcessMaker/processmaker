@@ -1149,7 +1149,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                                         'params' => $webentryRouteConfig->parameters,
                                     ]
                                 );
-                            } catch (Exception $e) {
+                            } catch (\Exception $e) {
                                 \Log::info('*** Error: ' . $e->getMessage());
                             }
                         }
@@ -1224,7 +1224,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Process events relationship.
      *
-     * @return ProcessEvents
+     * @return \ProcessMaker\Models\ProcessEvents
      */
     public function events()
     {
@@ -1253,7 +1253,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Assignments of the process.
      *
-     * @return HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function assignments()
     {
@@ -1581,7 +1581,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function deleteUnusedCustomRoutes($url, $processId, $nodeId)
     {
         // Delete unused custom routes
-        $customRoute = WebentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
+        $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
         if ($customRoute) {
             $customRoute->delete();
         }
@@ -1716,9 +1716,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                  ->orWhere('processes.description', 'like', $filter)
                  ->orWhere('processes.status', '=', $filterStr)
                  ->orWhereHas('user', function ($query) use ($filter) {
-                     $query->where('firstname', 'like', $filter)
-                         ->orWhere('lastname', 'like', $filter);
-                 })
+                    $query->where('firstname', 'like', $filter)
+                        ->orWhere('lastname', 'like', $filter);
+                })
                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
                      $qry->select('assignable_id')
                          ->from('category_assignments')

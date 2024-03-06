@@ -121,7 +121,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     /**
      * Create or update an execution instance to a persistent storage.
      *
-     * @param ExecutionInstanceInterface $instance
+     * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
      */
     public function storeExecutionInstance(ExecutionInstanceInterface $instance)
     {

@@ -14,22 +14,22 @@ class PermissionCheck
     /**
      * The authentication factory instance.
      *
-     * @var Auth
+     * @var \Illuminate\Contracts\Auth\Factory
      */
     protected $auth;
 
     /**
      * The gate instance.
      *
-     * @var Gate
+     * @var \Illuminate\Contracts\Auth\Access\Gate
      */
     protected $gate;
 
     /**
      * Create a new middleware instance.
      *
-     * @param  Auth  $auth
-     * @param  Gate  $gate
+     * @param  \Illuminate\Contracts\Auth\Factory  $auth
+     * @param  \Illuminate\Contracts\Auth\Access\Gate  $gate
      * @return void
      */
     public function __construct(Auth $auth, Gate $gate)
@@ -42,7 +42,7 @@ class PermissionCheck
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Closure  $next
+     * @param  \Closure  $next
      * @param  string  $ability
      * @param  array|null  $models
      * @return mixed

@@ -55,7 +55,7 @@ class ProcessUpdated implements ShouldBroadcastNow
     /**
      * Return the process request.
      *
-     * @return ProcessRequest
+     * @return \ProcessMaker\Models\ProcessRequest
      */
     public function getProcessRequest()
     {

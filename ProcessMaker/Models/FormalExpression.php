@@ -35,7 +35,7 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * FEEL expression object to be used to evaluate
-     * @var ExpressionLanguage
+     * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage
      */
     private $feelExpression;
 

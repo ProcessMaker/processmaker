@@ -380,7 +380,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws Throwable
+     * @throws \Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}",
@@ -543,7 +543,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws Throwable
+     * @throws \Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}/draft",
@@ -907,7 +907,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws Throwable
+     * @throws \Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}/restore",
@@ -1253,7 +1253,7 @@ class ProcessController extends Controller
      *
      * @return resource
      *
-     * @throws Throwable
+     * @throws \Throwable
      *
      * @OA\Post(
      *     path="/processes/{process_id}/import/assignments",
@@ -1399,7 +1399,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @param Request $request
      *
-     * @return ProcessRequests
+     * @return \ProcessMaker\Http\Resources\ProcessRequests
      *
      * @OA\Post(
      *     path="/process_events/{process_id}",

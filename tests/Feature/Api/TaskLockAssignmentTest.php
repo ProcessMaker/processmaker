@@ -17,12 +17,12 @@ class TaskLockAssignmentTest extends TestCase
     use RequestHelper;
 
     /**
-     * @var User
+     * @var \ProcessMaker\Models\User
      */
     protected $user1;
 
     /**
-     * @var User
+     * @var \ProcessMaker\Models\User
      */
     protected $user2;
 
@@ -160,10 +160,10 @@ class TaskLockAssignmentTest extends TestCase
     /**
      * Complete task
      *
-     * @param ProcessRequestToken $task
+     * @param \ProcessMaker\Models\ProcessRequestToken $task
      * @param array $data
      *
-     * @return ProcessRequestToken
+     * @return \ProcessMaker\Models\ProcessRequestToken
      */
     private function completeTask(ProcessRequestToken $task, $data = [])
     {

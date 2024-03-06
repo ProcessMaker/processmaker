@@ -12,7 +12,7 @@ class ResetPassword extends LaravelResetPassword
      * Get the reset password notification mail message for the given URL.
      *
      * @param  string  $url
-     * @return MailMessage
+     * @return \Illuminate\Notifications\Messages\MailMessage
      */
     protected function buildMailMessage($url)
     {

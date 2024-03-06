@@ -277,11 +277,11 @@ class LoginController extends Controller
      * Handle a login request to the application.
      * Overrides the original login action.
      *
-     * @param  Request $request
-     * @param  User $user
+     * @param  \Illuminate\Http\Request $request
+     * @param  \ProcessMaker\Models\User $user
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      *
-     * @throws ValidationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request, User $user)
     {
@@ -340,7 +340,7 @@ class LoginController extends Controller
     /**
      * Throws locked error message
      *
-     * @throws ValidationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     protected function throwLockedLoginResponse()
     {

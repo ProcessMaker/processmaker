@@ -37,7 +37,7 @@ class CatchEvent extends BpmnAction
      *
      * @param TokenInterface $token
      * @param CatchEventInterface $element
-     * @return ExecutionInstanceInterface
+     * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
     public function action(TokenInterface $token, CatchEventInterface $element)
     {

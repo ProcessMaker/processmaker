@@ -40,7 +40,7 @@ class TemplateController extends Controller
      * Get list Process Templates
      *
      * @param string $type
-     * @param Request $request
+     * @param \Illuminate\Http\Request $request
      * @return TemplateCollection
      */
     public function index(string $type, Request $request)
@@ -63,7 +63,7 @@ class TemplateController extends Controller
      * Store a newly created template
      *
      * @param string $type
-     * @param  Request $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(string $type, Request $request)
@@ -156,7 +156,7 @@ class TemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Template  $template
+     * @param  \ProcessMaker\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
     public function delete(string $type, Request $request)
@@ -188,7 +188,7 @@ class TemplateController extends Controller
     /**
      * Set a template as a Public Template
      *
-     * @param  Template  $template
+     * @param  \ProcessMaker\Models\Template  $template
      * @return \Illuminate\Http\Response
      */
     public function publishTemplate(string $type, Request $request)

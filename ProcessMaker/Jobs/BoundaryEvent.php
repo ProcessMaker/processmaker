@@ -42,7 +42,7 @@ class BoundaryEvent extends BpmnAction
      *
      * @param TokenInterface $token
      * @param CatchEventInterface $element
-     * @return ExecutionInstanceInterface
+     * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
     public function action(BpmnDocumentInterface $definitions, TokenInterface $token = null)
     {

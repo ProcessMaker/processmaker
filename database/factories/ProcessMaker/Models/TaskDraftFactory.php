@@ -2,11 +2,12 @@
 
 namespace Database\Factories\ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\TaskDraft;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TaskDraftFactory extends Factory
 {
+
     protected $model = TaskDraft::class;
 
     /**

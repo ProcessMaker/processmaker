@@ -158,7 +158,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * Validation rules
      *
-     * @param  User|null  $existing
+     * @param  \ProcessMaker\Models\User|null  $existing
      *
      * @return array
      */
@@ -184,7 +184,7 @@ class User extends Authenticatable implements HasMedia
     /**
      * Validation rules specifically for the password
      *
-     * @param  User|null  $existing
+     * @param  \ProcessMaker\Models\User|null  $existing
      *
      * @return array
      */
@@ -557,7 +557,6 @@ class User extends Authenticatable implements HasMedia
         if ($hasSingleGroupWith2fa || $hasMultipleGroupsWithAtLeastOne2fa || $independent) {
             return true;
         }
-
         return false;
     }
 }

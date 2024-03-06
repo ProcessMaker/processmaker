@@ -194,7 +194,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runScripTask($scriptTask, $token);
         } catch (\Throwable $e) {
-            Log::Error('Unhandled error when running a script task:' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a script task:' . $e->getMessage());
         }
     }
 
@@ -210,7 +210,7 @@ class BpmnSubscriber
         try {
             WorkflowManager::runServiceTask($serviceTask, $token);
         } catch (\Throwable $e) {
-            Log::Error('Unhandled error when running a service task:' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::Error('Unhandled error when running a service task:' . $e->getMessage());
         }
     }
 
@@ -278,7 +278,7 @@ class BpmnSubscriber
                 $instance->data = $data;
                 $instance->saveOrFail();
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error('The expression used in the flow generated and error: ', [$e->getMessage()]);
             $instance->logError($e, $transition->getOwner());
         }

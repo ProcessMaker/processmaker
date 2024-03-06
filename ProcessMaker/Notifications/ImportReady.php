@@ -67,7 +67,7 @@ class ImportReady extends Notification
      *
      * @param mixed $notifiable
      *
-     * @return BroadcastMessage
+     * @return \Illuminate\Notifications\Messages\BroadcastMessage
      */
     public function toBroadcast($notifiable)
     {

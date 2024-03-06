@@ -11,7 +11,7 @@ class CreateTestLogger
      * Create a custom Monolog instance.
      *
      * @param  array  $config
-     * @return Logger
+     * @return \Monolog\Logger
      */
     public function __invoke(array $config)
     {

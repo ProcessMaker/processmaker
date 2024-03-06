@@ -29,7 +29,7 @@ class CommentController extends Controller
      *
      * @param Request $request
      *
-     * @return ApiCollection
+     * @return \ProcessMaker\Http\Resources\ApiCollection
      *
      * @return \Illuminate\Http\Response
      */

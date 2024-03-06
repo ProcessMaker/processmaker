@@ -16,10 +16,10 @@ class Kernel extends HttpKernel
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        Middleware\TrimStrings::class,
+        \ProcessMaker\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        Middleware\TrustProxies::class,
-        Middleware\BrowserCache::class,
+        \ProcessMaker\Http\Middleware\TrustProxies::class,
+        \ProcessMaker\Http\Middleware\BrowserCache::class,
     ];
 
     /**
@@ -29,17 +29,17 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            Middleware\EncryptCookies::class,
+            \ProcessMaker\Http\Middleware\EncryptCookies::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            Middleware\SessionStarted::class,
-            Middleware\AuthenticateSession::class,
-            Middleware\SessionControlKill::class,
+            \ProcessMaker\Http\Middleware\SessionStarted::class,
+            \ProcessMaker\Http\Middleware\AuthenticateSession::class,
+            \ProcessMaker\Http\Middleware\SessionControlKill::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
-            Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
+            \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            Middleware\GenerateMenus::class,
+            \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
         ],
         'api' => [
@@ -62,25 +62,25 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => Middleware\ProcessMakerAuthenticate::class,
+        'auth' => \ProcessMaker\Http\Middleware\ProcessMakerAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'force_change_password' => Middleware\VerifyChangePasswordNeeded::class,
-        'guest' => Middleware\RedirectIfAuthenticated::class,
-        'permission' => Middleware\PermissionCheck::class,
+        'force_change_password' => \ProcessMaker\Http\Middleware\VerifyChangePasswordNeeded::class,
+        'guest' => \ProcessMaker\Http\Middleware\RedirectIfAuthenticated::class,
+        'permission' => \ProcessMaker\Http\Middleware\PermissionCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'sanitize' => Middleware\SanitizeInput::class,
-        'setlocale' => Middleware\SetLocale::class,
-        'setskin' => Middleware\SetSkin::class,
+        'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
+        'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
+        'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
-        'template-authorization' => Middleware\TemplateAuthorization::class,
-        'edit_username_password' => Middleware\ValidateEditUserAndPasswordPermission::class,
-        '2fa' => Middleware\TwoFactorAuthentication::class,
-        'saml_request' => Middleware\SamlRequest::class,
-        'session_block' => Middleware\SessionControlBlock::class,
-        'session_kill' => Middleware\SessionControlKill::class,
-        'no-cache' => Middleware\NoCache::class,
+        'template-authorization' => \ProcessMaker\Http\Middleware\TemplateAuthorization::class,
+        'edit_username_password' => \ProcessMaker\Http\Middleware\ValidateEditUserAndPasswordPermission::class,
+        '2fa' => \ProcessMaker\Http\Middleware\TwoFactorAuthentication::class,
+        'saml_request' => \ProcessMaker\Http\Middleware\SamlRequest::class,
+        'session_block' => \ProcessMaker\Http\Middleware\SessionControlBlock::class,
+        'session_kill' => \ProcessMaker\Http\Middleware\SessionControlKill::class,
+        'no-cache' => \ProcessMaker\Http\Middleware\NoCache::class,
     ];
 
     /**
@@ -95,6 +95,6 @@ class Kernel extends HttpKernel
      */
     protected $middlewarePriority = [
         \Illuminate\Session\Middleware\AuthenticateSession::class,
-        Middleware\ProcessMakerAuthenticate::class,
+        \ProcessMaker\Http\Middleware\ProcessMakerAuthenticate::class,
     ];
 }

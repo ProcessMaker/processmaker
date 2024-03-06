@@ -141,7 +141,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      *
      * @param  string  $key
      *
-     * @return Setting|null
+     * @return \ProcessMaker\Models\Setting|null
      * @throws \Exception
      */
     public static function byKey(string $key)
