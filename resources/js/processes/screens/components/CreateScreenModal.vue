@@ -20,22 +20,7 @@
     >
       <b-row>
         <b-col cols="8" class="type-style-col">
-          <screen-type-dropdown></screen-type-dropdown>
-          <!-- <b-form-group
-            :invalid-feedback="errorMessage('type', errors)"
-            :label="$t('Type')"
-            :state="errorState('type', errors)"
-            required
-          >
-            <b-form-select
-              v-model="formData.type"
-              :options="screenTypes"
-              :state="errorState('type', errors)"
-              :disabled="copyAssetMode"
-              name="type"
-              required
-            /> -->
-          </b-form-group>
+          <screen-type-dropdown />
         </b-col>
         <b-col cols="4">
           <template v-if="countCategories">
