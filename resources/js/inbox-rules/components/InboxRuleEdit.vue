@@ -4,11 +4,15 @@
       <template v-slot:label>
         <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
       </template>
-      <b-form-radio v-model="markAsPriority" name="actionsTask" value="false">
+      <b-form-radio v-model="markAsPriority"
+                    name="actionsTask"
+                    value="false">
         <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
           {{ $t('Mark as Priority') }}
       </b-form-radio>
-      <b-form-radio v-model="reassign" name="actionsTask" value="false">
+      <b-form-radio v-model="reassign"
+                    name="actionsTask"
+                    value="false">
         <img src="/img/people-fill.svg" :alt="$t('Reassign')">
           {{ $t('Reassign') }}
       </b-form-radio>
@@ -116,7 +120,7 @@
         if (this.inboxRule) {
           this.markAsPriority = this.inboxRule.mark_as_priority;
           this.reassign = this.inboxRule.reassign_to_user_id > 0,
-          this.deactivationDate = this.inboxRule.end_date;
+                  this.deactivationDate = this.inboxRule.end_date;
           this.ruleName = this.inboxRule.name;
         }
       }
