@@ -31,16 +31,16 @@
       </template>
 
       <template v-slot:cell-created_at="{ row, header, rowIndex }">
-        {{ convertUTCToLocal(row['created_at']) }}
+        {{ convertUTCToPMFormat(row['created_at']) }}
       </template>
 
       <template v-slot:cell-end_date="{ row, header, rowIndex }">
-        <PmRowButtons :ref="'pmRowButtons-'+rowIndex"
-                      :value="convertUTCToLocal(row['end_date'])"
+        <InboxRulesRowButtons :ref="'inboxRulesRowButtons-'+rowIndex"
+                      :value="convertUTCToPMFormat(row['end_date'])"
                       :row="row"
                       @onEditRule="onEditRule"
                       @onRemoveRule="onRemoveRule">
-        </PmRowButtons>
+        </InboxRulesRowButtons>
       </template>
 
     </PMTable>
@@ -50,12 +50,12 @@
 <script>
   import PMTable from "../../components/PMTable.vue";
   import PMSearchBar from "../../components/PMSearchBar.vue";
-  import PmRowButtons from "./PmRowButtons.vue";
+  import InboxRulesRowButtons from "./InboxRulesRowButtons.vue";
   export default {
     components: {
       PMTable,
       PMSearchBar,
-      PmRowButtons
+      InboxRulesRowButtons
     },
     data() {
       return {
@@ -125,11 +125,11 @@
         this.page = page;
       },
       onRowMouseover(row, scrolledWidth, index) {
-        this.$refs["pmRowButtons-" + index].show();
-        this.$refs["pmRowButtons-" + index].setMargin(scrolledWidth);
+        this.$refs["inboxRulesRowButtons-" + index].show();
+        this.$refs["inboxRulesRowButtons-" + index].setMargin(scrolledWidth);
       },
       onTrMouseleave(row, index) {
-        this.$refs["pmRowButtons-" + index].close();
+        this.$refs["inboxRulesRowButtons-" + index].close();
       },
       onCreateRule() {
         this.$router.push({name: 'edit', params: {id: 1}});
@@ -139,12 +139,13 @@
       },
       onRemoveRule(row) {
       },
-      convertUTCToLocal(value) {
+      convertUTCToPMFormat(value) {
         if (!moment(value).isValid()) {
           return "N/A";
         }
+        let timezone = ProcessMaker.user.timezone;
         let config = ProcessMaker.user.datetime_format;
-        return moment(value).format(config);
+        return moment(value).tz(timezone).format(config);
       }
     }
   };

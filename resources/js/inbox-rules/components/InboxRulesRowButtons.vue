@@ -3,21 +3,17 @@
     {{value}}
     <PMFloatingButtons ref="pmFloatingButtons">
       <template v-slot:content>
-
         <b-button variant="light"
                   size="sm"
                   @click="$emit('onEditRule', row);">
           <img src="/img/pencil-fill.svg" :alt="$t('Edit')">
         </b-button>
-
         <div class="pm-row-buttons-separator"></div>
-
         <b-button variant="light"
                   size="sm"
                   @click="$emit('onRemoveRule', row)">
           <img src="/img/trash-fill.svg" :alt="$t('Remove')">
         </b-button>
-
       </template>
     </PMFloatingButtons>
   </div>

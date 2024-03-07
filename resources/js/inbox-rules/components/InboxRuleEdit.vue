@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h4>{{$t('New Inbox Rule')}}</h4> <!--Edit id {{ $route.params.id }}-->
-
+  <div> <!--Edit id {{ $route.params.id }}-->
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
