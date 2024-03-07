@@ -55,6 +55,14 @@
                 :alt="$t('No Image')"
               />
             </b-button>
+            <b-button
+              class="icon-button"
+              :aria-label="$t('Quick fill Preview')"
+              variant="light"
+              @click="buttonPreviewThisData(tooltipRowData)"
+            >
+              <i class="fas fa-eye"/>
+            </b-button>
           </template>
         </tasks-list>
       </div>
@@ -124,6 +132,10 @@ export default {
     selected(taskData) {},
     buttonThisData(tooltipRowData) {
       this.$emit("quick-fill-data", tooltipRowData.data);
+      this.$emit("close");
+    },
+    buttonPreviewThisData(tooltipRowData) {
+      this.$emit("quick-fill-data-preview", tooltipRowData.data);
       this.$emit("close");
     },
   },
@@ -259,5 +271,9 @@ img {
   align-self: flex-start;
   margin-right: 2px;
   margin-top: 3px;
+}
+
+.icon-button {
+  color: #888;
 }
 </style>

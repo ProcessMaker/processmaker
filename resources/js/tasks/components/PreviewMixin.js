@@ -23,6 +23,7 @@ const PreviewMixin = {
       isSelectedTask: false,
       selectedTaskId: null,
       useThisDataButton: false,
+      showUseThisTask: false,
     };
   },
   methods: {
@@ -73,6 +74,7 @@ const PreviewMixin = {
       this.linkTasks2 = "";
       this.task = {};
       this.data = [];
+      this.previewData = [];
       this.taskTitle = "";
       this.prevTask = {};
       this.nextTask = {};

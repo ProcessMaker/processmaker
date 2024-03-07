@@ -22,7 +22,8 @@
           class="h-100 p-3"
         >
           <div v-show="!showQuickFillPreview">
-            <div class="d-flex w-100 h-100 mb-3">
+            <div v-if="!showUseThisTask" 
+              class="d-flex w-100 h-100 mb-3">
               <b-button
                 class="arrow-button"
                 variant="outline-secondary"
@@ -39,7 +40,7 @@
               >
                 <i class="fas fa-chevron-right" />
               </b-button>
-              <div class="my-1">
+              <div class="my-1 ml-1">
                 <a class="lead text-secondary font-weight-bold">
                   {{ task.element_name }}
                 </a>
@@ -74,7 +75,42 @@
                 </b-button>
               </div>
             </div>
-            <div class="frame-container">
+            <div v-if="showUseThisTask"
+              class="d-flex justify-content-between"
+            >
+            <div class="d-flex align-items-center">
+              <b-button
+                class="btn-back-quick-fill"
+                variant="link"
+                @click="showUseThisTask = false"
+              >
+                <i class="fas fa-arrow-left" />
+              </b-button>
+              <div class="my-1 ml-2">
+                <a class="lead text-secondary font-weight-bold">
+                  {{ task.element_name }}
+                </a>
+              </div>
+            </div>
+            <div>
+              <b-button
+                  v-if="showUseThisTask"
+                  class="mr-2"
+                  variant="primary"
+                  :aria-label="$t('Use This Task Data')"
+                  @click="fillWithQuickFillData(previewData)"
+                >
+                  {{ $t('Use This Task Data') }}
+                </b-button>
+                <b-button
+                  class="close-button mr-2"
+                  variant="link"
+                >
+                  <i class="fas fa-times" />
+                </b-button>
+            </div>
+          </div>
+          <div class="frame-container">
               <b-embed
                 v-if="showFrame1"
                 ref="tasksFrame1"
@@ -106,6 +142,7 @@
             :task="task"
             :data="data"
             @quick-fill-data="fillWithQuickFillData"
+            @quick-fill-data-preview="fillWithPreviewQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
         </div>
@@ -140,6 +177,7 @@ export default {
   },
   methods: {
     fillWithQuickFillData(data) {
+      const message = this.$t('Task Filled succesfully');
       if (this.showFrame1) {
         document
           .getElementById("tasksFrame1")
@@ -150,6 +188,12 @@ export default {
           .getElementById("tasksFrame2")
           .contentWindow.postMessage(data, "*");
       }
+      this.showUseThisTask = false;
+      ProcessMaker.alert(message, 'success');
+    },
+    fillWithPreviewQuickFillData(data) {
+      this.previewData = data;
+      this.showUseThisTask = true;
     },
   }
 };
@@ -213,5 +257,23 @@ export default {
 
 .arrow-button[disabled] {
   background-color: #ccc;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+}
+
+.close-button {
+  color: #888;
+  padding: 0;
+  border: none;
+  margin-left: auto;
+}
+
+.btn-back-quick-fill {
+  color: #888;
+  padding: 0;
+  border: none;
 }
 </style>
