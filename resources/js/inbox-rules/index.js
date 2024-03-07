@@ -15,14 +15,15 @@ const router = new VueRouter({
             component: Index,
         },
         {
-            name: "saved-search",
-            path: "/saved-search",
-            component: InboxRuleFilters,
+            name: "new",
+            path: "/new",
+            component: Edit,
             props(route) {
                 return {
-                    savedSearchId: parseInt(route.query.saved_search_id),
-                    processId: parseInt(route.query.process_id),
-                    elementId: route.query.element_id,
+                    ruleId: null,
+                    newSavedSearchId: parseInt(route.query.saved_search_id) || null,
+                    newProcessId: parseInt(route.query.process_id) || null,
+                    newElementId: route.query.element_id || null,
                 };
             }
         },
@@ -32,9 +33,7 @@ const router = new VueRouter({
             component: Edit,
             props(route) {
                 return {
-                    savedSearchId: parseInt(route.query.saved_search_id) || null,
-                    processId: parseInt(route.query.process_id) || null,
-                    elementId: route.query.element_id || null,
+                    ruleId: parseInt(route.params.id)
                 };
             }
         },

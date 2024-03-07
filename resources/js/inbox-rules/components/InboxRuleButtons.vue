@@ -6,7 +6,9 @@
       <img src="/img/eraser-fill.svg">
         {{ $t('Clear filters') }}
     </b-button>
-    <b-dropdown size="sm"
+    <b-dropdown v-if="showSavedSearchSelector"
+                @input="$emit('saved-search-id-changed', $event)"
+                size="sm"
                 split
                 split-variant="light"
                 variant="light"
@@ -16,7 +18,9 @@
     </b-dropdown>
     <b-button size="sm"
               variant="light"
-              class="button-border">
+              class="button-border"
+              @click="$emit('showColumns')"
+              >
       <img src="/img/gear-fill.svg">
     </b-button>
   </div>
@@ -27,6 +31,10 @@
     components: {
     },
     props: {
+      showSavedSearchSelector: {
+        type: Boolean,
+        default: true
+      }
     },
     data() {
       return {

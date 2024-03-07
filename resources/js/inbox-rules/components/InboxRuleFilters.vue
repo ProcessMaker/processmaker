@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-card v-if="!savedSearchId && (!processId || !elementId)">
-      <p>No saved search or task parameters provided</p>
+      <p>Select a saved search above.</p>
     </b-card>
     <b-card v-else>
       <div class="mb-3">
@@ -15,7 +15,7 @@
           :show-search-bar="false"
           :show-pmql-badge="!!savedSearchId"
         >
-          <template v-slot:right-of-badges>
+          <template v-slot:right-of-badges v-if="showColumnSelectorButton">
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
             </b-button>
@@ -76,6 +76,10 @@ export default {
     elementId: {
       type: String,
       default: null
+    },
+    showColumnSelectorButton: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -110,6 +114,9 @@ export default {
           this.columns = this.defaultColumns = response.data._adjusted_columns.filter(c => c.field !== 'is_priority');
           this.savedSearchAdvancedFilter = response.data.advanced_filter
         });
+    },
+    showColumns() {
+      this.$bvModal.show("columns");
     }
   },
   watch: {

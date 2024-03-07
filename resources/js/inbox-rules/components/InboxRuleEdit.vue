@@ -8,9 +8,9 @@
         <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
           {{ $t('Mark as Priority') }}
       </b-form-radio>
-      <b-form-radio v-model="reassing" name="actionsTask" value="false">
-        <img src="/img/people-fill.svg" :alt="$t('Reassing')">
-          {{ $t('Reassing') }}
+      <b-form-radio v-model="reassign" name="actionsTask" value="false">
+        <img src="/img/people-fill.svg" :alt="$t('Reassign')">
+          {{ $t('Reassign') }}
       </b-form-radio>
     </b-form-group>
 
@@ -75,12 +75,16 @@
       count: {
         type: Number,
         default: 0
+      },
+      inboxRule: {
+        type: Object,
+        default: null
       }
     },
     data() {
       return {
         markAsPriority: false,
-        reassing: false,
+        reassign: false,
         checkboxValues: [],
 
         deactivationDate: "",
@@ -90,9 +94,16 @@
     watch: {
       deactivationDate(a, b) {
         console.log("deactivationDate", a, b);
+      },
+      inboxRule: {
+        handler() {
+          this.setInboxRuleData();
+        },
+        deep: true
       }
     },
     mounted() {
+      this.setInboxRuleData();
     },
     methods: {
       onCancel() {
@@ -100,6 +111,14 @@
       },
       onCreateRule() {
         this.$router.push({name: 'index'});
+      },
+      setInboxRuleData() {
+        if (this.inboxRule) {
+          this.markAsPriority = this.inboxRule.mark_as_priority;
+          this.reassign = this.inboxRule.reassign_to_user_id > 0,
+          this.deactivationDate = this.inboxRule.end_date;
+          this.ruleName = this.inboxRule.name;
+        }
       }
     }
   };

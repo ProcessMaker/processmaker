@@ -5,20 +5,29 @@
       <PMPanelWithCustomHeader class="filters"
                                :title="$t('Step1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
-          <InboxRuleButtons>
+          <InboxRuleButtons
+            @showColumns="showColumns"
+            :show-saved-search-selector="showSavedSearchSelector"
+            :saved-search-id="newSavedSearchIdFromSelector"
+            @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
+            >
           </InboxRuleButtons>
         </template>
+
         <InboxRuleFilters
-          :saved-search-id="savedSearchId"
-          :process-id="processId"
-          :element-id="elementId"
+          v-if="inboxRule || isNew"
+          ref="inboxRuleFilters"
+          :saved-search-id="savedSearchIdForFilters"
+          :process-id="newProcessId"
+          :element-id="newElementId"
           @count="count = $event"
+          :show-column-selector-button="false"
           >
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
       <PMPanelWithCustomHeader class="ml-3 actions"
                                :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
-        <InboxRuleEdit :count="count">
+        <InboxRuleEdit :count="count" :inbox-rule="inboxRule">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>  
     </div>
@@ -38,27 +47,70 @@
       InboxRuleButtons
     },
     props: {
-      savedSearchId: {
+      newSavedSearchId: {
         type: Number,
         default: null
       },
-      processId: {
+      newProcessId: {
         type: Number,
         default: null
       },
-      elementId: {
+      newElementId: {
         type: String,
+        default: null
+      },
+      ruleId: {
+        type: Number,
         default: null
       }
     },
     data() {
       return {
-        count: 0
+        count: 0,
+        inboxRule: null,
+        newSavedSearchIdFromSelector: null
       };
     },
+    computed: {
+      savedSearchIdForFilters() {
+        // All existing inbox rules have a saved search id.
+        // If this is a new inbox rule, we could have a saved search id or a process id and element id
+
+        if (this.inboxRule) {
+          return this.inboxRule.saved_search_id
+        }
+
+        if (this.newSavedSearchId) {
+          return this.newSavedSearchId
+        }
+        
+        if (this.newSavedSearchIdFromSelector) {
+          return this.newSavedSearchIdFromSelector
+        }
+
+        return null;
+
+      },
+      isNew() {
+        return !this.ruleId;
+      },
+      showSavedSearchSelector() {
+        return this.isNew && !this.newSavedSearchId && !this.newElementId && !this.newProcessId;
+      }
+    },
     mounted() {
+      console.log("mounted. rule id", this.ruleId)
+      if (this.ruleId) {
+        window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
+          .then(response => {
+            this.inboxRule = response.data
+          })
+      }
     },
     methods: {
+      showColumns() {
+        this.$refs.inboxRuleFilters.showColumns();
+      }
     }
   };
 </script>
