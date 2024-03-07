@@ -24,6 +24,7 @@
           <screen-type-dropdown
             v-model="formData.type"
             :copy-asset-mode="copyAssetMode"
+            :screen-types="screenTypes"
           />
         </b-col>
         <b-col cols="4">
