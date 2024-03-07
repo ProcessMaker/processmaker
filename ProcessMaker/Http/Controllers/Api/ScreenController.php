@@ -575,4 +575,21 @@ class ScreenController extends Controller
 
         return new ScreenResource($screen);
     }
+
+    /**
+     * Only send data for a screen’s fields
+     *
+     * @param Screen $screen
+     *
+     * @return array
+     */
+    public function getFields(Screen $screen)
+    {
+         if ($screen) {
+             $screenFields = $screen->fields->map(fn($field) => $field->field);
+             return $screenFields;
+         } else {
+             return response()->json(['error' => 'Screen not found'], 404);
+         }
+    }
 }

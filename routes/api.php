@@ -87,6 +87,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Screens
     Route::get('screens', [ScreenController::class, 'index'])->name('screens.index'); // Permissions handled in the controller
     Route::get('screens/{screen}', [ScreenController::class, 'show'])->name('screens.show'); // Permissions handled in the controller
+    Route::get('screens/{screen}/fields', [ScreenController::class, 'getFields'])->name('getFields.show'); // Permissions handled in the controller
     Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens,screen');
     Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can:edit-screens,screen');
