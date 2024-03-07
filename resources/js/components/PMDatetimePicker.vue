@@ -20,9 +20,7 @@
                          class="pm-datetime-picker-button-datetime"
                          :class="{'pm-datetime-picker-button-border-right': !withTime}"
                          label-help=""
-                         :hide-header="true"
-                         @shown="onShow"
-                         @context="onContext">
+                         :hide-header="true">
         <template v-slot:button-content
                   v-if="$slots['button-content-datepicker']">
           <slot name="button-content-datepicker"></slot>
@@ -39,9 +37,7 @@
                          button-variant="light"
                          class="pm-datetime-picker-button-datetime"
                          :class="{'pm-datetime-picker-button-border-right': withTime}"
-                         show-seconds
-                         @shown="onShow"
-                         @context="onContext">
+                         show-seconds>
         <template v-slot:button-content
                   v-if="$slots['button-content-timepicker']">
           <slot name="button-content-timepicker"></slot>
@@ -85,13 +81,13 @@
         input: "",
         selectedDate: "",
         selectedTime: "",
-        onMounted: true
+        timeZone: window.ProcessMaker.user.timezone,
+        guestTimeZone: moment.tz.guess()
       };
     },
     watch: {
       value: {
         handler(newValue) {
-          console.log("value", newValue);
           this.input = this.convertFromISOString(newValue);
         },
         immediate: true
@@ -99,23 +95,14 @@
       input() {
         this.emitInput();
       },
-      selectedDate(a, b) {
-        console.log("selectedDate", a, b, this.onMounted);
-        if (this.onMounted) {
-          return;
-        }
+      selectedDate() {
         this.setInput();
       },
-      selectedTime(a, b) {
-        console.log("selectedTime", a, b, this.onMounted);
-        if (this.onMounted) {
-          return;
-        }
+      selectedTime() {
         this.setInput();
       }
     },
     mounted() {
-      console.log("mounted");
       this.selectedDate = this.getValueFromFormat(this.input, "YYYY-MM-DD");
       this.selectedTime = this.getValueFromFormat(this.input, "HH:mm:ss", "00:00:00");
     },
@@ -123,26 +110,21 @@
       emitInput() {
         this.$emit("input", this.convertToISOString(this.input));
       },
-      onShow() {
-        console.log("onShow");
-        this.onMounted = false;
-      },
-      onContext() {
-        console.log("onContext");
-      },
       setInput() {
         let datetime = this.selectedDate + " " + this.selectedTime;
-        this.input = moment(datetime).format(this.format);
+        this.input = moment(datetime).tz(this.guestTimeZone).format(this.format);
       },
       getValueFromFormat(string, format, defaultValue) {
-        let timezone = moment.tz.guess();
+        if (string === "") {
+          return string;
+        }
         if (this.isDatetime(string)) {
-          return moment(string).tz(timezone).format(format);
+          return moment(string).tz(this.guestTimeZone).format(format);
         } else {
           if (defaultValue !== undefined) {
             return defaultValue;
           }
-          return moment().tz(timezone).format(format);
+          return moment().tz(this.guestTimeZone).format(format);
         }
       },
 
@@ -150,7 +132,7 @@
         if (!this.isDatetime(dateString)) {
           return dateString;
         }
-        return moment(dateString).tz(window.ProcessMaker.user.timezone).format(this.format);
+        return moment(dateString).tz(this.timeZone).format(this.format);
       },
       convertToISOString(dateString) {
         if (!this.isDatetime(dateString)) {

@@ -8,7 +8,7 @@ use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
 
 class InboxRulesController extends Controller
 {
-    public function index($request)
+    public function index()
     {
         // Get default Saved search config
         if (class_exists(SavedSearch::class)) {

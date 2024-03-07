@@ -38,7 +38,8 @@
         <b>{{ $t('Deactivation date') }}</b>
       </template>
       <PMDatetimePicker v-model="deactivationDate"
-                        :withTime="true">
+                        :format="'YYYY-MM-DD'"
+                        :withTime="false">
         <template v-slot:button-content-datepicker>
           <img src="/img/calendar2-fill.svg">
         </template>
@@ -84,7 +85,7 @@
         reassing: false,
         checkboxValues: [],
 
-        deactivationDate: null,
+        deactivationDate: "",
         ruleName: null
       };
     },
