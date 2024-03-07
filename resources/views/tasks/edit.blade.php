@@ -92,7 +92,12 @@
                   data-target="#collapse-info"
                   @click="showTabs = !showTabs"
                 >
-                  <i class="fas fa-angle-right"></i>
+                  <template v-if="showTabs">
+                    <i class="fas fa-angle-right"></i>
+                  </template>
+                  <template v-else>
+                    <i class="fas fa-angle-left"></i>
+                  </template>
                 </button>
                 <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
                   <li class="nav-item" role="presentation">
@@ -135,8 +140,8 @@
                     role="tabpanel"
                     aria-labelledby="details-tab"
                   >
-                      <div class="ml-md-3 mt-3 mt-md-0" style="min-width:0px; max-width:400px; width:300px;">
-                        <div class="card">
+                      <div class="ml-md-3 mt-3 mt-md-0">
+                        <div class="card collapse-content">
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
@@ -216,7 +221,7 @@
                     role="tabpanel"
                     aria-labelledby="comments-tab"
                   >
-                    <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                    <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
                       <template v-if="panCommentInVueOptionsComponents">
                         <comment-container
                           commentable_type="ProcessMaker\Models\ProcessRequestToken"
@@ -346,7 +351,6 @@
           showReassignment: false,
           task,
           userHasAccessToTask,
-          statusCard: "card-header text-capitalize text-white text-status bg-success",
           selectedUser: [],
           hasErrors: false,
           redirectInProcess: false,
@@ -412,6 +416,14 @@
           },
           panCommentInVueOptionsComponents() {
             return 'pan-comment' in Vue.options.components;
+          },
+          statusCard() {
+            const header = {
+              "OVERDUE": "bg-danger",
+              "OPEN": "bg-success",
+              "COMPLETED": "bg-success",
+            };
+            return 'card-header text-capitalize text-white text-status ' + header[this.task.advanceStatus.toUpperCase()];
           },
         },
         methods: {
@@ -551,6 +563,9 @@
           switchTabInfo(tab) {
             this.showInfo = !this.showInfo;
           },
+          collapseTabs() {
+
+          }
         },
         mounted() {
           this.prepareData();
@@ -633,6 +648,12 @@
     border: 1px solid var(--borders, #CDDDEE);
     background: var(--white-w24, #FFF);
     color: #6a7888;
+  }
+  .collapse-content {
+    min-width:0px;
+    max-width:400px;
+    width:317px;
+    height:calc(100vh - 215px)
   }
 </style>
 @endsection

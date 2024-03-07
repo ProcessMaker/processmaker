@@ -276,48 +276,55 @@
             :timeline="false" />
       </div>
       @if (shouldShow('requestStatusContainer'))
-        <div v-if="statusLabel">
-          <button
-            role="button"
-            class="btn d-block mr-0 ml-auto button-collapse"
-            data-toggle="collapse"
-            data-target="#collapse-info"
-            @click="showTabs = !showTabs"
-          >
-          <i class="fas fa-angle-right"></i>
-          </button>
-          <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button
-                id="details-tab"
-                :class="{'nav-link': true, active: showInfo }"
-                data-bs-toggle="tab"
-                data-bs-target="#details"
-                type="button"
-                role="tab"
-                aria-controls="details"
-                aria-selected="true"
-                @click="switchTabInfo('details')"
-              >
-                @{{ __('Details') }}
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button
-                id="comments-tab"
-                :class="{'nav-link': true, active: !showInfo }"
-                data-bs-toggle="tab"
-                data-bs-target="#comments"
-                type="button"
-                role="tab"
-                aria-controls="comments"
-                aria-selected="false"
-                @click="switchTabInfo('comments')"
-              >
-                @{{ __('Comments') }}
-              </button>
-            </li>
-          </ul>
+        <div>
+          <template v-if="statusLabel">
+            <button
+              role="button"
+              class="btn d-block mr-0 ml-auto button-collapse"
+              data-toggle="collapse"
+              data-target="#collapse-info"
+              @click="showTabs = !showTabs"
+            >
+              <template v-if="showTabs">
+                <i class="fas fa-angle-right"></i>
+              </template>
+              <template v-else>
+                <i class="fas fa-angle-left"></i>
+              </template>
+            </button>
+            <ul v-if="showTabs" class="nav nav-tabs nav-collapse" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  id="details-tab"
+                  :class="{'nav-link': true, active: showInfo }"
+                  data-bs-toggle="tab"
+                  data-bs-target="#details"
+                  type="button"
+                  role="tab"
+                  aria-controls="details"
+                  aria-selected="true"
+                  @click="switchTabInfo('details')"
+                >
+                  @{{ __('Details') }}
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  id="comments-tab"
+                  :class="{'nav-link': true, active: !showInfo }"
+                  data-bs-toggle="tab"
+                  data-bs-target="#comments"
+                  type="button"
+                  role="tab"
+                  aria-controls="comments"
+                  aria-selected="false"
+                  @click="switchTabInfo('comments')"
+                >
+                  @{{ __('Comments') }}
+                </button>
+              </li>
+            </ul>
+          </template>
           <div class="tab-content">
             <div id="collapse-info" class="collapse show width">
               <div
@@ -327,9 +334,9 @@
                 role="tabpanel"
                 aria-labelledby="details-tab"
               >
-                <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                <div class="ml-md-3 mt-md-0 mt-3">
                   <template v-if="statusLabel">
-                    <div class="card">
+                    <div class="card collapse-content">
                       <ul class="list-group list-group-flush w-100">
                         @if ($canCancel == true && $request->status === 'ACTIVE')
                           <li class="list-group-item">
@@ -432,7 +439,7 @@
                 role="tabpanel"
                 aria-labelledby="comments-tab"
               >
-                <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
                   <template v-if="panCommentInVueOptionsComponents">
                     <comment-container
                       commentable_id="{{ $request->getKey() }}"
@@ -874,6 +881,12 @@
     letter-spacing: -0.28px;
     text-transform: uppercase;
     margin-bottom: 0.5rem;
+  }
+  .collapse-content {
+    min-width:0px;
+    max-width:400px;
+    width:317px;
+    height:calc(100vh - 215px)
   }
 </style>
 @endsection
