@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.10.0+next-20240228",
+    "version": "4.10.0+next-20240306",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -102,7 +102,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "f8392242",
+            "build": "8c7f726f",
             "custom": {
                 "package-ellucian-ethos": "1.15.3",
                 "package-plaid": "1.5.0",
@@ -133,7 +133,7 @@
             },
             "enterprise": {
                 "connector-docusign": "1.8.3",
-                "connector-idp": "1.8.0",
+                "connector-idp": "1.9.1",
                 "connector-pdf-print": "1.16.1",
                 "connector-send-email": "1.25.3",
                 "connector-slack": "1.8.0",
@@ -141,7 +141,7 @@
                 "docker-executor-node-ssr": "1.5.0",
                 "package-actions-by-email": "1.16.0",
                 "package-advanced-user-manager": "1.10.0",
-                "package-ai": "1.6.0",
+                "package-ai": "1.6.1",
                 "package-analytics-reporting": "1.5.1",
                 "package-auth": "1.17.1",
                 "package-cdata": "1.2.0",
@@ -154,12 +154,12 @@
                 "package-files": "1.13.2",
                 "package-googleplaces": "1.11.0",
                 "package-photo-video": "1.4.2",
-                "package-pm-blocks": "1.5.5",
+                "package-pm-blocks": "1.5.7",
                 "package-process-documenter": "1.9.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.8",
                 "package-projects": "1.2.5",
-                "package-savedsearch": "1.31.8",
+                "package-savedsearch": "1.33.0",
                 "package-sentry": "1.8.0",
                 "package-signature": "1.12.0",
                 "package-testing": "1.1.1",

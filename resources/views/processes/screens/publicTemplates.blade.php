@@ -4,14 +4,15 @@
                 <div class="flex-grow-1">
                     <pmql-input
                         ref="pmql_input"
-                        search-type="processes"
+                        search-type="screen_templates"
                         :value="pmql"
                         :url-pmql="urlPmql"
                         :filters-value="pmql"
                         :ai-enabled="false"
                         :show-filters="false"
                         :aria-label="$t('Search')"
-                        @submit="onNLQConversion">
+                        @submit="onNLQConversion"
+                        @pmqlchange="onChange">
                     </pmql-input>
                 </div>
             </div>
@@ -19,7 +20,8 @@
 
         <public-templates-listing ref="publicTemplatesListing"
                         :filter="filter"
-                        :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects') }}"
+                        :pmql="pmql"
+                        :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects', 'screen-templates') }}"
                         v-on:reload="reload">
         </public-templates-listing>
     </div>

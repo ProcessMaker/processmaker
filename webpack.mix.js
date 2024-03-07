@@ -136,6 +136,7 @@ mix
   .js("resources/js/tasks/show.js", "public/js/tasks/show.js")
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
+  .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
