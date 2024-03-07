@@ -423,7 +423,8 @@
               "OPEN": "bg-success",
               "COMPLETED": "bg-success",
             };
-            return 'card-header text-capitalize text-white text-status ' + header[this.task.advanceStatus.toUpperCase()];
+            const status = this.task.advanceStatus.toUpperCase();
+            return "card-header text-capitalize text-white text-status " + header[status];
           },
         },
         methods: {
