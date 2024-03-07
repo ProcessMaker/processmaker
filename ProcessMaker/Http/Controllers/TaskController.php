@@ -103,22 +103,30 @@ class TaskController extends Controller
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
-            $taskData = [
-                'task' => $task,
-                'dueLabels' => self::$dueLabels,
-                'manager' => $manager,
-                'submitUrl' => $submitUrl,
-                'files' => $task->processRequest->requestFiles(),
-                'addons' => $this->getPluginAddons('edit', []),
-                'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
-                'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
-            ];
             if (!empty($preview)) {
-                return view('tasks.preview', $taskData);
+                return view('tasks.preview', [
+                    'task' => $task,
+                    'dueLabels' => self::$dueLabels,
+                    'manager' => $manager,
+                    'submitUrl' => $submitUrl,
+                    'files' => $task->processRequest->requestFiles(),
+                    'addons' => $this->getPluginAddons('edit', []),
+                    'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                    'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                ]);
             }
 
             if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
-                return view('tasks.editMobile', $taskData);
+                return view('tasks.editMobile', [
+                    'task' => $task,
+                    'dueLabels' => self::$dueLabels,
+                    'manager' => $manager,
+                    'submitUrl' => $submitUrl,
+                    'files' => $task->processRequest->requestFiles(),
+                    'addons' => $this->getPluginAddons('edit', []),
+                    'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                    'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                ]);
             }
 
             UserResourceView::setViewed(Auth::user(), $task);
@@ -132,7 +140,18 @@ class TaskController extends Controller
                 'timezone',
                 'datetime_format',
             ]);
-            return view('tasks.edit', array_merge($taskData, ['currentUser' => $currentUser]));
+
+            return view('tasks.edit', [
+                'task' => $task,
+                'dueLabels' => self::$dueLabels,
+                'manager' => $manager,
+                'submitUrl' => $submitUrl,
+                'files' => $task->processRequest->requestFiles(),
+                'addons' => $this->getPluginAddons('edit', []),
+                'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+                'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                'currentUser' => $currentUser,
+            ]);
         }
     }
 }
