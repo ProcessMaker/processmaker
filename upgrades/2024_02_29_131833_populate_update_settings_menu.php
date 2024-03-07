@@ -114,7 +114,7 @@ class PopulateUpdateSettingsMenu extends Upgrade
         // Truncate the table settings_menus
         DB::table('settings_menus')->truncate();
         // Set the group_id
-        DB::table('settings_menus')->update([
+        DB::table('settings')->update([
             'group_id' => null,
         ]);
     }
