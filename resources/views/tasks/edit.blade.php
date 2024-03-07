@@ -209,8 +209,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
+                    <div
                     v-if="!showInfo"
                     id="comments"
                     v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
@@ -228,7 +227,8 @@
                         />
                       </template>
                     </div>
-                  </div>    
+                  </div> 
+                  </div>
                 </div>
                 <b-modal
                   v-model="showReassignment"
