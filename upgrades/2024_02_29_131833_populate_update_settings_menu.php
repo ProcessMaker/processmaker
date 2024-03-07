@@ -26,27 +26,31 @@ class PopulateUpdateSettingsMenu extends Upgrade
     {
         // Menu 1. Email SettingsMenus::EMAIL_GROUP_ID = 1
         SettingsMenus::firstOrCreate([
-            'menu_group' => SettingsMenus::EMAIL_MENU_GROUP,
-            'menu_group_icon' => SettingsMenus::EMAIL_MENU_ICON,
+            'menu_group' => SettingsMenus::EMAIL_MENU_GROUP
+        ], [
             'menu_group_order' => SettingsMenus::EMAIL_MENU_ORDER,
+            'ui' => json_encode(["icon" => SettingsMenus::EMAIL_MENU_ICON]),
         ]);
         // Menu 2. Integrations SettingsMenus::INTEGRATIONS_GROUP_ID = 2
         SettingsMenus::firstOrCreate([
-            'menu_group' => SettingsMenus::INTEGRATIONS_MENU_GROUP,
-            'menu_group_icon' => SettingsMenus::INTEGRATIONS_MENU_ICON,
+            'menu_group' => SettingsMenus::INTEGRATIONS_MENU_GROUP
+        ], [
             'menu_group_order' => SettingsMenus::INTEGRATIONS_MENU_ORDER,
+            'ui' => json_encode(["icon" => SettingsMenus::INTEGRATIONS_MENU_ICON]),
         ]);
         // Menu 3. Log-in & Auth SettingsMenus::LOG_IN_AUTH_GROUP_ID = 3
         SettingsMenus::firstOrCreate([
-            'menu_group' => SettingsMenus::LOG_IN_AUTH_MENU_GROUP,
-            'menu_group_icon' => SettingsMenus::LOG_IN_AUTH_MENU_ICON,
+            'menu_group' => SettingsMenus::LOG_IN_AUTH_MENU_GROUP
+        ], [
             'menu_group_order' => SettingsMenus::LOG_IN_AUTH_MENU_ORDER,
+            'ui' => json_encode(["icon" => SettingsMenus::LOG_IN_AUTH_MENU_ICON]),
         ]);
         // Menu 4. Users Settings SettingsMenus::USER_SETTINGS_GROUP_ID = 4
         SettingsMenus::firstOrCreate([
-            'menu_group' => SettingsMenus::USER_SETTINGS_MENU_GROUP,
-            'menu_group_icon' => SettingsMenus::USER_SETTINGS_MENU_ICON,
+            'menu_group' => SettingsMenus::USER_SETTINGS_MENU_GROUP
+        ], [
             'menu_group_order' => SettingsMenus::USER_SETTINGS_MENU_ORDER,
+            'ui' => json_encode(["icon" => SettingsMenus::USER_SETTINGS_MENU_ICON]),
         ]);
     }
 
@@ -57,16 +61,13 @@ class PopulateUpdateSettingsMenu extends Upgrade
      */
     public function up()
     {
-        $menus = DB::table('settings_menus')->select('id', 'menu_group')->get()->toArray();
-
-        Setting::chunk(100, function ($settings) use ($menus) {
+        Setting::chunk(100, function ($settings) {
             foreach ($settings as $setting) {
                 // Define the value of 'menu_group' based on 'group'
                 switch ($setting->group) {
                     case 'Actions By Email':
                     case 'Email Default Settings':
-                        $key = SettingsMenus::EMAIL_GROUP_ID;
-                        $setting->group_id = $menus[$key]->id;
+                        $id = $this->getId(SettingsMenus::EMAIL_MENU_GROUP);
                         break;
                     case 'Log-In Options': // Log-In and Password
                     case 'LDAP':
@@ -81,24 +82,24 @@ class PopulateUpdateSettingsMenu extends Upgrade
                     case 'SSO - Keycloak':
                     case 'SSO - Microsoft':
                     case 'SSO - SAML':
-                        $key = SettingsMenus::LOG_IN_AUTH_GROUP_ID;
-                        $setting->group_id = $menus[$key]->id;
+                        $id = $this->getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
                         break;
                     case 'User Signals':
                     case 'Users': // Additional Properties
-                        $key = SettingsMenus::USER_SETTINGS_GROUP_ID;
-                        $setting->group_id = $menus[$key]->id;
+                        $id = $this->getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
                         break;
                     case 'IDP': // Intelligent Document Processing
                     case 'DocuSign':
                     case 'External Integrations': // Enterprise Integrations
-                        $key = SettingsMenus::INTEGRATIONS_GROUP_ID;
-                        $setting->group_id = $menus[$key]->id;
+                        $id = $this->getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
                     default:
                         break;
                 }
-                $setting->save();
+                if ($id !== null) {
+                    $setting->group_id = $id;
+                    $setting->save();
+                }
             }
         });
     }
@@ -110,6 +111,19 @@ class PopulateUpdateSettingsMenu extends Upgrade
      */
     public function down()
     {
-        //
+        // Truncate the table settings_menus
+        DB::table('settings_menus')->truncate();
+        // Set the group_id
+        DB::table('settings')->update([
+            'group_id' => null,
+        ]);
+    }
+
+    /**
+     * Get the Id related to the specific menu_group
+     */
+    private function getId($menuName)
+    {
+        return DB::table('settings_menus')->where('menu_group', $menuName)->pluck('id')->first();
     }
 }
