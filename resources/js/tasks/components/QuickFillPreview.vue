@@ -176,10 +176,10 @@ export default {
 .suggested-task {
   display: flex;
   align-items: center;
-  border: 1px solid #fef7e2;
+  border: 1px solid #f1e4ba;
   margin: 20px 0;
   padding: 10px 20px;
-  background-color: #f1e4ba;
+  background-color: #fef7e2;
   height: 64px;
 }
 
@@ -201,11 +201,6 @@ export default {
   margin: 0 -16px;
 }
 
-.button-container {
-  padding: 0 -1px;
-  height: 64px;
-}
-
 .second-container {
   background-color: #f6f9fb;
   border-top: 1px solid #f6f9fb;
@@ -222,23 +217,8 @@ export default {
   margin: 20px;
 }
 
-.quick-fill-text {
-  margin-left: 8px;
-}
-
 .custom-table-class {
   background-color: #fff;
-}
-
-.suggested-task {
-  border: 1px solid #f1e4ba;
-  padding: 10px;
-  background-color: #fef7e2;
-  height: 64px;
-}
-
-.suggested-task span {
-  color: #556271;
 }
 
 .text-container {
