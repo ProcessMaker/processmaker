@@ -46,28 +46,28 @@ export default {
       selectedType: {
         type: "Form",
         icon: "fas fa-file",
-        description: "Fill the form and the information will be copied to the other forms and saved as a draft.",
+        description: "Design interactive and complex multi-page forms.",
       },
       screenTypes: [
         {
           type: "Form",
           icon: "fas fa-file",
-          description: "Fill the form and the information will be copied to the other forms and saved as a draft.",
+          description: "Design interactive and complex multi-page forms.",
         },
         {
           type: "E-Mail",
           icon: "fas fa-envelope",
-          description: "Fill the form and the information will be copied to the other forms and saved as a draft.",
+          description: "Compose the email body for email messages.",
         },
         {
           type: "Display",
           icon: "fas fa-desktop",
-          description: "Fill the form and the information will be copied to the other forms and saved as a draft.",
+          description: "Display information or allow Request participants to download files.",
         },
         {
           type: "Conversational",
           icon: "fas fa-comment",
-          description: "Fill the form and the information will be copied to the other forms and saved as a draft.",
+          description: "Design functional rule-based modern chat style experiences.",
         },
       ],
     };
