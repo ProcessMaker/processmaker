@@ -1,7 +1,7 @@
 <template>
   <multiselect
     v-model="selectedType"
-    :options="screenTypes"
+    :options="screenTypeOptions"
     track-by="type"
     label="type"
     aria-label="type"
@@ -19,7 +19,7 @@
       <div class="type-container">
         <i class="type-icon-placeholder pr-3" :class="props.option.icon" />
         <span class="type-desc">
-          <span class="type-title-placeholder">{{ props.option.type }}</span>
+          <span class="type-title-placeholder">{{ props.option.typeHuman }}</span>
           <span class="type-desc-placeholder">{{ props.option.description }}</span>
         </span>
       </div>
@@ -28,7 +28,7 @@
       <div class="type-container">
         <i class="type-icon p-3" :class="props.option.icon" />
         <span class="type-desc">
-          <span class="type-title-option">{{ props.option.type }}</span>
+          <span class="type-title-option">{{ props.option.typeHuman }}</span>
           <span class="type-desc-option">{{ props.option.description }}</span>
         </span>
       </div>
@@ -39,45 +39,83 @@
 <script>
 
 export default {
-  props: ["copyAssetMode"],
+  props: ["copyAssetMode", "screenTypes"],
   data() {
     return {
       isDisabled: false,
       selectedType: {
-        type: "Form",
+        type: "FORM",
+        typeHuman: "Form",
         icon: "fas fa-file",
         description: "Design interactive and complex multi-page forms.",
       },
-      screenTypes: [
-        {
-          type: "Form",
-          icon: "fas fa-file",
-          description: "Design interactive and complex multi-page forms.",
-        },
-        {
-          type: "E-Mail",
-          icon: "fas fa-envelope",
-          description: "Compose the email body for email messages.",
-        },
-        {
-          type: "Display",
-          icon: "fas fa-desktop",
-          description: "Display information or allow Request participants to download files.",
-        },
-        {
-          type: "Conversational",
-          icon: "fas fa-comment",
-          description: "Design functional rule-based modern chat style experiences.",
-        },
-      ],
     };
+  },
+  computed: {
+    screenTypeOptions() {
+      // Add icons and descriptions to the appropriate screen type options
+      const optionsArray = Object.entries(this.screenTypes).map(([key, value]) => {
+        let type;
+        let typeHuman;
+        let icon;
+        let description;
+
+        switch (key) {
+          case "FORM":
+            type = "FORM";
+            typeHuman = "Form";
+            icon = "fas fa-file";
+            description = this.$t("Design interactive and complex multi-page forms.");
+            break;
+          case "EMAIL":
+            type = "EMAIL";
+            typeHuman = "E-mail";
+            icon = "fas fa-envelope";
+            description = this.$t("Compose the email body for email messages.");
+            break;
+          case "DISPLAY":
+            type = "DISPLAY";
+            typeHuman = "Display";
+            icon = "fas fa-desktop";
+            description = this.$t("Display information or allow Request participants to download files.");
+            break;
+          case "CONVERSATIONAL":
+            type = "CONVERSATIONAL";
+            typeHuman = "Conversational";
+            icon = "fas fa-comment";
+            description = this.$t("Design functional rule-based modern chat style experiences.");
+            break;
+
+          default:
+            type = "FORM",
+            typeHuman = this.$t("Form");
+            icon = "fas fa-file";
+            description = this.$t("Design interactive and complex multi-page forms.");
+            break;
+        }
+
+        return {
+          type,
+          typeHuman,
+          icon,
+          description,
+        };
+      });
+
+      // Update the order of the options in the optionsArray
+      const order = ["FORM", "EMAIL", "DISPLAY", "CONVERSATIONAL"];
+
+      const sortedOptionsArray = optionsArray.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
+
+      return sortedOptionsArray;
+    },
   },
   mounted() {
     if (this.copyAssetMode) {
       this.isDisabled = true;
     }
 
-    this.selectedType.type = "Form";
+    this.selectedType.type = "FORM";
     this.$emit("input", this.selectedType.type);
   },
   methods: {
