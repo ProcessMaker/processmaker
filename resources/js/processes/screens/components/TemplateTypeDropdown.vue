@@ -11,19 +11,20 @@
     :show-labels="false"
     :prevent-autofocus="true"
     class="template-type-select mt-2"
+    @input="emitSelectedTemplate"
   >
     <template slot="singleLabel" slot-scope="props">
       <div class="type-container">
         <TemplateIcon class="template-type-icon" />
         <span class="type-desc">
-          <span class="template-type-placeholder">{{ props.option }}</span>
+          <span class="template-type-placeholder">{{ props.option.type }}</span>
         </span>
       </div>
     </template>
     <template slot="option" slot-scope="props">
       <div class="type-container">
         <span class="type-desc">
-          <span class="type-title-option">{{ props.option }}</span>
+          <span class="type-title-option">{{ props.option.type }}</span>
         </span>
       </div>
     </template>
@@ -39,9 +40,29 @@ export default {
   },
   data() {
     return {
-      selectedTemplateType: ["Public Templates"],
-      templateTypes: ["Public Templates", "My Templates"],
+      selectedTemplateType: [
+        {
+          type: "Public Templates",
+        },
+      ],
+      templateTypes: [
+        {
+          type: "Public Templates",
+        },
+        {
+          type: "My Templates",
+        },
+      ],
     };
+  },
+  mounted() {
+    this.selectedTemplateType.type = "Public Templates";
+    this.$emit("input", this.selectedTemplateType.type);
+  },
+  methods: {
+    emitSelectedTemplate() {
+      this.$emit("input", this.selectedTemplateType.type);
+    },
   },
 };
 
