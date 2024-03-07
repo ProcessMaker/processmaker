@@ -1,6 +1,5 @@
 <template>
   <b-input-group class="pm-datetime-picker">
-
     <b-form-input v-model="input"
                   type="text"
                   autocomplete="off"
@@ -9,7 +8,6 @@
                   :size="size"
                   class="pm-datetime-picker-input">
     </b-form-input>
-
     <b-input-group-append>
       <b-form-datepicker v-model="selectedDate"
                          button-only
@@ -27,7 +25,6 @@
         </template>
       </b-form-datepicker>
     </b-input-group-append>
-
     <b-input-group-append v-if="withTime">
       <b-form-timepicker v-model="selectedTime"
                          button-only
@@ -44,7 +41,6 @@
         </template>
       </b-form-timepicker>
     </b-input-group-append>
-
   </b-input-group>
 </template>
 
@@ -127,7 +123,6 @@
           return moment().tz(this.guestTimeZone).format(format);
         }
       },
-
       convertFromISOString(dateString) {
         if (!this.isDatetime(dateString)) {
           return dateString;
@@ -140,7 +135,6 @@
         }
         return moment(dateString).tz("UTC").toISOString();
       },
-
       isDatetime(string) {
         if (!string) {
           return false;
