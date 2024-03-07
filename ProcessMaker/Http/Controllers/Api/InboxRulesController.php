@@ -23,7 +23,8 @@ class InboxRulesController extends Controller
         $per_page = $request->input('per_page', 10);
         $filter = $request->input('filter', '');
 
-        $query = InboxRule::query();
+        $query = InboxRule::query()
+                ->where('active','=','1');
 
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
@@ -70,7 +71,10 @@ class InboxRulesController extends Controller
      */
     public function update(Request $request, $inbox_rule_id)
     {
-        // Logic to update an existing inbox rule
+        $inboxRule = InboxRule::find($inbox_rule_id);
+        $inboxRule->update([
+        ]);
+        $inboxRule->save();
     }
 
     /**
@@ -81,7 +85,11 @@ class InboxRulesController extends Controller
      */
     public function destroy($inbox_rule_id)
     {
-        // Logic to delete an existing inbox rule
+        $inboxRule = InboxRule::find($inbox_rule_id);
+        $inboxRule->update([
+            'active' => 0,
+        ]);
+        $inboxRule->save();
     }
 
     /**

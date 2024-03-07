@@ -1,4 +1,4 @@
-<template>
+<template><!--Edit id {{ $route.params.id }}-->
   <div class="pm-inbox-rule pr-3 pl-3">
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
@@ -27,7 +27,8 @@
       </PMPanelWithCustomHeader>
       <PMPanelWithCustomHeader class="ml-3 actions"
                                :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
-        <InboxRuleEdit :count="count" :inbox-rule="inboxRule">
+        <InboxRuleEdit :count="count" 
+                       :inbox-rule="inboxRule">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>  
     </div>
@@ -83,7 +84,7 @@
         if (this.newSavedSearchId) {
           return this.newSavedSearchId
         }
-        
+
         if (this.newSavedSearchIdFromSelector) {
           return this.newSavedSearchIdFromSelector
         }
@@ -99,12 +100,15 @@
       }
     },
     mounted() {
-      console.log("mounted. rule id", this.ruleId)
+      if (this.$route.params.inboxRule) {
+        this.inboxRule = this.$route.params.inboxRule;
+      }
+      console.log("mounted. rule id", this.ruleId);
       if (this.ruleId) {
         window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
-          .then(response => {
-            this.inboxRule = response.data
-          })
+                .then(response => {
+                  this.inboxRule = response.data;
+                });
       }
     },
     methods: {

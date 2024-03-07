@@ -22,6 +22,10 @@ class InboxRule extends ProcessMakerModel
         'make_draft' => 'boolean',
         'submit_data' => 'boolean',
     ];
+    
+    protected $fillable = [
+        'active'
+    ];
 
     /**
      * Define the relationship with ProcessRequestToken model

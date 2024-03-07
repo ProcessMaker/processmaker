@@ -36,10 +36,10 @@
 
       <template v-slot:cell-end_date="{ row, header, rowIndex }">
         <InboxRulesRowButtons :ref="'inboxRulesRowButtons-'+rowIndex"
-                      :value="convertUTCToPMFormat(row['end_date'])"
-                      :row="row"
-                      @onEditRule="onEditRule"
-                      @onRemoveRule="onRemoveRule">
+                              :value="convertUTCToPMFormat(row['end_date'])"
+                              :row="row"
+                              @onEditRule="onEditRule"
+                              @onRemoveRule="onRemoveRule">
         </InboxRulesRowButtons>
       </template>
 
@@ -135,9 +135,16 @@
         this.$router.push({name: 'edit', params: {id: 1}});
       },
       onEditRule(row) {
-        this.$router.push({name: 'edit', params: {id: row.id}});
+        //this.$router.push({name: 'edit', params: {inboxRule: row}});
+        this.$router.push({name: 'edit', params: {id: 1}});
       },
       onRemoveRule(row) {
+        window.ProcessMaker.apiClient
+                .delete('/tasks/rules/' + row.id)
+                .then(response => {
+                  this.requestData();
+                  alert("removed");
+                });
       },
       convertUTCToPMFormat(value) {
         if (!moment(value).isValid()) {

@@ -111,8 +111,8 @@ export default {
         .get("saved-searches/" + this.savedSearchId)
         .then(response => {
           this.savedSearch = response.data;
-          this.columns = this.defaultColumns = response.data._adjusted_columns.filter(c => c.field !== 'is_priority');
-          this.savedSearchAdvancedFilter = response.data.advanced_filter
+          this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
+          this.savedSearchAdvancedFilter = response.data.advanced_filter;
         });
     },
     showColumns() {
