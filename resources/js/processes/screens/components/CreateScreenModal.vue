@@ -24,6 +24,7 @@
           <screen-type-dropdown
             v-model="formData.type"
             :copy-asset-mode="copyAssetMode"
+            :screen-types="screenTypes"
           />
           <div class="template-type-label pt-4">
             <p>{{ templateTypeLabel }}</p>
