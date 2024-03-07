@@ -270,7 +270,8 @@
           userIsProcessManager,
           showTree: false,
           is_loading: false,
-          autoSaveDelay: 5000,
+          autoSaveDelay: 2000,
+          firstChange: true,
         },
         watch: {
           task: {
@@ -282,6 +283,16 @@
               }
             }
           },
+          formData: {
+            deep: true,
+            handler(formData) {
+              if (this.firstChange) {
+                this.firstChange = false;
+              } else {              
+                this.handleAutosave();
+              }
+            }
+          }
         },
         computed: {
           taskDefinitionConfig () {
@@ -463,10 +474,11 @@
             this.task = task;
           },
           autosaveApiCall() {
+            this.is_loading = true;
+            const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
             return ProcessMaker.apiClient
-            .put("drafts/" + this.task.id, this.formData)
+            .put("drafts/" + this.task.id, draftData)
             .then(() => {
-              this.is_loading = true;
             })
             .finally(() => {
               this.is_loading = false;

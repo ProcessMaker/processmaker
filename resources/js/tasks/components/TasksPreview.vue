@@ -34,13 +34,26 @@
               </div>
               <b-tooltip
                 target="saved-status"
-                custom-class="pm-table-tooltip"
+                custom-class="auto-save-tooltip"
               >
-                <div class="">
+                <div class="tooltip-case-title">
                   {{ task.process_request.case_title }}
+                </div>
+                <div class="tooltip-draft-date">
+                  <FontAwesomeIcon v-if="task.draft" class="text-success" :icon="savedIcon" />
+                  {{ $t('Last Autosave: ')+lastAutosave }}
                 </div>
               </b-tooltip>
               <div class="ml-auto mr-0 text-right">
+                <b-button
+                  class="icon-button"
+                  :aria-label="$t('Erase')"
+                  variant="light"
+                  v-b-tooltip.hover title="Erase Draft"
+                  @click="eraseDraft()"
+                >
+                  <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                </b-button>
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Previous Tasks')"
@@ -113,10 +126,26 @@ import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 import TaskSaveNotification from "./TaskSaveNotification.vue";
 import "splitpanes/dist/splitpanes.css";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import _ from 'lodash';
+import moment from "moment";
 
 export default {
-  components: { Splitpanes, Pane, TaskLoading, TaskSaveNotification },
+  components: { Splitpanes, Pane, TaskLoading, TaskSaveNotification, FontAwesomeIcon },
   mixins: [PreviewMixin, autosaveMixins],
+  watch: {
+    task: {
+      deep: true,
+      handler(task) {
+        if (task.draft) {
+          this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+        } else {
+          this.lastAutosave = "-";
+        }
+      },
+    },
+  },
   updated() {
     const resizeOb = new ResizeObserver((entries) => {
       const { width } = entries[0].contentRect;
@@ -133,6 +162,7 @@ export default {
         this.handleAutosave();
       }
     });
+    this.savedIcon = faCheckCircle;
   },
   methods: {
     fillWithQuickFillData(data) {
@@ -140,12 +170,24 @@ export default {
     },
     autosaveApiCall() {
       this.options.is_loading = true;
+      const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, this.formData)
+        .put("drafts/" + this.task.id, draftData)
         .then(() => {
         })
         .finally(() => {
           this.options.is_loading = false;
+        });
+    },
+    eraseDraft() {
+      ProcessMaker.apiClient
+        .delete("drafts/" + this.task.id)
+        .then(() => {
+          this.isLoading = setTimeout(() => {
+            this.stopFrame = true;
+            this.taskTitle = this.$t("Task Lorem");
+          }, 4900);
+          this.showSideBar(this.task, this.data);
         });
     },
   },
@@ -185,19 +227,45 @@ export default {
   grid-row-start: 1;
   grid-column-start: 1;
 }
-.pm-table-tooltip {
+.auto-save-tooltip {
   opacity: 1 !important;
 }
-.pm-table-tooltip .tooltip-inner {
+.auto-save-tooltip .tooltip-inner {
   background-color: #FFFFFF;
   color: #566877;
   box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
   max-width: 250px;
   padding: 14px;
   border-radius: 7px;
+  border: 1px solid #CDDDEE;
 }
-.pm-table-tooltip .arrow::before {
-  border-bottom-color: #F2F8FE !important;
-  border-top-color: #F2F8FE !important;
+.auto-save-tooltip .arrow::before {
+  border-bottom-color: #CDDDEE !important;
+  border-top-color: #CDDDEE !important;
+}
+.tooltip-case-title {
+  font-weight: 700;
+  font-size: 16px;
+}
+.tooltip-draft-date {
+  font-weight: 400;
+  font-size: 16px;
+}
+.icon-button {
+  display: inline-block;
+  width: 46px;
+  height: 36px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 0px;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  vertical-align: unset;
+}
+
+.icon-button img {
+  width: 16px;
+  height: 16px;
 }
 </style>

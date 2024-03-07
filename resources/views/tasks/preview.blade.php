@@ -185,6 +185,7 @@
           userIsProcessManager,
           is_loading: false,
           autoSaveDelay: 5000,
+          firstChange: true,
         },
         watch: {
           task: {
@@ -199,12 +200,16 @@
           formData: {
             deep: true,
             handler(formData) {
-              window.top.postMessage(
-                {
-                  typeData: "form-data",
-                  data: this.formData,
-                },
-                "*");
+              if (this.firstChange) {
+                this.firstChange = false;
+              } else {
+                window.top.postMessage(
+                  {
+                    typeData: "form-data",
+                    data: this.formData,
+                  },
+                  "*");
+              }
             }
           }
         },

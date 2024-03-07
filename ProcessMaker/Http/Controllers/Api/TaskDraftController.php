@@ -15,9 +15,13 @@ class TaskDraftController extends Controller
     public function update(Request $request, ProcessRequestToken $task)
     {
         $search = ['task_id' => $task->id];
-        $filteredData = Arr::except($request->all(), ['_user', '_request']);
-        $draft = TaskDraft::updateOrCreate($search,['data' => $filteredData]);
+        $draft = TaskDraft::updateOrCreate($search,['data' => $request->all()]);
 
         return new ApiResource($draft);
+    }
+    public function delete(ProcessRequestToken $task)
+    {
+        $draft = TaskDraft::where('task_id', $task->id)->delete();
+        return response([], 204);
     }
 }

@@ -24,6 +24,8 @@ const PreviewMixin = {
         is_loading: false,
       },
       autoSaveDelay: 2000,
+      savedIcon: null,
+      lastAutosave: "",
     };
   },
   methods: {

@@ -186,6 +186,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // TaskDrafts
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
+    Route::delete('drafts/{task}', [TaskDraftController::class, 'delete'])->name('taskdraft.delete');
 
     // Inbox Rules
     Route::prefix('tasks/rules')->group(function () {
