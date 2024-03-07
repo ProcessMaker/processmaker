@@ -227,7 +227,7 @@
                         />
                       </template>
                     </div>
-                  </div> 
+                  </div>
                   </div>
                 </div>
                 <b-modal
