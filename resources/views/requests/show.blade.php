@@ -276,7 +276,7 @@
             :timeline="false" />
       </div>
       @if (shouldShow('requestStatusContainer'))
-        <div>
+        <div v-if="statusLabel">
           <button
             role="button"
             class="btn d-block mr-0 ml-auto button-collapse"
@@ -290,13 +290,14 @@
             <li class="nav-item" role="presentation">
               <button
                 id="details-tab"
-                class="nav-link active"
-                data-toggle="tab"
-                data-target="#details"
+                :class="{'nav-link': true, active: showInfo }"
+                data-bs-toggle="tab"
+                data-bs-target="#details"
                 type="button"
                 role="tab"
                 aria-controls="details"
                 aria-selected="true"
+                @click="switchTabInfo('details')"
               >
                 @{{ __('Details') }}
               </button>
@@ -304,13 +305,14 @@
             <li class="nav-item" role="presentation">
               <button
                 id="comments-tab"
-                class="nav-link active"
-                data-toggle="tab"
-                data-target="#comments"
+                :class="{'nav-link': true, active: !showInfo }"
+                data-bs-toggle="tab"
+                data-bs-target="#comments"
                 type="button"
                 role="tab"
                 aria-controls="comments"
-                aria-selected="true"
+                aria-selected="false"
+                @click="switchTabInfo('comments')"
               >
                 @{{ __('Comments') }}
               </button>
@@ -318,7 +320,13 @@
           </ul>
           <div class="tab-content">
             <div id="collapse-info" class="collapse show width">
-              <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+              <div
+                v-if="showInfo"
+                id="details"
+                v-bind:class="{ 'tab-pane':true, fade: true, show: showInfo, active: showInfo }"
+                role="tabpanel"
+                aria-labelledby="details-tab"
+              >
                 <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
                   <template v-if="statusLabel">
                     <div class="card">
@@ -417,8 +425,26 @@
                   </template>
                 </div>
               </div>
+              <div
+                v-if="!showInfo"
+                id="comments"
+                v-bind:class="{ 'tab-pane':true, fade: true, show: !showInfo, active: !showInfo }"
+                role="tabpanel"
+                aria-labelledby="comments-tab"
+              >
+                <div class="ml-md-3 mt-md-0 mt-3" style="min-width:0px; max-width:400px; width:300px;">
+                  <template v-if="panCommentInVueOptionsComponents">
+                    <comment-container
+                      commentable_id="{{ $request->getKey() }}"
+                      commentable_type="{{ get_class($request) }}"
+                      name="{{ $request->name }}"
+                      :readonly="request.status === 'COMPLETED'"
+                      :header="false"
+                    />
+                  </template>
+                </div>
+              </div>
             </div>
-            <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">...2</div>
           </div>
         </div>
       @endif
@@ -486,6 +512,7 @@
           isObjectLoading: false,
           showTree: false,
           showTabs: true,
+          showInfo: true,
         };
       },
       computed: {
@@ -611,6 +638,9 @@
             this.isObjectLoading = true;
           }
           ProcessMaker.EventBus.$emit('tab-switched', tab);
+        },
+        switchTabInfo(tab) {
+          this.showInfo = !this.showInfo;
         },
         onLoadedObject() {
           this.isObjectLoading = false;
