@@ -15,8 +15,8 @@
     ]])
 @endsection
 @section('content')
-    <div class="px-3" id="settings">
-        <settings-groups ref="settings-groups"></settings-groups>
+    <div id="settings">
+        <settings-menu ref="settings-groups"></settings-menu>
     </div>
     @isset($addons)
         @foreach ($addons as $addon)
