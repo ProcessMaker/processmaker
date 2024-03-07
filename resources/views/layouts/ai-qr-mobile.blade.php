@@ -105,7 +105,7 @@
               @php
                 $loginLogo = \ProcessMaker\Models\Setting::getLogo();
               @endphp
-              <a href="#" class="navbar-brand pl-2">
+              <a href="#" class="navbar-brand pl-2 d-flex align-items-center">
                 <img alt="Login logo" class="navbar-logo" src={{$loginLogo}}>
               </a>
             </nav>
