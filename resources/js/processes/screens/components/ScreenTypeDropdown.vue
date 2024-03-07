@@ -87,7 +87,7 @@ export default {
             break;
 
           default:
-            type = "FORM",
+            type = "FORM";
             typeHuman = this.$t("Form");
             icon = "fas fa-file";
             description = this.$t("Design interactive and complex multi-page forms.");
