@@ -138,19 +138,16 @@ export default {
     getMenuGrups() {
       ProcessMaker.apiClient.get('/settings/menu-groups?order_by=menu_group_order')
       .then(response => {
-        this.transformResponse(response.data);
+        this.menuGroups = response.data;
+        this.checkCollapedMenus();
       });
     },
-    transformResponse(response) {
+    checkCollapedMenus() {
       var arrayCollaped = {};
-      response.sort((a, b) => {
-          return a.menu_group_order - b.menu_group_order;
-      });
-      response.forEach((element) => {
+      this.menuGroups.forEach((element) => {
         arrayCollaped[element.id] = !(element.menu_group_order === 1);
       });
-      this.collapsedMenus = arrayCollaped
-      this.menuGroups = response;
+      this.collapsedMenus = arrayCollaped;
     },
     isSelected(item) {
       return this.selectedItem === item;
