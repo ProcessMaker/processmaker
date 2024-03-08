@@ -586,8 +586,7 @@ class ScreenController extends Controller
     public function getFields(Screen $screen)
     {
          if ($screen) {
-             $screenFields = $screen->fields->map(fn($field) => $field->field);
-             return $screenFields;
+             return $screen->fields->map(fn($field) => $field->field);
          } else {
              return response()->json(['error' => 'Screen not found'], 404);
          }
