@@ -54,12 +54,17 @@ const ListMixin = {
         }
         this.previousAdvancedFilter = advancedFilter;
 
+        const include = "process,processRequest,processRequest.user,user,data".split(",");
+        if (this.additionalIncludes) {
+          include.push(...this.additionalIncludes);
+        }
+
         // Load from our api client
         ProcessMaker.apiClient
           .get(
             `${this.endpoint}?page=${
               this.page
-            }&include=process,processRequest,processRequest.user,user,data`
+            }&include=` + include.join(",")
               + `&pmql=${
                 encodeURIComponent(pmql)
               }&per_page=${

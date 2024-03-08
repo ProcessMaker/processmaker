@@ -250,6 +250,10 @@ export default {
     clone: {
       default: false,
     },
+    additionalIncludes: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
