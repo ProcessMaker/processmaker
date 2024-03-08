@@ -4,7 +4,6 @@
       <b-tab :title="group" v-for="(group, index) in groups" :key="group">
         <b-card class="border-top-0 p-0" no-body>
           <b-card-body class="p-3">
-            {{ group }}
             <settings-listing
               :group="group"
               @refresh="refresh"
