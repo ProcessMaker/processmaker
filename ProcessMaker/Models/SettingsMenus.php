@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Setting;
 
 class SettingsMenus extends ProcessMakerModel
 {
@@ -73,5 +74,10 @@ class SettingsMenus extends ProcessMakerModel
             'menu_group' => 'required',
             'menu_group_icon' => 'required',
         ];
+    }
+
+    public function groups()
+    {
+        return $this->hasMany(Setting::class, 'group_id');
     }
 }
