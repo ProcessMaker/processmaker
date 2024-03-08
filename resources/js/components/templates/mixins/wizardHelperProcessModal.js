@@ -89,7 +89,7 @@ export default {
     completed() {
       if (!this.importingProcessTemplate && this.shouldImportProcessTemplate) {
         this.importProcessTemplate();
-      } else if (this.shouldImportProcessTemplate) {
+      } else if (!this.importingProcessTemplate && !this.shouldImportProcessTemplate) {
         this.showHelperProcess = false;
         this.$bvModal.hide("processWizard");
       }
