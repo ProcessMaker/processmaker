@@ -1,9 +1,10 @@
-<template><!--Edit id {{ $route.params.id }}-->
+<template>
   <div class="pm-inbox-rule pr-3 pl-3">
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
-      <PMPanelWithCustomHeader class="filters"
-                               :title="$t('Step1:') + ' ' + $t('Define the filtering criteria')">
+      <PMPanelWithCustomHeader 
+        class="filters"
+        :title="$t('Step1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
             @showColumns="showColumns"
@@ -13,7 +14,6 @@
             >
           </InboxRuleButtons>
         </template>
-
         <InboxRuleFilters
           v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
@@ -25,12 +25,15 @@
           >
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
-      <PMPanelWithCustomHeader class="ml-3 actions"
-                               :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
-        <InboxRuleEdit :count="count" 
-                       :inbox-rule="inboxRule">
+
+      <PMPanelWithCustomHeader 
+        class="ml-3 actions"
+        :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
+        <InboxRuleEdit 
+          :count="count" 
+          :inbox-rule="inboxRule">
         </InboxRuleEdit>
-      </PMPanelWithCustomHeader>  
+      </PMPanelWithCustomHeader>
     </div>
   </div>
 </template>
@@ -76,21 +79,16 @@
       savedSearchIdForFilters() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
-
         if (this.inboxRule) {
           return this.inboxRule.saved_search_id
         }
-
         if (this.newSavedSearchId) {
           return this.newSavedSearchId
         }
-
         if (this.newSavedSearchIdFromSelector) {
           return this.newSavedSearchIdFromSelector
         }
-
         return null;
-
       },
       isNew() {
         return !this.ruleId;
@@ -100,10 +98,6 @@
       }
     },
     mounted() {
-      if (this.$route.params.inboxRule) {
-        this.inboxRule = this.$route.params.inboxRule;
-      }
-      console.log("mounted. rule id", this.ruleId);
       if (this.ruleId) {
         window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {

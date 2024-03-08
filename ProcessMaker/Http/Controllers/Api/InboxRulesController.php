@@ -23,8 +23,7 @@ class InboxRulesController extends Controller
         $per_page = $request->input('per_page', 10);
         $filter = $request->input('filter', '');
 
-        $query = InboxRule::query()
-                ->where('active','=','1');
+        $query = InboxRule::query();
 
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
@@ -41,13 +40,13 @@ class InboxRulesController extends Controller
     /**
      * Retrieve a specific inbox rule by its ID.
      *
-     * @param int $inbox_rule_id
+     * @param int $idInboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Request $request, $inbox_rule_id)
+    public function show(Request $request, $idInboxRule)
     {
         return new ApiResource(
-            InboxRule::findOrFail($inbox_rule_id)
+            InboxRule::findOrFail($idInboxRule)
         );
     }
 
@@ -59,43 +58,69 @@ class InboxRulesController extends Controller
      */
     public function store(Request $request)
     {
-        // Logic to store a new inbox rule
+        $request->applyToCurrentInboxMatchingTasks;
+        $request->applyToFutureTasks;
+        $data = [
+            'name' => $request->ruleName,
+            'user_id' => 2,
+            'active' => true,
+            'end_date' => $request->deactivationDate,
+            'saved_search_id' => 1,
+            'process_request_token_id' => 1,
+            'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
+            'reassign_to_user_id' => $request->selectedPerson,
+            'make_draft' => true,
+            'submit_data' => true,
+            'data' => null
+        ];
+        InboxRule::create($data);
+        return response([], 204);
     }
 
     /**
      * Update an existing inbox rule.
      *
      * @param Request $request
-     * @param int $inbox_rule_id
+     * @param int $idInboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $inbox_rule_id)
+    public function update(Request $request, $idInboxRule)
     {
-        $inboxRule = InboxRule::find($inbox_rule_id);
-        $inboxRule->update([
-        ]);
-        $inboxRule->save();
+        $request->applyToCurrentInboxMatchingTasks;
+        $request->applyToFutureTasks;
+        $data = [
+            'name' => $request->ruleName,
+            'user_id' => 2,
+            'active' => true,
+            'end_date' => $request->deactivationDate,
+            'saved_search_id' => 1,
+            'process_request_token_id' => 1,
+            'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
+            'reassign_to_user_id' => $request->selectedPerson,
+            'make_draft' => true,
+            'submit_data' => true,
+            'data' => null
+        ];
+        InboxRule::findOrFail($idInboxRule)->update($data);
+        return response([], 204);
     }
 
     /**
      * Delete an existing inbox rule.
      *
-     * @param int $inbox_rule_id
+     * @param int $idInboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($inbox_rule_id)
+    public function destroy($idInboxRule)
     {
-        $inboxRule = InboxRule::find($inbox_rule_id);
-        $inboxRule->update([
-            'active' => 0,
-        ]);
-        $inboxRule->save();
+        InboxRule::findOrFail($idInboxRule)->delete();
+        return response([], 204);
     }
 
     /**
      * Retrieve inbox rule log.
      *
-     * @param int $inbox_rule_id
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function executionLog(Request $request)

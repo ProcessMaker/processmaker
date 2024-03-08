@@ -23,9 +23,7 @@ class InboxRule extends ProcessMakerModel
         'submit_data' => 'boolean',
     ];
     
-    protected $fillable = [
-        'active'
-    ];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     /**
      * Define the relationship with ProcessRequestToken model

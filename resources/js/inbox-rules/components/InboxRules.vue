@@ -132,18 +132,19 @@
         this.$refs["inboxRulesRowButtons-" + index].close();
       },
       onCreateRule() {
-        this.$router.push({name: 'edit', params: {id: 1}});
+        this.$router.push({name: 'new'});
       },
       onEditRule(row) {
-        //this.$router.push({name: 'edit', params: {inboxRule: row}});
-        this.$router.push({name: 'edit', params: {id: 1}});
+        this.$router.push({name: 'edit', params: {inboxRule: row}});
       },
       onRemoveRule(row) {
         window.ProcessMaker.apiClient
                 .delete('/tasks/rules/' + row.id)
                 .then(response => {
+                  let message = "The inbox rule '{{name}}' was removed.";
+                  message = this.$t(message, {name: row.name});
+                  ProcessMaker.alert(message, "success");
                   this.requestData();
-                  alert("removed");
                 });
       },
       convertUTCToPMFormat(value) {

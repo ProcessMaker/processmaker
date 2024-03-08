@@ -22,6 +22,7 @@
         </b-form-select>
       </b-form-group>
     </b-form-group>
+
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('Rule Behavior') }}</b>
@@ -39,6 +40,7 @@
       </b-form-checkbox>
 
     </b-form-group>
+
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('Deactivation date') }}</b>
@@ -51,12 +53,14 @@
         </template>
       </PMDatetimePicker>
     </b-form-group>
+
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('Give this rule a name *') }}</b>
       </template>
       <b-form-input v-model="ruleName" placeholder="Enter your name"></b-form-input>
     </b-form-group>
+
     <b-form-group>
       <div class="d-flex flex-nowrap">
         <div  class="flex-grow-1 d-flex align-items-center">
@@ -84,13 +88,13 @@
       PMDatetimePicker
     },
     props: {
-      count: {
-        type: Number,
-        default: 0
-      },
       inboxRule: {
         type: Object,
         default: null
+      },
+      count: {
+        type: Number,
+        default: 0
       }
     },
     data() {
@@ -105,15 +109,6 @@
       };
     },
     watch: {
-      /*applyToCurrentInboxMatchingTasks(a, b) {
-       console.log("applyToCurrentInboxMatchingTasks", a, b);
-       },
-       applyToFutureTasks(a, b) {
-       console.log("deactivationDate", a, b);
-       },
-       deactivationDate(a, b) {
-       console.log("applyToFutureTasks", a, b);
-       },*/
       inboxRule: {
         handler() {
           this.setInboxRuleData();
@@ -130,12 +125,35 @@
         this.$router.push({name: 'index'});
       },
       onSave() {
-        window.ProcessMaker.apiClient
-                .delete('/tasks/rules/' + this.ruleId)
-                .then(response => {
-                  console.log(response);
-                });
-        this.$router.push({name: 'index'});
+        let params = {
+          actionsTask: this.actionsTask,
+          selectedPerson: this.selectedPerson,
+          applyToCurrentInboxMatchingTasks: this.applyToCurrentInboxMatchingTasks,
+          applyToFutureTasks: this.applyToFutureTasks,
+          deactivationDate: this.deactivationDate,
+          ruleName: this.ruleName
+        };
+        if (this.inboxRule) {
+          window.ProcessMaker.apiClient
+                  .put('/tasks/rules/' + this.inboxRule.id, params)
+                  .then(response => {
+                    this.$router.push({name: 'index'});
+
+                    let message = "The inbox rule '{{name}}' was updated.";
+                    message = this.$t(message, {name: this.ruleName});
+                    ProcessMaker.alert(message, "success");
+                  });
+        } else {
+          window.ProcessMaker.apiClient
+                  .post('/tasks/rules', params)
+                  .then(response => {
+                    this.$router.push({name: 'index'});
+
+                    let message = "The inbox rule {{name}} was created.";
+                    message = this.$t(message, {name: this.ruleName});
+                    ProcessMaker.alert(message, "success");
+                  });
+        }
       },
       setInboxRuleData() {
         if (this.inboxRule) {
@@ -151,16 +169,17 @@
         }
       },
       requestUser(filter, callback) {
-        ProcessMaker.apiClient.get(this.getUrlUsers(filter)).then(response => {
-          for (let i in response.data.data) {
-            this.persons.push({
-              text: response.data.data[i].fullname,
-              value: response.data.data[i].id
-            });
-          }
-        });
+        ProcessMaker.apiClient.get(this.getUrlUser(filter))
+                .then(response => {
+                  for (let i in response.data.data) {
+                    this.persons.push({
+                      text: response.data.data[i].fullname,
+                      value: response.data.data[i].id
+                    });
+                  }
+                });
       },
-      getUrlUsers(filter) {
+      getUrlUser(filter) {
         let page = 1;
         let perPage = 100;
         let orderBy = "username";
