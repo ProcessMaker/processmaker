@@ -132,14 +132,13 @@ export default {
     };
   },
   mounted() {
-    //this.getMenuGrups();
-    this.transformResponse(this.harcodedResponse);
+    this.getMenuGrups();
   },
   methods: {
     getMenuGrups() {
       ProcessMaker.apiClient.get('/settings/menu-groups?order_by=menu_group_order')
       .then(response => {
-        console.log(response.data);
+        this.transformResponse(response.data);
       });
     },
     transformResponse(response) {
