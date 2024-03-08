@@ -1,7 +1,7 @@
 import SettingsGroups from "./components/SettingsGroups";
-import SettingsMenu from "./components/SettingsMenu"
+import SettingsMain from "./components/SettingsMain"
 
 new Vue({
   el: "#settings",
-  components: { SettingsGroups, SettingsMenu },
+  components: { SettingsGroups, SettingsMain },
 });
