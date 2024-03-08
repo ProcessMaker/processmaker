@@ -26,6 +26,10 @@
             :copy-asset-mode="copyAssetMode"
             :screen-types="screenTypes"
           />
+          <div class="template-type-label pt-4">
+            <p>{{ templateTypeLabel }}</p>
+          </div>
+          <template-type-dropdown />
         </b-col>
         <b-col cols="4">
           <template v-if="countCategories">
@@ -111,6 +115,7 @@ import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import ScreenTypeDropdown from "./ScreenTypeDropdown.vue";
+import TemplateTypeDropdown from "./TemplateTypeDropdown.vue";
 import {
   isQuickCreate as isQuickCreateFunc,
   screenSelectId,
@@ -126,6 +131,7 @@ export default {
     Required,
     ProjectSelect,
     ScreenTypeDropdown,
+    TemplateTypeDropdown,
   },
   mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
@@ -168,6 +174,9 @@ export default {
     },
     subtitle() {
       return this.$t("Select the screen type and style.");
+    },
+    templateTypeLabel() {
+      return this.$t("Styles for the Screen Type").toUpperCase();
     },
   },
   mounted() {
@@ -264,6 +273,12 @@ export default {
 
 .footer-btns {
   padding-top: 100px;
+}
+
+.template-type-label {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 700;
 }
 
 </style>
