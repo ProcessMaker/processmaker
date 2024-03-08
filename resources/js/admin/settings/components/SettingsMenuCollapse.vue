@@ -79,9 +79,9 @@ export default {
       });
     },
     checkCollapedMenus() {
-      var arrayCollaped = {};
+      let arrayCollaped = {};
       this.menuGroups.forEach((element) => {
-        arrayCollaped[element.id] = !(element.menu_group_order === 1);
+        arrayCollaped[element.id] = element.menu_group_order !== 1;
       });
       this.collapsedMenus = arrayCollaped;
     },
