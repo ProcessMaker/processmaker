@@ -50,11 +50,14 @@ export default {
                       });
                   }
                 );
-                  break;
-                  case 'add-to-project':
-                    this.showAddToProjectModal(data.title, data.id);
-                  break;
-              }
+                break;
+              case 'add-to-project':
+                this.showAddToProjectModal(data.title, data.id);
+                break;
+              case 'create-template':
+                this.showCreateTemplateModal(data.title, data.id, data.type);
+                break;
+            }
           } else {
               switch (actionType) {
               case "edit-screen":
