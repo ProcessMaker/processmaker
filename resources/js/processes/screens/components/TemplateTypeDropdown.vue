@@ -57,11 +57,11 @@ export default {
   },
   mounted() {
     this.selectedTemplateType.type = "Public Templates";
-    this.$emit("input", this.selectedTemplateType.type);
+    this.$emit("selected-template", this.selectedTemplateType.type);
   },
   methods: {
     emitSelectedTemplate() {
-      this.$emit("input", this.selectedTemplateType.type);
+      this.$emit("selected-template", this.selectedTemplateType.type);
     },
   },
 };
