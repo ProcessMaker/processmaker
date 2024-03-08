@@ -27,23 +27,10 @@
               <div id="saved-status" class="my-1">
                 <task-save-notification
                   :options="options"
+                  :task="task"
+                  :date="lastAutosave"
                 />
-                <a class="lead text-secondary font-weight-bold">
-                  {{ task.element_name }}
-                </a>
               </div>
-              <b-tooltip
-                target="saved-status"
-                custom-class="auto-save-tooltip"
-              >
-                <div class="tooltip-case-title">
-                  {{ task.process_request.case_title }}
-                </div>
-                <div class="tooltip-draft-date">
-                  <FontAwesomeIcon v-if="task.draft" class="text-success" :icon="savedIcon" />
-                  {{ $t('Last Autosave: ')+lastAutosave }}
-                </div>
-              </b-tooltip>
               <div class="ml-auto mr-0 text-right">
                 <b-button
                   class="icon-button"
@@ -173,7 +160,12 @@ export default {
       const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
         .put("drafts/" + this.task.id, draftData)
-        .then(() => {
+        .then((response) => {
+          this.task.draft = _.merge(
+            {},
+            this.task.draft,
+            response.data
+          );
         })
         .finally(() => {
           this.options.is_loading = false;
@@ -188,6 +180,7 @@ export default {
             this.taskTitle = this.$t("Task Lorem");
           }, 4900);
           this.showSideBar(this.task, this.data);
+          this.task.draft = null;
         });
     },
   },
@@ -226,30 +219,6 @@ export default {
   overflow: auto;
   grid-row-start: 1;
   grid-column-start: 1;
-}
-.auto-save-tooltip {
-  opacity: 1 !important;
-}
-.auto-save-tooltip .tooltip-inner {
-  background-color: #FFFFFF;
-  color: #566877;
-  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
-  max-width: 250px;
-  padding: 14px;
-  border-radius: 7px;
-  border: 1px solid #CDDDEE;
-}
-.auto-save-tooltip .arrow::before {
-  border-bottom-color: #CDDDEE !important;
-  border-top-color: #CDDDEE !important;
-}
-.tooltip-case-title {
-  font-weight: 700;
-  font-size: 16px;
-}
-.tooltip-draft-date {
-  font-weight: 400;
-  font-size: 16px;
 }
 .icon-button {
   display: inline-block;

@@ -479,6 +479,7 @@
             return ProcessMaker.apiClient
             .put("drafts/" + this.task.id, draftData)
             .then(() => {
+              ProcessMaker.alert(this.$t('Saved'), 'success')
             })
             .finally(() => {
               this.is_loading = false;
