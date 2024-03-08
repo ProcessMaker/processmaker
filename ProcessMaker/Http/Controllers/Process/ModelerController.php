@@ -28,11 +28,38 @@ class ModelerController extends Controller
     use ProcessMapTrait;
 
     /**
-     * Invokes the Process Modeler for rendering.
+     * Display the modeler interface for a specific process.
+     *
+     * This method renders the modeler interface for a specific process,
+     * allowing users to view and edit the process in the modeler.
+     * It checks for any plugin addons to customize the display,
+     * and if found, renders the custom blade view with the provided alternatives.
+     * Otherwise, it renders the default modeler interface view with prepared data.
+     *
+     * @param ModelerManager $manager The ModelerManager instance.
+     * @param Process $process The Process instance to be displayed.
+     * @param Request $request The current HTTP request.
+     * @return \Illuminate\View\View The view for the modeler interface.
      */
     public function show(ModelerManager $manager, Process $process, Request $request)
     {
-        return view('processes.modeler.index', $this->prepareModelerData($manager, $process, $request));
+        // Default view for the modeler interface
+        $defaultView = 'processes.modeler.index';
+
+        // Get plugin addons for the 'show' action
+        $addons = $this->getPluginAddons('show', []);
+
+        // Retrieve custom blade view and alternatives from addons
+        $customBlade = ($addons[0] ?? [])['new-blade'];
+        $alternatives = ($addons[0] ?? [])['alternatives'];
+
+        // If a custom blade view and alternatives are provided, render the custom view
+        if ($customBlade && $alternatives) {
+            return view($customBlade, compact('alternatives'));
+        }
+        
+        // Otherwise, render the default modeler interface view with prepared data
+        return view($defaultView, $this->prepareModelerData($manager, $process, $request));
     }
     /**
      * Prepare data for displaying a process in the modeler.
