@@ -19,7 +19,7 @@ mix.webpackConfig({
   externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
   resolve: {
     extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json", "*.yml", "*.yaml"],
-    symlinks: true,
+    symlinks: false,
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
     },
