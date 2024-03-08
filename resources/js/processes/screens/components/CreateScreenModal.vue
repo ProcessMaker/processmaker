@@ -29,7 +29,7 @@
           <div class="template-type-label pt-4">
             <p>{{ templateTypeLabel }}</p>
           </div>
-          <template-type-dropdown />
+          <screen-template-options />
         </b-col>
         <b-col cols="4">
           <template v-if="countCategories">
@@ -115,7 +115,7 @@ import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
 import ScreenTypeDropdown from "./ScreenTypeDropdown.vue";
-import TemplateTypeDropdown from "./TemplateTypeDropdown.vue";
+import ScreenTemplateOptions from "./ScreenTemplateOptions.vue";
 import {
   isQuickCreate as isQuickCreateFunc,
   screenSelectId,
@@ -131,7 +131,7 @@ export default {
     Required,
     ProjectSelect,
     ScreenTypeDropdown,
-    TemplateTypeDropdown,
+    ScreenTemplateOptions,
   },
   mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
