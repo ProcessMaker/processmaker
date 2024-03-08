@@ -73,7 +73,7 @@ mix
   // Copy files necessary for images for the designer/modeler to it's own img directory
   // .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
   // .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
-  // .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
+  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix
