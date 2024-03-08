@@ -162,8 +162,8 @@ export default {
   components: { Splitpanes, Pane, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
   mounted () {
-    window.addEventListener('message', (event) => {
-      this.data = event.data;
+    window.addEventListener('dataUpdated', (event) => {
+      this.data = event.detail;
     });
   },
   updated() {
@@ -178,16 +178,7 @@ export default {
   methods: {
     fillWithQuickFillData(data) {
       const message = this.$t('Task Filled succesfully');
-      if (this.showFrame1) {
-        document
-          .getElementById("tasksFrame1")
-          .contentWindow.postMessage(data, "*");
-      }
-      if (this.showFrame2) {
-        document
-          .getElementById("tasksFrame2")
-          .contentWindow.postMessage(data, "*");
-      }
+      this.sendEvent("fillData", data);
       this.showUseThisTask = false;
       ProcessMaker.alert(message, 'success');
     },
@@ -195,6 +186,15 @@ export default {
       this.previewData = data;
       this.showUseThisTask = true;
     },
+    sendEvent(name, data)
+    {
+      const event = new CustomEvent(name, {
+        detail: data
+      });
+      document
+        .getElementById("tasksFrame1")
+        .contentWindow.dispatchEvent(event);
+    }
   }
 };
 </script>

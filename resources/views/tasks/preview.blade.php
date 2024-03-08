@@ -196,7 +196,10 @@
           formData: {
             deep: true,
             handler(formData) {
-              window.top.postMessage(this.formData, "*");
+              const event = new CustomEvent('dataUpdated', {
+                detail: formData,
+              });
+              window.top.dispatchEvent(event);
             }
           }
         },
@@ -382,15 +385,14 @@
         },
         mounted() {
           this.prepareData();
-          window.addEventListener('message', message => {
-            this.formData = _.merge(this.formData, message.data);
+          
+          window.addEventListener('fillData', event => {
+            this.formData = _.merge(this.formData, event.detail);
           });
+
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
-
-
-        
     
     </script>
 
