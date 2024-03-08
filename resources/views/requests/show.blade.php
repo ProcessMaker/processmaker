@@ -90,14 +90,14 @@
                 </a>
               </li>
               @isset($addons)
-                @foreach ($addons as $addon)
+                @foreach ($addons as $addon) @if (!empty($addon['title']))
                   <li class="nav-item">
                     <a class="nav-link" id="{{ $addon['id'] . '-tab' }}" data-toggle="tab" href="{{ '#' . $addon['id'] }}"
                       role="tab" aria-controls="{{ $addon['id'] }}" aria-selected="false">
                       {{ __($addon['title']) }}
                     </a>
                   </li>
-                @endforeach
+                @endif @endforeach
               @endisset
             </template>
           </ul>
