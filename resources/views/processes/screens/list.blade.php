@@ -35,6 +35,7 @@
         <screen-listing ref="screenListing"
                         :filter="filter"
                         :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects') }}"
+                        :current-user-id={{ \Auth::user()->id}}
                         v-on:reload="reload">
         </screen-listing>
     </div>
