@@ -38,7 +38,8 @@
         "moment-timezone": "^0.5.31",
         "resolve-url-loader": "^3.1.2",
         "sass-loader": "^12.6.0",
-        "vue-loader": "^15.10.0"
+        "vue-loader": "^15.10.0",
+        "yaml-loader": "^0.8.1"
     },
     "dependencies": {
         "@babel/runtime": "^7.23.8",
