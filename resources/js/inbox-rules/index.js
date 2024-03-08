@@ -1,6 +1,5 @@
 import Index from './components/Index.vue';
 import Edit from './components/Edit.vue';
-import InboxRuleFilters from './components/InboxRuleFilters.vue';
 
 Vue.use(VueRouter);
 const router = new VueRouter({
