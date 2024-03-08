@@ -32,7 +32,7 @@ class ModelerController extends Controller
      */
     public function show(ModelerManager $manager, Process $process, Request $request)
     {
-        return view('processes.modeler.index', $this->prepareShowData($manager, $process, $request));
+        return view('processes.modeler.index', $this->prepareModelerData($manager, $process, $request));
     }
     /**
      * Prepare data for displaying a process in the modeler.
