@@ -5,6 +5,10 @@
       :template="template"
       @show-details="showDetails()"
     />
+    <screen-template-card
+      v-if="type === 'screen'"
+      :template="template"
+    />
     <default-template-card
       v-else
       :template="template"
@@ -14,11 +18,12 @@
 </template>
 
 <script>
-import WizardTemplateCard from './WizardTemplateCard';
-import DefaultTemplateCard from './DefaultTemplateCard';
+import WizardTemplateCard from "./WizardTemplateCard.vue";
+import ScreenTemplateCard from "./ScreenTemplateCard.vue";
+import DefaultTemplateCard from "./DefaultTemplateCard.vue";
 
 export default {
-  components: {WizardTemplateCard, DefaultTemplateCard},
+  components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard },
   props: ["template", "type"],
   data() {
     return {
