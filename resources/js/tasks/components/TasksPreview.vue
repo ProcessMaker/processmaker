@@ -88,7 +88,7 @@
               </b-button>
               <div class="my-1 ml-2">
                 <a class="lead text-secondary font-weight-bold">
-                  {{ task.data._request.case_title }}
+                  {{ task.element_name }}
                 </a>
               </div>
             </div>
