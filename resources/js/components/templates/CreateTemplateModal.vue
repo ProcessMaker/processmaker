@@ -10,9 +10,11 @@
       @saveNewTemplate="saveTemplate"
       :setCustomButtons="true"
       :customButtons="customModalButtons"
-      size="md"
+      :size="modalSize ? modalSize : 'md'"
     >
-      <template>
+      <create-screen-template v-if="assetType === 'screen'" :screenType="screenType"/>
+      
+      <template v-else>
         <b-row align-v="start">
           <b-col>
             <required></required>
@@ -99,11 +101,12 @@ import Required from "../shared/Required.vue";
 import Modal from "../shared/Modal.vue";
 import FormErrorsMixin from "../shared/FormErrorsMixin";
 import CategorySelect from "../../processes/categories/components/CategorySelect.vue";
+import CreateScreenTemplate from "../../processes/screen-templates/components/CreateScreenTemplate.vue";
 
 export default {
-  components: { Modal, Required, CategorySelect },
+  components: { Modal, Required, CategorySelect, CreateScreenTemplate },
   mixins: [FormErrorsMixin],
-  props: ["assetName", "assetType", "assetId", "currentUserId"],
+  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType"],
   data() {
     return {
       errors: {},
@@ -128,7 +131,7 @@ export default {
   },
     computed: {
       title() {
-        return this.$t('Publish Template');
+        return this.$t('Create Template');
       },
       assetExistsError() {
           const capFirst = this.assetType[0].toUpperCase();
