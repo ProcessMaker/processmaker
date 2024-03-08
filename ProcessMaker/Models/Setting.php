@@ -93,6 +93,7 @@ class Setting extends ProcessMakerModel implements HasMedia
         'name',
         'helper',
         'group',
+        'group_id',
         'hidden',
         'ui',
     ];
@@ -369,5 +370,29 @@ class Setting extends ProcessMakerModel implements HasMedia
         }
 
         return $url . '?id=' . bin2hex(random_bytes(16));
+    }
+
+    /**
+     * Get the groups related to the specific group_id
+     *
+     * @param int menuId
+     *
+     * @return array
+     */
+    public static function groupsByMenu($menuId)
+    {
+        $query = Setting::query()->select('group')->groupBy('group')
+            ->where('group_id', $menuId)->pluck('group');
+        $response = $query->toArray();
+        $result = [];
+        foreach ($response as &$value) {
+            // Technical debts: we need to add int key to identify a group, currently this is a label
+            $result[] = [
+                'id' => $value,
+                'name' => $value,
+            ];
+        }
+
+        return $result;
     }
 }

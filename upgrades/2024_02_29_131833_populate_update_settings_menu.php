@@ -94,6 +94,7 @@ class PopulateUpdateSettingsMenu extends Upgrade
                         $id = $this->getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
                     default:
+                        $id = null;
                         break;
                 }
                 if ($id !== null) {

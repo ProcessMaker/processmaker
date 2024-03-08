@@ -25,6 +25,7 @@ class SettingController extends Controller
         'name',
         'helper',
         'group',
+        'group_id',
         'format',
         'created_at',
         'updated_at',
@@ -81,7 +82,7 @@ class SettingController extends Controller
     {
         $query = SettingsMenus::query();
 
-        $query->select('menu_group', 'ui');
+        $query->select('id', 'menu_group', 'ui');
 
         $orderBy = 'menu_group';
         $orderDirection = 'ASC';
@@ -96,6 +97,12 @@ class SettingController extends Controller
 
         $response = $query->orderBy($orderBy, $orderDirection)
             ->paginate($request->input('per_page', 10));
+
+        $response->map(function ($item) {
+            $item->groups = Setting::groupsByMenu($item->id);
+
+            return $item;
+        });
 
         return new ApiCollection($response);
     }
