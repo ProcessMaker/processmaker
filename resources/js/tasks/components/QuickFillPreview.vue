@@ -42,6 +42,7 @@
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="filter"
+          :additionalIncludes="['screenFilteredData']"
         >
           <template v-slot:tooltip="{ tooltipRowData }">
             <b-button
@@ -131,11 +132,11 @@ export default {
   methods: {
     selected(taskData) {},
     buttonThisData(tooltipRowData) {
-      this.$emit("quick-fill-data", tooltipRowData.data);
+      this.$emit("quick-fill-data", tooltipRowData.screen_filtered_data);
       this.$emit("close");
     },
     buttonPreviewThisData(tooltipRowData) {
-      this.$emit("quick-fill-data-preview", tooltipRowData.data);
+      this.$emit("quick-fill-data-preview", tooltipRowData.screen_filtered_data);
       this.$emit("close");
     },
   },

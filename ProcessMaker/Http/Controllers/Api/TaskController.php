@@ -107,8 +107,10 @@ class TaskController extends Controller
         $query->select('process_request_tokens.*');
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
-        if (in_array('data', $include)) {
-            unset($include[array_search('data', $include)]);
+        foreach (['data', 'screenFilteredData'] as $key) {
+            if (in_array($key, $include)) {
+                unset($include[array_search($key, $include)]);
+            }
         }
 
         $query->with($include);
