@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pl-3">
     <div class="main-container">
       <div class="button-container">
         <b-button
@@ -44,7 +44,26 @@
           :advanced-filter-prop="filter"
           :additionalIncludes="['screenFilteredData']"
         >
-          <template v-slot:tooltip="{ tooltipRowData }">
+          <template v-slot:preview-header="{ close, task }">
+            <div>
+              <b-button
+                  class="mr-2"
+                  variant="primary"
+                  :aria-label="$t('Use This Task Data')"
+                  @click="buttonThisData(task)"
+                >
+                  {{ $t('Use This Task Data') }}
+                </b-button>
+                <b-button
+                  class="close-button mr-2"
+                  variant="link"
+                  @click="close()"
+                >
+                  <i class="fas fa-times" />
+                </b-button>
+            </div>
+          </template>
+          <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
             <b-button
               class="icon-button"
               :aria-label="$t('Quick fill')"
@@ -60,7 +79,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="buttonPreviewThisData(tooltipRowData)"
+              @click="previewTasks(tooltipRowData, 93)"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -79,17 +98,17 @@ export default {
       processID: 27,
       filter: [
         {
-          subject: { type: "Status" },
+          subject: { type: "Field", value: "process_id" },
           operator: "=",
-          value: "Completed",
-          _column_field: "status",
-          _column_label: "Status",
+          value: this.task.process_id,
+        },
+        {
+          subject: { type: "Field", value: "element_id" },
+          operator: "=",
+          value: this.task.element_id,
         },
       ],
-      pmql:
-        '(user_id = 1 and status="Completed" and process_id=' +
-        this.task.process_id +
-        ")",
+      pmql: '(user_id = 1 and status="Completed")',
       columns: [
         {
           label: "Case #",
@@ -136,13 +155,12 @@ export default {
       this.$emit("close");
     },
     buttonPreviewThisData(tooltipRowData) {
-      this.$emit("quick-fill-data-preview", tooltipRowData.screen_filtered_data);
-      this.$emit("close");
     },
   },
 };
 </script>
 <style scoped>
+
 .btn-cancel {
   background-color: #d8e0e9;
 }
@@ -190,29 +208,6 @@ export default {
 
 .suggested-task span {
   color: #556271;
-}
-.main-container,
-.button-container {
-  border: 1px solid #f6f9fb;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  margin: 0 -16px;
-}
-
-.second-container {
-  background-color: #f6f9fb;
-  border-top: 1px solid #f6f9fb;
-  margin-left: -16px;
-  margin-right: -16px;
-}
-
-.third-container {
-  border-top: 1px solid #f6f9fb;
-  margin-left: 15px;
-  margin-right: 15px;
 }
 .content-container {
   margin: 20px;

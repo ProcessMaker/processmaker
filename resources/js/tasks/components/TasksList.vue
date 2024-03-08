@@ -155,7 +155,7 @@
             @mouseover="clearHideTimer"
             @mouseleave="hideTooltip"
           >
-          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData">
+          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
             <span>
               <i
                 v-if="!verifyURL('saved-searches')"
@@ -187,7 +187,11 @@
     <tasks-preview
       v-if="!verifyURL('saved-searches')"
       ref="preview"
-    />
+    >
+      <template v-slot:header="{ close, taskId }">
+        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)"></slot>
+      </template>
+    </tasks-preview>
   </div>
 </template>
 
@@ -350,6 +354,9 @@ export default {
     }
   },
   methods: {
+    getTask(taskId) {
+      return this.data.data.find(task => task.id === taskId);
+    },
     togglePriority(taskId, isPriority) {
       ProcessMaker.apiClient
         .put(`tasks/${taskId}/setPriority`, { is_priority: isPriority })
@@ -501,7 +508,7 @@ export default {
       }
       return link;
     },
-    previewTasks(info, size) {
+    previewTasks(info, size = null) {
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {

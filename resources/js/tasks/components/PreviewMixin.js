@@ -13,7 +13,6 @@ const PreviewMixin = {
       existPrev: false,
       existNext: false,
       loading: true,
-      paneMinSize: 0,
       showFrame: 1,
       showFrame1: false,
       showFrame2: false,
@@ -24,18 +23,19 @@ const PreviewMixin = {
       selectedTaskId: null,
       useThisDataButton: false,
       showUseThisTask: false,
+      splitpaneSize: 50,
     };
   },
   methods: {
     /**
      * Show the sidebar
      */
-    showSideBar(info, data, firstTime = false, task_id = null) {
-      let param = "";
-      if(task_id !== null){
-        param="/" + task_id;
-        this.useThisDataButton = true;
+    showSideBar(info, data, firstTime = false, size = null) {
+      if (size) {
+        this.splitpaneSize = size;
       }
+
+      let param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
@@ -61,10 +61,6 @@ const PreviewMixin = {
     hideButton() {
       this.isMouseOver = false;
     },
-    goQuickFill() {
-      this.showQuickFillPreview = true;
-      this.isSelectedTask = false;
-    },
     onClose() {
       this.showPreview = false;
       this.resetToDefault();
@@ -81,15 +77,11 @@ const PreviewMixin = {
       this.existPrev = false;
       this.existNext = false;
       this.loading = true;
-      this.paneMinSize = 0;
       this.showFrame = 1;
       this.showFrame1 = false;
       this.showFrame2 = false;
       this.isLoading = "";
       this.stopFrame = false;
-    },
-    setPaneMinSize(splitpanesWidth, minPixelWidth) {
-      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
     },
     /**
      * Defined Previuos and Next task
