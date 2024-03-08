@@ -215,7 +215,8 @@ export default {
 .menu-header:hover {
   background: #e5edf3;
 }
-.list-item-selected {
+.list-item-selected,
+.menu-header:focus {
   background: #e5edf3;
   color: #1572c2;
   font-weight: 700;
