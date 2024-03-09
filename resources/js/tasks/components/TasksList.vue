@@ -395,6 +395,7 @@ export default {
     },
     setupColumns() {
       this.tableHeaders = this.getColumns();
+      console.log('columns', this.tableHeaders);
     },
     getColumns() {
       if (this.$props.columns) {

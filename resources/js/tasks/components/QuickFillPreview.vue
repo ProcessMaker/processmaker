@@ -13,6 +13,7 @@
         <b-button
           class="close-button"
           variant="link"
+          @click="$emit('close')"
         >
           <i class="fas fa-times" />
         </b-button>
@@ -23,7 +24,7 @@
         <span>Select a previous task to reuse its filled data on the current task.</span>
       </div>
       <div class="third-container">
-        <div class="suggested-task">
+        <!-- <div class="suggested-task">
           <img
             src="../../../img/smartinbox-images/fill.svg"
             :alt="$t('No Image')"
@@ -33,7 +34,7 @@
             <span class="sub-text">Credit requested by Matthew Harris for  $US 4.900  |  Process: Client Request  |  Task: Loan Cre...</span>
           </div>
           
-        </div>
+        </div> -->
         <tasks-list
           ref="taskList"
           class="custom-table-class"
@@ -113,9 +114,6 @@ export default {
         {
           label: "Case #",
           field: "case_number",
-          sortable: true,
-          default: true,
-          width: 60,
           filter_subject: {
             type: "Relationship",
             value: "processRequest.case_number",
@@ -126,10 +124,6 @@ export default {
           label: "Case title",
           field: "case_title",
           name: "__slot:case_number",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
           filter_subject: {
             type: "Relationship",
             value: "processRequest.case_title",
@@ -137,13 +131,14 @@ export default {
           order_column: "process_requests.case_title",
         },
         {
-          label: "Due date",
-          field: "due_at",
+          label: "Completed",
+          field: "completed_at",
           format: "datetime",
-          sortable: true,
-          default: true,
-          width: 160,
-        },
+          filter_subject: {
+            type: "Field",
+            value: "completed_at",
+          },
+        }
       ],
       dataTasks: {},
     };

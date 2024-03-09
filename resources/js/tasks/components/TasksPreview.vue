@@ -93,7 +93,6 @@
             :task="task"
             :data="data"
             @quick-fill-data="fillWithQuickFillData"
-            @quick-fill-data-preview="fillWithPreviewQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
         </splitpane-container>
