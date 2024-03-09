@@ -113,17 +113,17 @@ class ScreenTemplate implements TemplateInterface
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        foreach ($response['export'] as $key => $asset) {
-            $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
-            if ($key === $uuid) {
-                $mode = 'copy';
-            }
-            $postOptions[$key] = [
-                'mode' => $mode,
-                'isTemplate' => true,
-                'saveAssetsMode' => $data['saveAssetsMode'],
-            ];
-        }
+        // foreach ($response['export'] as $key => $asset) {
+        //     $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
+        //     if ($key === $uuid) {
+        //         $mode = 'copy';
+        //     }
+        //     $postOptions[$key] = [
+        //         'mode' => $mode,
+        //         'isTemplate' => true,
+        //         'saveAssetsMode' => $data['saveAssetsMode'],
+        //     ];
+        // }
         $options = new Options($postOptions);
 
         // Create an exporter instance
@@ -136,8 +136,13 @@ class ScreenTemplate implements TemplateInterface
             'manifest' => json_encode($payload),
             'user_id' => \Auth::user()->id,
             'screen_type' => $screenType,
+            'media_collection' => '',
         ]);
 
+        $screenTemplate->saveOrFail();
+
+        // Update the media_collection attribute after saving
+        $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
         $screenTemplate->saveOrFail();
 
         return response()->json(['model' => $screenTemplate]);

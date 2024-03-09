@@ -1,0 +1,155 @@
+<template>
+    <div>
+        <b-tabs content-class="mt-3">
+            <b-tab :title="$t('Template Settings')" active>
+                <b-row>
+                  <b-col>
+                    <b-form-group
+                    required
+                    :label="$t('Template Name')"
+                    :description="formDescription('The template name must be unique.', 'name', errors)"
+                    :invalid-feedback="errorMessage('name', errors)"
+                    :state="errorState('name', errors)"
+                    >
+                        <b-form-input
+                            required
+                            autofocus
+                            v-model="templateData.name"
+                            autocomplete="off"
+                            :state="errorState('name', errors)"
+                            name="name"
+                        ></b-form-input>
+                    </b-form-group>
+
+                    <b-form-group
+                    required
+                    :label="$t('Description')"
+                    :invalid-feedback="errorMessage('description', errors)"
+                    :state="errorState('description', errors)"
+                    >
+                        <b-form-textarea
+                            required
+                            v-model="templateData.description"
+                            autocomplete="off"
+                            rows="3"
+                            :state="errorState('description', errors)"
+                            name="description"
+                        ></b-form-textarea>
+                    </b-form-group>
+
+                    <b-form-group
+                        required
+                        :label="$t('Type')"
+                        :state="errorState('type', errors)"
+                        :invalid-feedback="errorMessage('type', errors)"
+                    >
+                        <b-form-select
+                            required
+                            v-model="screenType"
+                            :options="screenTypes"
+                            name="type"
+                            disabled
+                        >
+                        </b-form-select>
+                    </b-form-group>
+
+                    <b-form-group
+                    required
+                    :label="$t('Version')"
+                    :invalid-feedback="errorMessage('version', errors)"
+                    :state="errorState('version', errors)"
+                    >
+                        <b-form-input
+                            required
+                            autofocus
+                            v-model="templateData.version"
+                            autocomplete="off"
+                            :state="errorState('version', errors)"
+                            name="version"
+                        ></b-form-input>
+                    </b-form-group>
+
+                    <category-select
+                        v-model="templateData.screen_category_id"
+                        :label="$t('Category')"
+                        api-get="screen_categories"
+                        api-list="screen_categories"
+                        name="category"
+                        :invalid-feedback="errorMessage('screen_category_id', errors)"
+                        :state="errorState('screen_category_id', errors)"
+                    />
+                  </b-col>
+                  <b-col>
+                    <multi-thumbnail-file-uploader label="Template Thumbnails"></multi-thumbnail-file-uploader>
+
+                    <b-form-group v-if="canMakePublicTemplates" class="mt-3">
+                        <b-form-checkbox
+                            id="make-screen-template-public"
+                            v-model="templateData.makePublic"
+                            name="make-screen-template-public"
+                            value="true"
+                            unchecked-value="false"
+                        >
+                        {{ $t('Make Public') }}
+                        </b-form-checkbox>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+            </b-tab>
+        </b-tabs>
+    </div>
+</template>
+
+<script>
+import Required from "../../../components/shared/Required.vue";
+import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
+import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader'
+
+export default {
+    components: {MultiThumbnailFileUploader },
+    mixins: [Required, FormErrorsMixin ],
+    props: ["screenType", "permission"],
+    data() {
+        return {
+            errors: {},
+            templateData: {
+                name: "",
+                description: "",
+                makePublic: false,
+                media_collection: '',
+                thumbnails: [],
+                type: this.screenType,
+                version: null,
+                unique_template_id: "",
+                screen_category_id: null
+            },
+            // TODO: Dynamically set the screenTypes array
+            screenTypes: [
+                {value: "FORM", text: "Form"},
+                {value: "DISPLAY", text: "Display"},
+                {value: "EMAIL", text: "Email"},
+                {value: "CONVERSATIONAL", text: "Conversational"},
+            ]
+        }
+    },
+    computed: {
+        canMakePublicTemplates() {
+            return this.permission.includes('publish-screen-templates');
+        }
+
+    },
+    watch: {
+        templateData: {
+            deep: true,
+            handler() {
+                if (this.templateData.name.length > 255) {
+                    this.errors.name = ['Name must be less than 255 characters.'];
+                } else {
+                    this.errors.name = null;
+                }
+                this.$emit("input", this.templateData, this.errors);
+            }
+        }
+    }
+}
+</script>
