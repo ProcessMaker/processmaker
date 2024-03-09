@@ -96,6 +96,7 @@
       :asset-name="screenTemplateName"
       :asset-id="screenId"
       :screenType="screenType"
+      :permission="permission"
       modal-size="lg"
     />
   </div>
