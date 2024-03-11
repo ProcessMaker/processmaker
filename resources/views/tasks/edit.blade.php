@@ -290,13 +290,6 @@
                 </b-modal>
               </div>
             @endif
-            <div v-if="panCommentInVueOptionsComponents">
-                <pan-comment :commentable_id="task.id"
-                             commentable_type="ProcessMaker\Models\ProcessRequestToken"
-                             :readonly="task.status === 'CLOSED'"
-                             :name="task.element_name"
-                             />
-            </div>
         </div>
     </div>
 @endsection

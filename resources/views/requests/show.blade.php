@@ -455,13 +455,6 @@
           </div>
         </div>
       @endif
-      <div v-if="panCommentInVueOptionsComponents">
-          <pan-comment commentable_id="{{ $request->getKey() }}"
-                       commentable_type="{{ get_class($request) }}"
-                       :readonly="request.status === 'COMPLETED'"
-                       name="{{ $request->name }}"
-                       />
-      </div>
     </div>
   </div>
 
