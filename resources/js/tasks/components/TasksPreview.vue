@@ -127,9 +127,16 @@ export default {
       const event = new CustomEvent(name, {
         detail: data
       });
-      document
+      if(this.showFrame1) {
+        document
         .getElementById("tasksFrame1")
         .contentWindow.dispatchEvent(event);
+      }
+      if(this.showFrame2) {
+        document
+        .getElementById("tasksFrame2")
+        .contentWindow.dispatchEvent(event);
+      }
     }
   }
 };
