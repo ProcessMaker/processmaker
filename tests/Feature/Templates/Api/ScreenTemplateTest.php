@@ -33,6 +33,7 @@ class ScreenTemplateTest extends TestCase
             'unique_template_id' => 'test-template-unique-id',
             'media_collection' => 'test-media-collection',
             'name' => 'Test Screen Template Creation',
+            'thumbnails' => '[]',
             'description' => 'Test Screen Template Description',
             'screen_category_id' => $screenCategoryId,
             'is_public' => false,
