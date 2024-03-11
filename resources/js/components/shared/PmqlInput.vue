@@ -17,6 +17,7 @@
 
           <pmql-input-filters
             v-if="showFilters"
+            ref="pmqlInputFilters"
             :type="searchType"
             :param-process="urlPmql ? '' : paramProcess"
             :param-status="urlPmql ? '' : paramStatus"
