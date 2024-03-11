@@ -61,7 +61,7 @@ export default {
       templateData: {},
       customModalButtons: [
         {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
-        {"content": "Publish", "action": "saveTemplate", "variant": "primary", "disabled": true, "hidden": false},
+        {"content": "Save", "action": "saveTemplate", "variant": "primary", "disabled": true, "hidden": false},
         {"content": "Update", "action": "updateTemplate", "variant": "secondary", "disabled": false, "hidden": true},
         {"content": "Save as New", "action": "saveNewTemplate", "variant": "primary", "disabled": true, "hidden": true},
       ],
@@ -102,6 +102,7 @@ export default {
       },
       close() {
         this.$bvModal.hide('createTemplate');
+        this.showWarning = false;
         // this.clear();
         // this.errors = {};
       },

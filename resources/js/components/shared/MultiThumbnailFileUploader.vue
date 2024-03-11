@@ -108,6 +108,14 @@ export default {
             dataProcess: {},
         }
     },
+    watch: {
+        images: {
+            deep: true,
+            handler() {
+                this.$emit('input', this.images);
+            }
+        }
+    },
     methods: {
         /**
          * Method to open a screen for image selection from hard drive

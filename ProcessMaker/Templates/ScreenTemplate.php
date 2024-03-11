@@ -97,7 +97,6 @@ class ScreenTemplate implements TemplateInterface
     public function save($request) : JsonResponse
     {
         $data = $request->all();
-
         // Find the required screen model
         $model = (new ExportController)->getModel('screen')->findOrFail($data['asset_id']);
 
@@ -108,22 +107,10 @@ class ScreenTemplate implements TemplateInterface
             return response()->json($response, 400);
         }
 
-        $uuid = $model->uuid;
         $screenType = $model->type;
 
         // Loop through each asset in the "export" array and set postOptions "mode" accordingly
         $postOptions = [];
-        // foreach ($response['export'] as $key => $asset) {
-        //     $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
-        //     if ($key === $uuid) {
-        //         $mode = 'copy';
-        //     }
-        //     $postOptions[$key] = [
-        //         'mode' => $mode,
-        //         'isTemplate' => true,
-        //         'saveAssetsMode' => $data['saveAssetsMode'],
-        //     ];
-        // }
         $options = new Options($postOptions);
 
         // Create an exporter instance
@@ -131,7 +118,7 @@ class ScreenTemplate implements TemplateInterface
         $exporter->export($model, ScreenExporter::class, $options);
         $payload = $exporter->payload();
 
-        // Create a new process template
+        // Create a new screen template
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => \Auth::user()->id,
@@ -142,7 +129,15 @@ class ScreenTemplate implements TemplateInterface
         $screenTemplate->saveOrFail();
 
         // Update the media_collection attribute after saving
-        $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
+        $mediaCollectionName = 'st-' . $screenTemplate->uuid . '-media';
+        $screenTemplate->media_collection = $mediaCollectionName;
+        $screenTemplate->saveOrFail();
+
+        // Add media to the media_collection after saving
+        $thumbnails = json_decode($data['thumbnails'], true);
+        foreach ($thumbnails as $thumbnail) {
+            $screenTemplate->addMediaFromBase64($thumbnail['url'])->toMediaCollection($mediaCollectionName);
+        }
         $screenTemplate->saveOrFail();
 
         return response()->json(['model' => $screenTemplate]);

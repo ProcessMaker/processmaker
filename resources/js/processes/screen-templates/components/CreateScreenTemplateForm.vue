@@ -64,7 +64,11 @@
                     />
                   </b-col>
                   <b-col>
-                    <multi-thumbnail-file-uploader :label="$t('Template Thumbnail')" class="mb-3"></multi-thumbnail-file-uploader>
+                    <multi-thumbnail-file-uploader 
+                        :label="$t('Template Thumbnail')" 
+                        class="mb-3"
+                        @input="handleThumbnails"
+                    />
 
                     <b-form-group
                     required
@@ -149,6 +153,11 @@ export default {
                 }
                 this.$emit("input", this.templateData, this.errors);
             }
+        }
+    },
+    methods: {
+        handleThumbnails(images) {
+            this.templateData.thumbnails = JSON.stringify(images);
         }
     }
 }
