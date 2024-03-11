@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
@@ -19,6 +20,10 @@ use StdClass;
 
 class Task extends ApiResource
 {
+    private $loadedData = null;
+
+    private static $screenFields = [];
+
     /**
      * Transform the resource into an array.
      *
@@ -31,8 +36,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $task = $this->resource->loadTokenInstance();
-            $array['data'] = $dataManager->getData($task);
+            $array['data'] = $this->getData();
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -131,6 +135,8 @@ class Task extends ApiResource
             }
         }
 
+        $this->setScreenFilteredData($array, $include);
+
         return $array;
     }
 
@@ -185,5 +191,38 @@ class Task extends ApiResource
         }
 
         return $assignedUsers;
+    }
+
+    private function setScreenFilteredData(&$array, $include)
+    {
+        if (in_array('screenFilteredData', $include)) {
+            $filtered = [];
+            $screenVersion = $this->getScreenVersion();
+            if ($screenVersion) {
+                if (!isset(self::$screenFields[$screenVersion->id])) {
+                    self::$screenFields[$screenVersion->id] = $screenVersion->fields;
+                }
+
+                foreach (self::$screenFields[$screenVersion->id] as $column) {
+                    $value = Arr::get($this->getData(), $column->field);
+                    if ($value) {
+                        $filtered[$column->field] = $value;
+                    }
+                }
+            }
+            $array['screen_filtered_data'] = $filtered;
+        }
+    }
+
+    private function getData()
+    {
+        if ($this->loadedData) {
+            return $this->loadedData;
+        }
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $this->loadedData = $dataManager->getData($task);
+
+        return $this->loadedData;
     }
 }

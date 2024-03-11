@@ -86,6 +86,7 @@
         blur: '2px',
         isPhotoVideo: false,
         cardStyles: 'pointer-events: none;',
+        iFramePostedData: null,
       }
     },
     computed: {
@@ -94,6 +95,9 @@
         return this.disableForm(json);
       },
       formData() {
+        if(this.iFramePostedData) {
+          return this.iFramePostedData;
+        }
         return this.rowData.data ? this.rowData.data : {};
       },
       printablePages() {
