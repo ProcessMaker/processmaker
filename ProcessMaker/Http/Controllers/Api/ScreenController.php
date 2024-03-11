@@ -583,7 +583,7 @@ class ScreenController extends Controller
      *
      * @return array
      */
-    public function getFields(Screen $screen)
+    public function getScreenFields(Screen $screen)
     {
          if ($screen) {
              return $screen->fields->map(fn($field) => $field->field);
