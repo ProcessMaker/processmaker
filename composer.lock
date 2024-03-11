@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6644f9db668330292f4f6ba80d608526",
+    "content-hash": "f1c41d5f3401558262dac816b1b821e9",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1511,7 +1511,7 @@
             "version": "v8.7.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:elastic/elastic-transport-php.git",
+                "url": "https://github.com/elastic/elastic-transport-php.git",
                 "reference": "4d7937f026393186f48b2e4fba6d8db85ca0dba6"
             },
             "dist": {
@@ -1555,6 +1555,10 @@
                 "psr-7",
                 "transport"
             ],
+            "support": {
+                "issues": "https://github.com/elastic/elastic-transport-php/issues",
+                "source": "https://github.com/elastic/elastic-transport-php/tree/v8.7.0"
+            },
             "time": "2023-05-23T08:44:23+00:00"
         },
         {
