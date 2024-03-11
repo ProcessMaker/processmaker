@@ -145,7 +145,7 @@
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
-                              <template v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
+                              <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
                                 <button
                                   v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                   type="button"
@@ -426,6 +426,9 @@
             };
             const status = this.task.advanceStatus.toUpperCase();
             return "card-header text-capitalize text-white text-status " + header[status];
+          },
+          isAllowReassignment() {
+            return this.task.definition.allowReassignment === "true";
           },
         },
         methods: {
