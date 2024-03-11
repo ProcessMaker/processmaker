@@ -204,9 +204,9 @@ trait TaskControllerIndexMethods
         return $response;
     }
 
-    private function applyResource($response, $request)
+    private function applyResource($response)
     {
-        return $response->map(function ($processRequestToken) use ($request) {
+        return $response->map(function ($processRequestToken) {
             return new Resource($processRequestToken);
         });
     }

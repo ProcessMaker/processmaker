@@ -137,7 +137,7 @@ class TaskController extends Controller
         $response = $this->applyUserFilter($response, $request, $user);
 
         // Map each item through its resource
-        $response = $this->applyResource($response, $request);
+        $response = $this->applyResource($response);
 
         $inOverdueQuery = ProcessRequestToken::query()
             ->whereIn('id', $response->pluck('id'))
