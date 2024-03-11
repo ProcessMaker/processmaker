@@ -49,7 +49,7 @@
                         :format="'YYYY-MM-DD'"
                         :withTime="false">
         <template v-slot:button-content-datepicker>
-          <img src="/img/calendar2-fill.svg">
+          <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')">
         </template>
       </PMDatetimePicker>
     </b-form-group>

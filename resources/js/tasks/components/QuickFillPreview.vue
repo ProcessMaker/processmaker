@@ -88,7 +88,6 @@ data() {
       //here logic for cancel buton
     },
     selected(taskData) {
-      //this.$root.$emit("selectedTaskForQuickFill", { task: this.task, data: this.data });
       this.$root.$emit("selectedTaskForQuickFill", { task: taskData, data: this.data });
     }
   }

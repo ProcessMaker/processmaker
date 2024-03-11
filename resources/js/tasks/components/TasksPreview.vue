@@ -36,7 +36,7 @@
                   variant="light"
                   @click="goQuickFill()"
                 >
-                  <img src="../../../img/smartinbox-images/fill.svg">
+                  <img src="../../../img/smartinbox-images/fill.svg" :alt="$t('Quick fill')">
                 </b-button>
                 <b-button
                   class="btn-light text-secondary"
