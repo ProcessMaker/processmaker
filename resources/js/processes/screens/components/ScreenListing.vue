@@ -97,6 +97,7 @@
       :asset-id="screenId"
       :screenType="screenType"
       :permission="permission"
+      :screen-types="types"
       headerClass="border-0"
       footerClass="border-0"
       modal-size="lg"
@@ -119,7 +120,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
-  props: ["filter", "id", "permission", "currentUserId"],
+  props: ["filter", "id", "permission", "currentUserId", 'types'],
   data() {
     return {
       orderBy: "title",

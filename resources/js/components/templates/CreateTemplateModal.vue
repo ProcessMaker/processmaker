@@ -19,7 +19,8 @@
       <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
       
       <create-screen-template-form 
-        v-if="assetType === 'screen'" 
+        v-if="assetType === 'screen'"
+        :types="screenTypes"
         :screenType="screenType"
         :permission="permission"
         @input="updateTemplateData"
@@ -43,7 +44,7 @@ import CreateTemplateForm from "./CreateTemplateForm.vue";
 export default {
   components: { Modal, Required, CategorySelect, CreateScreenTemplateForm, CreateTemplateForm },
   mixins: [FormErrorsMixin],
-  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass"],
+  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass", "screenTypes"],
   data() {
     return {
       showModal: false,

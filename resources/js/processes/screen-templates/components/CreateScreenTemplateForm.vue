@@ -36,21 +36,19 @@
                                 name="description"
                             ></b-form-textarea>
                         </b-form-group>
-
+                        
                         <b-form-group
                             required
                             :label="$t('Type')"
                             :state="errorState('type', errors)"
                             :invalid-feedback="errorMessage('type', errors)"
                         >
-                            <b-form-select
-                                required
+                            <screen-type-dropdown
                                 v-model="screenType"
-                                :options="screenTypes"
-                                name="type"
-                                disabled
-                            >
-                            </b-form-select>
+                                :screen-types="screenTypes"
+                                copy-asset-mode="true"
+                                hideDescription="true"
+                            />
                         </b-form-group>
 
                         <category-select
@@ -108,11 +106,12 @@
 import Required from "../../../components/shared/Required.vue";
 import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import MultiThumbnailFileUploader from '../../../components/shared/MultiThumbnailFileUploader'
+import ScreenTypeDropdown from "../../screens/components/ScreenTypeDropdown.vue";
 
 export default {
-    components: {MultiThumbnailFileUploader },
+    components: {MultiThumbnailFileUploader, ScreenTypeDropdown },
     mixins: [Required, FormErrorsMixin ],
-    props: ["screenType", "permission"],
+    props: ["screenType", "permission", "types"],
     data() {
         return {
             errors: {},

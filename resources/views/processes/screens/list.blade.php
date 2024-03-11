@@ -36,6 +36,7 @@
                         :filter="filter"
                         :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'projects', 'screen-templates') }}"
                         :current-user-id={{ \Auth::user()->id}}
+                        :types='@json($config->types)'
                         v-on:reload="reload">
         </screen-listing>
     </div>
