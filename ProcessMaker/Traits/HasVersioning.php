@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
 
 trait HasVersioning
@@ -103,6 +105,30 @@ trait HasVersioning
     public function getLatestVersion()
     {
         return $this->versions()->orderBy('id', 'desc')->published()->first();
+    }
+
+    /**
+     * Get the latest version of the model (process, screen, script)
+     *
+     * @return ProcessMakerModel The published version of the artifact
+     */
+    public function getPublishedVersion()
+    {
+        $implementation = WorkflowManager::NAYRA_PUBLISHER . get_class($this);
+        $existsCustomPublisher = $implementation
+            && WorkflowManager::existsServiceImplementation($implementation);
+        if ($existsCustomPublisher) {
+            $response = WorkflowManager::runServiceImplementation(
+                $implementation,
+                [
+                    'process' => $this,
+                ],
+                [],
+            );
+            return $response['publishedVersion'];
+        }
+
+        return $this->getLatestVersion();
     }
 
     /**

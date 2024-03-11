@@ -28,6 +28,8 @@ use ProcessMaker\Bpmn\Process;
  */
 class WorkflowManager extends Facade
 {
+    const NAYRA_PUBLISHER = 'nayra.publisher:';
+
     /**
      * Get the registered name of the component.
      *
