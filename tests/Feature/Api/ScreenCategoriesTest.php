@@ -87,7 +87,7 @@ class ScreenCategoriesTest extends TestCase
      */
     public function testScreensListing()
     {
-        $initialCount = ScreenCategory::count();
+        $initialCount = ScreenCategory::nonSystem()->count();
         // Create some screens
         $countScreens = 20;
         ScreenCategory::factory()->count($countScreens)->create();
@@ -121,7 +121,7 @@ class ScreenCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialInactiveCount = ScreenCategory::where('status', 'INACTIVE')->count();
+        $initialInactiveCount = ScreenCategory::nonSystem()->where('status', 'INACTIVE')->count();
 
         ScreenCategory::factory()->count(3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some screens
@@ -181,8 +181,7 @@ class ScreenCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ScreenCategory::where('status', 'ACTIVE')->count();
-        $initialInactiveCount = ScreenCategory::where('status', 'INACTIVE')->count();
+        $initialActiveCount = ScreenCategory::nonSystem()->where('status', 'ACTIVE')->count();
 
         // Create some screens
         $screenActive = [
@@ -271,7 +270,7 @@ class ScreenCategoriesTest extends TestCase
     public function testPagination()
     {
         // Number of screens in the tables at the moment of starting the test
-        $initialRows = ScreenCategory::all()->count();
+        $initialRows = ScreenCategory::nonSystem()->get()->count();
 
         // Number of rows to be created for the test
         $rowsToAdd = 7;

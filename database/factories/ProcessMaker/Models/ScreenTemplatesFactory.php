@@ -28,12 +28,13 @@ class ScreenTemplatesFactory extends Factory
         // $manifest = json_decode($response->getContent(), true);
 
         return [
-            'name' => $this->faker->unique()->sentence(3),
-            'description' => $this->faker->unique()->name(),
+            'unique_template_id' => '',
+            'name' => $this->faker->unique()->name(),
+            'description' => $this->faker->unique()->sentence(20),
             'user_id' => User::factory()->create()->getKey(),
             'editing_screen_uuid' => null,
             'screen_type' => 'FORM',
-            // 'manifest' => json_encode($manifest),
+            'media_collection' => $this->faker->unique()->name(),
             'manifest' => '{}',
             'is_public' => false,
             'is_system' => false,
