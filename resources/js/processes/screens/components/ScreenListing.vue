@@ -97,6 +97,8 @@
       :asset-id="screenId"
       :screenType="screenType"
       :permission="permission"
+      headerClass="border-0"
+      footerClass="border-0"
       modal-size="lg"
     />
   </div>

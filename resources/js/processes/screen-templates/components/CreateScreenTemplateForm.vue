@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-tabs content-class="mt-3">
+        <b-tabs class="screen-templates-form" content-class="p-4">
             <b-tab :title="$t('Template Settings')" active>
                 <b-row>
                   <b-col>
@@ -53,6 +53,19 @@
                         </b-form-select>
                     </b-form-group>
 
+                    <category-select
+                        v-model="templateData.screen_category_id"
+                        :label="$t('Category')"
+                        api-get="screen_categories"
+                        api-list="screen_categories"
+                        name="category"
+                        :invalid-feedback="errorMessage('screen_category_id', errors)"
+                        :state="errorState('screen_category_id', errors)"
+                    />
+                  </b-col>
+                  <b-col>
+                    <multi-thumbnail-file-uploader :label="$t('Template Thumbnail')" class="mb-3"></multi-thumbnail-file-uploader>
+
                     <b-form-group
                     required
                     :label="$t('Version')"
@@ -69,20 +82,7 @@
                         ></b-form-input>
                     </b-form-group>
 
-                    <category-select
-                        v-model="templateData.screen_category_id"
-                        :label="$t('Category')"
-                        api-get="screen_categories"
-                        api-list="screen_categories"
-                        name="category"
-                        :invalid-feedback="errorMessage('screen_category_id', errors)"
-                        :state="errorState('screen_category_id', errors)"
-                    />
-                  </b-col>
-                  <b-col>
-                    <multi-thumbnail-file-uploader label="Template Thumbnails"></multi-thumbnail-file-uploader>
-
-                    <b-form-group v-if="canMakePublicTemplates" class="mt-3">
+                    <b-form-group v-if="canMakePublicTemplates">
                         <b-form-checkbox
                             id="make-screen-template-public"
                             v-model="templateData.makePublic"
@@ -153,3 +153,29 @@ export default {
     }
 }
 </script>
+
+<style type="scss">
+.screen-templates-form {
+    .nav-tabs {
+        border: none !important;
+        .nav-link {
+            font-weight:bold;
+            padding: 15px 20px;
+            border-bottom: 0!important;
+            &.active {
+                box-shadow: none !important;
+            }
+        }
+        
+    }
+
+    .tab-content {
+        border: 1px solid #CDDDEE;
+    }
+
+    .image-thumbnails-container {
+        margin:0;
+        max-height: 270px;
+    }
+}   
+</style>

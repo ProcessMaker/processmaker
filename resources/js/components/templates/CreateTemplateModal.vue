@@ -12,6 +12,8 @@
       :setCustomButtons="true"
       :customButtons="customModalButtons"
       :size="modalSize ? modalSize : 'md'"
+      :headerClass="headerClass"
+      :footerClass="footerClass"
     >
       <required></required>
       <p class="mb-3" v-if="showWarning"><i class="fas fa-exclamation-triangle text-warning"></i> {{ assetExistsError }}</p>
@@ -41,7 +43,7 @@ import CreateTemplateForm from "./CreateTemplateForm.vue";
 export default {
   components: { Modal, Required, CategorySelect, CreateScreenTemplateForm, CreateTemplateForm },
   mixins: [FormErrorsMixin],
-  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission"],
+  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass"],
   data() {
     return {
       // errors: {},
