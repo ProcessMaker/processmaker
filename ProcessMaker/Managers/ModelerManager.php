@@ -24,7 +24,7 @@ class ModelerManager
      * This method adds a script to the JavaScript registry along with optional parameters.
      * The script URL is added to the registry, and if additional parameters are provided,
      * they are merged with the default parameters.
-     * 
+     *
      * @param string $script The URL of the script to add to the registry.
      * @param array $params Additional parameters for configuring the script (optional).
      * @return void
@@ -33,7 +33,7 @@ class ModelerManager
     {
         // Add the script URL to the JavaScript registry
         $this->javascriptRegistry[] = $script;
-        
+
         // Merge additional parameters with the default parameters and add to the parameters registry
         $this->javascriptParamsRegistry[] = array_merge(['src' => $script], $params);
     }
@@ -53,7 +53,7 @@ class ModelerManager
      *
      * This method returns the JavaScript parameters registry, which contains
      * parameters used to configure scripts in the application.
-     * 
+     *
      * @return array The JavaScript parameters registry.
      */
     public function getScriptWithParams()

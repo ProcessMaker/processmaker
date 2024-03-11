@@ -56,7 +56,7 @@ trait PluginServiceProviderTrait
      * This method registers a script for the modeler along with optional parameters.
      * The script path and its corresponding public URL are added to the modeler scripts registry,
      * and if additional parameters are provided, they are included in the registration.
-     * 
+     *
      * @param string $path The path to the script file.
      * @param string $public The public URL of the script.
      * @param array $params Additional parameters for configuring the script (optional).
