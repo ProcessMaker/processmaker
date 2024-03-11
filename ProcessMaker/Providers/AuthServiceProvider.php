@@ -77,6 +77,11 @@ class AuthServiceProvider extends ServiceProvider
 
                     $projects = $this->getProjectsForUser($user->id);
 
+                    // If the user has no projects, return false.
+                    if (empty($projects)) {
+                        return false;
+                    }
+
                     // Check if the user has 'create-projects' permission and the request is from specific endpoints
                     // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
                     $isAllowedEndpoint = $this->checkAllowedEndpoints($projects, request()->path());
