@@ -15,7 +15,7 @@ trait HasUuids
     {
         // TODO: Remove call in collections package src/Observers/RecordObserver.php
         static::creating(function ($model) {
-            if (!$model->uuid) {
+            if (get_class($model) !== 'ProcessMaker\\Plugins\\Collections\\Models\\Record' && !isset($model->uuid)) {
                 $model->uuid = self::generateUuid();
             }
         });
