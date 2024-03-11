@@ -100,8 +100,16 @@ div.main {
     addBreadcrumbs(breadcrumbData || []);
   });
   </script>
-    @foreach($manager->getScripts() as $script)
-      <script src="{{$script}}"></script>
+    @foreach($manager->getScriptWithParams() as $params)
+      <script
+      @foreach ($params as $key => $value)
+        @if (is_bool($value))
+          {{ $key }}
+        @else
+          {{ $key }}="{{ $value }}"
+        @endif
+      @endforeach
+      ></script>
     @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
 @endsection
