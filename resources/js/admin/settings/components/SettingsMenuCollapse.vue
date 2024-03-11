@@ -63,7 +63,8 @@ export default {
       currentTab: 0,
       groups: [],
       menuGroups: [],
-      selectedItem: "Action by Email",
+      selectedItem: "",
+      firstTime: true,
       collapsedMenus: {},
     };
   },
@@ -74,8 +75,17 @@ export default {
     getMenuGrups() {
       ProcessMaker.apiClient.get('/settings/menu-groups?order_by=menu_group_order')
       .then(response => {
-        this.menuGroups = response.data;
+        this.transformResponse(response.data.data);
         this.checkCollapedMenus();
+        if (this.firstTime) {
+          this.selectFirstItem();
+        }
+      });
+    },
+    transformResponse(response) {
+      response.forEach((element) => {
+        element.ui = JSON.parse(element.ui);
+        this.menuGroups.push(element);
       });
     },
     checkCollapedMenus() {
@@ -94,6 +104,9 @@ export default {
     },
     updateCollapse(menu) {
       this.collapsedMenus[menu.id] = !this.collapsedMenus[menu.id];
+    },
+    selectFirstItem() {
+      this.selectItem(this.menuGroups[0].groups[0]);
     }
   },
 };

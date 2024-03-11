@@ -82,7 +82,7 @@ class SettingController extends Controller
     {
         $query = SettingsMenus::query();
 
-        $query->select('id', 'menu_group', 'ui');
+        $query->select('id', 'menu_group', 'ui', 'menu_group_order');
 
         $orderBy = 'menu_group';
         $orderDirection = 'ASC';

@@ -12,6 +12,8 @@
     </div>
     <div class="setting-info">
       <settings-listing
+        v-if="selectedItem"
+        :key="setListingKey"
         :group="group"
         @refresh="refresh"
         @refresh-all="refreshAll"
@@ -30,12 +32,19 @@ export default {
   data() {
     return {
       currentTab: 0,
-      group: "Action by Email",
+      group: "",
+      setListingKey: 0,
+      selectedItem: false,
     }
   },
   methods: {
     selectGroup(item) {
-      this.group = item.id;
+      this.group = item.name;
+      this.selectedItem = true;
+      this.reRender();
+    },
+    reRender() {
+      this.setListingKey += 1;
     },
     refresh() {
       this.apiGet().then(response => {
