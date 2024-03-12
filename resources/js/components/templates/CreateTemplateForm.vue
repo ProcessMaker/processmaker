@@ -82,7 +82,7 @@ import FormErrorsMixin from "../shared/FormErrorsMixin";
 export default {
     components: {},
     mixins: [FormErrorsMixin],
-    props: [],
+    props: ["responseErrors"],
     data() {
         return {
             errors: {},
@@ -101,6 +101,12 @@ export default {
             deep: true,
             handler() {
                 this.$emit("input", this.templateData);
+            }
+        },
+        responseErrors: {
+            deep: true,
+            handler() {
+                this.errors = this.responseErrors;
             }
         }
     }

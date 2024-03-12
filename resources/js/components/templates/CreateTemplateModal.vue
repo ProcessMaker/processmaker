@@ -21,6 +21,7 @@
       <create-screen-template-form 
         v-if="assetType === 'screen'"
         :types="types"
+        :responseErrors="errors"
         :screenType="screenType"
         :permission="permission"
         @input="updateTemplateData"
@@ -28,6 +29,7 @@
       
       <create-template-form v-else
         @input="updateTemplateData"
+        :responseErrors="errors"
       />
     </modal>
   </div>
@@ -47,6 +49,7 @@ export default {
   props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass", "types"],
   data() {
     return {
+      errors: {},
       showModal: false,
       disabled: true,
       showWarning: false,

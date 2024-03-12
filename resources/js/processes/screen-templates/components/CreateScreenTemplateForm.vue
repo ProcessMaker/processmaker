@@ -111,7 +111,7 @@ import ScreenTypeDropdown from "../../screens/components/ScreenTypeDropdown.vue"
 export default {
     components: {MultiThumbnailFileUploader, ScreenTypeDropdown },
     mixins: [Required, FormErrorsMixin ],
-    props: ["screenType", "permission", "types"],
+    props: ["screenType", "permission", "types", "responseErrors"],
     data() {
         return {
             errors: {},
@@ -144,6 +144,12 @@ export default {
                     this.errors.name = null;
                 }
                 this.$emit("input", this.templateData, this.errors);
+            }
+        },
+        responseErrors: {
+            deep: true,
+            handler() {
+                this.errors = this.responseErrors;
             }
         }
     },
