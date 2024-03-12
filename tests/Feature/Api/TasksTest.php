@@ -538,7 +538,7 @@ class TasksTest extends TestCase
         $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
+            ->with(Mockery::any(), Mockery::any(), Mockery::any(), ['foo' => 'bar']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
@@ -575,7 +575,7 @@ class TasksTest extends TestCase
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
+            ->with(Mockery::any(), Mockery::any(), Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
                 'richtext2' => '<p>another</p>',
@@ -790,7 +790,7 @@ class TasksTest extends TestCase
 
     public function testGetScreenFields()
     {
-        $user = User::factory()->create(['is_administrator' => true]);
+        $this->be($this->user);
 
         $screen = Screen::factory()->create([
             'config' => json_decode(
@@ -800,29 +800,18 @@ class TasksTest extends TestCase
             ),
         ]);
 
-        ScreenVersion::factory()->create([
-            'screen_id' => $screen->id,
-            'type' => 'FORM',
-            'config' => $screen->config,
-            'status' => 'ACTIVE',
-        ]);
-
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
         $process = Process::factory()->create([
             'bpmn' => $bpmn,
-            'user_id' => $user->id,
         ]);
 
-        $request = ProcessRequest::factory()->create([
-            'process_id' => $process->id
-        ]);
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('node_1');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
 
-        // Create a new process without category
-        $task = ProcessRequestToken::factory()->create([
-            'process_request_id' => $request->id,
-        ]);
-      
+        $task = $request->tokens->last();
+
         // Calls new API by name
         $route = route('api.getScreenFields.show', ['task' => $task->id]);
         $response = $this->apiCall('GET', $route);
