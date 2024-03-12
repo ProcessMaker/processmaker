@@ -27,6 +27,7 @@
               :copy-asset-mode="copyAssetMode"
               :screen-types="screenTypes"
               data-cy="screen-type-dropdown"
+              hideDescription="false"
             />
             <div class="template-type-label pt-4">
               <p>{{ templateTypeLabel }}</p>
