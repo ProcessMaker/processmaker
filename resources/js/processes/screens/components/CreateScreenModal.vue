@@ -37,7 +37,11 @@
               @show-template-preview="showPreview"
             />
           </div>
-          <preview-template v-if="showTemplatePreview" :template="selectedTemplate" @hide-template-preview="hidePreview"></preview-template>
+          <preview-template
+            v-if="showTemplatePreview"
+            :template="selectedTemplate"
+            @hide-template-preview="hidePreview"
+          />
         </b-col>
         <b-col cols="5" class="form-style-col">
           <template v-if="countCategories">
@@ -276,7 +280,7 @@ export default {
     },
     showPreview(template) {
       this.showTemplatePreview = true;
-      this.selectedTemplate = template
+      this.selectedTemplate = template;
     },
     hidePreview() {
       this.showTemplatePreview = false;

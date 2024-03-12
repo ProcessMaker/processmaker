@@ -221,6 +221,7 @@ class ScreenTemplates extends Template implements HasMedia
             $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
         }
     }
+
     /**
      * Get the associated thumbnails for the given screen template
      */
