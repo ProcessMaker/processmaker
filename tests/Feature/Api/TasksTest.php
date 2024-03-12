@@ -819,10 +819,17 @@ class TasksTest extends TestCase
         $response->assertStatus(200);
 
         // Check JSON response
-        // $response->assertJsonStructure([
-        //     'data' => [
-        //         '*' => 'string'
-        //     ]
-        // ]);
+        $jsonResponse = $response->json();
+
+        $expectedFields = [
+            "richtext1",
+            "textarea1",
+            "input1",
+            "richtext2",
+            "textarea2",
+            "submit1",
+        ];
+
+        $this->assertEquals($expectedFields, $jsonResponse);
     }
 }
