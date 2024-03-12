@@ -87,7 +87,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Screens
     Route::get('screens', [ScreenController::class, 'index'])->name('screens.index'); // Permissions handled in the controller
     Route::get('screens/{screen}', [ScreenController::class, 'show'])->name('screens.show'); // Permissions handled in the controller
-    Route::get('screens/{screen}/screen_fields', [ScreenController::class, 'getScreenFields'])->name('getScreenFields.show'); // Permissions handled in the controller
     Route::post('screens', [ScreenController::class, 'store'])->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', [ScreenController::class, 'update'])->name('screens.update')->middleware('can:edit-screens,screen');
     Route::put('screens/{screen}/draft', [ScreenController::class, 'draft'])->name('screens.draft')->middleware('can:edit-screens,screen');
@@ -179,6 +178,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
+    Route::get('tasks/{task}/screen_fields', [TaskController::class, 'getScreenFields'])->name('getScreenFields.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
     Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:rollback,task');
     Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
