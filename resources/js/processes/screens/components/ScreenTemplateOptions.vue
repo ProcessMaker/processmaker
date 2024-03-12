@@ -50,6 +50,9 @@ export default {
     };
   },
   watch: {
+    selectedScreenType() {
+      this.fetch();
+    },
     templateType(newVal) {
       this.fetch(newVal);
     },
