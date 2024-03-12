@@ -2114,5 +2114,22 @@
   "No rules were executed yet": "No rules were executed yet",
   "Once rules start running, you can see the results here.": "Once rules start running, you can see the results here.",
   "Priority": "Priority",
-  "Save As Draft": "Save As Draft"
+  "Save As Draft": "Save As Draft",
+  "Do you want to delete this rule?": "Do you want to delete this rule?",
+  "Define the filtering criteria": "Define the filtering criteria",
+  "Rule Configuration": "Rule Configuration",
+  "Clear filters": "Clear filters",
+  "Mark as Priority": "Mark as Priority",
+  "Apply to current inbox matching tasks": "Apply to current inbox matching tasks",
+  "Apply to Future tasks": "Apply to Future tasks",
+  "This field is required!": "This field is required!",
+  "*=Required": "*=Required",
+  "What do we do with tasks that fit this filter?": "What do we do with tasks that fit this filter?",
+  "Rule Behavior": "Rule Behavior",
+  "Deactivation date": "Deactivation date",
+  "Give this rule a name *": "Give this rule a name *",
+  "All clear": "All clear",
+  "Due date": "Due date",
+  "Select a Person*": "Select a Person*",
+  "For a rule with no end date, leave the field empty": "For a rule with no end date, leave the field empty"
 }

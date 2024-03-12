@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pm-inbox-rule-edit">
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -52,6 +52,13 @@
           <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')">
         </template>
       </PMDatetimePicker>
+      <div class="pm-inbox-rule-edit-custom-placeholder">
+        {{ $t('For a rule with no end date, leave the field empty') }}
+      </div>
+    </b-form-group>
+
+    <b-form-group>
+      <div class="pm-inbox-rule-edit-custom-separator"></div>
     </b-form-group>
 
     <b-form-group>
@@ -231,5 +238,18 @@
 <style>
   .pm-inbox-rule-edit-radio>.custom-control-inline{
     display: flex;
+  }
+</style>
+<style scoped>
+  .pm-inbox-rule-edit>.form-group{
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .pm-inbox-rule-edit-custom-placeholder{
+    color: #556271;
+    font-size: 14px;
+  }
+  .pm-inbox-rule-edit-custom-separator{
+    border-top: 1px solid #CDDDEE;
   }
 </style>
