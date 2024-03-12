@@ -1,6 +1,6 @@
 <template>
     <div class="p-3">
-        <b-card-group deck v-if="!showCssPreview">
+        <b-card-group deck v-if="!showCssPreview" class="template-preview-card">
             <b-card
                 class="preview-card"
                 header-tag="header"
@@ -14,8 +14,13 @@
                         {{ templateData?.name }}
                     </h4>
                 </template>
-                <div class="thumbnail-preview">
-                    This is body to display thumbnails
+                <div class="thumbnail-preview text-center">
+                    <img v-for="thumbnail in templateData?.thumbnails"
+                        class="thumb mb-2"
+                        :src="thumbnail"
+                        fluid
+                        :alt="templateData?.name + ' thumbnail preview'"
+                    />
                 </div>
                 <template #footer>
                     <b-row class="d-flex p-2" align-h="between" align-v="center">
@@ -103,6 +108,10 @@
 </script>
 
 <style type="text/css" scoped>
+
+    .template-preview-card .card-body {
+        overflow-y:auto;
+    }
     .back-btn {
         font-size: 25px;
     }
@@ -118,7 +127,11 @@
     }
 
     .thumbnail-preview {
-        overflow: auto;
+        overflow: hidden;
+    }
+
+    .thumbnail-preview img.thumb {
+        max-width: 100%;
     }
 
     .template-options-group {
