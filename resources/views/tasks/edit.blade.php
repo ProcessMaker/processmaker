@@ -116,7 +116,7 @@
                             @click="eraseDraft()"
                           >
                             <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                            @{{$t('Erase Draft')}}
+                            @{{$t('Clear Task')}}
                           </b-button>
                         </li>
                         <li class="list-group-item" v-if="!showDueAtDates">
