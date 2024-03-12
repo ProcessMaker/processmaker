@@ -22,7 +22,7 @@
       >
         <b-btn
           class="px-1"
-          variant="outline-secondary"
+          variant="btn-clear"
           @click="clearFilter()"
         >
           <b-icon icon="x" />
@@ -76,5 +76,8 @@ export default {
 }
 .search-categories {
   padding-left: 1rem;
+}
+.btn-clear:hover {
+
 }
 </style>
