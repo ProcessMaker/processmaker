@@ -97,7 +97,7 @@
       :asset-id="screenId"
       :screenType="screenType"
       :permission="permission"
-      :screen-types="types"
+      :types="types"
       headerClass="border-0"
       footerClass="border-0"
       modal-size="lg"

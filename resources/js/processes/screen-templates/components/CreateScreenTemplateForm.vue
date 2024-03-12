@@ -44,8 +44,8 @@
                             :invalid-feedback="errorMessage('type', errors)"
                         >
                             <screen-type-dropdown
-                                v-model="screenType"
-                                :screen-types="screenTypes"
+                                :value="screenType"
+                                :screen-types="types"
                                 copy-asset-mode="true"
                                 hideDescription="true"
                             />
@@ -121,18 +121,11 @@ export default {
                 make_public: false,
                 media_collection: '',
                 thumbnails: "[]",
-                type: this.screenType,
+                type: "",
                 version: null,
                 unique_template_id: "",
                 screen_category_id: null
             },
-            // TODO: Dynamically set the screenTypes array
-            screenTypes: [
-                {value: "FORM", text: "Form"},
-                {value: "DISPLAY", text: "Display"},
-                {value: "EMAIL", text: "Email"},
-                {value: "CONVERSATIONAL", text: "Conversational"},
-            ]
         }
     },
     computed: {
@@ -158,6 +151,9 @@ export default {
         handleThumbnails(images) {
             this.templateData.thumbnails = JSON.stringify(images);
         }
+    },
+    mounted() {
+        this.templateData.screenType = this.types;
     }
 }
 </script>

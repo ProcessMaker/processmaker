@@ -39,7 +39,7 @@
 <script>
 
 export default {
-  props: ["copyAssetMode", "screenTypes", "hideDescription"],
+  props: ["value", "copyAssetMode", "screenTypes", "hideDescription"],
   data() {
     return {
       isDisabled: false,
@@ -115,7 +115,10 @@ export default {
       this.isDisabled = true;
     }
 
-    this.selectedType.type = "FORM";
+     // Find the matching value in screenTypeOptions or default to FORM
+     if (this.value) {
+      this.selectedType = this.screenTypeOptions.find(item => item.type === this.value);
+     }
     this.$emit("input", this.selectedType.type);
   },
   methods: {

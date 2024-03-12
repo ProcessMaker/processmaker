@@ -20,7 +20,7 @@
       
       <create-screen-template-form 
         v-if="assetType === 'screen'"
-        :types="screenTypes"
+        :types="types"
         :screenType="screenType"
         :permission="permission"
         @input="updateTemplateData"
@@ -44,7 +44,7 @@ import CreateTemplateForm from "./CreateTemplateForm.vue";
 export default {
   components: { Modal, Required, CategorySelect, CreateScreenTemplateForm, CreateTemplateForm },
   mixins: [FormErrorsMixin],
-  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass", "screenTypes"],
+  props: ["assetName", "assetType", "assetId", "currentUserId", "modalSize", "screenType", "permission", "headerClass", "footerClass", "types"],
   data() {
     return {
       showModal: false,
