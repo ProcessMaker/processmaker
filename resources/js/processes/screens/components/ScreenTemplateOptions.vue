@@ -38,13 +38,14 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 export default {
   components: { TemplateTypeDropdown, TemplateSelectCard },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: [],
+  props: ["selectedScreenType"],
   data() {
     return {
       filter: "",
       screenTemplates: [],
       type: "screen",
       templateType: "",
+      defaultScreenType: "FORM",
       template: {},
     };
   },
@@ -62,6 +63,7 @@ export default {
     },
     fetch() {
       let url;
+
       if (this.templateType === "") {
         this.templateType = "Public Templates";
       }
@@ -71,9 +73,9 @@ export default {
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
       if (this.templateType === "Public Templates") {
-        url = "templates/screen?is_public=1";
+        url = `templates/screen?screen_type=${this.selectedScreenType}&is_public=1`;
       } else if (this.templateType === "My Templates") {
-        url = "templates/screen?is_public=0";
+        url = `templates/screen?screen_type=${this.selectedScreenType}&is_public=0`;
       }
 
       // Load from our API client

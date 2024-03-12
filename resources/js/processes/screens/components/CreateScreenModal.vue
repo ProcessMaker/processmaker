@@ -32,6 +32,7 @@
           </div>
           <screen-template-options
             data-cy="screen-template-options"
+            :selected-screen-type="formData.type ? formData.type : 'FORM'"
           />
         </b-col>
         <b-col cols="5" class="form-style-col">
@@ -278,7 +279,7 @@ export default {
   background-color: #FFFFFF;
 }
 .footer-btns {
-  padding-top: 190px;
+  padding-top: 175px;
 }
 
 .template-type-label {
