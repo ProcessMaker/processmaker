@@ -145,14 +145,16 @@
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
-                              <button
-                                v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-                                type="button"
-                                class="btn btn-outline-secondary btn-block"
-                                @click="show"
-                              >
-                                <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                              </button>
+                              <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                <button
+                                  v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                  type="button"
+                                  class="btn btn-outline-secondary btn-block"
+                                  @click="show"
+                                >
+                                  <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                </button>
+                              </template>
                             </li>
                             <li class="list-group-item">
                               <!-- Section to Add Now What? -->
@@ -160,11 +162,11 @@
                             <div :class="statusCard">
                               <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
                             </div>
-                            <li v-if="dateDueAt" class="list-group-item" v-if="showDueAtDates">
+                            <li v-if="dateDueAt && showDueAtDates" class="list-group-item">
                               <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
                               @{{ moment(dateDueAt).format() }}
                             </li>
-                            <li class="list-group-item" v-if="!showDueAtDates">
+                            <li v-if="!showDueAtDates" class="list-group-item">
                               <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
                               @{{ moment(completedAt).format() }}
                             </li>
@@ -173,9 +175,9 @@
                                 <i class="fas fa-check-circle" style="color: #00875a;"></i>
                                 {{__('Autosave')}}
                               </p>
-                              <span>{{__('Last save')}}: </span> @{{ moment(completedAt).format() }}
+                              <span>{{__('Last save')}}: </span> @{{ moment(dateDueAt).format() }}
                             </li>
-                            <li class="list-group-item" v-if="task.is_self_service === 0">
+                            <li v-if="task.is_self_service === 0" class="list-group-item">
                               <p class="section-title">{{__('Assigned To')}}:</p>
                               <avatar-image
                                 v-if="task.user"
@@ -183,10 +185,6 @@
                                 class="d-inline-flex pull-left align-items-center"
                                 :input-data="task.user"
                               ></avatar-image>
-                              <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin || userIsProcessManager">
-                                <span>
-                                </span>
-                              </div>
                               @isset($assignedToAddons)
                                 @foreach ($assignedToAddons as $addon)
                                   {!! $addon['content'] ?? '' !!}
@@ -205,9 +203,12 @@
                             </li>
                             <li class="list-group-item">
                             <p class="section-title">{{__('Requested By')}}:</p>
-                              <avatar-image v-if="task.requestor" size="32"
-                                            class="d-inline-flex pull-left align-items-center"
-                                            :input-data="task.requestor"></avatar-image>
+                              <avatar-image
+                                v-if="task.requestor"
+                                size="32"
+                                class="d-inline-flex pull-left align-items-center"
+                                :input-data="task.requestor"
+                                ></avatar-image>
                               <p v-if="!task.requestor">{{__('Web Entry')}}</p>
                             </li>
                           </ul>
@@ -425,6 +426,9 @@
             };
             const status = this.task.advanceStatus.toUpperCase();
             return "card-header text-capitalize text-white text-status " + header[status];
+          },
+          isAllowReassignment() {
+            return this.task.definition.allowReassignment === "true";
           },
         },
         methods: {
