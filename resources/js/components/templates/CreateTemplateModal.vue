@@ -30,6 +30,7 @@
       <create-template-form v-else
         @input="updateTemplateData"
         :responseErrors="errors"
+        :assetType="assetType"
       />
     </modal>
   </div>

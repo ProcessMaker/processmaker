@@ -82,7 +82,7 @@ import FormErrorsMixin from "../shared/FormErrorsMixin";
 export default {
     components: {},
     mixins: [FormErrorsMixin],
-    props: ["responseErrors"],
+    props: ["responseErrors", "assetType"],
     data() {
         return {
             errors: {},
