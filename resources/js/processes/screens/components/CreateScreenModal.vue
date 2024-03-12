@@ -25,11 +25,14 @@
             v-model="formData.type"
             :copy-asset-mode="copyAssetMode"
             :screen-types="screenTypes"
+            data-cy="screen-type-dropdown"
           />
           <div class="template-type-label pt-4">
             <p>{{ templateTypeLabel }}</p>
           </div>
-          <screen-template-options />
+          <screen-template-options
+            data-cy="screen-template-options"
+          />
         </b-col>
         <b-col cols="5" class="form-style-col">
           <template v-if="countCategories">

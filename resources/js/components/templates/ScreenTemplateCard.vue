@@ -4,6 +4,7 @@
       no-body
       bg-variant="transparent"
       class="screen-template-card p-0"
+      data-cy="screen-template-card"
     >
       <b-card-body>
         <img
@@ -23,7 +24,7 @@
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
         </div>
-        <div class="preview-template">
+        <div class="preview-template pt-1">
           <b-link @click="showTemplatePreview">
             <i class="fas fa-eye fa-fw mr-0 pr-3 preview-icon" />
             {{ $t('Preview Template') }}
@@ -44,9 +45,6 @@ export default {
     return {
       defaultTemplate: null,
     };
-  },
-  mounted() {
-    console.log('this.template', this.template);
   },
   methods: {
     showTemplatePreview() {
