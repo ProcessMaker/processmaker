@@ -52,7 +52,7 @@
     },
     data() {
       return {
-        idButtonRemove: "inbox-rule-row-button-" + Math.random().toString(36).substr(2, 9)
+        idButtonRemove: "inbox-rule-row-button-" + Math.random().toString(36).substring(2, 9)
       };
     },
     methods: {
