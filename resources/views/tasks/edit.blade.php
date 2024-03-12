@@ -325,7 +325,7 @@
                   this.handleAutosave();
                 } else {
                   this.formDataWatcherActive = true;
-                }             
+                }
               }
             }
           }
@@ -524,7 +524,7 @@
             })
             .catch(() => {
               this.errorAutosave = true;
-            })            
+            })
             .finally(() => {
               this.options.is_loading = false;
             });

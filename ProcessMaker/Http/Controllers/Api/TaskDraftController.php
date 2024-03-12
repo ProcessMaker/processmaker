@@ -21,7 +21,7 @@ class TaskDraftController extends Controller
     }
     public function delete(ProcessRequestToken $task)
     {
-        $draft = TaskDraft::where('task_id', $task->id)->delete();
+        TaskDraft::where('task_id', $task->id)->delete();
         return response([], 204);
     }
 }
