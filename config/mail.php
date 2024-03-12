@@ -49,7 +49,9 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL'))['host']),
+            'auth_mode'     => null,
+            'verify_peer' => env('VERIFY_PEER', false),
         ],
 
         'ses' => [
