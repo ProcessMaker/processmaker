@@ -50,9 +50,6 @@ export default {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     }
   },
-  mounted() {
-    console.log('this.template', this.template);
-  },
   methods: {
     showTemplatePreview() {
       this.$emit('show-template-preview', this.template);
