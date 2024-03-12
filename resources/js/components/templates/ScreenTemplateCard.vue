@@ -8,7 +8,7 @@
     >
       <b-card-body>
         <img
-          src="https://picsum.photos/255/136"
+          :src="thumbnail"
           class="card-image"
           :alt="template.name"
         >
@@ -46,9 +46,17 @@ export default {
       defaultTemplate: null,
     };
   },
+  computed: {
+    thumbnail() {
+      return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
+    }
+  },
+  mounted() {
+    console.log('this.template', this.template);
+  },
   methods: {
     showTemplatePreview() {
-      console.log('hit ShowTemplatePreview');
+      this.$emit('show-template-preview', this.template);
     },
   },
 };

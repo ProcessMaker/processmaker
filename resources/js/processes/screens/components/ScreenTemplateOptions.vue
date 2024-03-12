@@ -23,6 +23,7 @@
           :key="index"
           :type="type"
           :template="template"
+          @show-template-preview="showPreview"
         />
       </b-card-group>
     </div>
@@ -101,6 +102,10 @@ export default {
           this.loading = false;
         });
     },
+    showPreview(template) {
+      this.$emit('show-template-preview', template);
+    }
+
   },
 };
 </script>

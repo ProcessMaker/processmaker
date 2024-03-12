@@ -12,6 +12,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ScreenTemplates extends Template implements HasMedia
 {
@@ -22,6 +23,11 @@ class ScreenTemplates extends Template implements HasMedia
     use InteractsWithMedia;
 
     protected $table = 'screen_templates';
+
+    protected $appends = [
+        'thumbnails',
+        // 'css',
+    ];
 
     const categoryClass = ScreenCategory::class;
 
@@ -215,4 +221,37 @@ class ScreenTemplates extends Template implements HasMedia
             $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
         }
     }
+    /**
+     * Get the associated thumbnails for the given screen template
+     */
+    public function getThumbnailsAttribute()
+    {
+        $thumbnails = [];
+        $thumbnailCollection = Media::where('collection_name', $this->media_collection)->get();
+        foreach ($thumbnailCollection as $thumbnail) {
+            array_push($thumbnails, $thumbnail->getUrl());
+        }
+
+        return $thumbnails;
+    }
+
+    /**
+     * Get the associated css for the given screen template
+     */
+    // public function getCssAttribute()
+    // {
+    //     dd('GET CSS', $this);
+    //     // if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
+    //     //     // return an empty collection
+    //     //     return new HasMany($this->newQuery(), $this, '', '');
+    //     // }
+
+    //     // return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
+    //     //     'project_assets',
+    //     //     'asset_id',
+    //     //     'project_id',
+    //     //     'id',
+    //     //     'id'
+    //     // )->wherePivot('asset_type', static::class);
+    // }
 }
