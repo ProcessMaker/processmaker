@@ -26,8 +26,8 @@ import {
   loopCharacteristicsHandler,
   loopCharacteristicsData,
   NodeIdentifierInput,
+  registerNodes,
 } from "@processmaker/modeler";
-import { registerNodes } from "@processmaker/modeler";
 import i18next from "i18next";
 import ModelerScreenSelect from "./components/inspector/ScreenSelect";
 import UserSelect from "./components/inspector/UserSelect";
