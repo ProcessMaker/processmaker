@@ -7,7 +7,9 @@ use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
+use Mockery;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -17,6 +19,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -783,5 +786,54 @@ class TasksTest extends TestCase
         $json = $response->json();
 
         $this->assertEquals($hitTask->id, $json['data'][0]['id']);
+    }
+
+    public function testGetScreenFields()
+    {
+        $user = User::factory()->create(['is_administrator' => true]);
+
+        $screen = Screen::factory()->create([
+            'config' => json_decode(
+                file_get_contents(
+                    base_path('tests/Fixtures/rich_text_screen.json')
+                )
+            ),
+        ]);
+
+        ScreenVersion::factory()->create([
+            'screen_id' => $screen->id,
+            'type' => 'FORM',
+            'config' => $screen->config,
+            'status' => 'ACTIVE',
+        ]);
+
+        $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+            'user_id' => $user->id,
+        ]);
+
+        $request = ProcessRequest::factory()->create([
+            'process_id' => $process->id
+        ]);
+
+        // Create a new process without category
+        $task = ProcessRequestToken::factory()->create([
+            'process_request_id' => $request->id,
+        ]);
+      
+        // Calls new API by name
+        $route = route('api.getScreenFields.show', ['task' => $task->id]);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertStatus(200);
+
+        // Check JSON response
+        // $response->assertJsonStructure([
+        //     'data' => [
+        //         '*' => 'string'
+        //     ]
+        // ]);
     }
 }
