@@ -135,7 +135,7 @@
         this.$router.push({name: 'new'});
       },
       onEditRule(row) {
-        this.$router.push({name: 'edit', params: {inboxRule: row}});
+        this.$router.push({name: 'edit', params: {id: row.id}});
       },
       onRemoveRule(row) {
         window.ProcessMaker.apiClient

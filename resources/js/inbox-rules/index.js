@@ -30,7 +30,7 @@ const router = new VueRouter({
       component: Edit,
       props(route) {
         return {
-          ruleId: parseInt(route.params.inboxRule.id)
+          ruleId: parseInt(route.params.id)
         };
       }
     }
