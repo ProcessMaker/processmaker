@@ -114,12 +114,6 @@ return [
             'root' => storage_path() . '/samlidp',
         ],
 
-        'decision_tables' => [
-            'driver' => 'local',
-            'root' => storage_path('decision-tables'),
-            'url' => env('APP_URL') . '/storage/decision-tables',
-            'visibility' => 'private',
-        ],
     ],
 
     /*
