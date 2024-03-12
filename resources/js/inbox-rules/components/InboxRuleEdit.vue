@@ -168,7 +168,7 @@
         }
       },
       onChangeRuleName() {
-        this.ruleNameState = this.ruleName.trim() === "" ? false : true;
+        this.ruleNameState = !(this.ruleName.trim() === "");
       },
       setInboxRuleData() {
         if (this.inboxRule) {
