@@ -61,7 +61,6 @@ export default {
       config: {
         connection_type: "",
         uri: "",
-        AuthScheme: "OAuth",
       },
       connectionOptions: {
         oauth: [

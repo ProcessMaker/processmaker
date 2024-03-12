@@ -47,7 +47,7 @@
                 error: false,
             };
         },
-        props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon', 'for'],
+        props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon', 'for', 'dataLoadingId'],
         watch: {
             dataLoading() {
                 ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading)
@@ -59,14 +59,14 @@
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
-                if (this.for && this.for.test(request.url) && request.method.toLowerCase() === 'get') {
+                if ((this.requestIdCheck?.(request) || (this.for?.test(request.url) && request.method.toLowerCase() === 'get'))) {
                     this.dataLoading = true
                     this.error = false
                     this.noResults = false
                 }
             })
             ProcessMaker.EventBus.$on('api-client-done', (response) => {
-                if (response.config && this.for && this.for.test(response.config.url)) {
+                if (this.responseIdCheck(response) || (response.config && this.for && this.for.test(response.config.url))) {
                     if (response.data && response.data.data && response.data.data.length === 0) {
                         this.noResults = true
                     }
@@ -91,6 +91,22 @@
             })
         },
         methods: {
+            requestIdCheck(request) {
+                if (!this.dataLoadingId) {
+                    return false;
+                }
+                if (this.dataLoadingId === request.dataLoadingId) {
+                    return true
+                }
+            },
+            responseIdCheck(response) {
+                if (!this.dataLoadingId) {
+                    return false;
+                }
+                if (this.dataLoadingId === response.config.dataLoadingId) {
+                    return true
+                }
+            },
             loadingText() {
                 return this.loading ? this.loading : this.$t('Loading')
             },

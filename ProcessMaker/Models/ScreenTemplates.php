@@ -11,13 +11,16 @@ use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class ScreenTemplates extends Template
+class ScreenTemplates extends Template implements HasMedia
 {
     use HasFactory;
     use HasCategories;
     use HideSystemResources;
     use ExtendedPMQL;
+    use InteractsWithMedia;
 
     protected $table = 'screen_templates';
 
@@ -196,13 +199,12 @@ class ScreenTemplates extends Template
      */
     public function getThumbnailsAttribute()
     {
-        $thumbnails = [];
-        $thumbnailCollection = Media::where('collection_name', $this->media_collection)->get();
-        foreach ($thumbnailCollection as $thumbnail) {
-            array_push($thumbnails, $thumbnail->getUrl());
-        }
+        $mediaCollectionName = 'st-' . $this->uuid . '-media';
+        $previewThumbs = $this->getMedia($mediaCollectionName);
 
-        return $thumbnails;
+        return $previewThumbs->map(function ($thumb) {
+            return $thumb->getFullUrl();
+        });
     }
 
     /**
@@ -224,4 +226,18 @@ class ScreenTemplates extends Template
     //     //     'id'
     //     // )->wherePivot('asset_type', static::class);
     // }
+    
+
+    /**
+     * Add files to media collection
+     */
+    public function addFilesToMediaCollection(string $directoryPath)
+    {
+        $files = File::allFiles($directoryPath);
+        $collectionName = basename($directoryPath);
+
+        foreach ($files as $file) {
+            $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
+        }
+    }
 }

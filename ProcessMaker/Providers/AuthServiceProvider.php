@@ -21,7 +21,6 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Policies\MediaPolicy;
-use ProcessMaker\Policies\NotificationPolicy;
 use ProcessMaker\Policies\ProcessPolicy;
 use ProcessMaker\Policies\ProcessRequestPolicy;
 use ProcessMaker\Policies\ProcessRequestTokenPolicy;
@@ -41,7 +40,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Media::class => MediaPolicy::class,
-        Notification::class => NotificationPolicy::class,
         Process::class => ProcessPolicy::class,
         ProcessVersion::class => ProcessVersionPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,

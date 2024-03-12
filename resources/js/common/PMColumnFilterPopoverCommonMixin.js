@@ -1,6 +1,12 @@
 import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
+  props: {
+    advancedFilterProp: {
+      type: Array,
+      default: null
+    }
+  },
   data() {
     return {
       advancedFilter: {},
@@ -12,6 +18,13 @@ const PMColumnFilterCommonMixin = {
   },
   methods: {
     storeFilterConfiguration() {
+      // If advanced filter was provided as a prop, do not save the filter
+      // or overwrite the global advanced_filter, instead emit the filter.
+      if (this.advancedFilterProp !== null) {
+        this.$emit("advanced-filter", this.formattedFilter());
+        return;
+      }
+
       const { order, type } = this.filterConfiguration();
       let url = "users/store_filter_configuration/";
       if (this.$props.columns && this.savedSearch) {
@@ -256,7 +269,17 @@ const PMColumnFilterCommonMixin = {
     },
     getFilterConfiguration() {
       const filters = {};
-      get(window, 'ProcessMaker.advanced_filter.filters', []).forEach((filter) => {
+      let inputAdvancedFilter;
+      let order = null;
+
+      if (this.advancedFilterProp !== null) {
+        inputAdvancedFilter = this.advancedFilterProp;
+      } else {
+        inputAdvancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
+        order = get(window, 'ProcessMaker.advanced_filter.order');
+      }
+
+      inputAdvancedFilter.forEach((filter) => {
         const key = filter._column_field;
         if (!(key in filters)) {
           filters[key] = [];
@@ -265,13 +288,15 @@ const PMColumnFilterCommonMixin = {
       });
       this.advancedFilter = filters;
       
-      const order = get(window, 'ProcessMaker.advanced_filter.order');
       if (order?.by && order?.direction) {
         this.setOrderByProps(order.by, order.direction);
       }
       
       this.markStyleWhenColumnSetAFilter();
-      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+      
+      if (this.advancedFilterProp === null) {
+        window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+      }
     },
   }
 };
