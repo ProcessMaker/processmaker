@@ -14,13 +14,19 @@
                         {{ templateData?.name }}
                     </h4>
                 </template>
-                <div class="thumbnail-preview text-center">
-                    <img v-for="thumbnail in templateData?.thumbnails"
-                        class="thumb mb-2"
-                        :src="thumbnail"
-                        fluid
-                        :alt="templateData?.name + ' thumbnail preview'"
-                    />
+                <div class="thumbnail-preview">
+                    <div v-if="templateHasThumbnails" class="text-center">
+                        <img 
+                            v-for="thumbnail in templateData?.thumbnails"
+                            class="thumb mb-2"
+                            :src="thumbnail"
+                            fluid
+                            :alt="templateData?.name + ' thumbnail preview'"
+                        />
+                    </div> 
+                    <div v-else>
+                        {{ $t('No preview images available for this template.') }}
+                    </div>
                 </div>
                 <template #footer>
                     <b-row class="d-flex p-2" align-h="between" align-v="center">
@@ -58,12 +64,16 @@
                 </template>
                 <div class="css-preview">
                     <monaco-editor
+                        v-if="templateHasCss"
                         ref="monacoEditor"
                         v-model="code"
                         :options="monacoOptions"
                         language="css"
                         class="editor"
                     />
+                    <div v-else>
+                        {{ $t('There\'s no custom CSS for this template.') }}
+                    </div>
                 </div>
             </b-card>
         </b-card-group>
@@ -89,12 +99,21 @@
                 },
             }
         },
+        computed: {
+            templateHasCss() {
+                return this.templateData.screen_custom_css !== null;
+            },
+            templateHasThumbnails() {
+                return this.templateData?.thumbnails.length > 0;
+            }
+        },
         methods: {
             hidePreview() {
                 this.$emit('hide-template-preview');
             },
             showTemplateCss() {
                 this.showCssPreview = true;
+                this.code = this.templateData?.screen_custom_css;
             },
             hideTemplateCss() {
                 this.showCssPreview = false;
