@@ -24,17 +24,6 @@
         <span>Select a previous task to reuse its filled data on the current task.</span>
       </div>
       <div class="third-container">
-        <!-- <div class="suggested-task">
-          <img
-            src="../../../img/smartinbox-images/fill.svg"
-            :alt="$t('No Image')"
-          />
-          <div class="text-container">
-            <span class="main-text">Quick fill task with:</span>
-            <span class="sub-text">Credit requested by Matthew Harris for  $US 4.900  |  Process: Client Request  |  Task: Loan Cre...</span>
-          </div>
-          
-        </div> -->
         <tasks-list
           ref="taskList"
           class="custom-table-class"

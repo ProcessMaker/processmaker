@@ -190,7 +190,7 @@ class SyncGuidedTemplates implements ShouldQueue
 
             return $rootLog['newId'];
         } catch (Exception $e) {
-            throw new Exception('Error:', $e->getMessage());
+            throw new Exception('Error: ' . $e->getMessage());
         }
     }
 
