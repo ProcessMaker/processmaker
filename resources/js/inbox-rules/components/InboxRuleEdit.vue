@@ -95,6 +95,14 @@
       count: {
         type: Number,
         default: 0
+      },
+      savedSearchData: {
+        type: Object,
+        default: {},
+      },
+      newTaskId: {
+        type: Number,
+        default: null
       }
     },
     data() {
@@ -109,6 +117,13 @@
       };
     },
     watch: {
+      savedSearchData: {
+        handler() {
+          console.log('savedSearchData', _.cloneDeep(this.savedSearchData));
+        },
+        deep: true,
+        immediate: true
+      },
       inboxRule: {
         handler() {
           this.setInboxRuleData();
@@ -131,7 +146,9 @@
           applyToCurrentInboxMatchingTasks: this.applyToCurrentInboxMatchingTasks,
           applyToFutureTasks: this.applyToFutureTasks,
           deactivationDate: this.deactivationDate,
-          ruleName: this.ruleName
+          ruleName: this.ruleName,
+          taskId: this.newTaskId,
+          ...this.savedSearchData,
         };
         if (this.inboxRule) {
           window.ProcessMaker.apiClient

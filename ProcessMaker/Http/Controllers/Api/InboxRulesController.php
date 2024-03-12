@@ -58,22 +58,31 @@ class InboxRulesController extends Controller
      */
     public function store(Request $request)
     {
+        // We always create a new saved search when we create a new inbox rule
+        $savedSearch = InboxRule::createSavedSearch([
+            'columns' => $request->columns,
+            'advanced_filter' => $request->advanced_filter,
+            'pmql' => $request->pmql,
+            'user_id' => $request->user()->id,
+        ]);
+
         $request->applyToCurrentInboxMatchingTasks;
         $request->applyToFutureTasks;
         $data = [
             'name' => $request->ruleName,
-            'user_id' => 2,
+            'user_id' => $request->user()->id,
             'active' => true,
             'end_date' => $request->deactivationDate,
-            'saved_search_id' => 1,
-            'process_request_token_id' => 1,
+            'saved_search_id' => $savedSearch->id,
+            'process_request_token_id' => $request->taskId,
             'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
             'reassign_to_user_id' => $request->selectedPerson,
             'make_draft' => true,
             'submit_data' => true,
-            'data' => null
+            'data' => null,
         ];
         InboxRule::create($data);
+
         return response([], 204);
     }
 
@@ -99,9 +108,10 @@ class InboxRulesController extends Controller
             'reassign_to_user_id' => $request->selectedPerson,
             'make_draft' => true,
             'submit_data' => true,
-            'data' => null
+            'data' => null,
         ];
         InboxRule::findOrFail($idInboxRule)->update($data);
+
         return response([], 204);
     }
 
@@ -114,6 +124,7 @@ class InboxRulesController extends Controller
     public function destroy($idInboxRule)
     {
         InboxRule::findOrFail($idInboxRule)->delete();
+
         return response([], 204);
     }
 

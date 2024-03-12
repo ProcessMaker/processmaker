@@ -18,10 +18,10 @@
           v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
           :saved-search-id="savedSearchIdForFilters"
-          :process-id="newProcessId"
-          :element-id="newElementId"
+          :task-id="newTaskId"
           @count="count = $event"
           :show-column-selector-button="false"
+          @saved-search-data="savedSearchData = $event"
           >
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
@@ -31,7 +31,10 @@
         :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
         <InboxRuleEdit 
           :count="count" 
-          :inbox-rule="inboxRule">
+          :inbox-rule="inboxRule"
+          :saved-search-data="savedSearchData"
+          :new-task-id="newTaskId"
+          >
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -55,12 +58,8 @@
         type: Number,
         default: null
       },
-      newProcessId: {
+      newTaskId: {
         type: Number,
-        default: null
-      },
-      newElementId: {
-        type: String,
         default: null
       },
       ruleId: {
@@ -72,7 +71,8 @@
       return {
         count: 0,
         inboxRule: null,
-        newSavedSearchIdFromSelector: null
+        newSavedSearchIdFromSelector: null,
+        savedSearchData: {},
       };
     },
     computed: {
@@ -94,7 +94,7 @@
         return !this.ruleId;
       },
       showSavedSearchSelector() {
-        return this.isNew && !this.newSavedSearchId && !this.newElementId && !this.newProcessId;
+        return this.isNew && !this.newSavedSearchId && !this.taskId;
       }
     },
     mounted() {

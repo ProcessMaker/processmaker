@@ -20,8 +20,7 @@ const router = new VueRouter({
         return {
           ruleId: null,
           newSavedSearchId: parseInt(route.query.saved_search_id) || null,
-          newProcessId: parseInt(route.query.process_id) || null,
-          newElementId: route.query.element_id || null
+          newTaskId: parseInt(route.query.task_id) || null
         };
       }
     },

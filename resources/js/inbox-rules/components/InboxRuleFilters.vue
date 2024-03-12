@@ -1,9 +1,12 @@
 <template>
   <div>
-    <b-card v-if="!savedSearchId && (!processId || !elementId)">
+    <b-card v-if="!savedSearchId && !task">
       <p>Select a saved search above.</p>
     </b-card>
     <b-card v-else>
+      <div v-if="task">
+        {{ taskTitle }}
+      </div>
       <div class="mb-3">
         <pmql-input ref="pmql_input"
           :value="pmql"
@@ -69,12 +72,8 @@ export default {
       type: Number,
       default: null
     },
-    processId: {
+    taskId: {
       type: Number,
-      default: null
-    },
-    elementId: {
-      type: String,
       default: null
     },
     showColumnSelectorButton: {
@@ -89,6 +88,7 @@ export default {
       defaultColumns: [],
       savedSearchAdvancedFilter: defaultFilter,
       ready: false,
+      task: null,
     }
   },
   components: {
@@ -100,6 +100,7 @@ export default {
       this.$emit('saved-search-data', {
         pmql: this.pmql,
         advanced_filter: this.savedSearchAdvancedFilter,
+        columns: this.columns
       });
     },
     applyColumns() {
@@ -115,13 +116,36 @@ export default {
           this.savedSearchAdvancedFilter = response.data.advanced_filter;
         });
     },
+    loadTask() {
+      return window.ProcessMaker.apiClient
+        .get("tasks/" + this.taskId)
+        .then(response => {
+          this.task = response.data;
+        });
+    },
     showColumns() {
       this.$bvModal.show("columns");
     }
   },
   watch: {
+    task: {
+      deep: true,
+      handler() {
+        console.log("task", this.task);
+      }
+    },
     savedSearchAdvancedFilter: {
       deep: true,
+      handler() {
+        this.emitSavedSearchData();
+      }
+    },
+    pmql: {
+      handler() {
+        this.emitSavedSearchData();
+      }
+    },
+    ready: {
       handler() {
         this.emitSavedSearchData();
       }
@@ -132,13 +156,8 @@ export default {
 
       const pmqls = [];
 
-      if (this.savedSearch?.key === 'tasks') {
-        // The default saved search does not have the user filter in the pmql
-        pmqls.push("(user_id = " + window.ProcessMaker.user.id + ")");
-      }
-
-      if (this.processId && this.elementId) {
-        pmqls.push('(process_id = ' + this.processId + ' AND element_id = "' + this.elementId + '")');
+      if (this.task) {
+        pmqls.push('(user_id = ' + window.ProcessMaker.user.id + ' AND process_id = ' + this.task.process_id + ' AND element_id = "' + this.task.element_id + '")');
       }
 
       if (this.savedSearch?.pmql) {
@@ -147,6 +166,12 @@ export default {
 
       return pmqls.join(' AND ');
     },
+    taskTitle() {
+      if (this.task) {
+        return this.$t('Your {{title}} tasks', {title: this.task.element_name})
+      }
+      return '';
+    }
   },
   mounted() {
     if (this.savedSearchId) {
@@ -155,13 +180,15 @@ export default {
          this.ready = true
       });
 
-    } else if (this.processId && this.elementId) {
+    } else if (this.taskId) {
 
       this.columns = this.defaultColumns =
         _.get(window, 'Processmaker.defaultColumns', [])
         .filter(c => c.field !== 'is_priority');
-
-      this.ready = true;
+      
+      this.loadTask().then(() => {
+         this.ready = true
+      });
     }
   }
 }
