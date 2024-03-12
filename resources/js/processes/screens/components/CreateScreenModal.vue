@@ -20,7 +20,7 @@
       @ok.prevent="onSubmit"
     >
       <b-row>
-        <b-col cols="8" class="type-style-col">
+        <b-col cols="7" class="type-style-col">
           <screen-type-dropdown
             v-model="formData.type"
             :copy-asset-mode="copyAssetMode"
@@ -31,7 +31,7 @@
           </div>
           <screen-template-options />
         </b-col>
-        <b-col cols="4">
+        <b-col cols="5" class="form-style-col">
           <template v-if="countCategories">
             <required />
             <b-form-group
@@ -271,8 +271,11 @@ export default {
   background-color: #F6F9FB;
 }
 
+.form-style-col {
+  background-color: #FFFFFF;
+}
 .footer-btns {
-  padding-top: 100px;
+  padding-top: 190px;
 }
 
 .template-type-label {
