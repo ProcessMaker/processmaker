@@ -9,10 +9,10 @@
           <img src="/img/pencil-fill.svg" :alt="$t('Edit')">
         </b-button>
         <div class="pm-row-buttons-separator"></div>
-        <b-button variant="light"
+        <b-button :id="idButtonRemove"
+                  variant="light"
                   size="sm"
-                  @click="onRemoveRule"
-                  :id="idButtonRemove">
+                  @click="onRemoveRule">
           <img src="/img/trash-fill.svg" :alt="$t('Remove')">
         </b-button>
       </template>
