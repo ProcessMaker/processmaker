@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     showTemplatePreview() {
-      console.log('hit ShowTemplatePreview');
+      this.$emit('show-template-preview', this.template);
     },
   },
 };

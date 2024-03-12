@@ -21,15 +21,18 @@
     >
       <b-row>
         <b-col cols="7" class="type-style-col">
-          <screen-type-dropdown
-            v-model="formData.type"
-            :copy-asset-mode="copyAssetMode"
-            :screen-types="screenTypes"
-          />
-          <div class="template-type-label pt-4">
-            <p>{{ templateTypeLabel }}</p>
+          <div v-if="!showTemplatePreview">
+            <screen-type-dropdown
+              v-model="formData.type"
+              :copy-asset-mode="copyAssetMode"
+              :screen-types="screenTypes"
+            />
+            <div class="template-type-label pt-4">
+              <p>{{ templateTypeLabel }}</p>
+            </div>
+            <screen-template-options @show-template-preview="showPreview"/>
           </div>
-          <screen-template-options />
+          <preview-template v-if="showTemplatePreview" :template="selectedTemplate" @hide-template-preview="hidePreview"></preview-template>
         </b-col>
         <b-col cols="5" class="form-style-col">
           <template v-if="countCategories">
@@ -122,6 +125,7 @@ import {
 } from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
+import PreviewTemplate from "../../../components/templates/PreviewTemplate.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -132,6 +136,7 @@ export default {
     ProjectSelect,
     ScreenTypeDropdown,
     ScreenTemplateOptions,
+    PreviewTemplate,
   },
   mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
@@ -160,6 +165,8 @@ export default {
       disabled: false,
       isQuickCreate: isQuickCreateFunc(),
       screenSelectId: screenSelectId(),
+      showTemplatePreview: false,
+      selectedTemplate: null,
     };
   },
   computed: {
@@ -262,6 +269,14 @@ export default {
         window.location = url;
       }
     },
+    showPreview(template) {
+      this.showTemplatePreview = true;
+      this.selectedTemplate = template
+    },
+    hidePreview() {
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
+    }
   },
 };
 </script>
