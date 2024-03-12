@@ -15,7 +15,10 @@
         </span>
       </div>
     </div>
-    <a class="lead text-secondary font-weight-bold">
+    <a
+      id="saved-status"
+      class="lead text-secondary font-weight-bold"
+    >
       {{ task.element_name }}
     </a>
     <b-tooltip
