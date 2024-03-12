@@ -4,7 +4,7 @@
     <div class="d-flex">
       <PMPanelWithCustomHeader 
         class="filters"
-        :title="$t('Step1:') + ' ' + $t('Define the filtering criteria')">
+        :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
             @showColumns="showColumns"
@@ -26,9 +26,9 @@
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
 
-      <PMPanelWithCustomHeader 
+      <PMPanelWithCustomHeader
         class="ml-3 actions"
-        :title="$t('Step2:') + ' ' + $t('Rule Configuration')">
+        :title="$t('Step 2:') + ' ' + $t('Rule Configuration')">
         <InboxRuleEdit 
           :count="count" 
           :inbox-rule="inboxRule">
