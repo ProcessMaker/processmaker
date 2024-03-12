@@ -45,12 +45,6 @@ class TemplateController extends Controller
      */
     public function index(string $type, Request $request)
     {
-        $templates = $this->template->index($type, $request);
-
-        if ($request->input('per_page') === '0') {
-            return $templates;
-        }
-
         if ($type === 'screen') {
             $is_public = $request->query('is_public');
 
@@ -60,7 +54,15 @@ class TemplateController extends Controller
                 $query->where('is_public', $is_public);
             }
 
-            return new TemplateCollection($query->get());
+            $templates = $query->get();
+
+            return new TemplateCollection($templates);
+        }
+
+        $templates = $this->template->index($type, $request);
+
+        if ($request->input('per_page') === '0') {
+            return $templates;
         }
 
         return new TemplateCollection($templates);

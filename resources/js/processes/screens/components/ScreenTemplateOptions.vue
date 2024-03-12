@@ -4,8 +4,16 @@
       v-model="templateType"
       @selected-template="handleSelectedTemplate"
     />
-    <div class="cards-container">
+    <data-loading
+      v-show="shouldShowLoader"
+      :for="/templates\screen/"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader" class="cards-container">
       <b-card-group
+        v-cloak
         id="screen-template-options"
         deck
         class="screen-template-options justify-content-space-between"
@@ -53,13 +61,20 @@ export default {
       this.templateType = templateType;
     },
     fetch() {
+      let url;
+      if (this.templateType === "") {
+        this.templateType = "Public Templates";
+      }
+
       this.loading = true;
       this.apiDataLoading = true;
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-      const url = this.templateType === "Public Templates"
-        ? "templates/screen?is_public=1"
-        : "templates/screen?is_public=0";
+      if (this.templateType === "Public Templates") {
+        url = "templates/screen?is_public=1";
+      } else if (this.templateType === "My Templates") {
+        url = "templates/screen?is_public=0";
+      }
 
       // Load from our API client
       ProcessMaker.apiClient
@@ -75,6 +90,7 @@ export default {
         .then(response => {
           this.screenTemplates = response.data.data;
           this.apiDataLoading = false;
+          this.apiNoResults = false;
         })
         .finally(() => {
           this.loading = false;
