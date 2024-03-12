@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -203,15 +202,13 @@
               if (this.firstChange) {
                 this.firstChange = false;
               } else {
-                window.top.postMessage(
-                  {
-                    typeData: "form-data",
-                    data: this.formData,
-                  },
-                  "*");
+                const event = new CustomEvent('dataUpdated', {
+                  detail: formData,
+                });
+                window.top.dispatchEvent(event);
               }
             }
-          }
+          },
         },
         computed: {
           taskDefinitionConfig () {
@@ -405,10 +402,15 @@
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;
+          
+          window.addEventListener('fillData', event => {
+            this.formData = _.merge(this.formData, event.detail);
+          });
+
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+    
     </script>
 
 
