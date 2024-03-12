@@ -72,7 +72,7 @@ class SettingsMenus extends ProcessMakerModel
     {
         return [
             'menu_group' => 'required',
-            'menu_group_icon' => 'required',
+            'menu_group_order' => 'required',
         ];
     }
 
