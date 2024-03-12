@@ -103,7 +103,7 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="details-tab"
-                      :class="{'nav-link': true, active: showInfo }"
+                      :class="{'nav-link': true,tabStyle: true, active: showInfo, styleInactive: !showInfo }"
                       data-bs-toggle="tab"
                       data-bs-target="#details"
                       type="button"
@@ -118,7 +118,7 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="comments-tab"
-                      :class="{'nav-link': true, active: !showInfo }"
+                      :class="{'nav-link': true,tabStyle: true, active: !showInfo, styleInactive: showInfo }"
                       data-bs-toggle="tab"
                       data-bs-target="#comments"
                       type="button"
@@ -149,7 +149,7 @@
                                 <button
                                   v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                   type="button"
-                                  class="btn btn-outline-secondary btn-block"
+                                  class="btn btn-block button-reassign"
                                   @click="show"
                                 >
                                   <i class="fas fa-user-friends"></i> {{__('Reassign')}}
@@ -160,7 +160,7 @@
                               <!-- Section to Add Now What? -->
                             </li>
                             <div :class="statusCard">
-                              <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
+                              <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
                             </div>
                             <li v-if="dateDueAt && showDueAtDates" class="list-group-item">
                               <p class="section-title">@{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}</p>
@@ -413,12 +413,12 @@
           },
           statusCard() {
             const header = {
-              "OVERDUE": "bg-danger",
-              "OPEN": "bg-success",
-              "COMPLETED": "bg-success",
+              "OVERDUE": "overdue-style",
+              "OPEN": "open-style",
+              "COMPLETED": "open-style",
             };
             const status = this.task.advanceStatus.toUpperCase();
-            return "card-header text-capitalize text-white text-status " + header[status];
+            return "card-header text-status " + header[status];
           },
           isAllowReassignment() {
             return this.task.definition.allowReassignment === "true";
@@ -624,6 +624,15 @@
     align-items: center;
     gap: 16px;
     margin: 16px;
+    color: white;
+    border-radius: 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    text-transform: uppercase;
   }
   .nav-collapse {
     padding: 0 16px;
@@ -652,6 +661,35 @@
     max-width:400px;
     width:317px;
     height:calc(100vh - 215px)
+  }
+  .styleInactive {
+    color: #556271;
+  }
+  .tabStyle {
+    border-radius: 4px 4px 0px 0px;
+  }
+  .open-style {
+    background-color: #4ea075;
+  }
+  .overdue-style {
+    background-color: #ed4858;
+  }
+  .button-reassign {
+    color: #556271;
+    text-transform: capitalize;
+    font-family: Open Sans;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    border: 1px solid #CDDDEE;
+    border-radius: 4px;
+    box-shadow: 0px 0px 3px 0px #0000001a;
+  }
+  .button-reassign:hover {
+    color: #556271;
+    background-color: #f3f5f8;
   }
 </style>
 @endsection
