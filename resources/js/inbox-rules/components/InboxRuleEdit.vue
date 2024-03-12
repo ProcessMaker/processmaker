@@ -58,13 +58,20 @@
       <template v-slot:label>
         <b>{{ $t('Give this rule a name *') }}</b>
       </template>
-      <b-form-input v-model="ruleName" placeholder="Enter your name"></b-form-input>
+      <b-form-input v-model="ruleName" 
+                    placeholder="Enter your name"
+                    :state="ruleNameState"
+                    @input="onChangeRuleName">
+      </b-form-input>
+      <b-form-invalid-feedback :state="ruleNameState">
+        {{ $t('This field is required!') }}
+      </b-form-invalid-feedback>
     </b-form-group>
 
     <b-form-group>
       <div class="d-flex flex-nowrap">
         <div  class="flex-grow-1 d-flex align-items-center">
-          <span class="">*=Required</span>
+          <span class="">{{ $t('*=Required') }}</span>
         </div>
         <div class="flex-grow-0">
           <b-button variant="secondary"
@@ -113,7 +120,8 @@
         applyToCurrentInboxMatchingTasks: false,
         applyToFutureTasks: false,
         deactivationDate: "",
-        ruleName: ""
+        ruleName: "",
+        ruleNameState: null
       };
     },
     watch: {
@@ -140,6 +148,10 @@
         this.$router.push({name: 'index'});
       },
       onSave() {
+        if (this.ruleName.trim() === "") {
+          this.ruleNameState = false;
+          return;
+        }
         let params = {
           actionsTask: this.actionsTask,
           selectedPerson: this.selectedPerson,
@@ -171,6 +183,9 @@
                     ProcessMaker.alert(message, "success");
                   });
         }
+      },
+      onChangeRuleName() {
+        this.ruleNameState = this.ruleName.trim() !== "";
       },
       setInboxRuleData() {
         if (this.inboxRule) {
