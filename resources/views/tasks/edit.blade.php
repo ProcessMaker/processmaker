@@ -99,7 +99,26 @@
                             @{{ moment(dateDueAt).format() }}
                         </li>
 
-
+                        <li v-if="task.draft" class="list-group-item">
+                          <task-save-panel
+                            :options="options"
+                            :task="task"
+                            :date="lastAutosave"
+                            :error="errorAutosave"
+                          />
+                        </li>
+                        <li class="list-group-item">
+                          <b-button
+                            class="edit-icon-button"
+                            :aria-label="$t('Erase')"
+                            variant="light"
+                            v-b-tooltip.hover title="Erase Draft"
+                            @click="eraseDraft()"
+                          >
+                            <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                            @{{$t('Erase Draft')}}
+                          </b-button>
+                        </li>
                         <li class="list-group-item" v-if="!showDueAtDates">
                             <i class='far fa-calendar-alt'></i>
                             <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
@@ -272,6 +291,13 @@
           is_loading: false,
           autoSaveDelay: 2000,
           firstChange: true,
+          options: {
+            is_loading: false,
+          },
+          lastAutosave: "-",
+          errorAutosave: false,
+          formDataWatcherActive: true,
+          
         },
         watch: {
           task: {
@@ -281,6 +307,11 @@
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
               }
+              if (task.draft) {
+                this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+              } else {
+                this.lastAutosave = "-";
+              }
             }
           },
           formData: {
@@ -288,8 +319,13 @@
             handler(formData) {
               if (this.firstChange) {
                 this.firstChange = false;
-              } else {              
-                this.handleAutosave();
+              } else {
+                if (this.formDataWatcherActive)
+                {
+                  this.handleAutosave();
+                } else {
+                  this.formDataWatcherActive = true;
+                }             
               }
             }
           }
@@ -474,16 +510,34 @@
             this.task = task;
           },
           autosaveApiCall() {
-            this.is_loading = true;
+            this.options.is_loading = true;
             const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
             return ProcessMaker.apiClient
             .put("drafts/" + this.task.id, draftData)
-            .then(() => {
+            .then((response) => {
               ProcessMaker.alert(this.$t('Saved'), 'success')
+              this.task.draft = _.merge(
+                {},
+                this.task.draft,
+                response.data
+              );
             })
+            .catch(() => {
+              this.errorAutosave = true;
+            })            
             .finally(() => {
-              this.is_loading = false;
+              this.options.is_loading = false;
             });
+          },
+          eraseDraft() {
+            this.formDataWatcherActive = false;
+            ProcessMaker.apiClient
+              .delete("drafts/" + this.task.id)
+              .then(() => {
+                this.task.draft = null;
+                const taskComponent = this.$refs.task;
+                taskComponent.loadTask();
+              });
           },
         },
         mounted() {
@@ -539,6 +593,25 @@
 
         .multiselect__tag-icon:after {
             color: white !important;
+        }
+        .edit-icon-button {
+            display: flex;
+            width: 100%;
+            height: 36px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            justify-content: left;
+            align-items: center;
+            vertical-align: unset;
+            text-transform: none !important;
+        }
+
+        .edit-icon-button img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
         }
     </style>
 @endsection

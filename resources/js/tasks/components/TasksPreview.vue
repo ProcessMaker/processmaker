@@ -29,6 +29,8 @@
                   :options="options"
                   :task="task"
                   :date="lastAutosave"
+                  :error="errorAutosave"
+                  :form-data="formData"
                 />
               </div>
               <div class="ml-auto mr-0 text-right">
@@ -166,6 +168,9 @@ export default {
             this.task.draft,
             response.data
           );
+        })
+        .catch(() => {
+          this.errorAutosave = true;
         })
         .finally(() => {
           this.options.is_loading = false;

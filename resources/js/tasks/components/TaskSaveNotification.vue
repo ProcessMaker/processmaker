@@ -6,7 +6,12 @@
     >
       <div class="toolbar-item d-flex justify-content-center align-items-center">
         <span>
-          <FontAwesomeIcon v-if="task.draft" class="text-success" :icon="icon" :spin="isLoading" />
+          <FontAwesomeIcon
+            v-if="task.draft"
+            :class="{ 'text-success': !error, 'text-secondary': error }"
+            :icon="icon"
+            :spin="isLoading"
+          />
         </span>
       </div>
     </div>
@@ -22,35 +27,62 @@
         {{ task.process_request.case_title }}
       </div>
       <div class="tooltip-draft-date">
-        <FontAwesomeIcon class="text-success" :icon="savedIcon" />
+        <FontAwesomeIcon v-if="!error" class="text-success" :icon="savedIcon" />
         {{ $t('Last Autosave: ')+date }}
+      </div>
+      <div v-if="error" class="tooltip-draft-error">
+        <FontAwesomeIcon v-if="error" class="text-secondary" :icon="errorIcon " />
+        <span>{{ $t('Unable to save. Verify your internet connection.') }}
+        </span>
       </div>
     </b-tooltip>
   </div>
 </template>
 <script>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faCheckCircle, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faSpinner, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: { FontAwesomeIcon },
   props: {
     options: {
       type: Object,
-      default: function () {
+      default() {
         return {
           is_loading: false,
         };
       },
     },
-    task: {},
-    date: "",
+    task: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    formData: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    date: {
+      type: String,
+      default() {
+        return "-";
+      },
+    },
+    error: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
   },
   data() {
     return {
       savedIcon: faCheckCircle,
       spinner: faSpinner,
-      lastAutosave: "",
+      errorIcon: faExclamationTriangle,
     };
   },
   computed: {
@@ -62,7 +94,15 @@ export default {
       return this.$t(status);
     },
     icon() {
-      return this.isLoading ? this.spinner : this.savedIcon;
+      if (this.error) {
+        return this.errorIcon;
+      }
+
+      if (this.isLoading) {
+        return this.spinner;
+      }
+
+      return this.savedIcon;
     },
   },
 };
@@ -82,7 +122,6 @@ export default {
 }
 .auto-save-tooltip .arrow::before {
   border-bottom-color: #CDDDEE !important;
-  border-top-color: #CDDDEE !important;
 }
 .tooltip-case-title {
   font-weight: 700;
@@ -91,5 +130,20 @@ export default {
 .tooltip-draft-date {
   font-weight: 400;
   font-size: 16px;
+}
+.tooltip-draft-error {
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+}
+.auto-save-tooltip .arrow::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    border-width: 0 .4rem .4rem;
+    transform: translateY(3px);
+    border-color: transparent;
+    border-style: solid;
+    border-bottom-color: #FFFFFF;
 }
 </style>

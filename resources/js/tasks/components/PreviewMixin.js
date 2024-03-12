@@ -26,6 +26,7 @@ const PreviewMixin = {
       autoSaveDelay: 2000,
       savedIcon: null,
       lastAutosave: "",
+      errorAutosave: false,
     };
   },
   methods: {
