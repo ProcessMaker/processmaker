@@ -10,9 +10,9 @@ use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ScreenTemplates extends Template implements HasMedia
 {
@@ -226,7 +226,6 @@ class ScreenTemplates extends Template implements HasMedia
     //     //     'id'
     //     // )->wherePivot('asset_type', static::class);
     // }
-    
 
     /**
      * Add files to media collection
