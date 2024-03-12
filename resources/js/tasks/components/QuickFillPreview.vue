@@ -1,100 +1,239 @@
 <template>
-    <div v-show="showQuickFillPreview">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="flex-grow: 1;">{{ $t('Quick Fill') }}</span>
-            <b-button 
-                class="btn-cancel"
-                @click="cancelQuickFill()"
-            >{{ $t('CANCEL') }}
-            </b-button>
-        </div>
-        <div class="search-bar flex-grow w-100">
-        <div class="d-flex align-items-center">
-            <i class="fa fa-search ml-3 pmql-icons">
-            </i>
-            <textarea  ref="search_input"
-                    type="text"
-                    :aria-label="''"
-                    :placeholder="$t('Search here')"
-                    rows="1"
-                    @keydown.enter.prevent
-                    class="pmql-input">
-            </textarea>
-        </div>
-        <div class="container">
+  <div class="pl-3">
+    <div class="main-container">
+      <div class="button-container">
+        <b-button
+          class="btn-back-quick-fill"
+          variant="link"
+          @click="$emit('close')"
+        >
+          <i class="fas fa-arrow-left" />
+        </b-button>
+        <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
+        <b-button
+          class="close-button"
+          variant="link"
+          @click="$emit('close')"
+        >
+          <i class="fas fa-times" />
+        </b-button>
+      </div>
+    </div>
+    <div class="second-container">
+      <div class="span-message">
+        <span>Select a previous task to reuse its filled data on the current task.</span>
+      </div>
+      <div class="third-container">
         <tasks-list
-            ref="taskList"
-            :disable-tooltip="true"
-            :disable-quick-fill-tooltip="true"
-            :columns="columns"
-            @selected="selected"
-            :pmql="pmql"
-            :advanced-filter-prop="filter"
-        ></tasks-list>
-        </div>
+          ref="taskList"
+          class="custom-table-class"
+          :disable-tooltip="true"
+          :columns="columns"
+          @selected="selected"
+          :pmql="pmql"
+          :advanced-filter-prop="filter"
+          :additionalIncludes="['screenFilteredData']"
+        >
+          <template v-slot:preview-header="{ close, task }">
+            <div>
+              <b-button
+                  class="mr-2"
+                  variant="primary"
+                  :aria-label="$t('Use This Task Data')"
+                  @click="buttonThisData(task)"
+                >
+                  {{ $t('Use This Task Data') }}
+                </b-button>
+                <b-button
+                  class="close-button mr-2"
+                  variant="link"
+                  @click="close()"
+                >
+                  <i class="fas fa-times" />
+                </b-button>
+            </div>
+          </template>
+          <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
+            <b-button
+              class="icon-button"
+              :aria-label="$t('Quick fill')"
+              variant="light"
+              @click="buttonThisData(tooltipRowData)"
+            >
+              <img
+                src="../../../img/smartinbox-images/Vector.svg"
+                :alt="$t('No Image')"
+              />
+            </b-button>
+            <b-button
+              class="icon-button"
+              :aria-label="$t('Quick fill Preview')"
+              variant="light"
+              @click="previewTasks(tooltipRowData, 93)"
+            >
+              <i class="fas fa-eye"/>
+            </b-button>
+          </template>
+        </tasks-list>
+      </div>
     </div>
-    </div>
+  </div>
 </template>
 <script>
 export default {
-props: ['showQuickFillPreview', 'task', 'data'],
-data() {
+  props: ["task", "data"],
+  data() {
     return {
-        filter: [
-            {
-                "subject": { "type": "Status" },
-                "operator": "=",
-                "value": "Completed",
-                "_column_field": "status",
-                "_column_label": "Status"
-            }
-        ],
-        pmql: '(user_id = 1)',
-        columns:[
+      taskData: {},
+      processID: 27,
+      filter: [
+        {
+          subject: { type: "Field", value: "process_id" },
+          operator: "=",
+          value: this.task.process_id,
+        },
+        {
+          subject: { type: "Field", value: "element_id" },
+          operator: "=",
+          value: this.task.element_id,
+        },
+      ],
+      pmql: '(user_id = 1 and status="Completed")',
+      columns: [
         {
           label: "Case #",
           field: "case_number",
-          sortable: true,
-          default: true,
-          width: 60,
-          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
-          order_column: 'process_requests.case_number',
+          filter_subject: {
+            type: "Relationship",
+            value: "processRequest.case_number",
+          },
+          order_column: "process_requests.case_number",
         },
         {
           label: "Case title",
           field: "case_title",
           name: "__slot:case_number",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
-          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
-          order_column: 'process_requests.case_title',
+          filter_subject: {
+            type: "Relationship",
+            value: "processRequest.case_title",
+          },
+          order_column: "process_requests.case_title",
         },
         {
-          label: "Due date",
-          field: "due_at",
+          label: "Completed",
+          field: "completed_at",
           format: "datetime",
-          sortable: true,
-          default: true,
-          width: 160,
-        },
+          filter_subject: {
+            type: "Field",
+            value: "completed_at",
+          },
+        }
       ],
       dataTasks: {},
-    }
+    };
   },
   methods: {
-    cancelQuickFill() {
-      //here logic for cancel buton
+    selected(taskData) {},
+    buttonThisData(tooltipRowData) {
+      this.$emit("quick-fill-data", tooltipRowData.screen_filtered_data);
+      this.$emit("close");
     },
-    selected(taskData) {
-      this.$root.$emit("selectedTaskForQuickFill", { task: taskData, data: this.data });
-    }
-  }
-}
+    buttonPreviewThisData(tooltipRowData) {
+    },
+  },
+};
 </script>
-<style>
+<style scoped>
+
 .btn-cancel {
-    background-color: #D8E0E9;
+  background-color: #d8e0e9;
+}
+.btn-back-quick-fill {
+  color: #888;
+  padding: 0;
+  border: none;
+}
+.button-container {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  border: 1px solid #f6f9fb;
+  padding: 0 12px;
+}
+.quick-fill-text {
+  color: #888;
+  margin-left: 8px;
+}
+.close-button {
+  color: #888;
+  padding: 0;
+  border: none;
+  margin-left: auto;
+}
+.arrow-button,
+.close-button {
+  color: #888;
+  padding: 0;
+  border: none;
+}
+.suggested-task {
+  display: flex;
+  align-items: center;
+  border: 1px solid #f1e4ba;
+  margin: 20px 0;
+  padding: 10px 20px;
+  background-color: #fef7e2;
+  height: 64px;
+}
+
+.suggested-task img {
+  margin-right: 5px; 
+}
+
+.suggested-task span {
+  color: #556271;
+}
+.content-container {
+  margin: 20px;
+}
+
+.custom-table-class {
+  background-color: #fff;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+}
+
+.main-text {
+  color: #556271;
+  font-size: 16px;
+}
+
+.sub-text {
+  color: #556271;
+  font-size: 14px;
+  margin-left: -30px;
+}
+
+.span-message {
+  background-color: #f6f9fb;
+  font-size: 16px;
+  color: #556271;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+img {
+  align-self: flex-start;
+  margin-right: 2px;
+  margin-top: 3px;
+}
+
+.icon-button {
+  color: #888;
 }
 </style>
