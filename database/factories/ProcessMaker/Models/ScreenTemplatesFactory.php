@@ -36,6 +36,7 @@ class ScreenTemplatesFactory extends Factory
             'screen_type' => 'FORM',
             'media_collection' => $this->faker->unique()->name(),
             'manifest' => '{}',
+            'screen_custom_css' => null,
             'is_public' => false,
             'is_system' => false,
             'asset_type' => null,
