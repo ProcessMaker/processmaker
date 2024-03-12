@@ -131,8 +131,6 @@ class TaskController extends Controller
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (QueryException $e) {
-            throw $e;
-
             return $this->handleQueryException($e);
         }
 
