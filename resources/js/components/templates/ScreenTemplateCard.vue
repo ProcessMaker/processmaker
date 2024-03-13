@@ -8,10 +8,18 @@
     >
       <b-card-body>
         <img
+          v-if="thumbnail"
           :src="thumbnail"
           class="card-image"
           :alt="template.name"
+          :style="{ width: '247px', height: '133px' }"
         >
+        <div
+          v-else
+          class="thumbnail-icon-container d-flex align-items-center justify-content-center"
+        >
+          <i class="fas fa-palette thumbnail-icon" />
+        </div>
         <div class="template-details">
           <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
           <span class="template-description d-block pb-1">{{ template.description | str_limit(150) }}</span>
@@ -49,7 +57,7 @@ export default {
   computed: {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
-    }
+    },
   },
   mounted() {
     console.log('this.template', this.template);
@@ -71,6 +79,16 @@ export default {
   border-radius: 6px;
 }
 
+.thumbnail-icon-container {
+  width: 247px;
+  height: 133px;
+  border: 2px solid #CDDDEE;
+  border-radius: 6px;
+}
+.thumbnail-icon {
+  color: #CDDDEE;
+  font-size: 59px;
+}
 .template-details, .default-template {
   color: #556271;
 }
