@@ -37,10 +37,10 @@ export default class {
 
     if (value) {
       if (typeof value === "object" && value.code) {
-        mask = this.masks().find((option) => option.code == value.code);
+        mask = this.masks().default.find((option) => option.code == value.code);
       }
       if (typeof value === "string") {
-        mask = this.masks().find((option) => option.code == value);
+        mask = this.masks().default.find((option) => option.code == value);
       }
     }
 
