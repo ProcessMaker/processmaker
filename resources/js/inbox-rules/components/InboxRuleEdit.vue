@@ -1,114 +1,117 @@
 <template>
   <div class="pm-inbox-rule-edit">
     <template v-if="!showFillConfig">
-    <b-form-group>
-      <template v-slot:label>
-        <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
-      </template>
-      <b-form-radio-group v-model="actionsTask"
-                          class="pm-inbox-rule-edit-radio">
-        <b-form-radio value="priority">
-          <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
-            {{ $t('Mark as Priority') }}
-        </b-form-radio>
-        <b-form-radio value="reassign">
-          <img src="/img/people-fill.svg" :alt="$t('Reassign')">
-            {{ $t('Reassign') }}
-        </b-form-radio>
-      </b-form-radio-group>
-      <b-form-group :label="$t('Select a Person*')"
-                    v-if="actionsTask==='reassign'">
-        <b-form-select v-model="selectedPerson" 
-                       :options="persons">
-        </b-form-select>
-      </b-form-group>
-    </b-form-group>
-
-    <b-form-group>
-      <b-form-checkbox
-        v-model="fillDataChecked"
-      >
-        {{ $t('Save and reuse filled data') }}
-      </b-form-checkbox>
-    </b-form-group>
-
-    <b-form-group>
-      <template v-slot:label>
-        <b>{{ $t('Rule Behavior') }}</b>
-      </template>
-
-      <b-form-checkbox v-model="applyToCurrentInboxMatchingTasks"
-                       value="true"
-                       unchecked-value="false">
-        {{ $t('Apply to current inbox matching tasks') }} ({{ count }})
-      </b-form-checkbox>
-      <b-form-checkbox v-model="applyToFutureTasks"
-                       value="true"
-                       unchecked-value="false">
-        {{ $t('Apply to Future tasks') }}
-      </b-form-checkbox>
-
-    </b-form-group>
-
-    <b-form-group>
-      <template v-slot:label>
-        <b>{{ $t('Deactivation date') }}</b>
-      </template>
-      <PMDatetimePicker v-model="deactivationDate"
-                        :format="'YYYY-MM-DD'"
-                        :withTime="false">
-        <template v-slot:button-content-datepicker>
-          <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')">
+      <b-form-group>
+        <template v-slot:label>
+          <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
         </template>
-      </PMDatetimePicker>
-      <div class="pm-inbox-rule-edit-custom-placeholder">
-        {{ $t('For a rule with no end date, leave the field empty') }}
-      </div>
-    </b-form-group>
+        <b-form-radio-group v-model="actionsTask"
+                            class="pm-inbox-rule-edit-radio">
+          <b-form-radio value="priority">
+            <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
+              {{ $t('Mark as Priority') }}
+          </b-form-radio>
+          <b-form-radio value="reassign">
+            <img src="/img/people-fill.svg" :alt="$t('Reassign')">
+              {{ $t('Reassign') }}
+          </b-form-radio>
+        </b-form-radio-group>
+        <b-form-group :label="$t('Select a Person*')"
+                      v-if="actionsTask==='reassign'">
+          <b-form-select v-model="selectedPerson" 
+                          :options="persons">
+          </b-form-select>
+        </b-form-group>
+      </b-form-group>
 
-    <b-form-group>
-      <div class="pm-inbox-rule-edit-custom-separator"></div>
-    </b-form-group>
+      <b-form-group>
+        <b-form-checkbox
+          v-model="fillDataChecked"
+        >
+          {{ $t('Save and reuse filled data') }}
+        </b-form-checkbox>
+      </b-form-group>
 
-    <b-form-group v-if="!fillDataChecked">
-      <template v-slot:label>
-        <b>{{ $t('Give this rule a name *') }}</b>
-      </template>
-      <b-form-input v-model="ruleName" 
-                    placeholder="Enter your name"
-                    :state="ruleNameState"
-                    @input="onChangeRuleName">
-      </b-form-input>
-      <b-form-invalid-feedback :state="ruleNameState">
-        {{ $t('This field is required!') }}
-      </b-form-invalid-feedback>
-    </b-form-group>
+      <b-form-group>
+        <template v-slot:label>
+          <b>{{ $t('Rule Behavior') }}</b>
+        </template>
 
-    <b-form-group>
-      <div class="d-flex flex-nowrap">
-        <div  class="flex-grow-1 d-flex align-items-center">
-          <span class="">{{ $t('*=Required') }}</span>
+        <b-form-checkbox v-model="applyToCurrentInboxMatchingTasks"
+                          value="true"
+                          unchecked-value="false">
+          {{ $t('Apply to current inbox matching tasks') }} ({{ count }})
+        </b-form-checkbox>
+        <b-form-checkbox v-model="applyToFutureTasks"
+                          value="true"
+                          unchecked-value="false">
+          {{ $t('Apply to Future tasks') }}
+        </b-form-checkbox>
+
+      </b-form-group>
+
+      <b-form-group>
+        <template v-slot:label>
+          <b>{{ $t('Deactivation date') }}</b>
+        </template>
+        <PMDatetimePicker v-model="deactivationDate"
+                          :format="'YYYY-MM-DD'"
+                          :withTime="false">
+          <template v-slot:button-content-datepicker>
+            <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')">
+          </template>
+        </PMDatetimePicker>
+        <div class="pm-inbox-rule-edit-custom-placeholder">
+          {{ $t('For a rule with no end date, leave the field empty') }}
         </div>
-        <div class="flex-grow-0">
-          <b-button variant="secondary"
-                    @click="onCancel">
-            {{ $t('Cancel') }}
-          </b-button>
-          <b-button v-if="!fillDataChecked"
-                    variant="primary"
-                    @click="onSave">
-            {{ $t('Save') }}
-          </b-button>
-          <b-button v-if="fillDataChecked"
-                    variant="primary"
-                    @click="showFillConfig = true">
-            {{ $t('Next') }}
-          </b-button>
+      </b-form-group>
+
+      <b-form-group>
+        <div class="pm-inbox-rule-edit-custom-separator"></div>
+      </b-form-group>
+
+      <b-form-group v-if="!fillDataChecked">
+        <template v-slot:label>
+          <b>{{ $t('Give this rule a name *') }}</b>
+        </template>
+        <b-form-input v-model="ruleName" 
+                      placeholder="Enter your name"
+                      :state="ruleNameState"
+                      @input="onChangeRuleName">
+        </b-form-input>
+        <b-form-invalid-feedback :state="ruleNameState">
+          {{ $t('This field is required!') }}
+        </b-form-invalid-feedback>
+      </b-form-group>
+
+      <b-form-group>
+        <div class="d-flex flex-nowrap">
+          <div  class="flex-grow-1 d-flex align-items-center">
+            <span class="">{{ $t('*=Required') }}</span>
+          </div>
+          <div class="flex-grow-0">
+            <b-button variant="secondary"
+                      @click="onCancel">
+              {{ $t('Cancel') }}
+            </b-button>
+            <b-button v-if="!fillDataChecked"
+                      variant="primary"
+                      @click="onSave">
+              {{ $t('Save') }}
+            </b-button>
+            <b-button v-if="fillDataChecked"
+                      variant="primary"
+                      @click="showFillConfig = true">
+              {{ $t('Next') }}
+            </b-button>
+          </div>
         </div>
-      </div>
-    </b-form-group>
+      </b-form-group>
     </template>
     <template v-if="showFillConfig">
+      <b-form-group>
+        Submit config here
+      </b-form-group>
       <b-button variant="primary"
                 @click="showFillConfig = false">
         {{ $t('Back') }}

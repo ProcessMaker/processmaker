@@ -40,7 +40,7 @@
 
       <PMPanelWithCustomHeader
         class="ml-3 actions"
-        :title="$t('Step 2:') + ' ' + $t('Rule Configuration')">
+        :title="rightPanelTitle">
         <InboxRuleEdit 
           :count="count" 
           :inbox-rule="inboxRule"
@@ -93,6 +93,12 @@
       };
     },
     computed: {
+      rightPanelTitle() {
+        if (this.showFillConfig) {
+          return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration')
+        }
+        return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration')
+      },
       savedSearchIdForFilters() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
