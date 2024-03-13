@@ -135,6 +135,11 @@ export default {
           permission: "create-projects",
         },
         {
+          value: "create-template",
+          content: "Save as Template",
+          icon: "fas fa-file-image",
+        },
+        {
           value: "duplicate-item",
           content: "Copy",
           permission: ["create-screens", "view-additional-asset-actions"],

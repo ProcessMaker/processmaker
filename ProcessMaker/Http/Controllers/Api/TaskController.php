@@ -29,9 +29,12 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\SanitizeHelper;
+use ProcessMaker\Traits\TaskControllerIndexMethods;
 
 class TaskController extends Controller
 {
+    use TaskControllerIndexMethods;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -103,137 +106,19 @@ class TaskController extends Controller
             $user = Auth::user();
         }
 
-        $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
-        $query->select('process_request_tokens.*');
-        $include = $request->input('include') ? explode(',', $request->input('include')) : [];
+        $query = $this->indexBaseQuery($request);
 
-        if (in_array('data', $include)) {
-            unset($include[array_search('data', $include)]);
-        }
+        $this->applyFilters($query, $request);
 
-        $query->with($include);
+        $this->excludeNonVisibleTasks($query, $request);
 
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $query->filter($filter);
-        }
+        $this->applyColumnOrdering($query, $request);
 
-        $filterByFields = [
-            'process_id',
-            'process_request_tokens.user_id' => 'user_id',
-            'process_request_tokens.status' => 'status',
-            'element_id',
-            'element_name',
-            'process_request_id',
-        ];
-        $parameters = $request->all();
-        foreach ($parameters as $column => $fieldFilter) {
-            if (in_array($column, $filterByFields)) {
-                if ($column === 'user_id') {
-                    $key = array_search($column, $filterByFields);
-                    $query->where(function ($query) use ($key, $column, $fieldFilter) {
-                        $userColumn = is_string($key) ? $key : $column;
-                        $query->where($userColumn, $fieldFilter);
-                        $query->orWhere(function ($query) use ($userColumn, $fieldFilter) {
-                            $query->whereNull($userColumn);
-                            $query->where('process_request_tokens.is_self_service', 1);
-                            $user = User::find($fieldFilter);
-                            $query->where(function ($query) use ($user) {
-                                foreach ($user->groups as $group) {
-                                    $query->orWhereJsonContains(
-                                        'process_request_tokens.self_service_groups', strval($group->getKey())
-                                    ); // backwards compatibility
-                                    $query->orWhereJsonContains(
-                                        'process_request_tokens.self_service_groups->groups', strval($group->getKey())
-                                    );
-                                }
-                                $query->orWhereJsonContains(
-                                    'process_request_tokens.self_service_groups->users', strval($user->getKey())
-                                );
-                            });
-                        });
-                    });
-                } elseif ($column === 'process_request_id') {
-                    $key = array_search($column, $filterByFields);
-                    $requestIdColumn = is_string($key) ? $key : $column;
-                    if (empty($parameters['include_sub_tasks'])) {
-                        $query->where($requestIdColumn, $fieldFilter);
-                    } else {
-                        // Include tasks from sub processes
-                        $ids = ProcessRequest::find($fieldFilter)->childRequests()->pluck('id')->toArray();
-                        $ids = Arr::prepend($ids, $fieldFilter);
-                        $query->whereIn($requestIdColumn, $ids);
-                    }
-                } else {
-                    $key = array_search($column, $filterByFields);
-                    $operator = is_numeric($fieldFilter) ? '=' : 'like';
-                    $query->where(is_string($key) ? $key : $column, $operator, $fieldFilter);
-                }
-            }
-        }
+        $this->applyStatusFilter($query, $request);
 
-        //list only display elements type task
-        $nonSystem = filter_var($request->input('non_system'), FILTER_VALIDATE_BOOLEAN);
-        $query->where(function ($query) {
-            $query->where('element_type', '=', 'task');
-            $query->orWhere('element_type', '=', 'serviceTask');
-            $query->where('element_name', '=', 'AI Assistant');
-        })
-            ->when($nonSystem, function ($query) {
-                $query->nonSystem();
-            });
+        $this->applyPmql($query, $request, $user);
 
-        // order by one or more columns
-        $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
-        foreach ($orderColumns as $column) {
-            $parts = explode('.', $column);
-            $table = count($parts) > 1 ? array_shift($parts) : 'process_request_tokens';
-            $columnName = array_pop($parts);
-            if (!Str::contains($column, '.')) {
-                $query->orderBy($column, $request->input('order_direction', 'asc'));
-            } elseif ($table === 'process_request' || $table === 'processRequest') {
-                if ($columnName === 'id') {
-                    $query->orderBy(
-                        'process_request_id',
-                        $request->input('order_direction', 'asc')
-                    );
-                } else {
-                    // Raw sort by (select column from process_requests ...)
-                    $query->orderBy(
-                        DB::raw("(select
-                                $columnName
-                            from
-                                process_requests
-                            where
-                                process_requests.id = process_request_tokens.process_request_id
-                        )"),
-                        $request->input('order_direction', 'asc')
-                    );
-                }
-            }
-        }
-
-        $statusFilter = $request->input('statusfilter', '');
-        if ($statusFilter) {
-            $statusFilter = array_map(function ($value) {
-                return mb_strtoupper(trim($value));
-            }, explode(',', $statusFilter));
-            $query->whereIn('status', $statusFilter);
-        }
-
-        $pmql = $request->input('pmql', '');
-        if (!empty($pmql)) {
-            try {
-                $query->pmql($pmql, null, $user);
-            } catch (QueryException $e) {
-                abort('Your PMQL search could not be completed.', 400);
-            } catch (SyntaxError $e) {
-                abort('Your PMQL contains invalid syntax.', 400);
-            }
-        }
-        if ($advancedFilter = $request->input('advanced_filter', '')) {
-            Filter::filter($query, $advancedFilter);
-        }
+        $this->applyAdvancedFilter($query, $request);
 
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
@@ -246,29 +131,13 @@ class TaskController extends Controller
         try {
             $response = $this->handleOrderByRequestName($request, $query->get());
         } catch (QueryException $e) {
-            $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
-            preg_match($regex, $e->getMessage(), $m);
-
-            return response([
-                'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
-            ], 422);
+            return $this->handleQueryException($e);
         }
 
-        // Only filter results if the user id was specified
-        if ($request->input('user_id') === $user->id) {
-            $response = $response->filter(function ($processRequestToken) use ($request, $user) {
-                if ($request->input('status') === 'CLOSED') {
-                    return $user->can('view', $processRequestToken->processRequest);
-                }
-
-                return $user->can('view', $processRequestToken);
-            })->values();
-        }
+        $response = $this->applyUserFilter($response, $request, $user);
 
         // Map each item through its resource
-        $response = $response->map(function ($processRequestToken) use ($request) {
-            return new Resource($processRequestToken);
-        });
+        $response = $this->applyResource($response);
 
         $inOverdueQuery = ProcessRequestToken::query()
             ->whereIn('id', $response->pluck('id'))
@@ -386,6 +255,16 @@ class TaskController extends Controller
         } else {
             return abort(422);
         }
+    }
+
+    private function handleQueryException($e)
+    {
+        $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
+        preg_match($regex, $e->getMessage(), $m);
+
+        return response([
+            'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
+        ], 422);
     }
 
     private function handleOrderByRequestName($request, $tasksList)
