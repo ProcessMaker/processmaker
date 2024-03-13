@@ -21,6 +21,17 @@
     >
       <strong>></strong>
     </button>
+    <span class="pagination-total">
+      {{ totalItems }}
+    </span>
+    <div class="btn-group dropup">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Dropup
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Option 1</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -55,6 +66,15 @@ export default {
     totalPageCount() {
       return this.meta.total_pages;
     },
+    totalItems() {
+      if (this.meta.total === 1) {
+        return this.meta.total + " item";
+      }
+      return this.meta.total + " items";
+    },
+  },
+  mounted() {
+    console.log(this.meta);
   },
   methods: {
     previousPage() {
@@ -80,6 +100,9 @@ export default {
   justify-content: left;
   align-items: center;
   margin-top: 20px;
+  font-weight: 400;
+  font-size: 15px;
+  color: #5C5C63;
 }
 .pagination-button {
   background-color: #FFFFFF;
@@ -97,5 +120,8 @@ export default {
 .pagination-current-page {
     color: #1572C2;
     font-weight: 700;
+}
+.pagination-total {
+  margin-left: 10px;
 }
 </style>

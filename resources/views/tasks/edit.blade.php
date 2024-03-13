@@ -98,7 +98,6 @@
                             <br>
                             @{{ moment(dateDueAt).format() }}
                         </li>
-
                         <li v-if="task.draft" class="list-group-item">
                           <task-save-panel
                             :options="options"
@@ -119,6 +118,11 @@
                             @{{$t('Clear Task')}}
                           </b-button>
                         </li>
+                        <li class="list-group-item">
+                          <b-button variant="outline-secondary" @click="createRule">{{ __('Create Rule') }}</b-button>
+                        </li>
+
+
                         <li class="list-group-item" v-if="!showDueAtDates">
                             <i class='far fa-calendar-alt'></i>
                             <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
@@ -376,6 +380,9 @@
           },
         },
         methods: {
+          createRule() {
+            window.location.href = `/tasks/rules/new?task_id=${this.task.id}`;
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
