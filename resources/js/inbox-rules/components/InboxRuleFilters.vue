@@ -108,19 +108,28 @@ export default {
       this.savedSearchAdvancedFilter = _.cloneDeep(defaultFilter);
     },
     loadSavedSearch() {
+      this.ready = false;
       return window.ProcessMaker.apiClient
         .get("saved-searches/" + this.savedSearchId)
         .then(response => {
           this.savedSearch = response.data;
           this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
           this.savedSearchAdvancedFilter = response.data.advanced_filter;
+          this.ready = true;
         });
     },
     loadTask() {
+      this.ready = false;
+
+      this.columns = this.defaultColumns =
+        _.get(window, 'Processmaker.defaultColumns', [])
+        .filter(c => c.field !== 'is_priority');
+
       return window.ProcessMaker.apiClient
         .get("tasks/" + this.taskId)
         .then(response => {
           this.task = response.data;
+          this.ready = true;
         });
     },
     showColumns() {
@@ -149,6 +158,16 @@ export default {
       handler() {
         this.emitSavedSearchData();
       }
+    },
+    taskId: {
+      handler() {
+        this.loadTask();
+      }
+    },
+    savedSearchId: {
+      handler() {
+        this.loadSavedSearch();
+      }
     }
   },
   computed: {
@@ -175,20 +194,9 @@ export default {
   },
   mounted() {
     if (this.savedSearchId) {
-      
-      this.loadSavedSearch().then(() => {
-         this.ready = true
-      });
-
+      this.loadSavedSearch();
     } else if (this.taskId) {
-
-      this.columns = this.defaultColumns =
-        _.get(window, 'Processmaker.defaultColumns', [])
-        .filter(c => c.field !== 'is_priority');
-      
-      this.loadTask().then(() => {
-         this.ready = true
-      });
+      this.loadTask();
     }
   }
 }

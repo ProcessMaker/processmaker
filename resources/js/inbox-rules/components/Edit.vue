@@ -3,6 +3,7 @@
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
       <PMPanelWithCustomHeader 
+        v-if="!showFillConfig"
         class="filters"
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
@@ -18,12 +19,23 @@
           v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
           :saved-search-id="savedSearchIdForFilters"
-          :task-id="newTaskId"
+          :task-id="taskId"
           @count="count = $event"
           :show-column-selector-button="false"
           @saved-search-data="savedSearchData = $event"
           >
         </InboxRuleFilters>
+      </PMPanelWithCustomHeader>
+      
+      <PMPanelWithCustomHeader 
+        v-if="showFillConfig"
+        class="filters"
+        :title="$t('Step 3:') + ' ' + $t('Enter form data')">
+        <template v-slot:header-right-content>
+          buttons
+        </template>
+        <InboxRuleFillData>
+        </InboxRuleFillData>
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
@@ -33,7 +45,8 @@
           :count="count" 
           :inbox-rule="inboxRule"
           :saved-search-data="savedSearchData"
-          :new-task-id="newTaskId"
+          :task-id="taskId"
+          @show-fill-config="showFillConfig = $event"
           >
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
@@ -46,12 +59,14 @@
   import InboxRuleEdit from "./InboxRuleEdit.vue";
   import InboxRuleFilters from "./InboxRuleFilters.vue";
   import InboxRuleButtons from "./InboxRuleButtons.vue";
+  import InboxRuleFillData from "./InboxRuleFillData.vue";
   export default {
     components: {
       PMPanelWithCustomHeader,
       InboxRuleEdit,
       InboxRuleFilters,
-      InboxRuleButtons
+      InboxRuleButtons,
+      InboxRuleFillData,
     },
     props: {
       newSavedSearchId: {
@@ -73,6 +88,8 @@
         inboxRule: null,
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
+        showFillConfig: false,
+        taskId: null,
       };
     },
     computed: {
@@ -98,10 +115,14 @@
       }
     },
     mounted() {
+      if (this.newTaskId) {
+        this.taskId = this.newTaskId;
+      }
       if (this.ruleId) {
         window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
+                  this.taskId = this.inboxRule.process_request_token_id;
                 });
       }
     },

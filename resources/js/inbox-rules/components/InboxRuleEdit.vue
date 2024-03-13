@@ -1,5 +1,6 @@
 <template>
   <div class="pm-inbox-rule-edit">
+    <template v-if="!showFillConfig">
     <b-form-group>
       <template v-slot:label>
         <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -21,6 +22,14 @@
                        :options="persons">
         </b-form-select>
       </b-form-group>
+    </b-form-group>
+
+    <b-form-group>
+      <b-form-checkbox
+        v-model="fillDataChecked"
+      >
+        {{ $t('Save and reuse filled data') }}
+      </b-form-checkbox>
     </b-form-group>
 
     <b-form-group>
@@ -61,7 +70,7 @@
       <div class="pm-inbox-rule-edit-custom-separator"></div>
     </b-form-group>
 
-    <b-form-group>
+    <b-form-group v-if="!fillDataChecked">
       <template v-slot:label>
         <b>{{ $t('Give this rule a name *') }}</b>
       </template>
@@ -85,13 +94,26 @@
                     @click="onCancel">
             {{ $t('Cancel') }}
           </b-button>
-          <b-button variant="primary"
+          <b-button v-if="!fillDataChecked"
+                    variant="primary"
                     @click="onSave">
             {{ $t('Save') }}
+          </b-button>
+          <b-button v-if="fillDataChecked"
+                    variant="primary"
+                    @click="showFillConfig = true">
+            {{ $t('Next') }}
           </b-button>
         </div>
       </div>
     </b-form-group>
+    </template>
+    <template v-if="showFillConfig">
+      <b-button variant="primary"
+                @click="showFillConfig = false">
+        {{ $t('Back') }}
+      </b-button>
+    </template>
   </div>
 </template>
 
@@ -114,7 +136,7 @@
         type: Object,
         default: {},
       },
-      newTaskId: {
+      taskId: {
         type: Number,
         default: null
       }
@@ -128,7 +150,9 @@
         applyToFutureTasks: false,
         deactivationDate: "",
         ruleName: "",
-        ruleNameState: null
+        ruleNameState: null,
+        fillDataChecked: false,
+        showFillConfig: false
       };
     },
     watch: {
@@ -144,6 +168,11 @@
           this.setInboxRuleData();
         },
         deep: true
+      },
+      showFillConfig: {
+        handler() {
+          this.$emit("show-fill-config", this.showFillConfig);
+        }
       }
     },
     mounted() {
@@ -166,7 +195,7 @@
           applyToFutureTasks: this.applyToFutureTasks,
           deactivationDate: this.deactivationDate,
           ruleName: this.ruleName,
-          taskId: this.newTaskId,
+          taskId: this.taskId,
           ...this.savedSearchData,
         };
         if (this.inboxRule) {
