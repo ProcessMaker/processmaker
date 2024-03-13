@@ -289,13 +289,13 @@ class ScreenTemplate implements TemplateInterface
      */
     protected function createScreenTemplate(array $data, array $payload, $customCss) : ScreenTemplates
     {
-        $screenType = Screen::findOrFail($data['asset_id'])->type;
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => auth()->id(),
-            'screen_type' => $screenType,
+            'screen_type' => $data['screenType'],
             'screen_custom_css' => $customCss,
             'media_collection' => '',
+            'is_public' =>  $data['is_public'] ? 1 : 0,
         ]);
         $screenTemplate->saveOrFail();
         $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
