@@ -42,7 +42,8 @@ class ScreenTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
-        $templates = ScreenTemplates::nonSystem()->with($include);
+        $isPublic = (int) $request->input('is_public', false);
+        $templates = ScreenTemplates::nonSystem()->with($include)->where('is_public', $isPublic);
         $pmql = $request->input('pmql', '');
         $filter = $request->input('filter');
 

@@ -51,18 +51,6 @@ class TemplateController extends Controller
             return $templates;
         }
 
-        if ($type === 'screen') {
-            $is_public = $request->query('is_public');
-
-            $query = ScreenTemplates::query();
-
-            if ($is_public !== null) {
-                $query->where('is_public', $is_public);
-            }
-
-            return new TemplateCollection($query->get());
-        }
-
         return new TemplateCollection($templates);
     }
 
