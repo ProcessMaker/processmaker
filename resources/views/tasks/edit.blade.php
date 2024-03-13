@@ -425,6 +425,9 @@
           },
         },
         methods: {
+          createRule() {
+            window.location.href = `/tasks/rules/new?task_id=${this.task.id}`;
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
