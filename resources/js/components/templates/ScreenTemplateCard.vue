@@ -7,13 +7,11 @@
       data-cy="screen-template-card"
     >
       <b-card-body>
-        <img
+        <div
           v-if="thumbnail"
-          :src="thumbnail"
-          class="card-image"
-          :alt="template.name"
-          :style="{ width: '247px', height: '133px' }"
-        >
+          class="thumbnail-image-container p-0"
+          :style="{ backgroundImage: 'url(' + thumbnail + ')'}"
+        ></div>
         <div
           v-else
           class="thumbnail-icon-container d-flex align-items-center justify-content-center"
@@ -78,7 +76,14 @@ export default {
 .card-image {
   border-radius: 6px;
 }
-
+.thumbnail-image-container {
+  background-size: contain;
+  width: 247px;
+  height: 133px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
 .thumbnail-icon-container {
   width: 247px;
   height: 133px;
