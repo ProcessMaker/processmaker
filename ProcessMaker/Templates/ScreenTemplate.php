@@ -42,9 +42,16 @@ class ScreenTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
-        $templates = ScreenTemplates::nonSystem()->with($include);
+        $screenType = (string) $request->input('screen_type');
+        $isPublic = (int) $request->input('is_public', false);
+        $templates = ScreenTemplates::nonSystem()->with($include)
+            ->where('is_public', $isPublic);
         $pmql = $request->input('pmql', '');
         $filter = $request->input('filter');
+
+        if (!empty($screenType)) {
+            $templates->where('screen_type', $screenType);
+        }
 
         if (!empty($pmql)) {
             try {
@@ -73,7 +80,7 @@ class ScreenTemplate implements TemplateInterface
                             })
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
-            })->get();
+            })->paginate($request->input('per_page', 10));
 
         return $templates;
     }

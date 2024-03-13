@@ -45,26 +45,6 @@ class TemplateController extends Controller
      */
     public function index(string $type, Request $request)
     {
-        if ($type === 'screen') {
-            $is_public = $request->query('is_public');
-
-            $screen_type = $request->query('screen_type');
-
-            $query = ScreenTemplates::query();
-
-            if ($screen_type !== null) {
-                $query->where('screen_type', $screen_type);
-            }
-
-            if ($is_public !== null) {
-                $query->where('is_public', $is_public);
-            }
-
-            $templates = $query->get();
-
-            return new TemplateCollection($templates);
-        }
-
         $templates = $this->template->index($type, $request);
 
         if ($request->input('per_page') === '0') {
