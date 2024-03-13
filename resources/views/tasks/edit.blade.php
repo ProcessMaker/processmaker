@@ -103,7 +103,7 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="details-tab"
-                      :class="{'nav-link': true,tabStyle: true, active: showInfo, styleInactive: !showInfo }"
+                      :class="{'nav-link': true, active: showInfo }"
                       data-bs-toggle="tab"
                       data-bs-target="#details"
                       type="button"
@@ -118,7 +118,7 @@
                   <li class="nav-item" role="presentation">
                     <button
                       id="comments-tab"
-                      :class="{'nav-link': true,tabStyle: true, active: !showInfo, styleInactive: showInfo }"
+                      :class="{'nav-link': true, active: !showInfo }"
                       data-bs-toggle="tab"
                       data-bs-target="#comments"
                       type="button"
@@ -661,12 +661,6 @@
     max-width:400px;
     width:317px;
     height:calc(100vh - 215px)
-  }
-  .styleInactive {
-    color: #556271;
-  }
-  .tabStyle {
-    border-radius: 4px 4px 0px 0px;
   }
   .open-style {
     background-color: #4ea075;
