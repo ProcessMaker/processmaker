@@ -59,7 +59,7 @@
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
-                if ((this.requestIdCheck?.(request) || (this.for?.test(request.url) && request.method.toLowerCase() === 'get'))) {
+                if (this.requestIdCheck(request) || (this.for?.test(request.url) && request.method.toLowerCase() === 'get')) {
                     this.dataLoading = true
                     this.error = false
                     this.noResults = false

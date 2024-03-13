@@ -23,6 +23,8 @@ class InboxRule extends ProcessMakerModel
         'submit_data' => 'boolean',
     ];
 
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+
     /**
      * Define the relationship with ProcessRequestToken model
      *
@@ -41,5 +43,21 @@ class InboxRule extends ProcessMakerModel
     public function savedSearch(): BelongsTo
     {
         return $this->belongsTo(SavedSearch::class, 'saved_search_id');
+    }
+
+    public static function createSavedSearch(array $data)
+    {
+        $userId = $data['user_id'];
+
+        return SavedSearch::create([
+            'user_id' => $userId,
+            'title' => 'Inbox Rule Saved Search',
+            'meta' => ['columns' => $data['columns']],
+            'pmql' => $data['pmql'],
+            'type' => 'task',
+            'advanced_filter' => $data['advanced_filter'],
+            'is_system' => true,
+            'key' => 'inbox-rule',
+        ]);
     }
 }
