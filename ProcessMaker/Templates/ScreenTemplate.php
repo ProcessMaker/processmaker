@@ -98,47 +98,17 @@ class ScreenTemplate implements TemplateInterface
     {
         $data = $request->all();
 
-        // Find the required screen model
-        $model = (new ExportController)->getModel('screen')->findOrFail($data['asset_id']);
-
         // Get the screen manifest
-        $response = $this->getManifest('screen', $data['asset_id']);
-
-        if (array_key_exists('error', $response)) {
-            return response()->json($response, 400);
+        $manifest = $this->getManifest('screen', $data['asset_id']);
+        if (array_key_exists('error', $manifest)) {
+            return response()->json($manifest, 400);
         }
 
-        $uuid = $model->uuid;
-        $screenType = $model->type;
+        // Create a new screen template
+        $screenTemplate = $this->createScreenTemplate($data, $manifest);
 
-        // Loop through each asset in the "export" array and set postOptions "mode" accordingly
-        $postOptions = [];
-        foreach ($response['export'] as $key => $asset) {
-            $mode = $data['saveAssetsMode'] === 'saveAllAssets' ? 'copy' : 'discard';
-            if ($key === $uuid) {
-                $mode = 'copy';
-            }
-            $postOptions[$key] = [
-                'mode' => $mode,
-                'isTemplate' => true,
-                'saveAssetsMode' => $data['saveAssetsMode'],
-            ];
-        }
-        $options = new Options($postOptions);
-
-        // Create an exporter instance
-        $exporter = new Exporter();
-        $exporter->export($model, ScreenExporter::class, $options);
-        $payload = $exporter->payload();
-
-        // Create a new process template
-        $screenTemplate = ScreenTemplates::make($data)->fill([
-            'manifest' => json_encode($payload),
-            'user_id' => \Auth::user()->id,
-            'screen_type' => $screenType,
-        ]);
-
-        $screenTemplate->saveOrFail();
+        // Save thumbnails
+        $this->saveThumbnails($screenTemplate, $data['thumbnails']);
 
         return response()->json(['model' => $screenTemplate]);
     }
@@ -194,9 +164,30 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
-    public function updateTemplateManifest(int $processId, $request)  : JsonResponse
+    /**
+     * Update the manifest of a screen template.
+     *
+     * @param  int  $screenId  The ID of the screen
+     * @param  Illuminate\Http\Request  $request  The HTTP request containing the updated template data
+     * @return JsonResponse  The JSON response indicating the success of the update
+     */
+    public function updateTemplateManifest(int $screenId, $request)  : JsonResponse
     {
-        // TODO: Implement updating a screen template manifest when editing template in screen builder
+        $data = $request->all();
+
+        // Get the screen manifest
+        $manifest = $this->getManifest('screen', $screenId);
+        if (array_key_exists('error', $manifest)) {
+            return response()->json($manifest, 400);
+        }
+
+        // Update the screen template manifest
+        $this->updateScreenTemplateData($data, $manifest);
+
+        // Save screen template thumbnails
+        $this->saveThumbnails($data['name'], $data['thumbnails']);
+
+        return response()->json();
     }
 
     /**
@@ -222,52 +213,6 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     * Get process template manifest.
-     *
-     * @param string $type
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    public function getManifest(string $type, int $id) : array
-    {
-        $response = (new ExportController)->manifest($type, $id);
-        $content = json_decode($response->getContent(), true);
-
-        return $content;
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestSortBy(Request $request, $default) : array
-    {
-        $column = $request->input('order_by', $default);
-        $direction = $request->input('order_direction', 'asc');
-
-        return [$column, $direction];
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestInclude(Request $request) : array
-    {
-        $include = $request->input('include');
-
-        return $include ? explode(',', $include) : [];
-    }
-
-    /**
      * Check if an existing process template with the same name exists.
      * If exists, return an array with the existing template ID and name.
      * Otherwise, return null.
@@ -288,5 +233,110 @@ class ScreenTemplate implements TemplateInterface
         }
 
         return null;
+    }
+
+    /**
+     * Get process template manifest.
+     *
+     * @param string $type
+     * @param Request $request
+     * @return array
+     */
+    public function getManifest(string $type, int $id) : array
+    {
+        $response = (new ExportController)->manifest($type, $id);
+
+        return json_decode($response->getContent(), true);
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default) : array
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_direction', 'asc');
+
+        return [$column, $direction];
+    }
+
+    /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     * @return array
+     */
+    protected function getRequestInclude(Request $request) : array
+    {
+        $include = $request->input('include');
+
+        return $include ? explode(',', $include) : [];
+    }
+
+    /**
+     * Create a new screen template.
+     *
+     * @param  array  $data  The data for creating the screen template
+     * @param  array  $payload  The payload for the screen template
+     * @return \App\Models\ScreenTemplates  The created screen template
+     */
+    protected function createScreenTemplate(array $data, array $payload) : ScreenTemplates
+    {
+        $screenType = Screen::findOrFail($data['asset_id'])->type;
+        $screenTemplate = ScreenTemplates::make($data)->fill([
+            'manifest' => json_encode($payload),
+            'user_id' => auth()->id(),
+            'screen_type' => $screenType,
+            'media_collection' => '',
+        ]);
+        $screenTemplate->saveOrFail();
+        $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
+        $screenTemplate->saveOrFail();
+
+        return $screenTemplate;
+    }
+
+    private function updateScreenTemplateData(array $data, array $payload)
+    {
+        ScreenTemplates::where('name', $data['name'])->update([
+            'description' => $data['description'],
+            'is_public' => $data['make_public'] ? 1 : 0,
+            'screen_category_id' => $data['screen_category_id'],
+            'manifest' => json_encode($payload),
+            'user_id' => auth()->id(),
+        ]);
+    }
+
+    protected function saveThumbnails($screenTemplate, string $thumbnails)
+    {
+        $screenTemplate = $this->resolveScreenTemplate($screenTemplate);
+
+        $thumbnails = json_decode($thumbnails, true);
+
+        foreach ($thumbnails as $thumbnail) {
+            $screenTemplate
+                ->addMediaFromBase64($thumbnail['url'])
+                ->toMediaCollection($screenTemplate->media_collection);
+        }
+
+        $screenTemplate->saveOrFail();
+    }
+
+    /**
+     * Resolve the screen template from the given input.
+     *
+     * @param  mixed  $screenTemplate  The screen template name or model
+     * @return \App\Models\ScreenTemplates  The resolved screen template model
+     */
+    protected function resolveScreenTemplate($screenTemplate): ScreenTemplates
+    {
+        if ($screenTemplate instanceof ScreenTemplates) {
+            return $screenTemplate;
+        }
+
+        return ScreenTemplates::where('name', $screenTemplate)->firstOrFail();
     }
 }

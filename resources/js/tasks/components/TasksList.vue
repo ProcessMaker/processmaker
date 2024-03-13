@@ -240,7 +240,7 @@ export default {
   ],
   props: {
     filter: {},
-    columns: {},
+    columns: [],
     pmql: {},
     disableTooltip: {
       default: false,
@@ -319,6 +319,12 @@ export default {
     },
   },
   watch: {
+    columns: {
+      deep: true,
+      handler() {
+        this.setupColumns();
+      }
+    },
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
@@ -339,6 +345,7 @@ export default {
           record["task_name"] = this.formatActiveTask(record);
         }
       }
+      this.$emit('count', newData.meta?.count);
     },
   },
   mounted: function mounted() {
@@ -395,11 +402,10 @@ export default {
     },
     setupColumns() {
       this.tableHeaders = this.getColumns();
-      console.log('columns', this.tableHeaders);
     },
     getColumns() {
-      if (this.$props.columns) {
-        return this.$props.columns;
+      if (this.columns && this.columns.length > 0) {
+        return this.columns;
       }
       // from query string status=CLOSED
       const isStatusCompletedList =

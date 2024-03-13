@@ -64,15 +64,15 @@
     },
     methods: {
       convertToISOString(dateString) {
-        let inUTCTimeZone = ''
-        if (dateString){
+        let inUTCTimeZone = "";
+        if (dateString) {
           inUTCTimeZone = moment(dateString).tz('UTC').toISOString();
         }
         return inUTCTimeZone;
       },
       convertFromISOString(dateString) {
         let inLocalTimeZone = dateString;
-        if (dateString){
+        if (dateString) {
           inLocalTimeZone = moment(dateString).tz(window.ProcessMaker.user.timezone).format("YYYY-MM-DD HH:mm:ss");
         }
         return inLocalTimeZone;
