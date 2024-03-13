@@ -86,6 +86,7 @@ export default {
       ProcessMaker.apiClient
         .get(
           url +
+          "&per_page=100" +
           "&filter=" +
           this.filter +
           "&order_by=" +
