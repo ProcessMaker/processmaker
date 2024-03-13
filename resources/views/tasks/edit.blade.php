@@ -98,6 +98,10 @@
                             @{{ moment(dateDueAt).format() }}
                         </li>
 
+                        <li class="list-group-item">
+                          <b-button variant="outline-secondary" @click="createRule">{{ __('Create Rule') }}</b-button>
+                        </li>
+
 
                         <li class="list-group-item" v-if="!showDueAtDates">
                             <i class='far fa-calendar-alt'></i>
@@ -326,6 +330,9 @@
           },
         },
         methods: {
+          createRule() {
+            window.location.href = `/tasks/rules/new?task_id=${this.task.id}`;
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {

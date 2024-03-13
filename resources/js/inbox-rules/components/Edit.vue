@@ -1,98 +1,124 @@
 <template>
-  <div class="pm-inbox-rule d-flex">
+  <div class="pm-inbox-rule pr-3 pl-3">
+    <h4>{{$t('New Inbox Rule')}}</h4>
+    <div class="d-flex">
+      <PMPanelWithCustomHeader 
+        class="filters"
+        :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
+        <template v-slot:header-right-content>
+          <InboxRuleButtons
+            @showColumns="showColumns"
+            :show-saved-search-selector="showSavedSearchSelector"
+            :saved-search-id="newSavedSearchIdFromSelector"
+            @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
+            >
+          </InboxRuleButtons>
+        </template>
+        <InboxRuleFilters
+          v-if="inboxRule || isNew"
+          ref="inboxRuleFilters"
+          :saved-search-id="savedSearchIdForFilters"
+          :task-id="newTaskId"
+          @count="count = $event"
+          :show-column-selector-button="false"
+          @saved-search-data="savedSearchData = $event"
+          >
+        </InboxRuleFilters>
+      </PMPanelWithCustomHeader>
 
-    <div>
-      <h4>{{$t('New Inbox Rule')}}</h4> Edit id {{ $route.params.id }}
-      <b-form-group>
-        <b-form-select v-model="savedSearchSelected" :options="savedSearch">
-        </b-form-select>  
-      </b-form-group>
-
-
-      <b-form-group label="What do we do with tasks that fit this filter?">
-        <b-form-radio v-model="markAsPriority" name="actionsTask" value="false">
-          {{ $t('Mark as Priority') }}
-        </b-form-radio>
-        <b-form-radio v-model="reassing" name="actionsTask" value="false">
-          {{ $t('Reassing') }}
-        </b-form-radio>
-      </b-form-group>
-
-      <b-form-group label="Rule Behavior">
-        <b-form-checkbox-group v-model="checkboxValues"
-                               name="ruleBehavior"
-                               stacked >
-          <b-form-checkbox value="true">
-            {{ $t('Apply to current inbox matching tasks (8)') }}
-          </b-form-checkbox>
-          <b-form-checkbox value="true">
-            {{ $t('Apply to Future tasks') }}
-          </b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-
-      <b-form-group label="Deactivation date">
-        <b-form-datepicker v-model="deactivationDate">
-        </b-form-datepicker>
-      </b-form-group>
-
-      <b-form-group label="Give this rule a name*">
-        <b-form-input v-model="ruleName" placeholder="Enter your name"></b-form-input>
-      </b-form-group>
-
-      <b-form-group>
-        <span>*=Required</span>
-        <b-button variant="secondary"
-                  @click="onCancel">
-          {{ $t('Cancel') }}
-        </b-button>
-        <b-button variant="primary"
-                  @click="onCreateRule">
-          {{ $t('Create Rule') }}
-        </b-button>
-      </b-form-group>
-
+      <PMPanelWithCustomHeader
+        class="ml-3 actions"
+        :title="$t('Step 2:') + ' ' + $t('Rule Configuration')">
+        <InboxRuleEdit 
+          :count="count" 
+          :inbox-rule="inboxRule"
+          :saved-search-data="savedSearchData"
+          :new-task-id="newTaskId"
+          >
+        </InboxRuleEdit>
+      </PMPanelWithCustomHeader>
     </div>
-
-    <div>
-
-    </div>
-
   </div>
 </template>
 
 <script>
+  import PMPanelWithCustomHeader from "../../components/PMPanelWithCustomHeader.vue";
+  import InboxRuleEdit from "./InboxRuleEdit.vue";
+  import InboxRuleFilters from "./InboxRuleFilters.vue";
+  import InboxRuleButtons from "./InboxRuleButtons.vue";
   export default {
     components: {
+      PMPanelWithCustomHeader,
+      InboxRuleEdit,
+      InboxRuleFilters,
+      InboxRuleButtons
     },
     props: {
+      newSavedSearchId: {
+        type: Number,
+        default: null
+      },
+      newTaskId: {
+        type: Number,
+        default: null
+      },
+      ruleId: {
+        type: Number,
+        default: null
+      }
     },
     data() {
       return {
-        markAsPriority: false,
-        reassing: false,
-        checkboxValues: [],
-
-        deactivationDate: null,
-        ruleName: null,
-        savedSearchSelected: null,
-        savedSearch: [
-          {value: 1, text: "saved search 1"},
-          {value: 2, text: "saved search 2"},
-          {value: 3, text: "saved search 3"},
-          {value: 4, text: "saved search 4"}
-        ]
+        count: 0,
+        inboxRule: null,
+        newSavedSearchIdFromSelector: null,
+        savedSearchData: {},
       };
     },
+    computed: {
+      savedSearchIdForFilters() {
+        // All existing inbox rules have a saved search id.
+        // If this is a new inbox rule, we could have a saved search id or a process id and element id
+        if (this.inboxRule) {
+          return this.inboxRule.saved_search_id
+        }
+        if (this.newSavedSearchId) {
+          return this.newSavedSearchId
+        }
+        if (this.newSavedSearchIdFromSelector) {
+          return this.newSavedSearchIdFromSelector
+        }
+        return null;
+      },
+      isNew() {
+        return !this.ruleId;
+      },
+      showSavedSearchSelector() {
+        return this.isNew && !this.newSavedSearchId && !this.taskId;
+      }
+    },
     mounted() {
+      if (this.ruleId) {
+        window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
+                .then(response => {
+                  this.inboxRule = response.data;
+                });
+      }
     },
     methods: {
-      onCancel() {
-        this.$router.push({name: 'index'});
-      },
-      onCreateRule() {
-        this.$router.push({name: 'index'});
+      showColumns() {
+        this.$refs.inboxRuleFilters.showColumns();
       }
     }
   };
 </script>
+
+<style scoped>
+  .filters {
+    flex-grow: 1;
+    width: 50%;
+  }
+  .actions {
+    width: 400px;
+  }
+</style>
