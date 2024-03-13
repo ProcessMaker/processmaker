@@ -193,6 +193,21 @@ class ScreenTemplates extends Template implements HasMedia
         return $query;
     }
 
+    public function getTemplateMediaAttribute()
+    {
+        $mediaCollectionName = 'st-' . $this->uuid . '-media';
+        $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
+        $previewThumbsUrls = $previewThumbs->map(function ($slide) {
+            return $slide->getFullUrl();
+        });
+        $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
+
+        return [
+            'thumbnail' => !is_null($thumbnailMedia) ? $thumbnailMedia->getFullUrl() : '',
+            'previewThumbs' => $previewThumbsUrls,
+        ];
+    }
+
     /**
      * Get the associated thumbnails for the given screen template
      */

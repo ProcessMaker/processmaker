@@ -26,14 +26,23 @@
               v-model="formData.type"
               :copy-asset-mode="copyAssetMode"
               :screen-types="screenTypes"
+              data-cy="screen-type-dropdown"
               hideDescription="false"
             />
             <div class="template-type-label pt-4">
               <p>{{ templateTypeLabel }}</p>
             </div>
-            <screen-template-options @show-template-preview="showPreview"/>
+            <screen-template-options
+              data-cy="screen-template-options"
+              :selected-screen-type="formData.type ? formData.type : 'FORM'"
+              @show-template-preview="showPreview"
+            />
           </div>
-          <preview-template v-if="showTemplatePreview" :template="selectedTemplate" @hide-template-preview="hidePreview"></preview-template>
+          <preview-template
+            v-if="showTemplatePreview"
+            :template="selectedTemplate"
+            @hide-template-preview="hidePreview"
+          />
         </b-col>
         <b-col cols="5" class="form-style-col">
           <template v-if="countCategories">
@@ -274,7 +283,7 @@ export default {
     },
     showPreview(template) {
       this.showTemplatePreview = true;
-      this.selectedTemplate = template
+      this.selectedTemplate = template;
     },
     hidePreview() {
       this.showTemplatePreview = false;
@@ -293,7 +302,7 @@ export default {
   background-color: #FFFFFF;
 }
 .footer-btns {
-  padding-top: 190px;
+  padding-top: 175px;
 }
 
 .template-type-label {
