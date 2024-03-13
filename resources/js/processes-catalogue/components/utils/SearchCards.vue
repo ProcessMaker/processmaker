@@ -46,9 +46,6 @@ export default {
 </script>
 
 <style scoped>
-.btn-input {
-  font-size: 20px;
-}
 .search-group {
   display: flex;
   align-items: center;
@@ -74,7 +71,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 0px;
-  font-size: 16px;
+  font-size: 20px;
   color: #6a7888;
   border-radius: 4px;
   width: 24px;
