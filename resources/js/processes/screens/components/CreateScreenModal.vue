@@ -221,6 +221,8 @@ export default {
     onClose() {
       this.resetFormData();
       this.resetErrors();
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
     },
     close() {
       this.$bvModal.hide("createScreen");
