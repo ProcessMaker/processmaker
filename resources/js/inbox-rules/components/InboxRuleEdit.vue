@@ -18,16 +18,21 @@
         </b-form-radio-group>
         <b-form-group :label="$t('Select a Person*')"
                       v-if="actionsTask==='reassign'">
-          <b-form-select v-model="selectedPerson" 
-                          :options="persons">
-          </b-form-select>
+          <PMFormSelectSuggest v-model="selectedPerson" 
+                               :options="persons"
+                               @onSearchChange="onSearchChange"
+                               :placeholder="$t('Select option')"
+                               :selectLabel="$t('Press enter to select')"
+                               :deselectLabel="$t('Press enter to remove')"
+                               :selectedLabel="$t('Selected')">
+          </PMFormSelectSuggest>
         </b-form-group>
       </b-form-group>
 
       <b-form-group>
         <b-form-checkbox
           v-model="fillDataChecked"
-        >
+          >
           {{ $t('Save and reuse filled data') }}
         </b-form-checkbox>
       </b-form-group>
@@ -38,13 +43,13 @@
         </template>
 
         <b-form-checkbox v-model="applyToCurrentInboxMatchingTasks"
-                          value="true"
-                          unchecked-value="false">
+                         value="true"
+                         unchecked-value="false">
           {{ $t('Apply to current inbox matching tasks') }} ({{ count }})
         </b-form-checkbox>
         <b-form-checkbox v-model="applyToFutureTasks"
-                          value="true"
-                          unchecked-value="false">
+                         value="true"
+                         unchecked-value="false">
           {{ $t('Apply to Future tasks') }}
         </b-form-checkbox>
 
@@ -122,9 +127,11 @@
 
 <script>
   import PMDatetimePicker from "../../components/PMDatetimePicker.vue";
+  import PMFormSelectSuggest from "../../components/PMFormSelectSuggest.vue";
   export default {
     components: {
-      PMDatetimePicker
+      PMDatetimePicker,
+      PMFormSelectSuggest
     },
     props: {
       inboxRule: {
@@ -137,7 +144,7 @@
       },
       savedSearchData: {
         type: Object,
-        default: {},
+        default: {}
       },
       taskId: {
         type: Number,
@@ -199,7 +206,7 @@
           deactivationDate: this.deactivationDate,
           ruleName: this.ruleName,
           taskId: this.taskId,
-          ...this.savedSearchData,
+          ...this.savedSearchData
         };
         if (this.inboxRule) {
           window.ProcessMaker.apiClient
@@ -239,9 +246,16 @@
           this.ruleName = this.inboxRule.name;
         }
       },
-      requestUser(filter, callback) {
-        ProcessMaker.apiClient.get(this.getUrlUser(filter))
+      requestUser(filter) {
+        let url = "users" +
+                "?page=1" +
+                "&per_page=100" +
+                "&filter=" + filter +
+                "&order_by=firstname" +
+                "&order_direction=asc";
+        ProcessMaker.apiClient.get(url)
                 .then(response => {
+                  this.persons = [];
                   for (let i in response.data.data) {
                     this.persons.push({
                       text: response.data.data[i].fullname,
@@ -250,18 +264,8 @@
                   }
                 });
       },
-      getUrlUser(filter) {
-        let page = 1;
-        let perPage = 100;
-        let orderBy = "username";
-        let orderDirection = "asc";
-        let url = "users" +
-                "?page=" + page +
-                "&per_page=" + perPage +
-                "&filter=" + filter +
-                "&order_by=" + orderBy +
-                "&order_direction=" + orderDirection;
-        return url;
+      onSearchChange(searchTerm) {
+        this.requestUser(searchTerm);
       }
     }
   };
