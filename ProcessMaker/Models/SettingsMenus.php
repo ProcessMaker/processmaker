@@ -79,4 +79,12 @@ class SettingsMenus extends ProcessMakerModel
     {
         return $this->hasMany(Setting::class, 'group_id');
     }
+
+    /**
+     * Get the Id related to the specific menu_group
+     */
+    public static function getId($menuName)
+    {
+        return SettingsMenus::where('menu_group', $menuName)->pluck('id')->first();
+    }
 }

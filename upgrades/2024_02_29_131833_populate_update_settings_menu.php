@@ -67,7 +67,7 @@ class PopulateUpdateSettingsMenu extends Upgrade
                 switch ($setting->group) {
                     case 'Actions By Email':
                     case 'Email Default Settings':
-                        $id = $this->getId(SettingsMenus::EMAIL_MENU_GROUP);
+                        $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
                         break;
                     case 'Log-In Options': // Log-In and Password
                     case 'LDAP':
@@ -82,16 +82,16 @@ class PopulateUpdateSettingsMenu extends Upgrade
                     case 'SSO - Keycloak':
                     case 'SSO - Microsoft':
                     case 'SSO - SAML':
-                        $id = $this->getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
+                        $id = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
                         break;
                     case 'User Signals':
                     case 'Users': // Additional Properties
-                        $id = $this->getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
+                        $id = SettingsMenus::getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
                         break;
                     case 'IDP': // Intelligent Document Processing
                     case 'DocuSign':
                     case 'External Integrations': // Enterprise Integrations
-                        $id = $this->getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
+                        $id = SettingsMenus::getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
                     default:
                         $id = null;
