@@ -87,6 +87,21 @@
         <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
       </div>
     </b-modal>
+
+    <create-template-modal
+      id="create-template-modal"
+      ref="create-template-modal"
+      asset-type="screen"
+      :current-user-id="currentUserId"
+      :asset-name="screenTemplateName"
+      :asset-id="screenId"
+      :screenType="screenType"
+      :permission="permission"
+      :types="types"
+      headerClass="border-0"
+      footerClass="border-0"
+      modal-size="lg"
+    />
   </div>
 </template>
 
@@ -95,6 +110,7 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import screenNavigationMixin from "../../../components/shared/screenNavigation";
+import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -102,15 +118,17 @@ import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue"
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal },
+  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
-  props: ["filter", "id", "permission"],
+  props: ["filter", "id", "permission", "currentUserId", 'types'],
   data() {
     return {
       orderBy: "title",
       screenId: null,
       assetName: " ",
       assignedProjects: [],
+      screenTemplateName: "",
+      screenType: "",
       sortOrder: [
         {
           field: "title",
@@ -215,11 +233,17 @@ export default {
             this.orderDirection +
             "&include=categories,category" +
             "&exclude=config"
-    )
+        )
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
+    },
+    showCreateTemplateModal(name, id, type) {
+      this.screenId = id;
+      this.screenTemplateName = name;
+      this.screenType = type;
+      this.$refs["create-template-modal"].show();
     },
   },
 

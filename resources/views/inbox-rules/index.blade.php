@@ -20,6 +20,9 @@
 @endsection
 
 @section('js')
+    <script>
+        window.Processmaker.defaultColumns = @json($defaultColumns);
+    </script>
     <script src="{{mix('js/inbox-rules/index.js')}}"></script>
 @endsection
 

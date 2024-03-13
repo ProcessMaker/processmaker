@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "170c88d7292da1686e7f49921cc29f2e",
+    "content-hash": "ee42d43573d0a7f9177448983c1863d4",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -12009,7 +12009,7 @@
             "version": "7.13.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twilio/twilio-php.git",
+                "url": "https://github.com/twilio/twilio-php.git",
                 "reference": "cda27b65615ecfddce24668803078bc72b46fe17"
             },
             "dist": {
@@ -12051,6 +12051,10 @@
                 "sms",
                 "twilio"
             ],
+            "support": {
+                "issues": "https://github.com/twilio/twilio-php/issues",
+                "source": "https://github.com/twilio/twilio-php/tree/7.13.0"
+            },
             "time": "2023-12-14T10:47:43+00:00"
         },
         {

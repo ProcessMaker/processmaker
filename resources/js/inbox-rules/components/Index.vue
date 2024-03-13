@@ -2,9 +2,9 @@
   <div>
     <h4>{{$t('Inbox Rules')}}</h4>
     <b-tabs class="m-3" content-class="p-3 pm-tab-content">
-      <b-tab :title="$t('Rules')"
+      <b-tab :title="$t('Rules')" @click="$refs.inboxRules.requestData()"
              active>
-        <InboxRules></InboxRules>
+        <InboxRules ref="inboxRules"></InboxRules>
       </b-tab>
       <b-tab :title="$t('Execution Log')" @click="$refs.executionLog.load()">
         <ExecutionLog ref="executionLog"></ExecutionLog>
