@@ -16,8 +16,8 @@
             <b-button class="ml-md-1 d-flex align-items-center text-nowrap"
                       variant="primary"
                       @click="onCreateRule">
-              <img src="/img/plus-lg.svg" :alt="$t('Create Rule')">
-                {{ $t('Create Rule') }}
+              <img src="/img/plus-lg.svg" :alt="$t('Create Rule')"/>
+              {{ $t('Create Rule') }}
             </b-button>
           </template>
         </PMSearchBar>

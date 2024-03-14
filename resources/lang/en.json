@@ -2131,5 +2131,7 @@
   "All clear": "All clear",
   "Due date": "Due date",
   "Select a Person*": "Select a Person*",
-  "For a rule with no end date, leave the field empty": "For a rule with no end date, leave the field empty"
+  "For a rule with no end date, leave the field empty": "For a rule with no end date, leave the field empty",
+  "If you want to establish an automatic submit for this rule, complete all the necessary fields and select you preferred submit action.": "If you want to establish an automatic submit for this rule, complete all the necessary fields and select you preferred submit action.",
+  "Submit after filling": "Submit after filling"
 }

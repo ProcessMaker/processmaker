@@ -8,12 +8,12 @@
         <b-form-radio-group v-model="actionsTask"
                             class="pm-inbox-rule-edit-radio">
           <b-form-radio value="priority">
-            <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')">
-              {{ $t('Mark as Priority') }}
+            <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')"/>
+            {{ $t('Mark as Priority') }}
           </b-form-radio>
           <b-form-radio value="reassign">
-            <img src="/img/people-fill.svg" :alt="$t('Reassign')">
-              {{ $t('Reassign') }}
+            <img src="/img/people-fill.svg" :alt="$t('Reassign')"/>
+            {{ $t('Reassign') }}
           </b-form-radio>
         </b-form-radio-group>
         <b-form-group :label="$t('Select a Person*')"
@@ -63,7 +63,7 @@
                           :format="'YYYY-MM-DD'"
                           :withTime="false">
           <template v-slot:button-content-datepicker>
-            <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')">
+            <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')"/>
           </template>
         </PMDatetimePicker>
         <div class="pm-inbox-rule-edit-custom-placeholder">
@@ -115,16 +115,55 @@
     </template>
     <template v-if="showFillConfig">
       <b-form-group>
-        Submit config here
+        <span>
+          {{ $t('If you want to establish an automatic submit for this rule, complete all the necessary fields and select you preferred submit action.') }}
+        </span>
       </b-form-group>
-      <b-button variant="primary"
-                @click="showFillConfig = false">
-        {{ $t('Back') }}
-      </b-button>
-      <b-button variant="primary"
-                @click="onSave">
-        {{ $t('Save') }}
-      </b-button>
+
+      <b-form-group>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <img src="/img/arrow-right.svg" :alt="$t('Submit after filling')" />
+            {{ $t('Submit after filling') }}
+          </div>
+          <b-form-checkbox switch></b-form-checkbox>
+        </div>
+      </b-form-group>
+
+      <!--Important! It may be necessary to change the values of the directives: 
+      v-model, :state, @input of this b-form-input.-->
+      <b-form-group v-if="fillDataChecked">
+        <template v-slot:label>
+          <b>{{ $t('Give this rule a name *') }}</b>
+        </template>
+        <b-form-input v-model="ruleName" 
+                      placeholder="Enter your name"
+                      :state="ruleNameState"
+                      @input="onChangeRuleName">
+        </b-form-input>
+        <b-form-invalid-feedback :state="ruleNameState">
+          {{ $t('This field is required!') }}
+        </b-form-invalid-feedback>
+      </b-form-group>
+
+      <b-form-group>
+        <div class="d-flex flex-nowrap">
+          <div  class="flex-grow-1 d-flex align-items-center">
+            <span class="">{{ $t('*=Required') }}</span>
+          </div>
+          <div class="flex-grow-0">
+            <b-button variant="primary"
+                      @click="showFillConfig = false">
+              {{ $t('Back') }}
+            </b-button>
+            <b-button variant="primary"
+                      @click="onSave">
+              {{ $t('Create Rule') }}
+            </b-button>
+          </div>
+        </div>
+      </b-form-group>
+
     </template>
   </div>
 </template>
