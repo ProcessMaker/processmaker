@@ -116,6 +116,10 @@
                 @click="showFillConfig = false">
         {{ $t('Back') }}
       </b-button>
+      <b-button variant="primary"
+                @click="onSave">
+        {{ $t('Save') }}
+      </b-button>
     </template>
   </div>
 </template>
@@ -142,6 +146,10 @@
       taskId: {
         type: Number,
         default: null
+      },
+      data: {
+        type: Object,
+        default: null
       }
     },
     data() {
@@ -161,7 +169,6 @@
     watch: {
       savedSearchData: {
         handler() {
-          console.log('savedSearchData', _.cloneDeep(this.savedSearchData));
         },
         deep: true,
         immediate: true
@@ -199,6 +206,7 @@
           deactivationDate: this.deactivationDate,
           ruleName: this.ruleName,
           taskId: this.taskId,
+          data: this.data,
           ...this.savedSearchData,
         };
         if (this.inboxRule) {

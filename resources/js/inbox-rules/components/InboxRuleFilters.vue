@@ -140,7 +140,6 @@ export default {
     task: {
       deep: true,
       handler() {
-        console.log("task", this.task);
       }
     },
     savedSearchAdvancedFilter: {

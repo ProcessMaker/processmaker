@@ -26,16 +26,21 @@
           >
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
-      
       <PMPanelWithCustomHeader 
         v-if="showFillConfig"
         class="filters"
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
-          buttons
+          <b-button size="sm" @click="resetData">{{ $t('Reset Data') }}</b-button>
         </template>
-        <InboxRuleFillData>
-        </InboxRuleFillData>
+
+        <InboxRuleFillData
+          ref="inboxRuleFillData"
+          :task-id="taskId"
+          :inbox-rule-data="inboxRule.data"
+          @data="inboxRule.data = $event"
+        />
+
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
@@ -47,6 +52,7 @@
           :saved-search-data="savedSearchData"
           :task-id="taskId"
           @show-fill-config="showFillConfig = $event"
+          :data="data"
           >
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
@@ -85,11 +91,14 @@
     data() {
       return {
         count: 0,
-        inboxRule: null,
+        inboxRule: {
+          data: null,
+        },
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
         showFillConfig: false,
         taskId: null,
+        data: {},
       };
     },
     computed: {
@@ -135,7 +144,18 @@
     methods: {
       showColumns() {
         this.$refs.inboxRuleFilters.showColumns();
+      },
+      resetData() {
+        this.inboxRule.data = null;
+        this.$refs.inboxRuleFillData.reload();
       }
+    },
+    watch: {
+      inboxRule: {
+        deep: true,
+        handler() {
+        }
+      },
     }
   };
 </script>

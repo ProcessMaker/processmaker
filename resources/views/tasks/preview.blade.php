@@ -345,9 +345,16 @@
           updateTask(val) {
             this.$set(this, 'task', val);
           },
-          submit(task) {
-            if (this.isSelfService) {
+          submit(task, loading, buttonInfo) {
+            if (window.location.search.includes('dispatchSubmit=1')) {
+              const event = new CustomEvent('formSubmit', {
+                detail: buttonInfo,
+              });
+              window.top.dispatchEvent(event);
+
+            } else if (this.isSelfService) {
               this.windowParent.alert(this.$t('Claim the Task to continue.'), 'warning');
+
             } else {
               if (this.submitting) {
                 return;

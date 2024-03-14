@@ -108,7 +108,7 @@ class InboxRulesController extends Controller
             'reassign_to_user_id' => $request->selectedPerson,
             'make_draft' => true,
             'submit_data' => true,
-            'data' => null,
+            'data' => $request->get('data', null),
         ];
         InboxRule::findOrFail($idInboxRule)->update($data);
 
