@@ -146,17 +146,33 @@
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
-                              <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
-                                <button
-                                  v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-                                  type="button"
-                                  class="btn btn-block button-actions"
-                                  @click="show"
-                                >
-                                  <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                </button>
-                              </template>
-                              <b-button variant="outline-secondary" @click="createRule">{{ __('Create Rule') }}</b-button>
+                              <div class="row button-group">
+                                <div class="col-6">
+                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                    <button
+                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      type="button"
+                                      class="btn btn-block button-actions"
+                                      @click="show"
+                                    >
+                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                    </button>
+                                  </template>
+                                </div>
+                                <div class="col-6"></div>
+                              </div>
+                              <div class="row button-group">
+                                <div class="col-6">
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    @click="createRule"
+                                  >
+                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                  </button>
+                                </div>
+                                <div class="col-6"></div>
+                              </div>
                             </li>
                             <li class="list-group-item">
                               <!-- Section to Add Now What? -->
@@ -168,7 +184,7 @@
                               >
                                 <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                                 {{ __('Clear Task') }}
-                              <button>
+                              </button>
                             </li>
                             <div :class="statusCard">
                               <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
@@ -746,7 +762,7 @@
     color: #556271;
     text-transform: capitalize;
     font-family: Open Sans;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 24px;
     letter-spacing: -0.02em;
@@ -758,6 +774,10 @@
   .button-actions:hover {
     color: #556271;
     background-color: #f3f5f8;
+  }
+  .button-group {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>
 @endsection

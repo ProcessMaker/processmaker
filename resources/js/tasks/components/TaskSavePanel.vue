@@ -1,13 +1,13 @@
 <template>
   <div>
     <div
+      v-if="task.draft"
       class="btn text-black text-capitalize cursor-default"
       :style="{ width: '20px' }"
     >
       <div class="toolbar-item d-flex justify-content-center align-items-center">
         <span>
           <FontAwesomeIcon
-            v-if="task.draft"
             :class="{ 'text-success': !error, 'text-secondary': error }"
             :icon="icon"
             :spin="isLoading"
@@ -92,8 +92,14 @@ export default {
 </script>
   <style>
   .autosave-title {
-    font-weight: 700;
+    color: var(--text-only, #556271);
     font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+    letter-spacing: -0.28px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
   }
   .autosave-draft-date {
     font-weight: 400;
