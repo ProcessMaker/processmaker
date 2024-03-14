@@ -1293,4 +1293,28 @@ class ProcessTest extends TestCase
 
         $this->assertDatabaseMissing('media', ['id' => $mediaImagen->id]);
     }
+
+    /**
+     * Test the start events
+     */
+    public function testProcessBookmarksStartEvents()
+    {
+        // We create a user that isn't administrator
+        $user = Auth::user();
+
+        // Add process permission to user
+        $this->user->permissions()->attach(Permission::byName('view-processes'));
+
+        // Create some processes
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $process = Process::factory()->create(['bpmn' => $bpmn]);
+        $process->usersCanStart('StartEventUID')->attach($user->id);
+
+        $url = route('api.processes.start.events', $process);
+        $params = [
+            'id' => $process->id,
+        ];
+        $response = $this->apiCall('GET', $url, $params);
+        $response->assertStatus(200);
+    }
 }
