@@ -2,7 +2,7 @@
   <div>
     <template-type-dropdown
       v-model="templateType"
-      @selected-template="handleSelectedTemplate"
+      @selected-template="handleSelectedTemplateType"
     />
     <data-loading
       v-show="shouldShowLoader"
@@ -24,6 +24,7 @@
           :type="type"
           :template="template"
           @show-template-preview="showPreview"
+          @selected-template="handleSelectedTemplate"
         />
       </b-card-group>
     </div>
@@ -62,7 +63,7 @@ export default {
     this.fetch();
   },
   methods: {
-    handleSelectedTemplate(templateType) {
+    handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
     },
     fetch() {
@@ -105,6 +106,9 @@ export default {
     },
     showPreview(template) {
       this.$emit('show-template-preview', template);
+    },
+    handleSelectedTemplate(templateId) {
+      this.$emit('selected-template', templateId);
     }
 
   },

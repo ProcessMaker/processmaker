@@ -10,6 +10,7 @@
         v-if="type === 'screen'"
         :template="template"
         @show-template-preview="showPreview"
+        @template-selected="handleSelectedTemplate"
       />
       <default-template-card
         v-else
@@ -41,8 +42,10 @@ export default {
       this.$emit("show-details", { template: this.template, type: this.type });
     },
     showPreview(template) {
-      console.log("SHOW PREVIEW", template);
       this.$emit('show-template-preview', { template: template, type: this.type});
+    },
+    handleSelectedTemplate(templateId) {
+      this.$emit('selected-template', templateId);
     }
   },
 };
