@@ -389,7 +389,7 @@
           },
           lastAutosave: "-",
           errorAutosave: false,
-          formDataWatcherActive: true,          
+          formDataWatcherActive: true,
           showTabs: true,
           showInfo: true,
         },
