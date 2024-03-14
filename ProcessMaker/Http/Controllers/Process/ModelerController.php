@@ -55,9 +55,9 @@ class ModelerController extends Controller
 
         // If a custom blade view and alternatives are provided, render the custom view
         if ($customBlade && $alternatives) {
-            return view($customBlade, compact('alternatives'));
+            return view($customBlade, $this->prepareModelerData($manager, $process, $request, 'A'));
         }
-        
+
         // Otherwise, render the default modeler interface view with prepared data
         return view($defaultView, $this->prepareModelerData($manager, $process, $request, 'A'));
     }
