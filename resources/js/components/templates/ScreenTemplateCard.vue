@@ -9,7 +9,7 @@
       <b-card-body>
         <div @click="selectTemplate" class="template-container">
           <div v-if="thumbnail" class="thumbnail-container thumbnail-image-container" :class="{'active': isActive }" :style="{ backgroundImage: 'url(' + thumbnail + ')'}"></div>
-          <div v-else class="thumbnail-container thumbnail-icon-container" :class="{'active': isActive }">
+          <div v-else class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center" :class="{'active': isActive }">
             <i class="fas fa-palette thumbnail-icon"></i>
           </div>
           <div class="template-details">
@@ -41,12 +41,13 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template"],
+  props: ["template", 'selectedTemplateId', "isActive"],
   data() {
     return {
       defaultTemplate: null,
-      isActive: false,
     };
+  },
+  watch: {
   },
   computed: {
     thumbnail() {
@@ -59,7 +60,6 @@ export default {
     },
     selectTemplate() {
       this.$emit('template-selected', this.template.id);
-      this.isActive = !this.isActive;
     }
   },
 };
@@ -85,6 +85,7 @@ export default {
 .thumbnail-container:hover,
 .thumbnail-container.active {
   border-color: #1572C2;
+  cursor: pointer;
 }
 
 .thumbnail-image-container {
