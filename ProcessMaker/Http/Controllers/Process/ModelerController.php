@@ -111,7 +111,7 @@ class ModelerController extends Controller
         $runAsUserDefault = User::where('is_administrator', true)->first();
 
         return [
-            'process' => $process->append('notifications', 'task_notifications'),
+            'process' => $process->append('notifications', 'task_notifications')->load('alternativeInfo'),
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
