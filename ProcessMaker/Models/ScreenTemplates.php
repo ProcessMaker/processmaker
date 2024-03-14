@@ -26,7 +26,6 @@ class ScreenTemplates extends Template implements HasMedia
 
     protected $appends = [
         'thumbnails',
-        // 'css',
     ];
 
     const categoryClass = ScreenCategory::class;
@@ -221,26 +220,6 @@ class ScreenTemplates extends Template implements HasMedia
             return $thumb->getFullUrl();
         });
     }
-
-    /**
-     * Get the associated css for the given screen template
-     */
-    // public function getCssAttribute()
-    // {
-    //     dd('GET CSS', $this);
-    //     // if (!class_exists('ProcessMaker\Package\Projects\Models\Project')) {
-    //     //     // return an empty collection
-    //     //     return new HasMany($this->newQuery(), $this, '', '');
-    //     // }
-
-    //     // return $this->belongsToMany('ProcessMaker\Package\Projects\Models\Project',
-    //     //     'project_assets',
-    //     //     'asset_id',
-    //     //     'project_id',
-    //     //     'id',
-    //     //     'id'
-    //     // )->wherePivot('asset_type', static::class);
-    // }
 
     /**
      * Add files to media collection

@@ -2,7 +2,7 @@
   <div>
     <template-type-dropdown
       v-model="templateType"
-      @selected-template="handleSelectedTemplate"
+      @selected-template="handleSelectedTemplateType"
     />
     <data-loading
       v-show="shouldShowLoader"
@@ -23,7 +23,9 @@
           :key="index"
           :type="type"
           :template="template"
+          :isActive="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
+          @selected-template="handleSelectedTemplate"
         />
       </b-card-group>
     </div>
@@ -48,6 +50,7 @@ export default {
       templateType: "",
       defaultScreenType: "FORM",
       template: {},
+      selectedTemplateId: null,
     };
   },
   watch: {
@@ -62,7 +65,7 @@ export default {
     this.fetch();
   },
   methods: {
-    handleSelectedTemplate(templateType) {
+    handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
     },
     fetch() {
@@ -105,6 +108,10 @@ export default {
     },
     showPreview(template) {
       this.$emit('show-template-preview', template);
+    },
+    handleSelectedTemplate(templateId) {
+      this.$emit('selected-template', templateId);
+      this.selectedTemplateId = templateId;
     }
 
   },
@@ -118,5 +125,26 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 20px;
+  // #screen-template-options {
+  //   .template-select-card {
+  //     &.active {
+  //       div {
+  //         div {
+  //           .screen-template-card {
+  //             .card-body {
+  //               .template-container {
+  //                 .thumbnail-container {
+  //                   border-color: #1572C2;
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+        
+  //     }
+  //   }
+  // }
+  
 }
 </style>

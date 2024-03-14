@@ -7,20 +7,15 @@
       data-cy="screen-template-card"
     >
       <b-card-body>
-        <div
-          v-if="thumbnail"
-          class="thumbnail-image-container p-0"
-          :style="{ backgroundImage: 'url(' + thumbnail + ')'}"
-        ></div>
-        <div
-          v-else
-          class="thumbnail-icon-container d-flex align-items-center justify-content-center"
-        >
-          <i class="fas fa-palette thumbnail-icon" />
-        </div>
-        <div class="template-details">
-          <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
-          <span class="template-description d-block pb-1">{{ template.description | str_limit(150) }}</span>
+        <div @click="selectTemplate" class="template-container">
+          <div v-if="thumbnail" class="thumbnail-container thumbnail-image-container" :class="{'active': isActive }" :style="{ backgroundImage: 'url(' + thumbnail + ')'}"></div>
+          <div v-else class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center" :class="{'active': isActive }">
+            <i class="fas fa-palette thumbnail-icon"></i>
+          </div>
+          <div class="template-details">
+            <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
+            <span class="template-description d-block pb-1">{{ template.description | str_limit(150) }}</span>
+          </div>
         </div>
         <div class="default-template d-flex align-items-end">
           <b-form-checkbox
@@ -46,24 +41,26 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template"],
+  props: ["template", 'selectedTemplateId', "isActive"],
   data() {
     return {
       defaultTemplate: null,
     };
+  },
+  watch: {
   },
   computed: {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
   },
-  mounted() {
-    console.log('this.template', this.template);
-  },
   methods: {
     showTemplatePreview() {
       this.$emit('show-template-preview', this.template);
     },
+    selectTemplate() {
+      this.$emit('template-selected', this.template.id);
+    }
   },
 };
 </script>
@@ -76,20 +73,27 @@ export default {
 .card-image {
   border-radius: 6px;
 }
-.thumbnail-image-container {
-  background-size: contain;
-  width: 247px;
-  height: 133px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #fff;
-}
-.thumbnail-icon-container {
+
+.thumbnail-container {
   width: 247px;
   height: 133px;
   border: 2px solid #CDDDEE;
-  border-radius: 6px;
+  border-radius: 7px;
+  background-color: #fff;
 }
+
+.thumbnail-container:hover,
+.thumbnail-container.active {
+  border-color: #1572C2;
+  cursor: pointer;
+}
+
+.thumbnail-image-container {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .thumbnail-icon {
   color: #CDDDEE;
   font-size: 59px;

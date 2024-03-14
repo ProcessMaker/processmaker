@@ -36,6 +36,7 @@
               data-cy="screen-template-options"
               :selected-screen-type="formData.type ? formData.type : 'FORM'"
               @show-template-preview="showPreview"
+              @selected-template="handleSelectedTemplate"
             />
           </div>
           <preview-template
@@ -218,6 +219,7 @@ export default {
         type: null,
         description: null,
         projects: [],
+        templateId: null,
       };
     },
     resetErrors() {
@@ -230,6 +232,8 @@ export default {
     onClose() {
       this.resetFormData();
       this.resetErrors();
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
     },
     close() {
       this.$bvModal.hide("createScreen");
@@ -286,6 +290,9 @@ export default {
     hidePreview() {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
+    },
+    handleSelectedTemplate(templateId) {
+      this.formData.templateId =  templateId;
     }
   },
 };
