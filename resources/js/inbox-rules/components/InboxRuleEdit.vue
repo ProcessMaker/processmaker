@@ -116,7 +116,8 @@
     <template v-if="showFillConfig">
       <b-form-group>
         <span>
-          {{ $t('If you want to establish an automatic submit for this rule, complete all the necessary fields and select you preferred submit action.') }}
+          {{ $t('If you want to establish an automatic submit for this rule,') }}
+          {{ $t('complete all the necessary fields and select you preferred submit action.') }}
         </span>
       </b-form-group>
 
@@ -285,6 +286,10 @@
                     let message = "The inbox rule '{{name}}' was updated.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
+                  })
+                  .catch((err) => {
+                    let message = "The operation cannot be performed. Please try again later.";
+                    ProcessMaker.alert(this.$t(message), "danger");
                   });
         } else {
           window.ProcessMaker.apiClient
@@ -295,6 +300,10 @@
                     let message = "The inbox rule {{name}} was created.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
+                  })
+                  .catch((err) => {
+                    let message = "The operation cannot be performed. Please try again later.";
+                    ProcessMaker.alert(this.$t(message), "danger");
                   });
         }
       },

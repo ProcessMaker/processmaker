@@ -190,6 +190,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         Route::post('/', [InboxRulesController::class, 'store'])->name('inboxrules.store');
         Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
         Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule_id}/update-active', [InboxRulesController::class, 'updateActive'])->name('inboxrules.update-active');
     });
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 

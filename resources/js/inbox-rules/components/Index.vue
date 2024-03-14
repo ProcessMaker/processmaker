@@ -1,12 +1,17 @@
 <template>
   <div>
     <h4>{{$t('Inbox Rules')}}</h4>
-    <b-tabs class="m-3" content-class="p-3 pm-tab-content">
-      <b-tab :title="$t('Rules')" @click="$refs.inboxRules.requestData()"
-             active>
+    <b-tabs class="m-3" 
+            content-class="p-3 pm-tab-content">
+      <b-tab :title="$t('Rules')" 
+             @click="$refs.inboxRules.requestData()"
+             active
+             data-cy="rules">
         <InboxRules ref="inboxRules"></InboxRules>
       </b-tab>
-      <b-tab :title="$t('Execution Log')" @click="$refs.executionLog.load()">
+      <b-tab :title="$t('Execution Log')" 
+             @click="$refs.executionLog.load()"
+             data-cy="executionLog">
         <ExecutionLog ref="executionLog"></ExecutionLog>
       </b-tab>
     </b-tabs>

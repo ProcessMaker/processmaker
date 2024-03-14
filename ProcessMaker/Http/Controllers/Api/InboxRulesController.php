@@ -146,4 +146,21 @@ class InboxRulesController extends Controller
 
         return new ApiCollection($response);
     }
+
+    /**
+     * Update an existing inbox rule.
+     *
+     * @param Request $request
+     * @param int $idInboxRule
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateActive(Request $request, $idInboxRule)
+    {
+        $data = [
+            'active' => $request->active
+        ];
+        InboxRule::findOrFail($idInboxRule)->update($data);
+
+        return response([], 204);
+    }
 }
