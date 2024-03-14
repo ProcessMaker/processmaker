@@ -80,7 +80,7 @@
           <b>{{ $t('Give this rule a name *') }}</b>
         </template>
         <b-form-input v-model="ruleName" 
-                      placeholder="Enter your name"
+                      :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
                       @input="onChangeRuleName">
         </b-form-input>
@@ -126,8 +126,22 @@
             <img src="/img/arrow-right.svg" :alt="$t('Submit after filling')" />
             {{ $t('Submit after filling') }}
           </div>
-          <b-form-checkbox switch></b-form-checkbox>
+          <b-form-checkbox switch
+                           v-model="submitAfterFilling">
+          </b-form-checkbox>
         </div>
+      </b-form-group>
+
+      <b-form-group v-if="submitAfterFilling">
+        <b>{{ $t('Choose the submit action you want to use by clicking on it in the form*') }}</b>
+      </b-form-group>
+
+      <b-form-group v-if="submitAfterFilling">
+        <template v-slot:label>
+          {{ $t('Submit action') }}
+        </template>
+        <b-form-input :placeholder="$t('Waiting selection')">
+        </b-form-input>
       </b-form-group>
 
       <!--Important! It may be necessary to change the values of the directives: 
@@ -137,7 +151,7 @@
           <b>{{ $t('Give this rule a name *') }}</b>
         </template>
         <b-form-input v-model="ruleName" 
-                      placeholder="Enter your name"
+                      :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
                       @input="onChangeRuleName">
         </b-form-input>
@@ -209,7 +223,8 @@
         ruleName: "",
         ruleNameState: null,
         fillDataChecked: false,
-        showFillConfig: false
+        showFillConfig: false,
+        submitAfterFilling: false
       };
     },
     watch: {
