@@ -129,8 +129,7 @@ class RollbackProcessRequest
 
         $processRequest = $this->newTask->processRequest;
         $processRequest->status = 'ACTIVE';
-        // @todo Review why process_version_id is updated here
-        $processRequest->process_version_id = $processRequest->process->getLatestVersion()->id;
+        $processRequest->process_version_id = $processRequest->getLatestVersion()->id;
         $processRequest->saveOrFail();
 
         $currentTask->status = 'CLOSED';
