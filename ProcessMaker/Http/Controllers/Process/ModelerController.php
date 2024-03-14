@@ -55,9 +55,9 @@ class ModelerController extends Controller
 
         // If a custom blade view and alternatives are provided, render the custom view
         if ($customBlade && $alternatives) {
-            return view($customBlade, compact('alternatives'));
+            return view($customBlade, $this->prepareModelerData($manager, $process, $request, 'A'));
         }
-        
+
         // Otherwise, render the default modeler interface view with prepared data
         return view($defaultView, $this->prepareModelerData($manager, $process, $request, 'A'));
     }
@@ -77,7 +77,7 @@ class ModelerController extends Controller
      *               block list, external integrations list, screen types, script executors,
      *               category counts, and other relevant information.
      */
-    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request, string $alternative)
+    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request)
     {
         // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
@@ -102,7 +102,7 @@ class ModelerController extends Controller
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve draft version of the process
-        $draft = $process->getDraftVersion($alternative);
+        $draft = $process->versions()->draft()->first();
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
