@@ -96,7 +96,7 @@ export default {
       groups.forEach((item) => {
         auxArr.push(item.id);
       });
-      auxArr.sort();
+      auxArr.sort((a, b) => a - b);
       auxArr.forEach((item) => {
         newGroups.push({ id: item, name: item });
       });
