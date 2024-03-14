@@ -1,14 +1,14 @@
 <template>
-  <div
-    class="menu-collapse"
-  >
+  <div class="menu-collapse">
     <div class="menu-width">
-      <p class="menu-title"> {{ $t('Settings') }} </p>
+      <p class="menu-title">
+        {{ $t('Settings') }}
+      </p>
       <div
-        v-for="(menu, index) in menuGroups"
+        v-for="menu in menuGroups"
         :key="menu.menu_group"
       >
-        <div 
+        <div
           :id="`headingOne${menu.menu_group_order}`"
           @click="updateCollapse(menu)"
         >
@@ -21,14 +21,14 @@
               :aria-controls="`collapseOne${menu.id}`"
             >
               <span>
-                <i :class="`fas fa-${menu.ui.icon}`"/>
+                <i :class="`fas fa-${menu.ui.icon}`" />
                 {{ menu.menu_group }}
               </span>
-              <i :class="{ 'fas fa-caret-down': collapsedMenus[menu.id], 'fas fa-caret-up': !collapsedMenus[menu.id] }"/>
-          </div>
+              <i :class="{ 'fas fa-caret-down': collapsedMenus[menu.id], 'fas fa-caret-up': !collapsedMenus[menu.id] }" />
+            </div>
           </h5>
         </div>
-  
+
         <div
           :id="`collapseOne${menu.id}`"
           class="collapse"
@@ -73,23 +73,37 @@ export default {
   },
   methods: {
     getMenuGrups() {
-      ProcessMaker.apiClient.get('/settings/menu-groups?order_by=menu_group_order')
-      .then(response => {
-        this.transformResponse(response.data.data);
-        this.checkCollapedMenus();
-        if (this.firstTime) {
-          this.selectFirstItem();
-        }
-      });
+      ProcessMaker.apiClient.get("/settings/menu-groups?order_by=menu_group_order")
+        .then((response) => {
+          this.transformResponse(response.data.data);
+          this.checkCollapedMenus();
+          if (this.firstTime) {
+            this.selectFirstItem();
+          }
+        });
     },
     transformResponse(response) {
+      this.menuGroups = [];
       response.forEach((element) => {
         element.ui = JSON.parse(element.ui);
         this.menuGroups.push(element);
+        element.groups = this.orderGroupAlphabetic(element.groups);
       });
     },
+    orderGroupAlphabetic(groups) {
+      const auxArr = [];
+      const newGroups = [];
+      groups.forEach((item) => {
+        auxArr.push(item.id);
+      });
+      auxArr.sort();
+      auxArr.forEach((item) => {
+        newGroups.push({ id: item, name: item });
+      });
+      return newGroups;
+    },
     checkCollapedMenus() {
-      let arrayCollaped = {};
+      const arrayCollaped = {};
       this.menuGroups.forEach((element) => {
         arrayCollaped[element.id] = element.menu_group_order !== 1;
       });
@@ -107,7 +121,7 @@ export default {
     },
     selectFirstItem() {
       this.selectItem(this.menuGroups[0].groups[0]);
-    }
+    },
   },
 };
 </script>

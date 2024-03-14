@@ -1,31 +1,30 @@
 <template>
-  <div
-    class="d-flex"
-  >
+  <div class="d-flex">
     <div
       id="menu"
       class="menu"
     >
       <settings-menu-collapse
+        ref="menu-collapse"
         @selectGroup="selectGroup"
-      />      
+      />
     </div>
-    <div class="setting-info">
+    <div class="setting-info pl-3">
       <settings-listing
         v-if="selectedItem"
         :key="setListingKey"
+        ref="listings"
         :group="group"
         @refresh="refresh"
         @refresh-all="refreshAll"
-        ref="listings"
       />
-      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import SettingsListing from './SettingsListing';
-import SettingsMenuCollapse from './SettingsMenuCollapse';
+import SettingsListing from "./SettingsListing.vue";
+import SettingsMenuCollapse from "./SettingsMenuCollapse.vue";
 
 export default {
   components: { SettingsListing, SettingsMenuCollapse },
@@ -35,7 +34,7 @@ export default {
       group: "",
       setListingKey: 0,
       selectedItem: false,
-    }
+    };
   },
   methods: {
     selectGroup(item) {
@@ -47,28 +46,28 @@ export default {
       this.setListingKey += 1;
     },
     refresh() {
-      this.apiGet().then(response => {
-        response.data.data.forEach(group => {
-          if (! this.groups.includes(group.group)) {
+      this.apiGet().then((response) => {
+        response.data.data.forEach((group) => {
+          if (!this.groups.includes(group.group)) {
             this.groups.push(group.group);
           }
         });
         this.groups.forEach((group, index) => {
-          let match = response.data.data.find(serverGroup => serverGroup.group === group);
+          const match = response.data.data.find((serverGroup) => serverGroup.group === group);
           if (!match) {
             this.groups.splice(index, 1);
           }
         });
         this.groups.sort();
         this.selectTab();
-        this.$emit('groups-refreshed');
+        this.$emit("groups-refreshed");
       });
     },
     refreshAll() {
       if (Array.isArray(this.$refs.listings)) {
-        this.$refs.listings.forEach(listing => {
+        this.$refs.listings.forEach((listing) => {
           listing.refresh();
-        })
+        });
       }
     },
   },
@@ -81,7 +80,7 @@ export default {
   min-width: 304px;
   padding-top: 16px;
   height: calc(100vh - 155px);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .menu-title {
   color: #556271;
