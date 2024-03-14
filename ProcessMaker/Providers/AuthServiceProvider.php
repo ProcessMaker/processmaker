@@ -63,6 +63,9 @@ class AuthServiceProvider extends ServiceProvider
             if ($user->is_administrator) {
                 return true;
             }
+
+            // Let other policies handle the request.
+            return null;
         });
 
         try {
@@ -70,22 +73,27 @@ class AuthServiceProvider extends ServiceProvider
             // Define the Gate permissions
             $permissions->each(function ($permission) {
                 Gate::define($permission->name, function (User $user, ...$params) use ($permission) {
+                    $authorized = false;
+
                     // Check if the user has the permission
                     if ($user->hasPermission($permission->name)) {
                         return true;
                     }
 
+                    // If the user has no projects, return false.
                     $projects = $this->getProjectsForUser($user->id);
+                    if (empty($projects)) {
+                        return false;
+                    }
 
                     // Check if the user has 'create-projects' permission and the request is from specific endpoints
                     // Users that ONLY have 'create-projects' permission are allowed to access specific endpoints
                     $isAllowedEndpoint = $this->checkAllowedEndpoints($projects, request()->path());
-
                     if ($user->hasPermission('create-projects') && $isAllowedEndpoint) {
-                        return $this->isProjectAsset($permission, $params);
+                        $authorized = $this->isProjectAsset($permission, $params);
                     }
 
-                    return false;
+                    return $authorized;
                 });
             });
         } catch (\Exception $e) {
