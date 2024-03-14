@@ -70,6 +70,7 @@ const PreviewMixin = {
       this.isMouseOver = false;
     },
     onClose() {
+      this.$emit('mark-selected-row', 0);
       this.showPreview = false;
       this.resetToDefault();
     },
@@ -135,9 +136,11 @@ const PreviewMixin = {
       this.linkTasks = "";
       this.loading = true;
       if (action === "Next") {
+        this.$emit('mark-selected-row', this.nextTask.id);
         this.showSideBar(this.nextTask, this.data);
       }
       if (action === "Prev") {
+        this.$emit('mark-selected-row', this.prevTask.id);
         this.showSideBar(this.prevTask, this.data);
       }
     },
