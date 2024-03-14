@@ -1,7 +1,6 @@
 <template>
   <div class="pm-inbox-rule pr-3 pl-3">
     <h4>{{$t('New Inbox Rule')}}</h4>
-    show fill config {{showFillConfig}}
     <div class="d-flex">
       <PMPanelWithCustomHeader 
         v-if="!showFillConfig"
