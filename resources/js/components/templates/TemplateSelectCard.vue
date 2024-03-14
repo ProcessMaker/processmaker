@@ -41,7 +41,6 @@ export default {
       this.$emit("show-details", { template: this.template, type: this.type });
     },
     showPreview(template) {
-      console.log("SHOW PREVIEW", template);
       this.$emit('show-template-preview', { template: template, type: this.type});
     }
   },
