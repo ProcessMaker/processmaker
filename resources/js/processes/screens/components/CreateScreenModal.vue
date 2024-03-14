@@ -251,21 +251,63 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
+      if (this.formData.templateId != null) {
+        this.handleCreateFromTemplate();
+      } else {
+        this.handleCreateFromBlank()
+      }
+    },
+    handleCreateFromBlank() {
       ProcessMaker.apiClient
         .post("screens", this.formData)
         .then(({ data }) => {
-          ProcessMaker.alert(this.$t("The screen was created."), "success");
-
-          const url = new URL(`/designer/screen-builder/${data.id}/edit`, window.location.origin);
-          this.appendProjectIdToURL(url, this.projectId);
-          this.handleRedirection(url, data);
+          this.handleSuccessMessageAndRedirect(data);
         })
         .catch((error) => {
           this.disabled = false;
           if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
+      });
+    },
+    handleCreateFromTemplate() {
+      ProcessMaker.apiClient.post(
+        `template/create/screen/${this.formData.templateId}`,
+        this.formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      )
+        .then((response) => {
+          if (response.data.existingAssets) {
+            // Use local storage to pass the data to the assets page.
+            const stateData = {
+              assets: JSON.stringify(response.data.existingAssets),
+              name: this.template.name,
+              responseId: response.data.id,
+              request: JSON.stringify(response.data.request),
+              redirectTo: null,
+            };
+            localStorage.setItem("templateAssetsState", JSON.stringify(stateData));
+            // Redirect to the assets page.
+            window.location = "/template/assets";
+          } else {
+            this.handleSuccessMessageAndRedirect(response.data);
+          }
+        })
+        .catch((error) => {
+          this.disabled = false;
+          this.addError = error.response?.data.errors;
         });
+    },
+    handleSuccessMessageAndRedirect(data) {
+      ProcessMaker.alert(this.$t("The screen was created."), "success");
+
+      const url = new URL(`/designer/screen-builder/${data.id}/edit`, window.location.origin);
+      this.appendProjectIdToURL(url, this.projectId);
+      this.handleRedirection(url, data);
     },
     handleRedirection(url, data) {
       if (this.callFromAiModeler) {
