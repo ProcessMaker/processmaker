@@ -77,9 +77,10 @@ class InboxRulesController extends Controller
             'process_request_token_id' => $request->taskId,
             'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
             'reassign_to_user_id' => $request->selectedPerson,
-            'make_draft' => true,
+            'make_draft' => $request->get('make_draft', false),
             'submit_data' => true,
-            'data' => null,
+            'submit_button' => $request->get('submit_button', null),
+            'data' => $request->get('data', null),
         ];
         InboxRule::create($data);
 
@@ -106,8 +107,9 @@ class InboxRulesController extends Controller
             'process_request_token_id' => 1,
             'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
             'reassign_to_user_id' => $request->selectedPerson,
-            'make_draft' => true,
+            'make_draft' => $request->get('make_draft', false),
             'submit_data' => true,
+            'submit_button' => $request->get('submit_button', null),
             'data' => $request->get('data', null),
         ];
         InboxRule::findOrFail($idInboxRule)->update($data);

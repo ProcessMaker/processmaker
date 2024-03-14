@@ -37,7 +37,7 @@ export default {
       this.formData = event.detail;
     });
     window.addEventListener('formSubmit', (event) => {
-      console.log("Got form submit", event.detail)
+      this.$emit("submit", event.detail);
     });
   },
   methods: {

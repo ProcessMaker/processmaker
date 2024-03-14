@@ -31,7 +31,7 @@
 
       <b-form-group>
         <b-form-checkbox
-          v-model="fillDataChecked"
+          v-model="makeDraft"
           >
           {{ $t('Save and reuse filled data') }}
         </b-form-checkbox>
@@ -75,7 +75,7 @@
         <div class="pm-inbox-rule-edit-custom-separator"></div>
       </b-form-group>
 
-      <b-form-group v-if="!fillDataChecked">
+      <b-form-group v-if="!makeDraft">
         <template v-slot:label>
           <b>{{ $t('Give this rule a name *') }}</b>
         </template>
@@ -99,12 +99,12 @@
                       @click="onCancel">
               {{ $t('Cancel') }}
             </b-button>
-            <b-button v-if="!fillDataChecked"
+            <b-button v-if="!makeDraft"
                       variant="primary"
                       @click="onSave">
               {{ $t('Save') }}
             </b-button>
-            <b-button v-if="fillDataChecked"
+            <b-button v-if="makeDraft"
                       variant="primary"
                       @click="showFillConfig = true">
               {{ $t('Next') }}
@@ -146,7 +146,7 @@
 
       <!--Important! It may be necessary to change the values of the directives: 
       v-model, :state, @input of this b-form-input.-->
-      <b-form-group v-if="fillDataChecked">
+      <b-form-group v-if="makeDraft">
         <template v-slot:label>
           <b>{{ $t('Give this rule a name *') }}</b>
         </template>
@@ -210,6 +210,10 @@
       data: {
         type: Object,
         default: null
+      },
+      submitButton: {
+        type: Object,
+        default: null
       }
     },
     data() {
@@ -222,7 +226,7 @@
         deactivationDate: "",
         ruleName: "",
         ruleNameState: null,
-        fillDataChecked: false,
+        makeDraft: false,
         showFillConfig: false,
         submitAfterFilling: false
       };
@@ -268,6 +272,8 @@
           ruleName: this.ruleName,
           taskId: this.taskId,
           data: this.data,
+          submit_button: this.submitButton,
+          make_draft: this.makeDraft,
           ...this.savedSearchData,
         };
         if (this.inboxRule) {

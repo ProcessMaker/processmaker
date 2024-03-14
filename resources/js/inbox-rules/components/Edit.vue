@@ -1,6 +1,7 @@
 <template>
   <div class="pm-inbox-rule pr-3 pl-3">
     <h4>{{$t('New Inbox Rule')}}</h4>
+    show fill config {{showFillConfig}}
     <div class="d-flex">
       <PMPanelWithCustomHeader 
         v-if="!showFillConfig"
@@ -37,8 +38,9 @@
         <InboxRuleFillData
           ref="inboxRuleFillData"
           :task-id="taskId"
-          :inbox-rule-data="inboxRule.data"
-          @data="inboxRule.data = $event"
+          :inbox-rule-data="data"
+          @data="data = $event"
+          @submit="submitButton = $event"
         />
 
       </PMPanelWithCustomHeader>
@@ -91,14 +93,13 @@
     data() {
       return {
         count: 0,
-        inboxRule: {
-          data: null,
-        },
+        inboxRule: null,
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
         showFillConfig: false,
         taskId: null,
         data: {},
+        submitButton: null,
       };
     },
     computed: {
@@ -146,7 +147,7 @@
         this.$refs.inboxRuleFilters.showColumns();
       },
       resetData() {
-        this.inboxRule.data = null;
+        this.data = null;
         this.$refs.inboxRuleFillData.reload();
       }
     },
