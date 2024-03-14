@@ -395,4 +395,24 @@ class Setting extends ProcessMakerModel implements HasMedia
 
         return $result;
     }
+
+    /**
+     * Update the group_id related to Settings
+     * @param string $settingsGroup
+     * @param null|int $id
+     */
+    public static function updateSettingsGroup($settingsGroup, $id)
+    {
+        Setting::where('group', $settingsGroup)->whereNull('group_id')->chunk(
+            50,
+            function ($settings) use ($id) {
+                foreach ($settings as $setting) {
+                    if ($id !== null) {
+                        $setting->group_id = $id;
+                        $setting->save();
+                    }
+                }
+            }
+        );
+    }
 }
