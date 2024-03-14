@@ -8,7 +8,7 @@
         >
     </div>
     <p class="text-center title-empty">
-      {{ $t("No Processes Available") }}
+      {{ $t("No results to show") }}
     </p>
     <p class="text-center message-empty">
       {{ $t("Sorry, we couldn't find any results for your search.") }}

@@ -286,7 +286,7 @@ i {
 .text-no-result {
   color: #4F606D;
   margin-left: 1rem;
-  font-family: Open Sans;
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   font-style: italic;
   font-weight: 400;
