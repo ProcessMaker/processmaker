@@ -2148,8 +2148,8 @@
   "Enter form data": "Enter form data",
   "Submit Configuration": "Submit Configuration",
   "Reset Data": "Reset Data",
-  "running.": "running.",
   "Rule activated": "Rule activated",
   "Rule deactivated": "Rule deactivated",
-  "The operation cannot be performed. Please try again later.": "The operation cannot be performed. Please try again later."
+  "The operation cannot be performed. Please try again later.": "The operation cannot be performed. Please try again later.",
+  "Type here to search": "Type here to search"
 }

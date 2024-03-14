@@ -21,7 +21,7 @@
           <PMFormSelectSuggest v-model="selectedPerson" 
                                :options="persons"
                                @onSearchChange="onSearchChange"
-                               :placeholder="$t('Select option')"
+                               :placeholder="$t('Type here to search')"
                                :selectLabel="$t('Press enter to select')"
                                :deselectLabel="$t('Press enter to remove')"
                                :selectedLabel="$t('Selected')">
@@ -33,6 +33,7 @@
         <b-form-checkbox
           v-model="makeDraft"
           >
+          <img src="/img/pencil-fill-text.svg" :alt="$t('Save and reuse filled data')"/>
           {{ $t('Save and reuse filled data') }}
         </b-form-checkbox>
       </b-form-group>
