@@ -59,7 +59,7 @@ class ModelerController extends Controller
         }
         
         // Otherwise, render the default modeler interface view with prepared data
-        return view($defaultView, $this->prepareModelerData($manager, $process, $request));
+        return view($defaultView, $this->prepareModelerData($manager, $process, $request, 'A'));
     }
     /**
      * Prepare data for displaying a process in the modeler.
@@ -77,7 +77,7 @@ class ModelerController extends Controller
      *               block list, external integrations list, screen types, script executors,
      *               category counts, and other relevant information.
      */
-    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request)
+    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request, string $alternative)
     {
         // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
@@ -102,7 +102,7 @@ class ModelerController extends Controller
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve draft version of the process
-        $draft = $process->versions()->draft()->first();
+        $draft = $process->getDraftVersion($alternative);
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }

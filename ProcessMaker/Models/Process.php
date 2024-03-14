@@ -66,6 +66,8 @@ use Throwable;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ * @method static Process find(string $id)
+ *
  * @OA\Schema(
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
@@ -385,6 +387,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
             'case_title' => 'nullable|max:200',
+            'alternative' => 'required|in:A,B',
         ];
     }
 

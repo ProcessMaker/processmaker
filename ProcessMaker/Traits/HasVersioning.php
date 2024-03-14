@@ -57,7 +57,7 @@ trait HasVersioning
 
         // Delete draft version.
         try {
-            $this->deleteDraft();
+            $this->deleteDraft($this->alternative);
         } catch(QueryException $e) {
             // Skip delete if the screen version is used in a process.
         }
@@ -67,20 +67,33 @@ trait HasVersioning
 
     /**
      * Save a draft version of the model
+     *
+     * @param string|null $alternative Overwrite the alternative identifier.
+     *
+     * @return ProcessMakerModel
      */
-    public function saveDraft()
+    public function saveDraft(string $alternative = null)
     {
         $attributes = $this->getModelAttributes();
         $attributes['draft'] = true;
+        $alternative = $alternative ?: $this->alternative;
+        $attributes['alternative'] = $alternative;
 
         return $this->versions()->updateOrCreate([
             'draft' => true,
+            'alternative' => $alternative,
         ], $attributes);
     }
 
-    public function deleteDraft()
+    public function deleteDraft(string $alternative = null)
     {
-        $this->versions()->draft()->delete();
+        $this->versions()->draft()
+            ->when(
+                $alternative,
+                function ($query) use ($alternative) {
+                    $query->where('alternative', $alternative);
+                }
+            )->delete();
     }
 
     private function getModelAttributes(): array
@@ -101,10 +114,18 @@ trait HasVersioning
 
     /**
      * Get the latest version of the executable artifact (screen, script)
+     *
+     * @param string $alternative The alternative version identifier. [A|B]
+     *
+     * @return ProcessMakerModel
      */
-    public function getLatestVersion()
+    public function getLatestVersion(string $alternative = 'A')
     {
-        return $this->versions()->orderBy('id', 'desc')->published()->first();
+        return $this->versions()
+            ->where('alternative', $alternative)
+            ->orderBy('id', 'desc')
+            ->published()
+            ->first();
     }
 
     /**
@@ -133,34 +154,46 @@ trait HasVersioning
 
     /**
      * Get the latest version of artifact (screen, script)
+     *
+     * @param string $alternative The alternative version identifier. [A|B]
+     *
+     * @return ProcessMakerModel
      */
-    public function getDraftOrPublishedLatestVersion()
+    public function getDraftOrPublishedLatestVersion(string $alternative = 'A')
     {
-        return $this->versions()->orderBy('id', 'desc')->first();
+        return $this->versions()
+            ->where('alternative', $alternative)
+            ->orderBy('id', 'desc')
+            ->first();
+    }
+
+    /**
+     * Get the latest version of artifact (screen, script)
+     *
+     * @param string $alternative The alternative version identifier. [A|B]
+     *
+     * @return ProcessMakerModel
+     */
+    public function getDraftVersion(string $alternative = null)
+    {
+        $alternative = $alternative ?: $this->alternative;
+        return $this->versions()
+            ->where('alternative', $alternative)
+            ->draft()
+            ->first();
     }
 
     /**
      * Return the version that was active when the task's request was started
      *
-     * @param ProcessRequestToken $task
+     * @param ProcessRequest $processRequest The process request object.
+     *
      * @return ProcessMakerModel
      */
     public function versionFor(ProcessRequest $processRequest = null)
     {
         // Skip version locking for now
         // It will be re-added with more configurable options in a future version
-        return $this->getLatestVersion();
-
-        /*
-        if (!$processRequest) {
-            return $this->getLatestVersion();
-        }
-
-        $requestStartedAt = $processRequest->created_at;
-        return self::versions()->where('created_at', '<=', $requestStartedAt)
-            ->orderBy('created_at', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
-        */
+        return $processRequest->getLatestVersion();
     }
 }

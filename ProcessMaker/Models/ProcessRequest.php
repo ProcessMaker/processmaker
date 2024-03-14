@@ -53,6 +53,7 @@ use Throwable;
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
+ * @property ProcessVersion $processVersion
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
  *
@@ -1029,5 +1030,15 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->where('category_type', ProcessCategory::class)
             ->whereIn('category_id', $systemCategories)
             ->exists();
+    }
+
+    /**
+     * Get the latest version of the process
+     *
+     * @return ProcessVersion
+     */
+    public function getLatestVersion(): ProcessVersion
+    {
+        return $this->process->getLatestVersion($this->processVersion->alternative);
     }
 }
