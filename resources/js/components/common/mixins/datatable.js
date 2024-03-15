@@ -86,7 +86,6 @@ export default {
 
       data.data.forEach((record) => {
         // format owner avatar if exists
-        console.log('record', record);
         if (Object.hasOwn(record, "user")) {
           // eslint-disable-next-line no-param-reassign
           record.owner = this.formatAvatar(record.user);

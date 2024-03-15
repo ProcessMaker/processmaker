@@ -25,12 +25,23 @@
               >
                 <i class="fas fa-chevron-right" />
               </b-button>
-              <div class="my-1 ml-1">
-                <a class="lead text-secondary font-weight-bold">
-                  {{ task.element_name }}
-                </a>
-              </div>
+              <task-save-notification
+                  :options="options"
+                  :task="task"
+                  :date="lastAutosave"
+                  :error="errorAutosave"
+                  :form-data="formData"
+              />
               <div class="ml-auto mr-0 text-right">
+                <b-button
+                  class="icon-button"
+                  :aria-label="$t('Erase')"
+                  variant="light"
+                  v-b-tooltip.hover title="Erase Draft"
+                  @click="eraseDraft()"
+                >
+                  <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                </b-button>
                 <b-button
                   class="icon-button"
                   :aria-label="$t('Quick fill')"
@@ -104,15 +115,30 @@
 <script>
 import SplitpaneContainer from "./SplitpaneContainer.vue";
 import TaskLoading from "./TaskLoading.vue";
-import PreviewMixin from "./PreviewMixin";
+import TaskSaveNotification from "./TaskSaveNotification.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
+import PreviewMixin from "./PreviewMixin";
+import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 
 export default {
-  components: { SplitpaneContainer, TaskLoading, QuickFillPreview },
-  mixins: [PreviewMixin],
-  mounted () {
+  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification },
+  mixins: [PreviewMixin, autosaveMixins],
+  watch: {
+    task: {
+      deep: true,
+      handler(task) {
+        if (task.draft) {
+          this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+        } else {
+          this.lastAutosave = "-";
+        }
+      },
+    },
+  },
+  mounted() {
     window.addEventListener('dataUpdated', (event) => {
-      this.data = event.detail;
+      this.formData = event.detail;
+      this.handleAutosave();
     });
   },
   methods: {
@@ -137,8 +163,39 @@ export default {
         .getElementById("tasksFrame2")
         .contentWindow.dispatchEvent(event);
       }
-    }
-  }
+    },
+    autosaveApiCall() {
+      this.options.is_loading = true;
+      const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
+      return ProcessMaker.apiClient
+        .put("drafts/" + this.task.id, draftData)
+        .then((response) => {
+          this.task.draft = _.merge(
+            {},
+            this.task.draft,
+            response.data
+          );
+        })
+        .catch(() => {
+          this.errorAutosave = true;
+        })
+        .finally(() => {
+          this.options.is_loading = false;
+        });
+    },
+    eraseDraft() {
+      ProcessMaker.apiClient
+        .delete("drafts/" + this.task.id)
+        .then(() => {
+          this.isLoading = setTimeout(() => {
+            this.stopFrame = true;
+            this.taskTitle = this.$t("Task Lorem");
+          }, 4900);
+          this.showSideBar(this.task, this.data);
+          this.task.draft = null;
+        });
+    },
+  },
 };
 </script>
 
