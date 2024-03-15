@@ -505,6 +505,10 @@ export default {
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
+        if (btn.ui.handler === "addMailServer") {
+          this.$parent.$refs["menu-collapse"].firstTime = false;
+          this.$parent.$refs["menu-collapse"].getMenuGrups();
+        }
       }
     },
     refresh() {
