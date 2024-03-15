@@ -7,12 +7,16 @@
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body public-templates-table-card" data-cy="public-templates-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body public-templates-table-card"
+      data-cy="public-templates-table"
+    >
       <filter-table
         :headers="fields"
         :data="data"
         table-name="public-screen-templates"
-        style="height: calc(100vh - 355px);"
+        style="height: calc(100vh - 355px)"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -25,11 +29,14 @@
             @click="handleEllipsisClick(column)"
           >
             <i
-              :class="['fas', {
-                'fa-sort': column.direction === 'none',
-                'fa-sort-up': column.direction === 'asc',
-                'fa-sort-down': column.direction === 'desc',
-              }]"
+              :class="[
+                'fas',
+                {
+                  'fa-sort': column.direction === 'none',
+                  'fa-sort-up': column.direction === 'asc',
+                  'fa-sort-down': column.direction === 'desc',
+                },
+              ]"
             />
           </div>
         </template>
@@ -92,9 +99,7 @@
                   />
                 </template>
                 <template v-if="header.field !== 'name'">
-                  <div
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
+                  <div :style="{ maxWidth: header.width + 'px' }">
                     {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
@@ -121,6 +126,7 @@
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
@@ -129,12 +135,12 @@ import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, paginationTable },
-  mixins: [datatableMixin,
+  mixins: [
+    datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
     screenNavigationMixin,
@@ -150,7 +156,7 @@ export default {
           field: "name",
           sortField: "name",
           direction: "asc",
-        }
+        },
       ],
 
       fields: [
@@ -198,12 +204,12 @@ export default {
           name: "__slot:actions",
           field: "actions",
           width: 60,
-        }
-      ]
+        },
+      ],
     };
   },
-  created () {
-    ProcessMaker.EventBus.$on("api-data-public-screen-templates", (val) => {
+  created() {
+    ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -212,34 +218,45 @@ export default {
   methods: {
     fetch() {
       this.loading = true;
-      //change method sort by slot name
+      // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "templates/screen" +
-          "?page=" +
-          this.page +
-          "&per_page=" +
-          this.perPage +
-          "&is_public=1" +
-          "&filter=" +
-          this.filter +
-          "&pmql=" + 
-          encodeURIComponent(this.pmql) +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection +
-          "&include=categories,category,user"
+          "templates/screen"
+            + `?page=${this.page}&per_page=${this.perPage}&is_public=1`
+            + `&filter=${this.filter}&pmql=${encodeURIComponent(this.pmql)}&order_by=${
+              this.orderBy
+            }&order_direction=${this.orderDirection}&include=categories,category,user`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
     },
-    onPublicTemplateNavigate() {
-      console.log('Hit public template Ellipsis Menu');
+    onPublicTemplateNavigate(actionType, data) {
+      switch (actionType?.value) {
+        case "delete-template":
+          ProcessMaker.confirmModal(
+            this.$t("Caution!"),
+            this.$t(
+              "Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.",
+              {
+                item: data.title,
+              },
+            ),
+            "",
+            () => {
+              ProcessMaker.apiClient.delete(`template/screen/${data.id}`).then(() => {
+                ProcessMaker.alert(this.$t("The template was deleted."), "success");
+                this.fetch();
+              });
+            },
+          );
+          break;
+        default:
+          break;
+      }
     },
   },
 };
