@@ -117,7 +117,7 @@ export default {
           projects: this.process.projects,
           bpmn: xml,
           svg: svgString,
-          alternative: window.ProcessMaker.modeler.process.alternative,
+          alternative: window.ProcessMaker.modeler.draftAlternative || "A",
         })
           .then((response) => {
             this.process.updated_at = response.data.updated_at;

@@ -117,6 +117,7 @@ class ModelerController extends Controller
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+            'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
             'externalIntegrationsList' => $externalIntegrationsList,
             'screenTypes' => $screenTypes,
