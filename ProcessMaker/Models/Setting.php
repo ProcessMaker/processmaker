@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Log;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia;
@@ -418,5 +419,59 @@ class Setting extends ProcessMakerModel implements HasMedia
                 }
             }
         );
+    }
+
+    /**
+     * Update the group_id related to Settings
+     * @param string $settingsGroup
+     * @param null|int $id
+     *
+     * @return array
+     */
+    public static function updateAllSettingsGroupId()
+    {
+        Setting::chunk(100, function ($settings) {
+            foreach ($settings as $setting) {
+                // Define the value of 'menu_group' based on 'group'
+                switch ($setting->group) {
+                    case 'Actions By Email':
+                    case 'Email Default Settings':
+                        $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
+                        break;
+                    case 'Log-In Options': // Log-In and Password
+                    case 'LDAP':
+                    case 'SSO': // Single Sign-On
+                    case 'SCIM':
+                    case 'Session Control':
+                    case 'SSO - Auth0':
+                    case 'SSO - Atlassian':
+                    case 'SSO - Facebook':
+                    case 'SSO - GitHub':
+                    case 'SSO - Google':
+                    case 'SSO - Keycloak':
+                    case 'SSO - Microsoft':
+                    case 'SSO - SAML':
+                        $id = SettingsMenus::getId(SettingsMenus::LOG_IN_AUTH_MENU_GROUP);
+                        break;
+                    case 'User Signals':
+                    case 'Users': // Additional Properties
+                        $id = SettingsMenus::getId(SettingsMenus::USER_SETTINGS_MENU_GROUP);
+                        break;
+                    case 'IDP': // Intelligent Document Processing
+                    case 'DocuSign':
+                    case 'External Integrations': // Enterprise Integrations
+                        $id = SettingsMenus::getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
+                        break;
+                    default:
+                        $id = null;
+                        break;
+                }
+                if ($id !== null) {
+                    $setting->group_id = $id;
+                    $setting->save();
+                    Log::info("Settings group {$setting->group} = {$setting->group_id} updated successfully");
+                }
+            }
+        });
     }
 }
