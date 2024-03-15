@@ -11,7 +11,7 @@
         </b-form-checkbox>
         <b-form-group :label="$t('Select a Person*')"
                       v-if="reassign">
-          <PMFormSelectSuggest v-model="selectedPerson" 
+          <PMFormSelectSuggest v-model="reassignToUserId" 
                                :options="persons"
                                @onSearchChange="onSearchChange"
                                :placeholder="$t('Type here to search')"
@@ -160,7 +160,7 @@
             <span class="">{{ $t('*=Required') }}</span>
           </div>
           <div class="flex-grow-0">
-            <b-button variant="primary"
+            <b-button variant="secondary"
                       @click="showFillConfig = false">
               {{ $t('Back') }}
             </b-button>
@@ -214,7 +214,7 @@
       return {
         markAsPriority: false,
         reassign: false,
-        selectedPerson: "",
+        reassignToUserId: "",
         persons: [],
         applyToCurrentInboxMatchingTasks: false,
         applyToFutureTasks: false,
@@ -260,7 +260,7 @@
         }
         let params = {
           markAsPriority: this.markAsPriority,
-          selectedPerson: this.selectedPerson,
+          reassignToUserId: this.reassignToUserId,
           applyToCurrentInboxMatchingTasks: this.applyToCurrentInboxMatchingTasks,
           applyToFutureTasks: this.applyToFutureTasks,
           deactivationDate: this.deactivationDate,
@@ -308,7 +308,7 @@
         if (this.inboxRule) {
           if (this.inboxRule.reassign_to_user_id > 0) {
             this.reassign = true;
-            this.selectedPerson = this.inboxRule.reassign_to_user_id;
+            this.reassignToUserId = this.inboxRule.reassign_to_user_id;
           }
           this.markAsPriority = this.inboxRule.mark_as_priority;
           this.deactivationDate = this.inboxRule.end_date;
