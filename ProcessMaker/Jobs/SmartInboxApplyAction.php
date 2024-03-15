@@ -10,20 +10,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessRequestToken;
 
-class SmartInbox implements ShouldQueue
+class SmartInboxApplyAction implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $incomingTaskId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(int $incomingTaskId)
+    public function __construct(
+        public int $taskId,
+        public int $inboxRuleId)
     {
-        $this->incomingTaskId = $incomingTaskId;
     }
 
     /**
@@ -31,10 +31,8 @@ class SmartInbox implements ShouldQueue
      */
     public function handle(): void
     {
-        $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
-        $matchingInboxRules = MatchingTasks::matchingInboxRules($incomingTask);
-        foreach ($matchingInboxRules as $inboxRule) {
-            SmartInboxApplyAction::dispatch($this->incomingTaskId, $inboxRule->id);
-        }
+        $inboxRule = InboxRule::findOrFail($this->inboxRuleId);
+        $task = ProcessRequestToken::findOrFail($this->taskId);
+        ApplyAction::applyActionOnTask($task, $inboxRule);
     }
 }
