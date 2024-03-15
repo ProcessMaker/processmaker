@@ -633,7 +633,7 @@ export default {
       if(!this.fromQuickFill){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
       }else{
-        bottomBorderY = rect.bottom - topAdjust + 225 - elementHeight;
+        bottomBorderY = rect.bottom - topAdjust + 220 - elementHeight;
       }
       
 

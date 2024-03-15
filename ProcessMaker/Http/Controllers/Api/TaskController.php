@@ -334,4 +334,21 @@ class TaskController extends Controller
 
         return new Resource($task->refresh());
     }
+
+    /**
+     * Only send data for a screen’s fields
+     *
+     * @param ProcessRequestToken $task
+     *
+     * @return array
+     */
+    public function getScreenFields(ProcessRequestToken $task)
+    {
+        $screenVersion = $task->getScreenVersion();
+        if ($screenVersion) {
+            return $screenVersion->fields->map(fn($field) => $field->field);
+        } else {
+            return response()->json(['error' => 'Screen not found'], 404);
+        }
+    }
 }
