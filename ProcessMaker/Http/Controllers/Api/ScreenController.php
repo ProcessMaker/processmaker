@@ -14,7 +14,6 @@ use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
@@ -221,9 +220,6 @@ class ScreenController extends Controller
         $screen = new Screen();
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
-
-        // Apply template settings if provided
-        $this->applyTemplateSettings($request, $screen);
 
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
@@ -579,21 +575,5 @@ class ScreenController extends Controller
         $screen->custom_css = $request->post('custom_css');
 
         return new ScreenResource($screen);
-    }
-
-    private function applyTemplateSettings(Request $request, Screen $screen)
-    {
-        if (isset($request['templateId'])) {
-            $template = ScreenTemplates::where('id', $request['templateId'])->first();
-            if ($template) {
-                $templateManifest = json_decode($template->manifest, true);
-                $templateRoot = $templateManifest['root'];
-                $templateConfig = json_decode($templateManifest['export'][$templateRoot]['attributes']['config'], true);
-
-                // Apply template config and custom CSS to the screen
-                $screen->config = $templateConfig;
-                $screen->custom_css = $template->screen_custom_css;
-            }
-        }
     }
 }

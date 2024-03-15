@@ -119,32 +119,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cards-container {
-  display: flex;
-  height: 500px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 20px;
-  // #screen-template-options {
-  //   .template-select-card {
-  //     &.active {
-  //       div {
-  //         div {
-  //           .screen-template-card {
-  //             .card-body {
-  //               .template-container {
-  //                 .thumbnail-container {
-  //                   border-color: #1572C2;
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-        
-  //     }
-  //   }
-  // }
-  
-}
+  .cards-container {
+    display: flex;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 20px;
+  }
 </style>
