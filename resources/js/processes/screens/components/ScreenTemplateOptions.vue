@@ -119,11 +119,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.cards-container {
-  display: flex;
-  height: 500px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 20px;  
-}
+  .cards-container {
+    display: flex;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 20px;
+  }
 </style>

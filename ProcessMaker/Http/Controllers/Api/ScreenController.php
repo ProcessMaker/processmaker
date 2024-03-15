@@ -14,7 +14,6 @@ use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 

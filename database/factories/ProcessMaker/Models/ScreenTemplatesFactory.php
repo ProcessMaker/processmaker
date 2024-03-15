@@ -22,7 +22,6 @@ class ScreenTemplatesFactory extends Factory
     public function definition()
     {
         $screen = Screen::factory()->create();
-        // TODO: Handle storing screen manifests
         $response = (new ExportController)->manifest('screen', $screen->id);
         $manifest = $response->getContent();
 
