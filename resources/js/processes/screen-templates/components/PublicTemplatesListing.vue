@@ -223,6 +223,7 @@ export default {
           this.page +
           "&per_page=" +
           this.perPage +
+          "&is_public=1" +
           "&filter=" +
           this.filter +
           "&pmql=" + 

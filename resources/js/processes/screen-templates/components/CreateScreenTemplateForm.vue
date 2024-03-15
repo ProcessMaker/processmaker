@@ -87,7 +87,7 @@
                         <b-form-group v-if="canMakePublicTemplates">
                             <b-form-checkbox
                                 id="make-screen-template-public"
-                                v-model="templateData.make_public"
+                                v-model="templateData.is_public"
                                 name="make-screen-template-public"
                                 value="true"
                                 unchecked-value="false"
@@ -118,7 +118,7 @@ export default {
             templateData: {
                 name: "",
                 description: "",
-                make_public: false,
+                is_public: false,
                 media_collection: '',
                 thumbnails: "[]",
                 type: "",
@@ -159,7 +159,7 @@ export default {
         }
     },
     mounted() {
-        this.templateData.screenType = this.types;
+        this.templateData.screenType = this.screenType;
     }
 }
 </script>

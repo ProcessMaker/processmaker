@@ -9,6 +9,7 @@
         :data="data"
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
+        :selected-row="selectedRow"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -188,6 +189,7 @@
     <tasks-preview
       v-if="!verifyURL('saved-searches')"
       ref="preview"
+      @mark-selected-row="markSelectedRow"
     >
       <template v-slot:header="{ close, taskId }">
         <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)"></slot>
@@ -262,6 +264,7 @@ export default {
   },
   data() {
     return {
+      selectedRow: 0,
       actions: [
         {
           value: "edit",
@@ -362,6 +365,9 @@ export default {
     }
   },
   methods: {
+    markSelectedRow(value) {
+      this.selectedRow = value;
+    },
     getTask(taskId) {
       return this.data.data.find(task => task.id === taskId);
     },
@@ -517,6 +523,7 @@ export default {
       return link;
     },
     previewTasks(info, size = null) {
+      this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {

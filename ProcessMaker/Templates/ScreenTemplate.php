@@ -42,9 +42,16 @@ class ScreenTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
-        $templates = ScreenTemplates::nonSystem()->with($include);
+        $screenType = (string) $request->input('screen_type');
+        $isPublic = (int) $request->input('is_public', false);
+        $templates = ScreenTemplates::nonSystem()->with($include)
+            ->where('is_public', $isPublic);
         $pmql = $request->input('pmql', '');
         $filter = $request->input('filter');
+
+        if (!empty($screenType)) {
+            $templates->where('screen_type', $screenType);
+        }
 
         if (!empty($pmql)) {
             try {
@@ -73,7 +80,7 @@ class ScreenTemplate implements TemplateInterface
                             })
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
-            })->get();
+            })->paginate($request->input('per_page', 10));
 
         return $templates;
     }
@@ -98,6 +105,9 @@ class ScreenTemplate implements TemplateInterface
     {
         $data = $request->all();
 
+        $screen = Screen::select('custom_css')->where('id', $data['asset_id'])->first();
+        $screenCustomCss = $screen['custom_css'];
+
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $data['asset_id']);
         if (array_key_exists('error', $manifest)) {
@@ -105,7 +115,7 @@ class ScreenTemplate implements TemplateInterface
         }
 
         // Create a new screen template
-        $screenTemplate = $this->createScreenTemplate($data, $manifest);
+        $screenTemplate = $this->createScreenTemplate($data, $manifest, $screenCustomCss);
 
         // Save thumbnails
         $this->saveThumbnails($screenTemplate, $data['thumbnails']);
@@ -283,14 +293,15 @@ class ScreenTemplate implements TemplateInterface
      * @param  array  $payload  The payload for the screen template
      * @return \App\Models\ScreenTemplates  The created screen template
      */
-    protected function createScreenTemplate(array $data, array $payload) : ScreenTemplates
+    protected function createScreenTemplate(array $data, array $payload, $customCss) : ScreenTemplates
     {
-        $screenType = Screen::findOrFail($data['asset_id'])->type;
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => auth()->id(),
-            'screen_type' => $screenType,
+            'screen_type' => $data['screenType'],
+            'screen_custom_css' => $customCss,
             'media_collection' => '',
+            'is_public' =>  $data['is_public'] ? 1 : 0,
         ]);
         $screenTemplate->saveOrFail();
         $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
