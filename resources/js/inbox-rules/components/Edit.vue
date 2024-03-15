@@ -8,12 +8,11 @@
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
-            @showColumns="showColumns"
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="newSavedSearchIdFromSelector"
             @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
-            @reset-filters="resetFilters"
-            >
+            @showColumns="showColumns"
+            @reset-filters="resetFilters">
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
@@ -21,12 +20,12 @@
           ref="inboxRuleFilters"
           :saved-search-id="savedSearchIdForFilters"
           :task-id="taskId"
-          @count="count = $event"
           :show-column-selector-button="false"
-          @saved-search-data="savedSearchData = $event"
-          >
+          @count="count = $event"
+          @saved-search-data="savedSearchData = $event">
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
+
       <PMPanelWithCustomHeader 
         v-if="showFillConfig"
         class="filters"
@@ -40,8 +39,8 @@
           :task-id="taskId"
           :inbox-rule-data="data"
           @data="data = $event"
-          @submit="submitButton = $event"
-        />
+          @submit="submitButton = $event">
+        </InboxRuleFillData>
 
       </PMPanelWithCustomHeader>
 
@@ -53,9 +52,8 @@
           :inbox-rule="inboxRule"
           :saved-search-data="savedSearchData"
           :task-id="taskId"
-          @show-fill-config="showFillConfig = $event"
           :data="data"
-          >
+          @show-fill-config="showFillConfig = $event">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -74,7 +72,7 @@
       InboxRuleEdit,
       InboxRuleFilters,
       InboxRuleButtons,
-      InboxRuleFillData,
+      InboxRuleFillData
     },
     props: {
       newSavedSearchId: {
@@ -99,27 +97,27 @@
         showFillConfig: false,
         taskId: null,
         data: {},
-        submitButton: null,
+        submitButton: null
       };
     },
     computed: {
       rightPanelTitle() {
         if (this.showFillConfig) {
-          return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration')
+          return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
         }
-        return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration')
+        return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
       },
       savedSearchIdForFilters() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
         if (this.inboxRule) {
-          return this.inboxRule.saved_search_id
+          return this.inboxRule.saved_search_id;
         }
         if (this.newSavedSearchId) {
-          return this.newSavedSearchId
+          return this.newSavedSearchId;
         }
         if (this.newSavedSearchIdFromSelector) {
-          return this.newSavedSearchIdFromSelector
+          return this.newSavedSearchIdFromSelector;
         }
         return null;
       },
@@ -159,7 +157,7 @@
         deep: true,
         handler() {
         }
-      },
+      }
     }
   };
 </script>
