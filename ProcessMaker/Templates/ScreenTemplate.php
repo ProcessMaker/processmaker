@@ -321,7 +321,7 @@ class ScreenTemplate implements TemplateInterface
             'screen_type' => $data['screenType'],
             'screen_custom_css' => $customCss,
             'media_collection' => '',
-            'is_public' =>  $data['is_public'] ? 1 : 0,
+            'is_public' => filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0,
         ]);
         $screenTemplate->saveOrFail();
         $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
