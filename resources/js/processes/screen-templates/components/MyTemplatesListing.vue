@@ -143,6 +143,10 @@ export default {
   methods: {
     onMyTemplateNavigate(actionType, data) {
       switch (actionType?.value) {
+        case "placeholder-action":
+          break;
+        case "placeholder-action-2":
+          break;
         case "delete-template":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
