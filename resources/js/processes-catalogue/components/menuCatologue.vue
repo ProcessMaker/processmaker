@@ -40,6 +40,12 @@
         >
           {{ item.name }}
         </b-list-group-item>
+        <p
+          v-if="data.length <= 2"
+          class="text-no-result"
+        >
+          {{ $t('No results') }}
+        </p>
       </b-list-group>
     </b-collapse>
     <hr class="my-12">
@@ -276,5 +282,19 @@ i {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+.text-no-result {
+  color: #4F606D;
+  margin-left: 1rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  height: 44px;
+  padding: 12px 18px;
+  gap: 16px;
 }
 </style>
