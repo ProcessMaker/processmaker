@@ -12,12 +12,14 @@
       type="text"
       :placeholder="`${currentPage}-${totalPageCount}`"
       class="pagination-button pagination-input"
+      @keyup.enter="redirectPage"
     >
 
     <button
       :disabled="currentPage >= totalPageCount"
       class="pagination-button"
       @click="nextPage"
+      v-model="pageInput"
     >
       <strong>></strong>
     </button>
@@ -33,7 +35,7 @@
           v-for="(item, index) in itemsPerPage"
           :key="index" class="dropdown-item pagination-dropdown-items"
           href="#"
-          @click="newPerPageChange(item.value)"
+          @click="goToPage(item.value)"
         >
           {{ item.perPage }}
         </a>
@@ -82,6 +84,7 @@ export default {
           value: 50,
         },
       ],
+      pageInput: "",
     };
   },
   computed: {
@@ -124,6 +127,9 @@ export default {
     changePerPage(value) {
       this.perPage = value;
       this.fetch();
+    },
+    redirectPage(value) {
+      console.log(value);
     },
   },
 };
