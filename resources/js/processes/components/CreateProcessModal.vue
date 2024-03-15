@@ -109,13 +109,13 @@ export default {
   components: { Modal, Required, ProjectSelect },
   mixins: [ FormErrorsMixin, AssetRedirectMixin ],
   props: [
-    "countCategories", 
-    "blankTemplate", 
-    "selectedTemplate", 
-    "templateData", 
-    "generativeProcessData", 
-    "isProjectsInstalled", 
-    "categoryType", 
+    "countCategories",
+    "blankTemplate",
+    "selectedTemplate",
+    "templateData",
+    "generativeProcessData",
+    "isProjectsInstalled",
+    "categoryType",
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
@@ -275,6 +275,9 @@ export default {
         });
     },
     handleCreateBlank(formData) {
+      // Add default alternative
+      formData.append("alternative", "A");
+
       ProcessMaker.apiClient.post(
         "/processes",
         formData,

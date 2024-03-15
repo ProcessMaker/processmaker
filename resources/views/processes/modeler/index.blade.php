@@ -64,6 +64,7 @@ div.main {
   window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
   window.ProcessMaker.modeler = {
+    abPublish: false,
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),

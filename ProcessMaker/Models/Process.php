@@ -287,6 +287,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Returns a single record from the `Alternative` model
+     */
+    public function alternativeInfo()
+    {
+        return $this->hasOne('ProcessMaker\Package\PackageABTesting\Models\Alternative', 'process_id', 'id');
+    }
+
+    /**
      * Notification settings of the process.
      *
      * @return HasMany

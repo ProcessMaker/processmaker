@@ -110,13 +110,21 @@ class ModelerController extends Controller
         // Retrieve the default user for running processes
         $runAsUserDefault = User::where('is_administrator', true)->first();
 
+        // Append notifications to the process
+        $process->append('notifications', 'task_notifications');
+        // Load the alternative if the package is installed
+        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            $process->load('alternativeInfo');
+        }
+
         return [
-            'process' => $process->append('notifications', 'task_notifications'),
+            'process' => $process,
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+            'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
             'externalIntegrationsList' => $externalIntegrationsList,
             'screenTypes' => $screenTypes,
