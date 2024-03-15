@@ -425,8 +425,6 @@ class Setting extends ProcessMakerModel implements HasMedia
      * Update the group_id related to Settings
      * @param string $settingsGroup
      * @param null|int $id
-     *
-     * @return array
      */
     public static function updateAllSettingsGroupId()
     {
