@@ -260,6 +260,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    fromQuickFill: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -600,6 +604,7 @@ export default {
       }
     },
     handleRowMouseover(row) {
+      console.log("Evento MouseOver desde QUickFill Full Task: ", this.fromQuickFill);
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
@@ -624,7 +629,13 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+      let bottomBorderY = 0
+      if(!this.fromQuickFill){
+        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+      }else{
+        bottomBorderY = rect.bottom - topAdjust + 225 - elementHeight;
+      }
+      
 
       this.rowPosition = {
         x: rightBorderX,

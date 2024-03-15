@@ -155,6 +155,19 @@
                                   <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
                               </template>
+                              <template>
+                                <button
+                                  v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                  type="button"
+                                  class="btn btn-block button-reassign"
+                                  @click="showQuickFill"
+                                >
+                                <img
+                                src="../../img/smartinbox-images/fill.svg"
+                                :alt="$t('No Image')"
+                              /> {{__('Quick Fill')}}
+                                </button>
+                              </template>
                             </li>
                             <li class="list-group-item">
                               <!-- Section to Add Now What? -->
@@ -485,6 +498,9 @@
           // Reassign methods
           show () {
             this.showReassignment = true;
+          },
+          showQuickFill () {
+            this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
           },
           cancelReassign () {
             this.showReassignment = false;

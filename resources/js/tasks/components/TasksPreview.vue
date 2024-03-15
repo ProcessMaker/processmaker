@@ -91,7 +91,8 @@
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"
-            :data="data"
+            :prop-columns="propColumns"
+            :prop-filters="propFilters"
             @quick-fill-data="fillWithQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
@@ -111,6 +112,7 @@ export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview },
   mixins: [PreviewMixin],
   mounted () {
+    console.log("prop task: ", this.task);
     window.addEventListener('dataUpdated', (event) => {
       this.data = event.detail;
     });

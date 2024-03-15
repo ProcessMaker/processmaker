@@ -24,6 +24,8 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
+      propColumns: [],
+      propFilters: "",
     };
   },
   methods: {

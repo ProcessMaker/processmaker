@@ -154,4 +154,51 @@ class TaskController extends Controller
             ]);
         }
     }
+
+    public function quickFillEdit(ProcessRequestToken $task)
+    {
+        // $task = $task->loadTokenInstance();
+        // $dataManager = new DataManager();
+        // $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
+        //                             ->where('commentable_id', $task->id)
+        //                             ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
+        //                             ->count() > 0;
+
+        // if (!\Auth::user()->can('update', $task) && !$userHasComments) {
+        //     $this->authorize('update', $task);
+        // }
+
+        // //Mark notification as read
+        // MarkNotificationAsRead::dispatch([['url', '=', '/' . Request::path()]], ['read_at' => Carbon::now()]);
+
+        // $manager = app(ScreenBuilderManager::class);
+        // event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));
+
+        // $submitUrl = route('api.tasks.update', $task->id);
+        // $task->processRequest;
+        // $task->user;
+        // $screenVersion = $task->getScreenVersion();
+        // $task->component = $screenVersion ? $screenVersion->parent->renderComponent() : null;
+        // $task->screen = $screenVersion ? $screenVersion->toArray() : null;
+        // $task->request_data = $dataManager->getData($task);
+        // $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
+        // $task->definition = $task->getDefinition();
+        // $task->requestor = $task->processRequest->user;
+
+        return view('tasks.editQuickFill', [
+            'task' => $task,
+        ]);
+
+        // return view('tasks.editQuickFill', [
+        //     'task' => $task,
+        //     'dueLabels' => self::$dueLabels,
+        //     'manager' => $manager,
+        //     'submitUrl' => $submitUrl,
+        //     'files' => $task->processRequest->requestFiles(),
+        //     'addons' => $this->getPluginAddons('edit', []),
+        //     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+        //     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+        // ]);
+        
+    }
 }
