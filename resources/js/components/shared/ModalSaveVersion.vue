@@ -337,8 +337,11 @@ export default {
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
-    abPublishVersion(data) {
-      // TODO: Version history for AB Testing
+    abPublishVersion(alternativeData) {
+      this.subject = alternativeData.subject;
+      this.description = alternativeData.description;
+
+      this.saveModal(alternativeData);
     },
     /**
      * Get all information related to Launchpad Settings Modal
@@ -634,26 +637,46 @@ export default {
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
     },
-    saveModal() {
+    /**
+     * Method to save modal
+     * @param alternativeData {
+     * publishedVersion: string A|B|AB,
+     * subject: string,
+     * description: string,
+     * } | null - Alternative data from AB Testing
+     *
+     * @returns {Promise<void>}
+     */
+    saveModal(alternativeData = null) {
+      const eventType = this.types[this.options.type];
+
+      let publishedVersion = 'A';
+
+      if (eventType === "modeler-save" && alternativeData) {
+        publishedVersion = alternativeData.publishedVersion;
+      }
+
       // if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
         this.dataProcess = this.process;
         this.dataProcess.description = this.processDescription;
-        this.saveProcessDescription();
+        this.saveProcessDescription(publishedVersion);
         return;
       }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
+
       const promise = new Promise((resolve, reject) => {
         // emit save types
         window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
+          eventType,
           this.redirectUrl,
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
-          this.types[this.options.type] === "modeler-save" ? false : null,
+          eventType === "modeler-save" ? false : null,
+          publishedVersion,
         );
       });
 
@@ -681,12 +704,14 @@ export default {
         });
 
       // Save only process description field using Process API
-      this.saveProcessDescription();
+      this.saveProcessDescription(publishedVersion);
     },
     /**
      * Save description field in Process
+     *
+     * @param {string} publishedVersion
      */
-    saveProcessDescription() {
+    saveProcessDescription(publishedVersion) {
       if (!this.processDescription) return;
       this.dataProcess.imagesCarousel = this.images;
       this.dataProcess.launchpad_properties = JSON.stringify({
@@ -701,6 +726,7 @@ export default {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
           launchpad_properties: this.dataProcess.launchpad_properties,
+          alternative: publishedVersion,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
