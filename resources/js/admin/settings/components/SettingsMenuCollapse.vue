@@ -145,6 +145,7 @@ export default {
   text-align: left;
   border-radius: 8px;
   width: 100%;
+  text-transform: capitalize;
 }
 .menu-width {
   width: 240px;
@@ -177,6 +178,7 @@ export default {
 .list-item:hover,
 .menu-header:hover {
   background: #e5edf3;
+  color: #4f606d;
 }
 .list-item-selected,
 .menu-header:focus {
