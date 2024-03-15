@@ -13,6 +13,7 @@
       <pagination-table
         :meta="dataRequests.meta"
         @page-change="changePageRequests"
+        @per-page-change="changePerPage"
       />
     </div>
     <div v-else>
@@ -117,7 +118,7 @@ export default {
       dataRequests: {},
       savedSearch: false,
       queryRequest: "",
-      perPage: 10,
+      perPage: 15,
     };
   },
   mounted() {
@@ -126,6 +127,10 @@ export default {
   methods: {
     changePageRequests(page) {
       this.page = page;
+      this.queryBuilder();
+    },
+    changePerPage(value) {
+      this.perPage = value;
       this.queryBuilder();
     },
     openRequest(data, index) {

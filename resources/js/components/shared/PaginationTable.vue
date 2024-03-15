@@ -8,11 +8,11 @@
       <strong><</strong>
     </button>
 
-    <div class="pagination-button">
-      <span class="pagination-current-page">{{ currentPage }}</span>
-      -
-      <span>{{ totalPageCount }}</span>
-    </div>
+    <input
+      type="text"
+      :placeholder="`${currentPage}-${totalPageCount}`"
+      class="pagination-button pagination-input"
+    >
 
     <button
       :disabled="currentPage >= totalPageCount"
@@ -29,7 +29,14 @@
         {{ perPageButton }}
       </button>
       <div class="dropdown-menu">
-        <a v-for="(item, index) in itemsPerPage" :key="index" class="dropdown-item pagination-dropdown-items" href="#">{{ item.perPage }}</a>
+        <a
+          v-for="(item, index) in itemsPerPage"
+          :key="index" class="dropdown-item pagination-dropdown-items"
+          href="#"
+          @click="newPerPageChange(item.value)"
+        >
+          {{ item.perPage }}
+        </a>
       </div>
     </div>
   </div>
@@ -63,13 +70,16 @@ export default {
     return {
       itemsPerPage: [
         {
-          perPage: "15 items",
+          perPage: this.$t("15 items"),
+          value: 15,
         },
         {
-          perPage: "30 items",
+          perPage: this.$t("30 items"),
+          value: 30,
         },
         {
-          perPage: "50 items",
+          perPage: this.$t("50 items"),
+          value: 50,
         },
       ],
     };
@@ -88,7 +98,7 @@ export default {
       return this.meta.total + " items";
     },
     perPageButton() {
-      return this.meta.per_page + "per Page"
+      return this.meta.per_page + " per Page"
     },
   },
   mounted() {
@@ -107,6 +117,13 @@ export default {
     },
     goToPage(page) {
       this.$emit('page-change', page);
+    },
+    newPerPageChange(value) {
+      this.$emit('per-page-change', value);
+    },
+    changePerPage(value) {
+      this.perPage = value;
+      this.fetch();
     },
   },
 };
@@ -155,5 +172,11 @@ export default {
   font-weight: 400;
   font-size: 14.5px;
   color: #5C5C63;
+}
+.pagination-input {
+  width: 50px;
+}
+.pagination-input::placeholder {
+  text-align: center;
 }
 </style>

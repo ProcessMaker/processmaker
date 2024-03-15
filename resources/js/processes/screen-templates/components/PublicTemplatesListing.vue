@@ -107,6 +107,7 @@
         :meta="data.meta"
         data-cy="public-templates-pagination"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
       <pagination
         ref="pagination"

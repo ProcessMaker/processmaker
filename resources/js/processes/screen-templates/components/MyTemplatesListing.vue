@@ -55,7 +55,12 @@
         </template>
       </filter-table>
 
-      <pagination-table :meta="data.meta" data-cy="my-templates-pagination" @page-change="changePage" />
+      <pagination-table
+        :meta="data.meta"
+        data-cy="my-templates-pagination"
+        @page-change="changePage"
+        @per-page-change="changePerPage"
+      />
       <pagination ref="pagination" :single="$t('My Template')" :plural="$t('My Templates')"
         :per-page-select-enabled="true" @changePerPage="changePerPage" @vuetable-pagination:change-page="onPageChange" />
     </div>

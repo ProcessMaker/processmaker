@@ -13,6 +13,7 @@
       <pagination-table
         :meta="dataTasks.meta"
         @page-change="changePageTasks"
+        @per-page-change="changePerPage"
       />
     </div>
     <div v-else>
@@ -119,7 +120,7 @@ export default {
       ],
       dataTasks: {},
       savedSearch: false,
-      perPage: 10,
+      perPage: 15,
     };
   },
   mounted() {
@@ -128,6 +129,10 @@ export default {
   methods: {
     changePageTasks(page) {
       this.page = page;
+      this.queryBuilder();
+    },
+    changePerPage(value) {
+      this.perPage = value;
       this.queryBuilder();
     },
     openTask(task) {
@@ -233,7 +238,9 @@ export default {
         `${this.pmqlTask}` +
         " AND process_id=" +
         `${this.process.id}` +
-        "&per_page=10&order_by=ID&order_direction=DESC&non_system=true";
+        "&per_page="+
+        `${this.perPage}`+
+        "&order_by=ID&order_direction=DESC&non_system=true";
       this.getData(this.queryTask);
     },
     getData(query) {
