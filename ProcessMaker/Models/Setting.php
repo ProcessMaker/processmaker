@@ -381,8 +381,12 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function groupsByMenu($menuId)
     {
-        $query = Setting::query()->select('group')->groupBy('group')
-            ->where('group_id', $menuId)->pluck('group');
+        $query = Setting::query()
+            ->select('group')
+            ->groupBy('group')
+            ->where('group_id', $menuId)
+            ->notHidden()
+            ->pluck('group');
         $response = $query->toArray();
         $result = [];
         foreach ($response as &$value) {
