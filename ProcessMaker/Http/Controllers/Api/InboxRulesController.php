@@ -60,10 +60,10 @@ class InboxRulesController extends Controller
     {
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
-            'columns' => $request->columns,
-            'advanced_filter' => $request->advanced_filter,
-            'pmql' => $request->pmql,
-            'user_id' => $request->user()->id,
+                'columns' => $request->columns,
+                'advanced_filter' => $request->advanced_filter,
+                'pmql' => $request->pmql,
+                'user_id' => $request->user()->id,
         ]);
 
         $request->applyToCurrentInboxMatchingTasks;
@@ -75,7 +75,7 @@ class InboxRulesController extends Controller
             'end_date' => $request->deactivationDate,
             'saved_search_id' => $savedSearch->id,
             'process_request_token_id' => $request->taskId,
-            'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
+            'mark_as_priority' => $request->markAsPriority,
             'reassign_to_user_id' => $request->selectedPerson,
             'make_draft' => $request->get('make_draft', false),
             'submit_data' => true,
@@ -105,7 +105,7 @@ class InboxRulesController extends Controller
             'end_date' => $request->deactivationDate,
             'saved_search_id' => 1,
             'process_request_token_id' => 1,
-            'mark_as_priority' => $request->actionsTask === 'priority' ? true : false,
+            'mark_as_priority' => $request->markAsPriority,
             'reassign_to_user_id' => $request->selectedPerson,
             'make_draft' => $request->get('make_draft', false),
             'submit_data' => true,

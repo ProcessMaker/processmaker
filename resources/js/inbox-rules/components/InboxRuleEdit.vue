@@ -5,19 +5,12 @@
         <template v-slot:label>
           <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
         </template>
-        <b-form-radio-group v-model="actionsTask"
-                            class="pm-inbox-rule-edit-radio">
-          <b-form-radio value="priority">
-            <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')"/>
-            {{ $t('Mark as Priority') }}
-          </b-form-radio>
-          <b-form-radio value="reassign">
-            <img src="/img/people-fill.svg" :alt="$t('Reassign')"/>
-            {{ $t('Reassign') }}
-          </b-form-radio>
-        </b-form-radio-group>
+        <b-form-checkbox v-model="reassign">
+          <img src="/img/people-fill.svg" :alt="$t('Reassign')"/>
+          {{ $t('Reassign') }}
+        </b-form-checkbox>
         <b-form-group :label="$t('Select a Person*')"
-                      v-if="actionsTask==='reassign'">
+                      v-if="reassign">
           <PMFormSelectSuggest v-model="selectedPerson" 
                                :options="persons"
                                @onSearchChange="onSearchChange"
@@ -27,12 +20,11 @@
                                :selectedLabel="$t('Selected')">
           </PMFormSelectSuggest>
         </b-form-group>
-      </b-form-group>
-
-      <b-form-group>
-        <b-form-checkbox
-          v-model="makeDraft"
-          >
+        <b-form-checkbox v-model="markAsPriority">
+          <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')"/>
+          {{ $t('Mark as Priority') }}
+        </b-form-checkbox>
+        <b-form-checkbox v-model="makeDraft">
           <img src="/img/pencil-fill-text.svg" :alt="$t('Save and reuse filled data')"/>
           {{ $t('Save and reuse filled data') }}
         </b-form-checkbox>
@@ -220,7 +212,8 @@
     },
     data() {
       return {
-        actionsTask: "priority",
+        markAsPriority: false,
+        reassign: false,
         selectedPerson: "",
         persons: [],
         applyToCurrentInboxMatchingTasks: false,
@@ -266,7 +259,7 @@
           return;
         }
         let params = {
-          actionsTask: this.actionsTask,
+          markAsPriority: this.markAsPriority,
           selectedPerson: this.selectedPerson,
           applyToCurrentInboxMatchingTasks: this.applyToCurrentInboxMatchingTasks,
           applyToFutureTasks: this.applyToFutureTasks,
@@ -313,13 +306,11 @@
       },
       setInboxRuleData() {
         if (this.inboxRule) {
-          if (this.inboxRule.mark_as_priority) {
-            this.actionsTask = "priority";
-          }
           if (this.inboxRule.reassign_to_user_id > 0) {
-            this.actionsTask = "reassign";
+            this.reassign = true;
             this.selectedPerson = this.inboxRule.reassign_to_user_id;
           }
+          this.markAsPriority = this.inboxRule.mark_as_priority;
           this.deactivationDate = this.inboxRule.end_date;
           this.ruleName = this.inboxRule.name;
         }
