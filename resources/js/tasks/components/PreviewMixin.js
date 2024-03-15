@@ -13,30 +13,49 @@ const PreviewMixin = {
       existPrev: false,
       existNext: false,
       loading: true,
-      paneMinSize: 0,
       showFrame: 1,
       showFrame1: false,
       showFrame2: false,
       isLoading: "",
       stopFrame: false,
+      formData: {},
+      options: {
+        is_loading: false,
+      },
+      autoSaveDelay: 2000,
+      savedIcon: null,
+      lastAutosave: "",
+      errorAutosave: false,
+      showQuickFillPreview: false,
+      isSelectedTask: false,
+      selectedTaskId: null,
+      useThisDataButton: false,
+      showUseThisTask: false,
+      splitpaneSize: 50,
     };
   },
   methods: {
     /**
      * Show the sidebar
      */
-    showSideBar(info, data, firstTime = false) {
+    showSideBar(info, data, firstTime = false, size = null) {
+      if (size) {
+        this.splitpaneSize = size;
+      }
+
+      let param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
+
       if (this.showFrame === 1) {
-        this.linkTasks1 = `/tasks/${info.id}/edit/preview`;
+        this.linkTasks1 = `/tasks/${info.id}/edit/preview`+param;
         this.showFrame1 = true;
       }
       if (this.showFrame === 2) {
         this.showFrame2 = true;
-        this.linkTasks2 = `/tasks/${info.id}/edit/preview`;
+        this.linkTasks2 = `/tasks/${info.id}/edit/preview`+param;
       }
       this.showPreview = true;
       this.data = data;
@@ -44,7 +63,14 @@ const PreviewMixin = {
       this.existNext = false;
       this.defineNextPrevTask();
     },
+    showButton() {
+      this.isMouseOver = true;
+    },
+    hideButton() {
+      this.isMouseOver = false;
+    },
     onClose() {
+      this.$emit('mark-selected-row', 0);
       this.showPreview = false;
       this.resetToDefault();
     },
@@ -53,21 +79,18 @@ const PreviewMixin = {
       this.linkTasks2 = "";
       this.task = {};
       this.data = [];
+      this.previewData = [];
       this.taskTitle = "";
       this.prevTask = {};
       this.nextTask = {};
       this.existPrev = false;
       this.existNext = false;
       this.loading = true;
-      this.paneMinSize = 0;
       this.showFrame = 1;
       this.showFrame1 = false;
       this.showFrame2 = false;
       this.isLoading = "";
       this.stopFrame = false;
-    },
-    setPaneMinSize(splitpanesWidth, minPixelWidth) {
-      this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
     },
     /**
      * Defined Previuos and Next task
@@ -113,9 +136,11 @@ const PreviewMixin = {
       this.linkTasks = "";
       this.loading = true;
       if (action === "Next") {
+        this.$emit('mark-selected-row', this.nextTask.id);
         this.showSideBar(this.nextTask, this.data);
       }
       if (action === "Prev") {
+        this.$emit('mark-selected-row', this.prevTask.id);
         this.showSideBar(this.prevTask, this.data);
       }
     },
@@ -123,6 +148,7 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded() {
+      const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
       this.stopFrame = false;
@@ -135,6 +161,10 @@ const PreviewMixin = {
       this.showFrame2 = true;
       this.showFrame1 = false;
       this.showFrame = 1;
+      if(this.useThisDataButton) {
+        ProcessMaker.alert(successMessage, 'success');
+        this.useThisDataButton = false;
+      }
     },
   },
 };

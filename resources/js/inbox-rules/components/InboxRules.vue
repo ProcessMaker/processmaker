@@ -1,15 +1,17 @@
 <template>
   <div>
     <PMTable :headers="headers"
-             :data="response"
-             @onRowMouseover="onRowMouseover"
-             @onTrMouseleave="onTrMouseleave"
+             :data="responseData"
+             :baseURL="baseURL"
              :empty="$t('No results have been found')"
              :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
-             empty-icon="noData">
+             empty-icon="noData"
+             @onRowMouseover="onRowMouseover"
+             @onTrMouseleave="onTrMouseleave"
+             @onPageChange="onPageChange">
 
       <template v-slot:top-content>
-        <PMSearchBar>
+        <PMSearchBar v-model="filter">
           <template v-slot:right-content>
             <b-button class="ml-md-1 d-flex align-items-center text-nowrap"
                       variant="primary"
@@ -21,13 +23,24 @@
         </PMSearchBar>
       </template>
 
-      <template v-slot:cell-deactivation_date="{ row, header, rowIndex }">
-        <PmRowButtons :ref="`pmRowButtons-${rowIndex}`"
-                      :value="row['deactivation_date']"
-                      :row="row"
-                      @onEditRule="onEditRule"
-                      @onRemoveRule="onRemoveRule">
-        </PmRowButtons>
+      <template v-slot:cell-active="{ row, header, rowIndex }">
+        <b-form-checkbox v-model="row['active']" 
+                         :disabled="true"
+                         switch>
+        </b-form-checkbox>
+      </template>
+
+      <template v-slot:cell-created_at="{ row, header, rowIndex }">
+        {{ convertUTCToPMFormat(row['created_at']) }}
+      </template>
+
+      <template v-slot:cell-end_date="{ row, header, rowIndex }">
+        <InboxRulesRowButtons :ref="'inboxRulesRowButtons-'+rowIndex"
+                              :value="convertUTCToPMFormat(row['end_date'])"
+                              :row="row"
+                              @onEditRule="onEditRule"
+                              @onRemoveRule="onRemoveRule">
+        </InboxRulesRowButtons>
       </template>
 
     </PMTable>
@@ -37,24 +50,35 @@
 <script>
   import PMTable from "../../components/PMTable.vue";
   import PMSearchBar from "../../components/PMSearchBar.vue";
-  import PmRowButtons from "./PmRowButtons.vue";
+  import InboxRulesRowButtons from "./InboxRulesRowButtons.vue";
   export default {
     components: {
       PMTable,
       PMSearchBar,
-      PmRowButtons
+      InboxRulesRowButtons
     },
     data() {
       return {
+        responseData: {data: [], meta: {}},
         headers: this.columns(),
-        response: {
-          data: this.getData(),
-          meta: {}
-        },
-        page: 1
+        baseURL: "tasks/rules",
+        page: 1,
+        per_page: 10,
+        order_by: "id",
+        order_direction: "asc",
+        filter: ""
       };
     },
     mounted() {
+      this.requestData();
+    },
+    watch: {
+      page() {
+        this.requestData();
+      },
+      filter() {
+        this.requestData();
+      }
     },
     methods: {
       columns() {
@@ -66,54 +90,70 @@
           },
           {
             label: this.$t("Status"),
-            field: "status",
+            field: "active",
             width: 10
           },
           {
             label: this.$t("Creation Date"),
-            field: "creation_date",
+            field: "created_at",
             width: 10
           },
           {
             label: this.$t("Deactivation Date"),
-            field: "deactivation_date",
+            field: "end_date",
             width: 10
           }
         ];
       },
-      getData() {
-        let rows = [
-          {
-            id: "1",
-            name: "name1",
-            status: "ok",
-            creation_date: "2024-01-01",
-            deactivation_date: "2024-01-02"
-          },
-          {
-            id: "2",
-            name: "name2",
-            status: "none",
-            creation_date: "2024-02-01",
-            deactivation_date: "2024-02-02"
-          }
-        ];
-        return rows;
+      requestData() {
+        let url = this.baseURL + "?"
+                + "page=" + this.page + "&"
+                + "per_page=" + this.per_page + "&"
+                + "order_by=" + this.order_by + "&"
+                + "order_direction=" + this.order_direction + "&"
+                + "filter=" + this.filter;
+
+        ProcessMaker.apiClient
+                .get(url)
+                .then((response) => {
+                  this.responseData = response.data;
+                })
+                .catch((error) => {
+                });
+      },
+      onPageChange(page) {
+        this.page = page;
       },
       onRowMouseover(row, scrolledWidth, index) {
-        this.$refs[`pmRowButtons-${index}`].show();
-        this.$refs[`pmRowButtons-${index}`].setMargin(scrolledWidth);
+        this.$refs["inboxRulesRowButtons-" + index].show();
+        this.$refs["inboxRulesRowButtons-" + index].setMargin(scrolledWidth);
       },
       onTrMouseleave(row, index) {
-        this.$refs[`pmRowButtons-${index}`].close();
+        this.$refs["inboxRulesRowButtons-" + index].close();
       },
       onCreateRule() {
-        this.$router.push({name: 'edit', params: {id: 1}});
+        this.$router.push({name: 'new'});
       },
       onEditRule(row) {
         this.$router.push({name: 'edit', params: {id: row.id}});
       },
       onRemoveRule(row) {
+        window.ProcessMaker.apiClient
+                .delete('/tasks/rules/' + row.id)
+                .then(response => {
+                  let message = "The inbox rule '{{name}}' was removed.";
+                  message = this.$t(message, {name: row.name});
+                  ProcessMaker.alert(message, "success");
+                  this.requestData();
+                });
+      },
+      convertUTCToPMFormat(value) {
+        if (!moment(value).isValid()) {
+          return "N/A";
+        }
+        let timezone = ProcessMaker.user.timezone;
+        let config = ProcessMaker.user.datetime_format;
+        return moment(value).tz(timezone).format(config);
       }
     }
   };

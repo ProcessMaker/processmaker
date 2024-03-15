@@ -1009,3 +1009,54 @@ nav {
   letter-spacing: -0.28px;
   text-transform: uppercase;
 }
+
+//New Screen modal styling
+#createScreen___BV_modal_body_.modal-body {
+  background-color: #F6F9FB;
+  padding: 0 15px !important;
+}
+
+#createScreen___BV_modal_body_ .row {
+  height: 100%;
+}
+
+#createScreen___BV_modal_body_ .row .col-8 {
+  padding: 15px;
+}
+
+#createScreen___BV_modal_body_ .row .col-4 {
+  background-color: #ffffff;
+  padding: 15px;
+}
+
+//New Screen modal, Screen Type Dropdown styling
+.type-style-col .multiselect:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.type-style-col .multiselect .multiselect__tags {
+  border-radius: 0.5em;
+}
+
+.type-style-col .multiselect .multiselect__select:before {
+  border-color: #000000 transparent transparent transparent;
+}
+
+.type-style-col .multiselect .multiselect__tags .type-title-placeholder {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.type-style-col .multiselect .multiselect__content-wrapper {
+  margin-top: 5px;
+  box-shadow: 0 10px 20px 4px rgba(0, 0, 0, 0.1);
+}
+
+.type-style-col .multiselect .multiselect__content-wrapper .multiselect__option {
+  padding: 8px;
+}
+
+.type-style-col .multiselect--disabled .multiselect__select {
+  background-color: transparent;
+}

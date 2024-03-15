@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -183,6 +182,9 @@
           submitting: false,
           userIsAdmin,
           userIsProcessManager,
+          is_loading: false,
+          autoSaveDelay: 5000,
+          firstChange: true,
         },
         watch: {
           task: {
@@ -191,6 +193,19 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
+              }
+            }
+          },
+          formData: {
+            deep: true,
+            handler(formData) {
+              if (this.firstChange) {
+                this.firstChange = false;
+              } else {
+                const event = new CustomEvent('dataUpdated', {
+                  detail: formData,
+                });
+                window.top.dispatchEvent(event);
               }
             }
           },
@@ -373,14 +388,29 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+          },
+          autosaveApiCall() {
+            return ProcessMaker.apiClient
+            .put("drafts/" + this.task.id, this.formData)
+            .then(() => {
+              this.is_loading = true;
+            })
+            .finally(() => {
+              this.is_loading = false;
+            });
+          },
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;
+          
+          window.addEventListener('fillData', event => {
+            this.formData = _.merge(this.formData, event.detail);
+          });
+
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+    
     </script>
 
 
