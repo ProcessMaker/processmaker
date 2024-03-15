@@ -12,6 +12,7 @@
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="newSavedSearchIdFromSelector"
             @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
+            @reset-filters="resetFilters"
             >
           </InboxRuleButtons>
         </template>
@@ -144,6 +145,9 @@
     methods: {
       showColumns() {
         this.$refs.inboxRuleFilters.showColumns();
+      },
+      resetFilters() {
+        this.$refs.inboxRuleFilters.resetFilters();
       },
       resetData() {
         this.data = null;

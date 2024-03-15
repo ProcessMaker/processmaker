@@ -2,7 +2,8 @@
   <div>
     <b-button size="sm"
               variant="light"
-              class="button-border button-font">
+              class="button-border button-font"
+              @click="$emit('reset-filters')">
       <img src="/img/eraser-fill.svg" :alt="$t('Clear filters')"/>
       {{ $t('Clear filters') }}
     </b-button>

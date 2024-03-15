@@ -60,10 +60,10 @@ class InboxRulesController extends Controller
     {
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
-                'columns' => $request->columns,
-                'advanced_filter' => $request->advanced_filter,
-                'pmql' => $request->pmql,
-                'user_id' => $request->user()->id,
+            'columns' => $request->columns,
+            'advanced_filter' => $request->advanced_filter,
+            'pmql' => $request->get('pmql') ?? '',
+            'user_id' => $request->user()->id,
         ]);
 
         $request->applyToCurrentInboxMatchingTasks;
@@ -157,7 +157,7 @@ class InboxRulesController extends Controller
     public function updateActive(Request $request, $idInboxRule)
     {
         $data = [
-            'active' => $request->active
+            'active' => $request->active,
         ];
         InboxRule::findOrFail($idInboxRule)->update($data);
 

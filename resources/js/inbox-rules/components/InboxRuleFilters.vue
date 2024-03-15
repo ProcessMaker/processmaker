@@ -62,10 +62,6 @@
 import TasksList from "../../tasks/components/TasksList.vue";
 import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
 
-const defaultFilter = {
-  filters: [],
-  order: { by: 'id', dir: 'desc' },
-};
 export default {
   props: {
     savedSearchId: {
@@ -79,6 +75,10 @@ export default {
     showColumnSelectorButton: {
       type: Boolean,
       default: true
+    },
+    isNew: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -86,7 +86,8 @@ export default {
       savedSearch: null,
       columns: [],
       defaultColumns: [],
-      savedSearchAdvancedFilter: defaultFilter,
+      savedSearchAdvancedFilter: null,
+      originalSavedSearchAdvancedFilter: null,
       ready: false,
       task: null,
     }
@@ -105,7 +106,91 @@ export default {
     },
     applyColumns() {
       this.columns = this.$refs.columnChooserAdapter.currentColumns;
-      this.savedSearchAdvancedFilter = _.cloneDeep(defaultFilter);
+      this.resetFilters();
+    },
+    resetFilters() {
+      this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
+    },
+    defaultTaskFilters() {
+      return {
+        order: { by: 'id', dir: 'desc' },
+        filters: [
+          this.userIdFilter(),
+          {
+            subject: {
+              type: "Field",
+              value: 'process_id'
+            },
+            operator: "=",
+            value: this.task.process_id,
+            _column_label: "Process ID"
+          },
+          {
+            subject: {
+              type: "Field",
+              value: 'element_id'
+            },
+            operator: "=",
+            value: this.task.element_id,
+            _column_label: "Node ID"
+          },
+          {
+            subject: {
+              type: "Status",
+            },
+            operator: "=",
+            value: 'In Progress',
+            _column_label: "Status"
+          }
+        ]
+      };
+    },
+    addDefaultSavedSearchFilters(filter) {
+      if (filter.filters) {
+        const hasUserIdFilter = filter.filters.some(f => {
+          return f.subject.type === 'Field' && f.subject.value === 'user_id';
+        });
+
+        if (!hasUserIdFilter) {
+          filter.filters.push(this.userIdFilter());
+        }
+
+        const hasStatusFilter = filter.filters.some(f => {
+          return f.subject.type === 'Status' && f.subject.value === 'In Progress';
+        });
+
+        if (!hasStatusFilter) {
+          filter.filters.push(this.statusFilter());
+        }
+
+      } else {
+        filter.filters = [this.userIdFilter()];
+      }
+      return filter;
+    },
+    addStatusFilter(filter) {
+    },
+    userIdFilter() {
+      return {
+        subject: {
+          type: "Field",
+          value: 'user_id'
+        },
+        operator: "=",
+        value: window.ProcessMaker.user.id,
+        _column_label: "User ID"
+      }
+    },
+    statusFilter() {
+      return {
+        subject: {
+          type: "Status",
+          value: 'In Progress'
+        },
+        operator: "=",
+        value: 'In Progress',
+        _column_label: "Status"
+      }
     },
     loadSavedSearch() {
       this.ready = false;
@@ -114,10 +199,13 @@ export default {
         .then(response => {
           this.savedSearch = response.data;
           this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
-          this.savedSearchAdvancedFilter = response.data.advanced_filter;
+          this.savedSearchAdvancedFilter = this.addDefaultSavedSearchFilters(response.data.advanced_filter);
+          this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
           this.ready = true;
         });
     },
+    // Only used when creating inbox rules.
+    // Existing inbox rules always have a saved search.
     loadTask() {
       this.ready = false;
 
@@ -129,6 +217,9 @@ export default {
         .get("tasks/" + this.taskId)
         .then(response => {
           this.task = response.data;
+          this.savedSearchAdvancedFilter = this.defaultTaskFilters();
+          console.log('this.savedSearchAdvancedFilter', this.savedSearchAdvancedFilter);
+          this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
           this.ready = true;
         });
     },
@@ -155,6 +246,7 @@ export default {
     },
     ready: {
       handler() {
+        this.resetFilters();
         this.emitSavedSearchData();
       }
     },
@@ -171,18 +263,10 @@ export default {
   },
   computed: {
     pmql() {
-
-      const pmqls = [];
-
-      if (this.task) {
-        pmqls.push('(user_id = ' + window.ProcessMaker.user.id + ' AND process_id = ' + this.task.process_id + ' AND element_id = "' + this.task.element_id + '")');
-      }
-
       if (this.savedSearch?.pmql) {
-        pmqls.push(this.savedSearch.pmql);
+        return this.savedSearch.pmql;
       }
-
-      return pmqls.join(' AND ');
+      return '';
     },
     taskTitle() {
       if (this.task) {
