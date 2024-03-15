@@ -52,6 +52,7 @@
         "psr/simple-cache": "^2.0",
         "pusher/pusher-php-server": "^7.0",
         "ralouphie/getallheaders": "^3.0",
+        "simplesoftwareio/simple-qrcode": "~4",
         "spatie/laravel-fractal": "^6.0",
         "spatie/laravel-medialibrary": "^10.7",
         "spomky-labs/otphp": "^11.2",
