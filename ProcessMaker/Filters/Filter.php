@@ -78,6 +78,8 @@ class Filter
             $this->filterByProcessId($query);
         } elseif ($this->subjectType === self::TYPE_RELATIONSHIP) {
             $this->filterByRelationship($query);
+        } elseif ($this->isJsonData() && $query->getModel() instanceof ProcessRequestToken) {
+            $this->filterByRequestData($query);
         } else {
             $this->applyQueryBuilderMethod($query);
         }
@@ -263,6 +265,13 @@ class Filter
     {
         $relationshipName = $this->relationshipSubjectTypeParts()[0];
         $query->whereHas($relationshipName, function ($rel) {
+            $this->applyQueryBuilderMethod($rel);
+        });
+    }
+
+    private function filterByRequestData(Builder $query)
+    {
+        $query->whereHas('processRequest', function ($rel) {
             $this->applyQueryBuilderMethod($rel);
         });
     }
