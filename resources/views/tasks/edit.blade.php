@@ -64,6 +64,7 @@
                               @@error="error"
                               @closed="closed"
                               @redirect="redirectToTask"
+                              @form-data-changed="handleAutosave()"
                           ></task>
                           @endcan
                           <div v-if="taskHasComments">
@@ -145,19 +146,45 @@
                           <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">
                               <!-- ADD THE OTHER BUTTONS -->
-                              <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
-                                <button
-                                  v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-                                  type="button"
-                                  class="btn btn-block button-reassign"
-                                  @click="show"
-                                >
-                                  <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                </button>
-                              </template>
+                              <div class="row button-group">
+                                <div class="col-6">
+                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                    <button
+                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      type="button"
+                                      class="btn btn-block button-actions"
+                                      @click="show"
+                                    >
+                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                    </button>
+                                  </template>
+                                </div>
+                                <div class="col-6"></div>
+                              </div>
+                              <div class="row button-group">
+                                <div class="col-6">
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    @click="createRule"
+                                  >
+                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                  </button>
+                                </div>
+                                <div class="col-6"></div>
+                              </div>
                             </li>
                             <li class="list-group-item">
                               <!-- Section to Add Now What? -->
+                              <button
+                                type="button"
+                                class="btn btn-block button-actions"
+                                v-b-tooltip.hover title="Erase Draft"
+                                @click="eraseDraft()"
+                              >
+                                <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                                {{ __('Clear Task') }}
+                              </button>
                             </li>
                             <div :class="statusCard">
                               <span style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</span>
@@ -171,11 +198,12 @@
                               @{{ moment(completedAt).format() }}
                             </li>
                             <li class="list-group-item">
-                              <p class="section-title">
-                                <i class="fas fa-check-circle" style="color: #00875a;"></i>
-                                {{__('Autosave')}}
-                              </p>
-                              <span>{{__('Last save')}}: </span> @{{ moment(dateDueAt).format() }}
+                              <task-save-panel
+                                :options="options"
+                                :task="task"
+                                :date="lastAutosave"
+                                :error="errorAutosave"
+                              />
                             </li>
                             <li v-if="task.is_self_service === 0" class="list-group-item">
                               <p class="section-title">{{__('Assigned To')}}:</p>
@@ -353,6 +381,15 @@
           userIsAdmin,
           userIsProcessManager,
           showTree: false,
+          is_loading: false,
+          autoSaveDelay: 2000,
+          firstChange: true,
+          options: {
+            is_loading: false,
+          },
+          lastAutosave: "-",
+          errorAutosave: false,
+          formDataWatcherActive: true,
           showTabs: true,
           showInfo: true,
         },
@@ -364,8 +401,28 @@
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit`);
               }
+              if (task.draft) {
+                this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
+              } else {
+                this.lastAutosave = "-";
+              }
             }
           },
+          formData: {
+            deep: true,
+            handler(formData) {
+              if (this.firstChange) {
+                this.firstChange = false;
+              } else {
+                if (this.formDataWatcherActive)
+                {
+                  this.handleAutosave();
+                } else {
+                  this.formDataWatcherActive = true;
+                }
+              }
+            }
+          }
         },
         computed: {
           taskDefinitionConfig () {
@@ -561,6 +618,36 @@
           taskUpdated(task) {
             this.task = task;
           },
+          autosaveApiCall() {
+            this.options.is_loading = true;
+            const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
+            return ProcessMaker.apiClient
+            .put("drafts/" + this.task.id, draftData)
+            .then((response) => {
+              ProcessMaker.alert(this.$t('Saved'), 'success')
+              this.task.draft = _.merge(
+                {},
+                this.task.draft,
+                response.data
+              );
+            })
+            .catch(() => {
+              this.errorAutosave = true;
+            })
+            .finally(() => {
+              this.options.is_loading = false;
+            });
+          },
+          eraseDraft() {
+            this.formDataWatcherActive = false;
+            ProcessMaker.apiClient
+              .delete("drafts/" + this.task.id)
+              .then(() => {
+                this.task.draft = null;
+                const taskComponent = this.$refs.task;
+                taskComponent.loadTask();
+              });
+          },
           switchTabInfo(tab) {
             this.showInfo = !this.showInfo;
           },
@@ -671,11 +758,11 @@
   .overdue-style {
     background-color: #ed4858;
   }
-  .button-reassign {
+  .button-actions {
     color: #556271;
     text-transform: capitalize;
     font-family: Open Sans;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 24px;
     letter-spacing: -0.02em;
@@ -684,9 +771,13 @@
     border-radius: 4px;
     box-shadow: 0px 0px 3px 0px #0000001a;
   }
-  .button-reassign:hover {
+  .button-actions:hover {
     color: #556271;
     background-color: #f3f5f8;
+  }
+  .button-group {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>
 @endsection
