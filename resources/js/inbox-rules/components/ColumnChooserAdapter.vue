@@ -18,6 +18,10 @@ export default {
     pmql: {
       type: String
     },
+    advancedFilter: {
+      type: Object,
+      default: null,
+    },
     columns: {
       type: Array,
       default() {
@@ -54,7 +58,8 @@ export default {
     window.ProcessMaker.apiClient
       .get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
         params: {
-          pmql: this.pmql
+          pmql: this.pmql,
+          advanced_filter: this.advancedFilter,
         }
       })
       .then(response => {

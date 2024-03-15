@@ -48,6 +48,7 @@
         <column-chooser-adapter
           ref="columnChooserAdapter"
           :pmql="pmql"
+          :advanced-filter="savedSearchAdvancedFilter"
           :columns="columns"
           :default-columns="defaultColumns"
       />
@@ -270,7 +271,7 @@ export default {
     },
     taskTitle() {
       if (this.task) {
-        return this.$t('Your {{title}} tasks', {title: this.task.element_name})
+        return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name})
       }
       return '';
     }
