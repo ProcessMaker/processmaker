@@ -3,7 +3,7 @@
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
       <PMPanelWithCustomHeader 
-        v-if="!showFillConfig"
+        v-if="isViewName(1)"
         class="filters"
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
@@ -27,7 +27,7 @@
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader 
-        v-if="showFillConfig"
+        v-if="isViewName(2)"
         class="filters"
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
@@ -53,7 +53,7 @@
           :saved-search-data="savedSearchData"
           :task-id="taskId"
           :data="data"
-          @show-fill-config="showFillConfig = $event">
+          @view-name="viewName($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -66,6 +66,7 @@
   import InboxRuleFilters from "./InboxRuleFilters.vue";
   import InboxRuleButtons from "./InboxRuleButtons.vue";
   import InboxRuleFillData from "./InboxRuleFillData.vue";
+  import IsViewMixin from "./IsViewMixin.js";
   export default {
     components: {
       PMPanelWithCustomHeader,
@@ -74,6 +75,7 @@
       InboxRuleButtons,
       InboxRuleFillData
     },
+    mixins: [IsViewMixin],
     props: {
       newSavedSearchId: {
         type: Number,
@@ -94,7 +96,6 @@
         inboxRule: null,
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
-        showFillConfig: false,
         taskId: null,
         data: {},
         submitButton: null
@@ -102,10 +103,12 @@
     },
     computed: {
       rightPanelTitle() {
-        if (this.showFillConfig) {
+        if (this.view_name === 1) {
+          return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
+        }
+        if (this.view_name === 2) {
           return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
         }
-        return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
       },
       savedSearchIdForFilters() {
         // All existing inbox rules have a saved search id.

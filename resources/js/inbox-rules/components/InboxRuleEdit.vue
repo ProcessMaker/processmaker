@@ -1,6 +1,6 @@
 <template>
   <div class="pm-inbox-rule-edit">
-    <template v-if="!showFillConfig">
+    <template v-if="isViewName(1)">
       <b-form-group>
         <template v-slot:label>
           <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -99,14 +99,14 @@
             </b-button>
             <b-button v-if="makeDraft"
                       variant="primary"
-                      @click="showFillConfig = true">
+                      @click="viewName(2)">
               {{ $t('Next') }}
             </b-button>
           </div>
         </div>
       </b-form-group>
     </template>
-    <template v-if="showFillConfig">
+    <template v-if="isViewName(2)">
       <b-form-group>
         <span>
           {{ $t('If you want to establish an automatic submit for this rule,') }}
@@ -161,7 +161,7 @@
           </div>
           <div class="flex-grow-0">
             <b-button variant="secondary"
-                      @click="showFillConfig = false">
+                      @click="viewName(1)">
               {{ $t('Back') }}
             </b-button>
             <b-button variant="primary"
@@ -179,11 +179,13 @@
 <script>
   import PMDatetimePicker from "../../components/PMDatetimePicker.vue";
   import PMFormSelectSuggest from "../../components/PMFormSelectSuggest.vue";
+  import IsViewMixin from "./IsViewMixin.js";
   export default {
     components: {
       PMDatetimePicker,
       PMFormSelectSuggest
     },
+    mixins: [IsViewMixin],
     props: {
       inboxRule: {
         type: Object,
@@ -222,7 +224,6 @@
         ruleName: "",
         ruleNameState: null,
         makeDraft: false,
-        showFillConfig: false,
         submitAfterFilling: false
       };
     },
@@ -238,11 +239,6 @@
           this.setInboxRuleData();
         },
         deep: true
-      },
-      showFillConfig: {
-        handler() {
-          this.$emit("show-fill-config", this.showFillConfig);
-        }
       }
     },
     mounted() {
