@@ -103,7 +103,7 @@ export default {
 .card-process {
   max-width: 343px;
   min-width: 296px;
-  width: 330px;
+  width: 27vw;
   height: 232px;
   margin-top: 1rem;
   margin-right: 1rem;
