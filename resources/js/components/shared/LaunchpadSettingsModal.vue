@@ -665,7 +665,7 @@ export default {
 <style lang="scss">
 label {
   color: #556271;
-  font-family: Open Sans;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
@@ -699,7 +699,6 @@ label {
   border-radius: 4px;
   gap: 6px;
   border: 1px solid #6A7888;
-  background-color: white;
 }
 .modal-footer .btn-secondary {
   color: white;
