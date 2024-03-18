@@ -1,4 +1,12 @@
 const ListMixin = {
+  computed: {
+    columnsQuery() {
+      if (this.columns && this.columns.length > 0) {
+        return `&columns=${this.columns.map(c => c.field).join(",")}`;
+      }
+      return "";
+    },
+  },
   methods: {
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
@@ -72,7 +80,8 @@ const ListMixin = {
               }${filterParams
               }${this.getSortParam()
               }&non_system=true` +
-              advancedFilter,
+              advancedFilter +
+              this.columnsQuery,
 
               { dataLoadingId: this.dataLoadingId }
           )

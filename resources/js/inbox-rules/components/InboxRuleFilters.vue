@@ -146,7 +146,7 @@ export default {
         ]
       };
     },
-    addDefaultSavedSearchFilters(filter) {
+    addRequiredSavedSearchFilters(filter) {
       if (filter.filters) {
         const hasUserIdFilter = filter.filters.some(f => {
           return f.subject.type === 'Field' && f.subject.value === 'user_id';
@@ -157,7 +157,7 @@ export default {
         }
 
         const hasStatusFilter = filter.filters.some(f => {
-          return f.subject.type === 'Status' && f.subject.value === 'In Progress';
+          return f.subject.type === 'Status' && f.value === 'In Progress';
         });
 
         if (!hasStatusFilter) {
@@ -168,8 +168,6 @@ export default {
         filter.filters = [this.userIdFilter()];
       }
       return filter;
-    },
-    addStatusFilter(filter) {
     },
     userIdFilter() {
       return {
@@ -186,7 +184,6 @@ export default {
       return {
         subject: {
           type: "Status",
-          value: 'In Progress'
         },
         operator: "=",
         value: 'In Progress',
@@ -200,7 +197,7 @@ export default {
         .then(response => {
           this.savedSearch = response.data;
           this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
-          this.savedSearchAdvancedFilter = this.addDefaultSavedSearchFilters(response.data.advanced_filter);
+          this.savedSearchAdvancedFilter = response.data.advanced_filter;
           this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
           this.ready = true;
         });
@@ -237,6 +234,7 @@ export default {
     savedSearchAdvancedFilter: {
       deep: true,
       handler() {
+        this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(this.savedSearchAdvancedFilter);
         this.emitSavedSearchData();
       }
     },
