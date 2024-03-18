@@ -57,7 +57,7 @@ trait HasVersioning
 
         // Delete draft version.
         try {
-            $this->deleteDraft($this->alternative);
+            $this->deleteDraft($this->alternative ?? null);
         } catch(QueryException $e) {
             // Skip delete if the screen version is used in a process.
         }
@@ -76,20 +76,29 @@ trait HasVersioning
     {
         $attributes = $this->getModelAttributes();
         $attributes['draft'] = true;
-        $alternative = $alternative ?: $this->alternative;
-        $attributes['alternative'] = $alternative;
+        if ($this->hasAlternative()) {
+            $alternative = $alternative ?: $this->alternative;
+            $attributes['alternative'] = $alternative;
+        }
 
-        return $this->versions()->updateOrCreate([
-            'draft' => true,
-            'alternative' => $alternative,
-        ], $attributes);
+        return $this->versions()->updateOrCreate(
+            [
+                'draft' => true,
+                ...(
+                    $this->hasAlternative()
+                    ? ['alternative' => $alternative]
+                    : []
+                )
+            ],
+            $attributes
+        );
     }
 
     public function deleteDraft(string $alternative = null)
     {
         $this->versions()->draft()
             ->when(
-                $alternative,
+                $this->hasAlternative() && $alternative,
                 function ($query) use ($alternative) {
                     $query->where('alternative', $alternative);
                 }
@@ -122,7 +131,12 @@ trait HasVersioning
     public function getLatestVersion(string $alternative = 'A')
     {
         return $this->versions()
-            ->where('alternative', $alternative)
+            ->when(
+                $this->hasAlternative(),
+                function ($query) use ($alternative) {
+                    $query->where('alternative', $alternative);
+                }
+            )
             ->orderBy('id', 'desc')
             ->published()
             ->first();
@@ -162,7 +176,12 @@ trait HasVersioning
     public function getDraftOrPublishedLatestVersion(string $alternative = 'A')
     {
         return $this->versions()
-            ->where('alternative', $alternative)
+            ->when(
+                $this->hasAlternative(),
+                function ($query) use ($alternative) {
+                    $query->where('alternative', $alternative);
+                }
+            )
             ->orderBy('id', 'desc')
             ->first();
     }
@@ -176,9 +195,14 @@ trait HasVersioning
      */
     public function getDraftVersion(string $alternative = null)
     {
-        $alternative = $alternative ?: $this->alternative;
+        $alternative = $alternative ?: ($this->alternative ?? null);
         return $this->versions()
-            ->where('alternative', $alternative)
+            ->when(
+                $this->hasAlternative(),
+                function ($query) use ($alternative) {
+                    $query->where('alternative', $alternative);
+                }
+            )
             ->draft()
             ->first();
     }
@@ -195,5 +219,15 @@ trait HasVersioning
         // Skip version locking for now
         // It will be re-added with more configurable options in a future version
         return $processRequest->getLatestVersion();
+    }
+
+    /**
+     * Returns true if the model has alternatives.
+     *
+     * @return false
+     */
+    public function hasAlternative()
+    {
+        return false;
     }
 }

@@ -1763,4 +1763,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
               ->height(480)
               ->sharpen(10);
     }
+
+    /**
+     * Returns true if the model has alternatives.
+     *
+     * @return false
+     */
+    public function hasAlternative()
+    {
+        return true;
+    }
 }
