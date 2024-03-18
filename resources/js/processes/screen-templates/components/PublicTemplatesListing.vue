@@ -135,6 +135,7 @@ import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
+import fieldsMixin from "../mixins/fieldsMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -147,10 +148,11 @@ export default {
     screenNavigationMixin,
     FilterTableBodyMixin,
     uniqIdsMixin,
+    fieldsMixin,
   ],
   props: {
     permission: {
-      type: [String, Object],
+      type: [String, Object, Array],
       default: "",
     },
     filter: {
@@ -176,56 +178,19 @@ export default {
           direction: "asc",
         },
       ],
-      fields: [
-        {
-          label: this.$t("Name"),
-          field: "name",
-          width: 200,
-          sortable: true,
-          truncate: true,
-          direction: "none",
-        },
-        {
-          label: this.$t("Description"),
-          field: "description",
-          width: 200,
-          sortable: true,
-          direction: "none",
-          sortField: "description",
-        },
-        {
-          label: this.$t("Type of Screen"),
-          field: "screen_type",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "screen_type",
-        },
-        {
-          label: this.$t("Owner"),
-          field: "owner",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "user.username",
-        },
-        {
-          label: this.$t("Modified"),
-          field: "updated_at",
-          format: "datetime",
-          width: 160,
-          sortable: true,
-          direction: "none",
-        },
-        {
-          name: "__slot:actions",
-          field: "actions",
-          width: 60,
-        },
-      ],
+      fields: [],
     };
   },
   created() {
+    this.insertFieldAfter("screen_type", {
+      label: this.$t("Owner"),
+      field: "owner",
+      width: 160,
+      sortable: true,
+      direction: "none",
+      sortField: "user.username",
+    });
+    this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
       this.apiDataLoading = false;
