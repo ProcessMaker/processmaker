@@ -94,10 +94,6 @@ export default {
   },
   data() {
     return {
-      images: [],
-      imagesMedia: [],
-      showDeleteIcons: Array(4).fill(false),
-      focusIcons: Array(4).fill(false),
       list: {},
       subject: "",
       description: "",
@@ -114,16 +110,12 @@ export default {
       maxImages: 4,
       processDescription: "",
       processDescriptionInitial: "",
-      selectedLaunchpadIcon: "",
-      selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
       labelButton: "Version Info",
       labelTab: "Launchpad Settings",
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
-      selectedSavedChartId: "",
       processId: "",
-      mediaImageId: [],
       dataProcess: {},
     };
   },
@@ -193,7 +185,6 @@ export default {
     },
     cleanTabLaunchpad() {
       this.getProcessDescription();
-      this.images = [];
       this.labelTab = "Launchpad Settings";
       this.labelButton = "Version Info";
       this.showVersionInfo = true;
@@ -245,19 +236,11 @@ export default {
      */
     saveProcessDescription() {
       if (!this.processDescription) return;
-      this.dataProcess.imagesCarousel = this.images;
-      this.dataProcess.launchpad_properties = JSON.stringify({
-        saved_chart_id: this.selectedSavedChartId,
-        saved_chart_title: this.selectedSavedChart,
-        icon: this.selectedLaunchpadIcon,
-        icon_label: this.selectedLaunchpadIconLabel,
-      });
 
       ProcessMaker.apiClient
         .put(`processes/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
-          launchpad_properties: this.dataProcess.launchpad_properties,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
@@ -277,15 +260,7 @@ export default {
       this.subject = "";
       this.description = "";
       this.errors = "";
-      this.images = [];
       this.$refs["my-modal-save"].show();
-    },
-    /**
-     * Method to set selected option to custom dropdown
-     */
-    selectOption(option) {
-      this.selectedSavedChart = option.title;
-      this.selectedSavedChartId = option.id;
     },
   },
 };
