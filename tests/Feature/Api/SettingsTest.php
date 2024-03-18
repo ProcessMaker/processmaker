@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -32,6 +33,114 @@ class SettingsTest extends TestCase
         'updated_at',
         'created_at',
     ];
+
+    /**
+     * Test extended properties variable valid name validation
+     */
+    public function testGetSettingsMenus()
+    {
+        // Get setting menus
+        SettingsMenus::factory()->create();
+        $route = route('api.settings.menu_groups');
+        $response = $this->apiCall('GET', $route);
+        // Verify the status
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response['data']);
+    }
+
+    /**
+     * Test extended properties variable valid name validation
+     */
+    public function testGetSettingsMenusGroup()
+    {
+        // Get setting menus
+        $menus = SettingsMenus::factory()->create();
+        Setting::factory()->create([
+            'key' => 'test.properties',
+            'name' => 'test',
+            'format' => 'test',
+            'group' => 'UserTest',
+            'group_id' => $menus->id,
+        ]);
+        $route = route('api.settings.menu_groups');
+        $response = $this->apiCall('GET', $route);
+        // Verify the status
+        $response->assertStatus(200);
+        $this->assertNotEmpty($response['data']);
+        $this->assertNotEmpty($response['data'][0]['groups']);
+    }
+
+    /**
+     * Test extended properties variable valid name validation
+     */
+    public function testUpdateSettingsForSpecificGroup()
+    {
+        $menus = SettingsMenus::factory()->create();
+        $group = 'Custom group';
+        Setting::factory()->create([
+            'key' => 'test.properties',
+            'name' => 'test',
+            'format' => 'test',
+            'group' => $group,
+            'group_id' => null,
+        ]);
+
+        // Update
+        Setting::updateSettingsGroup($group, $menus->id);
+        $matches = Setting::where('group', $group)->where('group_id', $menus->id)->get()->toArray();
+        $this->assertNotEmpty($matches);
+    }
+
+    /**
+     * Test extended properties variable valid name validation
+     */
+    public function testUpdateSettingsForAllGroups()
+    {
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::EMAIL_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::LOG_IN_AUTH_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::USER_SETTINGS_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::INTEGRATIONS_MENU_GROUP,
+        ]);
+        $groupsList = [
+            'Actions By Email',
+            'Email Default Settings',
+            'Log-In Options',
+            'LDAP',
+            'SSO',
+            'SCIM',
+            'Session Control',
+            'SSO - Auth0',
+            'SSO - Atlassian',
+            'SSO - Facebook',
+            'SSO - GitHub',
+            'SSO - Google',
+            'SSO - Keycloak',
+            'SSO - Microsoft',
+            'SSO - SAML',
+            'User Signals',
+            'Users',
+            'IDP',
+            'DocuSign',
+            'External Integrations',
+        ];
+        foreach ($groupsList as &$group) {
+            Setting::factory()->create([
+                'group' => $group,
+                'group_id' => null,
+            ]);
+        }
+        // Update
+        Setting::updateAllSettingsGroupId();
+        $matches = Setting::whereNull('group_id')->get()->toArray();
+        $this->assertEmpty($matches);
+    }
 
     /**
      * Test extended properties variable valid name validation
