@@ -96,7 +96,7 @@
                     :data="row"
                     :divider="true"
                     :screen-template="true"
-                    @navigate="onPublicTemplateNavigate"
+                    @navigate="onTemplateNavigate"
                   />
                 </template>
                 <template v-if="header.field !== 'name'">
@@ -131,11 +131,11 @@ import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
-import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
+import navigationMixin from "../mixins/navigationMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -145,10 +145,10 @@ export default {
     datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
-    screenNavigationMixin,
     FilterTableBodyMixin,
     uniqIdsMixin,
     fieldsMixin,
+    navigationMixin,
   ],
   props: {
     permission: {
@@ -215,34 +215,6 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    },
-    onPublicTemplateNavigate(actionType, data) {
-      switch (actionType?.value) {
-        case "placeholder-action":
-          break;
-        case "placeholder-action-2":
-          break;
-        case "delete-template":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t(
-              "Are you sure you want to delete the screen template {{item}}?",
-              {
-                item: data.title,
-              },
-            ),
-            "",
-            () => {
-              ProcessMaker.apiClient.delete(`template/screen/${data.id}`).then(() => {
-                ProcessMaker.alert(this.$t("The template was deleted."), "success");
-                this.fetch();
-              });
-            },
-          );
-          break;
-        default:
-          break;
-      }
     },
   },
 };
