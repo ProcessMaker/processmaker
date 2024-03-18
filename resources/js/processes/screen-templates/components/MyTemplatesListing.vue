@@ -240,7 +240,7 @@ export default {
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
             this.$t(
-              "Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.",
+              "Are you sure you want to delete the screen template {{item}}?",
               {
                 item: data.title,
               },
