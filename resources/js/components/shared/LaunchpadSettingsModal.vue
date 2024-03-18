@@ -218,13 +218,6 @@ export default {
       subject: "",
       description: "",
       errors: "",
-      types: {
-        Screen: "save-screen",
-        Script: "save-script",
-        Process: "modeler-save",
-      },
-      redirectUrl: null,
-      nodeId: null,
       selectedSavedChart: "",
       dropdownSavedCharts: [],
       maxImages: 4,
@@ -233,7 +226,6 @@ export default {
       selectedLaunchpadIcon: "",
       selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
-      btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
       selectedSavedChartId: "",
       processId: "",
@@ -382,7 +374,7 @@ export default {
     /**
      * Method to store version info from Launchpad Window
      */
-    saveFromEditLaunchpad() {
+     saveLaunchpad() {
       if (!this.processDescription) {
         ProcessMaker.alert(this.$t("The Description field is required."), "danger");
         return; 
@@ -435,54 +427,15 @@ export default {
         .catch((error) => {
           console.error("Error: ", error);
         });
-    },
+      },
     saveModal() {
-      // if method is called from ProcessMaker core
-      if (this.origin === "core") {
-        this.saveFromEditLaunchpad();
-        this.dataProcess = this.process;
-        this.dataProcess.description = this.processDescription;
-        this.saveProcessDescription();
-        return;
+      this.saveLaunchpad();
+      this.dataProcess = this.process;
+      // if method is not called from ProcessMaker core
+      if (this.origin !== "core") {
+        this.dataProcess = ProcessMaker.modeler.process;
       }
-      this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
-      const promise = new Promise((resolve, reject) => {
-        // emit save types
-        window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
-          this.redirectUrl,
-          this.nodeId,
-          this.options.type === "Screen" ? (false, resolve) : resolve,
-          reject,
-          this.types[this.options.type] === "modeler-save" ? false : null,
-        );
-      });
-
-      promise
-        .then((response) => {
-          ProcessMaker.apiClient
-            .post("/version_histories", {
-              subject: this.subject,
-              description: this.description,
-              versionable_id: this.options.id,
-              versionable_type: this.options.type,
-            })
-            .catch((error) => {
-              if (error.response.status && error.response.status === 422) {
-                this.errors = error.response.data.errors;
-              }
-              if (error.response.status === 404) {
-                // version_histories route not found because package-versions is not installed
-                console.error(err);
-              }
-            });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-
-      // Save only process description field using Process API
       this.saveProcessDescription();
     },
     /**
