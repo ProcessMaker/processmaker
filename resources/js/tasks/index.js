@@ -49,7 +49,7 @@ new Vue({
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
-  this.onInbox();
+    this.onInbox();
   },
   created() {
     const params = new URL(document.location).searchParams;
