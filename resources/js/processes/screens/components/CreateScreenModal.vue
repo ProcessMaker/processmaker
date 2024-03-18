@@ -37,6 +37,7 @@
               :selected-screen-type="formData.type ? formData.type : 'FORM'"
               @show-template-preview="showPreview"
               @selected-template="handleSelectedTemplate"
+              @selected-default-template="handleSelectedDefaultTemplate"
             />
           </div>
           <preview-template
@@ -334,8 +335,11 @@ export default {
       this.selectedTemplate = null;
     },
     handleSelectedTemplate(templateId) {
-      this.formData.templateId =  templateId;
-    }
+      this.formData.templateId = templateId;
+    },
+    handleSelectedDefaultTemplate(templateId) {
+      this.formData.defaultTemplateId = templateId;
+    },
   },
 };
 </script>

@@ -23,9 +23,13 @@
           :key="index"
           :type="type"
           :template="template"
+          :default-template-id="defaultTemplateId"
+          :is-default="template.id === defaultTemplateId"
           :isActive="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
+          @selected-default-template="handleSelectedDefaultTemplate"
+          @reset-default-template="handleResetDefaultTemplate"
         />
       </b-card-group>
     </div>
@@ -51,6 +55,7 @@ export default {
       defaultScreenType: "FORM",
       template: {},
       selectedTemplateId: null,
+      defaultTemplateId: null,
     };
   },
   watch: {
@@ -65,6 +70,14 @@ export default {
     this.fetch();
   },
   methods: {
+    getDefaultTemplates() {
+      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1);
+      if (defaultTemplate) {
+        this.defaultTemplateId = defaultTemplate.id;
+      } else {
+        this.defaultTemplateId = null;
+      }
+    },
     handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
     },
@@ -101,19 +114,31 @@ export default {
           this.screenTemplates = response.data.data;
           this.apiDataLoading = false;
           this.apiNoResults = false;
+          this.getDefaultTemplates(this.screenTemplates);
         })
         .finally(() => {
           this.loading = false;
         });
     },
     showPreview(template) {
-      this.$emit('show-template-preview', template);
+      this.$emit("show-template-preview", template);
     },
     handleSelectedTemplate(templateId) {
-      this.$emit('selected-template', templateId);
+      this.$emit("selected-template", templateId);
       this.selectedTemplateId = templateId;
-    }
-
+    },
+    handleSelectedDefaultTemplate(selectedTemplateId) {
+      this.$emit("selected-default-template", selectedTemplateId);
+      this.defaultTemplateId = selectedTemplateId;
+      this.screenTemplates.forEach((template) => {
+        if (template.id !== selectedTemplateId) {
+          template.defaultTemplateId = null;
+        }
+      });
+    },
+    handleResetDefaultTemplate() {
+      this.defaultTemplateId = null;
+    },
   },
 };
 </script>

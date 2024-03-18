@@ -19,8 +19,9 @@
         </div>
         <div class="default-template d-flex align-items-end">
           <b-form-checkbox
-            v-model="defaultTemplate"
+            v-model="selectedDefaultTemplate"
             name="default-template"
+            :disabled="disabled"
           >
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
@@ -41,26 +42,38 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template", 'selectedTemplateId', "isActive"],
+  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId"],
   data() {
     return {
-      defaultTemplate: null,
+      selectedDefaultTemplate: this.template.id === this.defaultTemplateId,
     };
-  },
-  watch: {
   },
   computed: {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
+    disabled() {
+      return this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null;
+    },
+  },
+  watch: {
+    selectedDefaultTemplate(newValue) {
+      if (newValue) {
+        this.$emit("template-default-selected", this.template.id);
+      } else {
+        this.$emit("reset-default-template", this.template.id);
+      }
+    },
   },
   methods: {
     showTemplatePreview() {
-      this.$emit('show-template-preview', this.template);
+      this.$emit("show-template-preview", this.template);
     },
     selectTemplate() {
-      this.$emit('template-selected', this.template.id);
-    }
+      this.$emit("template-selected", this.template.id);
+    },
+  },
+  mounted() {
   },
 };
 </script>
