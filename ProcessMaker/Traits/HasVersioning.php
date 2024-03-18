@@ -218,7 +218,9 @@ trait HasVersioning
     {
         // Skip version locking for now
         // It will be re-added with more configurable options in a future version
-        return $processRequest->getLatestVersion();
+        return $processRequest
+            ? $processRequest->getLatestVersion()
+            : $this->getLatestVersion();
     }
 
     /**
