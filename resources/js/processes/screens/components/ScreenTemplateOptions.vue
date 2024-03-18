@@ -54,7 +54,6 @@ export default {
           asset_type: this.selectedScreenType,
           name: "Blank Template",
           description: "Creates a blank screen.",
-          is_default_template: 0,
           is_public: this.templateType,
         },
       ],
@@ -85,6 +84,7 @@ export default {
       } else {
         this.defaultTemplateId = null;
       }
+      console.log("===== GET DEFAULT TEMPLATES", this.defaultTemplateId);
     },
     handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
@@ -119,7 +119,6 @@ export default {
           this.orderDirection
         )
         .then(response => {
-          // this.screenTemplates = response.data.data;
           this.screenTemplates = this.blankTemplate.concat(response.data.data);
           this.apiDataLoading = false;
           this.apiNoResults = false;
@@ -136,14 +135,58 @@ export default {
       this.$emit("selected-template", templateId);
       this.selectedTemplateId = templateId;
     },
-    handleSelectedDefaultTemplate(selectedTemplateId) {
-      this.$emit("selected-default-template", selectedTemplateId);
-      this.defaultTemplateId = selectedTemplateId;
-      this.screenTemplates.forEach((template) => {
-        if (template.id !== selectedTemplateId) {
-          template.defaultTemplateId = null;
-        }
+    handleSelectedDefaultTemplate(templateId) {
+      this.defaultTemplateId = templateId;
+
+      if (templateId === null) {
+        this.setBlankTemplateAsDefault();
+        this.updatePreviousDefaultTemplateStatus(templateId);
+      } else {
+        this.setDefaultTemplate(templateId);
+        this.updatePreviousDefaultTemplateStatus(templateId);
+      }
+
+      this.emitSelectedDefaultTemplate();
+    },
+    setBlankTemplateAsDefault() {
+      const blankTemplate = this.getBlankTemplate();
+      if (blankTemplate) {
+        blankTemplate.is_default_template = 1;
+        this.updateTemplateInArray(blankTemplate);
+      }
+    },
+    setDefaultTemplate(templateId) {
+      const defaultTemplate = this.getTemplateById(templateId);
+      if (defaultTemplate) {
+        defaultTemplate.is_default_template = 1;
+        this.updateTemplateInArray(defaultTemplate);
+      }
+    },
+    updatePreviousDefaultTemplateStatus(currentTemplateId) {
+      const previousDefaultTemplate = this.getPreviousDefaultTemplate(currentTemplateId);
+      if (previousDefaultTemplate) {
+        previousDefaultTemplate.is_default_template = 0;
+        this.updateTemplateInArray(previousDefaultTemplate);
+      }
+    },
+    emitSelectedDefaultTemplate() {
+      this.$emit("selected-default-template", this.defaultTemplateId);
+    },
+    getBlankTemplate() {
+      return this.screenTemplates.find(template => !template.hasOwnProperty('id'));
+    },
+    getTemplateById(templateId) {
+      return this.screenTemplates.find(template => template.id === templateId);
+    },
+    getPreviousDefaultTemplate(currentTemplateId) {
+      return this.screenTemplates.find(template => {
+        (template.id !== currentTemplateId && template.is_default_template === 1) ||
+        (!template.hasOwnProperty('id') && template.is_default_template === 1)
       });
+    },
+    updateTemplateInArray(updatedTemplate) {
+      const index = this.screenTemplates.indexOf(updatedTemplate);
+      this.$set(this.screenTemplates, index, updatedTemplate);
     },
     handleResetDefaultTemplate() {
       this.defaultTemplateId = null;

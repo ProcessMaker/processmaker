@@ -19,9 +19,9 @@
         </div>
         <div class="default-template d-flex align-items-end">
           <b-form-checkbox
-            :value="selectedDefaultTemplate"
+            v-model="isDefaultTemplate"
             name="default-template"
-            :disabled="disabled"
+            
           >
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
@@ -45,36 +45,35 @@ export default {
   props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId"],
   data() {
     return {
-      // selectedDefaultTemplate: this.template.id === this.defaultTemplateId,
+      isDefaultTemplate: false,
     };
   },
   computed: {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
-    disabled() {
-      console.log((this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null) || !this.selectedBlankTemplate);
-      return (this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null) || !this.selectedBlankTemplate;
-      // return this.selectedBlankTemplate ? true : this.defaultTemplateId !== null && this.template.id !== this.defaultTemplateId;
-    },
-    selectedBlankTemplate() {
-      return !this.template.id && !this.defaultTemplateId;
-    },
-    selectedDefaultTemplate() {
-      // console.log(this.selectedBlankTemplate ? true : this.template.id === this.defaultTemplateId);
-      return this.selectedBlankTemplate === true || this.template.id === this.defaultTemplateId;
-    },
   },
   watch: {
-    selectedDefaultTemplate(newValue) {
-      if (newValue) {
-        console.log('selected default');
-        this.$emit("template-default-selected", this.template.id);
-      } else {
-        console.log('deselected default');
-        this.$emit("reset-default-template", this.template.id);
+    template: {
+      deep: true,
+      handler() {
+        this.updateDefaultTemplateStatus();
       }
     },
+    isDefaultTemplate(newValue, oldValue) {
+      if (newValue) {
+        this.emitDefaultTemplateSelected();
+      }
+    },
+    defaultTemplateId(newValue, oldValue) {
+      if (newValue === undefined && oldValue === null) {
+        // TODO: Look into what is causing the blanktemplate id to be undefined when it should just be null
+      } else if (newValue !== oldValue){
+        if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
+          this.isDefaultTemplate = false;
+        }
+      } 
+    }
   },
   methods: {
     showTemplatePreview() {
@@ -83,8 +82,21 @@ export default {
     selectTemplate() {
       this.$emit("template-selected", this.template.id);
     },
+    updateDefaultTemplateStatus() {
+      if (this.defaultTemplateId === null && !this.template.hasOwnProperty("id")) {
+        this.isDefaultTemplate = true
+      } else {
+        this.isDefaultTemplate = !!this.template.is_default_template;
+      }
+      
+    },
+    emitDefaultTemplateSelected() {
+      const defaultTemplateId = this.template?.id || null;
+      this.$emit('template-default-selected', defaultTemplateId);
+    }
   },
   mounted() {
+    this.updateDefaultTemplateStatus();
   },
 };
 </script>
