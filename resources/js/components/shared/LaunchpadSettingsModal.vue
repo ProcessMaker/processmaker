@@ -372,30 +372,6 @@ export default {
       ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
     },
     /**
-     * Method to store version info from Launchpad Window
-     */
-     saveLaunchpad() {
-      if (!this.processDescription) {
-        ProcessMaker.alert(this.$t("The Description field is required."), "danger");
-        return; 
-      }
-      ProcessMaker.apiClient
-        .post("/version_histories", {
-          subject: this.subject,
-          description: this.description,
-          versionable_id: this.options.id,
-          versionable_type: this.options.type,
-        })
-        .then((response) => {
-          ProcessMaker.alert(this.$t("The version was saved."), "success");
-        })
-        .catch((error) => {
-          if (error.response.status && error.response.status === 422) {
-            this.errors = error.response.data.errors;
-          }
-        });
-    },
-    /**
      * Save description field in Process
      */
     saveProcessDescription() {
@@ -429,7 +405,6 @@ export default {
         });
       },
     saveModal() {
-      this.saveLaunchpad();
       this.dataProcess = this.process;
       // if method is not called from ProcessMaker core
       if (this.origin !== "core") {
