@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="data-table">
     <data-loading
@@ -147,7 +148,24 @@ export default {
     FilterTableBodyMixin,
     uniqIdsMixin,
   ],
-  props: ["permission", "filter", "pmql", "id"],
+  props: {
+    permission: {
+      type: [String, Object],
+      default: "",
+    },
+    filter: {
+      type: String,
+      default: "",
+    },
+    pmql: {
+      type: String,
+      default: "",
+    },
+    id: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       orderBy: "name",
@@ -158,7 +176,6 @@ export default {
           direction: "asc",
         },
       ],
-
       fields: [
         {
           label: this.$t("Name"),
