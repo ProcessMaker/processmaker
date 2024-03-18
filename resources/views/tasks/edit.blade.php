@@ -174,7 +174,7 @@
                                     :alt="$t('No Image')"
                                   >
                                     {{ __('Priority') }}
-                                  </button>                                  
+                                  </button>
                                 </div>
                               </div>
                               <div class="row button-group">
