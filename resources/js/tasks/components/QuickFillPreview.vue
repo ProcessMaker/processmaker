@@ -32,7 +32,7 @@
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="filter"
-          :from-quick-fill="fromQuickFill"
+          :from-button="propFromButton"
           :additionalIncludes="['screenFilteredData']"
         >
           <template v-slot:preview-header="{ close, task }">
@@ -82,7 +82,7 @@
 </template>
 <script>
 export default {
-  props: ["task", "propColumns", "propFilters"],
+  props: ["task", "propColumns", "propFilters", "propFromButton"],
   data() {
     return {
       fromQuickFill: true,
@@ -100,7 +100,7 @@ export default {
         },
       ],
       pmql: '(user_id = 1 and status="Completed")',
-      quickFilter: "",
+      quickFilter: null,
       columns: [
         {
           label: "Case #",
@@ -135,21 +135,20 @@ export default {
     };
   },
   mounted() {
-    console.log("COLUMNAS: ", this.filter);
-    console.log("Process ID que jala el componente this.task.process_id: ", this.task.process_id);
-    console.log("task en QuickFillPreview: ", this.task);
-    console.log("obteniendo propColumns: ", this.propColumns);
+    // console.log("COLUMNAS: ", this.filter);
+    // console.log("Process ID que jala el componente this.task.process_id: ", this.task.process_id);
+    // console.log("task en QuickFillPreview: ", this.task);
+    // console.log("obteniendo propColumns: ", this.propColumns);
 
-    if(this.propFilters !== "") {
-      console.log("en mounted en propFilters true: ", this.propFilters);
-      //this.task.process_id
-      //this.filter = this.propFilters;
-      this.quickFilter = this.propFilters;
-      console.log("QUICK FILTER: ", this.propFilters);
-    }
+    // if(this.propFilters !== "") {
+    //   //this.task.process_id
+    //   //this.filter = this.propFilters;
+    //   this.quickFilter = this.propFilters;
+    //   console.log("QUICK FILTER: ", this.propFilters);
+    // }
 
     if(this.propColumns.length > 0) {
-      console.log("en mounted en proColumns true: ", this.propColumns);
+      //console.log("en mounted en proColumns true: ", this.propColumns);
       this.columns = this.propColumns;
     }
   },

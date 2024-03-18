@@ -260,9 +260,9 @@ export default {
       type: Array,
       default: () => [],
     },
-    fromQuickFill: {
-      type: Boolean,
-      default: false,
+    fromButton: {
+      type: String,
+      default: "",
     }
   },
   data() {
@@ -604,7 +604,6 @@ export default {
       }
     },
     handleRowMouseover(row) {
-      console.log("Evento MouseOver desde QUickFill Full Task: ", this.fromQuickFill);
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
@@ -630,13 +629,11 @@ export default {
 
       const rightBorderX = rect.right;
       let bottomBorderY = 0
-      if(!this.fromQuickFill){
+      if(this.fromButton === "" || this.fromButton === "previewTask"){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
       }else{
         bottomBorderY = rect.bottom - topAdjust + 220 - elementHeight;
       }
-      
-
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,

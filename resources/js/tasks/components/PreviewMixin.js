@@ -33,8 +33,22 @@ const PreviewMixin = {
       showUseThisTask: false,
       splitpaneSize: 50,
       propColumns: [],
-      propFilters: "",
+      propFilters: [
+          {
+            subject: { type: "Field", value: "process_id" },
+            operator: "=",
+            value: 24,
+          },
+          {
+            subject: { type: "Field", value: "element_id" },
+            operator: "=",
+            value: "node_2"
+          },
+        ],
     };
+  },
+  mounted() {
+    console.log("en PreviewMixin task object: ", this.task);
   },
   methods: {
     /**

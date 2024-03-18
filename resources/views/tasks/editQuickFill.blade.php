@@ -32,6 +32,7 @@
     <quick-fill-preview
     class="quick-fill-preview"
     :task="data"
+    :prop-from-button ="'fullTask'"
     :prop-columns="columns"
     :prop-filters="filters"
     ></quick-fill-preview>
@@ -49,7 +50,19 @@ const task = @json($task);
         el: "#quick",
         data: {
             data: {},
-            filters: " and process_id=35 ",
+            //filters: " and process_id=35 ",
+            filters: [
+          {
+            subject: { type: "Field", value: "process_id" },
+            operator: "=",
+            value: 24,
+          },
+          {
+            subject: { type: "Field", value: "element_id" },
+            operator: "=",
+            value: "node_2"
+          },
+        ],
             columns: [
         {
           label: "Case #",

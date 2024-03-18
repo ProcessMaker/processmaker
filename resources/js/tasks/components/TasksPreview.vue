@@ -102,6 +102,7 @@
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"
+            :prop-from-button ="'previewTask'"
             :prop-columns="propColumns"
             :prop-filters="propFilters"
             @quick-fill-data="fillWithQuickFillData"
