@@ -182,6 +182,9 @@
           submitting: false,
           userIsAdmin,
           userIsProcessManager,
+          is_loading: false,
+          autoSaveDelay: 5000,
+          firstChange: true,
         },
         watch: {
           task: {
@@ -196,12 +199,16 @@
           formData: {
             deep: true,
             handler(formData) {
-              const event = new CustomEvent('dataUpdated', {
-                detail: formData,
-              });
-              window.top.dispatchEvent(event);
+              if (this.firstChange) {
+                this.firstChange = false;
+              } else {
+                const event = new CustomEvent('dataUpdated', {
+                  detail: formData,
+                });
+                window.top.dispatchEvent(event);
+              }
             }
-          }
+          },
         },
         computed: {
           taskDefinitionConfig () {
@@ -388,6 +395,16 @@
           },
           taskUpdated(task) {
             this.task = task;
+          },
+          autosaveApiCall() {
+            return ProcessMaker.apiClient
+            .put("drafts/" + this.task.id, this.formData)
+            .then(() => {
+              this.is_loading = true;
+            })
+            .finally(() => {
+              this.is_loading = false;
+            });
           },
         },
         mounted() {
