@@ -395,7 +395,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
             'case_title' => 'nullable|max:200',
-            'alternative' => 'required|in:A,B',
+            'alternative' => 'nullable|in:A,B',
         ];
     }
 
