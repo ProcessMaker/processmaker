@@ -260,6 +260,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    disableRowClick: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -595,7 +599,7 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if (!isPriorityIcon) {
+      if (!isPriorityIcon && !this.disableRowClick) {
         window.location.href = this.openTask(row);
       }
     },

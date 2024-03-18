@@ -34,6 +34,7 @@ const PreviewMixin = {
       splitpaneSize: 50,
       screenFields: [],
       previousTaskId: null,
+      userHasInteracted: false,
     };
   },
   computed: {

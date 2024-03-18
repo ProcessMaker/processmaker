@@ -83,7 +83,7 @@
   <div id="sidebar" style="display: 'none'"></div>
   <div id="navbar" style="display: 'none'"></div>
     <div v-cloak id="task" class="container-fluid px-3">
-        <div class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-md-row" id="interactionListener">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
                     <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
@@ -184,7 +184,7 @@
           userIsProcessManager,
           is_loading: false,
           autoSaveDelay: 5000,
-          firstChange: true,
+          userHasInteracted: false,
         },
         watch: {
           task: {
@@ -199,14 +199,7 @@
           formData: {
             deep: true,
             handler(formData) {
-              if (this.firstChange) {
-                this.firstChange = false;
-              } else {
-                const event = new CustomEvent('dataUpdated', {
-                  detail: formData,
-                });
-                window.top.dispatchEvent(event);
-              }
+              this.sendEvent('dataUpdated', formData);
             }
           },
         },
@@ -250,6 +243,18 @@
           }
         },
         methods: {
+          sendEvent(name, detail) {
+              const event = new CustomEvent(name, {
+                detail: detail,
+              });
+              window.top.dispatchEvent(event);
+          },
+          sendUserHasInteracted() {
+            if (!this.userHasInteracted) {
+              this.userHasInteracted = true;
+              this.sendEvent('userHasInteracted', true);
+            }
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
@@ -354,10 +359,7 @@
           },
           submit(task, loading, buttonInfo) {
             if (window.location.search.includes('dispatchSubmit=1')) {
-              const event = new CustomEvent('formSubmit', {
-                detail: buttonInfo,
-              });
-              window.top.dispatchEvent(event);
+              this.sendEvent('formSubmit', buttonInfo);
 
             } else if (this.isSelfService) {
               this.windowParent.alert(this.$t('Claim the Task to continue.'), 'warning');
@@ -414,6 +416,14 @@
             this.formData = _.merge(this.formData, event.detail);
           });
 
+          // listen for keydown on element with id interactionListener
+          const interactionListener = document.getElementById('interactionListener');
+          interactionListener.addEventListener('mousedown', (event) => {
+            this.sendUserHasInteracted();
+          });
+          interactionListener.addEventListener('keydown', (event) => {
+            this.sendUserHasInteracted();
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

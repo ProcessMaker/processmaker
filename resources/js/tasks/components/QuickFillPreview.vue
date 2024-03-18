@@ -32,6 +32,7 @@
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="filter"
+          :disable-row-click="true"
         >
           <template v-slot:preview-header="{ close, screenFilteredTaskData }">
             <div>

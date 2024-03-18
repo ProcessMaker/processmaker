@@ -141,8 +141,15 @@ export default {
   },
   mounted() {
     window.addEventListener('dataUpdated', (event) => {
+      if (!this.userHasInteracted) {
+        return;
+      }
       this.formData = this.filterScreenFields(event.detail);
       this.handleAutosave();
+    });
+
+    window.addEventListener('userHasInteracted', () => {
+      this.userHasInteracted = true;
     });
   },
   methods: {
