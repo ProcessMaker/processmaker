@@ -114,7 +114,7 @@ export default {
     },
     defaultTaskFilters() {
       return {
-        order: { by: 'id', dir: 'desc' },
+        order: { by: 'id', direction: 'desc' },
         filters: [
           this.userIdFilter(),
           {

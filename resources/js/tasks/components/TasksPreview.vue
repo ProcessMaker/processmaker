@@ -8,7 +8,7 @@
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:taskId="task.id">
+            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="screenFilteredTaskData">
               <b-button
                 class="arrow-button"
                 variant="outline-secondary"
@@ -132,12 +132,16 @@ export default {
         } else {
           this.lastAutosave = "-";
         }
+        if (this.previousTaskId !== task.id) {
+          this.loadScreenFields();
+          this.previousTaskId = task.id;
+        }
       },
     },
   },
   mounted() {
     window.addEventListener('dataUpdated', (event) => {
-      this.formData = event.detail;
+      this.formData = this.filterScreenFields(event.detail);
       this.handleAutosave();
     });
   },

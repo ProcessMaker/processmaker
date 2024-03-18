@@ -32,9 +32,33 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
+      screenFields: [],
+      previousTaskId: null,
     };
   },
+  computed: {
+    screenFilteredTaskData() {
+      return this.filterScreenFields(this.task?.data);
+    }
+  },
   methods: {
+    filterScreenFields(taskData)
+    {
+      const filteredData = {};
+      this.screenFields.forEach(field => {
+        _.set(filteredData, field, _.get(taskData, field));
+      });
+      return filteredData;
+    },
+    loadScreenFields() {
+      if (!this.task?.id) {
+        return;
+      }
+      window.ProcessMaker.apiClient.get(`tasks/${this.task.id}/screen_fields`)
+        .then(response => {
+          this.screenFields = response.data;
+        });
+    },
     /**
      * Show the sidebar
      */
