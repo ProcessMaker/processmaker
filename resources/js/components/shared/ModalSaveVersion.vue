@@ -140,7 +140,6 @@ export default {
       this.nodeId = nodeId;
       this.showModal();
     });
-    this.retrieveSavedSearchCharts();
     this.getDescriptionInitial();
     this.getProcessDescription();
 
@@ -155,36 +154,6 @@ export default {
       this.labelTab = tempLabel;
 
       this.isSecondaryColor = !this.isSecondaryColor;
-    },
-    /**
-     * Initial method to retrieve Saved Search Charts and populate dropdown
-     * Package Collections and Package SavedSearch always go together
-     */
-    retrieveSavedSearchCharts() {
-      if (!ProcessMaker.packages.includes("package-collections")) return;
-      ProcessMaker.apiClient
-        .get(
-          "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
-        )
-        .then((response) => {
-          if (response.data.data[0].charts) {
-            const resultArray = response.data.data.flatMap((item) => {
-              if (item.charts && Array.isArray(item.charts)) {
-                return item.charts.map((chartItem) => ({
-                  id: chartItem.id,
-                  title: chartItem.title,
-                }));
-              }
-              return [];
-            });
-
-            this.dropdownSavedCharts = resultArray;
-            this.selectedSavedChart = "";
-          }
-        })
-        .catch((error) => {
-          this.dropdownSavedCharts = [];
-        });
     },
     /**
      * Method to store initial data from process description field
@@ -225,7 +194,6 @@ export default {
     cleanTabLaunchpad() {
       this.getProcessDescription();
       this.images = [];
-      this.retrieveSavedSearchCharts();
       this.labelTab = "Launchpad Settings";
       this.labelButton = "Version Info";
       this.showVersionInfo = true;
