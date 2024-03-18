@@ -127,9 +127,9 @@
       :asset-id="processId"
       :asset-name="assetName"
     />
-    <modal-save-version
-      id="modal-save-version"
-      ref="modal-save-version"
+    <launchpad-settings-modal
+      id="launchpad-settings-modal"
+      ref="launchpad-settings-modal"
       asset-type="process"
       origin="core"
       :options="optionsData"
@@ -147,7 +147,7 @@ import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vu
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
-import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
+import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsModal.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 
@@ -158,7 +158,7 @@ export default {
     CreateTemplateModal,
     CreatePmBlockModal,
     AddToProjectModal,
-    ModalSaveVersion,
+    LaunchpadSettingsModal,
     ProcessOptions,
     ProcessesCarousel,
   },
@@ -250,7 +250,7 @@ export default {
       this.processId = id;
       this.assetName = name;
       this.assetType = "process";
-      this.$refs["modal-save-version"].showModal();
+      this.$refs["launchpad-settings-modal"].showModal();
     },
     getActions() {
       this.processLaunchpadActions = this.processActions
