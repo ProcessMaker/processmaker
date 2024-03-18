@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Process;
 
 trait HasVersioning
 {
@@ -218,8 +219,8 @@ trait HasVersioning
     {
         // Skip version locking for now
         // It will be re-added with more configurable options in a future version
-        return $processRequest
-            ? $processRequest->getLatestVersion()
+        return $processRequest && $processRequest->process && $this instanceof Process
+            ? $processRequest->process->getLatestVersion($processRequest->processVersion->alternative)
             : $this->getLatestVersion();
     }
 

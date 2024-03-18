@@ -1031,14 +1031,4 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->whereIn('category_id', $systemCategories)
             ->exists();
     }
-
-    /**
-     * Get the latest version of the process
-     *
-     * @return ProcessVersion
-     */
-    public function getLatestVersion(): ProcessVersion
-    {
-        return $this->process->getLatestVersion($this->processVersion->alternative);
-    }
 }
