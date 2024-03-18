@@ -70,6 +70,8 @@ class WebEntryUrlFixer extends Upgrade
         }
 
         $process->bpmn = $definitions->saveXml();
-        $process->save();
+        // Save process without firing events, as the webentryRouteConfig.entryUrl
+        // does not needed any additional update.
+        $process->saveQuietly();
     }
 }

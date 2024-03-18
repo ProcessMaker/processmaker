@@ -11,6 +11,8 @@
     :ok-disabled="okDisabled"
     :hide-footer="hideFooter"
     :hide-header="hideHeader"
+    :header-class="headerClass"
+    :footer-class="footerClass"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -128,7 +130,9 @@
       "titleButtons",
       "showAiSlogan",
       "requiredInFooter",
-      "titleIcon"
+      "titleIcon",
+      "headerClass",
+      "footerClass"
     ],
     methods: {
       onEvent(name, event) {

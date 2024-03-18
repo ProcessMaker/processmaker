@@ -13,87 +13,111 @@
       id="createScreen"
       :ok-disabled="disabled"
       :title="modalSetUp"
+      :subtitle="subtitle"
+      :hide-footer="true"
+      size="xl"
       @hidden="onClose"
       @ok.prevent="onSubmit"
     >
-      <template v-if="countCategories">
-        <required />
-        <b-form-group
-          :description="
-            formDescription('The screen name must be unique.', 'title', errors)
-          "
-          :invalid-feedback="errorMessage('title', errors)"
-          :label="$t('Name')"
-          :state="errorState('title', errors)"
-          required
-        >
-          <b-form-input
-            v-model="formData.title"
-            :state="errorState('title', errors)"
-            autocomplete="off"
-            autofocus
-            name="title"
-            required
+      <b-row>
+        <b-col cols="7" class="type-style-col">
+          <div v-if="!showTemplatePreview">
+            <screen-type-dropdown
+              v-model="formData.type"
+              :copy-asset-mode="copyAssetMode"
+              :screen-types="screenTypes"
+              :hide-description="false"
+              data-cy="screen-type-dropdown"
+            />
+            <div class="template-type-label pt-4">
+              <p>{{ templateTypeLabel }}</p>
+            </div>
+            <screen-template-options
+              data-cy="screen-template-options"
+              :selected-screen-type="formData.type ? formData.type : 'FORM'"
+              @show-template-preview="showPreview"
+            />
+          </div>
+          <preview-template
+            v-if="showTemplatePreview"
+            :template="selectedTemplate"
+            @hide-template-preview="hidePreview"
           />
-        </b-form-group>
-        <b-form-group
-          :invalid-feedback="errorMessage('description', errors)"
-          :label="$t('Description')"
-          :state="errorState('description', errors)"
-          required
-        >
-          <b-form-textarea
-            v-model="formData.description"
-            :state="errorState('description', errors)"
-            autocomplete="off"
-            name="description"
-            required
-            rows="3"
-          />
-        </b-form-group>
-        <b-form-group
-          :invalid-feedback="errorMessage('type', errors)"
-          :label="$t('Type')"
-          :state="errorState('type', errors)"
-          required
-        >
-          <b-form-select
-            v-model="formData.type"
-            :options="screenTypes"
-            :state="errorState('type', errors)"
-            :disabled="copyAssetMode"
-            name="type"
-            required
-          />
-        </b-form-group>
-        <category-select
-          v-model="formData.screen_category_id"
-          :errors="errors.screen_category_id"
-          :label="$t('Category')"
-          api-get="screen_categories"
-          api-list="screen_categories"
-          name="category"
-        />
-        <project-select
-          v-if="isProjectsInstalled"
-          v-model="formData.projects"
-          :errors="errors.projects"
-          :project-id="projectId"
-          :label="$t('Project')"
-          :required="isProjectSelectionRequired"
-          api-get="projects"
-          api-list="projects"
-        />
-      </template>
-      <template v-else>
-        <div>{{ $t("Categories are required to create a screen") }}</div>
-        <a
-          class="btn btn-primary container mt-2"
-          href="/designer/screens/categories"
-        >
-          {{ $t("Add Category") }}
-        </a>
-      </template>
+        </b-col>
+        <b-col cols="5" class="form-style-col">
+          <template v-if="countCategories">
+            <required />
+            <b-form-group
+              :description="
+                formDescription('The screen name must be unique.', 'title', errors)
+              "
+              :invalid-feedback="errorMessage('title', errors)"
+              :label="$t('Name')"
+              :state="errorState('title', errors)"
+              required
+            >
+              <b-form-input
+                v-model="formData.title"
+                :state="errorState('title', errors)"
+                autocomplete="off"
+                autofocus
+                name="title"
+                required
+              />
+            </b-form-group>
+            <b-form-group
+              :invalid-feedback="errorMessage('description', errors)"
+              :label="$t('Description')"
+              :state="errorState('description', errors)"
+              required
+            >
+              <b-form-textarea
+                v-model="formData.description"
+                :state="errorState('description', errors)"
+                autocomplete="off"
+                name="description"
+                required
+                rows="3"
+              />
+            </b-form-group>
+            <category-select
+              v-model="formData.screen_category_id"
+              :errors="errors.screen_category_id"
+              :label="$t('Category')"
+              api-get="screen_categories"
+              api-list="screen_categories"
+              name="category"
+            />
+            <project-select
+              v-if="isProjectsInstalled"
+              v-model="formData.projects"
+              :errors="errors.projects"
+              :project-id="projectId"
+              :label="$t('Project')"
+              :required="isProjectSelectionRequired"
+              api-get="projects"
+              api-list="projects"
+            />
+            <div class="footer-btns w-100 m-0 d-flex">
+              <button type="button" class="btn btn-outline-secondary ml-auto" @click="close">
+                {{ $t('Cancel') }}
+              </button>
+              <a class="btn btn-secondary ml-3" @click="onSubmit">
+                {{ $t('Save') }}
+              </a>
+            </div>
+          </template>
+          <template v-else>
+            <div>{{ $t("Categories are required to create a screen") }}</div>
+            <a
+              class="btn btn-primary container mt-2"
+              href="/designer/screens/categories"
+            >
+              {{ $t("Add Category") }}
+            </a>
+          </template>
+        </b-col>
+      </b-row>
     </modal>
   </div>
 </template>
@@ -103,12 +127,15 @@ import FormErrorsMixin from "../../../components/shared/FormErrorsMixin";
 import Modal from "../../../components/shared/Modal.vue";
 import Required from "../../../components/shared/Required.vue";
 import ProjectSelect from "../../../components/shared/ProjectSelect.vue";
+import ScreenTypeDropdown from "./ScreenTypeDropdown.vue";
+import ScreenTemplateOptions from "./ScreenTemplateOptions.vue";
 import {
   isQuickCreate as isQuickCreateFunc,
   screenSelectId,
 } from "../../../utils/isQuickCreate";
 import { filterScreenType } from "../../../utils/filterScreenType";
 import AssetRedirectMixin from "../../../components/shared/AssetRedirectMixin";
+import PreviewTemplate from "../../../components/templates/PreviewTemplate.vue";
 
 const channel = new BroadcastChannel("assetCreation");
 
@@ -117,6 +144,9 @@ export default {
     Modal,
     Required,
     ProjectSelect,
+    ScreenTypeDropdown,
+    ScreenTemplateOptions,
+    PreviewTemplate,
   },
   mixins: [FormErrorsMixin, AssetRedirectMixin],
   props: [
@@ -145,6 +175,8 @@ export default {
       disabled: false,
       isQuickCreate: isQuickCreateFunc(),
       screenSelectId: screenSelectId(),
+      showTemplatePreview: false,
+      selectedTemplate: null,
     };
   },
   computed: {
@@ -155,7 +187,13 @@ export default {
         return this.$t("Copy of Asset");
       }
       this.formData.title = "";
-      return this.$t("Create Screen");
+      return this.$t("New Screen");
+    },
+    subtitle() {
+      return this.$t("Select the screen type and style.");
+    },
+    templateTypeLabel() {
+      return this.$t("Styles for the Screen Type").toUpperCase();
     },
   },
   mounted() {
@@ -177,7 +215,7 @@ export default {
     resetFormData() {
       this.formData = {
         title: null,
-        type: "",
+        type: null,
         description: null,
         projects: [],
       };
@@ -192,10 +230,13 @@ export default {
     onClose() {
       this.resetFormData();
       this.resetErrors();
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
     },
     close() {
       this.$bvModal.hide("createScreen");
       this.disabled = false;
+      this.onClose();
       this.$emit("reload");
     },
     onSubmit() {
@@ -240,6 +281,34 @@ export default {
         window.location = url;
       }
     },
+    showPreview(template) {
+      this.showTemplatePreview = true;
+      this.selectedTemplate = template;
+    },
+    hidePreview() {
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
+    }
   },
 };
 </script>
+
+<style scoped>
+.type-style-col {
+  background-color: #F6F9FB;
+}
+
+.form-style-col {
+  background-color: #FFFFFF;
+}
+.footer-btns {
+  padding-top: 175px;
+}
+
+.template-type-label {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 700;
+}
+
+</style>

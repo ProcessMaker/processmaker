@@ -246,7 +246,7 @@ class ModelerController extends Controller
     /**
      * Invokes the Modeler for In-flight Process Map rendering for ai generative.
      */
-    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, Request $request)
+    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, $choiceNumber, Request $request)
     {
         $aiMicroserviceHost = config('app.ai_microservice_host');
         $url = $aiMicroserviceHost . '/pm/getPromptVersion';
@@ -261,9 +261,16 @@ class ModelerController extends Controller
         $promptVersion = Http::withHeaders($headers)->post($url, $params);
 
         $bpmn = '';
+        $choicesCount = 0;
 
         if (array_key_exists('version', $promptVersion->json())) {
-            $bpmn = $promptVersion->json()['version']['bpmn'];
+            if (array_key_exists('bpmn', $promptVersion->json()['version'])) {
+                $bpmn = $promptVersion->json()['version']['bpmn'];
+            }
+            if (array_key_exists('choices', $promptVersion->json()['version'])) {
+                $bpmn = $promptVersion->json()['version']['choices'][$choiceNumber]['bpmn'];
+                $choicesCount = count($promptVersion->json()['version']['choices']);
+            }
         }
 
         event(new ModelerStarting($manager));
@@ -271,6 +278,8 @@ class ModelerController extends Controller
         return view('processes.modeler.inflight-generative-ai', [
             'manager' => $manager,
             'bpmn' => $bpmn,
+            'choiceNumber' => $choiceNumber,
+            'choicesCount' => $choicesCount,
         ]);
     }
 }

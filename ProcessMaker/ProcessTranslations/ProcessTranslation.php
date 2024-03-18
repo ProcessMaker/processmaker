@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\ImportExport\Utils;
@@ -20,6 +21,8 @@ class ProcessTranslation
 {
     protected $process;
 
+    protected $includeImages;
+
     protected $humanLanguage = [
         'es' => 'Spanish',
         'de' => 'German',
@@ -28,9 +31,10 @@ class ProcessTranslation
         'nl' => 'Dutch',
     ];
 
-    public function __construct(Process $process)
+    public function __construct(Process $process, $includeImages = false)
     {
         $this->process = $process;
+        $this->includeImages = $includeImages;
     }
 
     public function getProcessScreensWithTranslations($withScreenData = [])
@@ -146,7 +150,24 @@ class ProcessTranslation
             }
         }
 
-        return $strings;
+        $result = [];
+        $imgPattern = '/<img[^>]+>/';
+        foreach($strings as $string) {
+            if ($this->includeImages && preg_match($imgPattern, $string)) {
+                $result[] = preg_replace_callback($imgPattern,
+                    function ($matches) {
+                        $hash = sha1($matches[0]);
+                        Cache::put('img.'.$hash, $matches[0], now()->addMinutes(15));
+                        return '<img src="' . $hash . '"/>';
+                    },
+                    $string);
+            }
+            else {
+                $result[] = $string;
+            }
+        }
+
+        return $result;
     }
 
     private static function getStringElements($items, $parent = null)

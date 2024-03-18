@@ -145,6 +145,8 @@ export default {
   props: ["processId", "processName", "translatedLanguages", "editTranslation", "permission"],
   data() {
     return {
+      currentNonce: null,
+      promptSessionId: "",
       showModal: false,
       disabled: false,
       aiLoading: false,
@@ -245,9 +247,10 @@ export default {
       if (val) {
         this.selectedLanguage = val;
         this.manualTranslation = true;
-        this.translate();
+        this.translate(false);
       }
     },
+
   },
   mounted() {
     this.getAvailableLanguages();
@@ -299,7 +302,21 @@ export default {
       this.showSelectTargetLanguage();
       this.$emit("create-process-translation-closed");
     },
-    translate() {
+    getPromptSessionForUser() {
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+      let item = promptSessions.find(item => item.userId === window.ProcessMaker?.modeler?.process?.user_id && item.server === window.location.host);
+
+      if (item) {
+        return item.promptSessionId;
+      }
+
+      return '';
+    },
+    translate(includeImages = true) {
       this.step = "translating";
       this.headerButtons[0].hidden = true;
       this.customModalButtons[1].hidden = true;
@@ -312,6 +329,10 @@ export default {
         language: this.selectedLanguage,
         processId: this.processId,
         manualTranslation: this.manualTranslation,
+        promptSessionId: this.getPromptSessionForUser(),
+        nonce: localStorage.getItem("currentNonce"),
+        includeImages: includeImages,
+        justStored: !includeImages,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
