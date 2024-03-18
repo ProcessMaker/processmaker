@@ -35,14 +35,16 @@ class Filter
 
     public array $or;
 
-    public static function filter(Builder $query, string $filterDefinitions)
+    public static function filter(Builder $query, string|array $filterDefinitions)
     {
-        $filterDefinitions = json_decode($filterDefinitions, true);
-        if (!isset($filterDefinitions)) {
-            // If the value is incorrect, we return a filter that produces an empty result.
-            $default = '{"subject":{"type":"Field","value":"id"},"operator":"=","value":""}';
-            $filterDefinitions = [json_decode($default, true)];
+        if (is_string($filterDefinitions)) {
+            $filterDefinitions = json_decode($filterDefinitions, true);
         }
+
+        if (!$filterDefinitions) {
+            return;
+        }
+
         $query->where(function ($query) use ($filterDefinitions) {
             foreach ($filterDefinitions as $filter) {
                 (new self($filter))->addToQuery($query);
