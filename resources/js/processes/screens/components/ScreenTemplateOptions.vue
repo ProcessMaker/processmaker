@@ -24,7 +24,6 @@
           :type="type"
           :template="template"
           :default-template-id="defaultTemplateId"
-          :is-default="template.id === defaultTemplateId"
           :isActive="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
@@ -50,6 +49,15 @@ export default {
     return {
       filter: "",
       screenTemplates: [],
+      blankTemplate: [
+        {
+          asset_type: this.selectedScreenType,
+          name: "Blank Template",
+          description: "Creates a blank screen.",
+          is_default_template: 0,
+          is_public: this.templateType,
+        },
+      ],
       type: "screen",
       templateType: "",
       defaultScreenType: "FORM",
@@ -111,7 +119,8 @@ export default {
           this.orderDirection
         )
         .then(response => {
-          this.screenTemplates = response.data.data;
+          // this.screenTemplates = response.data.data;
+          this.screenTemplates = this.blankTemplate.concat(response.data.data);
           this.apiDataLoading = false;
           this.apiNoResults = false;
           this.getDefaultTemplates(this.screenTemplates);

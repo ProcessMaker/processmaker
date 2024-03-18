@@ -19,7 +19,7 @@
         </div>
         <div class="default-template d-flex align-items-end">
           <b-form-checkbox
-            v-model="selectedDefaultTemplate"
+            :value="selectedDefaultTemplate"
             name="default-template"
             :disabled="disabled"
           >
@@ -45,7 +45,7 @@ export default {
   props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId"],
   data() {
     return {
-      selectedDefaultTemplate: this.template.id === this.defaultTemplateId,
+      // selectedDefaultTemplate: this.template.id === this.defaultTemplateId,
     };
   },
   computed: {
@@ -53,14 +53,25 @@ export default {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
     disabled() {
-      return this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null;
+      console.log((this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null) || !this.selectedBlankTemplate);
+      return (this.template.id !== this.defaultTemplateId && this.defaultTemplateId !== null) || !this.selectedBlankTemplate;
+      // return this.selectedBlankTemplate ? true : this.defaultTemplateId !== null && this.template.id !== this.defaultTemplateId;
+    },
+    selectedBlankTemplate() {
+      return !this.template.id && !this.defaultTemplateId;
+    },
+    selectedDefaultTemplate() {
+      // console.log(this.selectedBlankTemplate ? true : this.template.id === this.defaultTemplateId);
+      return this.selectedBlankTemplate === true || this.template.id === this.defaultTemplateId;
     },
   },
   watch: {
     selectedDefaultTemplate(newValue) {
       if (newValue) {
+        console.log('selected default');
         this.$emit("template-default-selected", this.template.id);
       } else {
+        console.log('deselected default');
         this.$emit("reset-default-template", this.template.id);
       }
     },
