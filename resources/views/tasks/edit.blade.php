@@ -176,6 +176,7 @@
                                     <button
                                       v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                       type="button"
+                                      v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
                                       class="btn btn-block button-actions"
                                       @click="showQuickFill"
                                     >
@@ -638,6 +639,9 @@
           autosaveApiCall() {
             this.options.is_loading = true;
             const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
+            console.log("Edit DRAFT this.formData: ", this.formData);
+      console.log("Edit DRAFT draftData: ", draftData);
+      console.log("Edit DRAFT this.task.id: ", this.task.id);
             return ProcessMaker.apiClient
             .put("drafts/" + this.task.id, draftData)
             .then((response) => {
@@ -647,6 +651,8 @@
                 this.task.draft,
                 response.data
               );
+              console.log("Edit DRAFT response.data ", response.data);
+              console.log("Edit DRAFT this.task.draft ", this.task.draft);
             })
             .catch(() => {
               this.errorAutosave = true;

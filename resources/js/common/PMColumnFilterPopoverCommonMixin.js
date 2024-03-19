@@ -3,7 +3,7 @@ import { get, cloneDeep } from "lodash";
 const PMColumnFilterCommonMixin = {
   props: {
     advancedFilterProp: {
-      type: Object,
+      type: Array,
       default: null
     }
   },
@@ -286,7 +286,8 @@ const PMColumnFilterCommonMixin = {
       let order = null;
 
       if (this.advancedFilterProp !== null) {
-        inputAdvancedFilter = this.advancedFilterProp.filters;
+        //inputAdvancedFilter = this.advancedFilterProp.filters;
+        inputAdvancedFilter = this.advancedFilterProp;
         order = this.advancedFilterProp.order;
       } else {
         inputAdvancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);

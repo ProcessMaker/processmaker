@@ -1,23 +1,37 @@
 <template>
   <div class="pl-3">
     <div class="main-container">
-      <div class="button-container">
-        <b-button
-          class="btn-back-quick-fill"
-          variant="link"
-          @click="$emit('close')"
-        >
-          <i class="fas fa-arrow-left" />
-        </b-button>
-        <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
-        <b-button
-          class="close-button"
-          variant="link"
-          @click="$emit('close')"
-        >
-          <i class="fas fa-times" />
-        </b-button>
-      </div>
+      
+          
+          <div v-if="propFromButton === 'fullTask'" class="header-container">
+            <span class="quick-fill-text-full">{{ $t("Quick Fill") }}</span>
+            <b-button
+            class="close-go-back-button"
+            @click="cancelAndGoBack()"
+          >
+          {{ $t('CANCEL AND GO BACK') }}
+          </b-button>
+          </div>
+          <div v-else>
+            <div class="button-container">
+            <b-button
+            class="btn-back-quick-fill"
+            variant="link"
+            @click="$emit('close')"
+          >
+            <i class="fas fa-arrow-left" />
+          </b-button>
+          <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
+            <b-button
+              class="close-button"
+              variant="link"
+              @click="$emit('close')"
+            >
+              <i class="fas fa-times" />
+            </b-button>
+          </div>
+          </div>
+      
     </div>
     <div class="second-container">
       <div class="span-message">
@@ -31,7 +45,7 @@
           :columns="columns"
           @selected="selected"
           :pmql="pmql"
-          :advanced-filter-prop="filter"
+          :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
           :additionalIncludes="['screenFilteredData']"
         >
@@ -56,6 +70,7 @@
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
             <b-button
+              v-if="propFromButton !== 'fullTask'"
               class="icon-button"
               :aria-label="$t('Quick fill')"
               variant="light"
@@ -67,10 +82,32 @@
               />
             </b-button>
             <b-button
+              v-if="propFromButton === 'fullTask'"
+              class="icon-button"
+              :aria-label="$t('Quick fill')"
+              variant="light"
+              @click="buttonThisDataFromFullTask(tooltipRowData)"
+            >
+              <img
+                src="../../../img/smartinbox-images/Vector.svg"
+                :alt="$t('No Image')"
+              />
+            </b-button>
+            <b-button
+              v-if="propFromButton !== 'fullTask'"
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
               @click="previewTasks(tooltipRowData, 93)"
+            >
+              <i class="fas fa-eye"/>
+            </b-button>
+            <b-button
+              v-if="propFromButton === 'fullTask'"
+              class="icon-button"
+              :aria-label="$t('Quick fill Preview')"
+              variant="light"
+              @click="previewTasks(tooltipRowData, 50)"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -87,19 +124,7 @@ export default {
     return {
       fromQuickFill: true,
       taskData: {},
-      filter: [
-        {
-          subject: { type: "Field", value: "process_id" },
-          operator: "=",
-          value: this.task.process_id,
-        },
-        {
-          subject: { type: "Field", value: "element_id" },
-          operator: "=",
-          value: this.task.element_id,
-        },
-      ],
-      pmql: '(user_id = 1 and status="Completed")',
+      pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.task.process_id})`,
       quickFilter: null,
       columns: [
         {
@@ -135,30 +160,42 @@ export default {
     };
   },
   mounted() {
-    // console.log("COLUMNAS: ", this.filter);
-    // console.log("Process ID que jala el componente this.task.process_id: ", this.task.process_id);
-    // console.log("task en QuickFillPreview: ", this.task);
-    // console.log("obteniendo propColumns: ", this.propColumns);
-
-    // if(this.propFilters !== "") {
-    //   //this.task.process_id
-    //   //this.filter = this.propFilters;
-    //   this.quickFilter = this.propFilters;
-    //   console.log("QUICK FILTER: ", this.propFilters);
-    // }
+    if(this.propFilters !== "") {
+      this.quickFilter = this.propFilters;
+    }
 
     if(this.propColumns.length > 0) {
-      //console.log("en mounted en proColumns true: ", this.propColumns);
       this.columns = this.propColumns;
     }
   },
   methods: {
     selected(taskData) {},
+    cancelAndGoBack() {
+      window.location.href = `/tasks/${this.task.id}/edit`;
+    },
     buttonThisData(tooltipRowData) {
       this.$emit("quick-fill-data", tooltipRowData.screen_filtered_data);
       this.$emit("close");
     },
-    buttonPreviewThisData(tooltipRowData) {
+    buttonThisDataFromFullTask(tooltipRowData) {
+      const draftData = _.omitBy(tooltipRowData.data, (value, key) => key.startsWith("_"));
+      return ProcessMaker.apiClient
+        .put("drafts/" + this.task.id, draftData)
+        .then((response) => {
+          this.task.draft = _.merge(
+            {},
+            this.task.draft,
+            response.data
+          );
+          window.location.href = `/tasks/${this.task.id}/edit`;
+          ProcessMaker.alert(this.$t('Task Filled successfully.'), 'success');
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        })
+        
+    },
+    buttonThisDataPreviewFromFullTask(tooltipRowData) {
     },
   },
 };
@@ -179,6 +216,27 @@ export default {
   height: 64px;
   border: 1px solid #f6f9fb;
   padding: 0 12px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #f6f9fb;
+  padding: 0 12px;
+}
+.close-go-back-button {
+  color: #fff;
+  background-color: #6A7888;
+  width: 228px;
+  height: 40px;
+  border-radius: 4px;
+  padding: 0;
+  border: none;
+  margin-left: auto;
+}
+.quick-fill-text-full {
+  color: #556271;
+  font-size: 27px;
 }
 .quick-fill-text {
   color: #888;

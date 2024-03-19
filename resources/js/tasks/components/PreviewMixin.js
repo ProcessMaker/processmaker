@@ -33,22 +33,8 @@ const PreviewMixin = {
       showUseThisTask: false,
       splitpaneSize: 50,
       propColumns: [],
-      propFilters: [
-          {
-            subject: { type: "Field", value: "process_id" },
-            operator: "=",
-            value: 24,
-          },
-          {
-            subject: { type: "Field", value: "element_id" },
-            operator: "=",
-            value: "node_2"
-          },
-        ],
+      propFilters: [],
     };
-  },
-  mounted() {
-    console.log("en PreviewMixin task object: ", this.task);
   },
   methods: {
     /**
@@ -64,7 +50,7 @@ const PreviewMixin = {
       this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
-
+      this.customFilter();
       if (this.showFrame === 1) {
         this.linkTasks1 = `/tasks/${info.id}/edit/preview`+param;
         this.showFrame1 = true;
@@ -78,6 +64,21 @@ const PreviewMixin = {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+    },
+    customFilter() {
+      console.log("custom Filter: ", this.task);
+      this.propFilters = [
+        {
+          subject: { type: "Field", value: "process_id" },
+          operator: "=",
+          value: this.task.process_id,
+        },
+        {
+          subject: { type: "Field", value: "element_id" },
+          operator: "=",
+          value: this.task.element_id,
+        },
+      ]
     },
     showButton() {
       this.isMouseOver = true;

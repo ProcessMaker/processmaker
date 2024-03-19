@@ -632,7 +632,7 @@ export default {
       if(this.fromButton === "" || this.fromButton === "previewTask"){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
       }else{
-        bottomBorderY = rect.bottom - topAdjust + 220 - elementHeight;
+        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,
