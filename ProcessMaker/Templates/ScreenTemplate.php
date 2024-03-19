@@ -17,6 +17,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
+use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
@@ -438,8 +439,7 @@ class ScreenTemplate implements TemplateInterface
     public function handleTemplateOptions($data, $screenId)
     {
         // Define available options and their corresponding components
-        $screenComponents = include 'ScreenComponents.php';
-        $availableOptions = $screenComponents();
+        $availableOptions = ScreenComponents::getComponents();
 
         // Get template options from the request data
         $templateOptions = json_decode($data['templateOptions'], true);
