@@ -53,6 +53,7 @@
           :saved-search-data="savedSearchData"
           :task-id="taskId"
           :data="data"
+          :submit-button="submitButton"
           @view-name="viewName($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
