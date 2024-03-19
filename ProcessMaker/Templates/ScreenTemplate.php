@@ -438,11 +438,8 @@ class ScreenTemplate implements TemplateInterface
     public function handleTemplateOptions($data, $screenId)
     {
         // Define available options and their corresponding components
-        $availableOptions = [
-            'CSS' => null, // No component associated'
-            'Fields' => ['FormInput', 'FormSelectList', 'FormTextArea', 'FormDatePicker', 'FormCheckBox', 'FileUpload'],
-            'Layout' => ['FormMultiColumn'],
-        ];
+        $screenComponents = include 'ScreenComponents.php';
+        $availableOptions = $screenComponents();
 
         // Get template options from the request data
         $templateOptions = json_decode($data['templateOptions'], true);
@@ -465,7 +462,7 @@ class ScreenTemplate implements TemplateInterface
                         // Filter out the items based on the associated components
                         $filteredItems = array_filter($newScreen->config[0]['items'],
                             function ($item) use ($components) {
-                                return !in_array($item['component'], $components);
+                                return !$this->checkNestedComponents($item, $components);
                             }
                         );
                         $config[0]['items'] = array_values($filteredItems);
@@ -495,5 +492,25 @@ class ScreenTemplate implements TemplateInterface
                 }
             }
         }
+    }
+
+    public function checkNestedComponents($item, $components)
+    {
+        if (in_array($item['component'], ['BFormComponent', 'BWrapperComponent'])) {
+            // Check if the bootstrapComponent is in the specified list for BFormComponent or BWrapperComponent
+            if (isset($item['config']['bootstrapComponent'])
+                && in_array($item['config']['bootstrapComponent'],
+                    $components[$item['component']]['bootstrapComponent'])
+            ) {
+                return true;
+            }
+        } else {
+            // Check if the component is directly in the specified list
+            if (in_array($item['component'], $components)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
