@@ -49,62 +49,64 @@
         </b-col>
         <b-col
           cols="5"
-          class="form-style-col"
+          class="form-style-col d-flex flex-column pb-4"
         >
           <template v-if="countCategories">
-            <required />
-            <b-form-group
-              :description="
-                formDescription('The screen name must be unique.', 'title', errors)
-              "
-              :invalid-feedback="errorMessage('title', errors)"
-              :label="$t('Name')"
-              :state="errorState('title', errors)"
-              required
-            >
-              <b-form-input
-                v-model="formData.title"
+            <div>
+              <required />
+              <b-form-group
+                :description="
+                  formDescription('The screen name must be unique.', 'title', errors)
+                "
+                :invalid-feedback="errorMessage('title', errors)"
+                :label="$t('Name')"
                 :state="errorState('title', errors)"
-                autocomplete="off"
-                autofocus
-                name="title"
                 required
-              />
-            </b-form-group>
-            <b-form-group
-              :invalid-feedback="errorMessage('description', errors)"
-              :label="$t('Description')"
-              :state="errorState('description', errors)"
-              required
-            >
-              <b-form-textarea
-                v-model="formData.description"
+              >
+                <b-form-input
+                  v-model="formData.title"
+                  :state="errorState('title', errors)"
+                  autocomplete="off"
+                  autofocus
+                  name="title"
+                  required
+                />
+              </b-form-group>
+              <b-form-group
+                :invalid-feedback="errorMessage('description', errors)"
+                :label="$t('Description')"
                 :state="errorState('description', errors)"
-                autocomplete="off"
-                name="description"
                 required
-                rows="3"
+              >
+                <b-form-textarea
+                  v-model="formData.description"
+                  :state="errorState('description', errors)"
+                  autocomplete="off"
+                  name="description"
+                  required
+                  rows="3"
+                />
+              </b-form-group>
+              <category-select
+                v-model="formData.screen_category_id"
+                :errors="errors.screen_category_id"
+                :label="$t('Category')"
+                api-get="screen_categories"
+                api-list="screen_categories"
+                name="category"
               />
-            </b-form-group>
-            <category-select
-              v-model="formData.screen_category_id"
-              :errors="errors.screen_category_id"
-              :label="$t('Category')"
-              api-get="screen_categories"
-              api-list="screen_categories"
-              name="category"
-            />
-            <project-select
-              v-if="isProjectsInstalled"
-              v-model="formData.projects"
-              :errors="errors.projects"
-              :project-id="projectId"
-              :label="$t('Project')"
-              :required="isProjectSelectionRequired"
-              api-get="projects"
-              api-list="projects"
-            />
-            <div class="footer-btns w-100 m-0 d-flex">
+              <project-select
+                v-if="isProjectsInstalled"
+                v-model="formData.projects"
+                :errors="errors.projects"
+                :project-id="projectId"
+                :label="$t('Project')"
+                :required="isProjectSelectionRequired"
+                api-get="projects"
+                api-list="projects"
+              />
+            </div>
+            <div class="w-100 m-0 d-flex mt-auto">
               <button
                 type="button"
                 class="btn btn-outline-secondary ml-auto"
@@ -316,9 +318,6 @@ export default {
 
 .form-style-col {
   background-color: #FFFFFF;
-}
-.footer-btns {
-  padding-top: 175px;
 }
 
 .template-type-label {
