@@ -32,6 +32,7 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
+      isPriority: false,
     };
   },
   methods: {
@@ -120,7 +121,8 @@ const PreviewMixin = {
      * Expand Open task
      */
     openTask() {
-      return `/tasks/${this.task.id}/edit`;
+      const url = `/tasks/${this.task.id}/edit`;
+      window.location.href = url;
     },
     /**
      * Go to previous or next task
@@ -165,6 +167,13 @@ const PreviewMixin = {
         ProcessMaker.alert(successMessage, 'success');
         this.useThisDataButton = false;
       }
+    },
+    addPriority() {
+      ProcessMaker.apiClient
+        .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
+        .then(() => {
+          this.task.is_priority = !this.task.is_priority;
+        });
     },
   },
 };
