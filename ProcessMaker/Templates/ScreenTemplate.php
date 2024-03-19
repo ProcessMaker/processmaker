@@ -384,6 +384,7 @@ class ScreenTemplate implements TemplateInterface
         $payload['description'] = $data['description'];
 
         $postOptions = [];
+
         foreach ($payload['export'] as $key => $asset) {
             // Exclude the import of screen categories if the category already exists in the database
             if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
@@ -427,8 +428,52 @@ class ScreenTemplate implements TemplateInterface
         $importingFromTemplate = true;
         $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
         $rootLog = $manifest[$payload['root']]->log;
+        $newScreenId = $rootLog['newId'];
+
+        $this->handleTemplateOptions($data, $newScreenId);
 
         return $rootLog['newId'];
+    }
+
+    public function handleTemplateOptions($data, $screenId)
+    {
+        // Define available options and their corresponding components
+        $availableOptions = [
+            'CSS' => null, // No component associated'
+            // TODO: Confirm all field components that will be removed
+            'Fields' => ['FormInput', 'FormSelectList', 'FormTextArea', 'FormDatePicker', 'FormCheckBox', 'FileUpload'],
+            // TODO: Confirm what components are considered 'layout'
+            'Layout' => ['FormMultiColumn'],
+        ];
+
+        // Get template options from the request data
+        $templateOptions = json_decode($data['templateOptions'], true);
+
+        // Retrieve the screen model
+        $newScreen = Screen::findOrFail($screenId);
+        $config = $newScreen->config;
+
+        // Iterate through available options to handle each one
+        foreach ($availableOptions as $option => $components) {
+            // Check if the current options is in the template options
+            if (!in_array($option, $templateOptions)) {
+                // Handle the option accordingly
+                switch($option) {
+                    case 'CSS':
+                        $newScreen->custom_css = null;
+                        break;
+                    case 'Fields':
+                    case 'Layout':
+                        // Filter out the items based on the associated components
+                        $filteredItems = array_filter($newScreen->config[0]['items'], function ($item) use ($components) {
+                            return !in_array($item['component'], $components);
+                        });
+                        $config[0]['items'] = array_values($filteredItems);
+                        $newScreen->config = $config;
+                }
+            }
+        }
+        $newScreen->save();
     }
 
     public function syncProjectAssets($data)
