@@ -20,7 +20,10 @@
       @ok.prevent="onSubmit"
     >
       <b-row>
-        <b-col cols="7" class="type-style-col">
+        <b-col
+          cols="7"
+          class="type-style-col"
+        >
           <div v-if="!showTemplatePreview">
             <screen-type-dropdown
               v-model="formData.type"
@@ -44,7 +47,10 @@
             @hide-template-preview="hidePreview"
           />
         </b-col>
-        <b-col cols="5" class="form-style-col">
+        <b-col
+          cols="5"
+          class="form-style-col"
+        >
           <template v-if="countCategories">
             <required />
             <b-form-group
@@ -99,10 +105,17 @@
               api-list="projects"
             />
             <div class="footer-btns w-100 m-0 d-flex">
-              <button type="button" class="btn btn-outline-secondary ml-auto" @click="close">
+              <button
+                type="button"
+                class="btn btn-outline-secondary ml-auto"
+                @click="close"
+              >
                 {{ $t('Cancel') }}
               </button>
-              <a class="btn btn-secondary ml-3" @click="onSubmit">
+              <a
+                class="btn btn-secondary ml-3"
+                @click="onSubmit"
+              >
                 {{ $t('Save') }}
               </a>
             </div>
@@ -202,7 +215,10 @@ export default {
     if (this.isQuickCreate === true) {
       this.screenTypes = filterScreenType() ?? this.types;
       // in any case the screenType if the only one, default to the first value
-      if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
+      const [defaultScreenType] = Object.keys(this.screenTypes);
+      if (Object.keys(this.screenTypes).length === 1) {
+        this.formData.type = defaultScreenType;
+      }
     }
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
@@ -288,7 +304,7 @@ export default {
     hidePreview() {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
-    }
+    },
   },
 };
 </script>
@@ -310,5 +326,4 @@ export default {
   color: #6c757d;
   font-weight: 700;
 }
-
 </style>
