@@ -12,6 +12,7 @@
         :isActive="isActive"
         :default-template-id="defaultTemplateId"
         :default-template-screen-type="defaultTemplateScreenType"
+        :is-default-template-public="isDefaultTemplatePublic"
         @show-template-preview="showPreview"
         @template-selected="handleSelectedTemplate"
         @template-default-selected="handleDefaultTemplateSelected"
@@ -35,7 +36,7 @@ import PreviewTemplate from "./PreviewTemplate.vue";
 
 export default {
   components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
-  props: ["template", "type", "isActive", "defaultTemplateId", "defaultTemplateScreenType"],
+  props: ["template", "type", "isActive", "defaultTemplateId", "defaultTemplateScreenType", "isDefaultTemplatePublic"],
   data() {
     return {
       showTemplatePreview: false,

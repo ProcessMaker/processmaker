@@ -25,6 +25,7 @@
           :template="template"
           :default-template-id="defaultTemplateId"
           :default-template-screen-type="selectedScreenType"
+          :is-default-template-public="isDefaultTemplatePublic"
           :isActive="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
@@ -66,12 +67,18 @@ export default {
       defaultTemplateId: null,
     };
   },
+  computed: {
+    isDefaultTemplatePublic() {
+      return this.templateType === 'Public Templates' ? 1 : 0;
+    }
+  },
   watch: {
     selectedScreenType() {
       this.fetch();
     },
     templateType(newVal) {
       this.fetch(newVal);
+      this.$emit('default-template-type-changed', newVal);
     },
   },
   mounted() {
@@ -79,13 +86,12 @@ export default {
   },
   methods: {
     getDefaultTemplates() {
-      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1 && template.screen_type == this.selectedScreenType );
+      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.hasOwnProperty('id') && template.is_public === this.isDefaultTemplatePublic);
       if (defaultTemplate) {
         this.defaultTemplateId = defaultTemplate.id;
       } else {
         this.defaultTemplateId = null;
       }
-      console.log("===== GET DEFAULT TEMPLATES", defaultTemplate, this.screenTemplates);
     },
     handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
@@ -121,6 +127,7 @@ export default {
         )
         .then(response => {
           this.blankTemplate[0].screen_type = this.selectedScreenType;
+          this.blankTemplate[0].is_public = this.isDefaultTemplatePublic;
           this.screenTemplates = this.blankTemplate.concat(response.data.data);
           this.apiDataLoading = false;
           this.apiNoResults = false;
@@ -175,15 +182,15 @@ export default {
       this.$emit("selected-default-template", this.defaultTemplateId);
     },
     getBlankTemplate() {
-      return this.screenTemplates.find(template => !template.hasOwnProperty('id') && template.screen_type == this.selectedScreenType);
+      return this.screenTemplates.find(template => !template.hasOwnProperty('id') && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
     },
     getTemplateById(templateId) {
-      return this.screenTemplates.find(template => template.id === templateId && template.screen_type == this.selectedScreenType);
+      return this.screenTemplates.find(template => template.id === templateId && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
     },
     getPreviousDefaultTemplate(currentTemplateId) {
       return this.screenTemplates.find(template => {
-        (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType) ||
-        (!template.hasOwnProperty('id') && template.is_default_template === 1 && template.screen_type == this.selectedScreenType)
+        (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic) ||
+        (!template.hasOwnProperty('id') && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic)
       });
     },
     updateTemplateInArray(updatedTemplate) {

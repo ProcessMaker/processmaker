@@ -38,6 +38,8 @@
               @show-template-preview="showPreview"
               @selected-template="handleSelectedTemplate"
               @selected-default-template="handleSelectedDefaultTemplate"
+              @default-template-type-changed="handleDefaultTemplateType"
+              
             />
           </div>
           <preview-template
@@ -252,7 +254,8 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.formData.templateId != null) {
+      
+      if (this.formData.templateId !== null || this.formData.defaultTemplateId !== null) {
         this.handleCreateFromTemplate();
       } else {
         this.handleCreateFromBlank()
@@ -340,6 +343,10 @@ export default {
     handleSelectedDefaultTemplate(templateId) {
       this.formData.defaultTemplateId = templateId;
     },
+    handleDefaultTemplateType(type) {
+      const isPublic = type === 'Public Templates' ? 1 : 0;
+      this.formData.is_public = isPublic;
+    }
   },
 };
 </script>

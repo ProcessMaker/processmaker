@@ -42,7 +42,7 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType"],
+  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType", 'isDefaultTemplatePublic'],
   data() {
     return {
       isDefaultTemplate: false,
@@ -71,10 +71,15 @@ export default {
       } else if (newValue !== oldValue){
         if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
           this.isDefaultTemplate = false;
+        } else if (newValue === null && !this.template.hasOwnProperty('id') && this.template.screen_type === this.defaultTemplateScreenType) {
+          this.isDefaultTemplate = true;
         }
       } 
     },
     defaultTemplateScreenType() {
+      this.updateDefaultTemplateStatus();
+    },
+    isDefaultTemplatePublic() {
       this.updateDefaultTemplateStatus();
     }
   },
@@ -86,12 +91,11 @@ export default {
       this.$emit("template-selected", this.template.id);
     },
     updateDefaultTemplateStatus() {
-      if ((this.defaultTemplateId === null || this.defaultTemplateId === undefined) && this.template.screen_type == this.defaultTemplateScreenType.toString() && !this.template.hasOwnProperty("id")) {
+      if ((this.defaultTemplateId === null || this.defaultTemplateId === undefined) && this.template.screen_type == this.defaultTemplateScreenType.toString() && !this.template.hasOwnProperty("id") && this.template.is_public === this.isDefaultTemplatePublic) {
         this.isDefaultTemplate = true
       } else {
-        this.isDefaultTemplate = this.template.screen_type === this.defaultTemplateScreenType.toString() && !!this.template.is_default_template;
+        this.isDefaultTemplate = this.template.screen_type === this.defaultTemplateScreenType.toString() && !!this.template.is_default_template && this.template.is_public === this.isDefaultTemplatePublic;
       }
-      
     },
     emitDefaultTemplateSelected() {
       const defaultTemplateId = this.template?.id || null;

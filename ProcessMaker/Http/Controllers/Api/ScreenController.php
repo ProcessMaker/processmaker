@@ -222,8 +222,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
 
-        if ($request->has('defaultTemplateId')) {
-            $this->updateDefaultTemplate($request->type);
+        if ($request->has('defaultTemplateId') && $request->has('is_public')) {
+            $this->updateDefaultTemplate($request->type, $request->is_public);
         }
 
         $screen->saveOrFail();
@@ -582,10 +582,8 @@ class ScreenController extends Controller
         return new ScreenResource($screen);
     }
 
-    public function updateDefaultTemplate(string $screenType)
+    public function updateDefaultTemplate(string $screenType, int $isPublic)
     {
-        ScreenTemplates::where('screen_type', $screenType)->where('is_default_template', 1)->update(['is_default_template' => 0]);
-
-        // ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
+        ScreenTemplates::where('screen_type', $screenType)->where('is_public', $isPublic)->where('is_default_template', 1)->update(['is_default_template' => 0]);
     }
 }
