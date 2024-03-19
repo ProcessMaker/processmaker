@@ -584,6 +584,9 @@ class ScreenController extends Controller
 
     public function updateDefaultTemplate(string $screenType, int $isPublic)
     {
-        ScreenTemplates::where('screen_type', $screenType)->where('is_public', $isPublic)->where('is_default_template', 1)->update(['is_default_template' => 0]);
+        ScreenTemplates::where('screen_type', $screenType)
+            ->where('is_public', $isPublic)
+            ->where('is_default_template', 1)
+            ->update(['is_default_template' => 0]);
     }
 }
