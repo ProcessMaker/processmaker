@@ -4,18 +4,17 @@
       v-model="templateType"
       @selected-template="handleSelectedTemplate"
     />
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/templates\screen/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
-    />
-    <div
-      v-show="!shouldShowLoader"
-      class="cards-container"
-    >
+    <div class="cards-container">
+      <data-loading
+        v-show="shouldShowLoader"
+        class="w-100"
+        :for="/templates\screen/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
       <b-card-group
+        v-show="!shouldShowLoader"
         v-cloak
         id="screen-template-options"
         deck
@@ -93,14 +92,8 @@ export default {
       // Load from our API client
       ProcessMaker.apiClient
         .get(
-          `${url
-          }&per_page=1000`
-          + `&filter=${
-            this.filter
-          }&order_by=${
-            this.orderBy
-          }&order_direction=${
-            this.orderDirection}`,
+          `${url}&per_page=1000`
+            + `&filter=${this.filter}&order_by=${this.orderBy}&order_direction=${this.orderDirection}`,
         )
         .then((response) => {
           this.screenTemplates = response.data.data;
@@ -114,7 +107,6 @@ export default {
     showPreview(template) {
       this.$emit("show-template-preview", template);
     },
-
   },
 };
 </script>
