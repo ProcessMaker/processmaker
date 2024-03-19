@@ -32,34 +32,10 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
-      screenFields: [],
-      previousTaskId: null,
       userHasInteracted: false,
     };
   },
-  computed: {
-    screenFilteredTaskData() {
-      return this.filterScreenFields(this.task?.data);
-    }
-  },
   methods: {
-    filterScreenFields(taskData)
-    {
-      const filteredData = {};
-      this.screenFields.forEach(field => {
-        _.set(filteredData, field, _.get(taskData, field));
-      });
-      return filteredData;
-    },
-    loadScreenFields() {
-      if (!this.task?.id) {
-        return;
-      }
-      window.ProcessMaker.apiClient.get(`tasks/${this.task.id}/screen_fields`)
-        .then(response => {
-          this.screenFields = response.data;
-        });
-    },
     /**
      * Show the sidebar
      */
@@ -172,7 +148,15 @@ const PreviewMixin = {
     /**
      * Show the frame when this is loaded
      */
-    frameLoaded() {
+    frameLoaded(iframe) {
+      if (iframe === "tasksFrame1") {
+        this.iframe1ContextWindow.event_parent_id = this._uid;
+      }
+
+      if (iframe === "tasksFrame2") {
+        this.iframe2ContextWindow.event_parent_id = this._uid;
+      }
+
       const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
@@ -190,6 +174,7 @@ const PreviewMixin = {
         ProcessMaker.alert(successMessage, 'success');
         this.useThisDataButton = false;
       }
+
     },
   },
 };

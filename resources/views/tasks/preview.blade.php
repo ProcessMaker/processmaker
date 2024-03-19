@@ -145,6 +145,7 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -194,16 +195,22 @@
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
               }
+              if (task?.id) {
+                this.formData = task.data;
+              }
             }
           },
-          formData: {
+          screenFilteredData: {
             deep: true,
-            handler(formData) {
-              this.sendEvent('dataUpdated', formData);
+            handler() {
+              this.sendEvent('dataUpdated', this.screenFilteredData);
             }
           },
         },
         computed: {
+          screenFilteredData () {
+            return this.filterScreenFields(this.formData);
+          },
           taskDefinitionConfig () {
             let config = {};
             if (this.task.definition && this.task.definition.config) {
@@ -243,11 +250,21 @@
           }
         },
         methods: {
-          sendEvent(name, detail) {
+          filterScreenFields(taskData) {
+            const filteredData = {};
+            screenFields.forEach(field => {
+              _.set(filteredData, field, _.get(taskData, field));
+            });
+            return filteredData;
+          },
+          sendEvent(name, data) {
               const event = new CustomEvent(name, {
-                detail: detail,
+                detail: {
+                  event_parent_id: window.event_parent_id,
+                  data: data
+                },
               });
-              window.top.dispatchEvent(event);
+              window.parent.dispatchEvent(event);
           },
           sendUserHasInteracted() {
             if (!this.userHasInteracted) {

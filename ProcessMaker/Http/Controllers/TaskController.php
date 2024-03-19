@@ -114,6 +114,7 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenVersion ? $screenVersion->fields->map(fn ($field) => $field->field) : [],
                 ]);
             }
 
