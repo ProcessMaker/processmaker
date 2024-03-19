@@ -440,9 +440,7 @@ class ScreenTemplate implements TemplateInterface
         // Define available options and their corresponding components
         $availableOptions = [
             'CSS' => null, // No component associated'
-            // TODO: Confirm all field components that will be removed
             'Fields' => ['FormInput', 'FormSelectList', 'FormTextArea', 'FormDatePicker', 'FormCheckBox', 'FileUpload'],
-            // TODO: Confirm what components are considered 'layout'
             'Layout' => ['FormMultiColumn'],
         ];
 
@@ -465,11 +463,15 @@ class ScreenTemplate implements TemplateInterface
                     case 'Fields':
                     case 'Layout':
                         // Filter out the items based on the associated components
-                        $filteredItems = array_filter($newScreen->config[0]['items'], function ($item) use ($components) {
-                            return !in_array($item['component'], $components);
-                        });
+                        $filteredItems = array_filter($newScreen->config[0]['items'],
+                            function ($item) use ($components) {
+                                return !in_array($item['component'], $components);
+                            }
+                        );
                         $config[0]['items'] = array_values($filteredItems);
                         $newScreen->config = $config;
+                    default:
+                        break;
                 }
             }
         }
