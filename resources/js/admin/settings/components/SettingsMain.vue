@@ -79,7 +79,7 @@ export default {
 .menu {
   min-width: 304px;
   padding-top: 16px;
-  height: calc(100vh - 155px);
+  height: calc(100vh - 150px);
   overflow-y: auto;
 }
 .menu-title {
@@ -93,5 +93,7 @@ export default {
 .setting-info {
   width: 100%;
   margin-right: 16px;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 </style>

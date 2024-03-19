@@ -91,14 +91,18 @@ export default {
       });
     },
     orderGroupAlphabetic(groups) {
-      const auxArr = [];
-      const newGroups = [];
-      groups.forEach((item) => {
-        auxArr.push(item.id);
-      });
-      auxArr.sort((a, b) => a - b);
-      auxArr.forEach((item) => {
-        newGroups.push({ id: item, name: item });
+      const newGroups = groups.sort((a, b) => {
+        // Ignore upper and lowercase
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        // names must be equal
+        return 0;
       });
       return newGroups;
     },
