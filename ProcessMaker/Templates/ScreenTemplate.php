@@ -498,7 +498,10 @@ class ScreenTemplate implements TemplateInterface
     {
         if (in_array($item['component'], ['BFormComponent', 'BWrapperComponent'])) {
             // Check if the bootstrapComponent is in the specified list for BFormComponent or BWrapperComponent
-            if (isset($item['config']['bootstrapComponent']) && in_array($item['config']['bootstrapComponent'], $components[$item['component']]['bootstrapComponent'])) {
+            if (isset($item['config']['bootstrapComponent'])
+                && in_array($item['config']['bootstrapComponent'],
+                    $components[$item['component']]['bootstrapComponent'])
+            ) {
                 return true;
             }
         } else {
