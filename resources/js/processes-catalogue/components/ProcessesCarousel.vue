@@ -3,6 +3,7 @@
     <b-carousel
       id="processes-carousel"
       v-model="slide"
+      no-animation
       :interval="interval"
       indicators
       img-height="400px"
