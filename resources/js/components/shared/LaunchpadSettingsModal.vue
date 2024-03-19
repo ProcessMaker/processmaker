@@ -590,7 +590,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 label {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
