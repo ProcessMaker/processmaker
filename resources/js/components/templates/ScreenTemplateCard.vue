@@ -67,7 +67,7 @@ export default {
     },
     defaultTemplateId(newValue, oldValue) {
       if (newValue === undefined && oldValue === null || newValue === null && oldValue === undefined) {
-        // TODO: Look into what is causing the blanktemplate id to be undefined when it should just be null
+        return;
       } else if (newValue !== oldValue){
         if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
           this.isDefaultTemplate = false;
