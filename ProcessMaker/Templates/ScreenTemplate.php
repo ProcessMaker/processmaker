@@ -496,13 +496,16 @@ class ScreenTemplate implements TemplateInterface
 
     public function checkNestedComponents($item, $components)
     {
-        if ($item['component'] === 'BFormComponent' || $item['component'] === 'BWrapperComponent') {
-            if (in_array($item['config']['bootstrapComponent'], $components[$item['component']]['bootstrapComponent'])) {
+        if (in_array($item['component'], ['BFormComponent', 'BWrapperComponent'])) {
+            // Check if the bootstrapComponent is in the specified list for BFormComponent or BWrapperComponent
+            if (isset($item['config']['bootstrapComponent']) && in_array($item['config']['bootstrapComponent'], $components[$item['component']]['bootstrapComponent'])) {
                 return true;
             }
-        }
-        if (in_array($item['component'], $components)) {
-            return true;
+        } else {
+            // Check if the component is directly in the specified list
+            if (in_array($item['component'], $components)) {
+                return true;
+            }
         }
 
         return false;

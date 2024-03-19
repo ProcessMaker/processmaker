@@ -5,7 +5,11 @@ return function () {
         'CSS' => null,
         'Layout' => [
             'FormMultiColumn',
-            'BFormComponent' => ['bootstrapComponent' => 'b-table'],
+            'BFormComponent' => [
+                'bootstrapComponent' => [
+                    'b-table',
+                ],
+            ],
         ],
         'Fields' => [
             'FormInput',
