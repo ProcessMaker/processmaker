@@ -188,10 +188,10 @@ export default {
       return this.screenTemplates.find(template => template.id === templateId && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic);
     },
     getPreviousDefaultTemplate(currentTemplateId) {
-      return this.screenTemplates.find(template => {
+      return this.screenTemplates.find(template =>
         (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic) ||
         (!template.hasOwnProperty('id') && template.is_default_template === 1 && template.screen_type == this.selectedScreenType && template.is_public === this.isDefaultTemplatePublic)
-      });
+      );
     },
     updateTemplateInArray(updatedTemplate) {
       const index = this.screenTemplates.indexOf(updatedTemplate);
