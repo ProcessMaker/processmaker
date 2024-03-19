@@ -42,7 +42,7 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId"],
+  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType"],
   data() {
     return {
       isDefaultTemplate: false,
@@ -66,13 +66,16 @@ export default {
       }
     },
     defaultTemplateId(newValue, oldValue) {
-      if (newValue === undefined && oldValue === null) {
+      if (newValue === undefined && oldValue === null || newValue === null && oldValue === undefined) {
         // TODO: Look into what is causing the blanktemplate id to be undefined when it should just be null
       } else if (newValue !== oldValue){
         if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
           this.isDefaultTemplate = false;
         }
       } 
+    },
+    defaultTemplateScreenType() {
+      this.updateDefaultTemplateStatus();
     }
   },
   methods: {
@@ -83,10 +86,10 @@ export default {
       this.$emit("template-selected", this.template.id);
     },
     updateDefaultTemplateStatus() {
-      if (this.defaultTemplateId === null && !this.template.hasOwnProperty("id")) {
+      if ((this.defaultTemplateId === null || this.defaultTemplateId === undefined) && this.template.screen_type == this.defaultTemplateScreenType.toString() && !this.template.hasOwnProperty("id")) {
         this.isDefaultTemplate = true
       } else {
-        this.isDefaultTemplate = !!this.template.is_default_template;
+        this.isDefaultTemplate = this.template.screen_type === this.defaultTemplateScreenType.toString() && !!this.template.is_default_template;
       }
       
     },

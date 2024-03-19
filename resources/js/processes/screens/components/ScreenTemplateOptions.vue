@@ -24,6 +24,7 @@
           :type="type"
           :template="template"
           :default-template-id="defaultTemplateId"
+          :default-template-screen-type="selectedScreenType"
           :isActive="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
@@ -51,7 +52,7 @@ export default {
       screenTemplates: [],
       blankTemplate: [
         {
-          asset_type: this.selectedScreenType,
+          screen_type: this.selectedScreenType,
           name: "Blank Template",
           description: "Creates a blank screen.",
           is_public: this.templateType,
@@ -78,13 +79,13 @@ export default {
   },
   methods: {
     getDefaultTemplates() {
-      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1);
+      const defaultTemplate = this.screenTemplates.find((template) => template.is_default_template === 1 && template.screen_type == this.selectedScreenType );
       if (defaultTemplate) {
         this.defaultTemplateId = defaultTemplate.id;
       } else {
         this.defaultTemplateId = null;
       }
-      console.log("===== GET DEFAULT TEMPLATES", this.defaultTemplateId);
+      console.log("===== GET DEFAULT TEMPLATES", defaultTemplate, this.screenTemplates);
     },
     handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
@@ -119,10 +120,11 @@ export default {
           this.orderDirection
         )
         .then(response => {
+          this.blankTemplate[0].screen_type = this.selectedScreenType;
           this.screenTemplates = this.blankTemplate.concat(response.data.data);
           this.apiDataLoading = false;
           this.apiNoResults = false;
-          this.getDefaultTemplates(this.screenTemplates);
+          this.getDefaultTemplates();
         })
         .finally(() => {
           this.loading = false;
@@ -173,15 +175,15 @@ export default {
       this.$emit("selected-default-template", this.defaultTemplateId);
     },
     getBlankTemplate() {
-      return this.screenTemplates.find(template => !template.hasOwnProperty('id'));
+      return this.screenTemplates.find(template => !template.hasOwnProperty('id') && template.screen_type == this.selectedScreenType);
     },
     getTemplateById(templateId) {
-      return this.screenTemplates.find(template => template.id === templateId);
+      return this.screenTemplates.find(template => template.id === templateId && template.screen_type == this.selectedScreenType);
     },
     getPreviousDefaultTemplate(currentTemplateId) {
       return this.screenTemplates.find(template => {
-        (template.id !== currentTemplateId && template.is_default_template === 1) ||
-        (!template.hasOwnProperty('id') && template.is_default_template === 1)
+        (template.id !== currentTemplateId && template.is_default_template === 1 && template.screen_type == this.selectedScreenType) ||
+        (!template.hasOwnProperty('id') && template.is_default_template === 1 && template.screen_type == this.selectedScreenType)
       });
     },
     updateTemplateInArray(updatedTemplate) {
