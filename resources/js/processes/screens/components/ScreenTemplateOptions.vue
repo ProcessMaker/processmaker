@@ -11,7 +11,10 @@
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="cards-container">
+    <div
+      v-show="!shouldShowLoader"
+      class="cards-container"
+    >
       <b-card-group
         v-cloak
         id="screen-template-options"
@@ -19,10 +22,10 @@
         class="screen-template-options justify-content-space-between"
       >
         <template-select-card
-          v-for="(template, index) in screenTemplates"
+          v-for="(screenTemplate, index) in screenTemplates"
           :key="index"
           :type="type"
-          :template="template"
+          :template="screenTemplate"
           @show-template-preview="showPreview"
         />
       </b-card-group>
@@ -39,7 +42,12 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 export default {
   components: { TemplateTypeDropdown, TemplateSelectCard },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["selectedScreenType"],
+  props: {
+    selectedScreenType: {
+      type: String,
+      default: "FORM",
+    },
+  },
   data() {
     return {
       filter: "",
@@ -85,16 +93,16 @@ export default {
       // Load from our API client
       ProcessMaker.apiClient
         .get(
-          url +
-          "&per_page=1000" +
-          "&filter=" +
-          this.filter +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection
+          `${url
+          }&per_page=1000`
+          + `&filter=${
+            this.filter
+          }&order_by=${
+            this.orderBy
+          }&order_direction=${
+            this.orderDirection}`,
         )
-        .then(response => {
+        .then((response) => {
           this.screenTemplates = response.data.data;
           this.apiDataLoading = false;
           this.apiNoResults = false;
@@ -104,8 +112,8 @@ export default {
         });
     },
     showPreview(template) {
-      this.$emit('show-template-preview', template);
-    }
+      this.$emit("show-template-preview", template);
+    },
 
   },
 };
