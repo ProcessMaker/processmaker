@@ -448,27 +448,29 @@ class ScreenTemplate implements TemplateInterface
         $newScreen = Screen::findOrFail($screenId);
         $config = $newScreen->config;
 
-        // Iterate through available options to handle each one
-        foreach ($availableOptions as $option => $components) {
-            // Check if the current options is in the template options
-            if (!in_array($option, $templateOptions)) {
-                // Handle the option accordingly
-                switch($option) {
-                    case 'CSS':
-                        $newScreen->custom_css = null;
-                        break;
-                    case 'Fields':
-                    case 'Layout':
-                        // Filter out the items based on the associated components
-                        $filteredItems = array_filter($newScreen->config[0]['items'],
-                            function ($item) use ($components) {
-                                return !$this->checkNestedComponents($item, $components);
-                            }
-                        );
-                        $config[0]['items'] = array_values($filteredItems);
-                        $newScreen->config = $config;
-                    default:
-                        break;
+        if (is_array($templateOptions)) {
+            // Iterate through available options to handle each one
+            foreach ($availableOptions as $option => $components) {
+                // Check if the current options is in the template options
+                if (!in_array($option, $templateOptions)) {
+                    // Handle the option accordingly
+                    switch($option) {
+                        case 'CSS':
+                            $newScreen->custom_css = null;
+                            break;
+                        case 'Fields':
+                        case 'Layout':
+                            // Filter out the items based on the associated components
+                            $filteredItems = array_filter($newScreen->config[0]['items'],
+                                function ($item) use ($components) {
+                                    return !$this->checkNestedComponents($item, $components);
+                                }
+                            );
+                            $config[0]['items'] = array_values($filteredItems);
+                            $newScreen->config = $config;
+                        default:
+                            break;
+                    }
                 }
             }
         }
