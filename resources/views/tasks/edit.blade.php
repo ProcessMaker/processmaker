@@ -163,6 +163,7 @@
                                   <button
                                     type="button"
                                     class="btn btn-block button-actions"
+                                    :class="{ 'button-priority': isPriority }"
                                     @click="addPriority"
                                   >
                                   <img
@@ -803,6 +804,10 @@
   .button-group {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+  .button-priority {
+    background-color: #FEF2F3;
+    color: #C56363;
   }
 </style>
 @endsection
