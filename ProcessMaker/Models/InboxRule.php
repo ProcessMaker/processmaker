@@ -16,6 +16,7 @@ class InboxRule extends ProcessMakerModel
 
     protected $casts = [
         'data' => 'array',
+        'submit_button' => 'array',
         'end_date' => 'datetime',
         'active' => 'boolean',
         'mark_as_priority' => 'boolean',

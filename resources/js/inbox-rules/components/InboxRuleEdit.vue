@@ -134,7 +134,9 @@
         <template v-slot:label>
           {{ $t('Submit action') }}
         </template>
-        <b-form-input :placeholder="$t('Waiting selection')">
+        <b-form-input :placeholder="$t('Waiting selection')"
+                      v-model="submitButtonLabel"
+                      :readonly="true">
         </b-form-input>
       </b-form-group>
 
@@ -224,7 +226,8 @@
         ruleName: "",
         ruleNameState: null,
         makeDraft: false,
-        submitAfterFilling: false
+        submitAfterFilling: false,
+        submitButtonLabel: ""
       };
     },
     watch: {
@@ -239,6 +242,9 @@
           this.setInboxRuleData();
         },
         deep: true
+      },
+      submitButton(value) {
+        this.submitButtonLabel = this.submitAfterFilling ? value.label : "";
       }
     },
     mounted() {
