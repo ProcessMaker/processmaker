@@ -60,29 +60,30 @@ class InboxRulesController extends Controller
     {
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
-            'columns' => $request->columns,
-            'advanced_filter' => $request->advanced_filter,
-            'pmql' => $request->get('pmql') ?? '',
+            'columns' => $request->input('columns'),
+            'advanced_filter' => $request->input('advanced_filter'),
+            'pmql' => $request->input('pmql') ?? '',
             'user_id' => $request->user()->id,
         ]);
 
-        $request->applyToCurrentInboxMatchingTasks;
-        $request->applyToFutureTasks;
-        $data = [
-            'name' => $request->ruleName,
+        InboxRule::create([
+            'name' => $request->input('name'),
             'user_id' => $request->user()->id,
-            'active' => true,
-            'end_date' => $request->deactivationDate,
+            'active' => $request->input('active', false),
+            'end_date' => $request->input('end_date'),
             'saved_search_id' => $savedSearch->id,
-            'process_request_token_id' => $request->taskId,
-            'mark_as_priority' => $request->markAsPriority,
-            'reassign_to_user_id' => $request->selectedPerson,
-            'make_draft' => $request->get('make_draft', false),
-            'submit_data' => true,
-            'submit_button' => $request->get('submit_button', null),
-            'data' => $request->get('data', null),
-        ];
-        InboxRule::create($data);
+            'process_request_token_id' => $request->input('process_request_token_id'),
+            'mark_as_priority' => $request->input('mark_as_priority', false),
+            'reassign_to_user_id' => $request->input('reassign_to_user_id'),
+            'make_draft' => $request->input('make_draft', false),
+            'submit_data' => $request->input('submit_data', false),
+            'submit_button' => $request->input('submit_button'),
+            'data' => $request->input('data'),
+        ]);
+
+        if ($request->get('apply_to_current_tasks', false)) {
+            // $inboxRule->applyToExistingTasks();
+        }
 
         return response([], 204);
     }
@@ -94,25 +95,28 @@ class InboxRulesController extends Controller
      * @param int $idInboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $idInboxRule)
+    public function update(Request $request, InboxRule $inboxRule)
     {
-        $request->applyToCurrentInboxMatchingTasks;
-        $request->applyToFutureTasks;
-        $data = [
-            'name' => $request->ruleName,
-            'user_id' => 2,
-            'active' => true,
-            'end_date' => $request->deactivationDate,
-            'saved_search_id' => 1,
-            'process_request_token_id' => 1,
-            'mark_as_priority' => $request->markAsPriority,
-            'reassign_to_user_id' => $request->selectedPerson,
-            'make_draft' => $request->get('make_draft', false),
-            'submit_data' => true,
-            'submit_button' => $request->get('submit_button', null),
-            'data' => $request->get('data', null),
-        ];
-        InboxRule::findOrFail($idInboxRule)->update($data);
+        $inboxRule->update([
+            'name' => $request->input('name'),
+            'active' => $request->input('active', false),
+            'end_date' => $request->input('end_date'),
+            'mark_as_priority' => $request->input('mark_as_priority', false),
+            'reassign_to_user_id' => $request->input('reassign_to_user_id'),
+            'make_draft' => $request->input('make_draft', false),
+            'submit_data' => $request->input('submit_data', false),
+            'submit_button' => $request->input('submit_button'),
+            'data' => $request->input('data'),
+        ]);
+
+        $inboxRule->savedSearch->update([
+            'columns' => $request->input('columns'),
+            'advanced_filter' => $request->input('advanced_filter'),
+        ]);
+
+        if ($request->get('apply_to_current_tasks', false)) {
+            // $inboxRule->applyToExistingTasks();
+        }
 
         return response([], 204);
     }
@@ -123,7 +127,7 @@ class InboxRulesController extends Controller
      * @param int $idInboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($idInboxRule)
+    public function destroy(InboxRule $inboxRule)
     {
         InboxRule::findOrFail($idInboxRule)->delete();
 

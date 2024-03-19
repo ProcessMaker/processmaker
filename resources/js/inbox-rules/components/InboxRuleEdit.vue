@@ -41,8 +41,8 @@
           {{ $t('Apply to current inbox matching tasks') }} ({{ count }})
         </b-form-checkbox>
         <b-form-checkbox v-model="applyToFutureTasks"
-                         value="true"
-                         unchecked-value="false">
+                         :value=true
+                         :unchecked-value=false>
           {{ $t('Apply to Future tasks') }}
         </b-form-checkbox>
 
@@ -168,7 +168,7 @@
             </b-button>
             <b-button variant="primary"
                       @click="onSave">
-              {{ $t('Create Rule') }}
+              {{ inboxRule.id ? $t('Update Rule') : $t('Create Rule') }}
             </b-button>
           </div>
         </div>
@@ -218,7 +218,7 @@
       return {
         markAsPriority: false,
         reassign: false,
-        reassignToUserId: "",
+        reassignToUserId: null,
         persons: [],
         applyToCurrentInboxMatchingTasks: false,
         applyToFutureTasks: false,
@@ -231,6 +231,16 @@
       };
     },
     watch: {
+      makeDraft() {
+        if (!this.makeDraft) {
+          this.submitAfterFilling = false;
+        }
+      },
+      reassign() {
+        if (!this.reassign) {
+          this.reassignToUserId = null;
+        }
+      },
       savedSearchData: {
         handler() {
         },
@@ -261,16 +271,17 @@
           return;
         }
         let params = {
-          markAsPriority: this.markAsPriority,
-          reassignToUserId: this.reassignToUserId,
-          applyToCurrentInboxMatchingTasks: this.applyToCurrentInboxMatchingTasks,
-          applyToFutureTasks: this.applyToFutureTasks,
-          deactivationDate: this.deactivationDate,
-          ruleName: this.ruleName,
-          taskId: this.taskId,
+          mark_as_priority: this.markAsPriority,
+          reassign_to_user_id: this.reassignToUserId,
+          apply_to_current_tasks: this.applyToCurrentInboxMatchingTasks,
+          active: this.applyToFutureTasks,
+          end_date: this.deactivationDate,
+          name: this.ruleName,
+          process_request_token_id: this.taskId,
           data: this.data,
           submit_button: this.submitButton,
           make_draft: this.makeDraft,
+          submit_data: this.submitAfterFilling,
           ...this.savedSearchData,
         };
         if (this.inboxRule) {
@@ -315,6 +326,9 @@
           this.markAsPriority = this.inboxRule.mark_as_priority;
           this.deactivationDate = this.inboxRule.end_date;
           this.ruleName = this.inboxRule.name;
+          this.makeDraft = this.inboxRule.make_draft;
+          this.submitAfterFilling = this.inboxRule.submit_data;
+          this.applyToFutureTasks = this.inboxRule.active;
         }
       },
       requestUser(filter) {

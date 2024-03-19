@@ -192,11 +192,11 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Inbox Rules
     Route::prefix('tasks/rules')->group(function () {
         Route::get('/', [InboxRulesController::class, 'index'])->name('inboxrules.index');
-        Route::get('/{inbox_rule_id}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
+        Route::get('/{inbox_rule}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
         Route::post('/', [InboxRulesController::class, 'store'])->name('inboxrules.store');
-        Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
-        Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
-        Route::put('/{inbox_rule_id}/update-active', [InboxRulesController::class, 'updateActive'])->name('inboxrules.update-active');
+        Route::put('/{inbox_rule}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
+        Route::delete('/{inbox_rule}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule}/update-active', [InboxRulesController::class, 'updateActive'])->name('inboxrules.update-active');
     });
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
