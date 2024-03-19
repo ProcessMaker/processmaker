@@ -108,6 +108,11 @@
                 return this.templateData?.thumbnails.length > 0;
             }
         },
+        watch: {
+            selectedTemplateOptions() {
+                this.$emit('template-options-selected', this.selectedTemplateOptions);
+            }
+        },
         methods: {
             hidePreview() {
                 this.$emit('hide-template-preview');

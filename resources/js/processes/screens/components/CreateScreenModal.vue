@@ -43,6 +43,7 @@
             v-if="showTemplatePreview"
             :template="selectedTemplate"
             @hide-template-preview="hidePreview"
+            @template-options-selected="handleSelectedTemplateOptions"
           />
         </b-col>
         <b-col cols="5" class="form-style-col">
@@ -220,6 +221,7 @@ export default {
         description: null,
         projects: [],
         templateId: null,
+        templateOptions: JSON.stringify(['CSS', 'Layout', 'Fields']),
       };
     },
     resetErrors() {
@@ -325,16 +327,22 @@ export default {
         window.location = url;
       }
     },
-    showPreview(template) {
+    showPreview(data) {
       this.showTemplatePreview = true;
-      this.selectedTemplate = template;
+      this.selectedTemplate = data;
+      this.formData.templateId = data.template.id;
     },
     hidePreview() {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
+      this.formData.templateId = null;
     },
     handleSelectedTemplate(templateId) {
       this.formData.templateId =  templateId;
+      this.formData.templateOptions = JSON.stringify(['CSS', 'Layout', 'Fields']);
+    },
+    handleSelectedTemplateOptions(options) {
+      this.formData.templateOptions = JSON.stringify(options);
     }
   },
 };
