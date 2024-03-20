@@ -66,7 +66,7 @@ class InboxRulesController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        InboxRule::create([
+        $inboxRule = InboxRule::create([
             'name' => $request->input('name'),
             'user_id' => $request->user()->id,
             'active' => $request->input('active', false),
