@@ -263,8 +263,6 @@ export default {
         {
           value: "edit-template",
           content: "Edit Template",
-          link: true,
-          href: "/designer/screen-builder/{{id}}/edit",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
         },
