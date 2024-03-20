@@ -76,11 +76,9 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
-                  
                     <span>
                       {{ row[header.field] }}
                     </span>
-                  
                   </div>
                   <b-tooltip
                     v-if="header.truncate"
