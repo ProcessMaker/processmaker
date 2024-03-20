@@ -135,7 +135,7 @@ export default {
       // What page of results we are on
       page: 1,
       // How many items per page
-      perPage: 10,
+      perPage: 15,
       // Our loading flag
       loading: false,
       // What column to order by (default of name)

@@ -119,6 +119,24 @@ class ScreenTemplateTest extends TestCase
         $this->assertSame($screenTemplate->is_public, 1);
     }
 
+    public function testCreateScreenFromTemplate()
+    {
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $screen_category_id = ScreenCategory::factory()->create()->id;
+        $user = User::factory()->create();
+
+        $route = route('api.template.create', ['screen', $screenTemplateId]);
+        $data = [
+            'title' => 'Test Screen Creation',
+            'description' => 'Test Screen Creation from Template',
+            'screen_category_id' => $screen_category_id,
+            'type' => 'FORM',
+            'templateId' => $screenTemplateId,
+        ];
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+    }
+
     public function testShowScreenTemplate()
     {
         // Create screen and save it in the manifest
