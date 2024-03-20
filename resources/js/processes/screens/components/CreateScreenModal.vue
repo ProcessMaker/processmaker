@@ -39,7 +39,6 @@
               @selected-template="handleSelectedTemplate"
               @selected-default-template="handleSelectedDefaultTemplate"
               @default-template-type-changed="handleDefaultTemplateType"
-              
             />
           </div>
           <preview-template
@@ -254,11 +253,16 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      
-      if (this.formData.templateId !== null || this.formData.defaultTemplateId !== null) {
+      if (this.formData.templateId !== null && this.formData.templateId !== undefined && this.formData.defaultTemplateId !== null) {
         this.handleCreateFromTemplate();
-      } else {
-        this.handleCreateFromBlank()
+      } else if (this.formData.defaultTemplateId !== null && this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId !== null) {
+        this.handleCreateFromTemplate();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId === null) {
+        this.handleCreateFromBlank();
       }
     },
     handleCreateFromBlank() {
@@ -272,7 +276,7 @@ export default {
           if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
-      });
+        });
     },
     handleCreateFromTemplate() {
       ProcessMaker.apiClient.post(
@@ -344,9 +348,9 @@ export default {
       this.formData.defaultTemplateId = templateId;
     },
     handleDefaultTemplateType(type) {
-      const isPublic = type === 'Public Templates' ? 1 : 0;
+      const isPublic = type === "Public Templates" ? 1 : 0;
       this.formData.is_public = isPublic;
-    }
+    },
   },
 };
 </script>
