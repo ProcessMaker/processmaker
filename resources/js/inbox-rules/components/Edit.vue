@@ -137,7 +137,7 @@
         this.taskId = this.newTaskId;
       }
       if (this.ruleId) {
-        window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
+        ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
                   this.data = this.inboxRule.data;

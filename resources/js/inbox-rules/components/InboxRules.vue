@@ -116,8 +116,7 @@
                 + "order_direction=" + this.order_direction + "&"
                 + "filter=" + this.filter;
 
-        ProcessMaker.apiClient
-                .get(url)
+        ProcessMaker.apiClient.get(url)
                 .then((response) => {
                   this.responseData = response.data;
                 })
@@ -141,8 +140,7 @@
         this.$router.push({name: "edit", params: {id: row.id}});
       },
       onRemoveRule(row) {
-        window.ProcessMaker.apiClient
-                .delete("/tasks/rules/" + row.id)
+        ProcessMaker.apiClient.delete("/tasks/rules/" + row.id)
                 .then(response => {
                   let message = "The inbox rule '{{name}}' was removed.";
                   message = this.$t(message, {name: row.name});
@@ -166,8 +164,7 @@
         let params = {
           active: value
         };
-        window.ProcessMaker.apiClient
-                .put("/tasks/rules/" + row["id"] + "/update-active", params)
+        ProcessMaker.apiClient.put("/tasks/rules/" + row["id"] + "/update-active", params)
                 .then(response => {
                   let message = value ? "Rule activated" : "Rule deactivated";
                   ProcessMaker.alert(this.$t(message), "success");

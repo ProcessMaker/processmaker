@@ -205,22 +205,21 @@
           operator: "=",
           value: window.ProcessMaker.user.id,
           _column_label: "User ID"
-        }
+        };
       },
       statusFilter() {
         return {
           subject: {
-            type: "Status",
+            type: "Status"
           },
           operator: "=",
           value: 'In Progress',
           _column_label: "Status"
-        }
+        };
       },
       loadSavedSearch() {
         this.ready = false;
-        return window.ProcessMaker.apiClient
-                .get("saved-searches/" + this.savedSearchId)
+        return ProcessMaker.apiClient.get("saved-searches/" + this.savedSearchId)
                 .then(response => {
                   this.savedSearch = response.data;
                   this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
@@ -238,8 +237,7 @@
                 _.get(window, 'Processmaker.defaultColumns', [])
                 .filter(c => c.field !== 'is_priority');
 
-        return window.ProcessMaker.apiClient
-                .get("tasks/" + this.taskId)
+        return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {
                   this.task = response.data;
                   this.savedSearchAdvancedFilter = this.defaultTaskFilters();
@@ -295,7 +293,7 @@
       },
       taskTitle() {
         if (this.task) {
-          return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name})
+          return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name});
         }
         return '';
       }

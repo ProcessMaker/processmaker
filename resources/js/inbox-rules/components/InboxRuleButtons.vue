@@ -8,21 +8,25 @@
       {{ $t('Clear unsaved filters') }}
     </b-button>
     <b-dropdown v-if="showSavedSearchSelector"
-                @input="$emit('saved-search-id-changed', $event)"
                 size="sm"
-                split
-                split-variant="light"
                 variant="light"
-                text="Load a saved search"
+                split-variant="light"
+                split
                 class="button-border">
       <template v-slot:button-content>
-        <img src="/img/funnel-fill.svg" :alt="$t('Load a saved search')"/>
-        <span class="button-font">
-          {{ $t('Load a saved search') }}
-        </span>
+        <div class="text-left">
+          <img src="/img/funnel-fill.svg" :alt="$t('Load a saved search')"/>
+          <span class="button-font">
+            {{ selectedOption ? selectedOption.text : $t('Load a saved search') }}
+          </span>
+        </div>
       </template>
-      <b-dropdown-item href="#">Action</b-dropdown-item>
-      <b-dropdown-item href="#">Another action</b-dropdown-item>
+      <b-dropdown-item v-for="option in options"
+                       :key="option.value" 
+                       :value="option"
+                       @click="onSelect(option)">
+        {{ option.text }}
+      </b-dropdown-item>
     </b-dropdown>
     <b-button size="sm"
               variant="light"
@@ -45,11 +49,39 @@
     },
     data() {
       return {
+        selectedOption: null,
+        options: []
       };
     },
     mounted() {
+      this.requestSavedSearch("");
     },
     methods: {
+      onSelect(option) {
+        this.selectedOption = option;
+        this.$emit('saved-search-id-changed', option.value);
+      },
+      requestSavedSearch(filter) {
+        let url = "saved-searches" +
+                "?include=reports,user_options" +
+                "&page=1" +
+                "&per_page=10" +
+                "&filter=" + filter +
+                "&type=task" +
+                "&subset=mine" +
+                "&order_by=title" +
+                "&order_direction=asc";
+        ProcessMaker.apiClient.get(url)
+                .then(response => {
+                  this.options = [];
+                  response?.data?.data?.forEach(item => {
+                    this.options.push({
+                      text: item.title,
+                      value: item.id
+                    });
+                  });
+                });
+      }
     }
   };
 </script>
@@ -58,6 +90,9 @@
   .button-border > button {
     border-top: 0px;
     border-bottom: 0px;
+  }
+  .button-border button:first-child {
+    min-width: 172px;
   }
 </style>
 <style scoped>

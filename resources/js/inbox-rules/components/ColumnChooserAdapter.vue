@@ -55,8 +55,7 @@ export default {
     if (this.savedSearchId) {
       savedSearchIdRoute = this.savedSearchId + '/';
     }
-    window.ProcessMaker.apiClient
-      .get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
+    ProcessMaker.apiClient.get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
         params: {
           pmql: this.pmql,
           advanced_filter: this.advancedFilter,

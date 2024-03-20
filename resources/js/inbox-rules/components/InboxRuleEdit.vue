@@ -169,7 +169,7 @@
             </b-button>
             <b-button variant="primary"
                       @click="onSave">
-              {{ inboxRule.id ? $t('Update Rule') : $t('Create Rule') }}
+              {{ inboxRule && inboxRule.id ? $t('Update Rule') : $t('Create Rule') }}
             </b-button>
           </div>
         </div>
@@ -311,8 +311,7 @@
           ...this.savedSearchData,
         };
         if (this.inboxRule) {
-          window.ProcessMaker.apiClient
-                  .put('/tasks/rules/' + this.inboxRule.id, params)
+          ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
                   .then(response => {
                     this.$router.push({name: 'index'});
 
@@ -325,8 +324,7 @@
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         } else {
-          window.ProcessMaker.apiClient
-                  .post('/tasks/rules', params)
+          ProcessMaker.apiClient.post('/tasks/rules', params)
                   .then(response => {
                     this.$router.push({name: 'index'});
 
