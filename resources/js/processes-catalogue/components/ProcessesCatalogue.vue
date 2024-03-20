@@ -6,8 +6,8 @@
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
-    <b-row>
-      <b-col cols="2">
+    <div class="d-flex">
+      <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="categoryList"
@@ -24,8 +24,8 @@
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
-      </b-col>
-      <b-col cols="10">
+      </div>
+      <div class="processes-info">
         <div
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
           class="d-flex justify-content-center py-5"
@@ -54,8 +54,8 @@
             :template="guidedTemplates"
           />
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -252,6 +252,11 @@ export default {
 </script>
 
 <style scoped>
+.menu {
+  min-width: 304px;
+  height: calc(100vh - 145px);
+  overflow-y: auto;
+}
 .menu-title {
   color: #556271;
   font-size: 22px;
@@ -259,5 +264,12 @@ export default {
   font-weight: 600;
   line-height: 46.08px;
   letter-spacing: -0.44px;
+}
+.processes-info {
+  width: 100%;
+  margin-right: 16px;
+  height: calc(100vh - 145px);
+  overflow-y: auto;
+  padding-left: 32px;
 }
 </style>
