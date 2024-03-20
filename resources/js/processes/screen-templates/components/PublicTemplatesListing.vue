@@ -68,9 +68,11 @@
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
                   >
+                  
                     <span>
                       {{ row[header.field] }}
                     </span>
+                  
                   </div>
                   <b-tooltip
                     v-if="header.truncate"
@@ -238,9 +240,21 @@ export default {
           this.loading = false;
         });
     },
-    onPublicTemplateNavigate() {
-      console.log('Hit public template Ellipsis Menu');
+    onPublicTemplateNavigate(action, data, index) {
+      switch (action.value) {
+        case "edit-template":
+          this.goToScreenBuilder(data.id);
+          break;
+      }
     },
+    goToScreenBuilder(data) {
+      ProcessMaker.apiClient.get(`/screen-builder/screen/${data}`)
+      .then((response) => {
+        window.location = `/designer/screen-builder/${response.data.id}/edit`
+      }).catch(error => {
+        ProcessMaker.alert(error.response?.data?.message, "danger");
+      });
+    }
   },
 };
 </script>

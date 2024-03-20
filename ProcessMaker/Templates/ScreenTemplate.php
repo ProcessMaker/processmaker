@@ -100,6 +100,7 @@ class ScreenTemplate implements TemplateInterface
         if ($screen) {
             return ['id' => $screen->id];
         }
+        // dd('No template found');
         // Otherwise we need to import the template and create a new screen
         $payload = json_decode($template->manifest, true);
         $options = new Options([]);
@@ -107,6 +108,7 @@ class ScreenTemplate implements TemplateInterface
         $importer->doImport();
 
         $screen = Screen::where('uuid', $importer->payload['root'])->first();
+        $screen->update(['is_template' => 1, 'title' => $template->name, 'description' => $template->description]);
         ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $screen->uuid]);
 
         // Return an array with the process ID
