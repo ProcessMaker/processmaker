@@ -189,8 +189,19 @@ export default {
       window.Echo.private(channel).listen(
         translationEvent,
         (response) => {
-          this.fetchPending();
-          this.fetch();
+          const language = response.data.language;
+          this.translatingLanguages.forEach(lang => {
+            if (lang.language === language) {
+              lang.stream = {
+                data: response.data.progress.progress + '%'
+              };
+              lang.humanLanguage += 'a';
+            }
+          });
+          if (response.data.progress.status === 'completed') {
+            this.fetchPending();
+            this.fetch();
+          }
         },
       );
     },
@@ -357,6 +368,13 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+
+          this.translatingLanguages.forEach(lang => {
+            lang.stream = {
+              data: "5 %",
+            };
+          });
+
           this.removeSocketListeners();
           this.subscribeToEvent();
         });
