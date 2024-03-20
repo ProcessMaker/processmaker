@@ -1,24 +1,29 @@
 <template>
-  <div id="start-events btn-group">
+  <div id="start-events btn-group mx-2">
     <button
       v-if="havelessOneStartEvent"
-      class="btn btn-success btn-lg start-button p-3"
+      class="btn btn-success start-button"
       type="button"
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <span class="px-3"> {{ $t('Start this process') }} </span>
+      <i class="fa fa-play-circle" style="font-size: 16px;" />
+      <span class="pl-2"> {{ $t('Start this process') }} </span>
     </button>
     <button
       v-else
-      class="btn btn-success btn-lg dropdown-toggle start-button p-3"
+      class="btn btn-success btn-lg dropdown-toggle start-button justify-content-between"
       type="button"
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
       @click="getStartEvents()"
     >
-      <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
+      <span>
+        <i class="fa fa-play-circle" style="font-size: 16px;"></i>
+        <span class="pl-2"> {{ $t('Start this process') }} </span>
+      </span>
+      <i class="fas fa-caret-down" style="font-size: 16px;"></i>
     </button>
     <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
       <p
@@ -143,18 +148,30 @@ export default {
 
 <style scoped>
 .start-button {
+  display: flex;
+  align-items: center;
   background: #4EA075;
   border: 0px;
-  width: 294px;
-  font-size: 16px;
+  border-radius: 8px;
+  height: 40px;
+  width: 249px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
   font-weight: 600;
-}
-
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-transform: capitalize;
+  padding: 5px 16px;
+}s
 .scrollable-menu {
     height: auto;
     max-height: 280px;
     overflow-x: hidden;
     width: 294px;
     border-radius: 4px;
+}
+.dropdown-toggle::after {
+    display: none;
 }
 </style>
