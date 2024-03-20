@@ -33,7 +33,7 @@ const PreviewMixin = {
       showUseThisTask: false,
       splitpaneSize: 50,
       propColumns: [],
-      propFilters: [],
+      propFilters: {},
     };
   },
   methods: {
@@ -66,7 +66,21 @@ const PreviewMixin = {
       this.defineNextPrevTask();
     },
     customFilter() {
-      this.propFilters = [
+      // this.propFilters = [
+      //   {
+      //     subject: { type: "Field", value: "process_id" },
+      //     operator: "=",
+      //     value: this.task.process_id,
+      //   },
+      //   {
+      //     subject: { type: "Field", value: "element_id" },
+      //     operator: "=",
+      //     value: this.task.element_id,
+      //   },
+      // ]
+      this.propFilters = {
+        order: { by: "created_at", direction: "desc" },
+        filters:[
         {
           subject: { type: "Field", value: "process_id" },
           operator: "=",
@@ -75,9 +89,9 @@ const PreviewMixin = {
         {
           subject: { type: "Field", value: "element_id" },
           operator: "=",
-          value: this.task.element_id,
-        },
-      ]
+          value: this.task.element_id
+        }],
+      }
     },
     showButton() {
       this.isMouseOver = true;

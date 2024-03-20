@@ -20,13 +20,12 @@
                 return ['Completed Tasks', route('tasks.index', ['status' => 'CLOSED'])];
             }
             return ['To Do Tasks', route('tasks.index')];
-        },
-        $task->processRequest->name =>
-            Auth::user()->can('view', $task->processRequest)
-              ? route('requests.show', ['request' => $task->processRequest->id])
-              : null,
-            __('Quick Fill') => null,
-            '@{{taskTitle}}' => null
+         },
+         $task->processRequest->name =>
+             Auth::user()->can('view', $task->processRequest)
+               ? route('requests.show', ['request' => $task->processRequest->id])
+               : null,
+             __('Quick Fill') => null,
       ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
@@ -50,7 +49,9 @@
       el: "#quickfill",
       data: {
           data: {},
-          filters: [
+          filters: {
+            order: { by: "created_at", direction: "desc" },
+            filters:[
             {
               subject: { type: "Field", value: "process_id" },
               operator: "=",
@@ -60,8 +61,8 @@
               subject: { type: "Field", value: "element_id" },
               operator: "=",
               value: task.element_id
-            },
-          ],
+            }],
+          },
           columns: [
             {
               label: "Case #",
