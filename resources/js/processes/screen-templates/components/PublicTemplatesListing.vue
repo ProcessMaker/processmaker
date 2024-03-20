@@ -219,7 +219,7 @@ export default {
           this.loading = false;
         });
     },
-    onPublicTemplateNavigate(action, data, index) {
+    onTemplateNavigate(action, data, index) {
       switch (action.value) {
         case "edit-template":
           this.goToScreenBuilder(data.id);
