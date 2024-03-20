@@ -1,24 +1,43 @@
 <template>
-  <div>
+  <div class="py-5">
     <div class="d-flex justify-content-center my-5">
-      <i class="empty-processes fa fa-umbrella-beach" />
+      <img
+          class="image d-flex empty-processes"
+          src="/img/launchpad-images/emptyResults.svg"
+          alt="Empty Results"
+        >
     </div>
+    <p class="text-center title-empty">
+      {{ $t("No results to show") }}
+    </p>
     <p class="text-center message-empty">
-      {{ $t("No Processes Available") }}
+      {{ $t("Sorry, we couldn't find any results for your search.") }}
+    </p>
+    <p class="text-center message-empty">
+      {{ $t("Check your spelling or use other terms.") }}
     </p>
   </div>
 </template>
 
 <style scoped>
 .empty-processes {
-  font-size: 200px;
+  height: 118px;
+}
+.title-empty {
+  color: #556271;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: -0.04em;
 }
 .message-empty {
-  color: #000;
-  font-size: 30px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  letter-spacing: -0.6px;
+  color: #556271;
+  margin-bottom: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 27px;
+  letter-spacing: -0.02em;
 }
 </style>

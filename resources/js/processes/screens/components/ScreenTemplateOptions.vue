@@ -4,29 +4,31 @@
       v-model="templateType"
       @selected-template="handleSelectedTemplateType"
     />
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/templates\screen/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
-    />
-    <div v-show="!shouldShowLoader" class="cards-container">
+    <div class="cards-container">
+      <data-loading
+        v-show="shouldShowLoader"
+        class="w-100"
+        :for="/templates\screen/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
       <b-card-group
+        v-show="!shouldShowLoader"
         v-cloak
         id="screen-template-options"
         deck
         class="screen-template-options justify-content-space-between"
       >
         <template-select-card
-          v-for="(template, index) in screenTemplates"
+          v-for="(screenTemplate, index) in screenTemplates"
           :key="index"
           :type="type"
           :template="template"
           :default-template-id="defaultTemplateId"
           :default-template-screen-type="selectedScreenType"
           :is-default-template-public="isDefaultTemplatePublic"
-          :isActive="selectedTemplateId === template.id ? 'active' : ''"
+          :is-active="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
           @selected-default-template="handleSelectedDefaultTemplate"
@@ -45,7 +47,12 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 export default {
   components: { TemplateTypeDropdown, TemplateSelectCard },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["selectedScreenType"],
+  props: {
+    selectedScreenType: {
+      type: String,
+      default: "FORM",
+    },
+  },
   data() {
     return {
       filter: "",
@@ -115,14 +122,8 @@ export default {
       // Load from our API client
       ProcessMaker.apiClient
         .get(
-          url +
-          "&per_page=1000" +
-          "&filter=" +
-          this.filter +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection
+          `${url}&per_page=1000`
+            + `&filter=${this.filter}&order_by=${this.orderBy}&order_direction=${this.orderDirection}`,
         )
         .then(response => {
           this.blankTemplate[0].screen_type = this.selectedScreenType;

@@ -27,16 +27,13 @@
           slot="singleLabel"
           slot-scope="props"
         >
-          <span v-if="props.option.value">
+          <span>
             <img
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
             >
             {{ props.option.label }}
-          </span>
-          <span v-else>
-            {{ placeholder }}
           </span>
         </template>
         <template
@@ -78,6 +75,10 @@ export default {
       icon: null,
       list: {},
       loading: true,
+      defaultIcon: {
+        value:'Default Icon',
+        label: this.$t("Default Icon"),
+      },
       placeholder: this.$t("Select Icon"),
       query: "",
     };
@@ -96,7 +97,7 @@ export default {
     this.list = this.all;
   },
   mounted() {
-    this.icon = this.value ? this.find(this.value) : this.find(this.default);
+    this.icon = this.value ? this.find(this.value) : this.defaultIcon;
   },
   methods: {
     onSearch(query) {
