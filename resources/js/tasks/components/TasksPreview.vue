@@ -146,10 +146,10 @@ export default {
     });
   },
   computed: {
-    iframe1ContextWindow() {
+    iframe1ContentWindow() {
       return this.$refs["tasksFrame1"].firstChild.contentWindow;
     },
-    iframe2ContextWindow() {
+    iframe2ContentWindow() {
       return this.$refs["tasksFrame2"].firstChild.contentWindow;
     },
   },
@@ -166,10 +166,10 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        this.iframe1ContextWindow.dispatchEvent(event);
+        this.iframe1ContentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        this.iframe2ContextWindow.dispatchEvent(event);
+        this.iframe2ContentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {

@@ -53,7 +53,7 @@
           :saved-search-data="savedSearchData"
           :task-id="taskId"
           :data="data"
-          :submit-button="submitButton"
+          :select-submit-button="submitButton"
           @view-name="viewName($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
@@ -140,6 +140,7 @@
         window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
+                  this.data = this.inboxRule.data;
                   this.taskId = this.inboxRule.process_request_token_id;
                 });
       }

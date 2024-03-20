@@ -150,11 +150,11 @@ const PreviewMixin = {
      */
     frameLoaded(iframe) {
       if (iframe === "tasksFrame1") {
-        this.iframe1ContextWindow.event_parent_id = this._uid;
+        this.iframe1ContentWindow.event_parent_id = this._uid;
       }
 
       if (iframe === "tasksFrame2") {
-        this.iframe2ContextWindow.event_parent_id = this._uid;
+        this.iframe2ContentWindow.event_parent_id = this._uid;
       }
 
       const successMessage = this.$t('Task Filled successfully');

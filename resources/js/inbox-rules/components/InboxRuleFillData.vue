@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="fillWithData()" id="formPreview" /> 
+    <b-embed :src="linkTasks" @load="loaded()" ref="preview" /> 
   </div>
 </template>
 
@@ -25,6 +25,9 @@
     computed: {
       linkTasks() {
         return `/tasks/${this.taskId}/edit/preview?dispatchSubmit=1`;
+      },
+      iframeContentWindow() {
+        return this.$refs['preview'].firstChild.contentWindow;
       }
     },
     watch: {
@@ -33,32 +36,38 @@
       }
     },
     mounted() {
-      window.addEventListener('dataUpdated', (event) => {
-        this.formData = event.detail;
+      this.receiveEvent('dataUpdated', (data) => {
+        console.log('dataUpdated', data);
+        this.formData = data;
       });
-      window.addEventListener('formSubmit', (event) => {
-        this.$emit("submit", event.detail);
+      this.receiveEvent('formSubmit', (data) => {
+        this.$emit("submit", data);
       });
     },
     methods: {
       reload() {
-        document.getElementById('formPreview')
-                .contentWindow
-                .location
-                .reload();
+        this.formData = {};
+        this.iframeContentWindow.location.reload();
       },
-      fillWithData() {
-        const data = this.inboxRuleData || {};
-        this.sendEvent("fillData", data);
+      loaded() {
+        console.log("loaded. Inbox rule data is ", JSON.stringify(this.inboxRuleData));
+        this.iframeContentWindow.event_parent_id = this._uid;
+        this.sendEvent("fillData", this.inboxRuleData);
       },
       sendEvent(name, data) {
         const event = new CustomEvent(name, {
           detail: data
         });
-        document.getElementById("formPreview")
-                .contentWindow
-                .dispatchEvent(event);
-      }
+        this.iframeContentWindow.dispatchEvent(event);
+      },
+      receiveEvent(name, callback) {
+        window.addEventListener(name, (event) => {
+          if (event.detail.event_parent_id !== this._uid) {
+            return;
+          }
+          callback(event.detail.data);
+        });
+      },
     }
   }
 </script>

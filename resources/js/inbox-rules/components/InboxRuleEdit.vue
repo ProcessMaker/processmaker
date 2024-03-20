@@ -136,6 +136,7 @@
         </template>
         <b-form-input :placeholder="$t('Waiting selection')"
                       v-model="submitButtonLabel"
+                      :state="submitButtonState"
                       :readonly="true">
         </b-form-input>
       </b-form-group>
@@ -209,7 +210,7 @@
         type: Object,
         default: null
       },
-      submitButton: {
+      selectSubmitButton: {
         type: Object,
         default: null
       }
@@ -227,6 +228,8 @@
         ruleNameState: null,
         makeDraft: false,
         submitAfterFilling: false,
+        submitButton: null,
+        submitButtonState: null,
         submitButtonLabel: ""
       };
     },
@@ -234,6 +237,27 @@
       makeDraft() {
         if (!this.makeDraft) {
           this.submitAfterFilling = false;
+        }
+      },
+      submitAfterFilling() {
+        if (!this.submitAfterFilling) {
+          this.submitButton = null;
+        }
+      },
+      selectSubmitButton() {
+        if (!this.selectSubmitButton) {
+          this.submitButton = null;
+          return;
+        }
+        this.submitButton = {
+          label: this.selectSubmitButton.label || null,
+          value: this.selectSubmitButton.value || null,
+          name: this.selectSubmitButton.name || null,
+        }
+      },
+      submitButton(value) {
+        if (value) {
+          this.submitButtonState = true;
         }
       },
       reassign() {
@@ -268,6 +292,10 @@
       onSave() {
         if (this.ruleName.trim() === "") {
           this.ruleNameState = false;
+          return;
+        }
+        if (this.submitAfterFilling && !this.submitButton) {
+          this.submitButtonState = false;
           return;
         }
         let params = {
@@ -329,6 +357,7 @@
           this.makeDraft = this.inboxRule.make_draft;
           this.submitAfterFilling = this.inboxRule.submit_data;
           this.applyToFutureTasks = this.inboxRule.active;
+          this.submitButton = this.inboxRule.submit_button;
         }
       },
       requestUser(filter) {

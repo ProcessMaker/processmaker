@@ -186,6 +186,7 @@
           is_loading: false,
           autoSaveDelay: 5000,
           userHasInteracted: false,
+          fillData: {},
         },
         watch: {
           task: {
@@ -197,6 +198,7 @@
               }
               if (task?.id) {
                 this.formData = task.data;
+                this.mergeFillDataWithFormData();
               }
             }
           },
@@ -206,6 +208,11 @@
               this.sendEvent('dataUpdated', this.screenFilteredData);
             }
           },
+          formData: {
+            deep: true,
+            handler() {
+            }
+          }
         },
         computed: {
           screenFilteredData () {
@@ -250,6 +257,9 @@
           }
         },
         methods: {
+          mergeFillDataWithFormData() {
+            this.formData = _.merge(this.formData, this.fillData);
+          },
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
@@ -430,7 +440,7 @@
           this.prepareData();
           
           window.addEventListener('fillData', event => {
-            this.formData = _.merge(this.formData, event.detail);
+            this.fillData = event.detail;
           });
 
           // listen for keydown on element with id interactionListener
