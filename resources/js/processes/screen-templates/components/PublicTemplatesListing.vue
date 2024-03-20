@@ -222,6 +222,12 @@ export default {
         case "edit-template":
           this.goToScreenBuilder(data.id);
           break;
+        case "export-item":
+          // to be added later
+            break;
+        case "delete-item":
+          // to be added later
+          break;
       }
     },
     goToScreenBuilder(data) {
