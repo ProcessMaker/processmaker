@@ -95,24 +95,40 @@ class ScreenTemplate implements TemplateInterface
     public function show($request) : array
     {
         $template = ScreenTemplates::find($request->id);
-        $screen = Screen::where('uuid', $template->editing_process_uuid)->where('is_template', 1)->first();
+
+        $screen = Screen::where('uuid', $template->editing_screen_uuid)->where('is_template', 1)->first();
 
         if ($screen) {
             return ['id' => $screen->id];
         }
-        // dd('No template found');
+
         // Otherwise we need to import the template and create a new screen
         $payload = json_decode($template->manifest, true);
-        $options = new Options([]);
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+            ];
+        }
+
+        $options = new Options($postOptions);
         $importer = new Importer($payload, $options);
-        $importer->doImport();
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $screenId = $rootLog['newId'];
 
-        $screen = Screen::where('uuid', $importer->payload['root'])->first();
-        $screen->update(['is_template' => 1, 'title' => $template->name, 'description' => $template->description]);
-        ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $screen->uuid]);
+        $newScreen = Screen::find($screenId);
+        $newScreen->update([
+            'is_template' => 1,
+            'title' => $template->name,
+            'description' => $template->description,
+            'asset_type' => 'SCREEN_TEMPLATE',
+        ]);
 
-        // Return an array with the process ID
-        return ['id' => $screen->id];
+        ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $newScreen->uuid]);
+
+        return ['id' => $newScreen->id];
     }
 
     /**
