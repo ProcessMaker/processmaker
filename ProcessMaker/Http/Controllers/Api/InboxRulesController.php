@@ -82,7 +82,7 @@ class InboxRulesController extends Controller
         ]);
 
         if ($request->get('apply_to_current_tasks', false)) {
-            // $inboxRule->applyToExistingTasks();
+            $inboxRule->applyToExistingTasks();
         }
 
         return response([], 204);
@@ -115,7 +115,7 @@ class InboxRulesController extends Controller
         ]);
 
         if ($request->get('apply_to_current_tasks', false)) {
-            // $inboxRule->applyToExistingTasks();
+            $inboxRule->applyToExistingTasks();
         }
 
         return response([], 204);

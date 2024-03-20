@@ -255,11 +255,6 @@
           name: this.selectSubmitButton.name || null,
         }
       },
-      submitButton(value) {
-        if (value) {
-          this.submitButtonState = true;
-        }
-      },
       reassign() {
         if (!this.reassign) {
           this.reassignToUserId = null;
@@ -279,6 +274,9 @@
       },
       submitButton(value) {
         this.submitButtonLabel = this.submitAfterFilling ? value.label : "";
+        if (value) {
+          this.submitButtonState = true;
+        }
       }
     },
     mounted() {
