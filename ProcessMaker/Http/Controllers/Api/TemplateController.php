@@ -246,7 +246,7 @@ class TemplateController extends Controller
 
     protected function createProcess(Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types['process'][4]));
+        $request->validate(Process::rules($request->id));
         $postOptions = $this->checkIfAssetsExist($request);
 
         if (!empty($postOptions)) {
@@ -270,7 +270,7 @@ class TemplateController extends Controller
 
     protected function createScreen(Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types['screen'][4]));
+        $request->validate(Screen::rules($request->id));
         $response = $this->template->create('screen', $request);
 
         if ($request->has('projects')) {

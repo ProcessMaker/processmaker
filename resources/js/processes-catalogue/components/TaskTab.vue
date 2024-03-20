@@ -1,5 +1,8 @@
 <template>
   <div>
+    <search-tab
+      :filter-pmql="onFilter"
+    />
     <div
       class="bg-white"
       v-if="!showTabTasks"
@@ -34,6 +37,7 @@ import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import DefaultTab from "./DefaultTab.vue";
+import SearchTab from "./utils/SearchTab.vue";
 import ListMixin from "../../tasks/components/ListMixin";
 import { FilterTable } from "../../components/shared";
 import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -48,6 +52,7 @@ export default {
     paginationTable,
     DefaultTab,
     FilterTable,
+    SearchTab,
   },
   mixins: [uniqIdsMixin, ListMixin, methodsTabMixin],
   props: {
@@ -207,10 +212,17 @@ export default {
         # ${value.case_number}
       </a>`;
     },
+    /**
+     * Build the search PMQL
+     */
+    onFilter(value, showEmpty = false) {
+      this.filter = `fulltext LIKE "%${value}%"`;
+      this.queryBuilder();
+    },
     queryBuilder() {
       let pmql = "";
       if (this.pmqlTask !== undefined) {
-        pmql = this.pmqlTask;
+        pmql = `(${this.pmqlTask}) AND (process_id = ${this.process.id})`
       }
       let filter = this.filter;
       if (filter?.length) {
@@ -227,17 +239,15 @@ export default {
         this.page = 1;
       }
       this.previousPmql = pmql;
-      this.tabTasks();
+      this.tabTasks(pmql);
     },
-    tabTasks() {
+    tabTasks(pmql) {
       this.queryTask =
         "tasks?page=" +
         this.page +
         "&include=process,processRequest,processRequest.user,user,data" +
         "&pmql=" +
-        `${this.pmqlTask}` +
-        " AND process_id=" +
-        `${this.process.id}` +
+        `${encodeURIComponent(pmql)}` +
         "&per_page="+
         `${this.perPage}`+
         "&order_by=ID&order_direction=DESC&non_system=true";
@@ -250,6 +260,7 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataTasks = this.transform(response.data);
+          this.showTabTasks = false;
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&

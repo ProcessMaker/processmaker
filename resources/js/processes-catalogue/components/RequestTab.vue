@@ -1,5 +1,8 @@
 <template>
   <div>
+    <search-tab
+      :filter-pmql="onFilter"
+    />
     <div
       class="bg-white"
       v-if="!showTabRequests"
@@ -32,6 +35,7 @@ import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import DefaultTab from "./DefaultTab.vue";
+import SearchTab from "./utils/SearchTab.vue";
 import ListMixin from "../../requests/components/ListMixin";
 import { FilterTable } from "../../components/shared";
 import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -46,6 +50,7 @@ export default {
     paginationTable,
     DefaultTab,
     FilterTable,
+    SearchTab,
   },
   mixins: [uniqIdsMixin, ListMixin, methodsTabMixin],
   props: {
@@ -180,12 +185,19 @@ export default {
          ${value.case_title_formatted || value.case_title || ""}
       </a>`;
     },
+    /**
+     * Build the search PMQL
+     */
+    onFilter(value, showEmpty = false) {
+      this.filter = `fulltext LIKE "%${value}%"`;
+      this.queryBuilder();
+    },
     queryBuilder() {
-      let pmql = " process_id=" + `${this.process.id}`;
+      let pmql = `process_id = "${this.process.id}"`;
       let filter = this.filter;
       if (filter?.length) {
         if (filter.isPMQL()) {
-          pmql = `(${pmql}) and (${filter})`;
+          pmql = `(${pmql}) AND (${filter})`;
           filter = "";
         }
       }
@@ -207,7 +219,7 @@ export default {
         this.perPage +
         "&include=process,participants,activeTasks,data" +
         "&pmql=" +
-        `${pmql}` +
+        `${encodeURIComponent(pmql)}` +
         "&filter&order_by=id&order_direction=DESC";
       this.getData(this.queryRequest);
     },
@@ -218,6 +230,7 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataRequests = this.transform(response.data);
+          this.showTabRequests = false;
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&
