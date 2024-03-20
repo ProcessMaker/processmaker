@@ -220,6 +220,7 @@ class ScreenController extends Controller
         $screen = new Screen();
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
+
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 

@@ -159,7 +159,24 @@
                                     </button>
                                   </template>
                                 </div>
-                                <div class="col-6"></div>
+                                <div class="col-6">
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    :class="{ 'button-priority': isPriority }"
+                                    @click="addPriority"
+                                  >
+                                  <img
+                                    :src="
+                                      isPriority
+                                        ? '/img/priority.svg'
+                                        : '/img/priority-header.svg'
+                                    "
+                                    :alt="$t('No Image')"
+                                  >
+                                    {{ __('Priority') }}
+                                  </button>
+                                </div>
                               </div>
                               <div class="row button-group">
                                 <div class="col-6">
@@ -407,6 +424,7 @@
           formDataWatcherActive: true,
           showTabs: true,
           showInfo: true,
+          isPriority: false,
         },
         watch: {
           task: {
@@ -666,6 +684,13 @@
                 taskComponent.loadTask();
               });
           },
+          addPriority() {
+            ProcessMaker.apiClient
+            .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
+            .then((response) => {
+              this.isPriority = !this.isPriority;
+            });
+          },
           switchTabInfo(tab) {
             this.showInfo = !this.showInfo;
           },
@@ -676,6 +701,7 @@
         mounted() {
           this.prepareData();
           window.ProcessMaker.isSelfService = this.isSelfService;
+          this.isPriority = task.is_priority;
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);
@@ -796,6 +822,10 @@
   .button-group {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+  .button-priority {
+    background-color: #FEF2F3;
+    color: #C56363;
   }
 </style>
 @endsection
