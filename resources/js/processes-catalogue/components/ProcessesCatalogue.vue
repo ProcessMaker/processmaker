@@ -47,6 +47,7 @@
             :current-user="currentUser"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
+            :screen="screen"
             @goBackCategory="returnedFromInfo"
           />
           <wizard-templates
@@ -71,7 +72,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser", "screen"],
   data() {
     return {
       listCategories: [],

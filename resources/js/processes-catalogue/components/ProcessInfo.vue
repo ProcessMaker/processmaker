@@ -5,6 +5,7 @@
           :permission="permission"
           :current-user-id="currentUserId"
           :is-documenter-installed="isDocumenterInstalled"
+          :screen="screen"
           @goBackCategory="goBackCategory"
         />
       <process-tab
@@ -23,7 +24,7 @@ export default {
     ProcessCollapseInfo,
     ProcessTab,
   },
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser", "screen"],
   data() {
     return {
       listCategories: [],

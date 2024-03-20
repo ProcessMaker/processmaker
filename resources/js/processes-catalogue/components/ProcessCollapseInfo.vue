@@ -1,7 +1,7 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
-      <div 
+      <div
         id="header"
         class="card card-body"
       >
@@ -45,7 +45,7 @@
                 v-b-tooltip.hover.bottom
                 :title="$t(labelTooltip)"
                 class="fas fa-bookmark"
-                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon  }"
+                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
                 @click="checkBookmark(process)"
               />
             </div>
@@ -66,7 +66,10 @@
           </div>
         </div>
       </div>
-      <div class="collapse show" id="collapseProcessInfo">
+      <div
+        id="collapseProcessInfo"
+        class="collapse show"
+      >
         <div class="info-collapse">
           <p class="title-process">
             {{ process.name }}
@@ -89,7 +92,7 @@
             >
               ...
             </a>
-          </p>  
+          </p>
           <div
             class="d-flex"
           >
@@ -104,6 +107,10 @@
           </div>
         </div>
       </div>
+      <display-screen
+        ref="screen"
+        :screen="screen"
+      />
     </div>
     <create-template-modal
       id="create-template-modal"
@@ -150,6 +157,7 @@ import processNavigationMixin from "../../components/shared/processNavigation";
 import ModalSaveVersion from "../../components/shared/ModalSaveVersion.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessOptions from "./ProcessOptions.vue";
+import DisplayScreen from "./utils/DisplayScreen.vue";
 
 export default {
   components: {
@@ -161,9 +169,10 @@ export default {
     ModalSaveVersion,
     ProcessOptions,
     ProcessesCarousel,
+    DisplayScreen,
   },
   mixins: [ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "screen"],
   data() {
     return {
       processId: null,
@@ -192,7 +201,7 @@ export default {
     this.bookmarkIcon();
   },
   methods: {
-    /** 
+    /**
      * Change button title
      */
     toogleInfoCollapsed() {
@@ -202,8 +211,8 @@ export default {
      * Verify if the process is marked
      */
     bookmarkIcon() {
-      this.labelTooltip = this.process.bookmark_id !== 0 ? 
-        this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
+      this.labelTooltip = this.process.bookmark_id !== 0
+        ? this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
       this.showBookmarkIcon = this.process.bookmark_id !== 0;
     },
     /**
@@ -277,7 +286,7 @@ export default {
         "create-process-templates",
         "view-projects",
       ];
-      this.showEllipsis = this.permission.some( (permission) => permissionsNeeded.includes(permission));
+      this.showEllipsis = this.permission.some((permission) => permissionsNeeded.includes(permission));
     },
     /**
      * Return a process cards from process info

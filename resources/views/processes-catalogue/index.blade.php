@@ -10,14 +10,16 @@
 
 @section('content')
   <div class="px-3 page-content mb-0" id="processes-catalogue">
+    
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
       :current-user="{{ \Auth::user() }}"
+      :screen='@json($screen)'
       is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
     >
-  </processes-catalogue>
+    </processes-catalogue>
   </div>
 @endsection
 
