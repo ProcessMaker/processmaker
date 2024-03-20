@@ -1,4 +1,5 @@
 const icons = [
+  "Default Icon",
   "3 Star Hotel",
   "24",
   "Add",
