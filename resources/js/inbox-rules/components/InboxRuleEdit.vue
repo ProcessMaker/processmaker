@@ -24,7 +24,7 @@
           <img src="/img/flag-fill-red.svg" :alt="$t('Mark as Priority')"/>
           {{ $t('Mark as Priority') }}
         </b-form-checkbox>
-        <b-form-checkbox v-model="makeDraft">
+        <b-form-checkbox v-model="makeDraft" v-if="taskId">
           <img src="/img/pencil-fill-text.svg" :alt="$t('Save and reuse filled data')"/>
           {{ $t('Save and reuse filled data') }}
         </b-form-checkbox>
