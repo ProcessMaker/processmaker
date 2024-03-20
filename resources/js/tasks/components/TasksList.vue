@@ -183,6 +183,7 @@
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
     </div>
     <tasks-preview

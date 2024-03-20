@@ -34,6 +34,10 @@ export default {
       this.page = page;
       this.fetch();
     },
+    changePerPage(value) {
+      this.perPage = value;
+      this.fetch();
+    },
     formatAvatar(user) {
       return {
         component: "AvatarImage",

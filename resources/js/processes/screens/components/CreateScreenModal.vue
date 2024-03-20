@@ -20,7 +20,10 @@
       @ok.prevent="onSubmit"
     >
       <b-row>
-        <b-col cols="7" class="type-style-col">
+        <b-col
+          cols="7"
+          class="type-style-col"
+        >
           <div v-if="!showTemplatePreview">
             <screen-type-dropdown
               v-model="formData.type"
@@ -45,65 +48,77 @@
             @hide-template-preview="hidePreview"
           />
         </b-col>
-        <b-col cols="5" class="form-style-col">
+        <b-col
+          cols="5"
+          class="form-style-col d-flex flex-column pb-4"
+        >
           <template v-if="countCategories">
-            <required />
-            <b-form-group
-              :description="
-                formDescription('The screen name must be unique.', 'title', errors)
-              "
-              :invalid-feedback="errorMessage('title', errors)"
-              :label="$t('Name')"
-              :state="errorState('title', errors)"
-              required
-            >
-              <b-form-input
-                v-model="formData.title"
+            <div>
+              <required />
+              <b-form-group
+                :description="
+                  formDescription('The screen name must be unique.', 'title', errors)
+                "
+                :invalid-feedback="errorMessage('title', errors)"
+                :label="$t('Name')"
                 :state="errorState('title', errors)"
-                autocomplete="off"
-                autofocus
-                name="title"
                 required
-              />
-            </b-form-group>
-            <b-form-group
-              :invalid-feedback="errorMessage('description', errors)"
-              :label="$t('Description')"
-              :state="errorState('description', errors)"
-              required
-            >
-              <b-form-textarea
-                v-model="formData.description"
+              >
+                <b-form-input
+                  v-model="formData.title"
+                  :state="errorState('title', errors)"
+                  autocomplete="off"
+                  autofocus
+                  name="title"
+                  required
+                />
+              </b-form-group>
+              <b-form-group
+                :invalid-feedback="errorMessage('description', errors)"
+                :label="$t('Description')"
                 :state="errorState('description', errors)"
-                autocomplete="off"
-                name="description"
                 required
-                rows="3"
+              >
+                <b-form-textarea
+                  v-model="formData.description"
+                  :state="errorState('description', errors)"
+                  autocomplete="off"
+                  name="description"
+                  required
+                  rows="3"
+                />
+              </b-form-group>
+              <category-select
+                v-model="formData.screen_category_id"
+                :errors="errors.screen_category_id"
+                :label="$t('Category')"
+                api-get="screen_categories"
+                api-list="screen_categories"
+                name="category"
               />
-            </b-form-group>
-            <category-select
-              v-model="formData.screen_category_id"
-              :errors="errors.screen_category_id"
-              :label="$t('Category')"
-              api-get="screen_categories"
-              api-list="screen_categories"
-              name="category"
-            />
-            <project-select
-              v-if="isProjectsInstalled"
-              v-model="formData.projects"
-              :errors="errors.projects"
-              :project-id="projectId"
-              :label="$t('Project')"
-              :required="isProjectSelectionRequired"
-              api-get="projects"
-              api-list="projects"
-            />
-            <div class="footer-btns w-100 m-0 d-flex">
-              <button type="button" class="btn btn-outline-secondary ml-auto" @click="close">
+              <project-select
+                v-if="isProjectsInstalled"
+                v-model="formData.projects"
+                :errors="errors.projects"
+                :project-id="projectId"
+                :label="$t('Project')"
+                :required="isProjectSelectionRequired"
+                api-get="projects"
+                api-list="projects"
+              />
+            </div>
+            <div class="w-100 m-0 d-flex mt-auto">
+              <button
+                type="button"
+                class="btn btn-outline-secondary ml-auto"
+                @click="close"
+              >
                 {{ $t('Cancel') }}
               </button>
-              <a class="btn btn-secondary ml-3" @click="onSubmit">
+              <a
+                class="btn btn-secondary ml-3"
+                @click="onSubmit"
+              >
                 {{ $t('Save') }}
               </a>
             </div>
@@ -203,7 +218,10 @@ export default {
     if (this.isQuickCreate === true) {
       this.screenTypes = filterScreenType() ?? this.types;
       // in any case the screenType if the only one, default to the first value
-      if (Object.keys(this.screenTypes).length === 1) this.formData.type = Object.keys(this.screenTypes)[0];
+      const [defaultScreenType] = Object.keys(this.screenTypes);
+      if (Object.keys(this.screenTypes).length === 1) {
+        this.formData.type = defaultScreenType;
+      }
     }
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
@@ -254,7 +272,7 @@ export default {
       if (this.formData.templateId != null) {
         this.handleCreateFromTemplate();
       } else {
-        this.handleCreateFromBlank()
+        this.handleCreateFromBlank();
       }
     },
     handleCreateFromBlank() {
@@ -268,7 +286,7 @@ export default {
           if (error?.response?.status && error?.response?.status === 422) {
             this.errors = error.response.data.errors;
           }
-      });
+        });
     },
     handleCreateFromTemplate() {
       ProcessMaker.apiClient.post(
@@ -334,8 +352,8 @@ export default {
       this.selectedTemplate = null;
     },
     handleSelectedTemplate(templateId) {
-      this.formData.templateId =  templateId;
-    }
+      this.formData.templateId = templateId;
+    },
   },
 };
 </script>
@@ -348,14 +366,10 @@ export default {
 .form-style-col {
   background-color: #FFFFFF;
 }
-.footer-btns {
-  padding-top: 175px;
-}
 
 .template-type-label {
   font-size: 14px;
   color: #6c757d;
   font-weight: 700;
 }
-
 </style>
