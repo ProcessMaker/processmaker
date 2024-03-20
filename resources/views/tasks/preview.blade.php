@@ -186,7 +186,7 @@
           is_loading: false,
           autoSaveDelay: 5000,
           userHasInteracted: false,
-          fillData: {},
+          initialFormDataSet: false,
         },
         watch: {
           task: {
@@ -195,10 +195,6 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
               if (task && oldTask && task.id !== oldTask.id) {
                 history.replaceState(null, null, `/tasks/${task.id}/edit/preview`);
-              }
-              if (task?.id) {
-                this.formData = task.data;
-                this.mergeFillDataWithFormData();
               }
             }
           },
@@ -210,7 +206,11 @@
           },
           formData: {
             deep: true,
-            handler() {
+            handler(to, old) {
+              if (!this.initialFormDataSet) {
+                this.initialFormDataSet = true;
+                this.sendEvent('readyForFillData', true);
+              }
             }
           }
         },
@@ -257,9 +257,6 @@
           }
         },
         methods: {
-          mergeFillDataWithFormData() {
-            this.formData = _.merge(this.formData, this.fillData);
-          },
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
@@ -424,6 +421,7 @@
           },
           taskUpdated(task) {
             this.task = task;
+            // this.sendEvent('taskLoaded', true);
           },
           autosaveApiCall() {
             return ProcessMaker.apiClient
@@ -438,9 +436,9 @@
         },
         mounted() {
           this.prepareData();
-          
+
           window.addEventListener('fillData', event => {
-            this.fillData = event.detail;
+            this.formData = _.merge(this.formData, event.detail);
           });
 
           // listen for keydown on element with id interactionListener

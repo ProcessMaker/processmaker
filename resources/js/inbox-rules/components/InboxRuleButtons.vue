@@ -4,8 +4,8 @@
               variant="light"
               class="button-border button-font"
               @click="$emit('reset-filters')">
-      <img src="/img/eraser-fill.svg" :alt="$t('Clear filters')"/>
-      {{ $t('Clear filters') }}
+      <img src="/img/eraser-fill.svg" :alt="$t('Clear unsaved filters')"/>
+      {{ $t('Clear unsaved filters') }}
     </b-button>
     <b-dropdown v-if="showSavedSearchSelector"
                 @input="$emit('saved-search-id-changed', $event)"

@@ -37,11 +37,13 @@
     },
     mounted() {
       this.receiveEvent('dataUpdated', (data) => {
-        console.log('dataUpdated', data);
         this.formData = data;
       });
       this.receiveEvent('formSubmit', (data) => {
         this.$emit("submit", data);
+      });
+      this.receiveEvent('readyForFillData', () => {
+        this.sendEvent("fillData", this.inboxRuleData);
       });
     },
     methods: {
@@ -50,9 +52,7 @@
         this.iframeContentWindow.location.reload();
       },
       loaded() {
-        console.log("loaded. Inbox rule data is ", JSON.stringify(this.inboxRuleData));
         this.iframeContentWindow.event_parent_id = this._uid;
-        this.sendEvent("fillData", this.inboxRuleData);
       },
       sendEvent(name, data) {
         const event = new CustomEvent(name, {
