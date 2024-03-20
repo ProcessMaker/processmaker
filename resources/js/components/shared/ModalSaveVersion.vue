@@ -16,7 +16,7 @@
         @ab-cancel="hideModal()"
       />
     </keep-alive>
-    <div class="form-group" v-if="!isABTestingInstalled">
+    <div class="form-group" v-show="!isABTestingInstalled">
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <b-card no-body>
