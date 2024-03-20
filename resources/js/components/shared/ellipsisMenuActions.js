@@ -307,6 +307,14 @@ export default {
           permission: ["publish-screen-templates"],
           icon: "fas fa-trash-alt",
         },
+        {
+          value: "edit-template",
+          content: "Edit Template",
+
+          href: "/screen-builder/screen/{{id}}",
+          permission: ["edit-screens"],
+          icon: "fas fa-pen-square",
+        },
       ],
     };
   },

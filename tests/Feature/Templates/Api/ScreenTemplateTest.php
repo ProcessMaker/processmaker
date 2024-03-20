@@ -5,18 +5,21 @@ namespace Tests\Feature\Templates\Api;
 use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Http\Controllers\Api\ExportController;
+use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
 
 class ScreenTemplateTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;
+    use HelperTrait;
 
     public function testCreateScreenTemplate()
     {
@@ -114,5 +117,28 @@ class ScreenTemplateTest extends TestCase
         // Check that the screen template was updated successfully
         $screenTemplate = ScreenTemplates::where('id', $screenTemplateId)->first();
         $this->assertSame($screenTemplate->is_public, 1);
+    }
+
+    public function testShowScreenTemplate()
+    {
+        // Create screen and save it in the manifest
+        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
+        $exporter = new Exporter();
+        $exporter->exportScreen($screen);
+        $manifest = (object) $exporter->payload();
+        // delete all screens
+        Screen::query()->delete();
+
+        // Create screen template
+        $screenTemplate = ScreenTemplates::factory()->create(
+            [
+                'name' => 'Test Screen Template',
+                'manifest' => json_encode($manifest),
+            ]
+        );
+
+        $route = route('api.template.show', ['screen', $screenTemplate->id]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
     }
 }
