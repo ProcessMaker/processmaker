@@ -50,8 +50,8 @@ class ModelerController extends Controller
         $addons = $this->getPluginAddons('show', []);
 
         // Retrieve custom blade view and alternatives from addons
-        $customBlade = ($addons[0] ?? [])['new-blade'];
-        $alternatives = ($addons[0] ?? [])['alternatives'];
+        $customBlade = ($addons[0] ?? [])['new-blade'] ?? null;
+        $alternatives = ($addons[0] ?? [])['alternatives'] ?? null;
 
         // If a custom blade view and alternatives are provided, render the custom view
         if ($customBlade && $alternatives) {
@@ -136,6 +136,7 @@ class ModelerController extends Controller
             'isPackageAiInstalled' => $isPackageAiInstalled,
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
+            'alternative' => $alternative,
         ];
     }
 
