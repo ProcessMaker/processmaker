@@ -7,7 +7,7 @@
             class="close-go-back-button"
             @click="cancelAndGoBack()"
           >
-          {{ $t('CANCEL AND GO BACK') }}
+          {{ $t('Cancel And Go Back') }}
           </b-button>
           </div>
           <div v-else>
@@ -33,7 +33,7 @@
     </div>
     <div class="second-container">
       <div class="span-message">
-        <span>Select a previous task to reuse its filled data on the current task.</span>
+        <span>{{ $t('Select a previous task to reuse its filled data on the current task.') }}</span>
       </div>
       <div class="third-container">
         <tasks-list
