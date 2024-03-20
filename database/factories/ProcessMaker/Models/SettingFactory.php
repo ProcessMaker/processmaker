@@ -44,6 +44,7 @@ class SettingFactory extends Factory
             'name' => $this->faker->title(),
             'helper' => $this->faker->sentence(),
             'group' => $this->faker->title(),
+            'group_id' => null,
             'format' => $format,
             'hidden' => false,
             'readonly' => false,
