@@ -1,10 +1,9 @@
 <template>
   <div>
-    <div
-      class="btn text-black text-capitalize cursor-default"
-    >
-      <div class="toolbar-item d-flex justify-content-center align-items-center">
-        <span>
+    <div class="container">
+      <div class="row">
+        <div class="col-auto" style="padding-right: 0px;">
+          <span>
           <FontAwesomeIcon
             v-if="task.draft"
             :class="{ 'text-success': !error, 'text-secondary': error }"
@@ -12,12 +11,19 @@
             :spin="isLoading"
           />
         </span>
-        <span
+        </div>
+        <div
+          id="element-name-col"
+          class="col truncate-text"
+          style="padding-left: 1px;"
+        >
+          <span
           id="saved-status"
           class="element-name"
         >
           {{ task.element_name }}
-        </span>
+      </span>
+        </div>
       </div>
     </div>
 
@@ -154,5 +160,11 @@ export default {
   font-weight: bold;
   color: #566877;
   margin-left: 5px;
+}
+.truncate-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 </style>
