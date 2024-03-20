@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="container">
-      <div class="row">
-        <div class="col-auto" style="padding-right: 0px;">
-          <span>
+    <div
+      class="btn text-black text-capitalize cursor-default"
+    >
+      <div class="toolbar-item d-flex align-items-center">
+        <span>
           <FontAwesomeIcon
             v-if="task.draft"
             :class="{ 'text-success': !error, 'text-secondary': error }"
@@ -11,22 +12,17 @@
             :spin="isLoading"
           />
         </span>
-        </div>
-        <div
-          id="element-name-col"
-          class="col truncate-text"
-          style="padding-left: 1px;"
-        >
-          <span
+        <span
           id="saved-status"
-          class="element-name"
+          class="element-name truncate-text"
+          :style="{
+            maxWidth: `${headerResponsive()}px`
+          }"
         >
           {{ task.element_name }}
-      </span>
-        </div>
+        </span>
       </div>
     </div>
-
     <b-tooltip
       v-if="task.draft"
       target="saved-status"
@@ -92,6 +88,8 @@ export default {
       savedIcon: faCheckCircle,
       spinner: faSpinner,
       errorIcon: faExclamationTriangle,
+      size: 50,
+      screenWidthPx: 0,
     };
   },
   computed: {
@@ -112,6 +110,20 @@ export default {
       }
 
       return this.savedIcon;
+    },
+  },
+  mounted() {
+    this.$root.$on('pane-size', (value) => {
+      this.size = value;
+    });
+    this.screenWidthPx = window.innerWidth;
+  },
+  methods: {
+    convertPercentageToPx(percentage) {
+      return (this.screenWidthPx * percentage) / 100;
+    },
+    headerResponsive() {
+      return this.convertPercentageToPx(this.size) - 550;
     },
   },
 };
@@ -165,6 +177,5 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-width: 100%;
 }
 </style>
