@@ -292,6 +292,12 @@ export default {
       publicTemplateActions: [
         //TODO: Update Public Template Ellipsis Menu Actions
         {
+          value: "edit-template",
+          content: "Edit Template",
+          permission: ["edit-screens"],
+          icon: "fas fa-pen-square",
+        },
+        {
           value: "export-item",
           content: "Export Template",
           link: true,
@@ -304,12 +310,6 @@ export default {
           content: "Delete Template",
           permission: ["publish-screen-templates"],
           icon: "fas fa-trash-alt",
-        },
-        {
-          value: "edit-template",
-          content: "Edit Template",
-          permission: ["edit-screens"],
-          icon: "fas fa-pen-square",
         },
       ],
     };
