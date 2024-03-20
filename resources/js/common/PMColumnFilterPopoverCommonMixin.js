@@ -286,7 +286,6 @@ const PMColumnFilterCommonMixin = {
       let order = null;
 
       if (this.advancedFilterProp !== null) {
-        //inputAdvancedFilter = this.advancedFilterProp.filters;
         inputAdvancedFilter = this.advancedFilterProp;
         order = this.advancedFilterProp.order;
       } else {
