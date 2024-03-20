@@ -22,8 +22,8 @@
             return ['To Do Tasks', route('tasks.index')];
         },
         $task->processRequest->name =>
-            Auth::user()->can('view', $task->processRequest) 
-              ? route('requests.show', ['request' => $task->processRequest->id]) 
+            Auth::user()->can('view', $task->processRequest)
+              ? route('requests.show', ['request' => $task->processRequest->id])
               : null,
             __('Quick Fill') => null,
             '@{{taskTitle}}' => null
