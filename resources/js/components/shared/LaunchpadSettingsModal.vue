@@ -6,174 +6,181 @@
     :title="$t('Launchpad Settings')"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
-  >
-    <p class="text-info-custom">
-      {{ $t('Here you can personalize how your process will be shown in the process browser') }}
-    </p>
-    <div class="d-flex justify-content-between">
-      <div class="mr-3">
-        <div
-          md="12"
-          class="no-padding"
-        >
-          <div class="d-flex align-items-center w-100 mt-2">
-            <label>{{ $t("Launchpad Carousel") }}</label>
-            <input
-              ref="fileInput"
-              type="file"
-              style="display: none"
-              accept="image/*"
-              @change="handleImageUpload"
-            >
-          </div>
-        </div>
-        <div
-          ref="thumbnailsContainer"
-          class="image-thumbnails-container"
-          @drop="handleDrop"
-          @dragover.prevent
-          @dragstart.prevent="handleDragStart"
-        >
+  > 
+    <div class="modal-content-custom">
+      <p class="text-info-custom">
+        {{ $t('Here you can personalize how your process will be shown in the process browser') }}
+      </p>
+      <div class="d-flex justify-content-between">
+        <div class="mr-3">
           <div
-            v-if="images.length === 0"
             md="12"
-            class="text-center"
+            class="no-padding"
           >
-            <div
-              class="drag-and-drop-container"
-              @dragover.prevent
-            >
-              <i class="fas fa-cloud-upload-alt" />
-              <div>
-                <strong>{{ $t("Drop your images here") }}</strong>
-              </div>
-              <div>
-                {{ $t("Supported formats are PNG and JPG. ") }}
-              </div>
+            <div class="d-flex align-items-center w-100">
+              <label>{{ $t("Launchpad Carousel") }}</label>
+              <input
+                ref="fileInput"
+                type="file"
+                style="display: none"
+                accept="image/*"
+                @change="handleImageUpload"
+              >
             </div>
           </div>
-          <b-row v-else>
-            <b-col
-              v-for="(image, index) in images"
-              :key="index"
-              md="6"
+          <div
+            ref="thumbnailsContainer"
+            class="image-thumbnails-container"
+          >
+            <div
+              v-if="images.length === 0"
+              md="12"
+              class="text-center images-info images-container"
             >
               <div
-                class="d-flex justify-content-end align-items-end thumbnail"
-                @mouseover="showDeleteIcon(index)"
-                @mouseleave="hideDeleteIcon(index)"
+                class="drag-and-drop-container"
+              >
+                <i class="fas fa-image" />
+                <div>
+                  {{ $t("Formats: PNG, JPG. 2 MB") }}
+                </div>
+                {{ $t("Recommended: 1800 x 750 px") }}
+              </div>
+            </div>
+            <b-row
+              v-else
+              class="images-container"
+            >
+              <b-col
+                v-for="(image, index) in images"
+                :key="index"
+                md="6"
               >
                 <div
-                  v-if="showDeleteIcons[index] || focusIcons[index]"
-                  class="m-1 delete-icon"
+                  class="d-flex justify-content-end align-items-end thumbnail image-style"
+                  @mouseover="showDeleteIcon(index)"
+                  @mouseleave="hideDeleteIcon(index)"
                 >
-                  <button
-                    id="popover-button-event"
-                    type="button"
-                    class="btn btn-light p-0 px-1"
-                    @click="focusIcon(index)"
+                  <div
+                    v-if="showDeleteIcons[index] || focusIcons[index]"
+                    class="m-1 delete-icon"
                   >
-                    <i class="fas fa-trash-alt p-0 custom-color" />
-                  </button>
-                  <b-popover
-                    ref="popover"
-                    :show.sync="focusIcons[index]"
-                    target="popover-button-event"
-                    triggers="focus"
-                    placement="bottom"
-                  >
-                    <div class="p-3">
-                      <p class="text-center">
-                        {{ $t("Do you really want to delete this image?") }}
-                      </p>
-                      <div class="d-flex justify-content-around">
+                    <div
+                      id="popover-button-event"
+                      @click="focusIcon(index)"
+                    >
+                      <i class="fas fa-trash-alt p-0 custom-color" />
+                    </div>
+                    <b-popover
+                      ref="popover"
+                      :show.sync="focusIcons[index]"
+                      target="popover-button-event"
+                      triggers="focus"
+                      placement="bottom"
+                    >
+                      <div class="p-3">
+                        <p class="text-center">
+                          {{ $t("Do you really want to delete this image?") }}
+                        </p>
                         <button
                           type="button"
-                          class="btn btn-secondary"
-                          @click="unfocusIcon(index)"
-                        >
-                          {{ $t("Cancel") }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-danger"
+                          class="btn btn-delete-image btns-popover"
                           @click="deleteImage(index)"
                         >
                           {{ $t("Delete") }}
                         </button>
+                        <button
+                          type="button"
+                          class="btn btn-cancel-delete btns-popover"
+                          @click="unfocusIcon(index)"
+                        >
+                          {{ $t("Cancel") }}
+                        </button>
                       </div>
-                    </div>
-                  </b-popover>
+                    </b-popover>
+                  </div>
+                  <img
+                    v-if="image.url"
+                    :src="image.url"
+                    :alt="$t('No Image')"
+                    class="image-style"
+                  >
                 </div>
-                <img
-                  v-if="image.url"
-                  :src="image.url"
-                  :alt="$t('No Image')"
-                  class="img-fluid"
-                >
-              </div>
-            </b-col>
-          </b-row>
-          <b-button
-            class="btn-custom-button"
-            @click="openFileInput"
-          >
-            {{ $t("Upload Images") }}
-          </b-button>
-        </div>
-      </div>
-      <div class="options-launchpad">
-        <label class="mt-2">
-          {{ $t("Launchpad Icon") }}
-        </label>
-        <icon-dropdown ref="icon-dropdown" />
-        <label class="mt-2">{{ $t("Chart") }}</label>
-        <div class="dropdown">
-          <button
-            id="statusDropdown"
-            class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <div class="d-flex align-items-center">
-              <i class="far fa-chart-bar" />
-              <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
-            </div>
-          </button>
-          <div
-            class="dropdown-menu custom-dropdown"
-            aria-labelledby="statusDropdown"
-          >
-            <a
-              v-for="(item, index) in dropdownSavedCharts"
-              :key="index"
-              class="dropdown-item"
-              @click="selectOption(item)"
+              </b-col>
+            </b-row>
+            <div
+              class="d-flex justify-content-center align-items-center"
+              @drop="handleDrop"
+              @dragover.prevent
+              @dragstart.prevent="handleDragStart"
             >
-              <i class="far fa-chart-bar custom-text" />
-              {{ item.title || 'Select Chart' }}
-            </a>
+              <div
+                class="input-file-custom"
+                @dragover.prevent
+                @click="openFileInput"
+              >
+                <i class="fa fa-plus mr-1" />
+                <span class="font-weight-bold mr-1">
+                  {{ $t("Drag or click here") }}
+                </span>
+                {{ $t("to upload an image") }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="options-launchpad">
+          <label>
+            {{ $t("Launchpad Icon") }}
+          </label>
+          <icon-dropdown ref="icon-dropdown" />
+          <label>{{ $t("Chart") }}</label>
+          <div class="dropdown">
+            <button
+              id="statusDropdown"
+              class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <div class="d-flex align-items-center">
+                <i class="far fa-chart-bar" />
+                <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
+              </div>
+            </button>
+            <div
+              class="dropdown-menu custom-dropdown"
+              aria-labelledby="statusDropdown"
+            >
+              <a
+                v-for="(item, index) in dropdownSavedCharts"
+                :key="index"
+                class="dropdown-item"
+                @click="selectOption(item)"
+              >
+                <i class="far fa-chart-bar custom-text" />
+                {{ item.title || 'Select Chart' }}
+              </a>
+            </div>
           </div>
         </div>
       </div>
+      <label>
+        {{ $t("Description") }}
+      </label>
+      <input
+        id="additional-details"
+        v-model="processDescription"
+        class="form-control input-custom"
+        type="text"
+        rows="5"
+        :aria-label="$t('Description')"
+      />
+      <span v-if="!processDescription" class="error-message">
+        {{ $t("The Description field is required.") }}
+        <br>
+      </span>
     </div>
-    <label class="mt-2">
-      {{ $t("Description") }}
-    </label>
-    <input
-      id="additional-details"
-      v-model="processDescription"
-      class="form-control input-custom"
-      type="text"
-      rows="5"
-      :aria-label="$t('Description')"
-    />
-    <span v-if="!processDescription" class="error-message">
-      {{ $t("The Description field is required.") }}
-      <br>
-    </span>
   </modal>
 </template>
 
@@ -590,15 +597,22 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="css">
 label {
   color: #556271;
+  margin-top: 16px;
+  margin-bottom: 4px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   letter-spacing: 0px;
   text-align: left;
+}
+.image-style {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
 }
 .modal-title div {
   color: #556271;
@@ -612,9 +626,14 @@ label {
 .modal-header {
   align-items: center;
 }
+.modal-footer {
+  margin-top: 0px;
+  padding: 20px 24px;
+}
 .modal-footer .btn-outline-secondary {
   color: #556271;
   background-color: white;
+  margin: 0px;
   width: 90px;
   height: 40px;
   font-family: 'Open Sans', sans-serif;
@@ -633,6 +652,8 @@ label {
   background-color: #6A7888;
   width: 99px;
   height: 40px;
+  margin: 0px;
+  margin-left: 7px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -645,7 +666,7 @@ label {
 }
 .text-info-custom {
   color: #556271;
-  margin-top: 16px;
+  margin-bottom: 17px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -669,13 +690,30 @@ label {
   height: 204px;
   border-radius: 4px;
   gap: 10px;
-  padding: 0px;
+  padding: 12px;
+}
+.images-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.images-container {
+  width: 345px;
+  height: 128px;
+  margin-bottom: 12px;
 }
 .drag-and-drop-container {
-  border: none;
-  border-radius: 5px;
-  margin-top: 0px;
-  color: #2381c8;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.07px;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #6a7888;
+  margin-bottom: 9px
+}
+.drag-and-drop-container i {
+  font-size: 32px;
 }
 .modal-dialog, .modal-content {
   max-width: 727px;
@@ -683,5 +721,67 @@ label {
 }
 .options-launchpad {
   width: 285px;
+}
+.input-file-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6a7888;
+  width: 344px;
+  height: 40px;
+  padding: 10px 0px;
+  background-color: #ebeef2;
+  border: 1px dashed #6a7888;
+  border-radius: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20.43px;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.modal-content-custom {
+  padding: 11px 8px;
+}
+b-row, b-col {
+  margin: 0px;
+  padding: 0px;
+}
+.delete-icon {
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #00000080;
+  
+}
+.delete-icon i {
+  font-size: 24px;
+  color: white;
+}
+.btns-popover {
+  height: 32px;
+  padding: 0px 14px;
+  border-radius: 4px;
+  border: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.btn-delete-image {
+  color: white;
+  background-color: #6a7888;
+}
+.btn-cancel-delete {
+  color: #556271;
+  background-color: #d8e0e9;
 }
 </style>
