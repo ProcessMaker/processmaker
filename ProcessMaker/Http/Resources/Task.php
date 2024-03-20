@@ -47,6 +47,9 @@ class Task extends ApiResource
         if (in_array('processRequest', $include)) {
             $array['process_request'] = new Users($this->processRequest);
         }
+        if (in_array('draft', $include)) {
+            $array['draft'] = $this->draft;
+        }
 
         $parentProcessRequest = $this->processRequest->parentRequest;
         $array['can_view_parent_request'] = $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);

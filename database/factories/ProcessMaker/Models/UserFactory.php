@@ -20,7 +20,7 @@ class UserFactory extends Factory
         }
 
         return [
-            'username' => $this->faker->unique()->userName(),
+            'username' => $this->faker->unique()->userName() . '_' . $this->faker->unique()->randomNumber(3),
             'email' => $this->faker->unique()->email(),
             'password' => $GLOBALS['testPassword'],
 
@@ -53,7 +53,7 @@ class UserFactory extends Factory
 
     public function admin()
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'is_administrator' => true,
             ];
