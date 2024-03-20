@@ -160,6 +160,6 @@ class TaskController extends Controller
     {
         return view('tasks.editQuickFill', [
             'task' => $task,
-        ]);       
+        ]);
     }
 }
