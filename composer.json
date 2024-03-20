@@ -140,7 +140,6 @@
                 "connector-slack": "1.8.0",
                 "docker-executor-cdata": "1.3.0",
                 "docker-executor-node-ssr": "1.5.0",
-                "package-ab-testing": "1.0.0",
                 "package-actions-by-email": "1.16.0",
                 "package-advanced-user-manager": "1.10.0",
                 "package-ai": "1.7.0",
@@ -172,6 +171,7 @@
                 "packages": "^0"
             },
             "docker-executors": {
+                "package-ab-testing": "1.0.0",
                 "docker-executor-java": "1.0.4",
                 "docker-executor-python": "1.0.1",
                 "docker-executor-csharp": "1.0.2"
