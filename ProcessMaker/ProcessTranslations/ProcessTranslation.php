@@ -438,10 +438,6 @@ class ProcessTranslation
         if ($processTranslationToken) {
             $token = $processTranslationToken->token;
             $processTranslationToken->delete();
-
-            // Cancel pending batch jobs
-            $batch = Bus::findBatch($token);
-            $batch->cancel();
         }
 
         return true;
