@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="data-table">
     <data-loading
@@ -7,12 +8,16 @@
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body public-templates-table-card" data-cy="public-templates-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="card card-body public-templates-table-card"
+      data-cy="public-templates-table"
+    >
       <filter-table
         :headers="fields"
         :data="data"
         table-name="public-screen-templates"
-        style="height: calc(100vh - 355px);"
+        style="height: calc(100vh - 355px)"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -25,11 +30,14 @@
             @click="handleEllipsisClick(column)"
           >
             <i
-              :class="['fas', {
-                'fa-sort': column.direction === 'none',
-                'fa-sort-up': column.direction === 'asc',
-                'fa-sort-down': column.direction === 'desc',
-              }]"
+              :class="[
+                'fas',
+                {
+                  'fa-sort': column.direction === 'none',
+                  'fa-sort-up': column.direction === 'asc',
+                  'fa-sort-down': column.direction === 'desc',
+                },
+              ]"
             />
           </div>
         </template>
@@ -88,13 +96,11 @@
                     :data="row"
                     :divider="true"
                     :screen-template="true"
-                    @navigate="onPublicTemplateNavigate"
+                    @navigate="onTemplateNavigate"
                   />
                 </template>
                 <template v-if="header.field !== 'name'">
-                  <div
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
+                  <div :style="{ maxWidth: header.width + 'px' }">
                     {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
@@ -121,27 +127,47 @@
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
-import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
+import fieldsMixin from "../mixins/fieldsMixin";
+import navigationMixin from "../mixins/navigationMixin";
 
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, paginationTable },
-  mixins: [datatableMixin,
+  mixins: [
+    datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
-    screenNavigationMixin,
     FilterTableBodyMixin,
     uniqIdsMixin,
+    fieldsMixin,
+    navigationMixin,
   ],
-  props: ["permission", "filter", "pmql", "id"],
+  props: {
+    permission: {
+      type: [String, Object, Array],
+      default: "",
+    },
+    filter: {
+      type: String,
+      default: "",
+    },
+    pmql: {
+      type: String,
+      default: "",
+    },
+    id: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       orderBy: "name",
@@ -150,60 +176,22 @@ export default {
           field: "name",
           sortField: "name",
           direction: "asc",
-        }
+        },
       ],
-
-      fields: [
-        {
-          label: this.$t("Name"),
-          field: "name",
-          width: 200,
-          sortable: true,
-          truncate: true,
-          direction: "none",
-        },
-        {
-          label: this.$t("Description"),
-          field: "description",
-          width: 200,
-          sortable: true,
-          direction: "none",
-          sortField: "description",
-        },
-        {
-          label: this.$t("Type of Screen"),
-          field: "screen_type",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "screen_type",
-        },
-        {
-          label: this.$t("Owner"),
-          field: "owner",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "user.username",
-        },
-        {
-          label: this.$t("Modified"),
-          field: "updated_at",
-          format: "datetime",
-          width: 160,
-          sortable: true,
-          direction: "none",
-        },
-        {
-          name: "__slot:actions",
-          field: "actions",
-          width: 60,
-        }
-      ]
+      fields: [],
     };
   },
-  created () {
-    ProcessMaker.EventBus.$on("api-data-public-screen-templates", (val) => {
+  created() {
+    this.insertFieldAfter("screen_type", {
+      label: this.$t("Owner"),
+      field: "owner",
+      width: 160,
+      sortable: true,
+      direction: "none",
+      sortField: "user.username",
+    });
+    this.fields = this.commonFields;
+    ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -212,34 +200,21 @@ export default {
   methods: {
     fetch() {
       this.loading = true;
-      //change method sort by slot name
+      // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "templates/screen" +
-          "?page=" +
-          this.page +
-          "&per_page=" +
-          this.perPage +
-          "&is_public=1" +
-          "&filter=" +
-          this.filter +
-          "&pmql=" + 
-          encodeURIComponent(this.pmql) +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection +
-          "&include=categories,category,user"
+          "templates/screen"
+            + `?page=${this.page}&per_page=${this.perPage}&is_public=1`
+            + `&filter=${this.filter}&pmql=${encodeURIComponent(this.pmql)}&order_by=${
+              this.orderBy
+            }&order_direction=${this.orderDirection}&include=categories,category,user`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    },
-    onPublicTemplateNavigate() {
-      console.log('Hit public template Ellipsis Menu');
     },
   },
 };
