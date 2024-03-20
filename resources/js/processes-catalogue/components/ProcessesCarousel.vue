@@ -1,8 +1,9 @@
 <template>
-  <div class="d-block">
+  <div class="carousel-container">
     <b-carousel
       id="processes-carousel"
       v-model="slide"
+      no-animation
       :interval="interval"
       indicators
       img-height="400px"
@@ -18,7 +19,7 @@
           <img
             :src="image.url"
             :alt="process.name"
-            class="d-block w-100 img-carousel"
+            class="d-block img-carousel"
           >
         </template>
       </b-carousel-slide>
@@ -112,7 +113,12 @@ export default {
   height: 400px;
 }
 .img-carousel {
-  max-width: 100%;
-  height: inherit;
+  max-width: 800px;
+  height: 400px;
+}
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  background-color: #edf1f6;
 }
 </style>
