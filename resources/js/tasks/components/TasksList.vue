@@ -191,7 +191,8 @@
       @mark-selected-row="markSelectedRow"
     >
       <template v-slot:header="{ close, taskId }">
-        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)"></slot>
+        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)" v-bind:tooltipRowData="tooltipRowData"></slot>
+
       </template>
     </tasks-preview>
   </div>
@@ -241,6 +242,7 @@ export default {
     FilterTableBodyMixin,
   ],
   props: {
+    selectedRowQuick: 0,
     filter: {},
     columns: [],
     pmql: {},

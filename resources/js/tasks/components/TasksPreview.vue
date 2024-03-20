@@ -169,8 +169,6 @@ export default {
     autosaveApiCall() {
       this.options.is_loading = true;
       const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
-      console.log("DRAFT this.formData: ", this.formData);
-      console.log("DRAFT draftData: ", draftData);
       return ProcessMaker.apiClient
         .put("drafts/" + this.task.id, draftData)
         .then((response) => {

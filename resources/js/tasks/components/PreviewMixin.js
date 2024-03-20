@@ -66,7 +66,6 @@ const PreviewMixin = {
       this.defineNextPrevTask();
     },
     customFilter() {
-      console.log("custom Filter: ", this.task);
       this.propFilters = [
         {
           subject: { type: "Field", value: "process_id" },

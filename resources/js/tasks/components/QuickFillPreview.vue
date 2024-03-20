@@ -1,8 +1,6 @@
 <template>
   <div class="pl-3">
     <div class="main-container">
-      
-          
           <div v-if="propFromButton === 'fullTask'" class="header-container">
             <span class="quick-fill-text-full">{{ $t("Quick Fill") }}</span>
             <b-button
@@ -43,19 +41,30 @@
           class="custom-table-class"
           :disable-tooltip="true"
           :columns="columns"
+          :selected-row-quick="selectedRowQuick"
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
           :additionalIncludes="['screenFilteredData']"
         >
-          <template v-slot:preview-header="{ close, task }">
+          <template v-slot:preview-header="{ close, task, tooltipRowData }">
             <div>
               <b-button
+                v-if="propFromButton !== 'fullTask'"
                   class="mr-2"
                   variant="primary"
                   :aria-label="$t('Use This Task Data')"
                   @click="buttonThisData(task)"
+                >
+                  {{ $t('Use This Task Data') }}
+                </b-button>
+                <b-button
+                v-if="propFromButton === 'fullTask'"
+                  class="mr-2"
+                  variant="primary"
+                  :aria-label="$t('Use This Task Data')"
+                  @click="buttonThisDataFromFullTask(tooltipRowData)"
                 >
                   {{ $t('Use This Task Data') }}
                 </b-button>
@@ -75,18 +84,6 @@
               :aria-label="$t('Quick fill')"
               variant="light"
               @click="buttonThisData(tooltipRowData)"
-            >
-              <img
-                src="../../../img/smartinbox-images/Vector.svg"
-                :alt="$t('No Image')"
-              />
-            </b-button>
-            <b-button
-              v-if="propFromButton === 'fullTask'"
-              class="icon-button"
-              :aria-label="$t('Quick fill')"
-              variant="light"
-              @click="buttonThisDataFromFullTask(tooltipRowData)"
             >
               <img
                 src="../../../img/smartinbox-images/Vector.svg"
@@ -122,6 +119,7 @@ export default {
   props: ["task", "propColumns", "propFilters", "propFromButton"],
   data() {
     return {
+      selectedRowQuick: 0,
       fromQuickFill: true,
       taskData: {},
       pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.task.process_id})`,
@@ -178,7 +176,7 @@ export default {
       this.$emit("close");
     },
     buttonThisDataFromFullTask(tooltipRowData) {
-      const draftData = _.omitBy(tooltipRowData.data, (value, key) => key.startsWith("_"));
+      const draftData = _.omitBy(tooltipRowData.screen_filtered_data, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
         .put("drafts/" + this.task.id, draftData)
         .then((response) => {
