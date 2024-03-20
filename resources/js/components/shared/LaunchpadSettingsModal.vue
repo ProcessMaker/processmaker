@@ -33,7 +33,7 @@
             class="image-thumbnails-container"
           >
             <div
-              v-if="images.length === 0"
+              v-if="images.length === 0 || loadingImage"
               md="12"
               class="text-center images-info images-container"
             >
@@ -47,23 +47,23 @@
                 {{ $t("Recommended: 1800 x 750 px") }}
               </div>
             </div>
-            <b-row
+            <div
               v-else
               class="images-container"
             >
-              <b-col
+              <div
                 v-for="(image, index) in images"
                 :key="index"
                 md="6"
               >
                 <div
-                  class="d-flex justify-content-end align-items-end thumbnail image-style"
+                  class="d-flex justify-content-end align-items-end thumbnail image-style mr-2"
                   @mouseover="showDeleteIcon(index)"
                   @mouseleave="hideDeleteIcon(index)"
                 >
                   <div
                     v-if="showDeleteIcons[index] || focusIcons[index]"
-                    class="m-1 delete-icon"
+                    class="delete-icon"
                   >
                     <div
                       id="popover-button-event"
@@ -78,9 +78,9 @@
                       triggers="focus"
                       placement="bottom"
                     >
-                      <div class="p-3">
-                        <p class="text-center">
-                          {{ $t("Do you really want to delete this image?") }}
+                      <div class="d-flex popover-custom">
+                        <p class="m-0">
+                          {{ $t("Do you want to delete this image?") }}
                         </p>
                         <button
                           type="button"
@@ -106,9 +106,16 @@
                     class="image-style"
                   >
                 </div>
-              </b-col>
-            </b-row>
+              </div>
+              <div
+                v-if="loadingImage"
+                class="loading-image image-style"
+              >
+                <b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+              </div>
+            </div>
             <div
+              v-if="!loadingImage && !notValidImage"
               class="d-flex justify-content-center align-items-center"
               @drop="handleDrop"
               @dragover.prevent
@@ -124,6 +131,27 @@
                   {{ $t("Drag or click here") }}
                 </span>
                 {{ $t("to upload an image") }}
+              </div>
+            </div>
+            <div
+              v-if="loadingImage"
+              class="d-flex justify-content-center align-items-center"
+            >
+              <div
+                class="input-file-custom"
+              >
+                {{ $t("Loading...") }}
+              </div>
+            </div>
+            <div
+              v-if="notValidImage"
+              class="d-flex justify-content-center align-items-center"
+            >
+              <div
+                class="input-file-custom"
+              >
+                <b-icon icon="exclamation-triangle-fill" class="mr-1" variant="warning"></b-icon>
+                {{ $t("Image not valid, try another") }}
               </div>
             </div>
           </div>
@@ -238,6 +266,8 @@ export default {
       processId: "",
       mediaImageId: [],
       dataProcess: {},
+      loadingImage: false,
+      notValidImage: false,
     };
   },
   computed: {
@@ -326,6 +356,8 @@ export default {
       this.retrieveSavedSearchCharts();
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
+      this.notValidImage = false;
+      this.loadingImage = false;
     },
     /**
      * Method to show trash image
@@ -552,6 +584,7 @@ export default {
      *  Validates images with png and jpg extensions.
      */
     validateImageExtension(files) {
+      this.loadingImage = true;
       Array.from(files).forEach((file) => {
         if (this.images.length < this.maxImages) {
           if (this.isValidFileExtension(file.name)) {
@@ -566,11 +599,16 @@ export default {
             };
             reader.readAsDataURL(file);
           } else {
+            this.notValidImage = true;
+            setTimeout(() => {
+              this.notValidImage = false;
+            }, 4000);
             ProcessMaker.alert(
               this.$t("Only PNG and JPG extensions are allowed."),
               "danger",
             );
           }
+          this.loadingImage = false;
         }
       });
     },
@@ -698,6 +736,7 @@ label {
   align-items: center;
 }
 .images-container {
+  display: flex;
   width: 345px;
   height: 128px;
   margin-bottom: 12px;
@@ -775,6 +814,7 @@ b-row, b-col {
   line-height: 24px;
   letter-spacing: -0.02em;
   text-align: left;
+  margin-left: 11px;
 }
 .btn-delete-image {
   color: white;
@@ -783,5 +823,28 @@ b-row, b-col {
 .btn-cancel-delete {
   color: #556271;
   background-color: #d8e0e9;
+}
+.popover {
+  max-width: 474px;
+  max-height: 64px;
+}
+.popover-custom {
+  display: flex;
+  align-items: center;
+  color: #556271;
+  padding: 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+}
+.loading-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  background-color: #f6f9fb;
+  border: 1px solid #CDDDEE;
 }
 </style>
