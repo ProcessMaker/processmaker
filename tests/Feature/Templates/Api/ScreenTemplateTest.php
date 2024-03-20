@@ -144,9 +144,7 @@ class ScreenTemplateTest extends TestCase
         $exporter = new Exporter();
         $exporter->exportScreen($screen);
         $manifest = (object) $exporter->payload();
-        // delete all screens
         Screen::query()->delete();
-
         // Create screen template
         $screenTemplate = ScreenTemplates::factory()->create(
             [
@@ -158,5 +156,9 @@ class ScreenTemplateTest extends TestCase
         $route = route('api.template.show', ['screen', $screenTemplate->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
+        $newScreen = Screen::find($response->json('id'));
+
+        $this->assertDatabaseHas('screen_templates', ['id' => $screenTemplate->id]);
+        $this->assertDatabaseHas('screens', ['title' => $newScreen->title]);
     }
 }
