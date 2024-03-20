@@ -16,7 +16,6 @@
         @show-template-preview="showPreview"
         @template-selected="handleSelectedTemplate"
         @template-default-selected="handleDefaultTemplateSelected"
-        @reset-default-template="handleResetDefaultTemplate"
       />
       <default-template-card
         v-else
@@ -56,9 +55,6 @@ export default {
     },
     handleDefaultTemplateSelected(templateId) {
       this.$emit("selected-default-template", templateId);
-    },
-    handleResetDefaultTemplate() {
-      this.$emit("reset-default-template");
     },
   },
 };

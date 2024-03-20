@@ -30,7 +30,6 @@
           @show-template-preview="showPreview"
           @selected-template="handleSelectedTemplate"
           @selected-default-template="handleSelectedDefaultTemplate"
-          @reset-default-template="handleResetDefaultTemplate"
         />
       </b-card-group>
     </div>
@@ -196,9 +195,6 @@ export default {
     updateTemplateInArray(updatedTemplate) {
       const index = this.screenTemplates.indexOf(updatedTemplate);
       this.$set(this.screenTemplates, index, updatedTemplate);
-    },
-    handleResetDefaultTemplate() {
-      this.defaultTemplateId = null;
     },
   },
 };

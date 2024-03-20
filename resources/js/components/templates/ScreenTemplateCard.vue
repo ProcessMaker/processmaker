@@ -81,7 +81,10 @@ export default {
     },
     isDefaultTemplatePublic() {
       this.updateDefaultTemplateStatus();
-    }
+    },
+  },
+  mounted() {
+    this.updateDefaultTemplateStatus();
   },
   methods: {
     showTemplatePreview() {
@@ -92,7 +95,7 @@ export default {
     },
     updateDefaultTemplateStatus() {
       if ((this.defaultTemplateId === null || this.defaultTemplateId === undefined) && this.template.screen_type == this.defaultTemplateScreenType.toString() && !this.template.hasOwnProperty("id") && this.template.is_public === this.isDefaultTemplatePublic) {
-        this.isDefaultTemplate = true
+        this.isDefaultTemplate = true;
       } else {
         this.isDefaultTemplate = this.template.screen_type === this.defaultTemplateScreenType.toString() && !!this.template.is_default_template && this.template.is_public === this.isDefaultTemplatePublic;
       }
@@ -100,10 +103,7 @@ export default {
     emitDefaultTemplateSelected() {
       const defaultTemplateId = this.template?.id || null;
       this.$emit('template-default-selected', defaultTemplateId);
-    }
-  },
-  mounted() {
-    this.updateDefaultTemplateStatus();
+    },
   },
 };
 </script>
