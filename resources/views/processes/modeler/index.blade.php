@@ -32,6 +32,7 @@ div.main {
   max-height: 100%;
 }
 </style>
+@yield('extra_css')
 @endsection
 
 @section('js')
@@ -113,4 +114,5 @@ div.main {
       ></script>
     @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+  @yield('extra_js')
 @endsection
