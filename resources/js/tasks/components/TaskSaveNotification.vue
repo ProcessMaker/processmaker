@@ -16,7 +16,7 @@
           id="saved-status"
           class="element-name truncate-text"
           :style="{
-            maxWidth: `${headerResponsive()}px`
+            maxWidth: `${size}px`
           }"
         >
           {{ task.element_name }}
@@ -82,14 +82,18 @@ export default {
         return false;
       },
     },
+    size: {
+      type: Number,
+      default() {
+        return 0;
+      },
+    },
   },
   data() {
     return {
       savedIcon: faCheckCircle,
       spinner: faSpinner,
       errorIcon: faExclamationTriangle,
-      size: 50,
-      screenWidthPx: 0,
     };
   },
   computed: {
@@ -113,18 +117,7 @@ export default {
     },
   },
   mounted() {
-    this.$root.$on('pane-size', (value) => {
-      this.size = value;
-    });
-    this.screenWidthPx = window.innerWidth;
-  },
-  methods: {
-    convertPercentageToPx(percentage) {
-      return (this.screenWidthPx * percentage) / 100;
-    },
-    headerResponsive() {
-      return this.convertPercentageToPx(this.size) - 550;
-    },
+
   },
 };
 </script>

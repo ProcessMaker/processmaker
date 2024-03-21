@@ -33,6 +33,31 @@ const PreviewMixin = {
       showUseThisTask: false,
       splitpaneSize: 50,
       isPriority: false,
+      size: 50,
+      screenWidthPx: 0,
+      ellipsisButton: false,
+      actions: [
+        {
+          value: "clear-draft",
+          content: "Clear Task",
+          image: "/img/smartinbox-images/eraser.svg",
+        },
+        {
+          value: "quick-fill",
+          content: "Quick Fill",
+          image: "/img/smartinbox-images/fill.svg",
+        },
+        {
+          value: "mark-priority",
+          content: "Mark as Priority",
+          image: "/img/priority-header.svg",
+        },
+        {
+          value: "open-task",
+          content: "Open Task",
+          icon: "fas fa-external-link-alt",
+        },        
+      ],
     };
   },
   methods: {
@@ -174,6 +199,36 @@ const PreviewMixin = {
         .then(() => {
           this.task.is_priority = !this.task.is_priority;
         });
+    },
+    onProcessNavigate(action, data) {
+      switch (action.value) {
+        case "clear-draft":
+          ProcessMaker.apiClient
+            .delete("drafts/" + this.task.id)
+            .then(() => {
+              this.isLoading = setTimeout(() => {
+                this.stopFrame = true;
+                this.taskTitle = this.$t("Task Lorem");
+              }, 4900);
+              this.showSideBar(this.task, this.data);
+              this.task.draft = null;
+            });
+          break;
+      }
+    },  
+    updateScreenWidthPx() {
+      this.screenWidthPx = window.innerWidth;
+    },
+    convertPercentageToPx(percentage) {
+      return (this.screenWidthPx * percentage) / 100;
+    },
+    headerResponsive() {
+      if (this.convertPercentageToPx(this.size) <= 550) {
+        this.ellipsisButton = true;
+        return this.convertPercentageToPx(this.size) - 400;
+      }
+      this.ellipsisButton = false;
+      return this.convertPercentageToPx(this.size) - 550;
     },
   },
 };

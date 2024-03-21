@@ -33,9 +33,19 @@
                 :date="lastAutosave"
                 :error="errorAutosave"
                 :form-data="formData"
+                :size="headerResponsive()"
               />
               <div class="ml-auto mr-0 text-right">
+                <ellipsis-menu
+                  v-if="ellipsisButton"
+                  :actions="actions"
+                  :data="task"
+                  :divider="false"
+                  style="float:none;"
+                  @navigate="onProcessNavigate"
+                />
                 <b-button-group
+                  v-if="!ellipsisButton"
                   class="preview-group-button"
                 >
                   <b-button
@@ -54,12 +64,13 @@
                     @click="showQuickFillPreview = true"
                   >
                     <img
-                      src="../../../img/smartinbox-images/fill.svg"
+                      src="/img/smartinbox-images/fill.svg"
                       :alt="$t('No Image')"
                     >
                   </b-button>
                 </b-button-group>
                 <b-button-group
+                  v-if="!ellipsisButton"
                   class="preview-group-button"
                 >
                   <b-button
@@ -142,12 +153,13 @@
 import SplitpaneContainer from "./SplitpaneContainer.vue";
 import TaskLoading from "./TaskLoading.vue";
 import TaskSaveNotification from "./TaskSaveNotification.vue";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 
 export default {
-  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification },
+  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
   watch: {
     task: {
@@ -167,6 +179,11 @@ export default {
       this.formData = event.detail;
       this.handleAutosave();
     });
+    this.$root.$on('pane-size', (value) => {
+      this.size = value;
+    });
+    this.screenWidthPx = window.innerWidth;
+    window.addEventListener('resize', this.updateScreenWidthPx);
   },
   methods: {
     fillWithQuickFillData(data) {
@@ -208,6 +225,7 @@ export default {
         })
         .finally(() => {
           this.options.is_loading = false;
+          this.errorAutosave = false;
         });
     },
     eraseDraft() {
