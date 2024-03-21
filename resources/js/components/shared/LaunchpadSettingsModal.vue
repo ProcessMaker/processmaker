@@ -1014,7 +1014,7 @@ b-row, b-col {
 #idDropdownMenuUpload .dropdown-item {
   color: #556271;
   padding: 12px;
-  font-family: Open Sans;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 21.79px;
