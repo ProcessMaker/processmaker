@@ -1,33 +1,54 @@
 <template>
   <div :class="type !== 'wizard' ? 'template-select-card-container pb-2' : 'wizard-select-card-container pb-4'" >
-    <wizard-template-card
-      v-if="type === 'wizard'"
-      :template="template"
-      @show-details="showDetails()"
-    />
-    <default-template-card
-      v-else
-      :template="template"
-      @show-details="showDetails()"
-    />
+    <div v-if="!showTemplatePreview">
+      <wizard-template-card
+        v-if="type === 'wizard'"
+        :template="template"
+        @show-details="showDetails()"
+      />
+      <screen-template-card
+        v-if="type === 'screen'"
+        :template="template"
+        @show-template-preview="showPreview"
+        :isActive="isActive"
+        @template-selected="handleSelectedTemplate"
+      />
+      <default-template-card
+        v-else
+        :template="template"
+        @show-details="showDetails()"
+      />
+    </div>
+    <preview-template v-if="showTemplatePreview"></preview-template>
   </div>
 </template>
 
 <script>
-import WizardTemplateCard from './WizardTemplateCard';
-import DefaultTemplateCard from './DefaultTemplateCard';
+import WizardTemplateCard from "./WizardTemplateCard.vue";
+import ScreenTemplateCard from "./ScreenTemplateCard.vue";
+import DefaultTemplateCard from "./DefaultTemplateCard.vue";
+import PreviewTemplate from "./PreviewTemplate.vue";
 
 export default {
-  components: {WizardTemplateCard, DefaultTemplateCard},
-  props: ["template", "type"],
+  components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
+  props: ["template", "type", 'isActive'],
   data() {
     return {
+      showTemplatePreview: false,
+      selectedTemplate: null,
+      selectedTemplateId: null,
     };
   },
   methods: {
     showDetails() {
       this.$emit("show-details", { template: this.template, type: this.type });
     },
+    showPreview(template) {
+      this.$emit('show-template-preview', { template: template, type: this.type});
+    },
+    handleSelectedTemplate(templateId) {
+      this.$emit('selected-template', templateId);
+    }
   },
 };
 </script>
