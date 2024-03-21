@@ -459,15 +459,14 @@ class ScreenTemplate implements TemplateInterface
                             $newScreen->custom_css = null;
                             break;
                         case 'Fields':
+                            // Remove Fields from the screen config
+                            $newConfig = $this->removeScreenComponents($newScreen->config, $components);
+                            $newScreen->config = $newConfig;
+                            break;
                         case 'Layout':
-                            // Filter out the items based on the associated components
-                            $filteredItems = array_filter($newScreen->config[0]['items'],
-                                function ($item) use ($components) {
-                                    return !$this->checkNestedComponents($item, $components);
-                                }
-                            );
-                            $config[0]['items'] = array_values($filteredItems);
-                            $newScreen->config = $config;
+                            $newConfig = $this->removeScreenComponents($newScreen->config, $components);
+                            $newScreen->config = $newConfig;
+                            break;
                         default:
                             break;
                     }
@@ -496,6 +495,86 @@ class ScreenTemplate implements TemplateInterface
         }
     }
 
+    public function removeScreenComponents($config, $components)
+    {
+        // Iterate through each screen page
+        $updatedConfig = [];
+        foreach ($config as $pageIndex => $page) {
+            $filteredPageItems = [];
+            // Iterate through each page item
+            if (isset($page['items'])) {
+                foreach ($page['items'] as $index => $item) {
+                    if (isset($item['component'])) {
+                        if ($item['component'] === 'FormMultiColumn' && !$this->checkNestedComponents($item, $components)) {
+                            // Its not listed we need to store it but we need to check for existing items in the the multicolumn
+                            foreach ($item['items'] as $colIndex => $column) {
+                                for ($i = count($column) - 1; $i >= 0; $i--) {
+                                    $columnItem = $column[$i];
+                                    if ($this->checkNestedComponents($columnItem, $components)) {
+                                        if ($columnItem['component'] === 'FormMultiColumn') {
+                                            // Recursively check for nested multi columns
+                                            $this->filterNestedMultiColumns($columnItem, $components, false);
+                                            $column[$i] = $columnItem;
+                                        } else {
+                                            // Remove the component if its not listed
+                                            array_splice($column, $i, 1);
+                                        }
+                                    } else {
+                                        if ($columnItem['component'] === 'FormMultiColumn') {
+                                            // Recursively check for nested multi columns
+                                            $this->filterNestedMultiColumns($columnItem, $components, false);
+                                            $column[$i] = $columnItem;
+                                        }
+                                    }
+                                }
+
+                                $item['items'][$colIndex] = $column;
+                            }
+                            $filteredPageItems[] = $item;
+                        } elseif ($item['component'] === 'FormMultiColumn' && $this->checkNestedComponents($item, $components)) {
+                            $filteredMultiColumnItems = [];
+                            // Its listed we need to remove it but we need to check for existing items in the the multicolumn
+                            foreach ($item['items'] as $colIndex => $column) {
+                                for ($i = count($column) - 1; $i >= 0; $i--) {
+                                    $columnItem = $column[$i];
+                                    if ($this->checkNestedComponents($columnItem, $components)) {
+                                        if ($columnItem['component'] === 'FormMultiColumn') {
+                                            // Recursively check for nested multi columns
+                                            $this->filterNestedMultiColumns($columnItem, $components, true);
+                                            foreach ($columnItem as $item) {
+                                                $filteredMultiColumnItems[] = $item;
+                                            }
+                                            $columnItem = null;
+                                        } else {
+                                            // Remove the component if its not listed
+                                            array_splice($column, $i, 1);
+                                        }
+                                    }
+
+                                    if (!is_null($columnItem)) {
+                                        $filteredMultiColumnItems[] = $columnItem;
+                                    }
+                                }
+                                // Remove the multicolumn
+                                unset($item['items'][$i]);
+                            }
+
+                            // Remove the multicolumn
+                            unset($page['items'][$index]);
+                            $filteredPageItems = $filteredMultiColumnItems;
+                        } elseif (!$this->checkNestedComponents($item, $components)) {
+                            $filteredPageItems[] = $item;
+                        }
+                    }
+                }
+            }
+            $page['items'] = $filteredPageItems;
+            $updatedConfig[] = $page;
+        }
+
+        return $updatedConfig;
+    }
+
     public function checkNestedComponents($item, $components)
     {
         if (in_array($item['component'], ['BFormComponent', 'BWrapperComponent'])) {
@@ -514,5 +593,34 @@ class ScreenTemplate implements TemplateInterface
         }
 
         return false;
+    }
+
+    private function filterNestedMultiColumns(&$item, $components, $removeMultiColumn)
+    {
+        if ($removeMultiColumn) {
+            $filteredColumnItems = [];
+        } else {
+            $filteredColumnItems = $item;
+        }
+
+        foreach ($item['items'] as $colIndex => $column) {
+            for ($i = count($column) - 1; $i >= 0; $i--) {
+                $columnItem = $column[$i];
+                if ($this->checkNestedComponents($columnItem, $components)) {
+                    if ($columnItem['component'] === 'FormMultiColumn') {
+                        // Recursively check nested multi-columns
+                        $this->filterNestedMultiColumns($columnItem, $components, $removeMultiColumn);
+                        $filteredColumnItems[] = $columnItem;
+                    } else {
+                        // Remove the component if it's not listed
+                        array_splice($column, $i, 1);
+                        $filteredColumnItems['items'][$colIndex] = $column;
+                    }
+                } elseif (!$this->checkNestedComponents($columnItem, $components)) {
+                    $filteredColumnItems[] = $columnItem;
+                }
+            }
+        }
+        $item = $filteredColumnItems;
     }
 }
