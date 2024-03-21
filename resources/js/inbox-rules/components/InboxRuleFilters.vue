@@ -1,34 +1,7 @@
 <template>
   <div>
     <b-card v-if="!savedSearchId && !task">
-      <div class="mb-3">
-        <pmql-input ref="pmql_input"
-                    :value="pmql"
-                    search-type="tasks"
-                    :ai-enabled="false"
-                    :show-filters="true"
-                    :aria-label="$t('Advanced Search (PMQL)')"
-                    :advanced-filter-prop="savedSearchAdvancedFilter"
-                    :show-search-bar="false"
-                    :show-pmql-badge="!!savedSearchId"
-                    >
-          <template v-slot:right-of-badges v-if="showColumnSelectorButton">
-            <b-button class="ml-md-2" v-b-modal.columns>
-              <i class="fas fw fa-cog"></i>
-            </b-button>
-          </template>
-        </pmql-input>
-      </div>
-      <tasks-list ref="taskList"
-                  :pmql="pmql"
-                  :advanced-filter-prop="savedSearchAdvancedFilter"
-                  @advanced-filter-updated="savedSearchAdvancedFilter = $event"
-                  :saved-search="savedSearch?.id"
-                  :columns="columns"
-                  @submit=""
-                  @count="$emit('count', $event)"
-                  >
-      </tasks-list>
+      <p>{{ $t('Select a saved search above.') }}</p>
     </b-card>
     <b-card v-else>
       <div v-if="task">
