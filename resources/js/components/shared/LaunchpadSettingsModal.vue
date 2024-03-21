@@ -430,6 +430,7 @@ export default {
     cleanTabLaunchpad() {
       this.getProcessDescription();
       this.images = [];
+      this.embedUrls = Array(4).fill("");
       this.retrieveSavedSearchCharts();
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
