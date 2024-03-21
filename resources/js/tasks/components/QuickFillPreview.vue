@@ -1,6 +1,6 @@
 <template>
   <div class="pl-3">
-    <div class="main-container">
+    <div>
           <div v-if="propFromButton === 'fullTask'" class="header-container">
             <span class="quick-fill-text-full">{{ $t("Quick Fill") }}</span>
             <b-button
@@ -12,20 +12,12 @@
           </div>
           <div v-else>
             <div class="button-container">
-            <b-button
-            class="btn-back-quick-fill"
-            variant="link"
-            @click="$emit('close')"
-          >
-            <i class="fas fa-arrow-left" />
-          </b-button>
           <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
             <b-button
-              class="close-button"
-              variant="link"
+              class="close-button-prev button-cancel"
               @click="$emit('close')"
             >
-              <i class="fas fa-times" />
+            {{ $t("Cancel") }}
             </b-button>
           </div>
           </div>
@@ -33,7 +25,9 @@
     </div>
     <div class="second-container">
       <div class="span-message">
-        <span>{{ $t('Select a previous task to reuse its filled data on the current task.') }}</span>
+        {{ this.processName 
+        ? $t('Select a previous task to reuse its filled data on the current task') + ': ' + this.processName 
+        : $t('Select a previous task to reuse its filled data on the current task.') }}
       </div>
       <div class="third-container">
         <tasks-list
@@ -49,32 +43,48 @@
           :additionalIncludes="['screenFilteredData']"
         >
           <template v-slot:preview-header="{ close, task, tooltipRowData }">
-            <div>
+            <div style="width: 92%;">
+              <div class="header-container-quick">
+                <div style="display: block; width: 100%;">
+                <span class="span-text">Data Preview</span>
+                <b-button
+                  v-if="propFromButton !== 'fullTask'"
+                    class="button-task mr-2"
+                    variant="primary"
+                    :aria-label="$t('Use This Task Data')"
+                    @click="buttonThisData(task)"
+                    style="display: block; width: 100%; margin-top:10px;"
+                  >
+                  <img
+                    src="../../../img/smartinbox-images/Stroke.svg"
+                    :alt="$t('No Image')"
+                    style="margin-right: 5px; margin-top: -2px"
+                  />{{ $t('Use This Task Data') }}
+                  </b-button>
+                  <b-button
+                  v-if="propFromButton === 'fullTask'"
+                    class="button-task mr-2"
+                    variant="primary"
+                    :aria-label="$t('Use This Task Data')"
+                    @click="buttonThisDataFromFullTask(tooltipRowData)"
+                    style="display: block; width: 100%; margin-top:10px;"
+                  >
+                  <img
+                    src="../../../img/smartinbox-images/Stroke.svg"
+                    :alt="$t('No Image')"
+                    style="margin-right: 5px; margin-top: -2px"
+                  />{{ $t('Use This Task Data') }}
+                  </b-button>
+                  
+              </div>
               <b-button
-                v-if="propFromButton !== 'fullTask'"
-                  class="mr-2"
-                  variant="primary"
-                  :aria-label="$t('Use This Task Data')"
-                  @click="buttonThisData(task)"
-                >
-                  {{ $t('Use This Task Data') }}
-                </b-button>
-                <b-button
-                v-if="propFromButton === 'fullTask'"
-                  class="mr-2"
-                  variant="primary"
-                  :aria-label="$t('Use This Task Data')"
-                  @click="buttonThisDataFromFullTask(tooltipRowData)"
-                >
-                  {{ $t('Use This Task Data') }}
-                </b-button>
-                <b-button
-                  class="close-button mr-2"
-                  variant="link"
-                  @click="close()"
-                >
-                  <i class="fas fa-times" />
-                </b-button>
+                    class="close-button mr-2"
+                    variant="link"
+                    @click="close()"
+                  >
+                    <i class="fas fa-times" />
+                  </b-button>
+              </div>
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
@@ -104,7 +114,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="previewTasks(tooltipRowData, 50)"
+              @click="previewTasks(tooltipRowData, 50); setTask()"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -119,6 +129,7 @@ export default {
   props: ["task", "propColumns", "propFilters", "propFromButton"],
   data() {
     return {
+      processName: "",
       selectedRowQuick: 0,
       fromQuickFill: true,
       taskData: {},
@@ -168,6 +179,9 @@ export default {
   },
   methods: {
     selected(taskData) {},
+    setTask() {
+      this.processName = this.task.process_request.case_title;
+    },
     cancelAndGoBack() {
       window.location.href = `/tasks/${this.task.id}/edit`;
     },
@@ -201,7 +215,7 @@ export default {
 <style scoped>
 
 .btn-cancel {
-  background-color: #d8e0e9;
+  background-color: #fff;
 }
 .btn-back-quick-fill {
   color: #888;
@@ -210,7 +224,7 @@ export default {
 }
 .button-container {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   height: 64px;
   border: 1px solid #f6f9fb;
   padding: 0 12px;
@@ -222,6 +236,15 @@ export default {
   border: 1px solid #f6f9fb;
   padding: 0 12px;
 }
+
+.header-container-quick {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #CDDDEE;
+  padding: 10px 12px;
+  background-color: #E8F0F9;
+}
+
 .close-go-back-button {
   color: #fff;
   background-color: #6A7888;
@@ -237,14 +260,43 @@ export default {
   font-size: 27px;
 }
 .quick-fill-text {
-  color: #888;
+  color: #566877;
   margin-left: 8px;
+  font-size: 16px;
 }
+
+.button-task {
+  color: #fff;
+  background-color: #1572C2;
+}
+
+.button-cancel {
+  color: #fff;
+  background-color: #6A7888;
+  width: 88px;
+  height: 32px;
+  font-weight: bold;
+}
+
+.close-button-prev {
+  color: #fff;
+  padding: 0;
+  border: none;
+}
+
+.arrow-button,
+.close-button-prev {
+  color: #fff;
+  padding: 0;
+  border: none;
+}
+
 .close-button {
   color: #888;
   padding: 0;
   border: none;
-  margin-left: auto;
+  margin-left: -25px;
+  margin-top: -45px;
 }
 .arrow-button,
 .close-button {
@@ -281,7 +333,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+  margin-left: 10px;
 }
 
 .main-text {
@@ -311,5 +363,11 @@ img {
 
 .icon-button {
   color: #888;
+}
+
+.span-text {
+  font-size: 16px;
+  color: #556271;
+  font-weight: bold;
 }
 </style>
