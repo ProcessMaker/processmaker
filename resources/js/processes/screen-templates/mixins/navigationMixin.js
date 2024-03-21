@@ -1,8 +1,6 @@
 export default {
   methods: {
     onTemplateNavigate(actionType, data) {
-      console.log(actionType);
-      console.log(data);
       switch (actionType?.value) {
         case "edit-template":
           this.goToScreenBuilder(data.id);
