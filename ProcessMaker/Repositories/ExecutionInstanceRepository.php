@@ -162,7 +162,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->callable_id = $process->getId();
         $instance->collaboration_uuid = $instance->getProperty('collaboration_uuid', null);
         $instance->process_id = $definition->getKey();
-        $instance->process_version_id = $version?->getKey();
+        $instance->process_version_id = $version?->getKey()
+            ?: $definition->getLatestVersion()->getKey();
         if ($instance->collaboration_uuid && !$instance->process_collaboration_id) {
             $collaboration = ProcessCollaboration::firstOrCreate([
                 'uuid' => $instance->collaboration_uuid,
