@@ -172,6 +172,18 @@ class ScreenTemplate implements TemplateInterface
         $existingAssets = $request->existingAssets;
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
+        $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
+        $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
+
+        if ($defaultTemplate) {
+            $requestData['templateId'] = $defaultTemplate->id;
+        }
+
+        if ($defaultTemplateId !== null) {
+            $requestData['templateId'] = $defaultTemplateId;
+            $this->updateDefaultTemplate($defaultTemplateId, $requestData['type']);
+        }
+
         $newScreenId = $this->importScreen($requestData, $existingAssets);
 
         try {
@@ -189,6 +201,33 @@ class ScreenTemplate implements TemplateInterface
                 'message' => $e->getMessage(),
             ], 422);
         }
+    }
+
+    /**
+     * Get the default template for the given screen type
+     *
+     * @param string $screenType The type of the screen (DISPLAY, FORM, CONVERSATIONAL, EMAIL)
+     * @return ScreenTemplates|null The default screen template or null if not found
+     */
+    public function getDefaultTemplate(string $screenType): ?ScreenTemplates
+    {
+        return ScreenTemplates::where('screen_type', $screenType)
+            ->where('is_default_template', 1)
+            ->first();
+    }
+
+    /**
+     * Update the default template for the given screen type
+     *
+     * @param int $defaultTemplateId The ID of the new default template
+     * @param string $screenType The type of screen (FORM, DISPLAY, EMAIL, CONVERSATIONAL)
+     * @return void
+     */
+    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType)
+    {
+        ScreenTemplates::where('screen_type', $screenType)->update(['is_default_template' => 0]);
+
+        ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
     }
 
     /**

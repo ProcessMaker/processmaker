@@ -40,6 +40,8 @@
               :selected-screen-type="formData.type ? formData.type : 'FORM'"
               @show-template-preview="showPreview"
               @selected-template="handleSelectedTemplate"
+              @selected-default-template="handleSelectedDefaultTemplate"
+              @default-template-type-changed="handleDefaultTemplateType"
             />
           </div>
           <preview-template
@@ -269,9 +271,15 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.formData.templateId != null) {
+      if (this.formData.templateId !== null && this.formData.templateId !== undefined && this.formData.defaultTemplateId !== null) {
         this.handleCreateFromTemplate();
-      } else {
+      } else if (this.formData.defaultTemplateId !== null && this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId !== null) {
+        this.handleCreateFromTemplate();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId === null) {
         this.handleCreateFromBlank();
       }
     },
@@ -353,6 +361,13 @@ export default {
     },
     handleSelectedTemplate(templateId) {
       this.formData.templateId = templateId;
+    },
+    handleSelectedDefaultTemplate(templateId) {
+      this.formData.defaultTemplateId = templateId;
+    },
+    handleDefaultTemplateType(type) {
+      const isPublic = type === "Public Templates" ? 1 : 0;
+      this.formData.is_public = isPublic;
     },
   },
 };
