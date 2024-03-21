@@ -1,13 +1,14 @@
 export default {
   methods: {
     onTemplateNavigate(actionType, data) {
+      console.log(actionType);
+      console.log(data);
       switch (actionType?.value) {
-        case "placeholder-action":
+        case "edit-template":
+          this.goToScreenBuilder(data.id);
           break;
-
         case "placeholder-action-2":
           break;
-
         case "delete-template":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
@@ -26,5 +27,13 @@ export default {
           break;
       }
     },
+    goToScreenBuilder(data) {
+      ProcessMaker.apiClient.get(`/screen-builder/screen/${data}`)
+      .then((response) => {
+        window.location = `/designer/screen-builder/${response.data.id}/edit`
+      }).catch(error => {
+        ProcessMaker.alert(error.response?.data?.message, "danger");
+      });
+    }
   },
 };

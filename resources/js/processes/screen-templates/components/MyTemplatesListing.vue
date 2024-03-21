@@ -213,27 +213,6 @@ export default {
           this.loading = false;
         });
     },
-    onTemplateNavigate(action, data, index) {
-      switch (action.value) {
-        case "edit-template":
-          this.goToScreenBuilder(data.id);
-          break;
-        case "export-item":
-          // to be added later
-            break;
-        case "delete-item":
-          // to be added later
-          break;
-      }
-    },
-    goToScreenBuilder(data) {
-      ProcessMaker.apiClient.get(`/screen-builder/screen/${data}`)
-      .then((response) => {
-        window.location = `/designer/screen-builder/${response.data.id}/edit`
-      }).catch(error => {
-        ProcessMaker.alert(error.response?.data?.message, "danger");
-      });
-    }
   },
 };
 </script>
