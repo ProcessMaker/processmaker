@@ -21,7 +21,7 @@
         class="screen-template-options justify-content-space-between"
       >
         <template-select-card
-          v-for="(screenTemplate, index) in screenTemplates"
+          v-for="(template, index) in screenTemplates"
           :key="index"
           :type="type"
           :template="template"
