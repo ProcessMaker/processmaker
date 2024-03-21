@@ -139,10 +139,13 @@
                         rows="5"
                         :aria-label="$t('Embed URL')"
                       />
-                      <div class="d-flex justify-content-between">
+                      <div
+                        v-if="!deleteEmbed"
+                        class="d-flex justify-content-between"
+                      >
                         <i
                           class="fas fa-trash-alt custom-trash-icon"
-                          @click="deleteEmbed(index)"
+                          @click="deleteEmbed = true"
                         />
                         <div class="d-flex">
                           <button
@@ -158,6 +161,32 @@
                             @click="saveEmbed(index)"
                           >
                             {{ $t("Apply") }}
+                          </button>
+                        </div>
+                      </div>
+                      <div
+                        v-else
+                        class="d-flex justify-content-between"
+                      >
+                        <span
+                          class="text-delete-embed"
+                        >
+                          {{ $t("Delete this embed media?") }}
+                        </span>
+                        <div class="d-flex">
+                          <button
+                            type="button"
+                            class="btn btn-cancel-delete btns-popover"
+                            @click="deleteEmbed = false"
+                          >
+                            {{ $t("Cancel") }}
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-delete-embed btns-popover"
+                            @click="deleteEmbedMedia(index)"
+                          >
+                            {{ $t("Delete") }}
                           </button>
                         </div>
                       </div>
@@ -345,6 +374,7 @@ export default {
       dataProcess: {},
       loadingImage: false,
       notValidImage: false,
+      deleteEmbed: false,
     };
   },
   computed: {
@@ -454,6 +484,7 @@ export default {
      */
     focusIcon(index) {
       this.focusIcons = Array(4).fill(false);
+      this.deleteEmbed = false;
       this.$set(this.focusIcons, index, true);
     },
     /**
@@ -461,6 +492,7 @@ export default {
      */
     unfocusIcon(index) {
       this.$set(this.focusIcons, index, false);
+      this.deleteEmbed = false;
     },
     /**
      * Method to delete image from carousel container
@@ -708,14 +740,14 @@ export default {
       this.focusIcon(this.images.length - 1);
     },
     cancelEmbed(index) {
-      this.embedUrls[index] = '';
+      this.$set(this.embedUrls, index, "");
       this.unfocusIcon(index);
     },
     saveEmbed(index) {
       this.images[index].url = this.embedUrls[index];
       this.unfocusIcon(index);
     },
-    deleteEmbed(index) {
+    deleteEmbedMedia(index) {
       this.embedUrls[index] = '';
       this.deleteImage(index);
     },
@@ -927,9 +959,22 @@ b-row, b-col {
   color: white;
   background-color: #6a7888;
 }
+.btn-delete-embed {
+  color: white;
+  background-color: #ed4858;
+}
 .btn-cancel-delete {
   color: #556271;
   background-color: #d8e0e9;
+}
+.text-delete-embed {
+  color: #556271;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 27px;
+  letter-spacing: -0.02em;
+  text-align: left;
 }
 .popover {
   max-width: 474px;
