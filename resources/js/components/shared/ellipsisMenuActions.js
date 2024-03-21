@@ -263,8 +263,6 @@ export default {
         {
           value: "edit-template",
           content: "Edit Template",
-          link: true,
-          href: "/designer/screen-builder/{{id}}/edit",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
         },
@@ -293,6 +291,12 @@ export default {
       ],
       publicTemplateActions: [
         //TODO: Update Public Template Ellipsis Menu Actions
+        {
+          value: "edit-template",
+          content: "Edit Template",
+          permission: ["edit-screens"],
+          icon: "fas fa-pen-square",
+        },
         {
           value: "export-item",
           content: "Export Template",

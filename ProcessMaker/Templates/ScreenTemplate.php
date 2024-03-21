@@ -20,6 +20,7 @@ use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
+use Tests\Feature\ImportExport\HelperTrait;
 
 /**
  * Summary of ScreenTemplate
@@ -91,10 +92,44 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request Request object
      * @return array Returns an array with the screen ID
      */
-    // public function show($request) : array
-    // {
-    //     // TODO: Implement showing selected screen template in screen builder
-    // }
+    public function show($request) : array
+    {
+        $template = ScreenTemplates::find($request->id);
+
+        $screen = Screen::where('uuid', $template->editing_screen_uuid)->where('is_template', 1)->first();
+
+        if ($screen) {
+            return ['id' => $screen->id];
+        }
+
+        // Otherwise we need to import the template and create a new screen
+        $payload = json_decode($template->manifest, true);
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+            ];
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $screenId = $rootLog['newId'];
+
+        $newScreen = Screen::find($screenId);
+        $newScreen->update([
+            'is_template' => 1,
+            'title' => $template->name,
+            'description' => $template->description,
+            'asset_type' => 'SCREEN_TEMPLATE',
+        ]);
+
+        ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $newScreen->uuid]);
+
+        return ['id' => $newScreen->id];
+    }
 
     /**
      * Save new screen template
