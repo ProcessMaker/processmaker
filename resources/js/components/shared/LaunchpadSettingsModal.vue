@@ -31,9 +31,12 @@
           <div
             ref="thumbnailsContainer"
             class="image-thumbnails-container"
+            @drop="handleDrop"
+            @dragover.prevent
+            @dragstart.prevent="handleDragStart"
           >
             <div
-              v-if="images.length === 0 || loadingImage"
+              v-if="images.length === 0 && !loadingImage"
               md="12"
               class="text-center images-info images-container"
             >
@@ -57,24 +60,24 @@
                 md="6"
               >
                 <div
+                  v-if="image.type !== 'embed'"
                   class="d-flex justify-content-end align-items-end thumbnail image-style mr-2"
                   @mouseover="showDeleteIcon(index)"
                   @mouseleave="hideDeleteIcon(index)"
                 >
                   <div
                     v-if="showDeleteIcons[index] || focusIcons[index]"
+                    :id="`popover-button-event-${index}`"
                     class="delete-icon"
+                    @click="focusIcon(index)"
                   >
-                    <div
-                      id="popover-button-event"
-                      @click="focusIcon(index)"
-                    >
+                    <div>
                       <i class="fas fa-trash-alt p-0 custom-color" />
                     </div>
                     <b-popover
                       ref="popover"
                       :show.sync="focusIcons[index]"
-                      target="popover-button-event"
+                      :target="`popover-button-event-${index}`"
                       triggers="focus"
                       placement="bottom"
                     >
@@ -106,31 +109,104 @@
                     class="image-style"
                   >
                 </div>
+                <div
+                  v-else
+                  id="embedFile"
+                >
+                  <div
+                    :id="`popover-embed-event-${index}`"
+                    class="square-image image-style"
+                    @click="focusIcon(index)"
+                  >
+                    <i class="fas fa-link" />
+                  </div>
+                  <b-popover
+                    ref="popover"
+                    :show.sync="focusIcons[index]"
+                    :target="`popover-embed-event-${index}`"
+                    triggers="focus"
+                    placement="bottom"
+                  >
+                    <div class="popover-embed">
+                      <label>
+                        {{ $t("Embed URL") }}
+                      </label>
+                      <input
+                        :id="`embed-input-${index}`"
+                        v-model="embedUrls[index]"
+                        class="form-control input-custom"
+                        type="text"
+                        rows="5"
+                        :aria-label="$t('Embed URL')"
+                      />
+                      <div class="d-flex justify-content-between">
+                        <i
+                          class="fas fa-trash-alt custom-trash-icon"
+                          @click="deleteEmbed(index)"
+                        />
+                        <div class="d-flex">
+                          <button
+                            type="button"
+                            class="btn btn-cancel-delete btns-popover"
+                            @click="cancelEmbed(index)"
+                          >
+                            {{ $t("Cancel") }}
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-delete-image btns-popover"
+                            @click="saveEmbed(index)"
+                          >
+                            {{ $t("Apply") }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </b-popover>
+                </div>
               </div>
               <div
                 v-if="loadingImage"
-                class="loading-image image-style"
+                class="square-image image-style"
               >
-                <b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+                <i class="fas fa-solid fa-circle-notch fa-spin" />
               </div>
             </div>
             <div
               v-if="!loadingImage && !notValidImage"
+              id="idDropdownMenuUpload"
               class="d-flex justify-content-center align-items-center"
-              @drop="handleDrop"
-              @dragover.prevent
-              @dragstart.prevent="handleDragStart"
             >
               <div
-                class="input-file-custom"
+                class="input-file-custom dropdown-toggle"
                 @dragover.prevent
-                @click="openFileInput"
+                type="button"
+                id="dropdownMenuUpload"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
               >
                 <i class="fa fa-plus mr-1" />
                 <span class="font-weight-bold mr-1">
                   {{ $t("Drag or click here") }}
                 </span>
                 {{ $t("to upload an image") }}
+              </div>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuUpload">
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click="openFileInput"
+                >
+                  {{ $t("Load an Image") }}
+                </a>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  @click="addEmbedMedia"
+                >
+                  {{ $t("Embed Media") }}
+                </a>
               </div>
             </div>
             <div
@@ -205,7 +281,7 @@
         :aria-label="$t('Description')"
       />
       <span v-if="!processDescription" class="error-message">
-        {{ $t("The Description field is required.") }}
+        {{ $t("The description field is required.") }}
         <br>
       </span>
     </div>
@@ -247,6 +323,7 @@ export default {
     return {
       images: [],
       imagesMedia: [],
+      embedUrls: Array(4).fill(""),
       showDeleteIcons: Array(4).fill(false),
       focusIcons: Array(4).fill(false),
       list: {},
@@ -594,6 +671,7 @@ export default {
                 file,
                 url: event.target.result,
                 uuid: "",
+                type: "image",
               });
               this.showDeleteIcons.push(false);
             };
@@ -611,6 +689,34 @@ export default {
           this.loadingImage = false;
         }
       });
+    },
+    addEmbedMedia() {
+      if (this.images.length >= this.maxImages) {
+        // The amount of images allowed was reached.
+        ProcessMaker.alert(
+          this.$t("It is not possible to include more than four images."),
+          "danger",
+        );
+        return;
+      }
+      this.images.push({
+        url: "",
+        uuid: "",
+        type: "embed",
+      });
+      this.focusIcon(this.images.length - 1);
+    },
+    cancelEmbed(index) {
+      this.embedUrls[index] = '';
+      this.unfocusIcon(index);
+    },
+    saveEmbed(index) {
+      this.images[index].url = this.embedUrls[index];
+      this.unfocusIcon(index);
+    },
+    deleteEmbed(index) {
+      this.embedUrls[index] = '';
+      this.deleteImage(index);
     },
     /**
      * Validate image extensions
@@ -638,7 +744,6 @@ export default {
 <style lang="css">
 label {
   color: #556271;
-  margin-top: 16px;
   margin-bottom: 4px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
@@ -704,7 +809,7 @@ label {
 }
 .text-info-custom {
   color: #556271;
-  margin-bottom: 17px;
+  margin-bottom: 33px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -717,6 +822,7 @@ label {
 }
 .input-custom {
   height: 40px;
+  margin-bottom: 16px;
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
@@ -826,7 +932,6 @@ b-row, b-col {
 }
 .popover {
   max-width: 474px;
-  max-height: 64px;
 }
 .popover-custom {
   display: flex;
@@ -839,12 +944,39 @@ b-row, b-col {
   line-height: 21.79px;
   letter-spacing: -0.02em;
 }
-.loading-image {
+.square-image {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 8px;
+  font-size: 24px;
+  color: #6a7888;
   background-color: #f6f9fb;
   border: 1px solid #CDDDEE;
+}
+.custom-trash-icon {
+  color: #6a7888;
+  font-size: 24px;
+}
+#idDropdownMenuUpload .dropdown-toggle::after {
+    display:none;
+}
+#idDropdownMenuUpload .dropdown-menu.show {
+  width: 229px;
+  padding: 0px;
+}
+#idDropdownMenuUpload .dropdown-item {
+  color: #556271;
+  padding: 12px;
+  font-family: Open Sans;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.popover-embed {
+  padding: 21px;
+  width: 474px;
 }
 </style>
