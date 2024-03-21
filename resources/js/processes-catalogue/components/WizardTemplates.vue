@@ -6,7 +6,7 @@
       package-ai="false"
       :component="currentComponent"
       :show-template-options-action-bar="false"
-      @show-details="showDetails($event)"
+      @show-details="showDetails($event)" 
     />
   </div>
 </template>
