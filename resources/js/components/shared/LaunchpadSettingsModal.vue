@@ -138,7 +138,7 @@
             aria-expanded="false"
           >
             <div class="d-flex align-items-center">
-              <span class="ml-2 custom-text">{{ selectedScreen || 'Select Screen' }}</span>
+              <span class="ml-2 custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
             </div>
           </button>
           <div
@@ -151,7 +151,7 @@
               class="dropdown-item"
               @click="selectScreenOption(item)"
             >
-              {{ item.title || 'Select Screen' }}
+              {{ item.title || $t('Select Screen') }}
             </a>
           </div>
         </div>
