@@ -488,6 +488,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
     }
 
+    /**
+     * Load the collaborations if exists
+     *
+     * @deprecated Not used, does not have a process_version reference
+     *
+     * @return BpmnDocumentInterface
+     */
     public function getCollaborations()
     {
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);

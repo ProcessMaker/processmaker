@@ -145,6 +145,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
 
         // Get process definition
         $definition = $process->getOwnerDocument()->getModel();
+        $version = $process->getOwnerDocument()->getProcessVersion();
 
         // Do nothing if is not persistent
         if ($process->isNonPersistent()) {
@@ -161,7 +162,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->callable_id = $process->getId();
         $instance->collaboration_uuid = $instance->getProperty('collaboration_uuid', null);
         $instance->process_id = $definition->getKey();
-        $instance->process_version_id = $definition->getLatestVersion()->getKey();
+        $instance->process_version_id = $version?->getKey();
         if ($instance->collaboration_uuid && !$instance->process_collaboration_id) {
             $collaboration = ProcessCollaboration::firstOrCreate([
                 'uuid' => $instance->collaboration_uuid,
