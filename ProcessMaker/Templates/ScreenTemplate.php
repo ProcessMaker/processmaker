@@ -5,12 +5,8 @@ namespace ProcessMaker\Templates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
-use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -62,7 +58,24 @@ class ScreenTemplate implements TemplateInterface
             }
         }
 
-        $templates = $templates->select('screen_templates.*')
+        return $templates
+            ->select(
+                'screen_templates.id',
+                'screen_templates.uuid',
+                'screen_templates.unique_template_id',
+                'screen_templates.name',
+                'screen_templates.description',
+                'screen_templates.version',
+                'screen_templates.user_id',
+                'screen_templates.editing_screen_uuid',
+                'screen_templates.screen_category_id',
+                'screen_templates.screen_type',
+                'screen_templates.is_public',
+                'screen_templates.is_system',
+                'screen_templates.asset_type',
+                'screen_templates.media_collection',
+                'screen_templates.screen_custom_css',
+            )
             ->leftJoin('screen_categories as category', 'screen_templates.screen_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'screen_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
@@ -81,9 +94,8 @@ class ScreenTemplate implements TemplateInterface
                             })
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
-            })->paginate($request->input('per_page', 10));
-
-        return $templates;
+            })
+            ->paginate($request->input('per_page', 10));
     }
 
     /**
