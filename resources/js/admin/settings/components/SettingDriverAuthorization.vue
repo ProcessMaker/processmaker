@@ -236,7 +236,7 @@ export default {
     },
     onSave() {
       this.formData.name = this.setting.config?.name;
-      this.formData.driver = this.setting.config?.driver;
+      this.formData.driver = this.setting.config?.name;
       this.transformed = { ...this.formData };
       this.authorizeConnection();
     },

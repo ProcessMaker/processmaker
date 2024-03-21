@@ -63,7 +63,10 @@
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
           :id="`row-${row.id}`"
-          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
+          :class="{ 
+              'pm-table-unread-row': isUnread(row, unread),
+              'pm-table-selected-row': selectedRow !== 0 && selectedRow === row.id
+          }"
           @click="handleRowClick(row, $event)"
           @mouseover="$emit('table-row-mouseover', row, rowIndex)"
           @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
@@ -160,6 +163,10 @@ export default {
       default: function () {
         return "";
       }
+    },
+    selectedRow: {
+      type: Number,
+      default: 0,
     },
   },
   data() {
@@ -424,5 +431,9 @@ export default {
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
   overflow-y: auto;
+}
+.pm-table-selected-row {
+  background-color: #E8F0F9;
+  color: #1572C2;
 }
 </style>

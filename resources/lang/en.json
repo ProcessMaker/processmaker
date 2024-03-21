@@ -1893,6 +1893,8 @@
   "Type": "Type",
   "Unable to import the process.": "Unable to import the process.",
   "Unable to import": "Unable to import",
+  "Unable to save. Verify your internet connection.": "Unable to save. Verify your internet connection.",
+  "Unable to save: Verify your internet connection.": "Unable to save: Verify your internet connection.",
   "Unable to send email. Please check your email server settings.": "Unable to send email. Please check your email server settings.",
   "Unable to send SMS. Please check your cell number and SMS server settings.": "Unable to send SMS. Please check your cell number and SMS server settings.",
   "Unauthorized - ProcessMaker": "Unauthorized - ProcessMaker",
