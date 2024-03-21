@@ -5,7 +5,18 @@ export default {
         case "placeholder-action":
           break;
 
-        case "placeholder-action-2":
+        case "make-public":
+          ProcessMaker.apiClient
+            .put(`template/screen/${data.id}/update`, {
+              name: data.name,
+              description: data.description,
+              version: data.version,
+              is_public: true,
+            })
+            .then(() => {
+              ProcessMaker.alert(this.$t("The template is now public."), "success");
+              this.fetch();
+            });
           break;
 
         case "delete-template":

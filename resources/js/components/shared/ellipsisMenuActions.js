@@ -1,4 +1,4 @@
-import DataLoading from "../common/DataLoading";
+import DataLoading from "../common/DataLoading.vue";
 
 export default {
   components: {
@@ -28,7 +28,7 @@ export default {
           href: "/process-browser/{{id}}",
           permission: ["edit-processes", "create-projects", "view-projects"],
           icon: "fas fa-file-export",
-          conditional: "if(status == 'ACTIVE', true, false)"
+          conditional: "if(status == 'ACTIVE', true, false)",
         },
         {
           value: "open-in-modeler",
@@ -37,14 +37,14 @@ export default {
           href: "/modeler/{{id}}",
           permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
-          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
+          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
         },
         {
           value: "edit-launchpad",
           content: "Edit in Launchpad",
           permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
-          conditional: "if(status == 'ACTIVE', true, false)"
+          conditional: "if(status == 'ACTIVE', true, false)",
         },
         {
           value: "create-template",
@@ -62,7 +62,7 @@ export default {
           value: "add-to-project",
           content: "Add to Project",
           icon: "fas fa-folder-plus",
-          permission: 'create-projects',
+          permission: "create-projects",
         },
         {
           value: "edit-item",
@@ -71,7 +71,8 @@ export default {
           href: "/processes/{{id}}/edit",
           permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-cog",
-          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"},
+          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
+        },
         {
           value: "view-documentation",
           content: "View Documentation",
@@ -86,7 +87,7 @@ export default {
           content: "Archive",
           permission: ["archive-processes", "view-additional-asset-actions"],
           icon: "fas fa-archive",
-          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)"
+          conditional: "if(status == 'ACTIVE' or status == 'INACTIVE', true, false)",
         },
         { value: "divider" },
         {
@@ -204,7 +205,7 @@ export default {
           permission: [
             "edit-data-sources",
             "view-data-sources",
-            "view-additional-asset-actions"
+            "view-additional-asset-actions",
           ],
         },
         {
@@ -217,7 +218,7 @@ export default {
           value: "remove-item",
           content: "Delete",
           icon: "fas fa-trash",
-          permission: ["delete-data-sources", "view-additional-asset-actions"]
+          permission: ["delete-data-sources", "view-additional-asset-actions"],
         },
       ],
       decisionTableActions: [
@@ -227,8 +228,8 @@ export default {
           icon: "fas fa-pen-square",
           permission: [
             "edit-decision_tables",
-            "view-additional-asset-actions"
-          ]
+            "view-additional-asset-actions",
+          ],
         },
         {
           value: "configure-item",
@@ -236,8 +237,8 @@ export default {
           icon: "fas fa-cog",
           permission: [
             "edit-decision_tables",
-            "view-additional-asset-actions"
-          ]
+            "view-additional-asset-actions",
+          ],
         },
         {
           value: "add-to-project",
@@ -249,17 +250,16 @@ export default {
           value: "export-item",
           content: "Export",
           icon: "fas fa-file-export",
-          permission: ["export-decision_tables", "view-additional-asset-actions"]
+          permission: ["export-decision_tables", "view-additional-asset-actions"],
         },
         {
           value: "remove-item",
           content: "Delete",
           icon: "fas fa-trash",
-          permission: ["delete-decision_tables", "view-additional-asset-actions"]
+          permission: ["delete-decision_tables", "view-additional-asset-actions"],
         },
       ],
       myTemplateActions: [
-        //TODO: Update My Template Ellipsis Menu Actions
         {
           value: "edit-template",
           content: "Edit Template",
@@ -271,8 +271,6 @@ export default {
         {
           value: "make-public",
           content: "Make Public",
-          link: true,
-          href: "/designer/screens/{{id}}/edit",
           permission: "publish-screen-templates",
           icon: "fas fa-globe",
         },
@@ -292,7 +290,6 @@ export default {
         },
       ],
       publicTemplateActions: [
-        //TODO: Update Public Template Ellipsis Menu Actions
         {
           value: "export-item",
           content: "Export Template",

@@ -4,19 +4,13 @@ namespace ProcessMaker\Templates;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
-use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
-use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
@@ -169,6 +163,31 @@ class ScreenTemplate implements TemplateInterface
         $template->saveOrFail();
 
         return response()->json();
+    }
+
+    /**
+     * Update the template.
+     */
+    public function updateTemplate(Request $request): JsonResponse
+    {
+        $request->validate([
+            'is_public' => 'sometimes|boolean',
+        ]);
+
+        $template = ScreenTemplates::findOrFail($request->id);
+
+        try {
+            $template->update($request->all());
+
+            $response = response()->json();
+        } catch (Exception $e) {
+            $response = response([
+                'message' => $e->getMessage(),
+                'errors' => $e->getMessage(),
+            ], 422);
+        }
+
+        return $response;
     }
 
     /**
