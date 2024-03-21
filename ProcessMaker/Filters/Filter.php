@@ -186,6 +186,10 @@ class Filter
             return $this->value . '%';
         }
 
+        if (is_numeric($this->value)) {
+            return (float) $this->value;
+        }
+
         return $this->value;
     }
 
