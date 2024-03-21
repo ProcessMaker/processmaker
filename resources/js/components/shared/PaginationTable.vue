@@ -8,11 +8,13 @@
       <strong><</strong>
     </button>
 
-    <div class="pagination-button">
-      <span class="pagination-current-page">{{ currentPage }}</span>
-      -
-      <span>{{ totalPageCount }}</span>
-    </div>
+    <input
+      type="text"
+      v-model="pageInput"
+      :placeholder="`${currentPage}-${totalPageCount}`"
+      class="pagination-button pagination-input"
+      @keyup.enter="redirectPage(pageInput)"
+    >
 
     <button
       :disabled="currentPage >= totalPageCount"
@@ -21,6 +23,24 @@
     >
       <strong>></strong>
     </button>
+    <span class="pagination-total">
+      {{ totalItems }}
+    </span>
+    <div class="btn-group dropup pagination-dropdown-group">
+      <button type="button" class="btn dropdown-toggle pagination-dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{ perPageButton }}
+      </button>
+      <div class="dropdown-menu">
+        <a
+          v-for="(item, index) in itemsPerPage"
+          :key="index" class="dropdown-item pagination-dropdown-items"
+          href="#"
+          @click="changePerPage(item.value)"
+        >
+          {{ item.perPage }}
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,12 +61,31 @@ export default {
           last_page: 1,
           links: [],
           path: "/",
-          per_page: 10,
+          per_page: 15,
           to: 0,
           total: 0,
         };
       },
     },
+  },
+  data() {
+    return {
+      itemsPerPage: [
+        {
+          perPage: this.$t("15 items"),
+          value: 15,
+        },
+        {
+          perPage: this.$t("30 items"),
+          value: 30,
+        },
+        {
+          perPage: this.$t("50 items"),
+          value: 50,
+        },
+      ],
+      pageInput: "",
+    };
   },
   computed: {
     currentPage() {
@@ -54,6 +93,15 @@ export default {
     },
     totalPageCount() {
       return this.meta.total_pages;
+    },
+    totalItems() {
+      if (this.meta.total === 1) {
+        return this.meta.total + " item";
+      }
+      return this.meta.total + " items";
+    },
+    perPageButton() {
+      return this.meta.per_page + " per Page"
     },
   },
   methods: {
@@ -70,6 +118,13 @@ export default {
     goToPage(page) {
       this.$emit('page-change', page);
     },
+    changePerPage(value) {
+      this.$emit('per-page-change', value);
+    },
+    redirectPage(value) {
+      this.$emit('page-change', value);
+      this.pageInput = "";
+    },
   },
 };
 </script>
@@ -80,6 +135,9 @@ export default {
   justify-content: left;
   align-items: center;
   margin-top: 20px;
+  font-weight: 400;
+  font-size: 15px;
+  color: #5C5C63;
 }
 .pagination-button {
   background-color: #FFFFFF;
@@ -97,5 +155,28 @@ export default {
 .pagination-current-page {
     color: #1572C2;
     font-weight: 700;
+}
+.pagination-total {
+  margin-left: 10px;
+}
+.pagination-dropup {
+  font-weight: 400;
+  font-size: 15px;
+  color: #5C5C63;
+  text-transform: none;
+}
+.pagination-dropdown-group {
+  min-width: 5rem;
+}
+.pagination-dropdown-items {
+  font-weight: 400;
+  font-size: 14.5px;
+  color: #5C5C63;
+}
+.pagination-input {
+  width: 50px;
+}
+.pagination-input::placeholder {
+  text-align: center;
 }
 </style>

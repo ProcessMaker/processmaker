@@ -98,8 +98,9 @@ Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
     <pagination-table
-        :meta="data.meta"
-        @page-change="changePage"
+      :meta="data.meta"
+      @page-change="changePage"
+      @per-page-change="changePerPage"
     />
   </div>
 </template>
