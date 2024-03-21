@@ -36,21 +36,33 @@ class SettingsTest extends TestCase
     ];
 
     /**
-     * Test extended properties variable valid name validation
+     * Test get settings menus
      */
     public function testGetSettingsMenus()
     {
-        // Get setting menus
-        SettingsMenus::factory()->create();
+        SettingsMenus::query()->delete();
+        // Create
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::EMAIL_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::LOG_IN_AUTH_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::USER_SETTINGS_MENU_GROUP,
+        ]);
+        SettingsMenus::factory()->create([
+            'menu_group' => SettingsMenus::INTEGRATIONS_MENU_GROUP,
+        ]);
         $route = route('api.settings.menu_groups');
         $response = $this->apiCall('GET', $route);
         // Verify the status
         $response->assertStatus(200);
-        $this->assertNotEmpty($response['data']);
+        $this->assertCount(4, $response['data']);
     }
 
     /**
-     * Test extended properties variable valid name validation
+     * Test get settings menus group related
      */
     public function testGetSettingsMenusGroup()
     {
@@ -72,7 +84,7 @@ class SettingsTest extends TestCase
     }
 
     /**
-     * Test extended properties variable valid name validation
+     * Test update settings for specific group
      */
     public function testUpdateSettingsForSpecificGroup()
     {
@@ -90,32 +102,6 @@ class SettingsTest extends TestCase
         Setting::updateSettingsGroup($group, $menus->id);
         $matches = Setting::where('group', $group)->where('group_id', $menus->id)->get()->toArray();
         $this->assertNotEmpty($matches);
-    }
-
-    /**
-     * Test extended properties variable valid name validation
-     */
-    public function testSetSettingsMenuWithoutDuplicate()
-    {
-        SettingsMenus::query()->delete();
-        // Create
-        SettingsMenus::factory()->create([
-            'menu_group' => SettingsMenus::EMAIL_MENU_GROUP,
-        ]);
-        SettingsMenus::factory()->create([
-            'menu_group' => SettingsMenus::LOG_IN_AUTH_MENU_GROUP,
-        ]);
-        SettingsMenus::factory()->create([
-            'menu_group' => SettingsMenus::USER_SETTINGS_MENU_GROUP,
-        ]);
-        SettingsMenus::factory()->create([
-            'menu_group' => SettingsMenus::INTEGRATIONS_MENU_GROUP,
-        ]);
-        $route = route('api.settings.menu_groups');
-        $response = $this->apiCall('GET', $route);
-        // Verify the status
-        $response->assertStatus(200);
-        $this->assertCount(4, $response['data']);
     }
 
     /**
