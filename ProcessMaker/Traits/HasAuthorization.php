@@ -32,11 +32,23 @@ trait HasAuthorization
 
         foreach ($this->groupMembersFromMemberable as $gm) {
             $group = $gm->group;
+            $permissions = $this->loadPermissionOfGroups($group, $permissions);
             $names = $group->permissions->pluck('name')->toArray();
             $permissions = array_merge($permissions, $names);
         }
 
         return $this->addCategoryViewPermissions($permissions);
+    }
+
+    public function loadPermissionOfGroups(Group $group, array $permissions = [])
+    {
+        foreach ($group->groupMembersFromMemberable as $member) {
+            $group = $member->group;
+            $permissions = $this->loadPermissionOfGroups($group, $permissions);
+            $permissions = array_merge($permissions, $group->permissions->pluck('name')->toArray());
+        }
+
+        return $permissions;
     }
 
     public function hasPermission($permissionString)

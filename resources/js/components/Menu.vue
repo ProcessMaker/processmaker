@@ -89,7 +89,7 @@
             }"
             :key="index"
             :options="item.options"
-            @navigate="(action, data) => handleNavigate(action, data)"
+            @navigate="handleNavigate"
           />
         </template>
       </b-col>
@@ -160,9 +160,12 @@ export default {
   },
   methods: {
     handleNavigate(action) {
-      switch (action.value) {
+      switch (action?.value) {
         case "discard-draft":
           window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
+          break;
+        case "create-template":
+          window.ProcessMaker.EventBus.$emit("show-create-template-modal");
           break;
         default:
           if (action.action) {

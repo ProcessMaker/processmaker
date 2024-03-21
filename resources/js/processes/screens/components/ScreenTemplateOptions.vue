@@ -2,28 +2,32 @@
   <div>
     <template-type-dropdown
       v-model="templateType"
-      @selected-template="handleSelectedTemplate"
+      @selected-template="handleSelectedTemplateType"
     />
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/templates\screen/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
-    />
-    <div v-show="!shouldShowLoader" class="cards-container">
+    <div class="cards-container">
+      <data-loading
+        v-show="shouldShowLoader"
+        class="w-100"
+        :for="/templates\screen/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
       <b-card-group
+        v-show="!shouldShowLoader"
         v-cloak
         id="screen-template-options"
         deck
         class="screen-template-options justify-content-space-between"
       >
         <template-select-card
-          v-for="(template, index) in screenTemplates"
+          v-for="(screenTemplate, index) in screenTemplates"
           :key="index"
           :type="type"
           :template="template"
+          :is-active="selectedTemplateId === template.id ? 'active' : ''"
           @show-template-preview="showPreview"
+          @selected-template="handleSelectedTemplate"
         />
       </b-card-group>
     </div>
@@ -39,7 +43,12 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 export default {
   components: { TemplateTypeDropdown, TemplateSelectCard },
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["selectedScreenType"],
+  props: {
+    selectedScreenType: {
+      type: String,
+      default: "FORM",
+    },
+  },
   data() {
     return {
       filter: "",
@@ -48,6 +57,7 @@ export default {
       templateType: "",
       defaultScreenType: "FORM",
       template: {},
+      selectedTemplateId: null,
     };
   },
   watch: {
@@ -62,7 +72,7 @@ export default {
     this.fetch();
   },
   methods: {
-    handleSelectedTemplate(templateType) {
+    handleSelectedTemplateType(templateType) {
       this.templateType = templateType;
     },
     fetch() {
@@ -85,16 +95,10 @@ export default {
       // Load from our API client
       ProcessMaker.apiClient
         .get(
-          url +
-          "&per_page=1000" +
-          "&filter=" +
-          this.filter +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection
+          `${url}&per_page=1000`
+            + `&filter=${this.filter}&order_by=${this.orderBy}&order_direction=${this.orderDirection}`,
         )
-        .then(response => {
+        .then((response) => {
           this.screenTemplates = response.data.data;
           this.apiDataLoading = false;
           this.apiNoResults = false;
@@ -104,19 +108,23 @@ export default {
         });
     },
     showPreview(template) {
-      this.$emit('show-template-preview', template);
-    }
+      this.$emit("show-template-preview", template);
+    },
+    handleSelectedTemplate(templateId) {
+      this.$emit("selected-template", templateId);
+      this.selectedTemplateId = templateId;
+    },
 
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.cards-container {
-  display: flex;
-  height: 500px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: 20px;
-}
+  .cards-container {
+    display: flex;
+    height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 20px;
+  }
 </style>
