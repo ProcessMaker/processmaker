@@ -53,12 +53,11 @@
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(task)"
-                    style="display: block; width: 100%; margin-top:10px;"
                   >
                   <img
                     src="../../../img/smartinbox-images/Stroke.svg"
+                    class="img-styles"
                     :alt="$t('No Image')"
-                    style="margin-right: 5px; margin-top: -2px"
                   />{{ $t('Use This Task Data') }}
                   </b-button>
                   <b-button
@@ -67,12 +66,10 @@
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisDataFromFullTask(tooltipRowData)"
-                    style="display: block; width: 100%; margin-top:10px;"
                   >
                   <img
                     src="../../../img/smartinbox-images/Stroke.svg"
                     :alt="$t('No Image')"
-                    style="margin-right: 5px; margin-top: -2px"
                   />{{ $t('Use This Task Data') }}
                   </b-button>
                   
@@ -268,6 +265,9 @@ export default {
 .button-task {
   color: #fff;
   background-color: #1572C2;
+  display: block; 
+  width: 100%; 
+  margin-top:10px;
 }
 
 .button-cancel {
@@ -359,6 +359,11 @@ img {
   align-self: flex-start;
   margin-right: 2px;
   margin-top: 3px;
+}
+
+.img-styles {
+  margin-right: 5px; 
+  margin-top: -2px;
 }
 
 .icon-button {
