@@ -1,9 +1,16 @@
 <template>
   <div>
-    <b-card v-if="!savedSearchId && !task">
-      <p>{{ $t('Select a saved search above.') }}</p>
-    </b-card>
-    <b-card v-else>
+    <div v-if="!savedSearchId && !task"
+         class="d-flex justify-content-center align-items-center flex-column ir-message">
+      <img src="/img/funnel-fill-elements-blue.svg" :alt="$t('Select a saved search above.')"/>
+      <b class="mt-3 mb-3 ir-message-b">{{ $t('Filter the tasks for this rule') }}</b>
+      <span class="text-center ir-message-span">
+        {{ $t('Select the') }}
+        <b>{{ $t('Load a saved search') }}</b>
+        {{ $t('control above.') }}
+      </span>
+    </div>
+    <div v-else>
       <div v-if="task">
         {{ taskTitle }}
       </div>
@@ -53,9 +60,7 @@
           :default-columns="defaultColumns"
           />
       </b-modal>
-
-
-    </b-card>
+    </div>
   </div>
 </template>
 
@@ -280,3 +285,15 @@
     }
   }
 </script>
+
+<style scoped>
+  .ir-message {
+    height: 100vh;
+  }
+  .ir-message-b {
+    font-size: 24px;
+  }
+  .ir-message-span {
+    width: 375px;
+  }
+</style>
