@@ -9,7 +9,7 @@
       <screen-template-card
         v-if="type === 'screen'"
         :template="template"
-        :isActive="isActive"
+        :is-active="isActive"
         :default-template-id="defaultTemplateId"
         :default-template-screen-type="defaultTemplateScreenType"
         :is-default-template-public="isDefaultTemplatePublic"

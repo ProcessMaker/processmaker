@@ -8,9 +8,18 @@
     >
       <b-card-body>
         <div @click="selectTemplate" class="template-container">
-          <div v-if="thumbnail" class="thumbnail-container thumbnail-image-container" :class="{'active': isActive }" :style="{ backgroundImage: 'url(' + thumbnail + ')'}"></div>
-          <div v-else class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center" :class="{'active': isActive }">
-            <i class="fas fa-palette thumbnail-icon"></i>
+          <div
+            v-if="thumbnail"
+            class="thumbnail-container thumbnail-image-container"
+            :class="{'active': isActive }"
+            :style="{ backgroundImage: 'url(' + thumbnail + ')'}"
+          />
+          <div
+            v-else
+            class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center"
+            :class="{'active': isActive }"
+          >
+            <i class="fas fa-palette thumbnail-icon" />
           </div>
           <div class="template-details">
             <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
@@ -21,7 +30,6 @@
           <b-form-checkbox
             v-model="isDefaultTemplate"
             name="default-template"
-            
           >
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
