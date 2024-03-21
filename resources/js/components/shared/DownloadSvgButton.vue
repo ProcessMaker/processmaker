@@ -103,6 +103,12 @@ export default {
       img: null,
     };
   },
+  watch: {
+    async svg() {
+      const svgString = await this.convertImagesToBase64(this.svg);
+      this.modelImg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+    },
+  },
   async mounted() {
     const svgString = await this.convertImagesToBase64(this.svg);
     this.modelImg = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
