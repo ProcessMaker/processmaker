@@ -494,11 +494,9 @@ export default {
         });
     },
     /**
-     * Initial method to retrieve Saved Search Charts and populate dropdown
-     * Package Collections and Package SavedSearch always go together
+     * Initial method to retrieve Screeens and populate dropdown
      */
      retrieveDisplayScreen() {
-      if (!ProcessMaker.packages.includes("package-collections")) return;
       ProcessMaker.apiClient
         .get(
           "screens?page=1&per_page=10&filter=&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY",
