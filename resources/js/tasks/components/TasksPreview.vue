@@ -41,7 +41,7 @@
                   :actions="actions"
                   :data="task"
                   :divider="false"
-                  style="float:none;"
+                  style="float:none; color: #566877;"
                   @navigate="onProcessNavigate"
                 />
                 <b-button-group
@@ -171,6 +171,10 @@ export default {
           this.lastAutosave = "-";
         }
         this.isPriority = task.is_priority;
+        const priorityAction = this.actions.find(action => action.value === 'mark-priority');
+        if (priorityAction) {
+          priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
+        }
       },
     },
   },

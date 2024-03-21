@@ -68,7 +68,6 @@ const PreviewMixin = {
       if (size) {
         this.splitpaneSize = size;
       }
-
       let param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;
@@ -117,6 +116,7 @@ const PreviewMixin = {
       this.showFrame2 = false;
       this.isLoading = "";
       this.stopFrame = false;
+      this.size = 50;
     },
     /**
      * Defined Previuos and Next task
@@ -213,6 +213,16 @@ const PreviewMixin = {
               this.showSideBar(this.task, this.data);
               this.task.draft = null;
             });
+          break;
+        case "quick-fill":
+          this.showQuickFillPreview = true;
+          this.size = 50;
+          break;
+        case "mark-priority":
+            this.addPriority();
+          break;
+        case "open-task":
+          this.openTask();
           break;
       }
     },  
