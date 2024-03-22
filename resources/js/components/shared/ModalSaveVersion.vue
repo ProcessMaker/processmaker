@@ -303,7 +303,6 @@ $multiselect-height: 38px;
   letter-spacing: -0.02em;
   line-height: 21px;
 }
-
 .custom-button {
   right: 10px;
   top: 20px;
