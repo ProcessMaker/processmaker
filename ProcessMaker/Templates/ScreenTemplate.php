@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
@@ -527,27 +528,22 @@ class ScreenTemplate implements TemplateInterface
         // Define available options and their corresponding components
         $availableOptions = ScreenComponents::getComponents();
 
-        // Get template options from the request data
         $templateOptions = json_decode($data['templateOptions'], true);
-
-        // Retrieve the screen model
         $newScreen = Screen::findOrFail($screenId);
-        $config = $newScreen->config;
 
         if (is_array($templateOptions)) {
             // Iterate through available options to handle each one
             foreach ($availableOptions as $option => $components) {
                 // Check if the current options is in the template options
                 if (!in_array($option, $templateOptions)) {
-                    // Handle the option accordingly
+                    // Remove the option configs/components from the new screen config
                     switch($option) {
                         case 'CSS':
                             $newScreen->custom_css = null;
                             break;
                         case 'Fields':
                         case 'Layout':
-                            // Remove Fields from the screen config
-                            $newConfig = $this->removeScreenComponents($newScreen->config, $components);
+                            $newConfig = ScreenTemplateHelper::removeScreenComponents($newScreen->config, $components);
                             $newScreen->config = $newConfig;
                             break;
                         default:
@@ -576,151 +572,5 @@ class ScreenTemplate implements TemplateInterface
                 }
             }
         }
-    }
-
-    public function removeScreenComponents($config, $components)
-    {
-        $updatedConfig = [];
-        foreach ($config as $page) {
-            $filteredPageItems = $this->filterPageItems($page['items'] ?? [], $components);
-            $page['items'] = $filteredPageItems;
-            $updatedConfig[] = $page;
-        }
-
-        return $updatedConfig;
-    }
-
-    private function filterPageItems($items, $components)
-    {
-        $filteredItems = [];
-
-        foreach ($items as $item) {
-            $filteredItem = $this->filterItemByComponent($item, $components);
-            if ($filteredItem !== null) {
-                if (is_array($filteredItem) && !isset($filteredItem['component'])) {
-                    $filteredItems = array_merge($filteredItems, $this->flattenNestedItems($filteredItem));
-                } else {
-                    $filteredItems[] = $filteredItem;
-                }
-            }
-        }
-
-        return $filteredItems;
-    }
-
-    private function flattenNestedItems($items)
-    {
-        $flattenedItems = [];
-        foreach ($items as $item) {
-            if (is_array($item) && !isset($item['component'])) {
-                $flattenedItems = array_merge($flattenedItems, $this->flattenNestedItems($item));
-            } else {
-                $flattenedItems[] = $item;
-            }
-        }
-
-        return $flattenedItems;
-    }
-
-    private function filterItemByComponent($item, $components)
-    {
-        if ($item['component'] === 'FormMultiColumn') {
-            return $this->filterFormMultiColumn($item, $components);
-        }
-
-        return !$this->removeNestedComponents($item, $components) ? $item : null;
-    }
-
-    private function filterFormMultiColumn($item, $components)
-    {
-        $removeMultiColumn = $this->removeNestedComponents($item, $components);
-        $filteredMultiColumnItems = $removeMultiColumn ? [] : $item;
-
-        foreach ($item['items'] as $index => $column) {
-            $filteredColumnItems = $this->filterColumnItems($column, $components, $removeMultiColumn);
-            if (isset($filteredColumnItems['items'])) {
-                $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
-            } else {
-                $filteredMultiColumnItems[] = $filteredColumnItems;
-            }
-
-            if (isset($filteredMultiColumnItems['items'])) {
-                $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
-            } else {
-                $filteredMultiColumnItems[] = $filteredColumnItems;
-            }
-        }
-
-        return $filteredMultiColumnItems;
-    }
-
-    private function filterColumnItems($column, $components, $removeMultiColumn)
-    {
-        $filteredColumnItems = [];
-
-        foreach ($column as $colItem) {
-            if (isset($colItem['component']) && $colItem['component'] === 'FormMultiColumn') {
-                $this->filterNestedMultiColumns($colItem, $components, $removeMultiColumn);
-                if (isset($colItem['items'])) {
-                    $filteredColumnItems[] = $colItem;
-                } else {
-                    $filteredColumnItems = $colItem;
-                }
-            } elseif (!$this->removeNestedComponents($colItem, $components)) {
-                $filteredColumnItems[] = $colItem;
-            }
-        }
-
-        return $filteredColumnItems;
-    }
-
-    private function removeNestedComponents($item, $components)
-    {
-        $componentList = ['BFormComponent', 'BWrapperComponent'];
-        if (in_array($item['component'], $componentList)) {
-            $bootstrapComponent = $item['config']['bootstrapComponent'] ?? null;
-            if ($bootstrapComponent && isset($components[$item['component']]['bootstrapComponent'])) {
-                return in_array($bootstrapComponent, $components[$item['component']]['bootstrapComponent']);
-            }
-        } else {
-            return in_array($item['component'], $components);
-        }
-
-        return false;
-    }
-
-    private function filterNestedMultiColumns(&$item, $components, $removeMultiColumn)
-    {
-        $multiColumnItems = $this->filterNestedColumns($item['items'], $components, $removeMultiColumn);
-        if ($removeMultiColumn) {
-            $item = $multiColumnItems;
-        } else {
-            $item['items'] = $multiColumnItems;
-        }
-    }
-
-    private function filterNestedColumns($columns, $components, $removeMultiColumn)
-    {
-        $filteredColumnItems = [];
-
-        foreach ($columns as $column) {
-            $filteredColumn = [];
-
-            foreach ($column as $columnItem) {
-                if ($this->removeNestedComponents($columnItem, $components)) {
-                    if ($columnItem['component'] === 'FormMultiColumn') {
-                        $this->filterNestedMultiColumns($columnItem, $components, $removeMultiColumn);
-                    } elseif ($removeMultiColumn) {
-                        $filteredColumn[] = $columnItem;
-                    }
-                } elseif ($removeMultiColumn) {
-                    $filteredColumn[] = $columnItem;
-                }
-            }
-
-            $filteredColumnItems[] = $filteredColumn;
-        }
-
-        return $filteredColumnItems;
     }
 }
