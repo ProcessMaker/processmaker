@@ -545,11 +545,8 @@ class ScreenTemplate implements TemplateInterface
                             $newScreen->custom_css = null;
                             break;
                         case 'Fields':
-                            // Remove Fields from the screen config
-                            $newConfig = $this->removeScreenComponents($newScreen->config, $components);
-                            $newScreen->config = $newConfig;
-                            break;
                         case 'Layout':
+                            // Remove Fields from the screen config
                             $newConfig = $this->removeScreenComponents($newScreen->config, $components);
                             $newScreen->config = $newConfig;
                             break;
@@ -584,40 +581,8 @@ class ScreenTemplate implements TemplateInterface
     public function removeScreenComponents($config, $components)
     {
         $updatedConfig = [];
-        foreach ($config as $index => $page) {
-            $filteredPageItems = [];
-            if (isset($page['items'])) {
-                foreach ($page['items'] as $item) {
-                    if (isset($item['component'])) {
-                        $item = $this->filterItemByComponent($item, $components, $index);
-
-                        if (!is_null($item) && !isset($item['component']) && is_array($item)) {
-                            foreach ($item as $subItem) {
-                                if (!isset($subItem['component']) && is_array($subItem)) {
-                                    foreach ($subItem as $nestedItem) {
-                                        if (!isset($nestedItem['component']) && is_array($nestedItem)) {
-                                            // Continue recursive check for nested array items
-                                            foreach ($nestedItem as $childItem) {
-                                                if (!isset($childItem['component']) && is_array($childItem)) {
-                                                    dd('childItem', $childItem);
-                                                } else {
-                                                    $filteredPageItems[] = $childItem;
-                                                }
-                                            }
-                                        } else {
-                                            $filteredPageItems[] = $nestedItem;
-                                        }
-                                    }
-                                } else {
-                                    $filteredPageItems[] = $subItem;
-                                }
-                            }
-                        } elseif (!is_null($item)) {
-                            $filteredPageItems[] = $item;
-                        }
-                    }
-                }
-            }
+        foreach ($config as $page) {
+            $filteredPageItems = $this->filterPageItems($page['items'] ?? [], $components);
             $page['items'] = $filteredPageItems;
             $updatedConfig[] = $page;
         }
@@ -625,7 +590,39 @@ class ScreenTemplate implements TemplateInterface
         return $updatedConfig;
     }
 
-    private function filterItemByComponent($item, $components, $pageIndex)
+    private function filterPageItems($items, $components)
+    {
+        $filteredItems = [];
+
+        foreach ($items as $item) {
+            $filteredItem = $this->filterItemByComponent($item, $components);
+            if ($filteredItem !== null) {
+                if (is_array($filteredItem) && !isset($filteredItem['component'])) {
+                    $filteredItems = array_merge($filteredItems, $this->flattenNestedItems($filteredItem));
+                } else {
+                    $filteredItems[] = $filteredItem;
+                }
+            }
+        }
+
+        return $filteredItems;
+    }
+
+    private function flattenNestedItems($items)
+    {
+        $flattenedItems = [];
+        foreach ($items as $item) {
+            if (is_array($item) && !isset($item['component'])) {
+                $flattenedItems = array_merge($flattenedItems, $this->flattenNestedItems($item));
+            } else {
+                $flattenedItems[] = $item;
+            }
+        }
+
+        return $flattenedItems;
+    }
+
+    private function filterItemByComponent($item, $components)
     {
         if ($item['component'] === 'FormMultiColumn') {
             $removeMultiColumn = $this->removeNestedComponents($item, $components);
