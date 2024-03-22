@@ -34,6 +34,33 @@ const PreviewMixin = {
       splitpaneSize: 50,
       propColumns: [],
       propFilters: {},
+      isPriority: false,
+      size: 50,
+      screenWidthPx: 0,
+      ellipsisButton: false,
+      actions: [
+        {
+          value: "clear-draft",
+          content: "Clear Task",
+          image: "/img/smartinbox-images/eraser.svg",
+        },
+        {
+          value: "quick-fill",
+          content: "Quick Fill",
+          image: "/img/smartinbox-images/fill.svg",
+        },
+        {
+          value: "mark-priority",
+          content: "Mark as Priority",
+          image: "/img/priority-header.svg",
+        },
+        {
+          value: "open-task",
+          content: "Open Task",
+          icon: "fas fa-external-link-alt",
+        },        
+      ],
+
     };
   },
   methods: {
@@ -44,7 +71,6 @@ const PreviewMixin = {
       if (size) {
         this.splitpaneSize = size;
       }
-
       let param = "";
       this.stopFrame = false;
       this.taskTitle = info.element_name;
@@ -66,18 +92,6 @@ const PreviewMixin = {
       this.defineNextPrevTask();
     },
     customFilter() {
-      // this.propFilters = [
-      //   {
-      //     subject: { type: "Field", value: "process_id" },
-      //     operator: "=",
-      //     value: this.task.process_id,
-      //   },
-      //   {
-      //     subject: { type: "Field", value: "element_id" },
-      //     operator: "=",
-      //     value: this.task.element_id,
-      //   },
-      // ]
       this.propFilters = {
         order: { by: "created_at", direction: "desc" },
         filters:[
@@ -121,6 +135,7 @@ const PreviewMixin = {
       this.showFrame2 = false;
       this.isLoading = "";
       this.stopFrame = false;
+      this.size = 50;
     },
     /**
      * Defined Previuos and Next task
@@ -150,7 +165,8 @@ const PreviewMixin = {
      * Expand Open task
      */
     openTask() {
-      return `/tasks/${this.task.id}/edit`;
+      const url = `/tasks/${this.task.id}/edit`;
+      window.location.href = url;
     },
     /**
      * Go to previous or next task
@@ -195,6 +211,53 @@ const PreviewMixin = {
         ProcessMaker.alert(successMessage, 'success');
         this.useThisDataButton = false;
       }
+    },
+    addPriority() {
+      ProcessMaker.apiClient
+        .put(`tasks/${this.task.id}/setPriority`, { is_priority: !this.isPriority })
+        .then(() => {
+          this.task.is_priority = !this.task.is_priority;
+        });
+    },
+    onProcessNavigate(action, data) {
+      switch (action.value) {
+        case "clear-draft":
+          ProcessMaker.apiClient
+            .delete("drafts/" + this.task.id)
+            .then(() => {
+              this.isLoading = setTimeout(() => {
+                this.stopFrame = true;
+                this.taskTitle = this.$t("Task Lorem");
+              }, 4900);
+              this.showSideBar(this.task, this.data);
+              this.task.draft = null;
+            });
+          break;
+        case "quick-fill":
+          this.showQuickFillPreview = true;
+          this.size = 50;
+          break;
+        case "mark-priority":
+            this.addPriority();
+          break;
+        case "open-task":
+          this.openTask();
+          break;
+      }
+    },  
+    updateScreenWidthPx() {
+      this.screenWidthPx = window.innerWidth;
+    },
+    convertPercentageToPx(percentage) {
+      return (this.screenWidthPx * percentage) / 100;
+    },
+    headerResponsive() {
+      if (this.convertPercentageToPx(this.size) <= 550) {
+        this.ellipsisButton = true;
+        return this.convertPercentageToPx(this.size) - 400;
+      }
+      this.ellipsisButton = false;
+      return this.convertPercentageToPx(this.size) - 550;
     },
   },
 };

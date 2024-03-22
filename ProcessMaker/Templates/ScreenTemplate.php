@@ -5,12 +5,8 @@ namespace ProcessMaker\Templates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Api\ExportController;
-use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -62,7 +58,24 @@ class ScreenTemplate implements TemplateInterface
             }
         }
 
-        $templates = $templates->select('screen_templates.*')
+        return $templates
+            ->select(
+                'screen_templates.id',
+                'screen_templates.uuid',
+                'screen_templates.unique_template_id',
+                'screen_templates.name',
+                'screen_templates.description',
+                'screen_templates.version',
+                'screen_templates.user_id',
+                'screen_templates.editing_screen_uuid',
+                'screen_templates.screen_category_id',
+                'screen_templates.screen_type',
+                'screen_templates.is_public',
+                'screen_templates.is_system',
+                'screen_templates.asset_type',
+                'screen_templates.media_collection',
+                'screen_templates.screen_custom_css',
+            )
             ->leftJoin('screen_categories as category', 'screen_templates.screen_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'screen_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
@@ -81,9 +94,8 @@ class ScreenTemplate implements TemplateInterface
                             })
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
-            })->paginate($request->input('per_page', 10));
-
-        return $templates;
+            })
+            ->paginate($request->input('per_page', 10));
     }
 
     /**
@@ -172,6 +184,18 @@ class ScreenTemplate implements TemplateInterface
         $existingAssets = $request->existingAssets;
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
+        $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
+        $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
+
+        if ($defaultTemplate) {
+            $requestData['templateId'] = $defaultTemplate->id;
+        }
+
+        if ($defaultTemplateId !== null) {
+            $requestData['templateId'] = $defaultTemplateId;
+            $this->updateDefaultTemplate($defaultTemplateId, $requestData['type']);
+        }
+
         $newScreenId = $this->importScreen($requestData, $existingAssets);
 
         try {
@@ -189,6 +213,33 @@ class ScreenTemplate implements TemplateInterface
                 'message' => $e->getMessage(),
             ], 422);
         }
+    }
+
+    /**
+     * Get the default template for the given screen type
+     *
+     * @param string $screenType The type of the screen (DISPLAY, FORM, CONVERSATIONAL, EMAIL)
+     * @return ScreenTemplates|null The default screen template or null if not found
+     */
+    public function getDefaultTemplate(string $screenType): ?ScreenTemplates
+    {
+        return ScreenTemplates::where('screen_type', $screenType)
+            ->where('is_default_template', 1)
+            ->first();
+    }
+
+    /**
+     * Update the default template for the given screen type
+     *
+     * @param int $defaultTemplateId The ID of the new default template
+     * @param string $screenType The type of screen (FORM, DISPLAY, EMAIL, CONVERSATIONAL)
+     * @return void
+     */
+    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType)
+    {
+        ScreenTemplates::where('screen_type', $screenType)->update(['is_default_template' => 0]);
+
+        ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
     }
 
     /**

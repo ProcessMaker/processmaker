@@ -9,9 +9,13 @@
       <screen-template-card
         v-if="type === 'screen'"
         :template="template"
+        :is-active="isActive"
+        :default-template-id="defaultTemplateId"
+        :default-template-screen-type="defaultTemplateScreenType"
+        :is-default-template-public="isDefaultTemplatePublic"
         @show-template-preview="showPreview"
-        :isActive="isActive"
         @template-selected="handleSelectedTemplate"
+        @template-default-selected="handleDefaultTemplateSelected"
       />
       <default-template-card
         v-else
@@ -31,7 +35,7 @@ import PreviewTemplate from "./PreviewTemplate.vue";
 
 export default {
   components: { WizardTemplateCard, DefaultTemplateCard, ScreenTemplateCard, PreviewTemplate },
-  props: ["template", "type", 'isActive'],
+  props: ["template", "type", "isActive", "defaultTemplateId", "defaultTemplateScreenType", "isDefaultTemplatePublic"],
   data() {
     return {
       showTemplatePreview: false,
@@ -44,11 +48,14 @@ export default {
       this.$emit("show-details", { template: this.template, type: this.type });
     },
     showPreview(template) {
-      this.$emit('show-template-preview', { template: template, type: this.type});
+      this.$emit("show-template-preview", { template: template, type: this.type});
     },
     handleSelectedTemplate(templateId) {
-      this.$emit('selected-template', templateId);
-    }
+      this.$emit("selected-template", templateId);
+    },
+    handleDefaultTemplateSelected(templateId) {
+      this.$emit("selected-default-template", templateId);
+    },
   },
 };
 </script>
