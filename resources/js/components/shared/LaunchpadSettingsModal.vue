@@ -93,7 +93,7 @@
       <input
         id="additional-details"
         v-model="processDescription"
-        class="form-control input-custom"
+        class="form-control input-custom mb-0"
         type="text"
         rows="5"
         :aria-label="$t('Description')"
@@ -532,7 +532,7 @@ label {
   text-align: center;
 }
 .modal-content-custom {
-  padding: 11px 8px;
+  padding: 11px 8px 0px 8px;
 }
 b-row, b-col {
   margin: 0px;
