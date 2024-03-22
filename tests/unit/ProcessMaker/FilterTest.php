@@ -7,9 +7,12 @@ use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use Tests\Feature\Shared\RequestHelper;
 
 class FilterTest extends TestCase
 {
+    use RequestHelper;
+
     private function filter($filterDefinition, $model = ProcessRequest::class)
     {
         $query = $model::query();
@@ -32,6 +35,42 @@ class FilterTest extends TestCase
             "select * from `process_requests` where (json_unquote(json_extract(`data`, '\$.\"form_input_1\"')) = 'abc')",
             $sql
         );
+    }
+
+    public function testCompareDataInteger()
+    {
+        $filter = [
+            [
+                'subject' => ['type' => 'Field', 'value' => 'data.form_input_1'],
+                'operator' => '<',
+                'value' => '6',
+            ],
+        ];
+
+        $processRequest1 = ProcessRequest::factory()->create([
+            'data' => ['form_input_1' => 5],
+        ]);
+
+        $task1 = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest1->id,
+        ]);
+
+        $processRequest2 = ProcessRequest::factory()->create([
+            'data' => ['form_input_1' => 7],
+        ]);
+
+        $task2 = ProcessRequestToken::factory()->create([
+            'process_request_id' => $processRequest2->id,
+        ]);
+
+        $response = $this->apiCall('GET', '/tasks', [
+            'advanced_filter' => json_encode($filter),
+        ]);
+
+        $results = $response->json()['data'];
+
+        $this->assertCount(1, $results);
+        $this->assertEquals($task1->id, $results[0]['id']);
     }
 
     public function testNestedOr()

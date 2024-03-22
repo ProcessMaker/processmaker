@@ -107,6 +107,7 @@
                           @closed="closed"
                           @redirect="redirectToTask"
                           :task-preview="true"
+                          :always-allow-editing="alwaysAllowEditing"
                         ></task>
                     </div>
                 </div>
@@ -187,6 +188,7 @@
           autoSaveDelay: 5000,
           userHasInteracted: false,
           initialFormDataSet: false,
+          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1')
         },
         watch: {
           task: {
@@ -204,15 +206,6 @@
               this.sendEvent('dataUpdated', this.screenFilteredData);
             }
           },
-          formData: {
-            deep: true,
-            handler(to, old) {
-              if (!this.initialFormDataSet) {
-                this.initialFormDataSet = true;
-                this.sendEvent('readyForFillData', true);
-              }
-            }
-          }
         },
         computed: {
           screenFilteredData () {
@@ -421,7 +414,9 @@
           },
           taskUpdated(task) {
             this.task = task;
-            // this.sendEvent('taskLoaded', true);
+            this.$nextTick(() => {
+              this.sendEvent('readyForFillData', true);
+            });
           },
           autosaveApiCall() {
             return ProcessMaker.apiClient
@@ -438,7 +433,7 @@
           this.prepareData();
 
           window.addEventListener('fillData', event => {
-            this.formData = _.merge(this.formData, event.detail);
+            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
           });
 
           // listen for keydown on element with id interactionListener

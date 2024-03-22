@@ -24,7 +24,7 @@
     },
     computed: {
       linkTasks() {
-        return `/tasks/${this.taskId}/edit/preview?dispatchSubmit=1`;
+        return `/tasks/${this.taskId}/edit/preview?dispatchSubmit=1&alwaysAllowEditing=1`;
       },
       iframeContentWindow() {
         return this.$refs['preview'].firstChild.contentWindow;
