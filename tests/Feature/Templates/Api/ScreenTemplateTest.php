@@ -139,26 +139,20 @@ class ScreenTemplateTest extends TestCase
 
     public function testShowScreenTemplate()
     {
-        // Create screen and save it in the manifest
-        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
-        $exporter = new Exporter();
-        $exporter->exportScreen($screen);
-        $manifest = (object) $exporter->payload();
-        Screen::query()->delete();
         // Create screen template
-        $screenTemplate = ScreenTemplates::factory()->create(
-            [
-                'name' => 'Test Screen Template',
-                'manifest' => json_encode($manifest),
-            ]
-        );
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template']);
 
+        // Make API call to show screen template
         $route = route('api.template.show', ['screen', $screenTemplate->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
-        $newScreen = Screen::find($response->json('id'));
 
-        $this->assertDatabaseHas('screen_templates', ['id' => $screenTemplate->id]);
-        $this->assertDatabaseHas('screens', ['title' => $newScreen->title]);
+        // Assert that our database has the screen template and the editing screen for that screen we created
+        $editingScreen = Screen::find($response->json('id'));
+        $screenTemplate = ScreenTemplates::where('name', 'Test Screen Template')->first();
+
+        $this->assertEquals($editingScreen->uuid, $screenTemplate->editing_screen_uuid);
+        $this->assertDatabaseHas('screens', ['title' => $editingScreen->title]);
+        $this->assertDatabaseHas('screens', ['description' => $screenTemplate->description]);
     }
 }
