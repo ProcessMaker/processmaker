@@ -264,7 +264,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false, publishedVersion = '') {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -272,7 +272,7 @@ export default {
         projects: this.process.projects,
         bpmn: this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
-        alternative: publishedVersion,
+        alternative: window.ProcessMaker.modeler.draftAlternative || "A",
       };
 
       const savedSuccessfully = (response) => {
