@@ -414,6 +414,7 @@
           },
           taskUpdated(task) {
             this.task = task;
+            this.formData = _.cloneDeep(task.request_data);
             this.$nextTick(() => {
               this.sendEvent('readyForFillData', true);
             });
