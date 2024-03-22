@@ -270,7 +270,7 @@ export default {
     /**
      * Converts Image from URL to Base64
      */
-     convertImageUrlToBase64(media, processId) {
+     convertImageUrlToBase64(media) {
       this.processId = processId;
       fetch(media.original_url)
         .then((response) => response.blob())
@@ -286,14 +286,14 @@ export default {
           console.error("Error loading image:", error);
         });
     },
-    setProcessId(processId) {
-      this.processId = processId;
-    },
     cleanCarousel() {
       this.images = [];
       this.embedUrls = Array(4).fill("");
       this.notValidImage = false;
       this.loadingImage = false;
+    },
+    setProcessId(processId) {
+      this.processId = processId;
     },
     getImages() {
       return this.images;

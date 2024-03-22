@@ -135,8 +135,7 @@ export default {
     this.retrieveSavedSearchCharts();
     this.getDescriptionInitial();
     this.getProcessDescription();
-          
-    this.$refs["image-carousel"].setProcessId(this.processId);
+
     // Receives selected Option from launchpad Icons multiselect
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
@@ -169,6 +168,8 @@ export default {
           mediaArray.forEach((media) => {
             this.$refs["image-carousel"].convertImageUrlToBase64(media);
           });
+    
+          this.$refs["image-carousel"].setProcessId(this.processId);
         });
     },
     showModal() {
@@ -538,10 +539,10 @@ b-row, b-col {
   color: #6a7888;
   font-size: 24px;
 }
-#launchpadSettingsModal .dropdown-toggle::after {
+#idDropdownMenuUpload .dropdown-toggle::after {
     display:none;
 }
-#launchpadSettingsModal .dropdown-menu.show {
+#idDropdownMenuUpload .dropdown-menu.show {
   width: 229px;
   padding: 0px;
 }
@@ -558,5 +559,15 @@ b-row, b-col {
 .popover-embed {
   padding: 21px;
   width: 474px;
+}
+.dropdown-style {
+  padding: 9px 12px;
+  color: #556271;
+  border-radius: 4px;
+  border: 1px solid #CDDDEE;
+}
+#launchpadSettingsModal .dropdown-menu.show {
+  width: 285px;
+  padding: 0px;
 }
 </style>
