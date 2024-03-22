@@ -306,7 +306,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
     Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
     Route::put('template/{type}/{processId}', [TemplateController::class, 'updateTemplateManifest'])->name('template.update')->middleware('template-authorization');
-    Route::put('template/{type}/{id}', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
+    Route::put('template/{type}/{id}/update', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
     Route::put('template/settings/{type}/{id}', [TemplateController::class, 'updateTemplateConfigs'])->name('template.settings.update')->middleware('template-authorization');
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
