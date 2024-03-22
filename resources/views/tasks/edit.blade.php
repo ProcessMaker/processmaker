@@ -361,6 +361,7 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -638,7 +639,10 @@
           },
           autosaveApiCall() {
             this.options.is_loading = true;
-            const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
+            const draftData = {};
+            screenFields.forEach((field) => {
+              _.set(draftData, field, _.get(this.formData, field));
+            });
             return ProcessMaker.apiClient
             .put("drafts/" + this.task.id, draftData)
             .then((response) => {

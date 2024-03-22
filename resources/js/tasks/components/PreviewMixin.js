@@ -32,6 +32,7 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
+      userHasInteracted: false,
       isPriority: false,
       size: 50,
       screenWidthPx: 0,
@@ -56,7 +57,7 @@ const PreviewMixin = {
           value: "open-task",
           content: "Open Task",
           icon: "fas fa-external-link-alt",
-        },        
+        },
       ],
     };
   },
@@ -176,7 +177,15 @@ const PreviewMixin = {
     /**
      * Show the frame when this is loaded
      */
-    frameLoaded() {
+    frameLoaded(iframe) {
+      if (iframe === "tasksFrame1") {
+        this.iframe1ContentWindow.event_parent_id = this._uid;
+      }
+
+      if (iframe === "tasksFrame2") {
+        this.iframe2ContentWindow.event_parent_id = this._uid;
+      }
+
       const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
@@ -194,6 +203,7 @@ const PreviewMixin = {
         ProcessMaker.alert(successMessage, 'success');
         this.useThisDataButton = false;
       }
+
     },
     addPriority() {
       ProcessMaker.apiClient
@@ -227,7 +237,7 @@ const PreviewMixin = {
           this.openTask();
           break;
       }
-    },  
+    },
     updateScreenWidthPx() {
       this.screenWidthPx = window.innerWidth;
     },
