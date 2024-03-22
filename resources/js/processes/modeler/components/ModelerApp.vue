@@ -265,7 +265,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false, publishedVersion) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false, publishedVersion = null) {
       const data = {
         name: this.process.name,
         description: this.process.description,
