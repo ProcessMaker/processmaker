@@ -625,36 +625,53 @@ class ScreenTemplate implements TemplateInterface
     private function filterItemByComponent($item, $components)
     {
         if ($item['component'] === 'FormMultiColumn') {
-            $removeMultiColumn = $this->removeNestedComponents($item, $components);
-            $filteredMultiColumnItems = $removeMultiColumn ? [] : $item;
-
-            foreach ($item['items'] as $index => $column) {
-                $filteredColumnItems = [];
-                foreach ($column as $colItem) {
-                    if (isset($colItem['component']) && $colItem['component'] === 'FormMultiColumn') {
-                        $this->filterNestedMultiColumns($colItem, $components, $removeMultiColumn);
-
-                        if (isset($colItem['items'])) {
-                            $filteredColumnItems = [$colItem];
-                        } else {
-                            $filteredColumnItems = $removeMultiColumn ? $colItem : $colItem;
-                        }
-                    } elseif (!$this->removeNestedComponents($colItem, $components)) {
-                        $filteredColumnItems[] = $colItem;
-                    }
-                }
-
-                if (isset($filteredMultiColumnItems['items'])) {
-                    $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
-                } else {
-                    $filteredMultiColumnItems[] = $filteredColumnItems;
-                }
-            }
-
-            return $filteredMultiColumnItems;
+            return $this->filterFormMultiColumn($item, $components);
         }
 
         return !$this->removeNestedComponents($item, $components) ? $item : null;
+    }
+
+    private function filterFormMultiColumn($item, $components)
+    {
+        $removeMultiColumn = $this->removeNestedComponents($item, $components);
+        $filteredMultiColumnItems = $removeMultiColumn ? [] : $item;
+
+        foreach ($item['items'] as $index => $column) {
+            $filteredColumnItems = $this->filterColumnItems($column, $components, $removeMultiColumn);
+            if (isset($filteredColumnItems['items'])) {
+                $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
+            } else {
+                $filteredMultiColumnItems[] = $filteredColumnItems;
+            }
+
+            if (isset($filteredMultiColumnItems['items'])) {
+                $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
+            } else {
+                $filteredMultiColumnItems[] = $filteredColumnItems;
+            }
+        }
+
+        return $filteredMultiColumnItems;
+    }
+
+    private function filterColumnItems($column, $components, $removeMultiColumn)
+    {
+        $filteredColumnItems = [];
+
+        foreach ($column as $colItem) {
+            if (isset($colItem['component']) && $colItem['component'] === 'FormMultiColumn') {
+                $this->filterNestedMultiColumns($colItem, $components, $removeMultiColumn);
+                if (isset($colItem['items'])) {
+                    $filteredColumnItems[] = $colItem;
+                } else {
+                    $filteredColumnItems = $removeMultiColumn ? $colItem : $colItem;
+                }
+            } elseif (!$this->removeNestedComponents($colItem, $components)) {
+                $filteredColumnItems[] = $colItem;
+            }
+        }
+
+        return $filteredColumnItems;
     }
 
     private function removeNestedComponents($item, $components)
