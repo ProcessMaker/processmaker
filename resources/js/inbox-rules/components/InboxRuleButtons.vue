@@ -8,6 +8,7 @@
       {{ $t('Clear unsaved filters') }}
     </b-button>
     <b-dropdown v-if="showSavedSearchSelector"
+                id="inboxRuleButtonsDropdown"
                 size="sm"
                 variant="light"
                 split-variant="light"
@@ -28,6 +29,16 @@
         {{ option.text }}
       </b-dropdown-item>
     </b-dropdown>
+    <b-popover target="inboxRuleButtonsDropdown"
+               triggers="hover focus"
+               placement="bottomleft"
+               boundary="window"
+               show
+               v-if="showMessageEmpty">
+      <div class="mt-2 mb-2 ml-3 mr-3">
+        {{ $t('No saved searches available') }}
+      </div>
+    </b-popover>
     <b-button size="sm"
               variant="light"
               class="button-border button-font"
@@ -50,8 +61,15 @@
     data() {
       return {
         selectedOption: null,
-        options: []
+        options: [],
+        showMessageEmpty: false
       };
+    },
+    watch: {
+      options() {
+        this.showMessageEmpty = this.options.length <= 0;
+        console.log(this.showMessageEmpty);
+      }
     },
     mounted() {
       this.requestSavedSearch("");

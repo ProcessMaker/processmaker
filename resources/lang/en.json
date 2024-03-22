@@ -2158,5 +2158,8 @@
   "Rule deactivated": "Rule deactivated",
   "The operation cannot be performed. Please try again later.": "The operation cannot be performed. Please try again later.",
   "Type here to search": "Type here to search",
-  "Select a saved search above.": "Select a saved search above."
+  "Select a saved search above.": "Select a saved search above.",
+  "Select the Load a saved search control above.": "Select the Load a saved search control above.",
+  "Select the <b>Load a saved search</b> control above.": "Select the <b>Load a saved search</b> control above.",
+  "No saved searches available": "No saved searches available"
 }

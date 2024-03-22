@@ -3,11 +3,9 @@
     <div v-if="!savedSearchId && !task"
          class="d-flex justify-content-center align-items-center flex-column ir-message">
       <img src="/img/funnel-fill-elements-blue.svg" :alt="$t('Select a saved search above.')"/>
-      <b class="mt-3 mb-3 ir-message-b">{{ $t('Filter the tasks for this rule') }}</b>
-      <span class="text-center ir-message-span">
-        {{ $t('Select the') }}
-        <b>{{ $t('Load a saved search') }}</b>
-        {{ $t('control above.') }}
+      <b class="mt-3 mb-3 ir-message-b">{{ $t('Select the Load a saved search control above.') }}</b>
+      <span class="text-center ir-message-span" 
+            v-html="$t('Select the <b>Load a saved search</b> control above.')">
       </span>
     </div>
     <div v-else>
@@ -95,12 +93,12 @@
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
         ready: false,
-        task: null,
-      }
+        task: null
+      };
     },
     components: {
       TasksList,
-      ColumnChooserAdapter,
+      ColumnChooserAdapter
     },
     methods: {
       emitSavedSearchData() {
@@ -142,7 +140,7 @@
             },
             {
               subject: {
-                type: "Status",
+                type: "Status"
               },
               operator: "=",
               value: 'In Progress',

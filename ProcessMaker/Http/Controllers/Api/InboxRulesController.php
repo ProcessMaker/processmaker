@@ -124,12 +124,12 @@ class InboxRulesController extends Controller
     /**
      * Delete an existing inbox rule.
      *
-     * @param int $idInboxRule
+     * @param int $inboxRule
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(InboxRule $inboxRule)
     {
-        InboxRule::findOrFail($idInboxRule)->delete();
+        $inboxRule->delete();
 
         return response([], 204);
     }
