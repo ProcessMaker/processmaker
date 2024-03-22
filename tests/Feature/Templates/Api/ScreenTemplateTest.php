@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
@@ -154,5 +155,17 @@ class ScreenTemplateTest extends TestCase
         $this->assertEquals($editingScreen->uuid, $screenTemplate->editing_screen_uuid);
         $this->assertDatabaseHas('screens', ['title' => $editingScreen->title]);
         $this->assertDatabaseHas('screens', ['description' => $screenTemplate->description]);
+    }
+
+    public function testImportExportScreenTemplate()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template']);
+        $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
+        $screenTemplate->delete();
+
+        $this->assertDatabaseMissing('screen_templates', ['name' => $screenTemplate->name]);
+        $this->import($payload);
+
+        $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
     }
 }
