@@ -31,7 +31,7 @@
     </b-dropdown>
     <b-popover target="inboxRuleButtonsDropdown"
                triggers="hover focus"
-               placement="bottomleft"
+               placement="bottom"
                boundary="window"
                show
                v-if="showMessageEmpty">
@@ -68,7 +68,6 @@
     watch: {
       options() {
         this.showMessageEmpty = this.options.length <= 0;
-        console.log(this.showMessageEmpty);
       }
     },
     mounted() {
