@@ -43,22 +43,32 @@ trait PluginServiceProviderTrait
      */
     public function modelerStarting(ModelerStarting $event)
     {
-        foreach ($this->modelerScripts as $path => $public) {
-            if (File::exists(public_path() . '/' . $public)) {
-                $event->manager->addScript(mix($path, $public));
+        foreach ($this->modelerScripts as $path => $config) {
+            if (File::exists(public_path() . '/' . $config['script_src'])) {
+                $event->manager->addScript(mix($path, $config['script_src']), $config['script_params']);
             }
         }
     }
 
     /**
-     * Register a custom javascript for the modeler
+     * Register a custom script for the modeler with optional parameters.
      *
-     * @param string $path
-     * @param string $public
+     * This method registers a script for the modeler along with optional parameters.
+     * The script path and its corresponding public URL are added to the modeler scripts registry,
+     * and if additional parameters are provided, they are included in the registration.
+     *
+     * @param string $path The path to the script file.
+     * @param string $public The public URL of the script.
+     * @param array $params Additional parameters for configuring the script (optional).
+     * @return void
      */
-    protected function registerModelerScript($path, $public)
+    protected function registerModelerScript($path, $public, array $params = [])
     {
-        $this->modelerScripts[$path] = $public;
+        // Register the script path and public URL along with optional parameters
+        $this->modelerScripts[$path] = [
+            'script_src' => $public,
+            'script_params' => $params,
+        ];
     }
 
     /**

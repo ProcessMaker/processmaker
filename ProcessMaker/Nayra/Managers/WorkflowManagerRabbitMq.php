@@ -68,7 +68,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         $this->validateData($data, $definitions, $event);
 
         // Get complementary information
-        $version = $definitions->getLatestVersion();
+        $version = $definitions->getPublishedVersion();
         $userId = $this->getCurrentUserId();
 
         // Create immediately a new process request
@@ -499,7 +499,7 @@ class WorkflowManagerRabbitMq extends WorkflowManagerDefault implements Workflow
         }
         // Dispatch complete task action
         $this->dispatchAction([
-            'bpmn' => $process->getLatestVersion()->getKey(),
+            'bpmn' => $process->getPublishedVersion()->getKey(),
             'action' => self::ACTION_TRIGGER_SIGNAL_EVENT,
             'params' => [
                 'signal_ref' => $signalRef,

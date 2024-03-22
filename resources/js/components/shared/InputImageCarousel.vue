@@ -262,6 +262,7 @@ export default {
       notValidImage: false,
       deleteEmbed: false,
       processId: "",
+      validSizeImageMB: 2,
     };
   },
   computed: {
@@ -363,7 +364,7 @@ export default {
       this.loadingImage = true;
       Array.from(files).forEach((file) => {
         if (this.images.length < this.maxImages) {
-          if (this.isValidFileExtension(file.name)) {
+          if (this.isValidFileExtension(file.name) && this.isValidSize(file)) {
             const reader = new FileReader();
             reader.onload = (event) => {
               this.images.push({
@@ -380,10 +381,6 @@ export default {
             setTimeout(() => {
               this.notValidImage = false;
             }, 4000);
-            ProcessMaker.alert(
-              this.$t("Only PNG and JPG extensions are allowed."),
-              "danger",
-            );
           }
           this.loadingImage = false;
         }
@@ -422,9 +419,31 @@ export default {
      */
     isValidFileExtension(fileName) {
       const allowedExtensions = [".jpg", ".jpeg", ".png"];
-      return allowedExtensions.includes(
+      let response = allowedExtensions.includes(
         fileName.slice(fileName.lastIndexOf(".")).toLowerCase(),
       );
+      if(!response) {
+        ProcessMaker.alert(
+          this.$t("Only PNG and JPG extensions are allowed."),
+          "danger",
+        );
+      }
+      return response;
+    },
+    isValidSize(file) {
+      let fileSize = file.size;
+      // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
+      let sizekiloBytes = parseInt(fileSize / 1024);
+      // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+      let sizeMegaBytes = sizekiloBytes / 1024;
+      let response = sizeMegaBytes <= this.validSizeImageMB;
+      if (!response) {
+        ProcessMaker.alert(
+          this.$t("Only images smaller than 2MB are allowed."),
+          "danger",
+        );
+      }
+      return response;
     },
     /**
      * Method to open a screen for image selection from hard drive
@@ -481,7 +500,7 @@ export default {
           data: { uuid },
         })
         .then((response) => {
-          ProcessMaker.alert(this.$t("The image was deleted"), "success");
+          ProcessMaker.alert(this.deleteEmbed ? this.$t("The embed media was deleted") : this.$t("The image was deleted"), "success");
         })
         .catch((error) => {
           console.error("Error", error);

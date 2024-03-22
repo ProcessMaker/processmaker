@@ -34,11 +34,12 @@
               class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
               type="button"
               data-toggle="dropdown"
+              data-bs-auto-close="outside"
               aria-haspopup="true"
               aria-expanded="false"
             >
               <div class="d-flex align-items-center">
-                <span class="ml-2 custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
+                <span class="custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
               </div>
             </button>
             <div
@@ -62,11 +63,12 @@
               class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
               type="button"
               data-toggle="dropdown"
+              data-bs-auto-close="outside"
               aria-haspopup="true"
               aria-expanded="false"
             >
               <div class="d-flex align-items-center">
-                  <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
+                  <span class="custom-text">{{ selectedSavedChart || $t('Select Chart') }}</span>
               </div>
             </button>
             <div
@@ -79,8 +81,7 @@
                 class="dropdown-item"
                 @click="selectOption(item)"
               >
-                <i class="far fa-chart-bar custom-text" />
-                {{ item.title || 'Select Chart' }}
+                {{ item.title || $t('Select Chart') }}
               </a>
             </div>
           </div>
@@ -644,5 +645,16 @@ b-row, b-col {
 #launchpadSettingsModal .dropdown-menu.show {
   width: 285px;
   padding: 0px;
+}
+.custom-text {
+  width: 239px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  font-family: Open Sans;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
 }
 </style>

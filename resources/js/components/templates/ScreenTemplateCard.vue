@@ -8,9 +8,18 @@
     >
       <b-card-body>
         <div @click="selectTemplate" class="template-container">
-          <div v-if="thumbnail" class="thumbnail-container thumbnail-image-container" :class="{'active': isActive }" :style="{ backgroundImage: 'url(' + thumbnail + ')'}"></div>
-          <div v-else class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center" :class="{'active': isActive }">
-            <i class="fas fa-palette thumbnail-icon"></i>
+          <div
+            v-if="thumbnail"
+            class="thumbnail-container thumbnail-image-container"
+            :class="{'active': isActive }"
+            :style="{ backgroundImage: 'url(' + thumbnail + ')'}"
+          />
+          <div
+            v-else
+            class="thumbnail-container thumbnail-icon-container d-flex align-items-center justify-content-center"
+            :class="{'active': isActive }"
+          >
+            <i class="fas fa-palette thumbnail-icon" />
           </div>
           <div class="template-details">
             <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
@@ -19,7 +28,7 @@
         </div>
         <div class="default-template d-flex align-items-end">
           <b-form-checkbox
-            v-model="defaultTemplate"
+            v-model="isDefaultTemplate"
             name="default-template"
           >
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
@@ -41,26 +50,68 @@ import templateMixin from "./mixins/template.js";
 
 export default {
   mixins: [templateMixin],
-  props: ["template", 'selectedTemplateId', "isActive"],
+  props: ["template", "selectedTemplateId", "isActive", "defaultTemplateId", "defaultTemplateScreenType", 'isDefaultTemplatePublic'],
   data() {
     return {
-      defaultTemplate: null,
+      isDefaultTemplate: false,
     };
-  },
-  watch: {
   },
   computed: {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
   },
+  watch: {
+    template: {
+      deep: true,
+      handler() {
+        this.updateDefaultTemplateStatus();
+      }
+    },
+    isDefaultTemplate(newValue, oldValue) {
+      if (newValue) {
+        this.emitDefaultTemplateSelected();
+      }
+    },
+    defaultTemplateId(newValue, oldValue) {
+      if (newValue === undefined && oldValue === null || newValue === null && oldValue === undefined) {
+        return;
+      } else if (newValue !== oldValue){
+        if (this.template.id === oldValue || (!this.template.hasOwnProperty('id') && oldValue === null)) {
+          this.isDefaultTemplate = false;
+        } else if (newValue === null && !this.template.hasOwnProperty('id') && this.template.screen_type === this.defaultTemplateScreenType) {
+          this.isDefaultTemplate = true;
+        }
+      } 
+    },
+    defaultTemplateScreenType() {
+      this.updateDefaultTemplateStatus();
+    },
+    isDefaultTemplatePublic() {
+      this.updateDefaultTemplateStatus();
+    },
+  },
+  mounted() {
+    this.updateDefaultTemplateStatus();
+  },
   methods: {
     showTemplatePreview() {
-      this.$emit('show-template-preview', this.template);
+      this.$emit("show-template-preview", this.template);
     },
     selectTemplate() {
-      this.$emit('template-selected', this.template.id);
-    }
+      this.$emit("template-selected", this.template.id);
+    },
+    updateDefaultTemplateStatus() {
+      if ((this.defaultTemplateId === null || this.defaultTemplateId === undefined) && this.template.screen_type == this.defaultTemplateScreenType.toString() && !this.template.hasOwnProperty("id") && this.template.is_public === this.isDefaultTemplatePublic) {
+        this.isDefaultTemplate = true;
+      } else {
+        this.isDefaultTemplate = this.template.screen_type === this.defaultTemplateScreenType.toString() && !!this.template.is_default_template && this.template.is_public === this.isDefaultTemplatePublic;
+      }
+    },
+    emitDefaultTemplateSelected() {
+      const defaultTemplateId = this.template?.id || null;
+      this.$emit('template-default-selected', defaultTemplateId);
+    },
   },
 };
 </script>

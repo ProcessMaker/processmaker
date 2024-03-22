@@ -6,55 +6,51 @@
     :title="$t('Publish New Version')"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
+    :hide-footer="isABTestingInstalled"
   >
-    <div class="form-group">
+    <keep-alive>
+      <component
+        :is="publishVersionComponent"
+        :alternative="alternative"
+        @ab-publish-version="abPublishVersion"
+        @ab-cancel="hideModal()"
+      />
+    </keep-alive>
+    <div class="form-group" v-show="!isABTestingInstalled">
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <b-card no-body>
-          <b-tabs card>
-            <button
-              type="button"
-              class="btn btn-custom-button btn-sm position-absolute modeler-save-button custom-button"
-              :style="btnStyle"
-              @click="swapLabel"
+          <b-card>
+            <label for="name">{{ $t("Version Name") }} </label>
+            <input
+              id="name"
+              v-model="subject"
+              class="form-control mt-2"
+              type="text"
+              name="name"
             >
-              <i class="fas fa-book mr-1" />
-              {{ labelButton }}
-            </button>
-            <b-tab :title="labelTab">
-              <b-card v-show="!showVersionInfo">
-                <label for="name">{{ $t("Version Name") }} </label>
-                <input
-                  id="name"
-                  v-model="subject"
-                  class="form-control mt-2"
-                  type="text"
-                  name="name"
-                >
-                <div
-                  v-if="errors.subject"
-                  class="invalid-feedback d-block"
-                  role="alert"
-                >
-                  {{ errors.subject[0] }}
-                </div>
-                <label
-                  class="mt-2"
-                  for="additional-details"
-                >
-                  {{ $t("Description") }}
-                </label>
-                <textarea
-                  id="additional-details"
-                  v-model="description"
-                  class="form-control mt-2"
-                  type="text"
-                  rows="8"
-                  :aria-label="$t('Description')"
-                />
-              </b-card>
-            </b-tab>
-          </b-tabs>
+            <div
+              v-if="errors.subject"
+              class="invalid-feedback d-block"
+              role="alert"
+            >
+              {{ errors.subject[0] }}
+            </div>
+            <label
+              class="mt-2"
+              for="additional-details"
+            >
+              {{ $t("Description") }}
+            </label>
+            <textarea
+              id="additional-details"
+              v-model="description"
+              class="form-control mt-2"
+              type="text"
+              rows="8"
+              :aria-label="$t('Description')"
+            />
+          </b-card>
         </b-card>
       </div>
     </div>
@@ -110,13 +106,14 @@ export default {
       maxImages: 4,
       processDescription: "",
       processDescriptionInitial: "",
-      showVersionInfo: true,
-      labelButton: "Version Info",
-      labelTab: "Launchpad Settings",
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
       processId: "",
       dataProcess: {},
+      // AB Testing
+      isABTestingInstalled: false,
+      publishVersionComponent: null,
+      alternative: null,
     };
   },
   computed: {
@@ -131,21 +128,25 @@ export default {
       this.redirectUrl = redirectUrl;
       this.nodeId = nodeId;
       this.showModal();
+
+      // AB Testing installed
+      this.isABTestingInstalled = ProcessMaker.modeler.abPublish;
+      // AB Testing component
+      if (this.isABTestingInstalled && ProcessMaker?.AbTesting?.PublishVersion) {
+        this.alternative = ProcessMaker?.modeler?.process?.alternative_info;
+        this.publishVersionComponent = ProcessMaker?.AbTesting?.PublishVersion;
+      }
     });
     this.getDescriptionInitial();
     this.getProcessDescription();
-
-    // Receives selected Option from launchpad Icons multiselect
-    this.$root.$on("launchpadIcon", this.launchpadIconSelected);
+  
   },
   methods: {
-    swapLabel() {
-      const tempLabel = this.labelButton;
-      this.showVersionInfo = !this.showVersionInfo;
-      this.labelButton = this.labelTab;
-      this.labelTab = tempLabel;
+    abPublishVersion(alternativeData) {
+      this.subject = alternativeData.subject;
+      this.description = alternativeData.description;
 
-      this.isSecondaryColor = !this.isSecondaryColor;
+      this.saveModal(alternativeData);
     },
     /**
      * Method to store initial data from process description field
@@ -170,7 +171,7 @@ export default {
           if(ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
-        } 
+        }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
@@ -181,27 +182,46 @@ export default {
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
-      this.cleanTabLaunchpad();
     },
-    cleanTabLaunchpad() {
-      this.getProcessDescription();
-      this.labelTab = "Launchpad Settings";
-      this.labelButton = "Version Info";
-      this.showVersionInfo = true;
-      this.isSecondaryColor = false;
-    },
-    saveModal() {
+    /**
+     * Method to save modal
+     * @param alternativeData {
+     * publishedVersion: string A|B|AB,
+     * subject: string,
+     * description: string,
+     * } | null - Alternative data from AB Testing
+     *
+     * @returns {Promise<void>}
+     */
+    saveModal(alternativeData = null) {
+      const eventType = this.types[this.options.type];
+
+      let publishedVersion = 'A';
+
+      if (eventType === "modeler-save" && alternativeData) {
+        publishedVersion = alternativeData.publishedVersion;
+      }
+
+      // if method is called from ProcessMaker core
+      if (this.origin === "core") {
+        this.dataProcess = this.process;
+        this.dataProcess.description = this.processDescription;
+        this.saveProcessDescription(publishedVersion);
+        return;
+      }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
+
       const promise = new Promise((resolve, reject) => {
         // emit save types
         window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
+          eventType,
           this.redirectUrl,
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
-          this.types[this.options.type] === "modeler-save" ? false : null,
+          eventType === "modeler-save" ? false : null,
+          publishedVersion,
         );
       });
 
@@ -229,18 +249,21 @@ export default {
         });
 
       // Save only process description field using Process API
-      this.saveProcessDescription();
+      this.saveProcessDescription(publishedVersion);
     },
     /**
      * Save description field in Process
+     *
+     * @param {string} publishedVersion
      */
-    saveProcessDescription() {
+    saveProcessDescription(publishedVersion) {
       if (!this.processDescription) return;
 
       ProcessMaker.apiClient
         .put(`processes/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
+          alternative: publishedVersion,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
@@ -248,7 +271,6 @@ export default {
             indexImage: null,
             type: "add",
           };
-          ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId");
           this.hideModal();
         })
