@@ -32,6 +32,7 @@ div.main {
   max-height: 100%;
 }
 </style>
+@yield('extra_css')
 @endsection
 
 @section('js')
@@ -64,6 +65,7 @@ div.main {
   window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
   window.ProcessMaker.modeler = {
+    abPublish: false,
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
@@ -100,8 +102,17 @@ div.main {
     addBreadcrumbs(breadcrumbData || []);
   });
   </script>
-    @foreach($manager->getScripts() as $script)
-      <script src="{{$script}}"></script>
+    @foreach($manager->getScriptWithParams() as $params)
+      <script
+      @foreach ($params as $key => $value)
+        @if (is_bool($value))
+          {{ $key }}
+        @else
+          {{ $key }}="{{ $value }}"
+        @endif
+      @endforeach
+      ></script>
     @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+  @yield('extra_js')
 @endsection

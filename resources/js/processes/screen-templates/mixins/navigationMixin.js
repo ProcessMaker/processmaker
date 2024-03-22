@@ -2,9 +2,9 @@ export default {
   methods: {
     onTemplateNavigate(actionType, data) {
       switch (actionType?.value) {
-        case "placeholder-action":
+        case "edit-template":
+          this.goToScreenBuilder(data.id);
           break;
-
         case "make-public":
           ProcessMaker.apiClient
             .put(`template/screen/${data.id}/update`, {
@@ -18,7 +18,6 @@ export default {
               this.fetch();
             });
           break;
-
         case "delete-template":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
@@ -36,6 +35,14 @@ export default {
         default:
           break;
       }
+    },
+    goToScreenBuilder(data) {
+      ProcessMaker.apiClient.get(`/screen-builder/screen/${data}`)
+        .then((response) => {
+          window.location = `/designer/screen-builder/${response.data.id}/edit`;
+        }).catch((error) => {
+          ProcessMaker.alert(error.response?.data?.message, "danger");
+        });
     },
   },
 };

@@ -36,6 +36,7 @@ class ScreenTemplatesFactory extends Factory
             'manifest' => $manifest,
             'screen_custom_css' => null,
             'is_public' => false,
+            'is_default_template' => false,
             'is_system' => false,
             'asset_type' => null,
             'version' => '1.0.0',

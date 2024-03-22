@@ -9,59 +9,96 @@
         <div>
           <div class="d-flex w-100 h-100 mb-3">
             <slot name="header" v-bind:close="onClose" v-bind:taskId="task.id">
-              <b-button
-                class="arrow-button"
-                variant="outline-secondary"
-                :disabled="!existPrev"
-                @click="goPrevNext('Prev')"
-              >
-                <i class="fas fa-chevron-left" />
-              </b-button>
-              <b-button
-                class="arrow-button"
-                variant="outline-secondary"
-                :disabled="!existNext"
-                @click="goPrevNext('Next')"
-              >
-                <i class="fas fa-chevron-right" />
-              </b-button>
+              <b-button-group>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existPrev"
+                  @click="goPrevNext('Prev')"
+                >
+                  <i class="fas fa-chevron-left" />
+                </b-button>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existNext"
+                  @click="goPrevNext('Next')"
+                >
+                  <i class="fas fa-chevron-right" />
+                </b-button>
+              </b-button-group>
               <task-save-notification
-                  :options="options"
-                  :task="task"
-                  :date="lastAutosave"
-                  :error="errorAutosave"
-                  :form-data="formData"
+                :options="options"
+                :task="task"
+                :date="lastAutosave"
+                :error="errorAutosave"
+                :form-data="formData"
+                :size="headerResponsive()"
               />
               <div class="ml-auto mr-0 text-right">
-                <b-button
-                  class="icon-button"
-                  :aria-label="$t('Erase')"
-                  variant="light"
-                  v-b-tooltip.hover title="Erase Draft"
-                  @click="eraseDraft()"
+                <ellipsis-menu
+                  v-if="ellipsisButton"
+                  :actions="actions"
+                  :data="task"
+                  :divider="false"
+                  style="float:none; color: #566877;"
+                  @navigate="onProcessNavigate"
+                />
+                <b-button-group
+                  v-if="!ellipsisButton"
+                  class="preview-group-button"
                 >
-                  <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                </b-button>
-                <b-button
-                  class="icon-button"
-                  :aria-label="$t('Quick fill')"
-                  variant="light"
-                  @click="showQuickFillPreview = true"
+                  <b-button
+                    class="icon-button"
+                    :aria-label="$t('Erase')"
+                    variant="light"
+                    v-b-tooltip.hover title="Erase Draft"
+                    @click="eraseDraft()"
+                  >
+                    <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                  </b-button>
+                  <b-button
+                    class="icon-button"
+                    :aria-label="$t('Quick fill')"
+                    variant="light"
+                    @click="showQuickFillPreview = true"
+                  >
+                    <img
+                      src="/img/smartinbox-images/fill.svg"
+                      :alt="$t('No Image')"
+                    >
+                  </b-button>
+                </b-button-group>
+                <b-button-group
+                  v-if="!ellipsisButton"
+                  class="preview-group-button"
                 >
-                  <img
-                    src="../../../img/smartinbox-images/fill.svg"
-                    :alt="$t('No Image')"
-                  />
-                </b-button>
-                <a class="text-secondary">|</a>
-                <b-button
-                  class="btn-light text-secondary"
-                  :aria-label="$t('Open Task')"
-                  :href="openTask()"
-                >
-                  <i class="fas fa-external-link-alt" />
-                </b-button>
-                <a class="text-secondary">|</a>
+                  <b-button
+                    class="icon-button"
+                    variant="light"
+                    :aria-label="$t('Priority')"
+                    :class="{ 'button-priority': isPriority }"
+                    @click="addPriority()"
+                  >
+                    <img
+                      :src="
+                        isPriority
+                          ? '/img/priority.svg'
+                          : '/img/priority-header.svg'
+                      "
+                      :alt="$t('No Image')"
+                    >
+                  </b-button>
+                  <b-button
+                    class="btn text-secondary icon-button"
+                    variant="light"
+                    :aria-label="$t('Open Task')"
+                    @click="openTask()"
+                  >
+                    <i class="fas fa-external-link-alt" />
+                  </b-button>
+                </b-button-group>
+
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Close')"
@@ -116,12 +153,13 @@
 import SplitpaneContainer from "./SplitpaneContainer.vue";
 import TaskLoading from "./TaskLoading.vue";
 import TaskSaveNotification from "./TaskSaveNotification.vue";
+import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import QuickFillPreview from "./QuickFillPreview.vue";
 import PreviewMixin from "./PreviewMixin";
 import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 
 export default {
-  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification },
+  components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
   watch: {
     task: {
@@ -132,6 +170,11 @@ export default {
         } else {
           this.lastAutosave = "-";
         }
+        this.isPriority = task.is_priority;
+        const priorityAction = this.actions.find(action => action.value === 'mark-priority');
+        if (priorityAction) {
+          priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
+        }
       },
     },
   },
@@ -140,6 +183,11 @@ export default {
       this.formData = event.detail;
       this.handleAutosave();
     });
+    this.$root.$on('pane-size', (value) => {
+      this.size = value;
+    });
+    this.screenWidthPx = window.innerWidth;
+    window.addEventListener('resize', this.updateScreenWidthPx);
   },
   methods: {
     fillWithQuickFillData(data) {
@@ -181,6 +229,7 @@ export default {
         })
         .finally(() => {
           this.options.is_loading = false;
+          this.errorAutosave = false;
         });
     },
     eraseDraft() {
@@ -244,6 +293,8 @@ export default {
 .arrow-button {
   width: 46px;
   height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .arrow-button[disabled] {
@@ -266,5 +317,13 @@ export default {
   color: #888;
   padding: 0;
   border: none;
+}
+.preview-group-button {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.button-priority {
+    background-color: #FEF2F3;
+    color: #C56363;
 }
 </style>

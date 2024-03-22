@@ -33,4 +33,23 @@ class ProcessFactory extends Factory
             'warnings' => null,
         ];
     }
+
+    /**
+     * Build a process with a specific template name
+     *
+     * Usage:
+     *  Process::factory()->withTemplate('SingleTask.bpmn')->create();
+     *
+     * @param string $templateName The name of the template. e.g. 'SingleTask.bpmn'
+     *
+     * @return self
+     */
+    public function withTemplate(string $templateName): self
+    {
+        return $this->state(
+            [
+                'bpmn' => Process::getProcessTemplate($templateName),
+            ]
+        );
+    }
 }
