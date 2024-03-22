@@ -127,6 +127,34 @@
           {{ $t("Launchpad Icon") }}
         </label>
         <icon-dropdown ref="icon-dropdown" />
+        <label class="mt-2">{{ $t("Launch Screen") }}</label>
+        <div class="dropdown">
+          <button
+            id="statusDropdownScreen"
+            class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <div class="d-flex align-items-center">
+              <span class="ml-2 custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
+            </div>
+          </button>
+          <div
+            class="dropdown-menu custom-dropdown"
+            aria-labelledby="statusDropdownScreen"
+          >
+            <a
+              v-for="(item, index) in dropdownSavedScreen"
+              :key="index"
+              class="dropdown-item"
+              @click="selectScreenOption(item)"
+            >
+              {{ item.title || $t('Select Screen') }}
+            </a>
+          </div>
+        </div>
         <label class="mt-2">{{ $t("Chart") }}</label>
         <div class="dropdown">
           <button
@@ -138,7 +166,6 @@
             aria-expanded="false"
           >
             <div class="d-flex align-items-center">
-              <i class="far fa-chart-bar" />
               <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
             </div>
           </button>
@@ -220,6 +247,7 @@ export default {
       errors: "",
       selectedSavedChart: "",
       dropdownSavedCharts: [],
+      dropdownSavedScreen: [],
       maxImages: 4,
       processDescription: "",
       processDescriptionInitial: "",
@@ -228,6 +256,9 @@ export default {
       showVersionInfo: true,
       isSecondaryColor: false,
       selectedSavedChartId: "",
+      selectedScreen: "",
+      selectedScreenId: "",
+      selectedScreenUuid:"",
       processId: "",
       mediaImageId: [],
       dataProcess: {},
@@ -238,6 +269,7 @@ export default {
   },
   mounted() {
     this.retrieveSavedSearchCharts();
+    this.retrieveDisplayScreen();
     this.getDescriptionInitial();
     this.getProcessDescription();
 
@@ -264,10 +296,16 @@ export default {
             this.selectedSavedChartId = launchpadProperties.saved_chart_id;
             this.selectedLaunchpadIcon = launchpadProperties.icon;
             this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.selectedScreen = launchpadProperties.screen_title;
+            this.selectedScreenId = launchpadProperties.screen_id;
+            this.selectedScreenUuid = launchpadProperties.screen_uuid;
             this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
           } else {
             this.selectedSavedChart = "";
             this.selectedSavedChartId = "";
+            this.selectedScreenUuid = "";
+            this.selectedScreen = "";
+            this.selectedScreenId = "";
           }
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
@@ -309,6 +347,14 @@ export default {
       this.selectedSavedChart = option.title;
       this.selectedSavedChartId = option.id;
     },
+    /**
+     * Method to set selected option to screen dropdown
+     */
+    selectScreenOption(option) {
+      this.selectedScreen = option.title;
+      this.selectedScreenId = option.id;
+      this.selectedScreenUuid = option.uuid;
+    },
     hideModal() {
       this.$refs["my-modal-save"].hide();
       this.cleanTabLaunchpad();
@@ -317,6 +363,7 @@ export default {
       this.getProcessDescription();
       this.images = [];
       this.retrieveSavedSearchCharts();
+      this.retrieveDisplayScreen();
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
     },
@@ -380,6 +427,9 @@ export default {
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
         saved_chart_title: this.selectedSavedChart,
+        screen_id: this.selectedScreenId,
+        screen_uuid: this.selectedScreenUuid,
+        screen_title: this.selectedScreen,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
       });
@@ -441,6 +491,31 @@ export default {
         })
         .catch((error) => {
           this.dropdownSavedCharts = [];
+        });
+    },
+    /**
+     * Initial method to retrieve Screeens and populate dropdown
+     */
+     retrieveDisplayScreen() {
+      ProcessMaker.apiClient
+        .get(
+          "screens?page=1&per_page=10&filter=&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY",
+        )
+        .then((response) => {
+          if (response.data.data) {
+            const resultArray = response.data.data.flatMap((item) => {
+              return {
+                id: item.id,
+                title: item.title,
+                uuid: item.uuid,
+              }
+            });
+            this.dropdownSavedScreen = resultArray;
+            this.selectedScreen = "";
+          }
+        })
+        .catch((error) => {
+          this.dropdownSavedScreen = [];
         });
     },
     /**
