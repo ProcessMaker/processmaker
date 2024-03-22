@@ -85,8 +85,8 @@
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
-            <!-- <b-button
-              v-if="propFromButton === 'fullTask'"
+            <b-button
+              v-if="propFromButton !== 'fullTask'"
               class="icon-button"
               :aria-label="$t('Quick fill')"
               variant="light"
@@ -96,7 +96,7 @@
                 src="../../../img/smartinbox-images/Vector.svg"
                 :alt="$t('No Image')"
               />
-            </b-button> -->
+            </b-button>
             <b-button
               v-if="propFromButton !== 'fullTask'"
               class="icon-button"
