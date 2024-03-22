@@ -138,8 +138,6 @@ class Task extends ApiResource
             }
         }
 
-        $this->setScreenFilteredData($array, $include);
-
         return $array;
     }
 
@@ -194,27 +192,6 @@ class Task extends ApiResource
         }
 
         return $assignedUsers;
-    }
-
-    private function setScreenFilteredData(&$array, $include)
-    {
-        if (in_array('screenFilteredData', $include)) {
-            $filtered = [];
-            $screenVersion = $this->getScreenVersion();
-            if ($screenVersion) {
-                if (!isset(self::$screenFields[$screenVersion->id])) {
-                    self::$screenFields[$screenVersion->id] = $screenVersion->fields;
-                }
-
-                foreach (self::$screenFields[$screenVersion->id] as $column) {
-                    $value = Arr::get($this->getData(), $column->field);
-                    if ($value) {
-                        $filtered[$column->field] = $value;
-                    }
-                }
-            }
-            $array['screen_filtered_data'] = $filtered;
-        }
     }
 
     private function getData()

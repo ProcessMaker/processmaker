@@ -18,6 +18,10 @@ export default {
     pmql: {
       type: String
     },
+    advancedFilter: {
+      type: Object,
+      default: null,
+    },
     columns: {
       type: Array,
       default() {
@@ -38,6 +42,18 @@ export default {
       currentColumns: [],
     }
   },
+  computed:
+  {
+    modifiedCurrentColumns() {
+      return this.currentColumns.map(column => {
+        return {
+          ...column,
+          filter_subject: { type: "Field", value: column.field },
+          order_column: column.field
+        }
+      });
+    }
+  },
   watch: {
     columns() {
       this.currentColumns = cloneDeep(this.columns);
@@ -51,10 +67,13 @@ export default {
     if (this.savedSearchId) {
       savedSearchIdRoute = this.savedSearchId + '/';
     }
-    window.ProcessMaker.apiClient
-      .get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
+    ProcessMaker.apiClient.get("saved-searches/" + savedSearchIdRoute + "columns?include=available,data", {
         params: {
-          pmql: this.pmql
+          pmql: this.pmql,
+          advanced_filter: {
+            ...this.advancedFilter,
+            filters: this.advancedFilter.filters.filter(f => !(f.subject.type === "Status" && f.value === "In Progress"))
+          }
         }
       })
       .then(response => {

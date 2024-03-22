@@ -5,6 +5,7 @@ namespace Tests;
 use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\InboxRule;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
@@ -14,6 +15,8 @@ class MatchingTasksTest extends TestCase
 {
     public function testMatchingInboxRulesForTaskType()
     {
+        $this->markTestSkipped('We are not longer matching task type in inbox rules. Must use saved search.');
+
         $user = User::factory()->create();
         $completedTask = ProcessRequestToken::factory()->create([
             'user_id' => $user->id,
@@ -74,8 +77,73 @@ class MatchingTasksTest extends TestCase
         $this->assertEquals($inboxRule->id, $matchingInboxRules[0]->id);
     }
 
+    public function testMatchingInboxRulesForAdvancedFilter()
+    {
+        ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
+
+        $user = User::factory()->create();
+
+        $processRequest = ProcessRequest::factory()->create([
+            'data' => [
+                'some_variable' => 'some value',
+            ],
+        ]);
+
+        $activeTask = ProcessRequestToken::factory()->create([
+            'user_id' => $user->id,
+            'status' => 'ACTIVE',
+            'process_request_id' => $processRequest->id,
+        ]);
+
+        $advancedFilter = [
+            'order' => ['by' => 'id', 'direction' => 'desc'],
+            'filters' => [
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'data.some_variable'],
+                    'operator' => '=',
+                    'value' => 'some value',
+                ], [
+                    'subject' => ['type' => 'Field', 'value' => 'user_id'],
+                    'operator' => '=',
+                    'value' => $user->id,
+                ],
+            ],
+        ];
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'task',
+            'advanced_filter' => $advancedFilter,
+        ]);
+
+        $inboxRule = InboxRule::factory()->create([
+            'user_id' => $user->id,
+            'saved_search_id' => $savedSearch->id,
+        ]);
+
+        // Non-matching saved search
+        $filterCopy = $advancedFilter;
+        $filterCopy['filters'][0]['value'] = 'some other value';
+        $nonMatchingSavedSearch = SavedSearch::factory()->create([
+            'type' => 'task',
+            'advanced_filter' => $filterCopy,
+        ]);
+
+        // Non-matching inbox rule
+        InboxRule::factory()->create([
+            'user_id' => $user->id,
+            'saved_search_id' => $nonMatchingSavedSearch->id,
+        ]);
+
+        $matchingInboxRules = MatchingTasks::matchingInboxRules($activeTask);
+
+        $this->assertCount(1, $matchingInboxRules);
+        $this->assertEquals($inboxRule->id, $matchingInboxRules[0]->id);
+    }
+
     public function testInboxRuleEndDate()
     {
+        ProcessCategory::factory()->create(['is_system' => true, 'name' => 'System']);
+
         $user = User::factory()->create();
 
         $task = ProcessRequestToken::factory()->create([
@@ -83,10 +151,35 @@ class MatchingTasksTest extends TestCase
             'status' => 'COMPLETED',
         ]);
 
+        $advancedFilter = [
+            'order' => ['by' => 'id', 'direction' => 'desc'],
+            'filters' => [
+                [
+                    'subject' => ['type' => 'Field', 'value' => 'process_id'],
+                    'operator' => '=',
+                    'value' => $task->process_id,
+                ], [
+                    'subject' => ['type' => 'Field', 'value' => 'element_id'],
+                    'operator' => '=',
+                    'value' => $task->element_id,
+                ], [
+                    'subject' => ['type' => 'Field', 'value' => 'user_id'],
+                    'operator' => '=',
+                    'value' => $user->id,
+                ],
+            ],
+        ];
+
+        $savedSearch = SavedSearch::factory()->create([
+            'type' => 'task',
+            'advanced_filter' => $advancedFilter,
+        ]);
+
         //Check with pastEndDate value
+
         $pastEndDate = now()->subDays(1);
         InboxRule::factory()->create([
-            'process_request_token_id' => $task->id,
+            'saved_search_id' => $savedSearch->id,
             'end_date' => $pastEndDate,
             'user_id' => $user->id,
         ]);
@@ -97,7 +190,7 @@ class MatchingTasksTest extends TestCase
         //Check with futureEndDate value
         $futureEndDate = now()->addDays(1);
         InboxRule::factory()->create([
-            'process_request_token_id' => $task->id,
+            'saved_search_id' => $savedSearch->id,
             'end_date' => $futureEndDate,
             'user_id' => $user->id,
         ]);
@@ -109,6 +202,8 @@ class MatchingTasksTest extends TestCase
 
     public function testGetForTypeTask()
     {
+        $this->markTestSkipped('We are not longer matching task type in inbox rules. Must use saved search.');
+
         $user = User::factory()->create();
 
         $task = ProcessRequestToken::factory()->create([

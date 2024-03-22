@@ -6,14 +6,14 @@
         <b-button variant="light"
                   size="sm"
                   @click="onEditRule">
-          <img src="/img/pencil-fill.svg" :alt="$t('Edit')">
+          <img src="/img/pencil-fill.svg" :alt="$t('Edit')"/>
         </b-button>
         <div class="pm-row-buttons-separator"></div>
         <b-button :id="idButtonRemove"
                   variant="light"
                   size="sm"
                   @click="onRemoveRule">
-          <img src="/img/trash-fill.svg" :alt="$t('Remove')">
+          <img src="/img/trash-fill.svg" :alt="$t('Remove')"/>
         </b-button>
       </template>
     </PMFloatingButtons>

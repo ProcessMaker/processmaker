@@ -294,7 +294,7 @@ const PMColumnFilterCommonMixin = {
       }
 
       inputAdvancedFilter.forEach((filter) => {
-        const key = filter._column_field;
+        const key = filter._column_field || 'N/A';
         if (!(key in filters)) {
           filters[key] = [];
         }
