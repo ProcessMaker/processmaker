@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae63339c24e5a6e4f6c1daa1a125b50c",
+    "content-hash": "967d56e39428900264b50360b8b51a20",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -1794,7 +1794,7 @@
             "version": "v8.11.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:elastic/elasticsearch-php.git",
+                "url": "https://github.com/elastic/elasticsearch-php.git",
                 "reference": "4c16dc67788afdec63294f072999594d0fd14ebb"
             },
             "dist": {
