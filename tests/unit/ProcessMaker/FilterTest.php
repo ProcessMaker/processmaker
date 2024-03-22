@@ -59,7 +59,7 @@ class FilterTest extends TestCase
             'data' => ['form_input_1' => 7],
         ]);
 
-        $task2 = ProcessRequestToken::factory()->create([
+        ProcessRequestToken::factory()->create([
             'process_request_id' => $processRequest2->id,
         ]);
 

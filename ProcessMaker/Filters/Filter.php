@@ -152,7 +152,7 @@ class Filter
     private function operator()
     {
         if (!in_array($this->operator, $this->operatorWhitelist)) {
-            throw new \Exception("Invalid operator: {$this->operator}");
+            abort("Invalid operator: {$this->operator}");
         }
 
         if ($this->operator === 'contains' || $this->operator === 'starts_with') {
