@@ -58,6 +58,7 @@
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                   </b-button>
                   <b-button
+                    v-if="showQuickFillPreview === false"
                     class="icon-button"
                     :aria-label="$t('Quick fill')"
                     variant="light"
