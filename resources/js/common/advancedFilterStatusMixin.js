@@ -46,7 +46,7 @@ export default {
       }
     },
     formatBadgeSubject(filter) {
-      return get(filter, '_column_label', '');
+      return get(filter, '_column_label', get(filter, 'subject.value', ''));
     },
   },
   computed: {

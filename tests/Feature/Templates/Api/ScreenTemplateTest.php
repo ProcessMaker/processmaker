@@ -2,9 +2,7 @@
 
 namespace Tests\Feature\Templates\Api;
 
-use Exception;
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
@@ -137,6 +135,47 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testMakePublicScreenTemplate()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['is_public' => false]);
+
+        $route = route('api.template.update.template', [
+            'type' => 'screen',
+            'id' => $screenTemplate->id,
+        ]);
+        $params = [
+            'name' => $screenTemplate->name,
+            'description' => $screenTemplate->description,
+            'version' => $screenTemplate->version,
+            'is_public' => true,
+        ];
+        $response = $this->apiCall('PUT', $route, $params);
+
+        // Check that the screen template is now public.
+        $response->assertStatus(200);
+        $screenTemplate->refresh();
+        $this->assertEquals(1, $screenTemplate->is_public);
+    }
+
+    public function testMakePrivateScreenTemplate()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['is_public' => true]);
+
+        $url = "/template/screen/{$screenTemplate->id}/update";
+        $params = [
+            'name' => $screenTemplate->name,
+            'description' => $screenTemplate->description,
+            'version' => $screenTemplate->version,
+            'is_public' => false,
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+
+        // Check that the screen template is now private.
+        $response->assertStatus(200);
+        $screenTemplate->refresh();
+        $this->assertEquals(0, $screenTemplate->is_public);
+    }
+    
     public function testShowScreenTemplate()
     {
         // Create screen and save it in the manifest

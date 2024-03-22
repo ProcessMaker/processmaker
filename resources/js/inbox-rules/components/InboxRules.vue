@@ -15,18 +15,20 @@
           <template v-slot:right-content>
             <b-button class="ml-md-1 d-flex align-items-center text-nowrap"
                       variant="primary"
-                      @click="onCreateRule">
-              <img src="/img/plus-lg.svg" :alt="$t('Create Rule')">
-                {{ $t('Create Rule') }}
+                      @click="onCreateRule"
+                      data-cy="createRule">
+              <img src="/img/plus-lg.svg" :alt="$t('Create Rule')"/>
+              {{ $t('Create Rule') }}
             </b-button>
           </template>
         </PMSearchBar>
       </template>
 
       <template v-slot:cell-active="{ row, header, rowIndex }">
-        <b-form-checkbox v-model="row['active']" 
-                         :disabled="true"
-                         switch>
+        <b-form-checkbox v-model="row['active']"
+                         @change="onChangeStatus($event,row)"
+                         switch
+                         :data-cy="'statusSwitch'+rowIndex">
         </b-form-checkbox>
       </template>
 
@@ -39,7 +41,8 @@
                               :value="convertUTCToPMFormat(row['end_date'])"
                               :row="row"
                               @onEditRule="onEditRule"
-                              @onRemoveRule="onRemoveRule">
+                              @onRemoveRule="onRemoveRule"
+                              :data-cy="'inboxRulesRowButtons'+rowIndex">
         </InboxRulesRowButtons>
       </template>
 
@@ -113,8 +116,7 @@
                 + "order_direction=" + this.order_direction + "&"
                 + "filter=" + this.filter;
 
-        ProcessMaker.apiClient
-                .get(url)
+        ProcessMaker.apiClient.get(url)
                 .then((response) => {
                   this.responseData = response.data;
                 })
@@ -132,19 +134,22 @@
         this.$refs["inboxRulesRowButtons-" + index].close();
       },
       onCreateRule() {
-        this.$router.push({name: 'new'});
+        this.$router.push({name: "new"});
       },
       onEditRule(row) {
-        this.$router.push({name: 'edit', params: {id: row.id}});
+        this.$router.push({name: "edit", params: {id: row.id}});
       },
       onRemoveRule(row) {
-        window.ProcessMaker.apiClient
-                .delete('/tasks/rules/' + row.id)
+        ProcessMaker.apiClient.delete("/tasks/rules/" + row.id)
                 .then(response => {
                   let message = "The inbox rule '{{name}}' was removed.";
                   message = this.$t(message, {name: row.name});
                   ProcessMaker.alert(message, "success");
                   this.requestData();
+                })
+                .catch((err) => {
+                  let message = "The operation cannot be performed. Please try again later.";
+                  ProcessMaker.alert(this.$t(message), "danger");
                 });
       },
       convertUTCToPMFormat(value) {
@@ -154,6 +159,21 @@
         let timezone = ProcessMaker.user.timezone;
         let config = ProcessMaker.user.datetime_format;
         return moment(value).tz(timezone).format(config);
+      },
+      onChangeStatus(value, row) {
+        let params = {
+          active: value
+        };
+        ProcessMaker.apiClient.put("/tasks/rules/" + row["id"] + "/update-active", params)
+                .then(response => {
+                  let message = value ? "Rule activated" : "Rule deactivated";
+                  ProcessMaker.alert(this.$t(message), "success");
+                })
+                .catch((err) => {
+                  row["active"] = !value;
+                  let message = "The operation cannot be performed. Please try again later.";
+                  ProcessMaker.alert(this.$t(message), "danger");
+                });
       }
     }
   };
