@@ -148,6 +148,7 @@
         :meta="data.meta"
         data-cy="process-pagination"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
       <pagination
         ref="pagination"

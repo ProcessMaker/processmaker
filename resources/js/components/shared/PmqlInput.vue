@@ -17,6 +17,7 @@
 
           <pmql-input-filters
             v-if="showFilters"
+            ref="pmqlInputFilters"
             :type="searchType"
             :param-process="urlPmql ? '' : paramProcess"
             :param-status="urlPmql ? '' : paramStatus"
@@ -35,6 +36,7 @@
         </div>
 
         <div
+          v-if="showSearchBar !== false"
           class="search-bar flex-grow w-100"
           :class="{ 'is-invalid': validations }"
           :style="styles?.container"
@@ -144,6 +146,7 @@
         </div>
       </div>
 
+      <div style="display: flex;">
       <div
         v-if="filterBadges.length > 0"
         class="selected-filters-bar d-flex pt-2"
@@ -174,6 +177,10 @@
             v-if="!get(filter, '1.0.advanced_filter', false)"
           />
         </span>
+      </div>
+      <div style="margin-left: auto">
+        <slot name="right-of-badges" />
+      </div>
       </div>
     </div>
   </div>
@@ -215,6 +222,8 @@ export default {
     "paramName",
     "permission",
     "updateQuery",
+    "showSearchBar",
+    "showPmqlBadge",
   ],
   data() {
     return {
@@ -243,8 +252,20 @@ export default {
       if (!this.showFilters) {
         return [];
       }
-      return [...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
+      return [...this.pmqlBadge, ...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
     },
+
+    pmqlBadge() {
+      const result = [];
+      if (this.value && this.showPmqlBadge === true) {
+        result.push([
+          'pmql',
+          [{name: this.value, operator: '', advanced_filter: true}]
+        ]);
+      }
+      return result;
+    },
+
     showPmqlSection() {
       return (
         !this.hidePmqlSection

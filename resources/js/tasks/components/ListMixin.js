@@ -54,12 +54,17 @@ const ListMixin = {
         }
         this.previousAdvancedFilter = advancedFilter;
 
+        const include = "process,processRequest,processRequest.user,user,data".split(",");
+        if (this.additionalIncludes) {
+          include.push(...this.additionalIncludes);
+        }
+
         // Load from our api client
         ProcessMaker.apiClient
           .get(
             `${this.endpoint}?page=${
               this.page
-            }&include=process,processRequest,processRequest.user,user,data`
+            }&include=` + include.join(",")
               + `&pmql=${
                 encodeURIComponent(pmql)
               }&per_page=${
@@ -68,9 +73,12 @@ const ListMixin = {
               }${this.getSortParam()
               }&non_system=true` +
               advancedFilter,
+
+              { dataLoadingId: this.dataLoadingId }
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];
               this.data.data.forEach((element) => {

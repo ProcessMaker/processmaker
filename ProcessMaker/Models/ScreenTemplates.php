@@ -10,15 +10,23 @@ use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class ScreenTemplates extends Template
+class ScreenTemplates extends Template implements HasMedia
 {
     use HasFactory;
     use HasCategories;
     use HideSystemResources;
     use ExtendedPMQL;
+    use InteractsWithMedia;
 
     protected $table = 'screen_templates';
+
+    protected $appends = [
+        'thumbnails',
+    ];
 
     const categoryClass = ScreenCategory::class;
 
@@ -183,5 +191,46 @@ class ScreenTemplates extends Template
         });
 
         return $query;
+    }
+
+    public function getTemplateMediaAttribute()
+    {
+        $mediaCollectionName = 'st-' . $this->uuid . '-media';
+        $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
+        $previewThumbsUrls = $previewThumbs->map(function ($slide) {
+            return $slide->getFullUrl();
+        });
+        $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
+
+        return [
+            'thumbnail' => !is_null($thumbnailMedia) ? $thumbnailMedia->getFullUrl() : '',
+            'previewThumbs' => $previewThumbsUrls,
+        ];
+    }
+
+    /**
+     * Get the associated thumbnails for the given screen template
+     */
+    public function getThumbnailsAttribute()
+    {
+        $mediaCollectionName = 'st-' . $this->uuid . '-media';
+        $previewThumbs = $this->getMedia($mediaCollectionName);
+
+        return $previewThumbs->map(function ($thumb) {
+            return $thumb->getFullUrl();
+        });
+    }
+
+    /**
+     * Add files to media collection
+     */
+    public function addFilesToMediaCollection(string $directoryPath)
+    {
+        $files = File::allFiles($directoryPath);
+        $collectionName = basename($directoryPath);
+
+        foreach ($files as $file) {
+            $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
+        }
     }
 }

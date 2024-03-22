@@ -29,16 +29,18 @@
           <td class="action">{{ formatDate(item.created_at) }}</td>
           <td class="action">{{ formatDate(item.updated_at) }}</td>
           <td class="action">
-            <ellipsis-menu
-              :actions="actionsInProgress"
-              :permission="permission"
-              :data="item"
-              :divider="true"
-              :customButton="inProgressButton"
-              :showProgress="true"
-              @navigate="onNavigate"
-            />
-            <p v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
+            <div class="translation-in-progress">
+              <ellipsis-menu
+                  :actions="actionsInProgress"
+                  :permission="permission"
+                  :data="item"
+                  :divider="true"
+                  :customButton="inProgressButton"
+                  :showProgress="true"
+                  @navigate="onNavigate"
+              />
+              <p class="right-aligned-percent" v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
+            </div>
           </td>
         </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
@@ -168,6 +170,9 @@ export default {
   },
 
   mounted() {
+    this.getNonce();
+    this.fetchHistory();
+    this.subscribeToTranslationEvent();
     window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification((response) => {
       if (response.processId === this.processId) {
         this.fetchPending();
@@ -177,6 +182,120 @@ export default {
   },
 
   methods: {
+    subscribeToTranslationEvent() {
+      const channel = `ProcessMaker.Models.User.${window.ProcessMaker?.user?.id}`;
+      const translationEvent = ".ProcessMaker\\Package\\PackageAi\\Events\\GenerateTranslationProgressEvent";
+      if (!window.Echo) {
+        return;
+      }
+      window.Echo.private(channel).listen(
+        translationEvent,
+        (response) => {
+          const language = response.data.language;
+          this.translatingLanguages.forEach(lang => {
+            if (lang.language === language) {
+              lang.stream = {
+                data: response.data.progress.progress + '%'
+              };
+              lang.humanLanguage += 'a';
+            }
+          });
+          if (response.data.progress.status === 'completed') {
+            this.fetchPending();
+            this.fetch();
+          }
+        },
+      );
+    },
+    getNonce() {
+      const max = 999999999999999;
+      const nonce = Math.floor(Math.random() * max);
+      this.currentNonce = nonce;
+      localStorage.currentNonce = this.currentNonce;
+    },
+    removePromptSessionForUser() {
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+
+      let item = promptSessions.find(item => item.userId === window.ProcessMaker?.modeler?.process?.user_id && item.server === window.location.host);
+
+      if (item) {
+        item.promptSessionId = '';
+      }
+
+      localStorage.setItem('promptSessions', JSON.stringify(promptSessions));
+    },
+    setPromptSessions(promptSessionId) {
+      let index = 'userId';
+      let id = this.process_id;
+
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+
+      let item = promptSessions.find(item => item[index] === id && item.server === window.location.host);
+
+      if (item) {
+        item.promptSessionId = promptSessionId;
+      } else {
+        promptSessions.push({ [index]: id, server: window.location.host, promptSessionId });
+      }
+
+      localStorage.setItem('promptSessions', JSON.stringify(promptSessions));
+    },
+    getPromptSessionForUser() {
+      // Get sessions list
+      let promptSessions = localStorage.getItem('promptSessions');
+
+      // If promptSessions does not exist, set it as an empty array
+      promptSessions = promptSessions ? JSON.parse(promptSessions) : [];
+      let item = promptSessions.find(item => item.userId === window.ProcessMaker?.modeler?.process?.user_id && item.server === window.location.host);
+
+      if (item) {
+        return item.promptSessionId;
+      }
+
+      return '';
+    },
+    fetchHistory() {
+      let url = '/package-ai/getPromptSessionHistory';
+
+      let params = {
+        server: window.location.host,
+        processId: null,
+      };
+
+      if (this.promptSessionId && this.promptSessionId !== null && this.promptSessionId !== '') {
+        params = {
+          promptSessionId: this.promptSessionId,
+        };
+      }
+
+      window.ProcessMaker.apiClient.post(url, params)
+        .then(response => {
+          this.setPromptSessions((response.data.promptSessionId));
+          this.promptSessionId = (response.data.promptSessionId);
+          localStorage.promptSessionId = (response.data.promptSessionId);
+        })
+        .catch((error) => {
+          const errorMsg = error.response?.data?.message || error.message;
+
+          this.loading = false;
+          if (error.response.status === 404) {
+            this.removePromptSessionForUser();
+            localStorage.promptSessionId = '';
+            this.promptSessionId = '';
+            this.fetchHistory();
+          } else {
+            window.ProcessMaker.alert(errorMsg, 'danger');
+          }
+        });
+    },
     onNavigate(action, data, index) {
       switch (action.value) {
         case "edit-translation":
@@ -251,6 +370,13 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+
+          this.translatingLanguages.forEach(lang => {
+            lang.stream = {
+              data: "5%",
+            };
+          });
+
           this.removeSocketListeners();
           this.subscribeToEvent();
         });
@@ -311,6 +437,9 @@ export default {
         language: data,
         processId: this.processId,
         option: "empty",
+        promptSessionId: this.getPromptSessionForUser(),
+        nonce: localStorage.getItem("currentNonce"),
+        includeImages: true,
       };
 
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
@@ -408,5 +537,19 @@ export default {
     left: 0;
     right: 0;
     top: 0;
+  }
+
+  .translation-in-progress {
+    display: flex;
+    flex-grow:1;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .right-aligned-percent {
+    float: right;
+    margin-left: 5px;
+    margin-top: 10px;
+    font-weight: bold;
   }
 </style>

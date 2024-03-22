@@ -194,24 +194,20 @@ class ModelerController extends Controller
     /**
      * Invokes the Modeler for In-flight Process Map rendering for ai generative.
      */
-    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, Request $request)
+    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, $choiceNumber, $type, Request $request)
     {
-        $aiMicroserviceHost = config('app.ai_microservice_host');
-        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
-        $headers = [
-            'Authorization' => 'token',
-        ];
-
-        $params = [
-            'promptVersionId' => $promptVersionId,
-        ];
-
-        $promptVersion = Http::withHeaders($headers)->post($url, $params);
-
+        $version = $this->getVersion($promptVersionId, $type);
         $bpmn = '';
+        $choicesCount = 0;
 
-        if (array_key_exists('version', $promptVersion->json())) {
-            $bpmn = $promptVersion->json()['version']['bpmn'];
+        if (array_key_exists('version', $version->json())) {
+            if (array_key_exists('bpmn', $version->json()['version'])) {
+                $bpmn = $version->json()['version']['bpmn'];
+            }
+            if (array_key_exists('choices', $version->json()['version'])) {
+                $bpmn = $version->json()['version']['choices'][$choiceNumber]['bpmn'];
+                $choicesCount = count($version->json()['version']['choices']);
+            }
         }
 
         event(new ModelerStarting($manager));
@@ -219,6 +215,29 @@ class ModelerController extends Controller
         return view('processes.modeler.inflight-generative-ai', [
             'manager' => $manager,
             'bpmn' => $bpmn,
+            'choiceNumber' => $choiceNumber,
+            'choicesCount' => $choicesCount,
         ]);
+    }
+
+    private function getVersion($promptVersionId, $type) {
+        $aiMicroserviceHost = config('app.ai_microservice_host');
+        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
+
+        $headers = [
+            'Authorization' => 'token',
+        ];
+        $params = [
+            'promptVersionId' => $promptVersionId,
+        ];
+
+        if ($type === 'processVersion') {
+            $url = $aiMicroserviceHost . '/pm/getProcessVersion';
+            $params = [
+                'processVersionId' => $promptVersionId,
+            ];
+        }
+        
+        return Http::withHeaders($headers)->post($url, $params);
     }
 }

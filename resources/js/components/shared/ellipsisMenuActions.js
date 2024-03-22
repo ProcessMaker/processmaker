@@ -135,6 +135,11 @@ export default {
           permission: "create-projects",
         },
         {
+          value: "create-template",
+          content: "Save as Template",
+          icon: "fas fa-file-image",
+        },
+        {
           value: "duplicate-item",
           content: "Copy",
           permission: ["create-screens", "view-additional-asset-actions"],
@@ -258,8 +263,6 @@ export default {
         {
           value: "edit-template",
           content: "Edit Template",
-          link: true,
-          href: "/designer/screen-builder/{{id}}/edit",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
         },
@@ -288,6 +291,12 @@ export default {
       ],
       publicTemplateActions: [
         //TODO: Update Public Template Ellipsis Menu Actions
+        {
+          value: "edit-template",
+          content: "Edit Template",
+          permission: ["edit-screens"],
+          icon: "fas fa-pen-square",
+        },
         {
           value: "export-item",
           content: "Export Template",

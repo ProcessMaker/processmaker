@@ -291,7 +291,7 @@
           <tree-view
             v-model="previewDataStringify"
             :iframe-height="iframeHeight"
-            style="border:1px; solid gray;"
+            style="border: 1px solid gray;"
           />
         </b-col>
       </b-row>
@@ -311,6 +311,20 @@
       ref="watchersPopup"
       v-model="watchers"
       @input="onInput()"
+    />
+    <create-template-modal
+      id="create-template-modal"
+      ref="create-template-modal"
+      asset-type="screen"
+      :current-user-id="user.id"
+      :asset-name="screen.title"
+      :asset-id="screen.id"
+      :screen-type="screen.type"
+      :permission="permission"
+      :types="{ [screen.type]: screen.type }"
+      header-class="border-0"
+      footer-class="border-0"
+      modal-size="lg"
     />
   </div>
 </template>
@@ -334,6 +348,7 @@ import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import autosaveMixins from "../../modules/autosave/mixins";
+import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 
 export default {
   components: {
@@ -345,6 +360,7 @@ export default {
     MonacoEditor,
     TopMenu,
     DataLoadingBasic,
+    CreateTemplateModal,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
@@ -373,6 +389,7 @@ export default {
       default: false,
     },
     processId: {
+      type: Number,
       default: 0,
     },
   },
@@ -502,6 +519,7 @@ export default {
     ];
 
     return {
+      user: {},
       previewDataStringify: "",
       numberOfElements: 0,
       preview: {
@@ -567,6 +585,11 @@ export default {
             content: this.$t("Discard Draft"),
             icon: "fas fa-angle-double-down",
             hide: this.isVersionsInstalled,
+          },
+          {
+            value: "create-template",
+            content: this.$t("Save as Template"),
+            icon: "fas fa-file-image",
           },
         ],
       },
@@ -673,7 +696,8 @@ export default {
   },
   mounted() {
     // To include another language in the Validator with variable processmaker
-    if (window.ProcessMaker?.user?.lang) {
+    this.user = window.ProcessMaker?.user;
+    if (this.user?.lang) {
       Validator.useLang(window.ProcessMaker.user.lang);
     }
 
@@ -689,6 +713,9 @@ export default {
     this.setVersionIndicator();
     // Display ellipsis menu.
     this.setEllipsisMenu();
+    ProcessMaker.EventBus.$on("show-create-template-modal", () => {
+      this.$refs["create-template-modal"].show();
+    });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
@@ -757,9 +784,9 @@ export default {
           return;
         }
         warnings.push(
-          // eslint-disable-next-line max-len
           this.$t(
-            "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
+            "{{name}} on page {{pageName}} is not accessible to screen readers. "
+            + "Please add a Label in the Variable section or an Aria Label in the Advanced section.",
             {
               name: item.config.name,
               pageName,

@@ -18,7 +18,6 @@ export default {
     return {
       errors: {},
       config: {
-        AuthScheme: "OAuth",
         Schema: "REST",
         Scope: "https://mail.google.com/",
       },
