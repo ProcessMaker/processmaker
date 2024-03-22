@@ -102,7 +102,7 @@ class ModelerController extends Controller
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve draft version of the process
-        $draft = $process->getDraftVersion($alternative);
+        $draft = $process->getDraftOrPublishedLatestVersion($alternative);
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
