@@ -3,8 +3,6 @@
     <PMTable :headers="headers"
              :data="responseData"
              :baseURL="baseURL"
-             :empty="$t('No results have been found')"
-             :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
              empty-icon="noData"
              @onRowMouseover="onRowMouseover"
              @onTrMouseleave="onTrMouseleave"
@@ -46,6 +44,9 @@
         </InboxRulesRowButtons>
       </template>
 
+      <template v-slot:no-results>
+        <PMMessageScreen></PMMessageScreen>
+      </template>
     </PMTable>
   </div>
 </template>
@@ -54,11 +55,13 @@
   import PMTable from "../../components/PMTable.vue";
   import PMSearchBar from "../../components/PMSearchBar.vue";
   import InboxRulesRowButtons from "./InboxRulesRowButtons.vue";
+  import PMMessageScreen from "../../components/PMMessageScreen.vue";
   export default {
     components: {
       PMTable,
       PMSearchBar,
-      InboxRulesRowButtons
+      InboxRulesRowButtons,
+      PMMessageScreen
     },
     data() {
       return {
