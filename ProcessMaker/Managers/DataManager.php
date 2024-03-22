@@ -91,6 +91,10 @@ class DataManager
             unset($userData['remember_token']);
             $data['_user'] = $userData;
         }
+        // Magic variable: _user is removed when the task is SelfService.
+        if ($token && $token->is_self_service === 1) {
+            unset($data['_user']);
+        }
 
         return $data;
     }
@@ -123,12 +127,7 @@ class DataManager
         }
 
         // Magic Variable: _user
-        $user = $token->user ?: Auth::user();
-        if ($user) {
-            $userData = $user->attributesToArray();
-            unset($userData['remember_token']);
-            $data['_user'] = $userData;
-        }
+        $data = $this->loadUserData($data, $token);
 
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;

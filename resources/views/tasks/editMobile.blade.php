@@ -280,7 +280,6 @@
               .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
               .then(() => {
                 window.ProcessMaker.alert(message, 'success', 5, true);
-                window.location = "/tasks";
               })
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page

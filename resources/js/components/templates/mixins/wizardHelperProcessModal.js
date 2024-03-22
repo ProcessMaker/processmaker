@@ -4,6 +4,7 @@ export default {
       task: null,
       currentUserId: null,
       formData: {},
+      importingProcessTemplate: false,
     };
   },
   methods: {
@@ -86,9 +87,9 @@ export default {
       this.task = task;
     },
     completed() {
-      if (this.shouldImportProcessTemplate) {
+      if (!this.importingProcessTemplate && this.shouldImportProcessTemplate) {
         this.importProcessTemplate();
-      } else {
+      } else if (!this.importingProcessTemplate && !this.shouldImportProcessTemplate) {
         this.showHelperProcess = false;
         this.$bvModal.hide("processWizard");
       }
@@ -103,6 +104,7 @@ export default {
       });
     },
     importProcessTemplate() {
+      this.importingProcessTemplate = true;
       ProcessMaker.apiClient.post(`template/create/process/${this.template.process_template_id}`, {
         name: this.template.name,
         description: this.template.description,
@@ -112,6 +114,7 @@ export default {
         wizardTemplateUuid: this.template.uuid,
         helperProcessRequestId: this.task.process_request_id,
       }).then((response) => {
+        this.importingProcessTemplate = false;
         if (response.data?.existingAssets) {
           this.handleExistingAssets(response.data);
         } else {
