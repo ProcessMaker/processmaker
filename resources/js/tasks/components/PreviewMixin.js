@@ -146,8 +146,10 @@ const PreviewMixin = {
      * Expand Open task
      */
     openTask() {
-      const url = `/tasks/${this.task.id}/edit`;
-      window.location.href = url;
+      if (this.task.id) {
+        const url = `/tasks/${this.task.id}/edit`;
+        window.location.href = url;
+      }
     },
     /**
      * Go to previous or next task
