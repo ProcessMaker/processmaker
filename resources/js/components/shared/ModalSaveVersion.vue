@@ -19,39 +19,35 @@
     <div class="form-group" v-show="!isABTestingInstalled">
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
-        <b-card no-body>
-          <b-card>
-            <label for="name">{{ $t("Version Name") }} </label>
-            <input
-              id="name"
-              v-model="subject"
-              class="form-control mt-2"
-              type="text"
-              name="name"
-            >
-            <div
-              v-if="errors.subject"
-              class="invalid-feedback d-block"
-              role="alert"
-            >
-              {{ errors.subject[0] }}
-            </div>
-            <label
-              class="mt-2"
-              for="additional-details"
-            >
-              {{ $t("Description") }}
-            </label>
-            <textarea
-              id="additional-details"
-              v-model="description"
-              class="form-control mt-2"
-              type="text"
-              rows="8"
-              :aria-label="$t('Description')"
-            />
-          </b-card>
-        </b-card>
+        <label for="name">{{ $t("Version Name") }} </label>
+        <input
+          id="name"
+          v-model="subject"
+          class="form-control mt-2"
+          type="text"
+          name="name"
+        >
+        <div
+          v-if="errors.subject"
+          class="invalid-feedback d-block"
+          role="alert"
+        >
+          {{ errors.subject[0] }}
+        </div>
+        <label
+          class="mt-2"
+          for="additional-details"
+        >
+          {{ $t("Description") }}
+        </label>
+        <textarea
+          id="additional-details"
+          v-model="description"
+          class="form-control mt-2"
+          type="text"
+          rows="8"
+          :aria-label="$t('Description')"
+        />
       </div>
     </div>
   </modal>

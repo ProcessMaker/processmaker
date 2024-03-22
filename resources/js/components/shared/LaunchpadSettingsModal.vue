@@ -651,7 +651,7 @@ b-row, b-col {
   overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
-  font-family: Open Sans;
+  font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 21.79px;
