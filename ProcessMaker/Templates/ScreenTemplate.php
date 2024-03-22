@@ -664,7 +664,7 @@ class ScreenTemplate implements TemplateInterface
                 if (isset($colItem['items'])) {
                     $filteredColumnItems[] = $colItem;
                 } else {
-                    $filteredColumnItems = $removeMultiColumn ? $colItem : $colItem;
+                    $filteredColumnItems = $colItem;
                 }
             } elseif (!$this->removeNestedComponents($colItem, $components)) {
                 $filteredColumnItems[] = $colItem;
@@ -691,10 +691,22 @@ class ScreenTemplate implements TemplateInterface
 
     private function filterNestedMultiColumns(&$item, $components, $removeMultiColumn)
     {
+        $multiColumnItems = $this->filterNestedColumns($item['items'], $components, $removeMultiColumn);
+        if ($removeMultiColumn) {
+            $item = $multiColumnItems;
+        } else {
+            $item['items'] = $multiColumnItems;
+        }
+    }
+
+    private function filterNestedColumns($columns, $components, $removeMultiColumn)
+    {
         $filteredColumnItems = [];
-        foreach ($item['items'] as $index => $column) {
+
+        foreach ($columns as $column) {
             $filteredColumn = [];
-            foreach ($column as  $columnItem) {
+
+            foreach ($column as $columnItem) {
                 if ($this->removeNestedComponents($columnItem, $components)) {
                     if ($columnItem['component'] === 'FormMultiColumn') {
                         $this->filterNestedMultiColumns($columnItem, $components, $removeMultiColumn);
@@ -705,16 +717,10 @@ class ScreenTemplate implements TemplateInterface
                     $filteredColumn[] = $columnItem;
                 }
             }
-            if (!$removeMultiColumn) {
-                $filteredColumnItems[] = $filteredColumn;
-            } else {
-                $filteredColumnItems[] = $filteredColumn;
-            }
+
+            $filteredColumnItems[] = $filteredColumn;
         }
-        if (!$removeMultiColumn) {
-            $item['items'] = $filteredColumnItems;
-        } else {
-            $item = $filteredColumnItems;
-        }
+
+        return $filteredColumnItems;
     }
 }
