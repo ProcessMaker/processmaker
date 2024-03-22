@@ -109,7 +109,7 @@
         });
       },
       applyColumns() {
-        this.columns = this.$refs.columnChooserAdapter.currentColumns;
+        this.columns = this.$refs.columnChooserAdapter.modifiedCurrentColumns;
         this.resetFilters();
       },
       resetFilters() {
