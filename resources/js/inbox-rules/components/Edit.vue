@@ -3,38 +3,58 @@
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
       <PMPanelWithCustomHeader 
+        v-if="isViewName(1)"
         class="filters"
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
-            @showColumns="showColumns"
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="newSavedSearchIdFromSelector"
             @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
-            >
+            @showColumns="showColumns"
+            @reset-filters="resetFilters">
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
           v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
           :saved-search-id="savedSearchIdForFilters"
-          :task-id="newTaskId"
-          @count="count = $event"
+          :task-id="taskId"
           :show-column-selector-button="false"
-          @saved-search-data="savedSearchData = $event"
-          >
+          @count="count = $event"
+          @saved-search-data="savedSearchData = $event">
         </InboxRuleFilters>
+      </PMPanelWithCustomHeader>
+
+      <PMPanelWithCustomHeader 
+        v-if="isViewName(2)"
+        class="filters"
+        :title="$t('Step 3:') + ' ' + $t('Enter form data')">
+        <template v-slot:header-right-content>
+          <b-button size="sm" @click="resetData">{{ $t('Reset Data') }}</b-button>
+        </template>
+
+        <InboxRuleFillData
+          ref="inboxRuleFillData"
+          :task-id="taskId"
+          :inbox-rule-data="data"
+          @data="data = $event"
+          @submit="submitButton = $event">
+        </InboxRuleFillData>
+
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
         class="ml-3 actions"
-        :title="$t('Step 2:') + ' ' + $t('Rule Configuration')">
+        :title="rightPanelTitle">
         <InboxRuleEdit 
           :count="count" 
           :inbox-rule="inboxRule"
           :saved-search-data="savedSearchData"
-          :new-task-id="newTaskId"
-          >
+          :task-id="taskId"
+          :data="data"
+          :select-submit-button="submitButton"
+          @view-name="viewName($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -46,13 +66,17 @@
   import InboxRuleEdit from "./InboxRuleEdit.vue";
   import InboxRuleFilters from "./InboxRuleFilters.vue";
   import InboxRuleButtons from "./InboxRuleButtons.vue";
+  import InboxRuleFillData from "./InboxRuleFillData.vue";
+  import IsViewMixin from "./IsViewMixin.js";
   export default {
     components: {
       PMPanelWithCustomHeader,
       InboxRuleEdit,
       InboxRuleFilters,
-      InboxRuleButtons
+      InboxRuleButtons,
+      InboxRuleFillData
     },
+    mixins: [IsViewMixin],
     props: {
       newSavedSearchId: {
         type: Number,
@@ -73,20 +97,31 @@
         inboxRule: null,
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
+        taskId: null,
+        data: {},
+        submitButton: null
       };
     },
     computed: {
+      rightPanelTitle() {
+        if (this.view_name === 1) {
+          return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
+        }
+        if (this.view_name === 2) {
+          return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
+        }
+      },
       savedSearchIdForFilters() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
         if (this.inboxRule) {
-          return this.inboxRule.saved_search_id
+          return this.inboxRule.saved_search_id;
         }
         if (this.newSavedSearchId) {
-          return this.newSavedSearchId
+          return this.newSavedSearchId;
         }
         if (this.newSavedSearchIdFromSelector) {
-          return this.newSavedSearchIdFromSelector
+          return this.newSavedSearchIdFromSelector;
         }
         return null;
       },
@@ -98,16 +133,35 @@
       }
     },
     mounted() {
+      if (this.newTaskId) {
+        this.taskId = this.newTaskId;
+      }
       if (this.ruleId) {
-        window.ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
+        ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
+                  this.data = this.inboxRule.data;
+                  this.taskId = this.inboxRule.process_request_token_id;
                 });
       }
     },
     methods: {
       showColumns() {
         this.$refs.inboxRuleFilters.showColumns();
+      },
+      resetFilters() {
+        this.$refs.inboxRuleFilters.resetFilters();
+      },
+      resetData() {
+        this.data = null;
+        this.$refs.inboxRuleFillData.reload();
+      }
+    },
+    watch: {
+      inboxRule: {
+        deep: true,
+        handler() {
+        }
       }
     }
   };
