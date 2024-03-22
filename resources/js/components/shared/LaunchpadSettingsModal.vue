@@ -1,215 +1,117 @@
 <template>
   <modal
+    id="launchpadSettingsModal"
     ref="my-modal-save"
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Launchpad Settings')"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
-  >
-    <p class="text-info-custom">
-      {{ $t('Here you can personalize how your process will be shown in the process browser') }}
-    </p>
-    <div class="d-flex justify-content-between">
-      <div class="mr-3">
-        <div
-          md="12"
-          class="no-padding"
-        >
-          <div class="d-flex align-items-center w-100 mt-2">
-            <label>{{ $t("Launchpad Carousel") }}</label>
-            <input
-              ref="fileInput"
-              type="file"
-              style="display: none"
-              accept="image/*"
-              @change="handleImageUpload"
-            >
-          </div>
-        </div>
-        <div
-          ref="thumbnailsContainer"
-          class="image-thumbnails-container"
-          @drop="handleDrop"
-          @dragover.prevent
-          @dragstart.prevent="handleDragStart"
-        >
+  > 
+    <div class="modal-content-custom">
+      <p class="text-info-custom">
+        {{ $t('Here you can personalize how your process will be shown in the process browser') }}
+      </p>
+      <div class="d-flex justify-content-between">
+        <div class="mr-3">
           <div
-            v-if="images.length === 0"
             md="12"
-            class="text-center"
+            class="no-padding"
           >
+            <label>{{ $t("Launchpad Carousel") }}</label>
+            <input-image-carousel ref="image-carousel" />
+          </div>
+        </div>
+        <div class="options-launchpad">
+          <label>
+            {{ $t("Launchpad Icon") }}
+          </label>
+          <icon-dropdown ref="icon-dropdown" />
+          <label class="mt-2">{{ $t("Launch Screen") }}</label>
+          <div class="dropdown">
+            <button
+              id="statusDropdownScreen"
+              class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <div class="d-flex align-items-center">
+                <span class="ml-2 custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
+              </div>
+            </button>
             <div
-              class="drag-and-drop-container"
-              @dragover.prevent
+              class="dropdown-menu custom-dropdown"
+              aria-labelledby="statusDropdownScreen"
             >
-              <i class="fas fa-cloud-upload-alt" />
-              <div>
-                <strong>{{ $t("Drop your images here") }}</strong>
-              </div>
-              <div>
-                {{ $t("Supported formats are PNG and JPG. ") }}
-              </div>
-            </div>
-          </div>
-          <b-row v-else>
-            <b-col
-              v-for="(image, index) in images"
-              :key="index"
-              md="6"
-            >
-              <div
-                class="d-flex justify-content-end align-items-end thumbnail"
-                @mouseover="showDeleteIcon(index)"
-                @mouseleave="hideDeleteIcon(index)"
+              <a
+                v-for="(item, index) in dropdownSavedScreen"
+                :key="index"
+                class="dropdown-item"
+                @click="selectScreenOption(item)"
               >
-                <div
-                  v-if="showDeleteIcons[index] || focusIcons[index]"
-                  class="m-1 delete-icon"
-                >
-                  <button
-                    id="popover-button-event"
-                    type="button"
-                    class="btn btn-light p-0 px-1"
-                    @click="focusIcon(index)"
-                  >
-                    <i class="fas fa-trash-alt p-0 custom-color" />
-                  </button>
-                  <b-popover
-                    ref="popover"
-                    :show.sync="focusIcons[index]"
-                    target="popover-button-event"
-                    triggers="focus"
-                    placement="bottom"
-                  >
-                    <div class="p-3">
-                      <p class="text-center">
-                        {{ $t("Do you really want to delete this image?") }}
-                      </p>
-                      <div class="d-flex justify-content-around">
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          @click="unfocusIcon(index)"
-                        >
-                          {{ $t("Cancel") }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-danger"
-                          @click="deleteImage(index)"
-                        >
-                          {{ $t("Delete") }}
-                        </button>
-                      </div>
-                    </div>
-                  </b-popover>
-                </div>
-                <img
-                  v-if="image.url"
-                  :src="image.url"
-                  :alt="$t('No Image')"
-                  class="img-fluid"
-                >
+                {{ item.title || $t('Select Screen') }}
+              </a>
+            </div>
+          </div>
+          <label>{{ $t("Chart") }}</label>
+          <div class="dropdown">
+            <button
+              id="statusDropdown"
+              class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              <div class="d-flex align-items-center">
+                  <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
               </div>
-            </b-col>
-          </b-row>
-          <b-button
-            class="btn-custom-button"
-            @click="openFileInput"
-          >
-            {{ $t("Upload Images") }}
-          </b-button>
-        </div>
-      </div>
-      <div class="options-launchpad">
-        <label class="mt-2">
-          {{ $t("Launchpad Icon") }}
-        </label>
-        <icon-dropdown ref="icon-dropdown" />
-        <label class="mt-2">{{ $t("Launch Screen") }}</label>
-        <div class="dropdown">
-          <button
-            id="statusDropdownScreen"
-            class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <div class="d-flex align-items-center">
-              <span class="ml-2 custom-text">{{ selectedScreen || 'Select Screen' }}</span>
-            </div>
-          </button>
-          <div
-            class="dropdown-menu custom-dropdown"
-            aria-labelledby="statusDropdownScreen"
-          >
-            <a
-              v-for="(item, index) in dropdownSavedScreen"
-              :key="index"
-              class="dropdown-item"
-              @click="selectScreenOption(item)"
+            </button>
+            <div
+              class="dropdown-menu custom-dropdown"
+              aria-labelledby="statusDropdown"
             >
-              {{ item.title || 'Select Screen' }}
-            </a>
-          </div>
-        </div>
-        <label class="mt-2">{{ $t("Chart") }}</label>
-        <div class="dropdown">
-          <button
-            id="statusDropdown"
-            class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-            type="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <div class="d-flex align-items-center">
-              <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
+              <a
+                v-for="(item, index) in dropdownSavedCharts"
+                :key="index"
+                class="dropdown-item"
+                @click="selectOption(item)"
+              >
+                <i class="far fa-chart-bar custom-text" />
+                {{ item.title || 'Select Chart' }}
+              </a>
             </div>
-          </button>
-          <div
-            class="dropdown-menu custom-dropdown"
-            aria-labelledby="statusDropdown"
-          >
-            <a
-              v-for="(item, index) in dropdownSavedCharts"
-              :key="index"
-              class="dropdown-item"
-              @click="selectOption(item)"
-            >
-              <i class="far fa-chart-bar custom-text" />
-              {{ item.title || 'Select Chart' }}
-            </a>
           </div>
         </div>
       </div>
+      <label>
+        {{ $t("Description") }}
+      </label>
+      <input
+        id="additional-details"
+        v-model="processDescription"
+        class="form-control input-custom"
+        type="text"
+        rows="5"
+        :aria-label="$t('Description')"
+      />
+      <span v-if="!processDescription" class="error-message">
+        {{ $t("The description field is required.") }}
+        <br>
+      </span>
     </div>
-    <label class="mt-2">
-      {{ $t("Description") }}
-    </label>
-    <input
-      id="additional-details"
-      v-model="processDescription"
-      class="form-control input-custom"
-      type="text"
-      rows="5"
-      :aria-label="$t('Description')"
-    />
-    <span v-if="!processDescription" class="error-message">
-      {{ $t("The Description field is required.") }}
-      <br>
-    </span>
   </modal>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
 import IconDropdown from "./IconDropdown.vue";
+import InputImageCarousel from "./InputImageCarousel.vue";
 
 export default {
-  components: { Modal, IconDropdown },
+  components: { Modal, IconDropdown, InputImageCarousel },
   props: {
     options: {
       type: Object,
@@ -237,10 +139,7 @@ export default {
   },
   data() {
     return {
-      images: [],
       imagesMedia: [],
-      showDeleteIcons: Array(4).fill(false),
-      focusIcons: Array(4).fill(false),
       list: {},
       subject: "",
       description: "",
@@ -248,7 +147,6 @@ export default {
       selectedSavedChart: "",
       dropdownSavedCharts: [],
       dropdownSavedScreen: [],
-      maxImages: 4,
       processDescription: "",
       processDescriptionInitial: "",
       selectedLaunchpadIcon: "",
@@ -264,9 +162,6 @@ export default {
       dataProcess: {},
     };
   },
-  computed: {
-    
-  },
   mounted() {
     this.retrieveSavedSearchCharts();
     this.retrieveDisplayScreen();
@@ -281,7 +176,6 @@ export default {
      * Get all information related to Launchpad Settings Modal
      */
     getLaunchpadSettings() {
-      this.images = [];
       ProcessMaker.apiClient
         .get(`processes/${this.processId}/media`)
         .then((response) => {
@@ -310,33 +204,16 @@ export default {
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
           mediaArray.forEach((media) => {
-            this.convertImageUrlToBase64(media);
+            this.$refs["image-carousel"].convertImageUrlToBase64(media);
           });
-        });
-    },
-    /**
-     * Converts Image from URL to Base64
-     */
-    convertImageUrlToBase64(media) {
-      fetch(media.original_url)
-        .then((response) => response.blob())
-        .then((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64Data = reader.result;
-            this.images.push({ url: base64Data, uuid: media.uuid });
-          };
-          reader.readAsDataURL(blob);
-        })
-        .catch((error) => {
-          console.error("Error loading image:", error);
+    
+          this.$refs["image-carousel"].setProcessId(this.processId);
         });
     },
     showModal() {
       this.subject = "";
       this.description = "";
       this.errors = "";
-      this.images = [];
       this.getLaunchpadSettings();
       this.$refs["my-modal-save"].show();
     },
@@ -361,69 +238,18 @@ export default {
     },
     cleanTabLaunchpad() {
       this.getProcessDescription();
-      this.images = [];
       this.retrieveSavedSearchCharts();
       this.retrieveDisplayScreen();
+      this.$refs["image-carousel"].cleanCarousel();
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
-    },
-    /**
-     * Method to show trash image
-     */
-    showDeleteIcon(index) {
-      return this.$set(this.showDeleteIcons, index, true);
-    },
-    /**
-     * Method to hide trash image
-     */
-    hideDeleteIcon(index) {
-      return this.$set(this.showDeleteIcons, index, false);
-    },
-    /**
-     * Method to focus trash image
-     */
-    focusIcon(index) {
-      this.focusIcons = Array(4).fill(false);
-      this.$set(this.focusIcons, index, true);
-    },
-    /**
-     * Method to unfocus trash image
-     */
-    unfocusIcon(index) {
-      this.$set(this.focusIcons, index, false);
-    },
-    /**
-     * Method to delete image from carousel container
-     */
-    deleteImage(index) {
-      const { uuid } = this.images[index];
-      this.images.splice(index, 1);
-      this.$set(this.showDeleteIcons, index, false);
-      this.$set(this.focusIcons, index, false);
-
-      // Call API to delete
-      ProcessMaker.apiClient
-        .delete(`processes/${this.processId}/media`, {
-          data: { uuid },
-        })
-        .then((response) => {
-          ProcessMaker.alert(this.$t("The image was deleted"), "success");
-        })
-        .catch((error) => {
-          console.error("Error", error);
-        });
-      const params = {
-        indexImage: index,
-        type: "delete",
-      };
-      ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
     },
     /**
      * Save description field in Process
      */
     saveProcessDescription() {
       if (!this.processDescription) return;
-      this.dataProcess.imagesCarousel = this.images;
+      this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
         saved_chart_title: this.selectedSavedChart,
@@ -494,11 +320,9 @@ export default {
         });
     },
     /**
-     * Initial method to retrieve Saved Search Charts and populate dropdown
-     * Package Collections and Package SavedSearch always go together
+     * Initial method to retrieve Screens and populate dropdown
      */
      retrieveDisplayScreen() {
-      if (!ProcessMaker.packages.includes("package-collections")) return;
       ProcessMaker.apiClient
         .get(
           "screens?page=1&per_page=10&filter=&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY",
@@ -519,13 +343,6 @@ export default {
         .catch((error) => {
           this.dropdownSavedScreen = [];
         });
-    },
-    /**
-     * Adds index info to dragged object
-     */
-    handleDragStart(event, index) {
-      event.dataTransfer.setData("text/plain", index);
-      event.preventDefault();
     },
     /**
      * Method to store initial data from process description field
@@ -559,106 +376,6 @@ export default {
           }
       }
     },
-    /**
-     * Method to add image files to thumbnails container
-     */
-    handleImageUpload(event) {
-      if (this.images.length >= this.maxImages) {
-        // The amount of images allowed was reached.
-        ProcessMaker.alert(
-          this.$t("It is not possible to include more than four images."),
-          "danger",
-        );
-        this.$refs.fileInput.value = "";
-        return;
-      }
-      const { files } = event.target;
-      this.handleImages(files);
-      event.target.value = "";
-    },
-    /**
-     * Method that allows drag elements to the container
-     */
-    handleDragOver(event) {
-      event.preventDefault();
-    },
-    /**
-     * This method handles dragged image files and adds each image to list
-     */
-    handleDrop(event) {
-      event.preventDefault();
-
-      // Checks if event has 'dataTransfer' property
-      if (event.dataTransfer) {
-        const { files } = event.dataTransfer;
-
-        // Checks if 'dataTransfer' has 'files' property
-        if (files && files.length > 0) {
-          if (this.images.length + files.length > this.maxImages) {
-            ProcessMaker.alert(
-              this.$t("It is not possible to include more than four images."),
-              "danger",
-            );
-            return;
-          }
-          this.validateImageExtension(files);
-        }
-      }
-    },
-    /**
-     * Generic Method to manage drag and drop and selected images
-     */
-    handleImages(files) {
-      this.validateImageExtension(files);
-    },
-    /**
-     * Adds an image from drag and drop to image container
-     */
-    handleDroppedImage(event) {
-      const { files } = event.dataTransfer;
-      this.handleImages(files);
-    },
-    /**
-     *  Validates images with png and jpg extensions.
-     */
-    validateImageExtension(files) {
-      Array.from(files).forEach((file) => {
-        if (this.images.length < this.maxImages) {
-          if (this.isValidFileExtension(file.name)) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              this.images.push({
-                file,
-                url: event.target.result,
-                uuid: "",
-              });
-              this.showDeleteIcons.push(false);
-            };
-            reader.readAsDataURL(file);
-          } else {
-            ProcessMaker.alert(
-              this.$t("Only PNG and JPG extensions are allowed."),
-              "danger",
-            );
-          }
-        }
-      });
-    },
-    /**
-     * Validate image extensions
-     */
-    isValidFileExtension(fileName) {
-      const allowedExtensions = [".jpg", ".jpeg", ".png"];
-      return allowedExtensions.includes(
-        fileName.slice(fileName.lastIndexOf(".")).toLowerCase(),
-      );
-    },
-    /**
-     * Method to open a screen for image selection from hard drive
-     */
-    openFileInput() {
-      this.$refs.fileInput.click();
-    },
     launchpadIconSelected(iconData) {
       this.selectedLaunchpadIcon = iconData.value;
       this.selectedLaunchpadIconLabel = iconData.label;
@@ -667,15 +384,21 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="css">
 label {
   color: #556271;
+  margin-bottom: 4px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 22px;
   letter-spacing: 0px;
   text-align: left;
+}
+.image-style {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
 }
 .modal-title div {
   color: #556271;
@@ -689,9 +412,14 @@ label {
 .modal-header {
   align-items: center;
 }
+.modal-footer {
+  margin-top: 0px;
+  padding: 20px 24px;
+}
 .modal-footer .btn-outline-secondary {
   color: #556271;
   background-color: white;
+  margin: 0px;
   width: 90px;
   height: 40px;
   font-family: 'Open Sans', sans-serif;
@@ -710,6 +438,8 @@ label {
   background-color: #6A7888;
   width: 99px;
   height: 40px;
+  margin: 0px;
+  margin-left: 7px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -722,7 +452,7 @@ label {
 }
 .text-info-custom {
   color: #556271;
-  margin-top: 16px;
+  margin-bottom: 33px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
@@ -735,6 +465,7 @@ label {
 }
 .input-custom {
   height: 40px;
+  margin-bottom: 16px;
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
@@ -746,13 +477,31 @@ label {
   height: 204px;
   border-radius: 4px;
   gap: 10px;
-  padding: 0px;
+  padding: 12px;
+}
+.images-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.images-container {
+  display: flex;
+  width: 345px;
+  height: 128px;
+  margin-bottom: 12px;
 }
 .drag-and-drop-container {
-  border: none;
-  border-radius: 5px;
-  margin-top: 0px;
-  color: #2381c8;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.07px;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #6a7888;
+  margin-bottom: 9px
+}
+.drag-and-drop-container i {
+  font-size: 32px;
 }
 .modal-dialog, .modal-content {
   max-width: 727px;
@@ -760,5 +509,140 @@ label {
 }
 .options-launchpad {
   width: 285px;
+}
+.input-file-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6a7888;
+  width: 344px;
+  height: 40px;
+  padding: 10px 0px;
+  background-color: #ebeef2;
+  border: 1px dashed #6a7888;
+  border-radius: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20.43px;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.modal-content-custom {
+  padding: 11px 8px;
+}
+b-row, b-col {
+  margin: 0px;
+  padding: 0px;
+}
+.delete-icon {
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #00000080;
+  
+}
+.delete-icon i {
+  font-size: 24px;
+  color: white;
+}
+.btns-popover {
+  height: 32px;
+  padding: 0px 14px;
+  border-radius: 4px;
+  border: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  margin-left: 11px;
+}
+.btn-delete-image {
+  color: white;
+  background-color: #6a7888;
+}
+.btn-delete-embed {
+  color: white;
+  background-color: #ed4858;
+}
+.btn-cancel-delete {
+  color: #556271;
+  background-color: #d8e0e9;
+}
+.text-delete-embed {
+  color: #556271;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 27px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.popover {
+  max-width: 474px;
+}
+.popover-custom {
+  display: flex;
+  align-items: center;
+  color: #556271;
+  padding: 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+}
+.square-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  font-size: 24px;
+  color: #6a7888;
+  background-color: #f6f9fb;
+  border: 1px solid #CDDDEE;
+}
+.custom-trash-icon {
+  color: #6a7888;
+  font-size: 24px;
+}
+#idDropdownMenuUpload .dropdown-toggle::after {
+    display:none;
+}
+#idDropdownMenuUpload .dropdown-menu.show {
+  width: 229px;
+  padding: 0px;
+}
+#launchpadSettingsModal .dropdown-item {
+  color: #556271;
+  padding: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.popover-embed {
+  padding: 21px;
+  width: 474px;
+}
+.dropdown-style {
+  padding: 9px 12px;
+  color: #556271;
+  border-radius: 4px;
+  border: 1px solid #CDDDEE;
+}
+#launchpadSettingsModal .dropdown-menu.show {
+  width: 285px;
+  padding: 0px;
 }
 </style>
