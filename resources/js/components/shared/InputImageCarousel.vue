@@ -271,7 +271,6 @@ export default {
      * Converts Image from URL to Base64
      */
      convertImageUrlToBase64(media) {
-      this.processId = processId;
       fetch(media.original_url)
         .then((response) => response.blob())
         .then((blob) => {
@@ -496,7 +495,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-
-</style>
