@@ -5,16 +5,17 @@ namespace ProcessMaker\Templates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
+use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
-use Tests\Feature\ImportExport\HelperTrait;
 
 /**
  * Summary of ScreenTemplate
@@ -493,6 +494,7 @@ class ScreenTemplate implements TemplateInterface
         $payload['description'] = $data['description'];
 
         $postOptions = [];
+
         foreach ($payload['export'] as $key => $asset) {
             // Exclude the import of screen categories if the category already exists in the database
             if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
@@ -536,8 +538,43 @@ class ScreenTemplate implements TemplateInterface
         $importingFromTemplate = true;
         $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
         $rootLog = $manifest[$payload['root']]->log;
+        $newScreenId = $rootLog['newId'];
+
+        $this->handleTemplateOptions($data, $newScreenId);
 
         return $rootLog['newId'];
+    }
+
+    public function handleTemplateOptions($data, $screenId)
+    {
+        // Define available options and their corresponding components
+        $availableOptions = ScreenComponents::getComponents();
+
+        $templateOptions = json_decode($data['templateOptions'], true);
+        $newScreen = Screen::findOrFail($screenId);
+
+        if (is_array($templateOptions)) {
+            // Iterate through available options to handle each one
+            foreach ($availableOptions as $option => $components) {
+                // Check if the current options is in the template options
+                if (!in_array($option, $templateOptions)) {
+                    // Remove the option configs/components from the new screen config
+                    switch($option) {
+                        case 'CSS':
+                            $newScreen->custom_css = null;
+                            break;
+                        case 'Fields':
+                        case 'Layout':
+                            $newConfig = ScreenTemplateHelper::removeScreenComponents($newScreen->config, $components);
+                            $newScreen->config = $newConfig;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        $newScreen->save();
     }
 
     public function syncProjectAssets($data)
