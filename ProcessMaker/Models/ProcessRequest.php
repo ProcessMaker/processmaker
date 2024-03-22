@@ -53,6 +53,7 @@ use Throwable;
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
+ * @property ProcessVersion $processVersion
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
  *

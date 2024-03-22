@@ -93,7 +93,7 @@ abstract class BpmnAction implements ShouldQueue
             $instance = $engine->loadProcessRequest($instance);
         } else {
             $processModel = Definitions::find($this->definitionsId);
-            $definitions = $processModel->getDefinitions();
+            $definitions = $processModel->getPublishedVersion()->getDefinitions();
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }
