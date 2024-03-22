@@ -27,7 +27,7 @@
             {{ $t("Launchpad Icon") }}
           </label>
           <icon-dropdown ref="icon-dropdown" />
-          <label class="mt-2">{{ $t("Launch Screen") }}</label>
+          <label>{{ $t("Launch Screen") }}</label>
           <div class="dropdown">
             <button
               id="statusDropdownScreen"
@@ -388,6 +388,7 @@ export default {
 <style lang="css">
 label {
   color: #556271;
+  margin-top: 16px;
   margin-bottom: 4px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
@@ -453,7 +454,7 @@ label {
 }
 .text-info-custom {
   color: #556271;
-  margin-bottom: 33px;
+  margin-bottom: 17px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
