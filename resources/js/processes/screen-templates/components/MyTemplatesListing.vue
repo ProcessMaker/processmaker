@@ -10,7 +10,7 @@
     />
     <div
       v-show="!shouldShowLoader"
-      class="card card-body my-templates-table-card"
+      class="my-templates-table-card"
       data-cy="my-templates-table"
     >
       <filter-table
@@ -114,6 +114,7 @@
         :meta="data.meta"
         data-cy="my-templates-pagination"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
       <pagination
         ref="pagination"

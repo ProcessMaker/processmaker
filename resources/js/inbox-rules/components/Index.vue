@@ -38,4 +38,9 @@
     border-left: 1px solid #dee2e6;
     background-color: white;
   }
+
+  .title-style {
+    font-size: 27px;
+    color: #556271;
+  }
 </style>

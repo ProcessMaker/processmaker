@@ -100,6 +100,7 @@
         <pagination-table
           :meta="data.meta"
           @page-change="changePage"
+          @per-page-change="changePerPage"
           data-cy="template-pagination"
         />
         <pagination

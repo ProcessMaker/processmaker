@@ -109,11 +109,15 @@ class WorkflowServiceProvider extends ServiceProvider
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument($params['process']);
+            $processVersion = $params['process_version'] ?? null;
             if ($engine) {
                 if (!$engine->getJobManager()) {
                     $engine->setJobManager(new TaskSchedulerManager());
                 }
                 $bpmnRepository->setEngine($engine);
+            }
+            if ($processVersion) {
+                $bpmnRepository->setProcessVersion($processVersion);
             }
             $bpmnRepository->getFactory();
             $bpmnRepository->setFactory($repository);
