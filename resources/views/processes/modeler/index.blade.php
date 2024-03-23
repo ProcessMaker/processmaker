@@ -65,7 +65,6 @@ div.main {
   window.ProcessMaker.PMBlockList = @json($pmBlockList);
   window.ProcessMaker.ExternalIntegrationsList = @json($externalIntegrationsList);
   window.ProcessMaker.modeler = {
-    abPublish: false,
     process: @json($process),
     autoSaveDelay: @json($autoSaveDelay),
     xml: @json($process->bpmn),
@@ -93,6 +92,10 @@ div.main {
     isPackageAiInstalled: @json($isPackageAiInstalled),
     isAiGenerated: @json($isAiGenerated),
     runAsUserDefault: @json($runAsUserDefault),
+    abPublish: @json($abPublish),
+    alternative: @json($alternative),
+    startingPoints: @json($startingPoints),
+    resumePoints: @json($resumePoints),
   }
   const warnings = @json($process->warnings);
 
