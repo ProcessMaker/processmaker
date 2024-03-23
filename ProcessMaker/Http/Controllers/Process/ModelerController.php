@@ -49,12 +49,11 @@ class ModelerController extends Controller
         // Get plugin addons for the 'show' action
         $addons = $this->getPluginAddons('show', []);
 
-        // Retrieve custom blade view and alternatives from addons
+        // Retrieve custom blade from addons
         $customBlade = ($addons[0] ?? [])['new-blade'] ?? null;
-        $alternatives = ($addons[0] ?? [])['alternatives'] ?? null;
 
-        // If a custom blade view and alternatives are provided, render the custom view
-        if ($customBlade && $alternatives) {
+        // If a custom blade view is provided, render the custom view
+        if ($customBlade) {
             return view($customBlade, $this->prepareModelerData($manager, $process, $request, 'A'));
         }
 
@@ -79,6 +78,13 @@ class ModelerController extends Controller
      */
     public function prepareModelerData(ModelerManager $manager, Process $process, Request $request, string $alternative)
     {
+        // Initializing variables
+        $processA = $processB = null;
+        $startingPointsA = $startingPointsB = [];
+        $startingPoints = ['A' => [], 'B' => []];
+        $resumePointsA = $resumePointsB = [];
+        $resumePoints = ['A' => [], 'B' => []];
+
         // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
         $externalIntegrationsList = $this->getExternalIntegrationsList();
@@ -112,9 +118,109 @@ class ModelerController extends Controller
 
         // Append notifications to the process
         $process->append('notifications', 'task_notifications');
+
         // Load the alternative if the package is installed
         if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
             $process->load('alternativeInfo');
+
+            // Load the another alternative
+            if ($process->alternative === 'A') {
+                $processAlternative = $process->getLatestVersion('B');
+                if (!is_null($processAlternative)) {
+                    $processB = Process::find($process->id);
+                    $processB->bpmn = $processAlternative->bpmn;
+                }
+                $processA = $process;
+            } else if ($process->alternative === 'B') {
+                $processAlternative = $process->getLatestVersion('A');
+                if (!is_null($processAlternative)) {
+                    $processA = Process::find($process->id);
+                    $processA->bpmn = $processAlternative->bpmn;
+                }
+                $processB = $process;
+            }
+
+            // Force to get updated start events
+            if (!is_null($processA)) {
+                $processA->start_events = $processA->getUpdatedStartEvents();
+            }
+            if (!is_null($processB)) {
+                $processB->start_events = $processB->getUpdatedStartEvents();
+            }
+
+            // Get all starting points
+            if (!empty($processA)) {
+                if (!empty($processA->start_events)) {
+                    foreach ($processA->start_events as $startEvent) {
+                        $startingPointsA[] = [
+                            'id' => $startEvent['id'],
+                            'name' => $startEvent['name'],
+                            'type' => 'startEvent',
+                        ];
+                    }
+                }
+                foreach ($processA->getTasks() as $task) {
+                    $startingPointsA[] = [
+                        'id' => $task['id'],
+                        'name' => $task['name'],
+                        'type' => 'task',
+                    ];
+                }
+            }
+
+            if (!empty($processB)) {
+                if (!empty($processB->start_events)) {
+                    foreach ($processB->start_events as $startEvent) {
+                        $startingPointsB[] = [
+                            'id' => $startEvent['id'],
+                            'name' => $startEvent['name'],
+                            'type' => 'startEvent',
+                        ];
+                    }
+                }
+                foreach ($processB->getTasks() as $task) {
+                    $startingPointsB[] = [
+                        'id' => $task['id'],
+                        'name' => $task['name'],
+                        'type' => 'task',
+                    ];
+                }
+            }
+
+            $startingPoints = [
+                'A' => $startingPointsA,
+                'B' => $startingPointsB,
+            ];
+
+            // Get all resume points
+            if (!empty($processA)) {
+                foreach ($processA->getTasks() as $task) {
+                    if ($task['type'] === 'task' || $task['type'] === 'userTask' || $task['type'] === 'manualTask') {
+                        $resumePointsA[] = [
+                            'id' => $task['id'],
+                            'name' => $task['name'],
+                            'type' => $task['type'],
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($processB)) {
+                foreach ($processB->getTasks() as $task) {
+                    if ($task['type'] === 'task' || $task['type'] === 'userTask' || $task['type'] === 'manualTask') {
+                        $resumePointsB[] = [
+                            'id' => $task['id'],
+                            'name' => $task['name'],
+                            'type' => $task['type'],
+                        ];
+                    }
+                }
+            }
+
+            $resumePoints = [
+                'A' => $resumePointsA,
+                'B' => $resumePointsB,
+            ];
         }
 
         return [
@@ -137,6 +243,9 @@ class ModelerController extends Controller
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
+            'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
+            'startingPoints' => $startingPoints,
+            'resumePoints' => $resumePoints,
         ];
     }
 
