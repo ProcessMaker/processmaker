@@ -41,6 +41,7 @@
         :is="component.type"
         v-for="(component, index) in external"
         :key="`external-${index}`"
+        :ref="`external-${component.id}`"
         :options="component.options"
       />
       <create-template-modal
@@ -264,7 +265,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false, publishedVersion = null) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -272,7 +273,7 @@ export default {
         projects: this.process.projects,
         bpmn: this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
-        alternative: window.ProcessMaker.modeler.draftAlternative || "A",
+        alternative: publishedVersion || window.ProcessMaker.modeler.draftAlternative || "A",
       };
 
       const savedSuccessfully = (response) => {

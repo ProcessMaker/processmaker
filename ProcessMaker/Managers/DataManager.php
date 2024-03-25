@@ -188,6 +188,11 @@ class DataManager
         $data['_request']['startEventId'] = $startEventToken?->element_id;
         $data['_request']['startEventName'] = $startEventToken?->element_name;
 
+        // Magic Variable: _request.alternative
+        if ($request->processVersionAlternative) {
+            $data['_request']['alternative'] = $request->processVersionAlternative;
+        }
+
         return $data;
     }
 }
