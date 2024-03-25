@@ -46,6 +46,7 @@ class Filter
         'in',
         'contains',
         'regex',
+        'starts_with',
     ];
 
     public static function filter(Builder $query, string|array $filterDefinitions)
@@ -152,7 +153,7 @@ class Filter
     private function operator()
     {
         if (!in_array($this->operator, $this->operatorWhitelist)) {
-            abort("Invalid operator: {$this->operator}");
+            abort(422, "Invalid operator: {$this->operator}");
         }
 
         if ($this->operator === 'contains' || $this->operator === 'starts_with') {
