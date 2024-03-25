@@ -158,11 +158,15 @@
           >
           <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
             <span>
-              <i
+              <b-button
                 v-if="!verifyURL('saved-searches')"
-                class="fa fa-eye py-2"
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
                 @click="previewTasks(tooltipRowData)"
-              />
+              >
+                <i class="fas fa-eye"/>
+              </b-button>
             </span>
             <ellipsis-menu
               :actions="actions"
@@ -721,6 +725,12 @@ export default {
   background-color: #1572c2;
   width: 197px;
   height: 40px;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
 }
 </style>
 <style lang="scss" scoped>
