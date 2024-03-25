@@ -191,8 +191,8 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
     >
-      <template v-slot:header="{ close, taskId }">
-        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)"></slot>
+      <template v-slot:header="{ close, screenFilteredTaskData }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
       </template>
     </tasks-preview>
   </div>
@@ -260,6 +260,10 @@ export default {
     additionalIncludes: {
       type: Array,
       default: () => [],
+    },
+    disableRowClick: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -596,7 +600,7 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if (!isPriorityIcon) {
+      if (!isPriorityIcon && !this.disableRowClick) {
         window.location.href = this.openTask(row);
       }
     },

@@ -249,6 +249,7 @@ export default {
     },
   },
   mounted() {
+    this.$on("refresh-menu", this.removeElement);
     if (! this.group) {
       this.orderBy = "group";
       this.fields.push({
@@ -505,11 +506,20 @@ export default {
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
+        if (btn.ui.handler === "addMailServer") {
+          this.$parent.$refs["menu-collapse"].firstTime = false;
+          this.$parent.$refs["menu-collapse"].getMenuGrups();
+        }
       }
+    },
+    removeElement() {
+      this.$parent.$refs["menu-collapse"].firstTime = true;
+      this.$parent.$refs["menu-collapse"].getMenuGrups();
     },
     refresh() {
       this.$refs.table.refresh();
-      this.$emit('refresh');
+      this.$parent.$refs["menu-collapse"].firstTime = false;
+      this.$parent.$refs["menu-collapse"].getMenuGrups();
     },
     formatGroupName(name) {
       return name.toLowerCase().replaceAll(" ", "-");
