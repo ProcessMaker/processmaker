@@ -100,7 +100,6 @@ class TaskController extends Controller
         $task->requestor = $task->processRequest->user;
         $task->draft = $task->draft();
         $element = $task->getDefinition(true);
-        $screenFields = $screenVersion ? $screenVersion->fields->map(fn ($field) => $field->field) : [];
         $screenFields = $screenVersion->screenFilteredFields();
 
         if ($element instanceof ScriptTaskInterface) {
