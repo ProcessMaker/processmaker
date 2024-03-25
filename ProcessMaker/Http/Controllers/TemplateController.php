@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiController;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Templates\ProcessTemplate;
 
@@ -65,5 +66,17 @@ class TemplateController extends Controller
     public function chooseTemplateAssets()
     {
         return view('templates.assets');
+    }
+
+    /**
+     * Get screen export page
+     *
+     * @param ScreenTemplates $screen
+     *
+     * @return object
+     */
+    public function export(ScreenTemplates $screen)
+    {
+        return view('templates.export-screen', compact('screen'));
     }
 }
