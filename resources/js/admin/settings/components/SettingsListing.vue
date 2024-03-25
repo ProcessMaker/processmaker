@@ -1,8 +1,8 @@
 <template>
   <div>
     <div
-      v-if="loading"
-      class="d-flex justify-content-center align-items-center bg-white w-100 h-100 p-5"
+      v-show="loading"
+      class="bg-white w-100 h-100 p-5"
     >
       <data-loading
         :for="/groups\?page/"
