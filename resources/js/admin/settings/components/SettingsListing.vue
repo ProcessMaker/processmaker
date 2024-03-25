@@ -388,7 +388,6 @@ export default {
         this.$nextTick(() => callback(this.settings));
 
         this.loading = false;
-        console.log('termino', this.loading);
       });
     },
     separateSettings(settings) {
