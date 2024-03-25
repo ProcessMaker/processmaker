@@ -131,7 +131,7 @@ class ModelerController extends Controller
                     $processB->bpmn = $processAlternative->bpmn;
                 }
                 $processA = $process;
-            } else if ($process->alternative === 'B') {
+            } elseif ($process->alternative === 'B') {
                 $processAlternative = $process->getLatestVersion('A');
                 if (!is_null($processAlternative)) {
                     $processA = Process::find($process->id);
@@ -228,7 +228,8 @@ class ModelerController extends Controller
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
-            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
+            'isVersionsInstalled' =>
+                PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
             'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
@@ -243,7 +244,8 @@ class ModelerController extends Controller
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
-            'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
+            'abPublish' =>
+                PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
             'startingPoints' => $startingPoints,
             'resumePoints' => $resumePoints,
         ];
