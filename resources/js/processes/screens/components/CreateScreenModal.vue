@@ -40,12 +40,15 @@
               :selected-screen-type="formData.type ? formData.type : 'FORM'"
               @show-template-preview="showPreview"
               @selected-template="handleSelectedTemplate"
+              @selected-default-template="handleSelectedDefaultTemplate"
+              @default-template-type-changed="handleDefaultTemplateType"
             />
           </div>
           <preview-template
             v-if="showTemplatePreview"
             :template="selectedTemplate"
             @hide-template-preview="hidePreview"
+            @template-options-selected="handleSelectedTemplateOptions"
           />
         </b-col>
         <b-col
@@ -238,6 +241,7 @@ export default {
         description: null,
         projects: [],
         templateId: null,
+        templateOptions: JSON.stringify(['CSS', 'Layout', 'Fields']),
       };
     },
     resetErrors() {
@@ -269,9 +273,15 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.formData.templateId != null) {
+      if (this.formData.templateId !== null && this.formData.templateId !== undefined && this.formData.defaultTemplateId !== null) {
         this.handleCreateFromTemplate();
-      } else {
+      } else if (this.formData.defaultTemplateId !== null && this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.templateId === undefined) {
+        this.handleCreateFromBlank();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId !== null) {
+        this.handleCreateFromTemplate();
+      } else if (this.formData.defaultTemplateId === null && this.formData.templateId === null) {
         this.handleCreateFromBlank();
       }
     },
@@ -343,17 +353,31 @@ export default {
         window.location = url;
       }
     },
-    showPreview(template) {
+    showPreview(data) {
       this.showTemplatePreview = true;
-      this.selectedTemplate = template;
+      this.selectedTemplate = data;
+      this.formData.templateId = data.template.id;
     },
     hidePreview() {
       this.showTemplatePreview = false;
       this.selectedTemplate = null;
+      this.formData.templateId = null;
     },
     handleSelectedTemplate(templateId) {
-      this.formData.templateId = templateId;
+      this.formData.templateId =  templateId;
+      this.formData.templateOptions = JSON.stringify(['CSS', 'Layout', 'Fields']);
     },
+    handleSelectedTemplateOptions(options) {
+      this.formData.templateOptions = JSON.stringify(options);
+    },
+    handleSelectedDefaultTemplate(templateId) {
+      this.formData.defaultTemplateId = templateId;
+    },
+    handleDefaultTemplateType(type) {
+      const isPublic = type === "Public Templates" ? 1 : 0;
+      this.formData.is_public = isPublic;
+    },
+
   },
 };
 </script>

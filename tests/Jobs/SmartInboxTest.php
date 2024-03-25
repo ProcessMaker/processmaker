@@ -25,7 +25,9 @@ class SmartInboxTest extends TestCase
             ->once()
             ->with(\Mockery::on(function ($arg) use ($task) {
                 return $arg instanceof ProcessRequestToken && $arg->id === $task->id;
-            }), [$inboxRule]);
+            }), \Mockery::on(function ($arg) use ($inboxRule) {
+                return $arg instanceof InboxRule && $arg->id === $inboxRule->id;
+            }));
 
         SmartInbox::dispatch($task->id);
     }

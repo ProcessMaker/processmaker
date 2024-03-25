@@ -39,11 +39,12 @@ class SettingFactory extends Factory
         }
 
         return [
-            'key' => $this->faker->word(),
+            'key' => $this->faker->unique()->word(),
             'config' => $config,
             'name' => $this->faker->title(),
             'helper' => $this->faker->sentence(),
             'group' => $this->faker->title(),
+            'group_id' => null,
             'format' => $format,
             'hidden' => false,
             'readonly' => false,

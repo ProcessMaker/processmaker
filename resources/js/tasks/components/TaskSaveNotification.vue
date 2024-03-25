@@ -2,9 +2,8 @@
   <div>
     <div
       class="btn text-black text-capitalize cursor-default"
-      :style="{ width: '20px' }"
     >
-      <div class="toolbar-item d-flex justify-content-center align-items-center">
+      <div class="toolbar-item d-flex align-items-center">
         <span>
           <FontAwesomeIcon
             v-if="task.draft"
@@ -13,14 +12,17 @@
             :spin="isLoading"
           />
         </span>
+        <span
+          id="saved-status"
+          class="element-name truncate-text"
+          :style="{
+            maxWidth: `${size}px`
+          }"
+        >
+          {{ task.element_name }}
+        </span>
       </div>
     </div>
-    <a
-      id="saved-status"
-      class="lead text-secondary font-weight-bold"
-    >
-      {{ task.element_name }}
-    </a>
     <b-tooltip
       v-if="task.draft"
       target="saved-status"
@@ -80,6 +82,12 @@ export default {
         return false;
       },
     },
+    size: {
+      type: Number,
+      default() {
+        return 0;
+      },
+    },
   },
   data() {
     return {
@@ -107,6 +115,9 @@ export default {
 
       return this.savedIcon;
     },
+  },
+  mounted() {
+
   },
 };
 </script>
@@ -140,13 +151,24 @@ export default {
   font-size: 16px;
 }
 .auto-save-tooltip .arrow::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    border-width: 0 .4rem .4rem;
-    transform: translateY(3px);
-    border-color: transparent;
-    border-style: solid;
-    border-bottom-color: #FFFFFF;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  border-width: 0 .4rem .4rem;
+  transform: translateY(3px);
+  border-color: transparent;
+  border-style: solid;
+  border-bottom-color: #FFFFFF;
+}
+.element-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #566877;
+  margin-left: 5px;
+}
+.truncate-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
