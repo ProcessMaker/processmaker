@@ -204,7 +204,7 @@
                             @can('view-process-translations')
                                 <div class="tab-pane fade show" :class="{'active': activeTab === 'nav-translations'}" id="nav-translations" ref="nav-translations" role="tabpanel"
                                     aria-labelledby="nav-translations-tab">
-                                    
+
                                     <div class="page-content mb-0" id="processTranslationIndex">
                                         <div id="search-bar" class="search mb-3" vcloak>
                                             <div class="d-flex flex-column flex-md-row">
@@ -231,10 +231,10 @@
                                                         @endcan
                                                         @can('create-process-translations')
                                                             <div class="mb-3 mb-md-0 ml-md-2">
-                                                                <a href="#" 
-                                                                    aria-label="{{ __('New Translation') }}" 
-                                                                    id="new_translation" 
-                                                                    class="btn btn-primary w-100" 
+                                                                <a href="#"
+                                                                    aria-label="{{ __('New Translation') }}"
+                                                                    id="new_translation"
+                                                                    class="btn btn-primary w-100"
                                                                     @click="newTranslation"
                                                                     data-test="translation-create-button">
                                                                     {{__('+ Translation')}}
@@ -245,7 +245,7 @@
                                                 @endcan
                                             </div>
                                         </div>
-                                    
+
                                         <div class="container-fluid">
                                             <process-translation-listing
                                                 ref="translationsListing"
@@ -263,8 +263,8 @@
                                         {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                                     </div>
 
-                                    <create-process-translation-modal 
-                                        ref="createProcessTranslationModal" 
+                                    <create-process-translation-modal
+                                        ref="createProcessTranslationModal"
                                         :process-id="{{ $process->id }}"
                                         :permission="{{ \Auth::user()->hasPermissionsFor('process-translations') }}"
                                         process-name="{{ $process->name }}"
@@ -447,171 +447,174 @@
 @section('js')
     <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
-      test = new Vue({
-        el: '#editProcess',
-        mixins: addons,
-        data() {
-          return {
-            formData: @json($process),
-            assignedProjects: @json($assignedProjects),
-            selectedProjects: '',
-            dataGroups: [],
-            value: [],
-            errors: {
-              name: null,
-              description: null,
-              category: null,
-              status: null,
-              screen: null
-            },
-            screens: [],
-            filterTranslations: "",
-            canCancel: @json($canCancel),
-            canEditData: @json($canEditData),
-            screenRequestDetail: @json($screenRequestDetail),
-            screenCancel: @json($screenCancel),
-            activeUsersAndGroups: @json($list),
-            pause_timer_start_events: false,
-            manager: @json($process->manager),
-            translatedLanguages: [],
-            editTranslation: null,
-            activeTab: "",
-          }
-        },
-        mounted() {
-            this.activeTab = "";
-            if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
-                this.canCancel.push(this.processManagerOption());
-            }
-
-            this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
-            
-            let path = new URL(location.href).href;
-            let target = path.split('#');
-
-            if (target[1] !== undefined) {
-                this.activeTab = target[1];
-            }
-            
-        },
-        computed: {
-            activeUsersAndGroupsWithManager() {
-                const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
-                usersAndGroups[0]['items'].unshift(this.processManagerOption());
-                return usersAndGroups;
-            }
-        },
-        watch: {
-            selectedProjects: {
-                handler() {
-                    this.formData.projects = this.selectedProjects;
-                }
-            }
-        },
-        methods: {
-          activateTab(event) {
-            window.location.href = event.target.href;
-          },
-          loadScreens(filter) {
-            ProcessMaker.apiClient
-              .get("screens?order_direction=asc&status=active&type=DISPLAY" + (typeof filter === 'string' ? '&filter=' + filter : ''))
-              .then(response => {
-                this.screens = response.data.data;
-              });
-          },
-          resetErrors() {
-            this.errors = Object.assign({}, {
-              name: null,
-              description: null,
-              category: null,
-              projects: null,
-              status: null,
-              screen: null
-            });
-          },
-          onClose() {
-            window.location.href = '/processes';
-          },
-          onTranslatedLanguagesChanged(translatedLanguages) {
-            this.translatedLanguages = translatedLanguages;
-            this.$refs.createProcessTranslationModal.getAvailableLanguages();
-          },
-          onEditTranslation(editTranslation) {
-            this.editTranslation = editTranslation;
-            this.$bvModal.show("createProcessTranslation");
-          },
-          onCreateProcessTranslationClosed() {
-            this.editTranslation = null;
-          },
-          onTranslatingLanguage() {
-            this.$refs.translationsListing.fetch();
-            this.$refs.translationsListing.fetchPending();
-          },
-          onLanguageSaved() {
-            this.$refs.translationsListing.fetch();
-            this.$refs.translationsListing.fetchPending();
-          },
-          formatAssigneePermissions(data) {
-            let response = {};
-
-            response['users'] = [];
-            response['groups'] = [];
-            response['pseudousers'] = [];
-
-            data.forEach(item => {
-              if (item.type == 'user') {
-                response['users'].push(parseInt(item.id));
-              }
-
-              if (item.type == 'group') {
-                response['groups'].push(parseInt(item.id));
-              }
-
-              if (item.type === 'pseudouser') {
-                response['pseudousers'].push(item.id);
-              }
-            });
-            return response;
-          },
-          formatValueScreen(item) {
-            return (item && item.id) ? item.id : null
-          },
-          onUpdate() {
-            this.resetErrors();
-            let that = this;
-            this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
-            this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
-            this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
-            this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
-            this.formData.manager_id = this.formatValueScreen(this.manager);
-            ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
-              .then(response => {
-                ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
-                that.onClose();
-              })
-              .catch(error => {
-                //define how display errors
-                if (error.response.status && error.response.status === 422) {
-                  // Validation error
-                  that.errors = error.response.data.errors;
-                }
-              });
-          },
-          processManagerOption() {
+        window.addEventListener("load", function() {
+            test = new Vue({
+            el: '#editProcess',
+            mixins: addons,
+            data() {
             return {
-                type: 'pseudouser',
-                id: 'manager',
-                fullname: this.$t('Process Manager')
-            };
-          },
-          newTranslation() {
-            this.$bvModal.show("createProcessTranslation");
-          },
-          importTranslation() {
-            window.location = `/processes/${this.formData.id}/import/translation`
-          },
-        },
-      });
+                formData: @json($process),
+                assignedProjects: @json($assignedProjects),
+                selectedProjects: '',
+                dataGroups: [],
+                value: [],
+                errors: {
+                name: null,
+                description: null,
+                category: null,
+                status: null,
+                screen: null
+                },
+                screens: [],
+                filterTranslations: "",
+                canCancel: @json($canCancel),
+                canEditData: @json($canEditData),
+                screenRequestDetail: @json($screenRequestDetail),
+                screenCancel: @json($screenCancel),
+                activeUsersAndGroups: @json($list),
+                pause_timer_start_events: false,
+                manager: @json($process->manager),
+                translatedLanguages: [],
+                editTranslation: null,
+                activeTab: "",
+            }
+            },
+            mounted() {
+                this.activeTab = "";
+                if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
+                    this.canCancel.push(this.processManagerOption());
+                }
+
+                this.selectedProjects = this.assignedProjects.length > 0 ? this.assignedProjects.map(project => project.id) : null;
+
+                let path = new URL(location.href).href;
+                let target = path.split('#');
+
+                if (target[1] !== undefined) {
+                    this.activeTab = target[1];
+                }
+
+            },
+            computed: {
+                activeUsersAndGroupsWithManager() {
+                    const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
+                    usersAndGroups[0]['items'].unshift(this.processManagerOption());
+                    return usersAndGroups;
+                }
+            },
+            watch: {
+                selectedProjects: {
+                    handler() {
+                        this.formData.projects = this.selectedProjects;
+                    }
+                }
+            },
+            methods: {
+            activateTab(event) {
+                window.location.href = event.target.href;
+            },
+            loadScreens(filter) {
+                ProcessMaker.apiClient
+                .get("screens?order_direction=asc&status=active&type=DISPLAY" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+                .then(response => {
+                    this.screens = response.data.data;
+                });
+            },
+            resetErrors() {
+                this.errors = Object.assign({}, {
+                name: null,
+                description: null,
+                category: null,
+                projects: null,
+                status: null,
+                screen: null
+                });
+            },
+            onClose() {
+                window.location.href = '/processes';
+            },
+            onTranslatedLanguagesChanged(translatedLanguages) {
+                this.translatedLanguages = translatedLanguages;
+                this.$refs.createProcessTranslationModal.getAvailableLanguages();
+            },
+            onEditTranslation(editTranslation) {
+                this.editTranslation = editTranslation;
+                this.$bvModal.show("createProcessTranslation");
+            },
+            onCreateProcessTranslationClosed() {
+                this.editTranslation = null;
+            },
+            onTranslatingLanguage() {
+                this.$refs.translationsListing.fetch();
+                this.$refs.translationsListing.fetchPending();
+            },
+            onLanguageSaved() {
+                this.$refs.translationsListing.fetch();
+                this.$refs.translationsListing.fetchPending();
+            },
+            formatAssigneePermissions(data) {
+                let response = {};
+
+                response['users'] = [];
+                response['groups'] = [];
+                response['pseudousers'] = [];
+
+                data.forEach(item => {
+                if (item.type == 'user') {
+                    response['users'].push(parseInt(item.id));
+                }
+
+                if (item.type == 'group') {
+                    response['groups'].push(parseInt(item.id));
+                }
+
+                if (item.type === 'pseudouser') {
+                    response['pseudousers'].push(item.id);
+                }
+                });
+                return response;
+            },
+            formatValueScreen(item) {
+                return (item && item.id) ? item.id : null
+            },
+            onUpdate() {
+                this.resetErrors();
+                let that = this;
+                this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
+                this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
+                this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
+                this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
+                this.formData.manager_id = this.formatValueScreen(this.manager);
+                ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
+                .then(response => {
+                    ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
+                    that.onClose();
+                })
+                .catch(error => {
+                    //define how display errors
+                    if (error.response.status && error.response.status === 422) {
+                    // Validation error
+                    that.errors = error.response.data.errors;
+                    }
+                });
+            },
+            processManagerOption() {
+                return {
+                    type: 'pseudouser',
+                    id: 'manager',
+                    fullname: this.$t('Process Manager')
+                };
+            },
+            newTranslation() {
+                this.$bvModal.show("createProcessTranslation");
+            },
+            importTranslation() {
+                window.location = `/processes/${this.formData.id}/import/translation`
+            },
+            },
+        });
+    })
+
     </script>
 @endsection
 
@@ -641,7 +644,7 @@
         #table-notifications td.action {
             text-align: center;
         }
-        
+
         #table-notifications td.notify {
             width: 215px;
         }
