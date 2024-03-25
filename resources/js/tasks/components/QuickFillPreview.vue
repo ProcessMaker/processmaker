@@ -41,7 +41,7 @@
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
         >
-          <template v-slot:preview-header="{ close, task, tooltipRowData }">
+          <template v-slot:preview-header="{ close, screenFilteredTaskData }">
             <div style="width: 92%;">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%;">
@@ -51,7 +51,7 @@
                     class="button-task mr-2"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
-                    @click="buttonThisData(task)"
+                    @click="buttonThisData(screenFilteredTaskData)"
                   >
                   <img
                     src="../../../img/smartinbox-images/Stroke.svg"
@@ -64,7 +64,7 @@
                     class="button-task mr-2"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
-                    @click="buttonThisDataFromFullTask(tooltipRowData)"
+                    @click="buttonThisDataFromFullTask(screenFilteredTaskData)"
                   >
                   <img
                     src="../../../img/smartinbox-images/Stroke.svg"
@@ -84,18 +84,6 @@
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
-            <b-button
-              v-if="propFromButton !== 'fullTask'"
-              class="icon-button"
-              :aria-label="$t('Quick fill')"
-              variant="light"
-              @click="buttonThisData(tooltipRowData)"
-            >
-              <img
-                src="../../../img/smartinbox-images/Vector.svg"
-                :alt="$t('No Image')"
-              />
-            </b-button>
             <b-button
               v-if="propFromButton !== 'fullTask'"
               class="icon-button"
@@ -196,14 +184,13 @@ export default {
     cancelAndGoBack() {
       window.location.href = `/tasks/${this.task.id}/edit`;
     },
-    buttonThisData(tooltipRowData) {
-      this.$emit("quick-fill-data", tooltipRowData.screen_filtered_data);
+    buttonThisData(data) {
+      this.$emit("quick-fill-data", data);
       this.$emit("close");
     },
-    buttonThisDataFromFullTask(tooltipRowData) {
-      const draftData = _.omitBy(tooltipRowData.screenFilteredTaskData, (value, key) => key.startsWith("_"));
+    buttonThisDataFromFullTask(data) {
       return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, draftData)
+        .put("drafts/" + this.task.id, data)
         .then((response) => {
           this.task.draft = _.merge(
             {},

@@ -191,8 +191,8 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
     >
-      <template v-slot:header="{ close, taskId }">
-        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)" v-bind:tooltipRowData="tooltipRowData"></slot>
+      <template v-slot:header="{ close, screenFilteredTaskData }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
       </template>
     </tasks-preview>
   </div>
