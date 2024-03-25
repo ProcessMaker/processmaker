@@ -13,6 +13,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\ImportSettings;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\SettingsMenus;
 use Throwable;
 
 class SettingController extends Controller
@@ -24,6 +25,7 @@ class SettingController extends Controller
         'name',
         'helper',
         'group',
+        'group_id',
         'format',
         'created_at',
         'updated_at',
@@ -72,6 +74,35 @@ class SettingController extends Controller
 
         $response = $query->orderBy($orderBy, $orderDirection)
             ->paginate($request->input('per_page', 1000));
+
+        return new ApiCollection($response);
+    }
+
+    public function menuGroup(Request $request)
+    {
+        $query = SettingsMenus::query();
+
+        $query->select('id', 'menu_group', 'ui', 'menu_group_order');
+
+        $orderBy = 'menu_group';
+        $orderDirection = 'ASC';
+
+        if ($request->has('order_by')) {
+            $orderBy = $request->input('order_by');
+        }
+
+        if ($request->has('order_direction')) {
+            $orderDirection = $request->input('order_direction');
+        }
+
+        $response = $query->orderBy($orderBy, $orderDirection)
+            ->paginate($request->input('per_page', 10));
+
+        $response->map(function ($item) {
+            $item->groups = Setting::groupsByMenu($item->id);
+
+            return $item;
+        });
 
         return new ApiCollection($response);
     }

@@ -35,14 +35,30 @@ class Filter
 
     public array $or;
 
-    public static function filter(Builder $query, string $filterDefinitions)
+    public array $operatorWhitelist = [
+        '=',
+        '!=',
+        '>',
+        '<',
+        '>=',
+        '<=',
+        'between',
+        'in',
+        'contains',
+        'regex',
+        'starts_with',
+    ];
+
+    public static function filter(Builder $query, string|array $filterDefinitions)
     {
-        $filterDefinitions = json_decode($filterDefinitions, true);
-        if (!isset($filterDefinitions)) {
-            // If the value is incorrect, we return a filter that produces an empty result.
-            $default = '{"subject":{"type":"Field","value":"id"},"operator":"=","value":""}';
-            $filterDefinitions = [json_decode($default, true)];
+        if (is_string($filterDefinitions)) {
+            $filterDefinitions = json_decode($filterDefinitions, true);
         }
+
+        if (!$filterDefinitions) {
+            return;
+        }
+
         $query->where(function ($query) use ($filterDefinitions) {
             foreach ($filterDefinitions as $filter) {
                 (new self($filter))->addToQuery($query);
@@ -78,6 +94,8 @@ class Filter
             $this->filterByProcessId($query);
         } elseif ($this->subjectType === self::TYPE_RELATIONSHIP) {
             $this->filterByRelationship($query);
+        } elseif ($this->isJsonData() && $query->getModel() instanceof ProcessRequestToken) {
+            $this->filterByRequestData($query);
         } else {
             $this->applyQueryBuilderMethod($query);
         }
@@ -100,6 +118,8 @@ class Filter
                 $this->subject(),
                 $this->value(),
             );
+        } elseif ($this->isJsonData()) {
+            $this->manuallyAddJsonWhere($query);
         } else {
             $query->$method(
                 $this->subject(),
@@ -109,8 +129,33 @@ class Filter
         }
     }
 
+    /**
+     * We must do this manually because Laravel bindings cast
+     * floats/doubles to strings and that wont work to compare
+     * json values
+     *
+     * @param [type] $query
+     * @return void
+     */
+    private function manuallyAddJsonWhere($query)
+    {
+        $parts = explode('.', $this->subjectValue);
+        array_shift($parts);
+        $selector = implode('"."', $parts);
+        $operator = $this->operator();
+        $value = $this->value();
+        if (!is_numeric($value)) {
+            $value = \DB::connection()->getPdo()->quote($value);
+        }
+        $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
+    }
+
     private function operator()
     {
+        if (!in_array($this->operator, $this->operatorWhitelist)) {
+            abort(422, "Invalid operator: {$this->operator}");
+        }
+
         if ($this->operator === 'contains' || $this->operator === 'starts_with') {
             return 'like';
         }
@@ -263,6 +308,13 @@ class Filter
     {
         $relationshipName = $this->relationshipSubjectTypeParts()[0];
         $query->whereHas($relationshipName, function ($rel) {
+            $this->applyQueryBuilderMethod($rel);
+        });
+    }
+
+    private function filterByRequestData(Builder $query)
+    {
+        $query->whereHas('processRequest', function ($rel) {
             $this->applyQueryBuilderMethod($rel);
         });
     }

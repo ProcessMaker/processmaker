@@ -40,7 +40,6 @@
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
-          :additionalIncludes="['screenFilteredData']"
         >
           <template v-slot:preview-header="{ close, task, tooltipRowData }">
             <div style="width: 92%;">
@@ -132,6 +131,21 @@ export default {
       taskData: {},
       pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.task.process_id})`,
       quickFilter: null,
+      filter: {
+        order: { by: 'id', direction: 'desc' },
+        filters: [
+          {
+            subject: { type: "Field", value: "process_id" },
+            operator: "=",
+            value: this.task.process_id,
+          },
+          {
+            subject: { type: "Field", value: "element_id" },
+            operator: "=",
+            value: this.task.element_id,
+          },
+        ],
+      },
       columns: [
         {
           label: "Case #",
@@ -187,7 +201,7 @@ export default {
       this.$emit("close");
     },
     buttonThisDataFromFullTask(tooltipRowData) {
-      const draftData = _.omitBy(tooltipRowData.screen_filtered_data, (value, key) => key.startsWith("_"));
+      const draftData = _.omitBy(tooltipRowData.screenFilteredTaskData, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
         .put("drafts/" + this.task.id, draftData)
         .then((response) => {
@@ -203,8 +217,6 @@ export default {
           console.error("Error", error);
         })
         
-    },
-    buttonThisDataPreviewFromFullTask(tooltipRowData) {
     },
   },
 };

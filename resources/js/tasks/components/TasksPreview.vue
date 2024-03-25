@@ -8,7 +8,7 @@
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:taskId="task.id">
+            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData">
               <b-button-group>
                 <b-button
                   class="arrow-button"
@@ -114,20 +114,18 @@
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
-              id="tasksFrame1"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
-              @load="frameLoaded()"
+              @load="frameLoaded('tasksFrame1')"
             />
             <b-embed
               v-if="showFrame2"
               ref="tasksFrame2"
-              id="tasksFrame2"
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
-              @load="frameLoaded()"
+              @load="frameLoaded('tasksFrame2')"
             />
 
             <task-loading
@@ -182,15 +180,30 @@ export default {
     },
   },
   mounted() {
-    window.addEventListener('dataUpdated', (event) => {
-      this.formData = event.detail;
-      this.handleAutosave();
+    this.receiveEvent("dataUpdated", (data) => {
+      this.formData = data;
+      if (this.userHasInteracted) {
+        this.handleAutosave();
+      }
     });
+
+    this.receiveEvent('userHasInteracted', () => {
+      this.userHasInteracted = true;
+    });
+    
     this.$root.$on('pane-size', (value) => {
       this.size = value;
     });
     this.screenWidthPx = window.innerWidth;
     window.addEventListener('resize', this.updateScreenWidthPx);
+  },
+  computed: {
+    iframe1ContentWindow() {
+      return this.$refs["tasksFrame1"].firstChild.contentWindow;
+    },
+    iframe2ContentWindow() {
+      return this.$refs["tasksFrame2"].firstChild.contentWindow;
+    },
   },
   methods: {
     fillWithQuickFillData(data) {
@@ -205,15 +218,19 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        document
-        .getElementById("tasksFrame1")
-        .contentWindow.dispatchEvent(event);
+        this.iframe1ContentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        document
-        .getElementById("tasksFrame2")
-        .contentWindow.dispatchEvent(event);
+        this.iframe2ContentWindow.dispatchEvent(event);
       }
+    },
+    receiveEvent(name, callback) {
+      window.addEventListener(name, (event) => {
+        if (event.detail.event_parent_id !== this._uid) {
+          return;
+        }
+        callback(event.detail.data);
+      });
     },
     autosaveApiCall() {
       this.options.is_loading = true;
