@@ -32,15 +32,15 @@
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="filter"
-          :additionalIncludes="['screenFilteredData']"
+          :disable-row-click="true"
         >
-          <template v-slot:preview-header="{ close, task }">
+          <template v-slot:preview-header="{ close, screenFilteredTaskData }">
             <div>
               <b-button
                   class="mr-2"
                   variant="primary"
                   :aria-label="$t('Use This Task Data')"
-                  @click="buttonThisData(task)"
+                  @click="buttonThisData(screenFilteredTaskData)"
                 >
                   {{ $t('Use This Task Data') }}
                 </b-button>
@@ -54,17 +54,6 @@
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
-            <b-button
-              class="icon-button"
-              :aria-label="$t('Quick fill')"
-              variant="light"
-              @click="buttonThisData(tooltipRowData)"
-            >
-              <img
-                src="../../../img/smartinbox-images/Vector.svg"
-                :alt="$t('No Image')"
-              />
-            </b-button>
             <b-button
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
@@ -86,18 +75,21 @@ export default {
     return {
       taskData: {},
       processID: 27,
-      filter: [
-        {
-          subject: { type: "Field", value: "process_id" },
-          operator: "=",
-          value: this.task.process_id,
-        },
-        {
-          subject: { type: "Field", value: "element_id" },
-          operator: "=",
-          value: this.task.element_id,
-        },
-      ],
+      filter: {
+        order: { by: 'id', direction: 'desc' },
+        filters: [
+          {
+            subject: { type: "Field", value: "process_id" },
+            operator: "=",
+            value: this.task.process_id,
+          },
+          {
+            subject: { type: "Field", value: "element_id" },
+            operator: "=",
+            value: this.task.element_id,
+          },
+        ],
+      },
       pmql: '(user_id = 1 and status="Completed")',
       columns: [
         {
@@ -134,8 +126,8 @@ export default {
   },
   methods: {
     selected(taskData) {},
-    buttonThisData(tooltipRowData) {
-      this.$emit("quick-fill-data", tooltipRowData.screen_filtered_data);
+    buttonThisData(data) {
+      this.$emit("quick-fill-data", data);
       this.$emit("close");
     },
     buttonPreviewThisData(tooltipRowData) {

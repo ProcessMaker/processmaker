@@ -28,7 +28,11 @@ trait ProcessTrait
     public function getDefinitions($forceParse = false, $engine = null)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
-            $options = ['process' => $this instanceof ProcessVersion ? $this->process : $this];
+            $version = $this instanceof ProcessVersion ? $this : null;
+            $options = [
+                'process' => $this instanceof ProcessVersion ? $this->process : $this,
+                'process_version' => $version,
+            ];
             !$engine ?: $options['engine'] = $engine;
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
