@@ -10,6 +10,7 @@ use ProcessMaker\Http\Kernel as HttpKernel;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 
+ini_set("memory_limit", -1);
 /*
 |--------------------------------------------------------------------------
 | Create The Application

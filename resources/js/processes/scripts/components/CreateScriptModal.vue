@@ -99,7 +99,7 @@
               >
                 <p class="closed">
                   {{ $t('Advanced Options') }}
-                  <i class="fas fa-angle-double-down" />
+                  <i class="fas fa-angle-double-down px-2" />
                 </p>
                 <p class="opened">
                   {{ $t('Less Options') }}
