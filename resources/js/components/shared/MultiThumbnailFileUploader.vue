@@ -266,7 +266,7 @@ export default {
         },
     },
     mounted() {
-        this.images = this.value;
+        this.images = this.value ? this.value : [];
     }
 }
 </script>
