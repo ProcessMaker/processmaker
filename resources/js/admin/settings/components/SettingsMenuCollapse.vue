@@ -67,7 +67,6 @@ export default {
       firstTime: true,
       collapsedMenus: {},
       oldMenuGroups: [],
-      refreshing: false,
       changeEmailServers: false,
     };
   },
@@ -83,7 +82,7 @@ export default {
           if (this.firstTime) {
             this.selectFirstItem();
           }
-          if (this.refreshing && this.changeEmailServers) {
+          if (this.changeEmailServers) {
             this.checkChangeEmailServer();
           }
         });
@@ -115,7 +114,6 @@ export default {
     },
     refresh() {
       this.oldMenuGroups = this.menuGroups;
-      this.refreshing = true;
       this.getMenuGrups();
     },
     orderGroupAlphabetic(groups) {

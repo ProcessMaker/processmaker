@@ -502,7 +502,6 @@ export default {
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
-        console.log(btn.ui.handler);
         if (btn.ui.handler === "addMailServer") {
           this.$parent.$refs["menu-collapse"].changeEmailServers = true;
         }
