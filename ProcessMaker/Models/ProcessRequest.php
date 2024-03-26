@@ -19,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Query\Expression;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\ForUserScope;
@@ -747,6 +748,23 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     }
 
     /**
+     * PMQL value alias for the alternative field in the process version
+     *
+     * @param string value
+     * @param ProcessMaker\Query\Expression expression
+     *
+     * @return callable
+     */
+    public function valueAliasAlternative(string $value, Expression $expression): callable
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('processVersion', function ($query) use ($expression, $value) {
+                $query->where('alternative', $expression->operator, $value);
+            });
+        };
+    }
+
+    /**
      * Get the process version used by this request
      *
      * @return ProcessVersion
@@ -1030,5 +1048,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->where('category_type', ProcessCategory::class)
             ->whereIn('category_id', $systemCategories)
             ->exists();
+    }
+
+    public function getProcessVersionAlternativeAttribute(): string | null
+    {
+        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            return $this->processVersion?->alternative;
+        }
+
+        return null;
     }
 }

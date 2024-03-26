@@ -166,7 +166,9 @@ class ProcessRequestController extends Controller
                 $response = $query->orderBy(
                     str_ireplace('.', '->', $request->input('order_by', 'name')),
                     $request->input('order_direction', 'ASC')
-                )->select('process_requests.*')
+                )
+                ->select('process_requests.*')
+                ->withAggregate('processVersion', 'alternative')
                 ->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
