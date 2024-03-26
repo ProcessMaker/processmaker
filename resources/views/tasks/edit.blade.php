@@ -188,7 +188,22 @@
                                   <i class="fas fa-plus"></i> {{ __('Create Rule') }}
                                   </button>
                                 </div>
-                                <div class="col-6"></div>
+                                <div class="col-6">
+                                  <template>
+                                    <button
+                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      type="button"
+                                      v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
+                                      class="btn btn-block button-actions"
+                                      @click="showQuickFill"
+                                    >
+                                    <img
+                                    src="../../img/smartinbox-images/fill.svg"
+                                    :alt="$t('No Image')"
+                                  /> {{__('Quick Fill')}}
+                                    </button>
+                                  </template>
+                                </div>
                               </div>
                             </li>
                             <li class="list-group-item">
@@ -561,6 +576,9 @@
           // Reassign methods
           show () {
             this.showReassignment = true;
+          },
+          showQuickFill () {
+            this.redirect(`/tasks/${this.task.id}/edit/quickfill`);
           },
           cancelReassign () {
             this.showReassignment = false;
