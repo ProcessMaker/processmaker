@@ -27,7 +27,6 @@
         <tasks-list
           ref="taskList"
           class="custom-table-class"
-          :disable-tooltip="true"
           :columns="columns"
           @selected="selected"
           :pmql="pmql"

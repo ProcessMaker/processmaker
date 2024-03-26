@@ -265,6 +265,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disableRuleTooltip: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -613,7 +617,7 @@ export default {
 
       let elementHeight = 36;
 
-      this.isTooltipVisible = true;
+      this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
