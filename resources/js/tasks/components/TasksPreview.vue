@@ -349,7 +349,7 @@ export default {
   margin-right: 10px;
 }
 .button-priority {
-    background-color: #FEF2F3;
-    color: #C56363;
+  background-color: #FEF2F3;
+  color: #C56363;
 }
 </style>

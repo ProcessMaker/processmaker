@@ -31,9 +31,38 @@
         class="filters"
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
-          <b-button size="sm" @click="resetData">{{ $t('Reset Data') }}</b-button>
-        </template>
+          <div class="custom-button-container">
+            <!-- <b-button 
+            size="sm" 
+            @click="resetData">{{ $t('Reset Data') }}
+            </b-button> -->
+            <button
+              type="button"
+              class="button-actions"
+              v-b-tooltip.hover title="Erase Draft"
+              @click="eraseDraft()"
+            >
+              <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+              {{ $t('Clear Task') }}
+            </button>
+            <button
+              type="button"
+              v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
+              class="button-actions"
+              @click="showQuickFillPreview = true"
+            >
+            <img
+            src="/img/smartinbox-images/fill.svg"
+            :alt="$t('No Image')"
+            /> {{ $t('Quick Fill') }}
+            </button>
+          </div>
 
+            
+              
+            
+        </template>
+<splitpane-container v-if="showQuickFillPreview" :size="93">
         <InboxRuleFillData
           ref="inboxRuleFillData"
           :task-id="taskId"
@@ -41,7 +70,17 @@
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
-
+        <!-- <div>
+          <quick-fill-preview
+                class="quick-fill-preview"
+                :task="data"
+                :prop-from-button ="'inboxRules'"
+                :prop-columns="columns"
+                :prop-filters="filter"
+                @close="showQuickFillPreview = false"
+              ></quick-fill-preview>
+        </div> -->
+</splitpane-container>
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
@@ -68,13 +107,17 @@
   import InboxRuleButtons from "./InboxRuleButtons.vue";
   import InboxRuleFillData from "./InboxRuleFillData.vue";
   import IsViewMixin from "./IsViewMixin.js";
+  import QuickFillPreview from "../../tasks/components/QuickFillPreview.vue";
+  import SplitpaneContainer from "../../tasks/components/SplitpaneContainer.vue";
   export default {
     components: {
       PMPanelWithCustomHeader,
       InboxRuleEdit,
       InboxRuleFilters,
       InboxRuleButtons,
-      InboxRuleFillData
+      InboxRuleFillData,
+      QuickFillPreview,
+      SplitpaneContainer,
     },
     mixins: [IsViewMixin],
     props: {
@@ -93,13 +136,59 @@
     },
     data() {
       return {
+        showQuickFillPreview: false,
         count: 0,
         inboxRule: null,
         newSavedSearchIdFromSelector: null,
         savedSearchData: {},
         taskId: null,
         data: {},
-        submitButton: null
+        submitButton: null,
+        filter: {
+          order: { by: 'id', direction: 'desc' },
+          filters: [
+            {
+              subject: { type: "Field", value: "process_id" },
+              operator: "=",
+              value: 305,
+            },
+            {
+              subject: { type: "Field", value: "element_id" },
+              operator: "=",
+              value: "node_2",
+            },
+          ],
+        },
+        columns: [
+          {
+            label: "Case #",
+            field: "case_number",
+            filter_subject: {
+              type: "Relationship",
+              value: "processRequest.case_number",
+            },
+            order_column: "process_requests.case_number",
+          },
+          {
+            label: "Case title",
+            field: "case_title",
+            name: "__slot:case_number",
+            filter_subject: {
+              type: "Relationship",
+              value: "processRequest.case_title",
+            },
+            order_column: "process_requests.case_title",
+          },
+          {
+            label: "Completed",
+            field: "completed_at",
+            format: "datetime",
+            filter_subject: {
+              type: "Field",
+              value: "completed_at",
+            },
+          }
+        ],
       };
     },
     computed: {
@@ -146,6 +235,29 @@
       }
     },
     methods: {
+      // fillWithQuickFillData(data) {
+      //   const message = this.$t('Task Filled succesfully');
+      //   this.sendEvent("fillData", data);
+      //   this.showUseThisTask = false;
+      //   ProcessMaker.alert(message, 'success');
+      // },
+      sendEvent(name, data)
+      {
+        const event = new CustomEvent(name, {
+          detail: data
+        });
+        if(this.showFrame1) {
+          this.iframe1ContentWindow.dispatchEvent(event);
+        }
+        if(this.showFrame2) {
+          this.iframe2ContentWindow.dispatchEvent(event);
+        }
+      },
+      showQuickFill () {
+        //this.redirect(`/tasks/${this.taskId}/edit/quickfill`);
+        //window.location.href = 
+
+      },
       showColumns() {
         this.$refs.inboxRuleFilters.showColumns();
       },
@@ -174,5 +286,30 @@
   }
   .actions {
     width: 400px;
+  }
+  .button-actions {
+    color: #556271;
+    text-transform: capitalize;
+    font-family: Open Sans;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    border: 1px solid #CDDDEE;
+    border-radius: 4px;
+    box-shadow: 0px 0px 3px 0px #0000001a;
+    background-color: white;
+  }
+  .button-actions:hover {
+    color: #556271;
+    background-color: #f3f5f8;
+  }
+  .custom-button-container {
+    display: inline-block;
+    padding: 0px;
+    justify-content: center;
+    align-items: center;
+    vertical-align: unset;
   }
 </style>
