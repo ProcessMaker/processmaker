@@ -1,7 +1,9 @@
 <template>
+<splitpane-container v-if="propQuickFill" :size="50">
   <div>
     <b-embed :src="linkTasks" @load="loaded()" ref="preview" /> 
   </div>
+  </splitpane-container>
 </template>
 
 
@@ -15,6 +17,10 @@
       inboxRuleData: {
         type: Object,
         default: null
+      },
+      propQuickFill: {
+        type: Boolean,
+        default: false
       }
     },
     data() {

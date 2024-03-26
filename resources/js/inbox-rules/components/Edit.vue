@@ -62,11 +62,12 @@
               
             
         </template>
-<splitpane-container v-if="showQuickFillPreview" :size="93">
+
         <InboxRuleFillData
           ref="inboxRuleFillData"
           :task-id="taskId"
           :inbox-rule-data="data"
+          :prop-quick-fill="showQuickFillPreview"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
@@ -80,7 +81,7 @@
                 @close="showQuickFillPreview = false"
               ></quick-fill-preview>
         </div> -->
-</splitpane-container>
+
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
