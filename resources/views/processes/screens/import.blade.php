@@ -75,7 +75,7 @@
                 </li>
             </ul>
             <div slot="modal-footer" class="w-100 text-right">
-                <button 
+                <button
                     type="button"
                     class="btn btn-secondary ml-2"
                     @click="onCancel"
