@@ -217,7 +217,7 @@ export default {
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
           eventType === "modeler-save" ? false : null,
-          publishedVersion,
+          "",
         );
       });
 
@@ -252,14 +252,14 @@ export default {
      *
      * @param {string} publishedVersion
      */
-    saveProcessDescription(publishedVersion) {
+    saveProcessDescription() {
       if (!this.processDescription) return;
 
       ProcessMaker.apiClient
         .put(`processes/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
-          alternative: publishedVersion,
+          launchpad_properties: this.dataProcess.launchpad_properties,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
