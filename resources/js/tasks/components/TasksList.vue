@@ -407,6 +407,7 @@ export default {
     formatActiveTask(row) {
       return `
       <a href="${this.openTask(row)}"
+        data-cy="active-task-data"
         class="text-nowrap">
         ${row.element_name}
       </a>`;
