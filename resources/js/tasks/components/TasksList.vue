@@ -190,6 +190,7 @@
       v-if="!verifyURL('saved-searches')"
       ref="preview"
       @mark-selected-row="markSelectedRow"
+      :tooltip-button="tooltipFromButton"
     >
       <template v-slot:header="{ close, screenFilteredTaskData }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
@@ -273,6 +274,7 @@ export default {
   },
   data() {
     return {
+      tooltipFromButton: "",
       selectedRow: 0,
       actions: [
         {
@@ -532,6 +534,7 @@ export default {
       return link;
     },
     previewTasks(info, size = null) {
+      this.tooltipFromButton = size;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },

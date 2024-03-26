@@ -1,6 +1,7 @@
 const PreviewMixin = {
   data() {
     return {
+      tooltipFromButton: "",
       showPreview: false,
       showRight: true,
       linkTasks1: "",

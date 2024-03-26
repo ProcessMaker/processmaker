@@ -110,7 +110,7 @@
               </div>
             </slot>
           </div>
-          <div class="frame-container">
+          <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -162,6 +162,7 @@ import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
+  props: ["tooltipButton"],
   watch: {
     task: {
       deep: true,
@@ -281,6 +282,11 @@ export default {
 .frame-container {
   display: grid;
   height: 70vh;
+}
+.frame-container-full {
+  display: grid;
+  height: 70vh;
+  width: 93%
 }
 .embed-responsive,
 .load-frame {
