@@ -284,7 +284,7 @@ export default {
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
       this.shouldDisplayNoDataMessage = false;
       this.$nextTick(() => {
-        this.$emit('refresh-all');
+        this.refresh();
       });
     });
   },
@@ -407,11 +407,7 @@ export default {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
-            if (_.get(setting, 'ui.refreshOnSave')) {
-              this.$emit('refresh-all');
-            } else {
-              this.refresh();
-            }
+            this.refresh();
           }
         }).finally(() => {
           this.savingSetting = null;
