@@ -2164,5 +2164,9 @@
   "Select a saved search above.": "Select a saved search above.",
   "Select the Load a saved search control above.": "Select the Load a saved search control above.",
   "Select the <b>Load a saved search</b> control above.": "Select the <b>Load a saved search</b> control above.",
-  "No saved searches available": "No saved searches available"
+  "No saved searches available": "No saved searches available",
+  "Inbox rules empty": "Inbox rules empty",
+  "You haven't set up any Inbox Rules yet": "You haven't set up any Inbox Rules yet",
+  "Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.": "Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.",
+  "Create an Inbox Rule Now": "Create an Inbox Rule Now"
 }

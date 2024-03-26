@@ -28,8 +28,6 @@ import PmqlInput from "./components/shared/PmqlInput.vue";
 import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
-import PaginationTable from "./components/shared/PaginationTable.vue";
-import { FilterTableBodyMixin } from "./components/shared";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
@@ -95,7 +93,6 @@ window.Vue.component("pmql-input", PmqlInput);
 window.Vue.component("data-tree-toggle", DataTreeToggle);
 window.Vue.component("tree-view", TreeView);
 window.Vue.component("filter-table", FilterTable);
-window.Vue.component("pagination-table", PaginationTable);
 
 let translationsLoaded = false;
 const mdates = JSON.parse(
@@ -105,7 +102,6 @@ const mdates = JSON.parse(
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) });
 Vue.mixin(AccessibilityMixin);
-Vue.mixin(FilterTableBodyMixin);
 
 window.ProcessMaker = {
   i18n: i18next,
