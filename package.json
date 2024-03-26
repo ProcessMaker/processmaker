@@ -1,7 +1,7 @@
 {
     "name": "@processmaker/processmaker",
     "version": "4.9.3+nightly-20240322",
-    "description": "ProcessMaker 4",
+    "description": "ProcessMaker 4 Nightly",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
     "homepage": "https://github.com/ProcessMaker/processmaker",
