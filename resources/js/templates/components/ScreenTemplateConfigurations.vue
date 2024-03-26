@@ -7,7 +7,7 @@
                 :description="$t('The template name must be unique.')"
                 class="mb-3"
                 :state="errorState('name', errors)"
-                :invalid-feedback="errorMessage('name')"
+                :invalid-feedback="errorMessage('name', errors)"
                 required
             >
                 <b-form-input v-model="template.name" id="name-text"></b-form-input>
@@ -18,7 +18,7 @@
                 label-for="description-text"
                 class="mb-3"
                 :state="errorState('description', errors)"
-                :invalid-feedback="errorMessage('description')"
+                :invalid-feedback="errorMessage('description', errors)"
                 required
             >
                 <b-form-textarea v-model="template.description" id="description-text"></b-form-textarea>
@@ -59,7 +59,7 @@
                 label-for="version-text"
                 class="mb-3"
                 :state="errorState('version', errors)"
-                :invalid-feedback="errorMessage('version')"
+                :invalid-feedback="errorMessage('version', errors)"
                 required
             >
                 <b-form-input v-model="template.version" id="version-text"></b-form-input>
@@ -90,7 +90,7 @@ import ScreenTypeDropdown from "../../processes/screens/components/ScreenTypeDro
 export default {
     components: {CategorySelect, MultiThumbnailFileUploader, ScreenTypeDropdown},
     mixins: [FormErrorsMixin],
-    props: ['templateData', 'permission', 'screenTypes'],
+    props: ['templateData', 'permission', 'screenTypes', 'responseErrors'],
     data() {
         return {
             template: this.templateData,
@@ -108,7 +108,16 @@ export default {
             handler() {
                 this.$emit('updated', this.template);
             }
+        },
+        responseErrors: {
+            deep: true,
+            handler() {
+                console.log("responseErrors", this.responseErrors);
+                this.errors = this.responseErrors;
+                console.log("errors", this.errors)
+            }
         }
+
     },
     methods: {
         handleThumbnails(images) {

@@ -6,7 +6,7 @@
             :description="$t('The template name must be unique.')"
             class="mb-3"
             :state="errorState('name', errors)"
-            :invalid-feedback="errorMessage('name')"
+            :invalid-feedback="errorMessage('name', errors)"
             required
         >
             <b-form-input v-model="template.name" id="name-text"></b-form-input>
@@ -17,7 +17,7 @@
             label-for="description-text"
             class="mb-3"
             :state="errorState('description', errors)"
-            :invalid-feedback="errorMessage('description')"
+            :invalid-feedback="errorMessage('description', errors)"
             required
         >
             <b-form-textarea v-model="template.description" id="description-text"></b-form-textarea>
@@ -28,7 +28,7 @@
             label-for="version-text"
             class="mb-3"
             :state="errorState('version', errors)"
-            :invalid-feedback="errorMessage('version')"
+            :invalid-feedback="errorMessage('version', errors)"
             required
         >
             <b-form-input v-model="template.version" id="version-text"></b-form-input>
@@ -49,7 +49,7 @@ import CategorySelect from "../../components/shared/CategorySelect.vue";
 export default {
     components: {CategorySelect},
     mixins: [FormErrorsMixin],
-    props: ['templateData', 'permission'],
+    props: ['templateData', 'permission', 'responseErrors'],
     data() {
         return {
             template: this.templateData,
@@ -61,6 +61,12 @@ export default {
             deep: true,
             handler() {
                 this.$emit('updated', this.template);
+            }
+        },
+        responseErrors: {
+            deep: true,
+            handler() {
+                this.errors = this.responseErrors;
             }
         }
     },
