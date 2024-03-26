@@ -54,14 +54,25 @@
             window.location = '{{ route("screens.index") }}';
           },
           onExport() {
-            console.log(this.screenId);
-            ProcessMaker.apiClient.get('export/manifest/screen-template/' + this.screenId )
+            ProcessMaker.apiClient.post(`export/screen-template/download/${this.screenId}`)
               .then(response => {
-                window.location = response.data.url;
-                ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
+                const jsonData = JSON.stringify(response.data);
+                const blob = new Blob([jsonData], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+
+                // Create a link and trigger the download
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', response.data.name);
+                document.body.appendChild(link);
+                link.click();
+    
+                // Clean up by removing the link and revoking the Blob URL
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                ProcessMaker.alert(this.$t('The Screen Template was exported.'), 'success');
               })
               .catch(error => {
-                console.log('error', error);
                 ProcessMaker.alert(error.response.data.message, 'danger');
               });
           }
