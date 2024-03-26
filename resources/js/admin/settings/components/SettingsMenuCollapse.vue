@@ -68,6 +68,7 @@ export default {
       collapsedMenus: {},
       oldMenuGroups: [],
       refreshing: false,
+      changeEmailServers: false,
     };
   },
   mounted() {
@@ -81,8 +82,8 @@ export default {
           this.checkCollapedMenus();
           if (this.firstTime) {
             this.selectFirstItem();
-          } 
-          if (this.refreshing) {
+          }
+          if (this.refreshing && this.changeEmailServers) {
             this.checkChangeEmailServer();
           }
         });
@@ -98,15 +99,18 @@ export default {
     checkChangeEmailServer() {
       const oldEmailMenu = this.oldMenuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
       const newEmailMenu = this.menuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
+      // Check if a Email Server was addded
       if (oldEmailMenu.length < newEmailMenu.length) {
         const newGroup = newEmailMenu.filter((group) => !oldEmailMenu.some((oldGroup) => group.id === oldGroup.id));
         if (newGroup[0].id.includes("Email Server")) {
           this.selectItem(newGroup[0]);
         }
       }
+      // Check if a Email Server was deleted
       if (oldEmailMenu.length > newEmailMenu.length) {
         this.selectFirstItem();
       }
+      this.changeEmailServers = false;
       this.refreshing = false;
     },
     refresh() {
