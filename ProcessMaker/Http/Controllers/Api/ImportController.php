@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ImportV2;
+use ProcessMaker\Models\ScreenTemplates;
 
 class ImportController extends Controller
 {
@@ -101,6 +102,20 @@ class ImportController extends Controller
         TemplateCreated::dispatch($payload);
 
         return response()->json([], 200);
+    }
+
+    public function importScreen(Request $request)
+    {
+        $jsonData = $request->file('file')->get();
+        $payload = json_decode($jsonData, true);
+
+        $importer = new Importer($payload, new Options(['mode' => 'copy']));
+        $manifest = $importer->doImport();
+
+        // // Call Event to store Template Changes in Log
+        // TemplateCreated::dispatch($payload);
+
+        return $manifest;
     }
 
     private function handlePasswordDecrypt(Request $request, array $payload)

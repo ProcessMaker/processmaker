@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Import Screen')}}
+    {{__('Import Screen Template')}}
 @endsection
 
 @section('sidebar')
@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
       __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Import') => null,
+        __('Import Screen Template') => null,
     ]])
 @endsection
 @section('content')
@@ -21,11 +21,11 @@
             <div class="col">
                 <div class="card text-center">
                     <div class="card-header bg-light text-left">
-                        <h5>{{__('Import Screen')}}</h5>
+                        <h5>{{__('Import Screen Template')}}</h5>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title" v-if="!fileName">
-                          {{__('You are about to import a Screen.')}}
+                          {{__('You are about to import a Screen Template.')}}
                         </h5>
                         <h5 class="card-title" v-else>
                           {{__('You are about to import ')}} @{{ fileName }}
@@ -106,7 +106,6 @@
             this.uploaded = true;
             this.submitted = false;
             this.fileName = this.file.name;
-            console.log(this.file);
           },
           reload() {
             window.location.reload();
@@ -121,7 +120,7 @@
               return
             }
             this.submitted = true;
-            ProcessMaker.apiClient.post('/screens/import',
+            ProcessMaker.apiClient.post('import-screen',
               formData,
               {
                 headers: {
@@ -129,12 +128,13 @@
                 }
               }
             ).then(response => {
-              if (!response.data.status) {
-                ProcessMaker.alert(this.$t('Unable to import the screen.'), 'danger');
+            console.log('Response', response);
+              if (!response.status) {
+                ProcessMaker.alert(this.$t('Unable to import the screen template.'), 'danger');
                 return;
               }
               this.options = response.data.status;
-              let message = this.$t('The screen was imported.');
+              let message = this.$t('The screen template was imported.');
               let variant = 'success';
               for (let item in this.options) {
                 if (!this.options[item].success) {
@@ -148,7 +148,7 @@
               .catch(error => {
                 this.submitted = false;
                 ProcessMaker.alert(
-                  this.$t('Unable to import the screen.') +
+                  this.$t('Unable to import the screen template.') +
                   (error.response.data.message ? ': ' + error.response.data.message : ''),
                   'danger'
                   );

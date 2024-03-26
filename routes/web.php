@@ -163,7 +163,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('template/assets', [TemplateController::class, 'chooseTemplateAssets'])->name('templates.assets');
     Route::get('modeler/templates/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization', 'can:edit-process-templates');
     Route::get('screen-template/{screen}/export', [TemplateController::class, 'export'])->name('screens.export')->middleware('can:export-screens');
-
+    Route::get('screen-template/import', [TemplateController::class, 'importScreen'])->name('screens.importScreen')->middleware('can:import-screens');
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {
         return response()->view('errors.404', [], 404);

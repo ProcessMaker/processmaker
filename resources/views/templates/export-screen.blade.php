@@ -26,7 +26,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to export a Screen Template.')}}</h5>
                         <h6>"{{$screen->name}}"</h6>
-                        <p class="card-text">{{__('All the configurations of the screen template will be exported.')}}</p>
+                        <p class="card-text">
+                            {{__('All the configurations of the screen template will be exported.')}}
+                        </p>
                     </div>
                     <div class="card-footer bg-light" align="right">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
@@ -70,6 +72,7 @@
                 // Clean up by removing the link and revoking the Blob URL
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
+
                 ProcessMaker.alert(this.$t('The Screen Template was exported.'), 'success');
               })
               .catch(error => {

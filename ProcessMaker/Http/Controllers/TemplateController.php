@@ -79,4 +79,14 @@ class TemplateController extends Controller
     {
         return view('templates.export-screen', compact('screen'));
     }
+
+    /**
+     * Get page import
+     *
+     * @param ScreenTemplates $screen
+     */
+    public function importScreen(ScreenTemplates $screen)
+    {
+        return view('templates.import-screen');
+    }
 }
