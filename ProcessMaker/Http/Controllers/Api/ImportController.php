@@ -109,11 +109,20 @@ class ImportController extends Controller
         $jsonData = $request->file('file')->get();
         $payload = json_decode($jsonData, true);
 
-        $importer = new Importer($payload, new Options(['mode' => 'copy']));
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+            ];
+        }
+
+        $options = new Options($postOptions);
+
+        $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
 
         // // Call Event to store Template Changes in Log
-        // TemplateCreated::dispatch($payload);
+        TemplateCreated::dispatch($payload);
 
         return $manifest;
     }

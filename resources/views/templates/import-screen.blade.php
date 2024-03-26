@@ -128,7 +128,6 @@
                 }
               }
             ).then(response => {
-            console.log('Response', response);
               if (!response.status) {
                 ProcessMaker.alert(this.$t('Unable to import the screen template.'), 'danger');
                 return;
@@ -136,14 +135,8 @@
               this.options = response.data.status;
               let message = this.$t('The screen template was imported.');
               let variant = 'success';
-              for (let item in this.options) {
-                if (!this.options[item].success) {
-                  message = this.$t('The screen was imported, but with errors.');
-                  variant = 'warning'
-                }
-              }
               ProcessMaker.alert(message, variant);
-              this.$refs.responseImport.show();
+              window.location = '{{ route("screens.index") }}';
             })
               .catch(error => {
                 this.submitted = false;
