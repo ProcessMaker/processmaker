@@ -193,6 +193,17 @@ class TemplateController extends Controller
         return $this->template->publishTemplate($type, $request);
     }
 
+    /**
+     * Delete media from the template
+     *
+     * @param  Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteMediaImages(string $type, Request $request)
+    {
+        return $this->template->deleteMediaImages($type, $request);
+    }
+
     private function validateImportedFile($content, $request)
     {
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
