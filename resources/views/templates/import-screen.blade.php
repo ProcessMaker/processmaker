@@ -40,7 +40,7 @@
                             aria-label="{{__('select file')}}">
                         <button
                             type="button"
-                            @click="$refs.file.click()" 
+                            @click="$refs.file.click()"
                             class="btn btn-secondary ml-2"
                             data-cy="button-browse"
                             >
@@ -49,7 +49,7 @@
                         </button>
                     </div>
                     <div class="card-footer bg-light text-right">
-                        <button 
+                        <button
                           type="button"
                           class="btn btn-outline-secondary"
                           @click="onCancel"
@@ -75,7 +75,7 @@
                 </li>
             </ul>
             <div slot="modal-footer" class="w-100 text-right">
-                <button 
+                <button
                     type="button"
                     class="btn btn-secondary ml-2"
                     @click="onCancel"

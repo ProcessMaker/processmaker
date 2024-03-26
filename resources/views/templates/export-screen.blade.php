@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col">
                 <div class="card text-center">
-                    <div class="card-header bg-light" align="left">
+                    <div class="card-header bg-light text-left">
                         <h5>{{__('Export Screen Template')}}</h5>
                     </div>
                     <div class="card-body">
@@ -30,7 +30,7 @@
                             {{__('All the configurations of the screen template will be exported.')}}
                         </p>
                     </div>
-                    <div class="card-footer bg-light" align="right">
+                    <div class="card-footer bg-light text-right">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{__('Cancel')}}
                         </button>

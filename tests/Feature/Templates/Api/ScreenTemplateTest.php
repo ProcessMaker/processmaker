@@ -176,11 +176,12 @@ class ScreenTemplateTest extends TestCase
         $screenTemplate->refresh();
         $this->assertEquals(0, $screenTemplate->is_public);
     }
-    
+
     public function testShowScreenTemplate()
     {
         // Create screen template
-        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template']);
+        $name = 'Test Screen Template';
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => $name]);
 
         // Make API call to show screen template
         $route = route('api.template.show', ['screen', $screenTemplate->id]);
@@ -189,7 +190,7 @@ class ScreenTemplateTest extends TestCase
 
         // Assert that our database has the screen template and the editing screen for that screen we created
         $editingScreen = Screen::find($response->json('id'));
-        $screenTemplate = ScreenTemplates::where('name', 'Test Screen Template')->first();
+        $screenTemplate = ScreenTemplates::where('name', $name)->first();
 
         $this->assertEquals($editingScreen->uuid, $screenTemplate->editing_screen_uuid);
         $this->assertDatabaseHas('screens', ['title' => $editingScreen->title]);
