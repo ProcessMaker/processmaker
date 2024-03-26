@@ -69,7 +69,8 @@
                         </div>
                     </b-popover>
                 </div>
-                <img v-if="image.url" :src="image.url" :alt="$t('No Image')" class="img-fluid">
+                <img v-if="image && image.url" :src="image.url ? image.url : ''" :alt="image?.name" class="img-fluid">
+                <img v-else-if="image && typeof image === 'string'" :src="image" :alt="$t('Image')" class="img-fluid">
             </div>
         </b-col>
         <b-col v-if="images.length === 0" md="12" class="text-center">
@@ -95,7 +96,7 @@
 export default {
     components: {},
     mixins: [],
-    props: ["label"],
+    props: ["label", "value", "modelType", "modelId"],
     data() {
         return {
             images: [],
@@ -198,7 +199,7 @@ export default {
             /**
          * Method to delete image from carousel container
          */
-            deleteImage(index) {
+        deleteImage(index) {
             const { uuid } = this.images[index];
             this.images.splice(index, 1);
             this.$set(this.showDeleteIcons, index, false);
@@ -206,7 +207,7 @@ export default {
 
             // Call API to delete
             window.ProcessMaker.apiClient
-            .delete(`processes/${this.processId}/media`, {
+            .delete(`${this.modelType}/${this.modelId}/media`, {
                 data: { uuid },
             })
             .then((response) => {
@@ -264,5 +265,8 @@ export default {
             );
         },
     },
+    mounted() {
+        this.images = this.value;
+    }
 }
 </script>
