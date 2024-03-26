@@ -153,10 +153,6 @@ trait HasScreenFields
      */
     public function screenFilteredFields()
     {
-        return $this->fields->filter(function ($column) {
-            // Do not include submit buttons here. They
-            // will be captured separately.
-            return !$column->isSubmitButton;
-        })->pluck('field');
+        return $this->fields->pluck('field');
     }
 }
