@@ -140,6 +140,7 @@
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
+                  this.submitButton = this.inboxRule.submit_button;
                   this.data = this.inboxRule.data;
                   this.taskId = this.inboxRule.process_request_token_id;
                 });
