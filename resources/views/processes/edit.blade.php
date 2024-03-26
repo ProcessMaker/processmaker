@@ -613,7 +613,7 @@
                 },
                 },
             });
-        }
+        });
 
     </script>
 @endsection
