@@ -34,11 +34,6 @@ export default {
           sortable: true,
           direction: "none",
         },
-        {
-          name: "__slot:actions",
-          field: "actions",
-          width: 60,
-        },
       ],
     };
   },
