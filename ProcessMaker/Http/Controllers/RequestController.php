@@ -90,6 +90,7 @@ class RequestController extends Controller
             }
         }
 
+
         $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
                 ->where('commentable_id', $request->id)
                 ->where('body', 'like', '%{{' . \Auth::user()->id . '}}%')
