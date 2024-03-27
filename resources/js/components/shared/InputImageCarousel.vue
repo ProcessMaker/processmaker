@@ -445,13 +445,12 @@ export default {
       this.notURL = false;
     },
     isValidURL(urlString) {
-      let url;
       try {
-        url = new URL(urlString);
+        const url = new URL(urlString);
+        return url.protocol === "http:" || url.protocol === "https:";
       } catch (error) {
         return false;
       }
-      return url.protocol === "http:" || url.protocol === "https:";
     },
     deleteEmbedMedia(index) {
       this.embedUrls[index] = '';

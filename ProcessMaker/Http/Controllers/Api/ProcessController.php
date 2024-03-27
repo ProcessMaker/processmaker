@@ -42,7 +42,7 @@ use Throwable;
 
 class ProcessController extends Controller
 {
-    const CAROUSEL_FILE_TYPES = [
+    const CAROUSEL_TYPES = [
         'IMAGE' => 'image',
         'EMBED' => 'embed'
     ];
@@ -1718,14 +1718,14 @@ class ProcessController extends Controller
                 if (is_string($image['url']) && !empty($image['url'])) {
                     if (!$process->media()->where('collection_name', 'images_carousel')
                     ->where('uuid', $image['uuid'])->exists()) {
-                        if ($image['type'] === self::CAROUSEL_FILE_TYPES['IMAGE']) {
+                        if ($image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
                             $process
                             ->addMediaFromBase64($image['url'])
                             ->withCustomProperties(['type' => $image['type']])
                             ->toMediaCollection('images_carousel');
                         }
-                        if ($image['type'] === self::CAROUSEL_FILE_TYPES['EMBED']) {
-                            $fakeFile = File::image('photo.jpg');
+                        if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
+                            $fakeFile =  File::image('photo.jpg');
                             $process
                             ->addMedia($fakeFile)
                             ->withCustomProperties([
