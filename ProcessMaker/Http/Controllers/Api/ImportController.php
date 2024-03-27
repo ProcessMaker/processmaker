@@ -106,6 +106,7 @@ class ImportController extends Controller
 
     public function importScreenTemplate(Request $request)
     {
+        $request->validate(['file' => 'required|file|mimes:json']);
         $jsonData = $request->file('file')->get();
         $payload = json_decode($jsonData, true);
 
