@@ -44,7 +44,7 @@ jobs:
         run: |
             RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
             echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
-            echo K8S_BRANCH
+            echo $K8S_BRANCH
       #- name: Clone repo K8S
       #  run: |
       #    echo "IMAGE: ${{ env.IMAGE }}"
