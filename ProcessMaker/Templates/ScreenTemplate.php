@@ -17,6 +17,7 @@ use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Summary of ScreenTemplate
@@ -289,12 +290,13 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateConfigs($request) : JsonResponse
     {
-        $id = (int) $request->id;
-        $template = ScreenTemplates::where('id', $id)->firstOrFail();
-        $template->fill($request->except('id'));
-        $template->user_id = Auth::user()->id;
-
         try {
+            $id = (int) $request->id;
+            $template = ScreenTemplates::where('id', $id)->firstOrFail();
+            $this->syncTemplateMedia($template, $request->template_media);
+            $template->fill($request->except('id'));
+            $template->user_id = Auth::user()->id;
+
             $template->saveOrFail();
 
             return response()->json();
@@ -625,6 +627,50 @@ class ScreenTemplate implements TemplateInterface
                     ]);
                 }
             }
+        }
+    }
+
+    private function syncTemplateMedia($template, $media)
+    {
+        // Get the UUIDs of updated media
+        $updatedTemplateMediaUuids = $this->getMediaUuids($media);
+
+        // Delete media that is missing from the request media
+        $this->deleteMissingMedia($template, $updatedTemplateMediaUuids);
+
+        // Get the UUIDs of existing media associated with the template
+        $existingMediaUuids = $this->getMediaUuids($template->template_media);
+
+        // Add new media that is not already associated with the template
+        $this->addNewMedia($template, $media, $existingMediaUuids);
+    }
+
+    private function getMediaUuids($media)
+    {
+        return array_map(function ($obj) {
+            return $obj['uuid'];
+        }, $media);
+    }
+
+    private function deleteMissingMedia($template, $updatedTemplateMediaUuids)
+    {
+        $result = array_filter($template->template_media, function ($obj) use ($updatedTemplateMediaUuids) {
+            return !in_array($obj['uuid'], $updatedTemplateMediaUuids);
+        });
+
+        foreach ($result as $media) {
+            Media::where('uuid', $media['uuid'])->delete();
+        }
+    }
+
+    private function addNewMedia($template, $media, $existingMediaUuids)
+    {
+        $result = array_filter($media, function ($obj) use ($existingMediaUuids) {
+            return !in_array($obj['uuid'], $existingMediaUuids);
+        });
+
+        foreach ($result as $media) {
+            $template->addMediaFromBase64($media['url'])->toMediaCollection($template->media_collection);
         }
     }
 }
