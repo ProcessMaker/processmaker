@@ -118,7 +118,7 @@ jobs:
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
-            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise
+            helm install --timeout 60m -f template-instance.yaml ci-$deploy processmaker/enterprise
             #Add cert
             sed -i "s/{{instance}}/ci-$deploy/" template-cert.yaml
             sed -i "s/{{tls-crt}}/${{ secrets.TLS_CRT }}/" template-cert.yaml
@@ -128,7 +128,7 @@ jobs:
             echo "Bouncing Instance  ";
             sed -i "s/{{instance}}/ci-$deploy/g" template-bounce.yaml
             sed -i "s/{{current_datetime}}/$current_datetime/g" template-bounce.yaml
-            helm upgrade --timeout 20m ci-$deploy processmaker/enterprise --version 2.1.0          
+            helm upgrade --timeout 60m ci-$deploy processmaker/enterprise --version 2.1.0          
             kubectl apply -f template-bounce.yaml
           fi
           export INSTANCE_URL=https://ci-$deploy$DOM_EKS

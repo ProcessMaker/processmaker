@@ -1,63 +1,104 @@
 <template>
   <div class="pl-3">
-    <div class="main-container">
-      <div class="button-container">
-        <b-button
-          class="btn-back-quick-fill"
-          variant="link"
-          @click="$emit('close')"
-        >
-          <i class="fas fa-arrow-left" />
-        </b-button>
-        <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
-        <b-button
-          class="close-button"
-          variant="link"
-          @click="$emit('close')"
-        >
-          <i class="fas fa-times" />
-        </b-button>
-      </div>
+    <div>
+          <div v-if="propFromButton === 'fullTask'" class="header-container">
+            <span class="quick-fill-text-full">{{ $t("Quick Fill") }}</span>
+            <b-button
+            class="close-go-back-button"
+            @click="cancelAndGoBack()"
+          >
+          {{ $t('Cancel And Go Back') }}
+          </b-button>
+          </div>
+          <div v-else>
+            <div class="button-container">
+          <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
+            <b-button
+              class="close-button-prev button-cancel"
+              @click="$emit('close')"
+            >
+            {{ $t("Cancel") }}
+            </b-button>
+          </div>
+          </div>
+      
     </div>
     <div class="second-container">
       <div class="span-message">
-        <span>Select a previous task to reuse its filled data on the current task.</span>
+        {{ this.processName 
+        ? $t('Select a previous task to reuse its filled data on the current task') + ': ' + this.processName 
+        : $t('Select a previous task to reuse its filled data on the current task.') }}
       </div>
       <div class="third-container">
         <tasks-list
           ref="taskList"
           class="custom-table-class"
           :columns="columns"
+          :selected-row-quick="selectedRowQuick"
           @selected="selected"
           :pmql="pmql"
-          :advanced-filter-prop="filter"
-          :disable-row-click="true"
+          :advanced-filter-prop="quickFilter"
+          :from-button="propFromButton"
         >
           <template v-slot:preview-header="{ close, screenFilteredTaskData }">
-            <div>
-              <b-button
-                  class="mr-2"
-                  variant="primary"
-                  :aria-label="$t('Use This Task Data')"
-                  @click="buttonThisData(screenFilteredTaskData)"
-                >
-                  {{ $t('Use This Task Data') }}
-                </b-button>
+            <div style="width: 92%;">
+              <div class="header-container-quick">
+                <div style="display: block; width: 100%;">
+                <span class="span-text">Data Preview</span>
                 <b-button
-                  class="close-button mr-2"
-                  variant="link"
-                  @click="close()"
-                >
-                  <i class="fas fa-times" />
-                </b-button>
+                  v-if="propFromButton !== 'fullTask'"
+                    class="button-task mr-2"
+                    variant="primary"
+                    :aria-label="$t('Use This Task Data')"
+                    @click="buttonThisData(screenFilteredTaskData)"
+                  >
+                  <img
+                    src="../../../img/smartinbox-images/Stroke.svg"
+                    class="img-styles"
+                    :alt="$t('No Image')"
+                  />{{ $t('Use This Task Data') }}
+                  </b-button>
+                  <b-button
+                  v-if="propFromButton === 'fullTask'"
+                    class="button-task mr-2"
+                    variant="primary"
+                    :aria-label="$t('Use This Task Data')"
+                    @click="buttonThisDataFromFullTask(screenFilteredTaskData)"
+                  >
+                  <img
+                    src="../../../img/smartinbox-images/Stroke.svg"
+                    class="img-styles"
+                    :alt="$t('No Image')"
+                  />{{ $t('Use This Task Data') }}
+                  </b-button>
+                  
+              </div>
+              <b-button
+                    class="close-button mr-2"
+                    variant="link"
+                    @click="close()"
+                  >
+                    <i class="fas fa-times" />
+                  </b-button>
+              </div>
             </div>
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
             <b-button
+              v-if="propFromButton !== 'fullTask'"
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
               @click="previewTasks(tooltipRowData, 93)"
+            >
+              <i class="fas fa-eye"/>
+            </b-button>
+            <b-button
+              v-if="propFromButton === 'fullTask'"
+              class="icon-button"
+              :aria-label="$t('Quick fill Preview')"
+              variant="light"
+              @click="previewTasks(tooltipRowData, 50); setTask()"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -69,11 +110,15 @@
 </template>
 <script>
 export default {
-  props: ["task", "data"],
+  props: ["task", "propColumns", "propFilters", "propFromButton"],
   data() {
     return {
+      processName: "",
+      selectedRowQuick: 0,
+      fromQuickFill: true,
       taskData: {},
-      processID: 27,
+      pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.task.process_id})`,
+      quickFilter: null,
       filter: {
         order: { by: 'id', direction: 'desc' },
         filters: [
@@ -89,7 +134,6 @@ export default {
           },
         ],
       },
-      pmql: '(user_id = 1 and status="Completed")',
       columns: [
         {
           label: "Case #",
@@ -123,13 +167,43 @@ export default {
       dataTasks: {},
     };
   },
+  mounted() {
+    if(this.propFilters !== "") {
+      this.quickFilter = this.propFilters;
+    }
+
+    if(this.propColumns.length > 0) {
+      this.columns = this.propColumns;
+    }
+  },
   methods: {
     selected(taskData) {},
+    setTask() {
+      this.processName = this.task.process_request.case_title;
+    },
+    cancelAndGoBack() {
+      window.location.href = `/tasks/${this.task.id}/edit`;
+    },
     buttonThisData(data) {
       this.$emit("quick-fill-data", data);
       this.$emit("close");
     },
-    buttonPreviewThisData(tooltipRowData) {
+    buttonThisDataFromFullTask(data) {
+      return ProcessMaker.apiClient
+        .put("drafts/" + this.task.id, data)
+        .then((response) => {
+          this.task.draft = _.merge(
+            {},
+            this.task.draft,
+            response.data
+          );
+          window.location.href = `/tasks/${this.task.id}/edit`;
+          ProcessMaker.alert(this.$t('Task Filled successfully.'), 'success');
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        })
+        
     },
   },
 };
@@ -137,7 +211,7 @@ export default {
 <style scoped>
 
 .btn-cancel {
-  background-color: #d8e0e9;
+  background-color: #fff;
 }
 .btn-back-quick-fill {
   color: #888;
@@ -146,20 +220,82 @@ export default {
 }
 .button-container {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   height: 64px;
   border: 1px solid #f6f9fb;
   padding: 0 12px;
 }
-.quick-fill-text {
-  color: #888;
-  margin-left: 8px;
+
+.header-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #f6f9fb;
+  padding: 0 12px;
 }
+
+.header-container-quick {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #CDDDEE;
+  padding: 10px 12px;
+  background-color: #E8F0F9;
+}
+
+.close-go-back-button {
+  color: #fff;
+  background-color: #6A7888;
+  width: 228px;
+  height: 40px;
+  border-radius: 4px;
+  padding: 0;
+  border: none;
+  margin-left: auto;
+}
+.quick-fill-text-full {
+  color: #556271;
+  font-size: 27px;
+}
+.quick-fill-text {
+  color: #566877;
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+.button-task {
+  color: #fff;
+  background-color: #1572C2;
+  display: block; 
+  width: 100%; 
+  margin-top:10px;
+}
+
+.button-cancel {
+  color: #fff;
+  background-color: #6A7888;
+  width: 88px;
+  height: 32px;
+  font-weight: bold;
+}
+
+.close-button-prev {
+  color: #fff;
+  padding: 0;
+  border: none;
+}
+
+.arrow-button,
+.close-button-prev {
+  color: #fff;
+  padding: 0;
+  border: none;
+}
+
 .close-button {
   color: #888;
   padding: 0;
   border: none;
-  margin-left: auto;
+  margin-left: -25px;
+  margin-top: -45px;
 }
 .arrow-button,
 .close-button {
@@ -196,7 +332,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+  margin-left: 10px;
 }
 
 .main-text {
@@ -224,7 +360,18 @@ img {
   margin-top: 3px;
 }
 
+.img-styles {
+  margin-right: 5px; 
+  margin-top: -2px;
+}
+
 .icon-button {
   color: #888;
+}
+
+.span-text {
+  font-size: 16px;
+  color: #556271;
+  font-weight: bold;
 }
 </style>
