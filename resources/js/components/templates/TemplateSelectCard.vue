@@ -7,7 +7,7 @@
         @show-details="showDetails()"
       />
       <screen-template-card
-        v-if="type === 'screen'"
+        v-else-if="type === 'screen'"
         :template="template"
         :is-active="isActive"
         :default-template-id="defaultTemplateId"
