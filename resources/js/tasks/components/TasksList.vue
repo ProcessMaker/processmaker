@@ -158,11 +158,15 @@
           >
           <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
             <span>
-              <i
+              <b-button
                 v-if="!verifyURL('saved-searches')"
-                class="fa fa-eye py-2"
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
                 @click="previewTasks(tooltipRowData)"
-              />
+              >
+                <i class="fas fa-eye"/>
+              </b-button>
             </span>
             <ellipsis-menu
               :actions="actions"
@@ -190,6 +194,7 @@
       v-if="!verifyURL('saved-searches')"
       ref="preview"
       @mark-selected-row="markSelectedRow"
+      :tooltip-button="tooltipFromButton"
     >
       <template v-slot:header="{ close, screenFilteredTaskData }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
@@ -242,6 +247,7 @@ export default {
     FilterTableBodyMixin,
   ],
   props: {
+    selectedRowQuick: 0,
     filter: {},
     columns: [],
     pmql: {},
@@ -261,6 +267,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    fromButton: {
+      type: String,
+      default: "",
+    },
     disableRowClick: {
       type: Boolean,
       default: false,
@@ -268,6 +278,7 @@ export default {
   },
   data() {
     return {
+      tooltipFromButton: "",
       selectedRow: 0,
       actions: [
         {
@@ -407,6 +418,7 @@ export default {
     formatActiveTask(row) {
       return `
       <a href="${this.openTask(row)}"
+        data-cy="active-task-data"
         class="text-nowrap">
         ${row.element_name}
       </a>`;
@@ -527,6 +539,7 @@ export default {
       return link;
     },
     previewTasks(info, size = null) {
+      this.tooltipFromButton = size;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
@@ -629,8 +642,12 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
-
+      let bottomBorderY = 0
+      if(this.fromButton === "" || this.fromButton === "previewTask"){
+        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+      }else{
+        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+      }
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -721,6 +738,12 @@ export default {
   background-color: #1572c2;
   width: 197px;
   height: 40px;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
 }
 </style>
 <style lang="scss" scoped>
