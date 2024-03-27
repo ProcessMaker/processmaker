@@ -3,6 +3,7 @@
 namespace Tests\Feature\Templates\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
@@ -202,10 +203,28 @@ class ScreenTemplateTest extends TestCase
         $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template']);
         $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
         $screenTemplate->delete();
-
         $this->assertDatabaseMissing('screen_templates', ['name' => $screenTemplate->name]);
         $this->import($payload);
-
         $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
+    }
+
+    public function testImportExportScreenTemplatesRoutes()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['is_public' => true, 'name' => 'Test Screen Template']);
+        // Test download route
+        $route = route('api.export.download', ['screen-template', $screenTemplate->id]);
+        $response = $this->apiCall('POST', $route);
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Disposition', 'attachment; filename=test_screen_template.json');
+        // Test import route
+        $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
+        $jsonFileName = 'screen_template.json';
+        $file = UploadedFile::fake()->createWithContent($jsonFileName, json_encode($payload));
+        // API call to import screen template
+        $url = '/import/screen-template';
+        $params = ['file' => $file];
+        $importResponse = $this->apiCall('POST', $url, $params);
+        $importResponse->assertStatus(200);
+        $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name . ' 2']);
     }
 }
