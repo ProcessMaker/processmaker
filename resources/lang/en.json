@@ -2168,5 +2168,7 @@
   "Inbox rules empty": "Inbox rules empty",
   "You haven't set up any Inbox Rules yet": "You haven't set up any Inbox Rules yet",
   "Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.": "Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.",
-  "Create an Inbox Rule Now": "Create an Inbox Rule Now"
+  "Create an Inbox Rule Now": "Create an Inbox Rule Now",
+  "Filter the tasks for this rule": "Filter the tasks for this rule",
+  "Please choose the tasks in your inbox that this new rule should apply to. <b>Use the column filters</b> to achieve this.": "Please choose the tasks in your inbox that this new rule should apply to. <b>Use the column filters</b> to achieve this."
 }

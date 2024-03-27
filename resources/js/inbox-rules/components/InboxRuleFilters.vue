@@ -45,6 +45,17 @@
         @submit=""
         @count="$emit('count', $event)"
         >
+        <template v-slot:no-results>
+          <PMMessageScreen>
+            <template v-slot:content>
+              <img src="/img/funnel-fill-elements-blue.svg" 
+                   :alt="$t('Select a saved search above.')"/>
+              <b>{{ $t('Filter the tasks for this rule') }}</b>
+              <span v-html="$t('Please choose the tasks in your inbox that this new rule should apply to. <b>Use the column filters</b> to achieve this.')">
+              </span>
+            </template>
+          </PMMessageScreen>
+        </template>
       </tasks-list>
 
       <b-modal
@@ -82,10 +93,6 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
-      },
-      isNew: {
-        type: Boolean,
-        default: false
       }
     },
     data() {

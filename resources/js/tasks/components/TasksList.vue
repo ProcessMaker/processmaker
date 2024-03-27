@@ -179,7 +179,11 @@
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
         :data-loading-id="dataLoadingId"
-      />
+        >
+        <template v-slot:no-results>
+          <slot name="no-results"></slot>
+        </template>
+      </data-loading>
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"

@@ -9,8 +9,8 @@
         <template v-slot:header-right-content>
           <InboxRuleButtons
             :show-saved-search-selector="showSavedSearchSelector"
-            :saved-search-id="newSavedSearchIdFromSelector"
-            @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
+            :saved-search-id="savedSearchIdSelected"
+            @saved-search-id-changed="savedSearchIdSelected = $event"
             @showColumns="showColumns"
             @reset-filters="resetFilters">
           </InboxRuleButtons>
@@ -18,7 +18,7 @@
         <InboxRuleFilters
           v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
-          :saved-search-id="savedSearchIdForFilters"
+          :savedSearchId="getSavedSearchId"
           :task-id="taskId"
           :show-column-selector-button="false"
           @count="count = $event"
@@ -95,7 +95,7 @@
       return {
         count: 0,
         inboxRule: null,
-        newSavedSearchIdFromSelector: null,
+        savedSearchIdSelected: null,
         savedSearchData: {},
         taskId: null,
         data: {},
@@ -111,7 +111,7 @@
           return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
         }
       },
-      savedSearchIdForFilters() {
+      getSavedSearchId() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
         if (this.inboxRule) {
@@ -120,8 +120,8 @@
         if (this.newSavedSearchId) {
           return this.newSavedSearchId;
         }
-        if (this.newSavedSearchIdFromSelector) {
-          return this.newSavedSearchIdFromSelector;
+        if (this.savedSearchIdSelected) {
+          return this.savedSearchIdSelected;
         }
         return null;
       },
