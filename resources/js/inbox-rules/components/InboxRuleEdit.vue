@@ -1,6 +1,6 @@
 <template>
   <div class="pm-inbox-rule-edit">
-    <template v-if="isViewName(1)">
+    <template v-if="viewIs('main')">
       <b-form-group>
         <template v-slot:label>
           <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -99,14 +99,14 @@
             </b-button>
             <b-button v-if="makeDraft"
                       variant="primary"
-                      @click="viewName(2)">
+                      @click="viewsTo('nextConfiguration')">
               {{ $t('Next') }}
             </b-button>
           </div>
         </div>
       </b-form-group>
     </template>
-    <template v-if="isViewName(2)">
+    <template v-if="viewIs('nextConfiguration')">
       <b-form-group>
         <span>
           {{ $t('If you want to establish an automatic submit for this rule,') }}
@@ -164,7 +164,7 @@
           </div>
           <div class="flex-grow-0">
             <b-button variant="secondary"
-                      @click="viewName(1)">
+                      @click="viewsTo('main')">
               {{ $t('Back') }}
             </b-button>
             <b-button variant="primary"

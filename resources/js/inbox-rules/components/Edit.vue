@@ -3,7 +3,7 @@
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
       <PMPanelWithCustomHeader 
-        v-if="isViewName(1)"
+        v-if="viewIs('main')"
         class="filters"
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
@@ -27,7 +27,7 @@
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader 
-        v-if="isViewName(2)"
+        v-if="viewIs('nextConfiguration')"
         class="filters"
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
@@ -54,7 +54,7 @@
           :task-id="taskId"
           :data="data"
           :select-submit-button="submitButton"
-          @view-name="viewName($event)">
+          @onChangeViews="viewsTo($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -104,10 +104,10 @@
     },
     computed: {
       rightPanelTitle() {
-        if (this.view_name === 1) {
+        if (this.viewIs('main')) {
           return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
         }
-        if (this.view_name === 2) {
+        if (this.viewIs('nextConfiguration')) {
           return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
         }
       },
