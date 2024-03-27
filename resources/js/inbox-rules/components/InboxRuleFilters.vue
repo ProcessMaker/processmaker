@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div v-if="!savedSearchId && !task"
-         class="d-flex justify-content-center align-items-center flex-column ir-message">
-      <img src="/img/funnel-fill-elements-blue.svg" :alt="$t('Select a saved search above.')"/>
-      <b class="mt-3 mb-3 ir-message-b">{{ $t('Select the Load a saved search control above.') }}</b>
-      <span class="text-center ir-message-span" 
-            v-html="$t('Select the <b>Load a saved search</b> control above.')">
-      </span>
+    <div v-if="!savedSearchId && !task">
+      <PMMessageScreen>
+        <template v-slot:content>
+          <img src="/img/funnel-fill-elements-blue.svg" 
+               :alt="$t('Select a saved search above.')"/>
+          <b>{{ $t('Select the Load a saved search control above.') }}</b>
+          <span v-html="$t('Select the <b>Load a saved search</b> control above.')">
+          </span>
+        </template>
+      </PMMessageScreen>
     </div>
     <div v-else>
       <div v-if="task">
@@ -65,7 +68,7 @@
 <script>
   import TasksList from "../../tasks/components/TasksList.vue";
   import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
-
+  import PMMessageScreen from "../../components/PMMessageScreen.vue";
   export default {
     props: {
       savedSearchId: {
@@ -98,7 +101,8 @@
     },
     components: {
       TasksList,
-      ColumnChooserAdapter
+      ColumnChooserAdapter,
+      PMMessageScreen
     },
     methods: {
       emitSavedSearchData() {
@@ -285,7 +289,7 @@
 </script>
 
 <style scoped>
-  .ir-message {
+  /*.ir-message {
     height: 100vh;
   }
   .ir-message-b {
@@ -293,5 +297,5 @@
   }
   .ir-message-span {
     width: 375px;
-  }
+  }*/
 </style>
