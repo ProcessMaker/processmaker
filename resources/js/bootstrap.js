@@ -29,7 +29,6 @@ import DataTreeToggle from "./components/common/data-tree-toggle.vue";
 import TreeView from "./components/TreeView.vue";
 import FilterTable from "./components/shared/FilterTable.vue";
 import PaginationTable from "./components/shared/PaginationTable.vue";
-import { FilterTableBodyMixin } from "./components/shared";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 
 window.__ = translator;
@@ -105,7 +104,6 @@ const mdates = JSON.parse(
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) });
 Vue.mixin(AccessibilityMixin);
-Vue.mixin(FilterTableBodyMixin);
 
 window.ProcessMaker = {
   i18n: i18next,
