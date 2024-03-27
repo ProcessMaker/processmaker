@@ -120,7 +120,7 @@
               return
             }
             this.submitted = true;
-            ProcessMaker.apiClient.post('import-screen',
+            ProcessMaker.apiClient.post('import/screen-template',
               formData,
               {
                 headers: {
