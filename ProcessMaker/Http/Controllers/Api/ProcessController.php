@@ -43,7 +43,7 @@ use Throwable;
 class ProcessController extends Controller
 {
     const CAROUSEL_FILE_TYPES = [
-        'IMAGE' => 'image', 
+        'IMAGE' => 'image',
         'EMBED' => 'embed'
     ];
 
