@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ProcessArchived;
 use ProcessMaker\Events\ProcessCreated;
@@ -41,6 +42,11 @@ use Throwable;
 
 class ProcessController extends Controller
 {
+    const CAROUSEL_FILE_TYPES = [
+        'IMAGE' => 'image', 
+        'EMBED' => 'embed'
+    ];
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -1711,8 +1717,23 @@ class ProcessController extends Controller
             foreach ($request->imagesCarousel as $image) {
                 if (is_string($image['url']) && !empty($image['url'])) {
                     if (!$process->media()->where('collection_name', 'images_carousel')
-                        ->where('uuid', $image['uuid'])->exists()) {
-                        $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
+                    ->where('uuid', $image['uuid'])->exists()) {
+                        if ($image['type'] === self::CAROUSEL_FILE_TYPES['IMAGE']) {
+                            $process
+                            ->addMediaFromBase64($image['url'])
+                            ->withCustomProperties(['type' => $image['type']])
+                            ->toMediaCollection('images_carousel');
+                        }
+                        if ($image['type'] === self::CAROUSEL_FILE_TYPES['EMBED']) {
+                            $fakeFile = File::image('photo.jpg');
+                            $process
+                            ->addMedia($fakeFile)
+                            ->withCustomProperties([
+                                'type' => $image['type'],
+                                'url' => $image['url']
+                            ])
+                            ->toMediaCollection('images_carousel');
+                        }
                     }
                 }
             }
