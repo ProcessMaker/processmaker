@@ -182,14 +182,15 @@ export default {
   font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   font-weight: 400;
-  line-height: 20px;
-  letter-spacing: -0.02em;
+  line-height: normal;
+  letter-spacing: -0.3px;
   text-align: left;
 }
 .list-item:hover,
 .menu-header:hover {
   background: #e5edf3;
   color: #4f606d;
+  font-weight: 400;
 }
 .list-item-selected,
 .menu-header:focus {
