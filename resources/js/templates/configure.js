@@ -29,10 +29,8 @@ new Vue({
             switch (this.type) {
                 case 'process':
                     return '/processes';
-                    break;
                 case 'screen':
                         return '/designer/screens';
-                        break;
                 default:
                     break;
             }
@@ -40,7 +38,7 @@ new Vue({
     },
     methods: {
         resetErrors() {
-            this.errors = Object.assign({});
+            this.errors = {};
         },
         onClose() {
             window.location.href = this.redirectUrl;
