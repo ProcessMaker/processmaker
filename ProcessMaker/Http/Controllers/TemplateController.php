@@ -85,7 +85,7 @@ class TemplateController extends Controller
      *
      * @param ScreenTemplates $screen
      */
-    public function importScreen(ScreenTemplates $screen)
+    public function importScreen()
     {
         return view('templates.import-screen');
     }

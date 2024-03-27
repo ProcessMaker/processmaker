@@ -117,11 +117,8 @@ class ImportController extends Controller
         }
 
         $options = new Options($postOptions);
-
         $importer = new Importer($payload, $options);
         $manifest = $importer->doImport();
-
-        // // Call Event to store Template Changes in Log
         TemplateCreated::dispatch($payload);
 
         return $manifest;
