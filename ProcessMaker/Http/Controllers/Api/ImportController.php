@@ -104,7 +104,7 @@ class ImportController extends Controller
         return response()->json([], 200);
     }
 
-    public function importScreen(Request $request)
+    public function importScreenTemplate(Request $request)
     {
         $jsonData = $request->file('file')->get();
         $payload = json_decode($jsonData, true);
