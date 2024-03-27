@@ -209,6 +209,7 @@
         },
         computed: {
           screenFilteredData () {
+            console.log(this.formData);
             return this.filterScreenFields(this.formData);
           },
           taskDefinitionConfig () {
@@ -414,7 +415,9 @@
           },
           taskUpdated(task) {
             this.task = task;
-            this.formData = _.merge(task.request_data, task.draft.data);
+            if (task.status === 'CLOSED') {
+              this.formData = _.cloneDeep(task.request_data);
+            }
             this.$nextTick(() => {
               this.sendEvent('readyForFillData', true);
             });
