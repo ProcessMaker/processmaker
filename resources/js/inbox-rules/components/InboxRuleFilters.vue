@@ -289,13 +289,4 @@
 </script>
 
 <style scoped>
-  /*.ir-message {
-    height: 100vh;
-  }
-  .ir-message-b {
-    font-size: 24px;
-  }
-  .ir-message-span {
-    width: 375px;
-  }*/
 </style>
