@@ -20,7 +20,9 @@ const router = new VueRouter({
         return {
           ruleId: null,
           newSavedSearchId: parseInt(route.query.saved_search_id) || null,
-          newTaskId: parseInt(route.query.task_id) || null
+          newTaskId: parseInt(route.query.task_id) || null,
+          elementId: route.query.element_id || null,
+          processId: parseInt(route.query.process_id) || null
         };
       }
     },
@@ -33,7 +35,7 @@ const router = new VueRouter({
           ruleId: parseInt(route.params.id)
         };
       }
-    }
+    },
   ]
 });
 

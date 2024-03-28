@@ -1,9 +1,7 @@
-<template>
-<splitpane-container v-if="propQuickFill" :size="50">
-  <div>
-    <b-embed :src="linkTasks" @load="loaded()" ref="preview" /> 
-  </div>
-  </splitpane-container>
+<template>  
+    <div>
+      <b-embed :src="linkTasks" @load="loaded()" ref="preview" />
+    </div>
 </template>
 
 
@@ -18,10 +16,6 @@
         type: Object,
         default: null
       },
-      propQuickFill: {
-        type: Boolean,
-        default: false
-      }
     },
     data() {
       return {

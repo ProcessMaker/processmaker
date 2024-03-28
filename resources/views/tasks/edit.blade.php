@@ -517,7 +517,7 @@
         },
         methods: {
           createRule() {
-            window.location.href = `/tasks/rules/new?task_id=${this.task.id}`;
+            window.location.href = `/tasks/rules/new?task_id=${this.task.id}&element_id=${this.task.element_id}&process_id=${this.task.process_id}`;
           },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer

@@ -1,6 +1,6 @@
 <template>
   <div class="pl-3">
-    <div>
+
           <div v-if="propFromButton === 'fullTask'" class="header-container">
             <span class="quick-fill-text-full">{{ $t("Quick Fill") }}</span>
             <b-button
@@ -21,8 +21,7 @@
             </b-button>
           </div>
           </div>
-      
-    </div>
+
     <div class="second-container">
       <div class="span-message">
         {{ this.processName 
@@ -86,7 +85,7 @@
           </template>
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
             <b-button
-              v-if="propFromButton !== 'fullTask'"
+              v-if="propFromButton === 'previewTask'"
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
@@ -103,9 +102,18 @@
             >
               <i class="fas fa-eye"/>
             </b-button>
+            <b-button
+              v-if="propFromButton === 'inboxRules'"
+              class="icon-button"
+              :aria-label="$t('Quick fill Preview')"
+              variant="light"
+              @click="previewTasks(tooltipRowData, 50, 'inboxRules');"
+            >
+              <i class="fas fa-eye"/>
+            </b-button>
           </template>
         </tasks-list>
-      </div>
+        </div>
     </div>
   </div>
 </template>
@@ -178,6 +186,11 @@ export default {
     }
   },
   methods: {
+    verifyURL(string) {
+      const currentUrl = window.location.href;
+      const isInUrl = currentUrl.includes(string);
+      return isInUrl;
+    },
     selected(taskData) {},
     setTask() {
       this.processName = this.task.process_request.case_title;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="showPreview">
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         id="tasks-preview"
@@ -111,6 +111,7 @@
             </slot>
           </div>
           <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
+        
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -147,7 +148,7 @@
         </splitpane-container>
       </div>
     </splitpane-container>
-  </div>
+    </div>
 </template>
 
 <script>
@@ -162,7 +163,7 @@ import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
-  props: ["tooltipButton"],
+  props: ["tooltipButton", "propPreview"],
   watch: {
     task: {
       deep: true,
@@ -181,6 +182,9 @@ export default {
     },
   },
   mounted() {
+    if(this.propPreview){
+      this.showPreview = true;
+    }
     this.receiveEvent("dataUpdated", (data) => {
       this.formData = data;
       if (this.userHasInteracted) {

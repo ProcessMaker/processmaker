@@ -32,10 +32,6 @@
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
           <div class="custom-button-container">
-            <!-- <b-button 
-            size="sm" 
-            @click="resetData">{{ $t('Reset Data') }}
-            </b-button> -->
             <button
               type="button"
               class="button-actions"
@@ -57,30 +53,28 @@
             /> {{ $t('Quick Fill') }}
             </button>
           </div>
-
-            
-              
-            
         </template>
 
         <InboxRuleFillData
+          v-if="!showQuickFillPreview"
           ref="inboxRuleFillData"
           :task-id="taskId"
           :inbox-rule-data="data"
-          :prop-quick-fill="showQuickFillPreview"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
-        <!-- <div>
+        <div>
           <quick-fill-preview
-                class="quick-fill-preview"
-                :task="data"
-                :prop-from-button ="'inboxRules'"
-                :prop-columns="columns"
-                :prop-filters="filter"
-                @close="showQuickFillPreview = false"
-              ></quick-fill-preview>
-        </div> -->
+          v-if="showQuickFillPreview"
+            class="quick-fill-preview"
+            :task="task"
+            :prop-from-button ="'inboxRules'"
+            :prop-columns="columns"
+            :prop-filters="filter"
+            @close="showQuickFillPreview = false"
+            @quick-fill-data="fillWithQuickFillData"
+          ></quick-fill-preview>
+        </div>
 
       </PMPanelWithCustomHeader>
 
@@ -110,6 +104,7 @@
   import IsViewMixin from "./IsViewMixin.js";
   import QuickFillPreview from "../../tasks/components/QuickFillPreview.vue";
   import SplitpaneContainer from "../../tasks/components/SplitpaneContainer.vue";
+
   export default {
     components: {
       PMPanelWithCustomHeader,
@@ -133,10 +128,19 @@
       ruleId: {
         type: Number,
         default: null
-      }
+      },
+      elementId: {
+        type: String,
+        default: null
+      },
+      processId: {
+        type: Number,
+        default: null
+      },
     },
     data() {
       return {
+        task: {},
         showQuickFillPreview: false,
         count: 0,
         inboxRule: null,
@@ -145,18 +149,19 @@
         taskId: null,
         data: {},
         submitButton: null,
+        pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.processId})`,
         filter: {
-          order: { by: 'id', direction: 'desc' },
+          order: { by: 'created_at', direction: 'desc' },
           filters: [
             {
               subject: { type: "Field", value: "process_id" },
               operator: "=",
-              value: 305,
+              value: this.processId,
             },
             {
               subject: { type: "Field", value: "element_id" },
               operator: "=",
-              value: "node_2",
+              value: this.elementId,
             },
           ],
         },
@@ -223,6 +228,11 @@
       }
     },
     mounted() {
+      this.task = { 
+        "process_id" : this.processId,
+        "element_id" : this.elementId,
+        "id" : this.newTaskId,
+      };
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
       }
@@ -236,12 +246,17 @@
       }
     },
     methods: {
-      // fillWithQuickFillData(data) {
-      //   const message = this.$t('Task Filled succesfully');
-      //   this.sendEvent("fillData", data);
-      //   this.showUseThisTask = false;
-      //   ProcessMaker.alert(message, 'success');
-      // },
+      fillWithQuickFillData(data) {
+        const message = this.$t('Task Filled succesfully');
+        this.sendEvent("fillData", data);
+        this.showUseThisTask = false;
+        ProcessMaker.alert(message, 'success');
+      },
+      verifyURL(string) {
+        const currentUrl = window.location.href;
+        const isInUrl = currentUrl.includes(string);
+        return isInUrl;
+      },
       sendEvent(name, data)
       {
         const event = new CustomEvent(name, {
