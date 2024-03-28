@@ -212,6 +212,7 @@ export default {
       this.sendEvent("fillData", data);
       this.showUseThisTask = false;
       ProcessMaker.alert(message, 'success');
+      this.handleAutosave();
     },
     sendEvent(name, data)
     {
