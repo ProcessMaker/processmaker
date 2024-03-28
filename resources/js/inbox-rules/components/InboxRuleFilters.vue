@@ -35,6 +35,8 @@
         v-if="ready"
         ref="taskList"
         :pmql="pmql"
+        :disable-row-click="true"
+        :disable-rule-tooltip="true"
         :advanced-filter-prop="savedSearchAdvancedFilter"
         @advanced-filter-updated="savedSearchAdvancedFilter = $event"
         :saved-search="savedSearch?.id"
