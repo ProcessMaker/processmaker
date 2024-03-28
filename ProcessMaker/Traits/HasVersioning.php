@@ -148,7 +148,7 @@ trait HasVersioning
      *
      * @return ProcessMakerModel The published version of the artifact
      */
-    public function getPublishedVersion()
+    public function getPublishedVersion(array $data)
     {
         $implementation = WorkflowManager::NAYRA_PUBLISHER . get_class($this);
         $existsCustomPublisher = $implementation
@@ -156,10 +156,10 @@ trait HasVersioning
         if ($existsCustomPublisher) {
             $response = WorkflowManager::runServiceImplementation(
                 $implementation,
+                $data,
                 [
                     'process' => $this,
                 ],
-                [],
             );
             return $response['publishedVersion'];
         }
