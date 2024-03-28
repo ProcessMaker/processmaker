@@ -68,7 +68,7 @@
           enabledTransports: ['ws', 'wss'],
           disableStats: true,
         };
-        
+
         @if(config('broadcasting.connections.pusher.options.host'))
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
@@ -150,7 +150,9 @@
 @endforeach
 @endisset
     <!--javascript!-->
+    @if(config('services.userway.enabled'))
+        <script src="https://cdn.userway.org/widget.js" data-account="{{ config('services.userway.account_id') }}"></script>
+    @endif
     @yield('js')
 </body>
-
 </html>

@@ -53,4 +53,9 @@ return [
         'template_categories' => env('GUIDED_TEMPLATE_CATEGORIES', 'all'),
     ],
 
+    'userway' => [
+        'enabled' => env('USERWAY_ENABLED', false),
+        'account_id' => env('USERWAY_ACCOUNT_ID'),
+    ]
+
 ];
