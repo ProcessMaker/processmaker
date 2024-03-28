@@ -182,7 +182,11 @@ class ScreenTemplateTest extends TestCase
     {
         // Create screen template
         $name = 'Test Screen Template';
-        $screenTemplate = ScreenTemplates::factory()->create(['name' => $name, 'description' => 'Test Screen Template Description']);
+        $screenTemplate = ScreenTemplates::factory()->create(
+            [
+                'name' => $name,
+                'description' => 'Test Screen Template Description',
+            ]);
 
         // Make API call to show screen template
         $route = route('api.template.show', ['screen', $screenTemplate->id]);
