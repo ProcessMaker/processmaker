@@ -131,12 +131,13 @@
     import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
     import paginationTable from "../../components/shared/PaginationTable.vue";
     import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+    import templateMixin from "../../processes/screen-templates/mixins/templateMixin.js";
   
     const uniqIdsMixin = createUniqIdsMixin();
   
     export default {
       components: { EllipsisMenu, paginationTable },
-      mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, FilterTableBodyMixin],
+      mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, FilterTableBodyMixin, templateMixin],
       props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "processName"],
       data() {
         return {
@@ -330,18 +331,11 @@
                 this.apiDataLoading = false;
                 this.apiNoResults = false;
                 this.loading = false;
-             //   console.log('FETCH PERMISSIONS', this.permission);
               });
         },
         addWarningMessages(data) {
           data.data = data.data.map(template => {
             template.warningMessages = [];
-            // if (!template.manager_id) {
-            //   process.warningMessages.push(this.$t('Process Manager not configured.'));
-            // }
-            // if (template.warnings) {
-            //   process.warningMessages.push(this.$t('BPMN validation issues. Request cannot be started.'));
-            // }
             return template;
           });
           return data;
