@@ -171,6 +171,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     //Process Launchpad
     Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
     Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
+    Route::get('processes/{process}/embed', [ProcessController::class, 'getEmbed'])->name('processes.embed')->middleware('can:view-processes');
+    Route::delete('processes/{process}/embed', [ProcessController::class, 'deleteEmbed'])->name('processes.delete-embed')->middleware('can:view-processes');
 
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
