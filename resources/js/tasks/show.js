@@ -8,6 +8,8 @@ import NavbarTaskMobile from "./components/NavbarTaskMobile.vue";
 import AvatarImage from "../components/AvatarImage.vue";
 import Timeline from "../components/Timeline.vue";
 import TimelineItem from "../components/TimelineItem.vue";
+import QuickFillPreview from "./components/QuickFillPreview.vue";
+import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
 
@@ -19,6 +21,8 @@ Vue.component("AvatarImage", AvatarImage);
 Vue.component("MonacoEditor", MonacoEditor);
 Vue.component("Timeline", Timeline);
 Vue.component("TimelineItem", TimelineItem);
+Vue.component("QuickFillPreview", QuickFillPreview);
+Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
 
 Vue.mixin(autosaveMixins);

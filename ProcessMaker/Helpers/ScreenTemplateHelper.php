@@ -97,11 +97,6 @@ class ScreenTemplateHelper
 
         foreach ($item['items'] as $index => $column) {
             $filteredColumnItems = self::filterColumnItems($column, $components, $removeMultiColumn);
-            if (isset($filteredColumnItems['items'])) {
-                $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;
-            } else {
-                $filteredMultiColumnItems[] = $filteredColumnItems;
-            }
 
             if (isset($filteredMultiColumnItems['items'])) {
                 $filteredMultiColumnItems['items'][$index] = $filteredColumnItems;

@@ -117,8 +117,15 @@ export default {
       this.getMenuGrups();
     },
     orderGroupAlphabetic(groups) {
-      const newGroups = groups.sort((a, b) => {
-        // Ignore upper and lowercase
+      const newGroups = groups.map(group => {
+        // Check if starts with "-"
+        if (group.name.startsWith('-')) {
+          // Remplace with the vignette
+          group.name = '•' + group.name.substring(1);
+        }
+        return group;
+      }).sort((a, b) => {
+        // Ordenar los grupos alfabéticamente por el nombre
         const nameA = a.name.toUpperCase();
         const nameB = b.name.toUpperCase();
         if (nameA < nameB) {

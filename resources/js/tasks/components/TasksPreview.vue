@@ -58,6 +58,7 @@
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                   </b-button>
                   <b-button
+                    v-if="showQuickFillPreview === false"
                     class="icon-button"
                     :aria-label="$t('Quick fill')"
                     variant="light"
@@ -109,7 +110,7 @@
               </div>
             </slot>
           </div>
-          <div class="frame-container">
+          <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -137,7 +138,9 @@
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"
-            :data="data"
+            :prop-from-button ="'previewTask'"
+            :prop-columns="propColumns"
+            :prop-filters="propFilters"
             @quick-fill-data="fillWithQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
@@ -159,6 +162,7 @@ import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
+  props: ["tooltipButton"],
   watch: {
     task: {
       deep: true,
@@ -278,6 +282,11 @@ export default {
 .frame-container {
   display: grid;
   height: 70vh;
+}
+.frame-container-full {
+  display: grid;
+  height: 70vh;
+  width: 93%
 }
 .embed-responsive,
 .load-frame {
