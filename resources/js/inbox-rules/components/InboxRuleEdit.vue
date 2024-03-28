@@ -186,7 +186,7 @@
              footer-class="pm-inbox-rule-edit-modal-footer">
       <div class="pm-inbox-rule-edit-modal-content mb-4 mr-4 ml-4">
         <img src="/img/check-circle-lg.svg" :alt="$t('Rule successfully created')"/>
-        <b>{{ $t('Rule successfully created') }}</b>
+        <b>{{ inboxRule ? $t('Rule successfully updated'): $t('Rule successfully created') }}</b>
         <span>{{ $t('Check it out in the "Rules" section of your inbox.') }}</span>
       </div>
     </b-modal>
