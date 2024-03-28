@@ -125,6 +125,8 @@
                 :data="tooltipRowData"
                 :divider="false"
                 :permission="permission"
+                :screen-template="true"
+                @navigate="onTemplateNavigate"
               />
             </slot>
           </div>
@@ -286,7 +288,7 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       const leftBorderX = rect.left;
-      const topBorderY = rect.top - topAdjust - 272 + elementHeight;
+      const topBorderY = rect.top - topAdjust - 203 + elementHeight;
 
       this.rowPosition = {
         x: leftBorderX,
