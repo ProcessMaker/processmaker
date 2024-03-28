@@ -29,7 +29,7 @@
           </div>
           <preview-template
             ref="preview"
-            :template="template"
+            :template="selectedTemplate"
             :hide-back-arrow="true"
           />
         </div>
@@ -50,7 +50,7 @@ export default {
   },
   mixins: [templatePreviewMixin],
   props: {
-    template: {
+    selectedTemplate: {
       type: [Object, Array],
       default: null,
     },
