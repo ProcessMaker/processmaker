@@ -152,6 +152,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->name('tasks.index')
         ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::get('tasks/{task}/edit/quickfill', [TaskController::class, 'quickFillEdit'])->name('tasks.edit.quickfill');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 
     Route::get('tasks/rules/{path?}', [InboxRulesController::class, 'index'])->name('inbox-rules.index')->where('path', '.*');
