@@ -228,5 +228,6 @@ export default {
 
 .public-templates-table-card {
   padding: 0;
+  border: none;
 }
 </style>
