@@ -17,11 +17,11 @@
                 <div class="thumbnail-preview">
                     <div v-if="templateHasThumbnails" class="text-center">
                         <img 
-                            v-for="thumbnail in templateData?.thumbnails"
+                            v-for="thumbnail in templateData?.template_media"
                             class="thumb mb-2"
-                            :src="thumbnail"
+                            :src="thumbnail?.url"
                             fluid
-                            :alt="templateData?.name + ' thumbnail preview'"
+                            :alt="templateData?.name + $t('thumbnail preview')"
                         />
                     </div> 
                     <div v-else>
@@ -105,7 +105,7 @@
                 return this.templateData.screen_custom_css !== null;
             },
             templateHasThumbnails() {
-                return this.templateData?.thumbnails.length > 0;
+                return this.templateData?.template_media.length > 0;
             }
         },
         watch: {
