@@ -283,6 +283,7 @@ class ScreenController extends Controller
         //Creating temporary Key to store multiple id categories
         $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
+        $this->updateScreenTemplate($screen);
 
         return response([], 204);
     }
@@ -588,5 +589,18 @@ class ScreenController extends Controller
             ->where('is_public', $isPublic)
             ->where('is_default_template', 1)
             ->update(['is_default_template' => 0]);
+    }
+
+    private function updateScreenTemplate($screen)
+    {
+        $screen = Screen::find($screen);
+        \Log::debug('===== MESSAGE =====', ['prop' => $screen->is_template]);
+        // \Log::debug("===== MESSAGE request =====", ["prop" => $request]);
+        if ($screen['is_template'] === 1) {
+            \Log::debug('===== MESSAGE =====', ['prop' => 'here']);
+            $screenTemplate = ScreenTemplates::where('editing_screen_uuid', $screen->uuid)->firstOrFail();
+            $payload = $this->export($screen, Screen::class);
+            $screenTemplate->update(['manifest', $payload]);
+        }
     }
 }
