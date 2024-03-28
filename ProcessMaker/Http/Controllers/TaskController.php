@@ -158,4 +158,11 @@ class TaskController extends Controller
             ]);
         }
     }
+
+    public function quickFillEdit(ProcessRequestToken $task)
+    {
+        return view('tasks.editQuickFill', [
+            'task' => $task,
+        ]);
+    }
 }

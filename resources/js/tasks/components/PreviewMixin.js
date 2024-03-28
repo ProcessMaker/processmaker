@@ -1,6 +1,7 @@
 const PreviewMixin = {
   data() {
     return {
+      tooltipFromButton: "",
       showPreview: false,
       showRight: true,
       linkTasks1: "",
@@ -32,6 +33,8 @@ const PreviewMixin = {
       useThisDataButton: false,
       showUseThisTask: false,
       splitpaneSize: 50,
+      propColumns: [],
+      propFilters: {},
       userHasInteracted: false,
       isPriority: false,
       size: 50,
@@ -59,6 +62,7 @@ const PreviewMixin = {
           icon: "fas fa-external-link-alt",
         },
       ],
+
     };
   },
   methods: {
@@ -74,7 +78,7 @@ const PreviewMixin = {
       this.taskTitle = info.element_name;
       this.showFrame1 = firstTime ? true : this.showFrame1;
       this.task = info;
-
+      this.customFilter();
       if (this.showFrame === 1) {
         this.linkTasks1 = `/tasks/${info.id}/edit/preview`+param;
         this.showFrame1 = true;
@@ -88,6 +92,22 @@ const PreviewMixin = {
       this.existPrev = false;
       this.existNext = false;
       this.defineNextPrevTask();
+    },
+    customFilter() {
+      this.propFilters = {
+        order: { by: "created_at", direction: "desc" },
+        filters:[
+        {
+          subject: { type: "Field", value: "process_id" },
+          operator: "=",
+          value: this.task.process_id,
+        },
+        {
+          subject: { type: "Field", value: "element_id" },
+          operator: "=",
+          value: this.task.element_id
+        }],
+      }
     },
     showButton() {
       this.isMouseOver = true;
