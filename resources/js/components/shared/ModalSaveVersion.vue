@@ -4,19 +4,26 @@
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Publish New Version')"
+    :hide-footer="true"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
-    :hide-footer="isABTestingInstalled"
   >
-    <keep-alive>
-      <component
-        :is="publishVersionComponent"
-        :alternative="alternative"
-        @ab-publish-version="abPublishVersion"
-        @ab-cancel="hideModal()"
-      />
-    </keep-alive>
-    <div class="form-group" v-show="!isABTestingInstalled">
+    <template
+      v-if="isABTestingInstalled && alternative?.version_b_enabled"
+    >
+      <keep-alive>
+        <component
+          :is="publishVersionComponent"
+          :alternative="alternative"
+          @ab-publish-version="abPublishVersion"
+          @ab-cancel="hideModal()"
+        />
+      </keep-alive>
+    </template>
+    <div
+      v-else
+      class="form-group"
+    >
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <label for="name">{{ $t("Version Name") }} </label>
@@ -48,6 +55,21 @@
           rows="8"
           :aria-label="$t('Description')"
         />
+      </div>
+
+      <hr class="long-hr mt-4 mb-4">
+
+      <div class="d-flex justify-content-end pv-actions">
+        <button class="btn btn-outline-secondary text-uppercase mr-3" @click.prevent="hideModal()">
+          Cancel
+        </button>
+        <button
+          class="btn btn-secondary text-uppercase"
+          data-test="btn-save-publish"
+          @click.prevent="abPublishVersion"
+        >
+          Save and Publish
+        </button>
       </div>
     </div>
   </modal>
@@ -345,5 +367,9 @@ $multiselect-height: 38px;
 
 .custom-text {
   font-size: 16px;
+}
+
+.long-hr {
+  margin: auto -24px;
 }
 </style>
