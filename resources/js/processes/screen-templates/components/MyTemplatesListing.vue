@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="data-table">
     <data-loading
@@ -16,8 +15,11 @@
       <filter-table
         :headers="fields"
         :data="data"
+        :selected-row="selectedRow"
         table-name="my-screen-templates"
         style="height: calc(100vh - 355px)"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -27,7 +29,7 @@
           <div
             v-if="column.sortable"
             :key="index"
-            @click="handleEllipsisClick(column)"
+            style="display: inline-block"
           >
             <i
               :class="[
@@ -88,17 +90,6 @@
                     {{ row[header.field] }}
                   </b-tooltip>
                 </template>
-                <template v-if="header.field === 'actions'">
-                  <ellipsis-menu
-                    class="my-template-table"
-                    :actions="myTemplateActions"
-                    :permission="permission"
-                    :data="row"
-                    :divider="true"
-                    :screen-template="true"
-                    @navigate="onTemplateNavigate"
-                  />
-                </template>
                 <template v-if="header.field !== 'name'">
                   <div :style="{ maxWidth: header.width + 'px' }">
                     {{ getNestedPropertyValue(row, header) }}
@@ -109,7 +100,35 @@
           </td>
         </template>
       </filter-table>
-
+      <screen-templates-tooltip
+        v-show="isTooltipVisible"
+        :position="rowPosition"
+      >
+        <template #screen-templates-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+            <slot
+              name="tooltip"
+              :tooltipRowData="tooltipRowData"
+              :previewTemplate="previewTemplate"
+            >
+              <span>
+                <i
+                  class="fa fa-eye py-2"
+                  @click="previewTemplate(tooltipRowData)"
+                />
+              </span>
+              <ellipsis-menu
+                :actions="myTemplateActions"
+                :data="tooltipRowData"
+                :divider="false"
+              />
+            </slot>
+          </div>
+        </template>
+      </screen-templates-tooltip>
       <pagination-table
         :meta="data.meta"
         data-cy="my-templates-pagination"
@@ -125,6 +144,11 @@
         @vuetable-pagination:change-page="onPageChange"
       />
     </div>
+    <template-preview-container
+      ref="preview"
+      :template="selectedTemplate"
+      @mark-selected-row="markSelectedRow"
+    />
   </div>
 </template>
 
@@ -134,15 +158,25 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import PreviewTemplate from "../../../components/templates/PreviewTemplate.vue";
+import TemplatePreviewContainer from "./TemplatePreviewContainer.vue";
+import ScreenTemplatesTooltip from "./ScreenTemplatesTooltip.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
 import navigationMixin from "../mixins/navigationMixin";
+import templatePreviewMixin from "../mixins/templatePreviewMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, paginationTable },
+  components: {
+    EllipsisMenu,
+    paginationTable,
+    PreviewTemplate,
+    TemplatePreviewContainer,
+    ScreenTemplatesTooltip,
+  },
   mixins: [
     datatableMixin,
     dataLoadingMixin,
@@ -151,6 +185,7 @@ export default {
     FilterTableBodyMixin,
     fieldsMixin,
     navigationMixin,
+    templatePreviewMixin,
   ],
   props: {
     permission: {
@@ -184,6 +219,13 @@ export default {
         },
       ],
       fields: [],
+      isTooltipVisible: false,
+      rowPosition: {},
+      tooltipRowData: {},
+      hideTimer: null,
+      selectedRow: 0,
+      showTemplatePreview: false,
+      selectedTemplate: null,
     };
   },
   created() {
@@ -213,6 +255,67 @@ export default {
           this.loading = false;
         });
     },
+    previewTemplate(info, size = null) {
+      this.selectedRow = info.id;
+      this.selectedTemplate = info;
+      this.$refs.preview.showSideBar(info, this.data.data, true, size);
+    },
+    handleRowMouseover(row) {
+      this.clearHideTimer();
+
+      const tableContainer = document.getElementById("table-container");
+      const rectTableContainer = tableContainer.getBoundingClientRect();
+      const topAdjust = rectTableContainer.top;
+
+      let elementHeight = 36;
+
+      this.isTooltipVisible = true;
+      this.tooltipRowData = row;
+
+      const rowElement = document.getElementById(`row-${row.id}`);
+      const rect = rowElement.getBoundingClientRect();
+
+      const selectedFiltersBar = document.querySelector(
+        ".selected-filters-bar",
+      );
+      const selectedFiltersBarHeight = selectedFiltersBar
+        ? selectedFiltersBar.offsetHeight
+        : 0;
+
+      elementHeight -= selectedFiltersBarHeight;
+
+      const leftBorderX = rect.left;
+      const topBorderY = rect.top - topAdjust - 272 + elementHeight;
+
+      this.rowPosition = {
+        x: leftBorderX,
+        y: topBorderY,
+      };
+    },
+    hideTooltip() {
+      this.isTooltipVisible = false;
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
+    handleRowMouseleave(visible) {
+      this.startHideTimer();
+    },
+    startHideTimer() {
+      this.hideTimer = setTimeout(() => {
+        this.hideTooltip();
+      }, 700);
+    },
+    getTemplate(templateId) {
+      return this.data.find((template) => template.id === templateId);
+    },
+    markSelectedRow(value) {
+      this.selectedRow = value;
+    },
+    hidePreview() {
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
+    },
   },
 };
 </script>
@@ -224,5 +327,6 @@ export default {
 
 .my-templates-table-card {
   padding: 0;
+  border: none;
 }
 </style>
