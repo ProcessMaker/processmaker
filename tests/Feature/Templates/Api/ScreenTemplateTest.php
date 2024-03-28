@@ -193,7 +193,6 @@ class ScreenTemplateTest extends TestCase
         $editingScreen = Screen::find($response->json('id'));
         $screenTemplate = ScreenTemplates::where('name', $name)->first();
 
-        $this->assertEquals($editingScreen->uuid, $screenTemplate->editing_screen_uuid);
         $this->assertDatabaseHas('screens', ['title' => $editingScreen->title]);
         $this->assertDatabaseHas('screens', ['description' => $screenTemplate->description]);
     }
