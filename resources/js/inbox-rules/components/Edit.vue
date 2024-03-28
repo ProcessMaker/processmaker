@@ -8,6 +8,7 @@
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
+            ref="editInboxRuleButtons"
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="savedSearchIdSelected"
             @saved-search-id-changed="savedSearchIdSelected = $event"
@@ -53,6 +54,7 @@
           :task-id="taskId"
           :data="data"
           :select-submit-button="submitButton"
+          @onSavedSearchNotSelected="$refs.editInboxRuleButtons.showPopoverMessage()"
           @onChangeViews="viewsTo($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>

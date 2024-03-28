@@ -292,7 +292,7 @@
           this.setInboxRuleData();
         },
         deep: true
-      },
+      }
     },
     mounted() {
       this.requestUser("");
@@ -303,6 +303,10 @@
         this.$router.push({name: 'index'});
       },
       onSave() {
+        if (!this.savedSearchData.columns) {
+          this.$emit("onSavedSearchNotSelected", true);
+          return;
+        }
         if (this.ruleName.trim() === "") {
           this.ruleNameState = false;
           return;
