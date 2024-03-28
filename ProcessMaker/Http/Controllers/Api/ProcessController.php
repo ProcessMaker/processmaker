@@ -26,6 +26,7 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
@@ -1744,6 +1745,32 @@ class ProcessController extends Controller
         // Check if image exists before delete
         if ($mediaImagen) {
             $mediaImagen->delete();
+        }
+    }
+
+    public function getEmbed(Request $request, Process $process)
+    {
+        $media = Process::with(['embed'])
+        ->where('id', $process->id)
+        ->get();
+
+        return new ProcessCollection($media);
+    }
+
+    public function deleteEmbed(Request $request, Process $process)
+    {
+        $process = Process::find($process->id);
+
+        // Get UUID in the table
+        $uuid = $request->input('uuid');
+
+        $embedUrl = $process->getMedia('images_carousel')
+            ->where('uuid', $uuid)
+            ->first();
+
+        // Check if embed before delete
+        if ($embedUrl) {
+            $embedUrl->delete();
         }
     }
 }
