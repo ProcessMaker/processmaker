@@ -93,6 +93,14 @@
                   <b-button
                     class="btn text-secondary icon-button"
                     variant="light"
+                    :aria-label="$t('Reassign')"
+                    @click="openReassignment()"
+                  >
+                    <i class="fas fa-user-friends" />
+                  </b-button>
+                  <b-button
+                    class="btn text-secondary icon-button"
+                    variant="light"
                     :aria-label="$t('Open Task')"
                     @click="openTask()"
                   >
@@ -109,6 +117,56 @@
                 </b-button>
               </div>
             </slot>
+          </div>
+          <div
+            id="reassign-container"
+            class="d-flex w-100 h-100 mb-3 align-items-center"
+            v-if="showReassignment"
+          >
+            <div class="mr-3">
+              <label for="user">Assign to:</label>
+            </div>
+            <div class="flex-grow-1">
+              <select-from-api
+                id='user'
+                v-model="selectedUser"
+                :placeholder="$t('Type here to search')"
+                api="users"
+                :multiple="false"
+                :show-labels="false"
+                :searchable="true"
+                :store-id="false"
+                label="fullname"
+              >
+                <template slot="noResult">
+                  {{ $t('No elements found. Consider changing the search query.') }}
+                </template>
+                <template slot="noOptions">
+                  {{ $t('No Data Available') }}
+                </template>
+                <template slot="tag" slot-scope="props">
+                  <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                    <span class="option__desc mr-1">
+                      <span class="option__title">{{ props.option.fullname }}</span>
+                    </span>
+                    <i aria-hidden="true" tabindex="1"
+                      @click="props.remove(props.option)"
+                      class="multiselect__tag-icon"></i>
+                  </span>
+                </template>
+                <template slot="option" slot-scope="props">
+                  <div class="option__desc d-flex align-items-center">
+                    <span class="option__title mr-1">{{ props.option.fullname }}</span>
+                  </div>
+                </template>
+              </select-from-api>
+            </div>
+            <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+              {{ $t('Assign') }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary ml-2" @click="cancelReassign">
+              {{ $t('Cancel') }}
+            </button>
           </div>
           <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
             <b-embed
@@ -205,6 +263,9 @@ export default {
     iframe2ContentWindow() {
       return this.$refs["tasksFrame2"].firstChild.contentWindow;
     },
+    disabled() {
+      return this.selectedUser ? this.selectedUser.length === 0 : true;
+    },
   },
   methods: {
     fillWithQuickFillData(data) {
@@ -264,6 +325,25 @@ export default {
           this.showSideBar(this.task, this.data);
           this.task.draft = null;
         });
+    },
+    reassignUser() {
+      if (this.selectedUser) {
+        ProcessMaker.apiClient
+          .put("tasks/" + this.task.id, {
+            user_id: this.selectedUser.id
+          })
+          .then(response => {
+            this.showReassignment = false;
+            this.selectedUser = [];
+          });
+      }
+    },
+    cancelReassign() {
+      this.showReassignment = false;
+      this.selectedUser = [];
+    },
+    openReassignment() {
+      this.showReassignment = true;
     },
   },
 };
