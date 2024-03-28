@@ -95,5 +95,9 @@ export default {
   margin-right: 16px;
   height: calc(100vh - 150px);
   overflow-y: auto;
+  background-color: #fff;
+  padding: 16px 16px 106px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--borders, #CDDDEE);
 }
 </style>

@@ -17,9 +17,11 @@ class ScreenComponents
                 ],
             ],
             'Fields' => [
+                'AiSection',
                 'FormInput',
                 'FormSelectList',
                 'FormTextArea',
+                'FormHtmlViewer',
                 'FormDatePicker',
                 'FormCheckbox',
                 'FormRichText',
