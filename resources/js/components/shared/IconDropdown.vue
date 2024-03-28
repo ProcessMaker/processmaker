@@ -98,6 +98,7 @@ export default {
   },
   mounted() {
     this.icon = this.value ? this.find(this.value) : this.defaultIcon;
+    this.onSelect(this.icon);
   },
   methods: {
     onSearch(query) {
@@ -115,7 +116,7 @@ export default {
       this.placeholder = this.$t("Select Icon");
     },
     find(value) {
-      return this.all.find((icon) => icon.value == value);
+      return this.all.find((icon) => icon.value === value);
     },
     onHover(icon) {
       this.placeholder = icon.label;

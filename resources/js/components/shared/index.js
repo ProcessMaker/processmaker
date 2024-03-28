@@ -17,6 +17,7 @@ import FormErrorsMixin from "./FormErrorsMixin";
 import AssetRedirectMixin from "./AssetRedirectMixin";
 import IconSelector from "./IconSelector";
 import IconDropdown from "./IconDropdown";
+import InputImageCarousel from "./InputImageCarousel.vue";
 import Modal from "./Modal";
 import ModalSaveVersion from "./ModalSaveVersion.vue";
 import PmqlInput from "./PmqlInput";
@@ -79,6 +80,7 @@ export {
   AssetRedirectMixin,
   IconSelector,
   IconDropdown,
+  InputImageCarousel,
   Modal,
   ModalSaveVersion,
   PmqlInput,
