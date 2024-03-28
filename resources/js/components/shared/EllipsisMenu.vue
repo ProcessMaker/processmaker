@@ -91,9 +91,11 @@
           >
             <div class="ellipsis-dropdown-content">
               <i
+                v-if="!action.image"
                 class="pr-1 fa-fw"
                 :class="action.icon"
               />
+              <img v-if="action.image" :src="action.image" :alt="$t('Priority')">
               <span>{{ $t(action.content) }}</span>
             </div>
           </b-dropdown-item>

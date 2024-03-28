@@ -109,13 +109,13 @@ export default {
   components: { Modal, Required, ProjectSelect },
   mixins: [ FormErrorsMixin, AssetRedirectMixin ],
   props: [
-    "countCategories", 
-    "blankTemplate", 
-    "selectedTemplate", 
-    "templateData", 
-    "generativeProcessData", 
-    "isProjectsInstalled", 
-    "categoryType", 
+    "countCategories",
+    "blankTemplate",
+    "selectedTemplate",
+    "templateData",
+    "generativeProcessData",
+    "isProjectsInstalled",
+    "categoryType",
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
@@ -171,9 +171,14 @@ export default {
   },
   methods: {
     onShown() {
-      if (this.generativeProcessData) {
-        this.name = this.generativeProcessData.process_title;
-        this.description = this.generativeProcessData.process_description;
+      if (this.generativeProcessData && !this.generativeProcessData.choices?.length) {
+        this.name = this.currentModel.process_title;
+        this.description = this.currentModel.process_description;
+      }
+      if (this.generativeProcessData && this.generativeProcessData.choices?.length > 0) {
+        const currentChoice = this.generativeProcessData.choices[this.generativeProcessData.currentChoice];
+        this.name = currentChoice.process_title;
+        this.description = currentChoice.process_description;
       }
     },
     show() {
@@ -235,8 +240,11 @@ export default {
         formData.append("version", this.template_version);
         this.handleCreateFromTemplate(this.templateData.id, formData);
       } else {
-        if (this.generativeProcessData) {
+        if (this.generativeProcessData && !this.generativeProcessData.choices?.length) {
           formData.append("bpmn", this.generativeProcessData.bpmn);
+        }
+        if (this.generativeProcessData && this.generativeProcessData.choices?.length > 0) {
+          formData.append("bpmn", this.generativeProcessData.choices[this.generativeProcessData.currentChoice].bpmn);
         }
         this.handleCreateBlank(formData);
       }
@@ -275,6 +283,9 @@ export default {
         });
     },
     handleCreateBlank(formData) {
+      // Add default alternative
+      formData.append("alternative", "A");
+
       ProcessMaker.apiClient.post(
         "/processes",
         formData,

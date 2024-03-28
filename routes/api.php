@@ -31,6 +31,7 @@ use ProcessMaker\Http\Controllers\Api\SettingController;
 use ProcessMaker\Http\Controllers\Api\SignalController;
 use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
+use ProcessMaker\Http\Controllers\Api\TaskDraftController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
@@ -178,18 +179,24 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
+    Route::get('tasks/{task}/screen_fields', [TaskController::class, 'getScreenFields'])->name('getScreenFields.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
     Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:rollback,task');
     Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
 
+    // TaskDrafts
+    Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
+    Route::delete('drafts/{task}', [TaskDraftController::class, 'delete'])->name('taskdraft.delete');
+
     // Inbox Rules
     Route::prefix('tasks/rules')->group(function () {
         Route::get('/', [InboxRulesController::class, 'index'])->name('inboxrules.index');
-        Route::get('/{inbox_rule_id}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
+        Route::get('/{inbox_rule}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
         Route::post('/', [InboxRulesController::class, 'store'])->name('inboxrules.store');
-        Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
-        Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
+        Route::delete('/{inbox_rule}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule}/update-active', [InboxRulesController::class, 'updateActive'])->name('inboxrules.update-active');
     });
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
@@ -300,12 +307,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
     Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
     Route::put('template/{type}/{processId}', [TemplateController::class, 'updateTemplateManifest'])->name('template.update')->middleware('template-authorization');
-    Route::put('template/{type}/{id}', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
+    Route::put('template/{type}/{id}/update', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
     Route::put('template/settings/{type}/{id}', [TemplateController::class, 'updateTemplateConfigs'])->name('template.settings.update')->middleware('template-authorization');
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
+    Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('template.show')->middleware('can:edit-screen-templates');
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');

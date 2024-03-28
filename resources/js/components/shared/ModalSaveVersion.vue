@@ -6,8 +6,17 @@
     :title="$t('Publish New Version')"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
+    :hide-footer="isABTestingInstalled"
   >
-    <div class="form-group">
+    <keep-alive>
+      <component
+        :is="publishVersionComponent"
+        :alternative="alternative"
+        @ab-publish-version="abPublishVersion"
+        @ab-cancel="hideModal()"
+      />
+    </keep-alive>
+    <div class="form-group" v-show="!isABTestingInstalled">
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
         <b-card no-body>
@@ -291,9 +300,12 @@ export default {
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
       selectedSavedChartId: "",
-      processId: "",
       mediaImageId: [],
       dataProcess: {},
+      // AB Testing
+      isABTestingInstalled: false,
+      publishVersionComponent: null,
+      alternative: null,
     };
   },
   computed: {
@@ -308,6 +320,14 @@ export default {
       this.redirectUrl = redirectUrl;
       this.nodeId = nodeId;
       this.showModal();
+
+      // AB Testing installed
+      this.isABTestingInstalled = ProcessMaker.modeler.abPublish;
+      // AB Testing component
+      if (this.isABTestingInstalled && ProcessMaker?.AbTesting?.PublishVersion) {
+        this.alternative = ProcessMaker?.modeler?.process?.alternative_info;
+        this.publishVersionComponent = ProcessMaker?.AbTesting?.PublishVersion;
+      }
     });
     this.retrieveSavedSearchCharts();
     this.getDescriptionInitial();
@@ -317,6 +337,12 @@ export default {
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
+    abPublishVersion(alternativeData) {
+      this.subject = alternativeData.subject;
+      this.description = alternativeData.description;
+
+      this.saveModal(alternativeData);
+    },
     /**
      * Get all information related to Launchpad Settings Modal
      */
@@ -515,7 +541,7 @@ export default {
           if(ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
-        } 
+        }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
@@ -611,26 +637,46 @@ export default {
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
     },
-    saveModal() {
+    /**
+     * Method to save modal
+     * @param alternativeData {
+     * publishedVersion: string A|B|AB,
+     * subject: string,
+     * description: string,
+     * } | null - Alternative data from AB Testing
+     *
+     * @returns {Promise<void>}
+     */
+    saveModal(alternativeData = null) {
+      const eventType = this.types[this.options.type];
+
+      let publishedVersion = 'A';
+
+      if (eventType === "modeler-save" && alternativeData) {
+        publishedVersion = alternativeData.publishedVersion;
+      }
+
       // if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
         this.dataProcess = this.process;
         this.dataProcess.description = this.processDescription;
-        this.saveProcessDescription();
+        this.saveProcessDescription(publishedVersion);
         return;
       }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
+
       const promise = new Promise((resolve, reject) => {
         // emit save types
         window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
+          eventType,
           this.redirectUrl,
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
-          this.types[this.options.type] === "modeler-save" ? false : null,
+          eventType === "modeler-save" ? false : null,
+          "",
         );
       });
 
@@ -658,10 +704,12 @@ export default {
         });
 
       // Save only process description field using Process API
-      this.saveProcessDescription();
+      this.saveProcessDescription(publishedVersion);
     },
     /**
      * Save description field in Process
+     *
+     * @param {string} publishedVersion
      */
     saveProcessDescription() {
       if (!this.processDescription) return;
@@ -714,7 +762,7 @@ export default {
     saveFromEditLaunchpad() {
       if (!this.processDescription) {
         ProcessMaker.alert(this.$t("The Description field is required."), "danger");
-        return; 
+        return;
       }
       ProcessMaker.apiClient
         .post("/version_histories", {

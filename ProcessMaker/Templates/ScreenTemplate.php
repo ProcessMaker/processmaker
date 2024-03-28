@@ -4,19 +4,15 @@ namespace ProcessMaker\Templates;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
-use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Exporters\ScreenExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
-use ProcessMaker\Models\Template;
+use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
@@ -42,9 +38,16 @@ class ScreenTemplate implements TemplateInterface
     {
         $orderBy = $this->getRequestSortBy($request, 'name');
         $include = $this->getRequestInclude($request);
-        $templates = ScreenTemplates::nonSystem()->with($include);
+        $screenType = (string) $request->input('screen_type');
+        $isPublic = (int) $request->input('is_public', false);
+        $templates = ScreenTemplates::nonSystem()->with($include)
+            ->where('is_public', $isPublic);
         $pmql = $request->input('pmql', '');
         $filter = $request->input('filter');
+
+        if (!empty($screenType)) {
+            $templates->where('screen_type', $screenType);
+        }
 
         if (!empty($pmql)) {
             try {
@@ -54,7 +57,24 @@ class ScreenTemplate implements TemplateInterface
             }
         }
 
-        $templates = $templates->select('screen_templates.*')
+        return $templates
+            ->select(
+                'screen_templates.id',
+                'screen_templates.uuid',
+                'screen_templates.unique_template_id',
+                'screen_templates.name',
+                'screen_templates.description',
+                'screen_templates.version',
+                'screen_templates.user_id',
+                'screen_templates.editing_screen_uuid',
+                'screen_templates.screen_category_id',
+                'screen_templates.screen_type',
+                'screen_templates.is_public',
+                'screen_templates.is_system',
+                'screen_templates.asset_type',
+                'screen_templates.media_collection',
+                'screen_templates.screen_custom_css',
+            )
             ->leftJoin('screen_categories as category', 'screen_templates.screen_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'screen_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
@@ -73,9 +93,8 @@ class ScreenTemplate implements TemplateInterface
                             })
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
-            })->get();
-
-        return $templates;
+            })
+            ->paginate($request->input('per_page', 10));
     }
 
     /**
@@ -84,10 +103,44 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request Request object
      * @return array Returns an array with the screen ID
      */
-    // public function show($request) : array
-    // {
-    //     // TODO: Implement showing selected screen template in screen builder
-    // }
+    public function show($request) : array
+    {
+        $template = ScreenTemplates::find($request->id);
+
+        $screen = Screen::where('uuid', $template->editing_screen_uuid)->where('is_template', 1)->first();
+
+        if ($screen) {
+            return ['id' => $screen->id];
+        }
+
+        // Otherwise we need to import the template and create a new screen
+        $payload = json_decode($template->manifest, true);
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+            ];
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $manifest = $importer->doImport();
+        $rootLog = $manifest[$payload['root']]->log;
+        $screenId = $rootLog['newId'];
+
+        $newScreen = Screen::find($screenId);
+        $newScreen->update([
+            'is_template' => 1,
+            'title' => $template->name,
+            'description' => $template->description,
+            'asset_type' => 'SCREEN_TEMPLATE',
+        ]);
+
+        ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $newScreen->uuid]);
+
+        return ['id' => $newScreen->id];
+    }
 
     /**
      * Save new screen template
@@ -98,6 +151,9 @@ class ScreenTemplate implements TemplateInterface
     {
         $data = $request->all();
 
+        $screen = Screen::select('custom_css')->where('id', $data['asset_id'])->first();
+        $screenCustomCss = $screen['custom_css'];
+
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $data['asset_id']);
         if (array_key_exists('error', $manifest)) {
@@ -105,7 +161,7 @@ class ScreenTemplate implements TemplateInterface
         }
 
         // Create a new screen template
-        $screenTemplate = $this->createScreenTemplate($data, $manifest);
+        $screenTemplate = $this->createScreenTemplate($data, $manifest, $screenCustomCss);
 
         // Save thumbnails
         $this->saveThumbnails($screenTemplate, $data['thumbnails']);
@@ -121,10 +177,69 @@ class ScreenTemplate implements TemplateInterface
      *
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the screen template is not found
      */
-    // public function create($request) : JsonResponse
-    // {
-    //     // TODO: Implement creating a screen from a selected screen template
-    // }
+    public function create($request) : JsonResponse
+    {
+        // Check for existing assets
+        $existingAssets = $request->existingAssets;
+        $requestData = $existingAssets ? $request->toArray()['request'] : $request;
+
+        $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
+        $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
+
+        if ($defaultTemplate) {
+            $requestData['templateId'] = $defaultTemplate->id;
+        }
+
+        if ($defaultTemplateId !== null) {
+            $requestData['templateId'] = $defaultTemplateId;
+            $this->updateDefaultTemplate($defaultTemplateId, $requestData['type']);
+        }
+
+        $newScreenId = $this->importScreen($requestData, $existingAssets);
+
+        try {
+            $screen = Screen::findOrFail($newScreenId);
+
+            $screen->title = $requestData['title'];
+            $screen->description = $requestData['description'];
+            $screen->save();
+
+            $this->syncProjectAssets($requestData);
+
+            return response()->json(['id' => $newScreenId, 'title' => $screen->title]);
+        } catch (Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Get the default template for the given screen type
+     *
+     * @param string $screenType The type of the screen (DISPLAY, FORM, CONVERSATIONAL, EMAIL)
+     * @return ScreenTemplates|null The default screen template or null if not found
+     */
+    public function getDefaultTemplate(string $screenType): ?ScreenTemplates
+    {
+        return ScreenTemplates::where('screen_type', $screenType)
+            ->where('is_default_template', 1)
+            ->first();
+    }
+
+    /**
+     * Update the default template for the given screen type
+     *
+     * @param int $defaultTemplateId The ID of the new default template
+     * @param string $screenType The type of screen (FORM, DISPLAY, EMAIL, CONVERSATIONAL)
+     * @return void
+     */
+    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType)
+    {
+        ScreenTemplates::where('screen_type', $screenType)->update(['is_default_template' => 0]);
+
+        ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
+    }
 
     /**
      *  Publish a Screen Template to display in the Public Templates tab
@@ -139,6 +254,31 @@ class ScreenTemplate implements TemplateInterface
         $template->saveOrFail();
 
         return response()->json();
+    }
+
+    /**
+     * Update the template.
+     */
+    public function updateTemplate(Request $request): JsonResponse
+    {
+        $request->validate([
+            'is_public' => 'sometimes|boolean',
+        ]);
+
+        $template = ScreenTemplates::findOrFail($request->id);
+
+        try {
+            $template->update($request->all());
+
+            $response = response()->json();
+        } catch (Exception $e) {
+            $response = response([
+                'message' => $e->getMessage(),
+                'errors' => $e->getMessage(),
+            ], 422);
+        }
+
+        return $response;
     }
 
     /**
@@ -283,14 +423,15 @@ class ScreenTemplate implements TemplateInterface
      * @param  array  $payload  The payload for the screen template
      * @return \App\Models\ScreenTemplates  The created screen template
      */
-    protected function createScreenTemplate(array $data, array $payload) : ScreenTemplates
+    protected function createScreenTemplate(array $data, array $payload, $customCss) : ScreenTemplates
     {
-        $screenType = Screen::findOrFail($data['asset_id'])->type;
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => auth()->id(),
-            'screen_type' => $screenType,
+            'screen_type' => $data['screenType'],
+            'screen_custom_css' => $customCss,
             'media_collection' => '',
+            'is_public' => filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0,
         ]);
         $screenTemplate->saveOrFail();
         $screenTemplate->media_collection = 'st-' . $screenTemplate->uuid . '-media';
@@ -338,5 +479,120 @@ class ScreenTemplate implements TemplateInterface
         }
 
         return ScreenTemplates::where('name', $screenTemplate)->firstOrFail();
+    }
+
+    protected function importScreen($data, $existingAssets)
+    {
+        $templateId = (int) $data['templateId'];
+        $template = ScreenTemplates::where('id', $templateId)->firstOrFail();
+        $template->fill($data->except('id'));
+        $template->name = $data['title'];
+
+        $payload = json_decode($template->manifest, true);
+
+        $payload['title'] = $data['title'];
+        $payload['description'] = $data['description'];
+
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            // Exclude the import of screen categories if the category already exists in the database
+            if ($asset['model'] === 'ProcessMaker\Models\ScreenCategory') {
+                $screenCategory = ScreenCategory::where('uuid', $key)->first();
+                if ($screenCategory !== null) {
+                    unset($payload['export'][$key]);
+                    continue;
+                }
+            }
+
+            $postOptions[$key] = [
+                'mode' => 'copy',
+                'isTemplate' => false,
+                'saveAssetsMode' => 'saveAllAssets',
+            ];
+
+            if ($existingAssets) {
+                foreach ($existingAssets as $item) {
+                    $uuid = $item['uuid'];
+                    if (isset($postOptions[$uuid])) {
+                        $postOptions[$uuid]['mode'] = $item['mode'];
+                    }
+                }
+            }
+
+            if ($payload['root'] === $key) {
+                // Set title and description for the new screen
+                $payload['export'][$key]['attributes']['name'] = $data['title'];
+                $payload['export'][$key]['attributes']['description'] = $data['description'];
+                $payload['export'][$key]['attributes']['screen_category_id'] = $data['screen_category_id'];
+
+                $payload['export'][$key]['name'] = $data['title'];
+                $payload['export'][$key]['description'] = $data['description'];
+                $payload['export'][$key]['screen_category_id'] = $data['screen_category_id'];
+            }
+        }
+
+        $options = new Options($postOptions);
+        $importer = new Importer($payload, $options);
+        $existingAssetsInDatabase = null;
+        $importingFromTemplate = true;
+        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
+        $rootLog = $manifest[$payload['root']]->log;
+        $newScreenId = $rootLog['newId'];
+
+        $this->handleTemplateOptions($data, $newScreenId);
+
+        return $rootLog['newId'];
+    }
+
+    public function handleTemplateOptions($data, $screenId)
+    {
+        // Define available options and their corresponding components
+        $availableOptions = ScreenComponents::getComponents();
+
+        $templateOptions = json_decode($data['templateOptions'], true);
+        $newScreen = Screen::findOrFail($screenId);
+
+        if (is_array($templateOptions)) {
+            // Iterate through available options to handle each one
+            foreach ($availableOptions as $option => $components) {
+                // Check if the current options is in the template options
+                if (!in_array($option, $templateOptions)) {
+                    // Remove the option configs/components from the new screen config
+                    switch($option) {
+                        case 'CSS':
+                            $newScreen->custom_css = null;
+                            break;
+                        case 'Fields':
+                        case 'Layout':
+                            $newConfig = ScreenTemplateHelper::removeScreenComponents($newScreen->config, $components);
+                            $newScreen->config = $newConfig;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        $newScreen->save();
+    }
+
+    public function syncProjectAssets($data)
+    {
+        if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($data['projects'])) {
+            $manifest = $this->getManifest('screen', $newScreenId);
+
+            foreach (explode(',', $data['projects']) as $project) {
+                foreach ($manifest['export'] as $asset) {
+                    $model = $asset['model']::find($asset['attributes']['id']);
+                    $projectAsset = new (self::PROJECT_ASSET_MODEL_CLASS);
+                    $projectAsset->create([
+                        'project_id' => $project,
+                        'asset_id' => $model->id,
+                        'asset_type' => get_class($model),
+                    ]);
+                }
+            }
+        }
     }
 }

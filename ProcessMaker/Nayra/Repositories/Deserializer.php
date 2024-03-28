@@ -58,7 +58,7 @@ class Deserializer
             $version = ProcessVersion::find($modelId);
             $model = $version->process;
 
-            $definition = app(BpmnDocumentInterface::class, ['process' => $model]);
+            $definition = app(BpmnDocumentInterface::class, ['process' => $model, 'process_version' => $version]);
             $definition->setFactory($this->factory);
             $definition->loadXML($version->bpmn);
 

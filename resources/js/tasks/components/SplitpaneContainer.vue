@@ -1,6 +1,6 @@
 
 <template>
-  <splitpanes ref="inspectorSplitPanes" class="splitpane default-theme" :dbl-click-splitter="false">
+  <splitpanes ref="inspectorSplitPanes" class="splitpane default-theme" :dbl-click-splitter="false" @resize="sizeListener($event)">
     <pane style="opacity: 0">
       <div />
     </pane>
@@ -29,6 +29,9 @@ export default {
   methods: {
     setPaneMinSize(splitpanesWidth, minPixelWidth) {
       this.paneMinSize = (minPixelWidth * 100) / splitpanesWidth;
+    },
+    sizeListener(event) {
+      this.$root.$emit('pane-size', event[1].size);
     },
   },
   updated() {

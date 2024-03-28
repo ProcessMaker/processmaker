@@ -209,6 +209,8 @@ import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
 import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import SettingsEmpty from "./SettingsEmpty.vue";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -228,6 +230,7 @@ export default {
     SettingsExport,
     SettingsRange,
     SettingSelect,
+    SettingsEmpty,
   },
   mixins:[dataLoadingMixin, uniqIdsMixin],
   props: ['group'],

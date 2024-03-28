@@ -22,10 +22,8 @@ class ScreenTemplatesFactory extends Factory
     public function definition()
     {
         $screen = Screen::factory()->create();
-        // TODO: Handle storing screen manifests
-        // $response = (new ExportController)->manifest('process', $process->id);
-
-        // $manifest = json_decode($response->getContent(), true);
+        $response = (new ExportController)->manifest('screen', $screen->id);
+        $manifest = $response->getContent();
 
         return [
             'unique_template_id' => '',
@@ -35,8 +33,10 @@ class ScreenTemplatesFactory extends Factory
             'editing_screen_uuid' => null,
             'screen_type' => 'FORM',
             'media_collection' => $this->faker->unique()->name(),
-            'manifest' => '{}',
+            'manifest' => $manifest,
+            'screen_custom_css' => null,
             'is_public' => false,
+            'is_default_template' => false,
             'is_system' => false,
             'asset_type' => null,
             'version' => '1.0.0',

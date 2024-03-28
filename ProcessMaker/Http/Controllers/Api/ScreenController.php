@@ -14,6 +14,7 @@ use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
@@ -220,6 +221,11 @@ class ScreenController extends Controller
         $screen = new Screen();
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
+
+        if ($request->has('defaultTemplateId') && $request->has('is_public')) {
+            $this->updateDefaultTemplate($request->type, $request->is_public);
+        }
+
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 
@@ -574,5 +580,13 @@ class ScreenController extends Controller
         $screen->custom_css = $request->post('custom_css');
 
         return new ScreenResource($screen);
+    }
+
+    public function updateDefaultTemplate(string $screenType, int $isPublic)
+    {
+        ScreenTemplates::where('screen_type', $screenType)
+            ->where('is_public', $isPublic)
+            ->where('is_default_template', 1)
+            ->update(['is_default_template' => 0]);
     }
 }

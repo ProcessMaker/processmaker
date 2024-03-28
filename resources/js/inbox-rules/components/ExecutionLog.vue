@@ -12,64 +12,65 @@
 </template>
 
 <script>
-import PMTable from "../../components/PMTable.vue";
-export default {
-  components: {
-    PMTable,
-  },
-  data() {
-    return {
-      response: { data: [], meta: {}},
-      page: 1,
-    }
-  },
-  methods: {
-    load() {
-      const params = {
-        page: this.page
-      };
-      window.ProcessMaker.apiClient.get("tasks/rule-execution-log", { params }).then(response => {
-        this.response = response.data;
-      });
+  import PMTable from "../../components/PMTable.vue";
+  export default {
+    components: {
+      PMTable,
     },
-    changePage(page) {
-      this.page = page;
-      this.load();
+    data() {
+      return {
+        response: {data: [], meta: {}},
+        page: 1,
+      }
     },
-    columns() {
-      return [
-        {
-          label: this.$t("Case #"),
-          field: "task.process_request.case_number",
-        },
-        {
-          label: this.$t("Case Name"),
-          field: "task.process_request.case_title",
-        },
-        {
-          label: this.$t("Run Date"),
-          field: "created_at",
-          format: "datetime",
-        },
-        {
-          label: this.$t("Applied Rule"),
-          field: "inbox_rule_attributes.name",
-        },
-        {
-          label: this.$t("Task Due Date"),
-          field: "task.due_at",
-          format: "datetime",
-        },
-        {
-          label: this.$t("Task Name"),
-          field: "task.element_name",
-        },
-        {
-          label: this.$t("Status"),
-          field: "task.status",
-        }
-      ]
+    methods: {
+      load() {
+        const params = {
+          page: this.page
+        };
+        ProcessMaker.apiClient.get("tasks/rule-execution-log", {params})
+                .then(response => {
+                  this.response = response.data;
+                });
+      },
+      changePage(page) {
+        this.page = page;
+        this.load();
+      },
+      columns() {
+        return [
+          {
+            label: this.$t("Case #"),
+            field: "task.process_request.case_number",
+          },
+          {
+            label: this.$t("Case Name"),
+            field: "task.process_request.case_title",
+          },
+          {
+            label: this.$t("Run Date"),
+            field: "created_at",
+            format: "datetime",
+          },
+          {
+            label: this.$t("Applied Rule"),
+            field: "inbox_rule_attributes.name",
+          },
+          {
+            label: this.$t("Task Due Date"),
+            field: "task.due_at",
+            format: "datetime",
+          },
+          {
+            label: this.$t("Task Name"),
+            field: "task.element_name",
+          },
+          {
+            label: this.$t("Status"),
+            field: "task.status",
+          }
+        ]
+      }
     }
   }
-}
 </script>

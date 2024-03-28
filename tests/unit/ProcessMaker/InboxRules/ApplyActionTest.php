@@ -44,7 +44,7 @@ class ApplyActionTest extends TestCase
                 ['foo' => 'bar']
             );
 
-        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
+        ApplyAction::applyActionOnTask($activeTask, $inboxRule);
 
         $inboxRuleLog = InboxRuleLog::orderBy('id', 'desc')->first();
         $this->assertEquals($inboxRuleLog->inbox_rule_attributes, $inboxRule->getAttributes());
@@ -75,7 +75,7 @@ class ApplyActionTest extends TestCase
             'is_priority' => false,
         ]);
 
-        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
+        ApplyAction::applyActionOnTask($activeTask, $inboxRule);
 
         $activeTask->refresh();
 
@@ -116,7 +116,7 @@ class ApplyActionTest extends TestCase
             ->with($userToReassign->id, \Mockery::on(fn ($arg) => $arg->id === $user->id))
             ->getMock();
 
-        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
+        ApplyAction::applyActionOnTask($activeTask, $inboxRule);
     }
 
     public function testSaveAsDraft()
@@ -144,7 +144,7 @@ class ApplyActionTest extends TestCase
             'data' => ['input' => 'active value'],
         ]);
 
-        ApplyAction::applyActionOnTask($activeTask, [$inboxRule]);
+        ApplyAction::applyActionOnTask($activeTask, $inboxRule);
 
         $taskDraftData = TaskDraft::where('task_id', $activeTask->id)->value('data');
 

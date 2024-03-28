@@ -9,6 +9,7 @@
         :data="data"
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
+        :selected-row="selectedRow"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -157,11 +158,15 @@
           >
           <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
             <span>
-              <i
+              <b-button
                 v-if="!verifyURL('saved-searches')"
-                class="fa fa-eye py-2"
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
                 @click="previewTasks(tooltipRowData)"
-              />
+              >
+                <i class="fas fa-eye"/>
+              </b-button>
             </span>
             <ellipsis-menu
               :actions="actions"
@@ -182,14 +187,17 @@
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
     </div>
     <tasks-preview
       v-if="!verifyURL('saved-searches')"
       ref="preview"
+      @mark-selected-row="markSelectedRow"
+      :tooltip-button="tooltipFromButton"
     >
-      <template v-slot:header="{ close, taskId }">
-        <slot name="preview-header" v-bind:close="close" v-bind:task="getTask(taskId)"></slot>
+      <template v-slot:header="{ close, screenFilteredTaskData }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
       </template>
     </tasks-preview>
   </div>
@@ -239,6 +247,7 @@ export default {
     FilterTableBodyMixin,
   ],
   props: {
+    selectedRowQuick: 0,
     filter: {},
     columns: [],
     pmql: {},
@@ -258,9 +267,19 @@ export default {
       type: Array,
       default: () => [],
     },
+    fromButton: {
+      type: String,
+      default: "",
+    },
+    disableRowClick: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
+      tooltipFromButton: "",
+      selectedRow: 0,
       actions: [
         {
           value: "edit",
@@ -361,6 +380,9 @@ export default {
     }
   },
   methods: {
+    markSelectedRow(value) {
+      this.selectedRow = value;
+    },
     getTask(taskId) {
       return this.data.data.find(task => task.id === taskId);
     },
@@ -396,6 +418,7 @@ export default {
     formatActiveTask(row) {
       return `
       <a href="${this.openTask(row)}"
+        data-cy="active-task-data"
         class="text-nowrap">
         ${row.element_name}
       </a>`;
@@ -516,6 +539,8 @@ export default {
       return link;
     },
     previewTasks(info, size = null) {
+      this.tooltipFromButton = size;
+      this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
@@ -588,7 +613,7 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if (!isPriorityIcon) {
+      if (!isPriorityIcon && !this.disableRowClick) {
         window.location.href = this.openTask(row);
       }
     },
@@ -617,8 +642,12 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
-
+      let bottomBorderY = 0
+      if(this.fromButton === "" || this.fromButton === "previewTask"){
+        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+      }else{
+        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+      }
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -709,6 +738,12 @@ export default {
   background-color: #1572c2;
   width: 197px;
   height: 40px;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
 }
 </style>
 <style lang="scss" scoped>
