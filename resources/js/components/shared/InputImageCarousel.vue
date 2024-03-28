@@ -181,9 +181,9 @@
         </div>
       </div>
       <div
-        v-if="!loadingImage && !notValidImage"
+        v-show="!loadingImage && !notValidImage"
         id="idDropdownMenuUpload"
-        class="d-flex justify-content-center align-items-center"
+        class="justify-content-center align-items-center"
       >
         <div
           class="input-file-custom dropdown-toggle"

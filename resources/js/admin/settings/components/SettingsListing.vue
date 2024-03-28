@@ -150,7 +150,7 @@
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
           <div class="h-100 w-100 text-center">
-            No Data Available
+            <SettingsEmpty />
           </div>
         </template>
       </b-table>
@@ -192,6 +192,8 @@ import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
 import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import SettingsEmpty from "./SettingsEmpty.vue";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -211,6 +213,7 @@ export default {
     SettingsExport,
     SettingsRange,
     SettingSelect,
+    SettingsEmpty,
   },
   mixins:[uniqIdsMixin],
   props: ['group'],

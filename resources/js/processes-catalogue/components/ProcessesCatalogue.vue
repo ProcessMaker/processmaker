@@ -27,7 +27,7 @@
       </div>
       <div class="processes-info">
         <div
-          v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
+          v-if="!showWizardTemplates && !showCardProcesses && !showProcess && !showProcessScreen"
           class="d-flex justify-content-center py-5"
         >
           <CatalogueEmpty />
@@ -41,10 +41,18 @@
             @wizardLinkSelect="wizardTemplatesSelected"
           />
           <ProcessInfo
-            v-if="showProcess && !showWizardTemplates && !showCardProcesses"
+            v-if="showProcess && !showWizardTemplates && !showCardProcesses && !showProcessScreen"
             :process="selectedProcess"
             :current-user-id="currentUserId"
             :current-user="currentUser"
+            :permission="permission"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="returnedFromInfo"
+          />
+          <ProcessScreen
+            v-if="showProcessScreen && !showCardProcesses"
+            :process="selectedProcess"
+            :current-user-id="currentUserId"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
@@ -66,10 +74,11 @@ import CatalogueEmpty from "./CatalogueEmpty.vue";
 import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 import WizardTemplates from "./WizardTemplates.vue";
+import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
   },
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
@@ -92,6 +101,7 @@ export default {
       showWizardTemplates: false,
       showCardProcesses: false,
       showProcess: false,
+      showProcessScreen: false,
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
@@ -152,7 +162,7 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            if(!this.checkDefaultOptions()) {
+            if (!this.checkDefaultOptions()) {
               this.listCategories = [...this.defaultOptions, ...this.listCategories];
             }
             this.listCategories = [...this.listCategories, ...response.data.data];
@@ -238,7 +248,13 @@ export default {
     openProcess(process) {
       this.showCardProcesses = false;
       this.guidedTemplates = false;
-      this.showProcess = true;
+      if (this.verifyScreen(process)) {
+        this.showProcess = false;
+        this.showProcessScreen = true;
+      } else {
+        this.showProcess = true;
+        this.showProcessScreen = false;
+      }
       this.selectedProcess = process;
     },
     /**
@@ -246,6 +262,12 @@ export default {
      */
     returnedFromInfo() {
       this.selectCategorie(this.category);
+    },
+    /**
+     * Verify if the process open the info or Screen
+     */
+    verifyScreen(process) {
+      return JSON.parse(process.launchpad_properties)?.screen_id || false;
     },
   },
 };

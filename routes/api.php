@@ -203,6 +203,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
+    Route::get('requests/{process}/default-chart', [ProcessRequestController::class, 'getDefaultChart'])->name('requests.default.chart');
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');

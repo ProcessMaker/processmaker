@@ -386,12 +386,16 @@ class Setting extends ProcessMakerModel implements HasMedia
             ->select('group')
             ->groupBy('group')
             ->where('group_id', $menuId)
+            ->orderBy('group', 'ASC')
             ->notHidden()
             ->pluck('group');
         $response = $query->toArray();
         $result = [];
         foreach ($response as &$value) {
             // Technical debts: we need to add int key to identify a group, currently this is a label
+            if (strpos($value, "SSO -") === 0) {
+                $value = "- " . $value;
+            }
             $result[] = [
                 'id' => $value,
                 'name' => $value,
