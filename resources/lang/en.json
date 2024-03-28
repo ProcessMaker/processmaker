@@ -2182,5 +2182,9 @@
   "open": "open",
   "AUTOSAVE": "AUTOSAVE",
   "Last save: ": "Last save: ",
-  "Press enter to remove group": "Press enter to remove group"
+  "Press enter to remove group": "Press enter to remove group",
+  "Rule successfully created": "Rule successfully created",
+  "Check it out in the \"Rules\" section of your inbox.": "Check it out in the \"Rules\" section of your inbox.",
+  "The inbox rule {{name}} was created.": "The inbox rule {{name}} was created.",
+  "The inbox rule '{{name}}' was updated.": "The inbox rule '{{name}}' was updated."
 }

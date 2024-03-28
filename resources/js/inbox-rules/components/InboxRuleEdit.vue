@@ -176,6 +176,20 @@
       </b-form-group>
 
     </template>
+
+    <b-modal ref="openModal"
+             @hidden="onModalHidden"
+             centered
+             hide-footer
+             modal-class="pm-inbox-rule-edit-modal"
+             header-class="pm-inbox-rule-edit-modal-header"
+             footer-class="pm-inbox-rule-edit-modal-footer">
+      <div class="pm-inbox-rule-edit-modal-content mb-4 mr-4 ml-4">
+        <img src="/img/check-circle-lg.svg" :alt="$t('Rule successfully created')"/>
+        <b>{{ $t('Rule successfully created') }}</b>
+        <span>{{ $t('Check it out in the "Rules" section of your inbox.') }}</span>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -227,7 +241,7 @@
         ruleName: "",
         ruleNameState: null,
         makeDraft: false,
-        submitAfterFilling: false,
+        submitAfterFilling: false
       };
     },
     computed: {
@@ -239,8 +253,8 @@
           label: this.selectSubmitButton.label || null,
           value: this.selectSubmitButton.value || null,
           name: this.selectSubmitButton.name || null,
-          loopContext: this.selectSubmitButton.loopContext || null,
-        }
+          loopContext: this.selectSubmitButton.loopContext || null
+        };
       },
       submitButtonState() {
         if (!this.submitAfterFilling) {
@@ -313,7 +327,7 @@
         if (this.inboxRule) {
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
                   .then(response => {
-                    this.$router.push({name: 'index'});
+                    this.$refs.openModal.show();
 
                     let message = "The inbox rule '{{name}}' was updated.";
                     message = this.$t(message, {name: this.ruleName});
@@ -326,7 +340,7 @@
         } else {
           ProcessMaker.apiClient.post('/tasks/rules', params)
                   .then(response => {
-                    this.$router.push({name: 'index'});
+                    this.$refs.openModal.show();
 
                     let message = "The inbox rule {{name}} was created.";
                     message = this.$t(message, {name: this.ruleName});
@@ -337,6 +351,9 @@
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         }
+      },
+      onModalHidden() {
+        this.$router.push({name: 'index'});
       },
       onChangeRuleName() {
         this.ruleNameState = this.ruleName.trim() !== "";
@@ -383,6 +400,25 @@
 <style>
   .pm-inbox-rule-edit-radio>.custom-control-inline{
     display: flex;
+  }
+  .pm-inbox-rule-edit-modal .modal-content{
+    border-radius: 12px;
+  }
+  .pm-inbox-rule-edit-modal-content>:not(img):not(svg){
+    display: flex;
+    flex-direction: column;
+  }
+  .pm-inbox-rule-edit-modal-content>b{
+    font-size: 24px;
+    color: #4EA075;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .pm-inbox-rule-edit-modal-header{
+    border-color: white;
+  }
+  .pm-inbox-rule-edit-modal-footer{
+    border-color: white;
   }
 </style>
 <style scoped>
