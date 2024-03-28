@@ -175,7 +175,7 @@ class ScreenTemplateTest extends TestCase
         $screenTemplate->refresh();
         $this->assertEquals(0, $screenTemplate->is_public);
     }
-    
+
     public function testShowScreenTemplate()
     {
         // Create screen and save it in the manifest
@@ -192,7 +192,7 @@ class ScreenTemplateTest extends TestCase
             ]
         );
 
-        $route = route('api.template.show', ['screen', $screenTemplate->id]);
+        $route = route('api.screenBuilder.template.show', ['screen', $screenTemplate->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
         $newScreen = Screen::find($response->json('id'));
