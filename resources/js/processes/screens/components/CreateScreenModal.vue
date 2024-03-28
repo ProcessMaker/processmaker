@@ -273,15 +273,9 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.formData.templateId !== null && this.formData.templateId !== undefined && this.formData.defaultTemplateId !== null) {
+      if (this.formData.templateId !== null && this.formData.templateId !== undefined || this.formData.defaultTemplateId !== null) {
         this.handleCreateFromTemplate();
-      } else if (this.formData.defaultTemplateId !== null && this.formData.templateId === undefined) {
-        this.handleCreateFromBlank();
-      } else if (this.formData.templateId === undefined) {
-        this.handleCreateFromBlank();
-      } else if (this.formData.defaultTemplateId === null && this.formData.templateId !== null) {
-        this.handleCreateFromTemplate();
-      } else if (this.formData.defaultTemplateId === null && this.formData.templateId === null) {
+      } else {
         this.handleCreateFromBlank();
       }
     },
