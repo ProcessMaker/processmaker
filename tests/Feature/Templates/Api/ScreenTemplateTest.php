@@ -61,6 +61,7 @@ class ScreenTemplateTest extends TestCase
             'name' => 'Test Screen Template Update',
             'description' => 'Test Screen Template Updated Description',
             'version' => '1.0.1',
+            'template_media' => [],
         ];
         $response = $this->apiCall('PUT', $route, $data);
         // Assert response status
@@ -175,7 +176,7 @@ class ScreenTemplateTest extends TestCase
         $screenTemplate->refresh();
         $this->assertEquals(0, $screenTemplate->is_public);
     }
-    
+
     public function testShowScreenTemplate()
     {
         // Create screen and save it in the manifest
