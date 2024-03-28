@@ -124,6 +124,7 @@
                 :actions="myTemplateActions"
                 :data="tooltipRowData"
                 :divider="false"
+                :permission="permission"
               />
             </slot>
           </div>
@@ -146,7 +147,7 @@
     </div>
     <template-preview-container
       ref="preview"
-      :template="selectedTemplate"
+      :selected-template="selectedTemplate"
       @mark-selected-row="markSelectedRow"
     />
   </div>
