@@ -182,7 +182,7 @@ class ScreenTemplateTest extends TestCase
     {
         // Create screen template
         $name = 'Test Screen Template';
-        $screenTemplate = ScreenTemplates::factory()->create(['name' => $name]);
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => $name, 'description' => 'Test Screen Template Description']);
 
         // Make API call to show screen template
         $route = route('api.template.show', ['screen', $screenTemplate->id]);
@@ -190,11 +190,13 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
 
         // Assert that our database has the screen template and the editing screen for that screen we created
-        $editingScreen = Screen::find($response->json('id'));
-        $screenTemplate = ScreenTemplates::where('name', $name)->first();
+        $editingScreen = Screen::where('id', $response->json()['id'])->firstOrFail();
+        $screenTemplate = ScreenTemplates::where('editing_screen_uuid', $editingScreen->uuid)->firstOrFail();
 
-        $this->assertDatabaseHas('screens', ['title' => $editingScreen->title]);
-        $this->assertDatabaseHas('screens', ['description' => $screenTemplate->description]);
+        $this->assertEquals($editingScreen->title, $screenTemplate->name);
+        $this->assertEquals($editingScreen->description, $screenTemplate->description);
+        $this->assertEquals(1, $editingScreen->is_template);
+        $this->assertEquals('SCREEN_TEMPLATE', $editingScreen->asset_type);
     }
 
     public function testImportExportScreenTemplate()
