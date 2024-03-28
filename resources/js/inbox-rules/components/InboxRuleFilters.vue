@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!savedSearchId && !task">
+    <div v-if="!savedSearchId && !task" >
       <PMMessageScreen>
         <template v-slot:content>
           <img src="/img/funnel-fill-elements-blue.svg" 
@@ -220,9 +220,9 @@
       loadTask() {
         this.ready = false;
 
-        this.columns = this.defaultColumns =
-                _.get(window, 'Processmaker.defaultColumns', [])
-                .filter(c => c.field !== 'is_priority');
+        let defaultColumns = _.get(window, 'Processmaker?.defaultColumns', []);
+        this.defaultColumns = defaultColumns.filter(c => c.field !== 'is_priority');
+        this.columns = this.defaultColumns;
 
         return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {

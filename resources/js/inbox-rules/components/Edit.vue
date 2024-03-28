@@ -16,10 +16,9 @@
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
-          v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
           :savedSearchId="getSavedSearchId"
-          :task-id="taskId"
+          :taskId="taskId"
           :show-column-selector-button="false"
           @count="count = $event"
           @saved-search-data="savedSearchData = $event">
