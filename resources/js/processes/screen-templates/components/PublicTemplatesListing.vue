@@ -10,7 +10,7 @@
     />
     <div
       v-show="!shouldShowLoader"
-      class="card card-body public-templates-table-card"
+      class="public-templates-table-card"
       data-cy="public-templates-table"
     >
       <filter-table

@@ -21,7 +21,7 @@ trait TaskControllerIndexMethods
         $query->select('process_request_tokens.*');
         $include = $request->input('include') ? explode(',', $request->input('include')) : [];
 
-        foreach (['data', 'screenFilteredData'] as $key) {
+        foreach (['data'] as $key) {
             if (in_array($key, $include)) {
                 unset($include[array_search($key, $include)]);
             }

@@ -150,7 +150,7 @@
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
           <div class="h-100 w-100 text-center">
-            No Data Available
+            <SettingsEmpty />
           </div>
         </template>
       </b-table>
@@ -192,6 +192,8 @@ import SettingsExport from './SettingsExport';
 import SettingsRange from './SettingsRange';
 import SettingDriverAuthorization from './SettingDriverAuthorization';
 import { createUniqIdsMixin } from "vue-uniq-ids";
+import SettingsEmpty from "./SettingsEmpty.vue";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
@@ -211,6 +213,7 @@ export default {
     SettingsExport,
     SettingsRange,
     SettingSelect,
+    SettingsEmpty,
   },
   mixins:[uniqIdsMixin],
   props: ['group'],
@@ -249,6 +252,7 @@ export default {
     },
   },
   mounted() {
+    this.$on("refresh-menu", this.removeElement);
     if (! this.group) {
       this.orderBy = "group";
       this.fields.push({
@@ -505,11 +509,20 @@ export default {
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
+        if (btn.ui.handler === "addMailServer") {
+          this.$parent.$refs["menu-collapse"].firstTime = false;
+          this.$parent.$refs["menu-collapse"].getMenuGrups();
+        }
       }
+    },
+    removeElement() {
+      this.$parent.$refs["menu-collapse"].firstTime = true;
+      this.$parent.$refs["menu-collapse"].getMenuGrups();
     },
     refresh() {
       this.$refs.table.refresh();
-      this.$emit('refresh');
+      this.$parent.$refs["menu-collapse"].firstTime = false;
+      this.$parent.$refs["menu-collapse"].getMenuGrups();
     },
     formatGroupName(name) {
       return name.toLowerCase().replaceAll(" ", "-");

@@ -458,18 +458,18 @@ export default {
         section: "right",
         items: [
           {
-            id: "button_undo",
+            id: "undo",
             type: "button",
-            title: this.$t("Calculated Properties"),
+            title: this.$t("Undo"),
             name: this.$t("Undo"),
             variant: "link",
             icon: "fas fa-undo",
             action: "undoAction()",
           },
           {
-            id: "button_redo",
+            id: "redo",
             type: "button",
-            title: this.$t("Calculated Properties"),
+            title: this.$t("Redo"),
             name: this.$t("Redo"),
             variant: "link",
             icon: "fas fa-redo",
@@ -1266,14 +1266,18 @@ body {
   background-color: #ffff;
   color: #6a7888;
   padding: 8px 8px 2px 8px;
+  font-size: 1rem !important;
 }
 .btn-platform:hover {
   color: #6a7888;
 }
 .page-dropdown-menu {
   min-width: 333px;
+  max-height: 26rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
   .dropdown-item {
-   font-size: 14px !important;
+   font-size: 1rem !important;
   };
 }
 </style>

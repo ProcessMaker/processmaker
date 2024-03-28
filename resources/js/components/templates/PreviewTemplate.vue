@@ -55,11 +55,12 @@
             >
                 <template #header>
                     <b-row class="d-flex m-0" align-h="between" align-v="center">
-                       <h4>{{ $t('Custom CSS') }}</h4>
-                        <b-button @click="hideTemplateCss" variant="outline-secondary" class="text-uppercase">
-                            <i class="fas fa-cubes"></i> 
-                            {{ $t('Templates') }}
-                        </b-button>
+                        <h4>
+                            <b-button @click="hideTemplateCss" variant="link" class="p-0 back-btn mr-2">
+                                <i class="fas fa-arrow-circle-left text-secondary"></i>
+                            </b-button>
+                            {{ $t('Custom CSS') }}
+                        </h4>
                     </b-row>
                 </template>
                 <div class="css-preview">
@@ -105,6 +106,11 @@
             },
             templateHasThumbnails() {
                 return this.templateData?.thumbnails.length > 0;
+            }
+        },
+        watch: {
+            selectedTemplateOptions() {
+                this.$emit('template-options-selected', this.selectedTemplateOptions);
             }
         },
         methods: {
