@@ -8,11 +8,13 @@ use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiControlle
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Templates\ProcessTemplate;
+use ProcessMaker\Templates\ScreenTemplate;
 
 class TemplateController extends Controller
 {
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class],
+        'screen' => [Screen::class, ScreenTemplate::class],
     ];
 
     /**
@@ -45,9 +47,19 @@ class TemplateController extends Controller
      */
     public function configure(string $type, $request)
     {
-        [$template, $addons, $categories] = (new $this->types[$type][1])->configure($request);
+        [$type, $template, $addons, $categories, $route, $screenTypes] =
+            (new $this->types[$type][1])->configure($request);
 
-        return view('templates.configure', compact(['template', 'addons', 'categories']));
+        return view('templates.configure', compact(
+            [
+                'type',
+                'template',
+                'addons',
+                'categories',
+                'route',
+                'screenTypes',
+            ]
+        ));
     }
 
     public function show(Request $request)

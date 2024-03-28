@@ -435,14 +435,16 @@ class ProcessTemplate implements TemplateInterface
         $template->description = $query->description;
         $template->process_category_id = $query['process_category_id'];
         $template->version = $query->version;
+        $template->is_public = $query->is_public;
         $categories = ProcessCategory::orderBy('name')
             ->where('status', 'ACTIVE')
             ->get()
             ->pluck('name', 'id')
             ->toArray();
         $addons = $this->getPluginAddons('edit', compact(['template']));
+        $route = ['label' => 'Screens', 'action' => 'screens'];
 
-        return [$template, $addons, $categories];
+        return ['process', $template, $addons, $categories, $route, null];
     }
 
     /**

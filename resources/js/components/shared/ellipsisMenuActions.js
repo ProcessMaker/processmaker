@@ -267,6 +267,14 @@ export default {
           icon: "fas fa-pen-square",
         },
         {
+          value: "configure-template",
+          content: "Configure Template",
+          link: true,
+          href:"/template/screen/{{id}}/configure",
+          permission: ["edit-screens"],
+          icon: "fas fa-cog",
+        },
+        {
           value: "make-public",
           content: "Make Public",
           permission: "publish-screen-templates",

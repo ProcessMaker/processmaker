@@ -10,9 +10,9 @@
 
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Designer') => route('processes.index'),
-        __('Processes') => route('processes.index'),
-        __('Templates') => route('processes.index'),
+        __('Designer') => route( $route['action'] . '.index'),
+        $route['label'] => route($route['action'] . '.index'),
+        __('Templates') => route($route['action'] . '.index'),
         $template->name => null,
     ]])
 @endsection
@@ -20,7 +20,6 @@
     <div class="container" id="configureTemplate" v-cloak>
         <div class="row">
             <div class="col-12">
-
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
@@ -39,54 +38,24 @@
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
-                            <required></required>
-                            <div class="form-group">
-                                {!!Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
-                                {!!Form::text('name', null,
-                                    [ 'id'=> 'name',
-                                        'class'=> 'form-control',
-                                        'v-model'=> 'formData.name',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
-                                    ])
-                                !!}
-                                <small class="form-text text-muted"
-                                       v-if="! errors.name">{{ __('The template name must be unique.') }}</small>
-                                <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
-                                {!! Form::textarea('description', null,
-                                    ['id' => 'description',
-                                        'rows' => 4,
-                                        'class'=> 'form-control',
-                                        'v-model' => 'formData.description',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
-                                    ])
-                                !!}
-                                <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
-                            </div>
-                             <div class="form-group">
-                                {!!Form::label('version', __('Version') . '<small class="ml-1">*</small>', [], false)!!}
-                                {!!Form::text('version', null,
-                                    [ 'id'=> 'version',
-                                        'class'=> 'form-control',
-                                        'v-model'=> 'formData.version',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.version}'
-                                    ])
-                                !!}
-                                <div class="invalid-feedback" role="alert"
-                                    v-if="errors.version">@{{errors.version[0]}}</div>
-                            </div>
-                            <category-select :label="$t('Category')" api-get="process_categories"
-                                api-list="process_categories" v-model="formData.process_category_id"
-                                :errors="errors.category"
-                                >
-                            </category-select>
-                            <div class="d-flex justify-content-end mt-2">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
-                            </div>
-                        </div>
+                             <required></required>
+                            @if ($type === 'process')
+                                <process-template-configurations
+                                    :template-data="formData"
+                                    :permission="{{ \Auth::user()->hasPermissionsFor('process-templates') }}"
+                                    :response-errors="errors"
+                                    @updated="handleUpdatedTemplate"
+                                />
+                            @endif
+                            @if ($type === 'screen')
+                                <screen-template-configurations
+                                    :template-data="formData"
+                                    :permission="{{ \Auth::user()->hasPermissionsFor('screen-templates') }}"
+                                    :screen-types="screenTypes"
+                                    :response-errors="errors"
+                                    @updated="handleUpdatedTemplate"
+                                />
+                            @endif
                         </div>
                         @isset($addons)
                             @foreach ($addons as $addon)
@@ -97,8 +66,16 @@
                             @endforeach
                         @endisset
                     </div>
+                    <div class="d-flex justify-content-end mt-2">
+                        {!! Form::button(__('Cancel'),
+                            [
+                                'class'=>'btn btn-outline-secondary',
+                                '@click' => 'onClose'
+                            ])
+                        !!}
+                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -106,60 +83,14 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/templates/configure.js')}}"></script>
     <script>
-      test = new Vue({
-        el: '#configureTemplate',
-        mixins: addons,
-        data() {
-          return {
-            formData: @json($template),
-            dataGroups: [],
-            value: [],
-            errors: {
-              name: null,
-              description: null,
-              category: null,
-              status: null,
-              screen: null
-            },
-          }
-        },       
-        methods: {          
-          resetErrors() {
-            this.errors = Object.assign({}, {
-              name: null,
-              description: null,
-              category: null,
-              status: null,
-              screen: null
-            });
-          },
-          onClose() {
-            window.location.href = '/processes';
-          },         
-          onUpdate() {
-            this.resetErrors();
-            let that = this;           
-            
-            ProcessMaker.apiClient.put('template/settings/process/' + that.formData.id, that.formData)
-              .then(response => {                
-                ProcessMaker.alert(this.$t('The template was saved.'), 'success', 5, true);
-                that.onClose();
-              })
-              .catch(error => {
-                // //define how display errors
-                this.errors.name = ['The template name must be unique.'];
-                if (error.response.status && error.response.status === 422) {
-                  // Validation error
-                  that.errors = error.response.data.errors;
-                 
-                }
-              });
-          },          
+        window.ProcessMaker.templateConfigurations = {
+            data: @json($template),
+            templateType: @json($type),
+            screenTypes: @json($screenTypes),
         }
-      });
     </script>
+    <script src="{{mix('js/templates/configure.js')}}"></script>
 @endsection
 
 @section('css')

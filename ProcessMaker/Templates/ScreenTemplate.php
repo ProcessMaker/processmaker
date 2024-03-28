@@ -12,6 +12,7 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
+use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
@@ -339,17 +340,48 @@ class ScreenTemplate implements TemplateInterface
      */
     public function configure(int $id) : array
     {
-        // TODO: Implement showing selected screen template configurations
+        $template = (object) [];
+
+        $template = ScreenTemplates::select([
+            'id',
+            'uuid',
+            'media_collection',
+            'name',
+            'description',
+            'screen_category_id',
+            'version',
+        ])->where('id', $id)->firstOrFail();
+
+        $categories = ScreenCategory::orderBy('name')
+            ->where('status', 'ACTIVE')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+        $addons = $this->getPluginAddons('edit', compact(['template']));
+        $route = ['label' => 'Screens', 'action' => 'screens'];
+
+        $screenTypes = ScreenType::all()->pluck('name')->toArray();
+
+        return ['screen', $template, $addons, $categories, $route, $screenTypes];
     }
 
     /**
-     *  Delete process template
+     *  Delete screen template
      * @param mixed $request
      * @return bool
      */
     public function destroy(int $id) : bool
     {
         return ScreenTemplates::where('id', $id)->delete();
+    }
+
+    /**
+     * Delete screen template media
+     * @param mixed $request
+     * @return bool
+     */
+    public function deleteMediaImages(Request $request)
+    {
     }
 
     /**
