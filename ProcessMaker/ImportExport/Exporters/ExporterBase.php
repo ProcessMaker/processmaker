@@ -128,12 +128,12 @@ abstract class ExporterBase implements ExporterInterface
         $this->logger = new Logger();
     }
 
-    public function uuid() : string
+    public function uuid(): string
     {
         return $this->model->uuid;
     }
 
-    public function include() : bool
+    public function include(): bool
     {
         if ($this->discard) { // Explicit Discard (not from passed-in options)
             if (!$this->ignoreExplicitDiscard) {
@@ -232,12 +232,12 @@ abstract class ExporterBase implements ExporterInterface
         return Arr::get($this->references, $type, null);
     }
 
-    protected function getExportAttributes() : array
+    protected function getExportAttributes(): array
     {
         return $this->model->getAttributes();
     }
 
-    public function getName($model) : string
+    public function getName($model): string
     {
         if (!$model) {
             $model = $this->model;
@@ -357,7 +357,7 @@ abstract class ExporterBase implements ExporterInterface
         ];
     }
 
-    public function getLastModifiedBy() : array
+    public function getLastModifiedBy(): array
     {
         $lastModifiedBy = [
             'lastModifiedByName' => '',
@@ -417,7 +417,7 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
-    protected function duplicateExists($attribute, $value) : bool
+    protected function duplicateExists($attribute, $value): bool
     {
         $class = get_class($this->model);
 
@@ -442,7 +442,7 @@ abstract class ExporterBase implements ExporterInterface
         return $this->manifest->modelExists($class, $attribute, $value);
     }
 
-    public function handleDuplicateAttributes() : array
+    public function handleDuplicateAttributes(): array
     {
         $handlers = [];
         foreach ($this->handleDuplicatesByIncrementing as  $index => $attr) {
@@ -491,6 +491,15 @@ abstract class ExporterBase implements ExporterInterface
         }
     }
 
+    protected function exportMedias()
+    {
+        foreach ($this->model->media as $mediaRow) {
+            if ($mediaRow->model_type === 'ProcessMaker\Models\Process') {
+                $this->addDependent('media', $mediaRow, MediaExporter::class);
+            }
+        }
+    }
+
     protected function associateCategories($categoryClass, $property)
     {
         $categories = collect([]);
@@ -528,7 +537,7 @@ abstract class ExporterBase implements ExporterInterface
                 $foundCategory = $categoryClass::find($this->model->process_category_id);
 
                 if (!$foundCategory instanceof $categoryClass) {
-                    Log::warning("Import/Export: Unable to find ".$categoryClass::class." with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
+                    Log::warning("Import/Export: Unable to find " . $categoryClass::class . " with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
                 }
 
                 $categories->push($foundCategory ?? $uncategorizedCategory());

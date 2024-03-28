@@ -27,7 +27,7 @@ class ProcessExporter extends ExporterBase
 
     public ExportManager $manager;
 
-    public function export() : void
+    public function export(): void
     {
         $process = $this->model;
 
@@ -50,6 +50,8 @@ class ProcessExporter extends ExporterBase
         $this->exportSignals();
 
         $this->exportAssignments();
+
+        $this->exportMedias();
 
         // Notification Settings.
         $this->addReference('notification_settings', $process->notification_settings->toArray());
@@ -75,7 +77,7 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
     }
 
-    public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
+    public function import($existingAssetInDatabase = null, $importingFromTemplate = false): bool
     {
         if ($existingAssetInDatabase) {
             $this->model = Process::where('id', $existingAssetInDatabase)->first();
