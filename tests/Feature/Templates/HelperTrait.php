@@ -3,6 +3,9 @@
 namespace Tests\Feature\Templates;
 
 use Database\Seeders\SignalSeeder;
+use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Importer;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -49,5 +52,21 @@ trait HelperTrait
         (new SignalSeeder())->run();
         $this->globalSignal = new SignalData('test_global', 'test_global', '');
         SignalManager::addSignal($this->globalSignal);
+    }
+
+    public function export($model, $exporterClass, $options = null)
+    {
+        $exporter = new Exporter();
+        $exporter->export($model, $exporterClass, $options);
+
+        return $exporter->payload();
+    }
+
+    public function import($payload, $options = null)
+    {
+        $options = $options ?: new Options([]);
+        $importer = new Importer($payload, $options);
+        $importer->previewImport();
+        $importer->doImport();
     }
 }

@@ -30,6 +30,9 @@ const app = new Vue({
     reload() {
       this.$refs.myTemplatesListing.fetch();
     },
+    goToImport() {
+      window.location = "/screen-template/import";
+    },
   },
 });
 
