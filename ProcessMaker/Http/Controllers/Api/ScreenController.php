@@ -10,6 +10,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
+use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
@@ -593,14 +595,13 @@ class ScreenController extends Controller
 
     private function updateScreenTemplate($screen)
     {
-        $screen = Screen::find($screen);
-        \Log::debug('===== MESSAGE =====', ['prop' => $screen->is_template]);
-        // \Log::debug("===== MESSAGE request =====", ["prop" => $request]);
-        if ($screen['is_template'] === 1) {
-            \Log::debug('===== MESSAGE =====', ['prop' => 'here']);
-            $screenTemplate = ScreenTemplates::where('editing_screen_uuid', $screen->uuid)->firstOrFail();
-            $payload = $this->export($screen, Screen::class);
-            $screenTemplate->update(['manifest', $payload]);
+        if ($screen->is_template && $screen->asset_type === 'SCREEN_TEMPLATE') {
+            $screen->update(['is_template' => 0, 'asset_type' => null]);
+            $exporter = new Exporter();
+            $exporter->exportScreen($screen);
+            ScreenTemplates::where('editing_screen_uuid', $screen->uuid)
+                ->update(['manifest' => json_encode($exporter->payload())]);
+            $screen->update(['is_template' => 1, 'asset_type' => 'SCREEN_TEMPLATE']);
         }
     }
 }
