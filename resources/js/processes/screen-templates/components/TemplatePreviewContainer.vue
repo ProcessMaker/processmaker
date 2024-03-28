@@ -1,6 +1,7 @@
 <template>
   <div>
     <splitpane-container
+      v-if="showPreview"
       :size="splitpaneSize"
     >
       <div
@@ -10,7 +11,11 @@
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-            <slot name="header" :close="onClose" :templateId="template.id">
+            <slot
+              name="header"
+              :close="onClose"
+              :templateId="template.id"
+            >
               <div class="ml-auto mr-0 text-right">
                 <b-button
                   class="btn-light text-secondary"
@@ -23,11 +28,9 @@
             </slot>
           </div>
           <preview-template
-            v-if="showTemplatePreview"
             ref="preview"
-            :template="getTemplate(templateId)"
-            @hide-template-preview="hidePreview"
-            @mark-selected-row="markSelectedRow"
+            :template="template"
+            :hide-back-arrow="true"
           />
         </div>
       </div>
@@ -46,5 +49,21 @@ export default {
     PreviewTemplate,
   },
   mixins: [templatePreviewMixin],
-}
+  props: {
+    template: {
+      type: [Object, Array],
+      default: null,
+    },
+  },
+};
 </script>
+
+<style scoped>
+#template-preview {
+  box-sizing: border-box;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+</style>
