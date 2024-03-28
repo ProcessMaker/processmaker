@@ -205,9 +205,12 @@ export default {
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
           mediaArray.forEach((media) => {
-            this.$refs["image-carousel"].convertImageUrlToBase64(media);
+            if (media.custom_properties.type && media.custom_properties.type === "embed") {
+              this.$refs["image-carousel"].addEmbedFile(media);
+            } else {
+              this.$refs["image-carousel"].convertImageUrlToBase64(media);
+            }
           });
-    
           this.$refs["image-carousel"].setProcessId(this.processId);
         });
     },
@@ -241,7 +244,6 @@ export default {
       this.getProcessDescription();
       this.retrieveSavedSearchCharts();
       this.retrieveDisplayScreen();
-      this.$refs["image-carousel"].cleanCarousel();
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
     },
@@ -250,6 +252,7 @@ export default {
      */
     saveProcessDescription() {
       if (!this.processDescription) return;
+      if (!this.$refs["image-carousel"].checkImages()) return;
       this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.launchpad_properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
