@@ -247,10 +247,7 @@
           return null;
         }
 
-        if (this.submitButton) {
-          return true;
-        }
-        return false;
+        return !!this.submitButton;
       },
       submitButtonLabel() {
         if (!this.submitAfterFilling || !this.selectSubmitButton?.label) {

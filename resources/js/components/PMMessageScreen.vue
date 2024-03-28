@@ -6,8 +6,6 @@
 </template>
 
 <style scoped>
-  .pm-message-screen {
-  }
   .pm-message-screen > :first-child {
     margin-top: 2rem !important;
   }
