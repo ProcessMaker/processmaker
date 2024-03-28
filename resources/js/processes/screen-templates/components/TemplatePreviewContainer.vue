@@ -31,6 +31,7 @@
             ref="preview"
             :template="selectedTemplate"
             :hide-back-arrow="true"
+            :hide-template-options="true"
           />
         </div>
       </div>
