@@ -3,8 +3,6 @@
     <PMTable :headers="headers"
              :data="responseData"
              :baseURL="baseURL"
-             :empty="$t('No results have been found')"
-             :empty-desc="$t('We apologize, but we were unable to find any results that match your search. Please consider trying a different search. Thank you')"
              empty-icon="noData"
              @onRowMouseover="onRowMouseover"
              @onTrMouseleave="onTrMouseleave"
@@ -46,6 +44,23 @@
         </InboxRulesRowButtons>
       </template>
 
+      <template v-slot:no-results>
+        <PMMessageScreen>
+          <template v-slot:content>
+            <img src="/img/inbox-rule-suggest-lg.svg" 
+                 :alt="$t('Inbox rules empty')" />
+            <b>
+              {{ $t("You haven't set up any Inbox Rules yet") }}
+            </b>
+            <span v-html="$t('Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.')">
+            </span>
+            <a href="#"
+               @click="onCreateRule">
+              {{ $t("Create an Inbox Rule Now") }}
+            </a>
+          </template>
+        </PMMessageScreen>
+      </template>
     </PMTable>
   </div>
 </template>
@@ -54,11 +69,13 @@
   import PMTable from "../../components/PMTable.vue";
   import PMSearchBar from "../../components/PMSearchBar.vue";
   import InboxRulesRowButtons from "./InboxRulesRowButtons.vue";
+  import PMMessageScreen from "../../components/PMMessageScreen.vue";
   export default {
     components: {
       PMTable,
       PMSearchBar,
-      InboxRulesRowButtons
+      InboxRulesRowButtons,
+      PMMessageScreen
     },
     data() {
       return {

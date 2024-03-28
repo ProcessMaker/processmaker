@@ -1,6 +1,6 @@
 <template>
   <div class="pm-inbox-rule-edit">
-    <template v-if="isViewName(1)">
+    <template v-if="viewIs('main')">
       <b-form-group>
         <template v-slot:label>
           <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -99,14 +99,14 @@
             </b-button>
             <b-button v-if="makeDraft"
                       variant="primary"
-                      @click="viewName(2)">
+                      @click="viewsTo('nextConfiguration')">
               {{ $t('Next') }}
             </b-button>
           </div>
         </div>
       </b-form-group>
     </template>
-    <template v-if="isViewName(2)">
+    <template v-if="viewIs('nextConfiguration')">
       <b-form-group>
         <span>
           {{ $t('If you want to establish an automatic submit for this rule,') }}
@@ -134,7 +134,7 @@
         <template v-slot:label>
           {{ $t('Submit action') }}
         </template>
-        <b-form-input :placeholder="$t('Waiting selection')"
+        <b-form-input :placeholder="$t('Waiting for selection')"
                       v-model="submitButtonLabel"
                       :state="submitButtonState"
                       :readonly="true">
@@ -164,7 +164,7 @@
           </div>
           <div class="flex-grow-0">
             <b-button variant="secondary"
-                      @click="viewName(1)">
+                      @click="viewsTo('main')">
               {{ $t('Back') }}
             </b-button>
             <b-button variant="primary"
@@ -228,31 +228,38 @@
         ruleNameState: null,
         makeDraft: false,
         submitAfterFilling: false,
-        submitButton: null,
-        submitButtonState: null,
-        submitButtonLabel: ""
       };
+    },
+    computed: {
+      submitButton() {
+        if (!this.selectSubmitButton || !this.submitAfterFilling) {
+          return null;
+        }
+        return {
+          label: this.selectSubmitButton.label || null,
+          value: this.selectSubmitButton.value || null,
+          name: this.selectSubmitButton.name || null,
+          loopContext: this.selectSubmitButton.loopContext || null,
+        }
+      },
+      submitButtonState() {
+        if (!this.submitAfterFilling) {
+          return null;
+        }
+
+        return !!this.submitButton;
+      },
+      submitButtonLabel() {
+        if (!this.submitAfterFilling || !this.selectSubmitButton?.label) {
+          return "";
+        }
+        return this.selectSubmitButton.label;
+      }
     },
     watch: {
       makeDraft() {
         if (!this.makeDraft) {
           this.submitAfterFilling = false;
-        }
-      },
-      submitAfterFilling() {
-        if (!this.submitAfterFilling) {
-          this.submitButton = null;
-        }
-      },
-      selectSubmitButton() {
-        if (!this.selectSubmitButton) {
-          this.submitButton = null;
-          return;
-        }
-        this.submitButton = {
-          label: this.selectSubmitButton.label || null,
-          value: this.selectSubmitButton.value || null,
-          name: this.selectSubmitButton.name || null,
         }
       },
       reassign() {
@@ -272,12 +279,6 @@
         },
         deep: true
       },
-      submitButton(value) {
-        this.submitButtonLabel = this.submitAfterFilling ? value.label : "";
-        if (value) {
-          this.submitButtonState = true;
-        }
-      }
     },
     mounted() {
       this.requestUser("");
@@ -292,8 +293,7 @@
           this.ruleNameState = false;
           return;
         }
-        if (this.submitAfterFilling && !this.submitButton) {
-          this.submitButtonState = false;
+        if (this.submitButtonState === false) {
           return;
         }
         let params = {
@@ -353,7 +353,6 @@
           this.makeDraft = this.inboxRule.make_draft;
           this.submitAfterFilling = this.inboxRule.submit_data;
           this.applyToFutureTasks = this.inboxRule.active;
-          this.submitButton = this.inboxRule.submit_button;
         }
       },
       requestUser(filter) {

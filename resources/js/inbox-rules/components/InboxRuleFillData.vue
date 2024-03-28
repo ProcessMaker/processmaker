@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="loaded()" ref="preview" /> 
+    <b-embed :src="linkTasks" @load="loaded()" :disable-interstitial="true" ref="preview" /> 
   </div>
 </template>
 
@@ -24,7 +24,7 @@
     },
     computed: {
       linkTasks() {
-        return `/tasks/${this.taskId}/edit/preview?dispatchSubmit=1&alwaysAllowEditing=1`;
+        return `/tasks/${this.taskId}/edit/preview?dispatchSubmit=1&alwaysAllowEditing=1&disableInterstitial=1`;
       },
       iframeContentWindow() {
         return this.$refs['preview'].firstChild.contentWindow;

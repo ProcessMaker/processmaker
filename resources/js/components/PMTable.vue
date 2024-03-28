@@ -18,6 +18,18 @@
                  :empty="empty"
                  :empty-desc="emptyDesc"
                  :empty-icon="emptyIcon">
+      <template v-slot:no-results>
+        <slot name="no-results"></slot>
+      </template>
+      <template v-slot:no-results-title>
+        <slot name="no-results-title"></slot>
+      </template>
+      <template v-slot:no-results-image>
+        <slot name="no-results-image"></slot>
+      </template>
+      <template v-slot:no-results-message>
+        <slot name="no-results-message"></slot>
+      </template>
     </DataLoading>
 
     <PaginationTable :meta="data?.meta"

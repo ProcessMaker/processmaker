@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div v-if="!savedSearchId && !task"
-         class="d-flex justify-content-center align-items-center flex-column ir-message">
-      <img src="/img/funnel-fill-elements-blue.svg" :alt="$t('Select a saved search above.')"/>
-      <b class="mt-3 mb-3 ir-message-b">{{ $t('Select the Load a saved search control above.') }}</b>
-      <span class="text-center ir-message-span" 
-            v-html="$t('Select the <b>Load a saved search</b> control above.')">
-      </span>
+    <div v-if="!savedSearchId && !task" >
+      <PMMessageScreen>
+        <template v-slot:content>
+          <img src="/img/funnel-fill-elements-blue.svg" 
+               :alt="$t('Select a saved search above.')"/>
+          <b>{{ $t('Select the Load a saved search control above.') }}</b>
+          <span v-html="$t('Select the <b>Load a saved search</b> control above.')">
+          </span>
+        </template>
+      </PMMessageScreen>
     </div>
     <div v-else>
       <div v-if="task">
@@ -42,6 +45,17 @@
         @submit=""
         @count="$emit('count', $event)"
         >
+        <template v-slot:no-results>
+          <PMMessageScreen>
+            <template v-slot:content>
+              <img src="/img/funnel-fill-elements-blue.svg" 
+                   :alt="$t('Select a saved search above.')"/>
+              <b>{{ $t('Filter the tasks for this rule') }}</b>
+              <span v-html="$t('Please choose the tasks in your inbox that this new rule should apply to. <b>Use the column filters</b> to achieve this.')">
+              </span>
+            </template>
+          </PMMessageScreen>
+        </template>
       </tasks-list>
 
       <b-modal
@@ -65,7 +79,7 @@
 <script>
   import TasksList from "../../tasks/components/TasksList.vue";
   import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
-
+  import PMMessageScreen from "../../components/PMMessageScreen.vue";
   export default {
     props: {
       savedSearchId: {
@@ -79,10 +93,6 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
-      },
-      isNew: {
-        type: Boolean,
-        default: false
       }
     },
     data() {
@@ -98,7 +108,8 @@
     },
     components: {
       TasksList,
-      ColumnChooserAdapter
+      ColumnChooserAdapter,
+      PMMessageScreen
     },
     methods: {
       emitSavedSearchData() {
@@ -209,9 +220,9 @@
       loadTask() {
         this.ready = false;
 
-        this.columns = this.defaultColumns =
-                _.get(window, 'Processmaker.defaultColumns', [])
-                .filter(c => c.field !== 'is_priority');
+        let defaultColumns = _.get(window, 'Processmaker?.defaultColumns', []);
+        this.defaultColumns = defaultColumns.filter(c => c.field !== 'is_priority');
+        this.columns = this.defaultColumns;
 
         return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {
@@ -285,13 +296,4 @@
 </script>
 
 <style scoped>
-  .ir-message {
-    height: 100vh;
-  }
-  .ir-message-b {
-    font-size: 24px;
-  }
-  .ir-message-span {
-    width: 375px;
-  }
 </style>

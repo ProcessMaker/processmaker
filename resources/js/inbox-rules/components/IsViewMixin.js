@@ -1,22 +1,22 @@
 const IsViewMixin = {
   data() {
     return {
-      view_name: 1
+      currentView: "main"
     };
   },
   watch: {
-    view_name: {
+    currentView: {
       handler() {
-        this.$emit("view-name", this.view_name);
+        this.$emit("onChangeViews", this.currentView);
       }
     }
   },
   methods: {
-    isViewName(name) {
-      return this.view_name === name;
+    viewIs(...views) {
+      return views.includes(this.currentView);
     },
-    viewName(name) {
-      this.view_name = name;
+    viewsTo(view) {
+      this.currentView = view;
     }
   }
 };

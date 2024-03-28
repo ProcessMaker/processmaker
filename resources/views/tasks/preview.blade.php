@@ -108,6 +108,7 @@
                           @redirect="redirectToTask"
                           :task-preview="true"
                           :always-allow-editing="alwaysAllowEditing"
+                          :disable-interstitial="disableInterstitial"
                         ></task>
                     </div>
                 </div>
@@ -188,7 +189,8 @@
           autoSaveDelay: 5000,
           userHasInteracted: false,
           initialFormDataSet: false,
-          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1')
+          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
+          disableInterstitial: window.location.search.includes('disableInterstitial=1')
         },
         watch: {
           task: {

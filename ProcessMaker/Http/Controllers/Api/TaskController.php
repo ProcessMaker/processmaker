@@ -346,7 +346,7 @@ class TaskController extends Controller
     {
         $screenVersion = $task->getScreenVersion();
         if ($screenVersion) {
-            return $screenVersion->fields->map(fn($field) => $field->field);
+            return $screenVersion->screenFilteredFields();
         } else {
             return response()->json(['error' => 'Screen not found'], 404);
         }
