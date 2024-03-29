@@ -16,6 +16,7 @@
       <filter-table
         :headers="fields"
         :data="data"
+        :loading="shouldShowLoader"
         table-name="my-screen-templates"
         style="height: calc(100vh - 355px)"
       >
@@ -189,14 +190,15 @@ export default {
   created() {
     this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-my-screen-templates", () => {
+      console.log('ON api-data-my-screen-templates');
       this.fetch();
-      this.apiDataLoading = false;
-      this.apiNoResults = false;
     });
   },
   methods: {
     fetch() {
+      console.log('fetch');
       this.loading = true;
+      this.apiDataLoading = true;
       // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
@@ -209,8 +211,14 @@ export default {
             }&order_direction=${this.orderDirection}&include=categories,category,user`,
         )
         .then((response) => {
+          console.log("RESPONSE", response);
           this.data = this.transform(response.data);
           this.loading = false;
+          this.apiDataLoading = false;
+          this.apiNoResults = false;
+        })
+        .catch((error) => {
+          console.log("ERROR", error);
         });
     },
   },

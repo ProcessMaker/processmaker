@@ -13,6 +13,7 @@ export default {
   },
   computed: {
     shouldShowLoader() {
+      console.log("shouldShowLoader", this.apiDataLoading, this.apiNoResults);
       return this.apiDataLoading || this.apiNoResults;
     },
   },
