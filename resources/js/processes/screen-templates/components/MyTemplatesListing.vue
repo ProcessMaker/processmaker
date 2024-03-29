@@ -196,7 +196,6 @@ export default {
   },
   methods: {
     fetch() {
-      console.log('fetch');
       this.loading = true;
       this.apiDataLoading = true;
       // change method sort by slot name
@@ -211,14 +210,13 @@ export default {
             }&order_direction=${this.orderDirection}&include=categories,category,user`,
         )
         .then((response) => {
-          console.log("RESPONSE", response);
           this.data = this.transform(response.data);
           this.loading = false;
           this.apiDataLoading = false;
           this.apiNoResults = false;
         })
         .catch((error) => {
-          console.log("ERROR", error);
+          console.error(error);
         });
     },
   },

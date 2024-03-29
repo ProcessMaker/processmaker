@@ -194,13 +194,12 @@ export default {
     this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
-      this.apiDataLoading = false;
-      this.apiNoResults = false;
     });
   },
   methods: {
     fetch() {
       this.loading = true;
+      this.apiDataLoading = true;
       // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
@@ -215,6 +214,11 @@ export default {
         .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
+          this.apiDataLoading = false;
+          this.apiNoResults = false;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
   },
