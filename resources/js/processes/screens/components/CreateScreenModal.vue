@@ -222,6 +222,9 @@ export default {
     },
     otherTemplateSelected() {
       return this.formData.selectedTemplate;
+    },
+    getTemplateId() {
+      return this.hasTemplateId ? this.formData.templateId : this.formData.defaultTemplateId;
     }
   },
   mounted() {
@@ -303,7 +306,7 @@ export default {
     },
     handleCreateFromTemplate() {
       ProcessMaker.apiClient.post(
-        `template/create/screen/${this.formData.templateId}`,
+        `template/create/screen/${this.getTemplateId}`,
         this.formData,
         {
           headers: {
