@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3df149d219170629951c6342bd42c9d0",
+    "content-hash": "15c2520eda59d089fd6294e6babb9102",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -7523,6 +7523,71 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.10.0"
             },
             "time": "2023-11-01T02:20:26+00:00"
+        },
+        {
+            "name": "processmaker/package-files",
+            "version": "1.14.0",
+            "dist": {
+                "type": "path",
+                "url": "../processmaker-plugins/package-files",
+                "reference": "8b62e9f60e8ce670995c073f59ca305037e740f0"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\Files\\FilesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\Files\\": "src",
+                    "Tests\\": "tests/",
+                    "Database\\Factories\\ProcessMaker\\Package\\Files\\": "database/factories"
+                }
+            },
+            "description": "File manager package for ProcessMaker 4",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "processmaker/package-projects",
+            "version": "1.2.5",
+            "dist": {
+                "type": "path",
+                "url": "../processmaker-plugins/package-projects",
+                "reference": "a17b581c89ca58060803c656f160069a867a91af"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\Projects\\PackageServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\Projects\\": "src",
+                    "Tests\\": "tests/",
+                    "Database\\Factories\\ProcessMaker\\Package\\Projects\\": "database/factories"
+                }
+            },
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "DevOps",
+                    "email": "devops@processmaker.com"
+                }
+            ],
+            "description": "This package provides the ability to manage projects within ProcessMaker.",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "processmaker/pmql",
