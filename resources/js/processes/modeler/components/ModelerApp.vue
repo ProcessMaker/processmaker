@@ -16,6 +16,7 @@
           :owner="self"
           :decorations="decorations"
           :validation-bar="validationBar"
+          :show-toolbar="showToolbar"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="emitSaveEvent"
@@ -78,6 +79,12 @@ export default {
     CreatePmBlockModal,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
+  props: {
+    showToolbar: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       self: this,
