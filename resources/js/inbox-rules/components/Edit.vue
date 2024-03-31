@@ -56,25 +56,27 @@
         </template>
 
         <InboxRuleFillData
-          v-if="!showQuickFillPreview"
           ref="inboxRuleFillData"
           :task-id="taskId"
           :inbox-rule-data="data"
+          :prop-inbox-quick-fill="propInboxData"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
         <div>
+        <splitpane-container v-if="showQuickFillPreview" :size="50">
           <quick-fill-preview
-          v-if="showQuickFillPreview"
             class="quick-fill-preview"
             :task="task"
             :prop-from-button ="'inboxRules'"
             :prop-columns="columns"
             :prop-filters="filter"
             @close="showQuickFillPreview = false"
-            @quick-fill-data="fillWithQuickFillData"
+            @quick-fill-data-inbox="fillWithQuickFillData"
           ></quick-fill-preview>
+           </splitpane-container>
         </div>
+       
 
       </PMPanelWithCustomHeader>
 
@@ -104,6 +106,7 @@
   import IsViewMixin from "./IsViewMixin.js";
   import QuickFillPreview from "../../tasks/components/QuickFillPreview.vue";
   import SplitpaneContainer from "../../tasks/components/SplitpaneContainer.vue";
+  import _ from "lodash";
 
   export default {
     components: {
@@ -140,6 +143,7 @@
     },
     data() {
       return {
+        propInboxData: {},
         task: {},
         showQuickFillPreview: false,
         count: 0,
@@ -248,31 +252,13 @@
     methods: {
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
-        this.sendEvent("fillData", data);
-        this.showUseThisTask = false;
+        this.propInboxData = data;
         ProcessMaker.alert(message, 'success');
       },
       verifyURL(string) {
         const currentUrl = window.location.href;
         const isInUrl = currentUrl.includes(string);
         return isInUrl;
-      },
-      sendEvent(name, data)
-      {
-        const event = new CustomEvent(name, {
-          detail: data
-        });
-        if(this.showFrame1) {
-          this.iframe1ContentWindow.dispatchEvent(event);
-        }
-        if(this.showFrame2) {
-          this.iframe2ContentWindow.dispatchEvent(event);
-        }
-      },
-      showQuickFill () {
-        //this.redirect(`/tasks/${this.taskId}/edit/quickfill`);
-        //window.location.href = 
-
       },
       showColumns() {
         this.$refs.inboxRuleFilters.showColumns();

@@ -1,5 +1,5 @@
 <template>
-    <div :style="{ top: (position.y) + 'px', right: (50 + (position.x)) + 'px' }" class="task-tooltip">
+    <div :style="{ top: (position.y) + 'px', right:  '50px' }" class="task-tooltip">
         <slot name="task-tooltip-body">
         </slot>
     </div>

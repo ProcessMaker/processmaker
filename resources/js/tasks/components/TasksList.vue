@@ -539,7 +539,9 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
-      this.tooltipFromButton = size;
+      console.log("TasksList previewTasks size: ",size);
+      console.log("TasksList fromButton: ",fromButton);
+      this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
@@ -641,7 +643,8 @@ export default {
 
       elementHeight -= selectedFiltersBarHeight;
 
-      let rightBorderX = rect.right - 1750;
+      //let rightBorderX = rect.right - 1750;
+      let rightBorderX = rect.right;
       let bottomBorderY = 0
       if(this.fromButton === "" || this.fromButton === "previewTask"){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
@@ -651,8 +654,8 @@ export default {
       }
       if(this.fromButton === "inboxRules"){
         
-        bottomBorderY = rect.bottom - topAdjust + 320 - elementHeight;
-        rightBorderX = 430;
+        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
+        //rightBorderX = 430;
       }
       this.rowPosition = {
         x: rightBorderX,

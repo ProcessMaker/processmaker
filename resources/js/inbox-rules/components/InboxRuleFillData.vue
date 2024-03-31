@@ -16,6 +16,10 @@
         type: Object,
         default: null
       },
+      propInboxQuickFill: {
+        type: Object,
+        default: null
+      },
     },
     data() {
       return {
@@ -33,6 +37,10 @@
     watch: {
       formData() {
         this.$emit("data", this.formData);
+      },
+      propInboxQuickFill() {
+        this.formData = this.propInboxQuickFill;
+        this.iframeContentWindow.location.reload();
       }
     },
     mounted() {

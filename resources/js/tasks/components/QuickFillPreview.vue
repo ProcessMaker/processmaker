@@ -89,7 +89,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="previewTasks(tooltipRowData, 93)"
+              @click="previewTasks(tooltipRowData, 93, 'previewTask')"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -98,7 +98,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="previewTasks(tooltipRowData, 50); setTask()"
+              @click="previewTasks(tooltipRowData, 50, 'fullTask'); setTask()"
             >
               <i class="fas fa-eye"/>
             </b-button>
@@ -199,8 +199,13 @@ export default {
       window.location.href = `/tasks/${this.task.id}/edit`;
     },
     buttonThisData(data) {
-      this.$emit("quick-fill-data", data);
-      this.$emit("close");
+      if(this.propFromButton === 'inboxRules'){
+        this.$emit("quick-fill-data-inbox", data);
+      } else {
+        this.$emit("quick-fill-data", data);
+        this.$emit("close");
+      }
+      
     },
     buttonThisDataFromFullTask(data) {
       return ProcessMaker.apiClient
@@ -217,7 +222,6 @@ export default {
         .catch((error) => {
           console.error("Error", error);
         })
-        
     },
   },
 };

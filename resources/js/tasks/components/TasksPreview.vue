@@ -1,5 +1,161 @@
 <template>
   <div v-if="showPreview">
+    
+    <div v-if="tooltipButton === 'inboxRules'">
+      <splitpane-container v-if="showPreview" :size="splitpaneSize">
+        <div
+        id="tasks-preview"
+        ref="tasks-preview"
+        class="h-100 p-3"
+      >
+        <div>
+          <div class="d-flex w-100 h-100 mb-3">
+            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData">
+              <b-button-group>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existPrev"
+                  @click="goPrevNext('Prev')"
+                >
+                  <i class="fas fa-chevron-left" />
+                </b-button>
+                <b-button
+                  class="arrow-button"
+                  variant="outline-secondary"
+                  :disabled="!existNext"
+                  @click="goPrevNext('Next')"
+                >
+                  <i class="fas fa-chevron-right" />
+                </b-button>
+              </b-button-group>
+              <task-save-notification
+                :options="options"
+                :task="task"
+                :date="lastAutosave"
+                :error="errorAutosave"
+                :form-data="formData"
+                :size="headerResponsive()"
+              />
+              <div class="ml-auto mr-0 text-right">
+                <ellipsis-menu
+                  v-if="ellipsisButton"
+                  :actions="actions"
+                  :data="task"
+                  :divider="false"
+                  style="float:none; color: #566877;"
+                  @navigate="onProcessNavigate"
+                />
+                <b-button-group
+                  v-if="!ellipsisButton"
+                  class="preview-group-button"
+                >
+                  <b-button
+                    class="icon-button"
+                    :aria-label="$t('Erase')"
+                    variant="light"
+                    v-b-tooltip.hover title="Erase Draft"
+                    @click="eraseDraft()"
+                  >
+                    <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                  </b-button>
+                  <b-button
+                    v-if="showQuickFillPreview === false"
+                    class="icon-button"
+                    :aria-label="$t('Quick fill')"
+                    variant="light"
+                    @click="showQuickFillPreview = true"
+                  >
+                    <img
+                      src="/img/smartinbox-images/fill.svg"
+                      :alt="$t('No Image')"
+                    >
+                  </b-button>
+                </b-button-group>
+                <b-button-group
+                  v-if="!ellipsisButton"
+                  class="preview-group-button"
+                >
+                  <b-button
+                    class="icon-button"
+                    variant="light"
+                    :aria-label="$t('Priority')"
+                    :class="{ 'button-priority': isPriority }"
+                    @click="addPriority()"
+                  >
+                    <img
+                      :src="
+                        isPriority
+                          ? '/img/priority.svg'
+                          : '/img/priority-header.svg'
+                      "
+                      :alt="$t('No Image')"
+                    >
+                  </b-button>
+                  <b-button
+                    class="btn text-secondary icon-button"
+                    variant="light"
+                    :aria-label="$t('Open Task')"
+                    @click="openTask()"
+                  >
+                    <i class="fas fa-external-link-alt" />
+                  </b-button>
+                </b-button-group>
+
+                <b-button
+                  class="btn-light text-secondary"
+                  :aria-label="$t('Close')"
+                  @click="onClose()"
+                >
+                  <i class="fas fa-times" />
+                </b-button>
+              </div>
+            </slot>
+          </div>
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton}">
+        
+            <b-embed
+              v-if="showFrame1"
+              ref="tasksFrame1"
+              width="100%"
+              :class="showFrame2 ? 'loadingFrame' : ''"
+              :src="linkTasks1"
+              @load="frameLoaded('tasksFrame1')"
+            />
+            <b-embed
+              v-if="showFrame2"
+              ref="tasksFrame2"
+              width="100%"
+              :class="showFrame1 ? 'loadingFrame' : ''"
+              :src="linkTasks2"
+              @load="frameLoaded('tasksFrame2')"
+            />
+
+            <task-loading
+              v-show="stopFrame"
+              class="load-frame"
+            />
+          </div>
+        </div>
+        <h1>Replace QuickF Comp  </h1>
+        <!-- <splitpane-container v-if="showQuickFillPreview" :size="93">
+          <quick-fill-preview
+            class="quick-fill-preview"
+            :task="task"
+            :prop-from-button ="'previewTask'"
+            :prop-columns="propColumns"
+            :prop-filters="propFilters"
+            @quick-fill-data="fillWithQuickFillData"
+            @close="showQuickFillPreview = false"
+          ></quick-fill-preview>
+        </splitpane-container> -->
+      </div>
+          </splitpane-container>
+    </div>
+
+    <div v-else>
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         id="tasks-preview"
@@ -110,7 +266,9 @@
               </div>
             </slot>
           </div>
-          <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton}">
         
             <b-embed
               v-if="showFrame1"
@@ -148,6 +306,7 @@
         </splitpane-container>
       </div>
     </splitpane-container>
+    </div>
     </div>
 </template>
 
@@ -288,6 +447,11 @@ export default {
   height: 70vh;
 }
 .frame-container-full {
+  display: grid;
+  height: 70vh;
+  width: 93%
+}
+.frame-container-inbox {
   display: grid;
   height: 70vh;
   width: 93%
