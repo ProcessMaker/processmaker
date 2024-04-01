@@ -222,7 +222,7 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $newScreen = $screen->fill($request->input());
 
-        if ($request->has('defaultTemplateId') && $request->has('is_public')) {
+        if ($request->has('defaultTemplateId') && is_null($request->defaultTemplateId) && $request->has('is_public')) {
             $this->updateDefaultTemplate($request->type, $request->is_public);
         }
 

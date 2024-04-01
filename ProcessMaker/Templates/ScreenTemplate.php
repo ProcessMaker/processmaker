@@ -71,6 +71,7 @@ class ScreenTemplate implements TemplateInterface
                 'screen_templates.screen_category_id',
                 'screen_templates.screen_type',
                 'screen_templates.is_public',
+                'screen_templates.is_default_template',
                 'screen_templates.is_system',
                 'screen_templates.asset_type',
                 'screen_templates.media_collection',
