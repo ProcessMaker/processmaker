@@ -14,7 +14,9 @@ Login
     <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
       <div class="card card-body p-3">
         @if (! $block)
-          <form method="POST" class="form" action="{{ route('login') }}">
+          <form method="POST" class="form" action="{{ route('login') }}" autocomplete="off">
+            <input type="text" style="display:none">
+            <input type="password" style="display:none" autocomplete="new-password">
             @if (session()->has('timeout'))
               <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
             @endif
@@ -24,7 +26,15 @@ Login
               <div class="form-group">
                 <label for="username">{{ __('Username') }}</label>
                 <div>
-                  <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
+                  <input
+                    id="username"
+                    type="text"
+                    class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}"
+                    name="username"
+                    value="{{ old('username') }}"
+                    required
+                    autocomplete="username"
+                  >
                   @if ($errors->has('username'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('username') }}</strong>
@@ -35,7 +45,14 @@ Login
               <div class="form-group">
                 <label for="password">{{ __('Password') }}</label>
                 <div class="">
-                  <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
+                  <input
+                    id="password"
+                    type="text"
+                    class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                    name="password"
+                    required
+                    autocomplete="new-password"
+                  >
                   @if ($errors->has('password'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('password') }}</strong>
@@ -91,6 +108,16 @@ Login
           document.cookie = "isMobile=true"
           document.cookie = "firstMounted=true"
         }
+
+        const password = document.querySelector('#password');
+
+        password.addEventListener('keyup', () => {
+          let type = 'password';
+          if (password.value === '') {
+            type = 'text';
+          }
+          password.setAttribute('type', type);
+        });
     </script>
 @endsection
 

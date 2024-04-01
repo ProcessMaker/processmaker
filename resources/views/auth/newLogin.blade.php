@@ -51,7 +51,9 @@
                 @endcomponent
               </div>
               @if (! $block)
-              <form method="POST" class="form" action="{{ route('login') }}">
+              <form method="POST" class="form" action="{{ route('login') }}" autocomplete="off">
+                <input type="text" style="display:none">
+                <input type="password" style="display:none" autocomplete="new-password">
                 @if (session()->has('timeout'))
                 <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
                 @endif
@@ -64,7 +66,15 @@
                 <div class="form-group">
                   <label for="username">{{ __('Username') }}</label>
                   <div class="password-container">
-                    <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{__('Enter your username')}}" required>
+                    <input
+                      id="username"
+                      type="text"
+                      class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}"
+                      name="username" value="{{ old('username') }}"
+                      placeholder="{{__('Enter your username')}}"
+                      required
+                      autocomplete="username"
+                    >
                     @if ($errors->has('username'))
                     <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('username') }}</strong>
@@ -75,7 +85,14 @@
                 <div class="form-group">
                   <label for="password">{{ __('Password') }}</label>
                   <div class="password-container">
-                    <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Enter your password')}}" required>
+                    <input
+                      id="password"
+                      type="text"
+                      class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                      name="password" placeholder="{{__('Enter your password')}}"
+                      required
+                      autocomplete="new-password"
+                    >
                     <i class="fa fa-eye" id="togglePassword"></i>
                     @if ($errors->has('password'))
                     <span class="invalid-feedback" role="alert">
@@ -131,11 +148,29 @@
   const togglePassword = document.querySelector('#togglePassword');
   const password = document.querySelector('#password');
 
+  function setToggle(type) {
+    let classToggle = 'fa fa-eye';
+    if (type === 'password') {
+      classToggle = 'fa fa-eye-slash';
+    }
+    togglePassword.setAttribute('class', classToggle);
+  }
+  
+  password.addEventListener('keyup', () => {
+    let type = 'password';
+    if (password.value === '') {
+      type = 'text';
+    }
+    password.setAttribute('type', type);
+    this.setToggle(type);
+  });
+ 
+
   togglePassword.addEventListener('click', function (e) {
     const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
     password.setAttribute('type', type);
-    this.classList.toggle('fa-eye-slash');
-});
+    this.setToggle(type);
+  });
 </script>
 <style>
   .row {
