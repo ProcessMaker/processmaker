@@ -65,7 +65,6 @@ export default {
   top: 0;
   right: 0;
   min-height: 80vh;
-  /* width: 95%; */
   width: 76%;
   position: absolute;
 }

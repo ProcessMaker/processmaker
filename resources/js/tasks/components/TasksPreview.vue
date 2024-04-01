@@ -342,7 +342,6 @@ export default {
 .frame-container-inbox {
   display: grid;
   height: 70vh;
-  /* width: 50%; */
   width: 97%;
 }
 .embed-responsive,

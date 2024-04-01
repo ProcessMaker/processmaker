@@ -104,7 +104,6 @@
   import IsViewMixin from "./IsViewMixin.js";
   import QuickFillPreview from "../../tasks/components/QuickFillPreview.vue";
   import SplitpaneContainer from "../../tasks/components/SplitpaneContainer.vue";
-  import _ from "lodash";
 
   export default {
     components: {

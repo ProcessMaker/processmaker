@@ -641,7 +641,6 @@ export default {
 
       elementHeight -= selectedFiltersBarHeight;
 
-      //let rightBorderX = rect.right - 1750;
       let rightBorderX = rect.right;
       let bottomBorderY = 0
       if(this.fromButton === "" || this.fromButton === "previewTask"){
@@ -651,9 +650,7 @@ export default {
         bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
       }
       if(this.fromButton === "inboxRules"){
-        
         bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
-        //rightBorderX = 430;
       }
       this.rowPosition = {
         x: rightBorderX,
