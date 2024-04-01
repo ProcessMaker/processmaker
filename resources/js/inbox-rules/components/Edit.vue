@@ -36,7 +36,7 @@
               type="button"
               class="button-actions"
               v-b-tooltip.hover title="Erase Draft"
-              @click="eraseDraft()"
+              @click="eraseQuickFill()"
             >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
               {{ $t('Clear Task') }}
@@ -250,6 +250,9 @@
       }
     },
     methods: {
+      eraseQuickFill() {
+        this.propInboxData = {};
+      },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
         this.propInboxData = data;
