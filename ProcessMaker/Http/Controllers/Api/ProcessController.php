@@ -28,6 +28,7 @@ use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;

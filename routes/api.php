@@ -18,6 +18,7 @@ use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
+use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
 use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
@@ -160,6 +161,13 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('bookmarks.store')->middleware($middlewareCatalog);
     Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])
         ->name('bookmarks.destroy')->middleware($middlewareCatalog);
+    // Process Launchpad
+    Route::get('process_launchpad/{process}', [ProcessLaunchpadController::class, 'index'])
+        ->name('launchpad.index')->middleware($middlewareCatalog);
+    Route::post('process_launchpad/{process}', [ProcessLaunchpadController::class, 'store'])
+        ->name('launchpad.store')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{bookmark}', [ProcessLaunchpadController::class, 'destroy'])
+        ->name('launchpad.destroy')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
