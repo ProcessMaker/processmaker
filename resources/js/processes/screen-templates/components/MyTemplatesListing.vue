@@ -3,7 +3,7 @@
   <div class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/screens/"
+      :for="/\/screens\?/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -135,7 +135,6 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
 import navigationMixin from "../mixins/navigationMixin";
@@ -149,7 +148,6 @@ export default {
     dataLoadingMixin,
     uniqIdsMixin,
     ellipsisMenuMixin,
-    FilterTableBodyMixin,
     fieldsMixin,
     navigationMixin,
   ],
@@ -191,7 +189,9 @@ export default {
     this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-my-screen-templates", () => {
       this.fetch();
+      this.apiDataLoading = false;
       this.apiNoResults = false;
+      this.loading = false;
     });
   },
   methods: {
