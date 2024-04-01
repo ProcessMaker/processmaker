@@ -77,19 +77,20 @@ export default {
         .then((response) => {
           const firstResponse = response.data.data.shift();
           const mediaArray = firstResponse.media;
+          const embedArray = firstResponse.embed;
           mediaArray.forEach((media) => {
             const mediaType = media.custom_properties.type ?? 'image';
-            if (mediaType === "embed") {
-              this.images.push({ 
-                url: media.custom_properties.url,
-                type: media.custom_properties.type
-              });
-            } else {
-              this.images.push({
-                url: media.original_url,
-                type: "image"
-              });
-            }
+            this.images.push({
+              url: media.original_url,
+              type: mediaType
+            });
+          });
+          embedArray.forEach((embed) => {
+            let customProperties = JSON.parse(embed.custom_properties)
+            this.images.push({ 
+              url: customProperties.url,
+              type: customProperties.type
+            });
           });
         })
         .catch((error) => {

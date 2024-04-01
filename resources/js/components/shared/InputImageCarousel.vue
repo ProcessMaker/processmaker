@@ -295,11 +295,12 @@ export default {
      * Adding File embed url
      */
     addEmbedFile(media) {
-      const mediaURL = media.custom_properties.url;
+      const customProperties = JSON.parse(media.custom_properties)
+      const mediaURL = customProperties.url;
       this.images.push({
         url: mediaURL,
         uuid: media.uuid,
-        type: media.custom_properties.type,
+        type: customProperties.type,
       });
       this.embedUrls[this.images.length - 1] = mediaURL;
     },
@@ -452,11 +453,6 @@ export default {
         return false;
       }
     },
-    deleteEmbedMedia(index) {
-      this.embedUrls[index] = '';
-      this.deleteImage(index);
-      this.notURL = false;
-    },
     /**
      * Validate image extensions
      */
@@ -545,7 +541,36 @@ export default {
           data: { uuid },
         })
         .then((response) => {
-          ProcessMaker.alert(this.deleteEmbed ? this.$t("The embed media was deleted") : this.$t("The image was deleted"), "success");
+          ProcessMaker.alert(this.$t("The image was deleted"), "success");
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        });
+      const params = {
+        indexImage: index,
+        type: "delete",
+      };
+      ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+    },
+    /**
+     * Method to delete image from carousel container
+     */
+     deleteEmbedMedia(index) {
+      const { uuid } = this.images[index];
+      this.images.splice(index, 1);
+      this.$set(this.showDeleteIcons, index, false);
+      this.$set(this.focusIcons, index, false);
+
+      this.embedUrls[index] = '';
+      this.notURL = false;
+      
+      // Call API to delete
+      ProcessMaker.apiClient
+        .delete(`processes/${this.processId}/embed`, {
+          data: { uuid },
+        })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The embed media was deleted"), "success");
         })
         .catch((error) => {
           console.error("Error", error);

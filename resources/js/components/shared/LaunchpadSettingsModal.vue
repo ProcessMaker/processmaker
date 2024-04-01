@@ -202,14 +202,14 @@ export default {
             this.selectedScreen = "";
             this.selectedScreenId = "";
           }
-          // Load Images into Carousel Container
+          // Load media into Carousel Container
           const mediaArray = firstResponse.media;
+          const embedArray = firstResponse.embed;
           mediaArray.forEach((media) => {
-            if (media.custom_properties.type && media.custom_properties.type === "embed") {
-              this.$refs["image-carousel"].addEmbedFile(media);
-            } else {
-              this.$refs["image-carousel"].convertImageUrlToBase64(media);
-            }
+            this.$refs["image-carousel"].convertImageUrlToBase64(media);
+          });
+          embedArray.forEach((media) => {
+            this.$refs["image-carousel"].addEmbedFile(media);
           });
           this.$refs["image-carousel"].setProcessId(this.processId);
         });

@@ -4,15 +4,29 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Traits\HasUuids;
 
 class Embed extends ProcessMakerModel
 {
     use HasFactory;
+    use HasUuids;
 
     protected $connection = 'processmaker';
 
     protected $table = 'embed';
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
+        'uuid',
+        'created_at',
+        'updated_at',
+    ];
+    
     /**
      * The attributes that are mass assignable.
      *

@@ -1717,24 +1717,34 @@ class ProcessController extends Controller
         if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
             foreach ($request->imagesCarousel as $image) {
                 if (is_string($image['url']) && !empty($image['url'])) {
-                    if (!$process->media()->where('collection_name', 'images_carousel')
-                    ->where('uuid', $image['uuid'])->exists()) {
-                        if ($image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
+                    if ($image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
+                        if (!$process->media()->where('collection_name', 'images_carousel')
+                        ->where('uuid', $image['uuid'])->exists()) {
                             $process
                             ->addMediaFromBase64($image['url'])
                             ->withCustomProperties(['type' => $image['type']])
                             ->toMediaCollection('images_carousel');
                         }
-                        if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
-                            $fakeFile =  File::image('photo.jpg');
-                            $process
-                            ->addMedia($fakeFile)
-                            ->withCustomProperties([
-                                'type' => $image['type'],
-                                'url' => $image['url']
-                            ])
-                            ->toMediaCollection('images_carousel');
-                        }
+                    }
+                }
+                if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
+                    $embed = new Embed();
+                    $values = [
+                        'model_id' => $process->id,
+                        'model_type' => Process::class,
+                        'mime_type' => 'text/url',
+                        'custom_properties' => json_encode([
+                            'url' => $image['url'],
+                            'type' => $image['type']
+                        ]),
+                    ];
+                    if (!is_null($image['uuid']) && $image['uuid'] !== '') {
+                        $newEmbed = $embed->updateOrCreate([
+                            'uuid' => $image['uuid']
+                        ], $values);
+                    } else {
+                        $newEmbed = $embed->fill($values);
+                        $embed->saveOrFail();
                     }
                 }
             }
@@ -1743,9 +1753,8 @@ class ProcessController extends Controller
 
     public function getMediaImages(Request $request, Process $process)
     {
-        $media = Process::with(['media' => function ($query) {
-            $query->orderBy('order_column', 'asc');
-        }])
+        $media = Process::with(['media'])
+        ->with(['embed'])
         ->where('id', $process->id)
         ->get();
 
@@ -1780,13 +1789,10 @@ class ProcessController extends Controller
 
     public function deleteEmbed(Request $request, Process $process)
     {
-        $process = Process::find($process->id);
-
         // Get UUID in the table
         $uuid = $request->input('uuid');
 
-        $embedUrl = $process->getMedia('images_carousel')
-            ->where('uuid', $uuid)
+        $embedUrl = Embed::where('uuid', $uuid)
             ->first();
 
         // Check if embed before delete
