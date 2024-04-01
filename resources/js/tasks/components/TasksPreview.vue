@@ -91,6 +91,7 @@
                     >
                   </b-button>
                   <b-button
+                    v-if="isAllowReassignment || isUserAdmin || isProcessManager"
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Reassign')"
@@ -235,6 +236,9 @@ export default {
         if (priorityAction) {
           priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
         }
+        if (this.task.id) {
+          this.singleTask();
+        }
       },
     },
   },
@@ -249,12 +253,13 @@ export default {
     this.receiveEvent('userHasInteracted', () => {
       this.userHasInteracted = true;
     });
-    
+
     this.$root.$on('pane-size', (value) => {
       this.size = value;
     });
     this.screenWidthPx = window.innerWidth;
     window.addEventListener('resize', this.updateScreenWidthPx);
+    this.getUser();
   },
   computed: {
     iframe1ContentWindow() {
@@ -265,6 +270,18 @@ export default {
     },
     disabled() {
       return this.selectedUser ? this.selectedUser.length === 0 : true;
+    },
+    isAllowReassignment() {
+      if (this.taskDefinition.definition) {
+        return this.taskDefinition.definition.allowReassignment === "true";
+      }
+      return false;
+    },
+    isUserAdmin() {
+      return this.user.is_administrator;
+    },
+    isProcessManager() {
+      return this.task.process_obj.properties.manager_id === ProcessMaker.user.id;
     },
   },
   methods: {
@@ -343,7 +360,21 @@ export default {
       this.selectedUser = [];
     },
     openReassignment() {
-      this.showReassignment = true;
+      this.showReassignment = !this.showReassignment;
+    },
+    singleTask() {
+      ProcessMaker.apiClient
+        .get(`tasks/${this.task.id}?include=definition`)
+        .then((response) => {
+          this.taskDefinition = response.data;
+        });
+    },
+    getUser() {
+      ProcessMaker.apiClient
+        .get(`users/${ProcessMaker.user.id}`)
+        .then((response) => {
+          this.user = response.data;
+        });
     },
   },
 };

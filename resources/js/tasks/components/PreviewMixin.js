@@ -42,6 +42,8 @@ const PreviewMixin = {
       ellipsisButton: false,
       selectedUser: [],
       showReassignment: false,
+      taskDefinition: {},
+      user: {},
       actions: [
         {
           value: "clear-draft",
