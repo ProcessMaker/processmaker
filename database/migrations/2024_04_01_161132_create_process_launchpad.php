@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('process_launchpad', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->unsignedInteger('process_id');
+            $table->unsignedInteger('process_id')->unique();
             $table->unsignedInteger('user_id')->nullable();
             $table->json('launchpad_properties');
             $table->timestamps();

@@ -28,6 +28,7 @@ class ProcessLaunchpadController extends Controller
         try {
             $newLaunch = $launch->updateOrCreate([
                 'process_id' => $process->id,
+            ], [
                 'user_id' => Auth::user()->id,
                 'launchpad_properties' => $properties,
             ]);
