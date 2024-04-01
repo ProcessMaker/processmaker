@@ -1,36 +1,36 @@
 <template>
   <div>
-    <template v-if="hasData">
+    <template v-if="saveSearchId !== null">
       <div class="base-chart h-85 w-85 custom-settings">
         <component
-          ref="chart"
           :is="chartComponent"
+          ref="chart"
           :saved-search-type="chart.saved_search.type"
           :data="chartData"
           :config="chartConfig"
           :options="chartOptions"
-          :additionalPmql="additionalPmql"
+          :additional-pmql="additionalPmql"
           :height="height"
           :width="width"
           :styles="styles"
-        >
-        </component>
+        />
       </div>
     </template>
-    <div v-else>
-      <div class="image-container">
-        <img
-          src="/img/launchpad-images/defaultImage.svg"
-          alt="Chart"
-          style="width: 90%; height: 90%; object-fit: cover; margin-top: 10px"
-        >
+    <template v-else>
+      <div class="default-chart">
+        <pie-chart
+          :data="defaultData"
+          :options="defaultOptions"
+          :width="width"
+          :height="height"
+        />
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
-import ChartDataMixin from "./mixins/ChartData.js";
+import ChartDataMixin from "./mixins/ChartData";
 import BarHorizontalChart from "./charts/BarHorizontalChart.vue";
 import BarVerticalChart from "./charts/BarVerticalChart.vue";
 import DoughnutChart from "./charts/DoughnutChart.vue";
@@ -40,7 +40,6 @@ import CountChart from "./charts/CountChart.vue";
 import ListChart from "./charts/ListChart.vue";
 
 export default {
-  mixins: [ChartDataMixin],
   components: {
     BarHorizontalChart,
     BarVerticalChart,
@@ -50,6 +49,7 @@ export default {
     CountChart,
     ListChart,
   },
+  mixins: [ChartDataMixin],
   props: {
     value: {
       type: Object,
@@ -64,11 +64,11 @@ export default {
     },
     height: {
       type: Number,
-      default: 400,
+      default: 294,
     },
     width: {
       type: Number,
-      default: 260,
+      default: 294,
     },
     process: {
       type: Object,
@@ -92,9 +92,19 @@ export default {
           display: true,
         },
       },
-      hasData: false,
       chartId: "",
       chartName: "",
+      defaultData: {},
+      defaultOptions: {
+        responsive: false,
+        legend: {
+          position: "bottom",
+        },
+        title: {
+          display: true,
+          text: this.$t("Case by Status"),
+        },
+      },
     };
   },
   computed: {
@@ -121,28 +131,32 @@ export default {
           return "bar-horizontal-chart";
       }
     },
-  },
-  beforeMount() {
-    this.setDefaults();
+    saveSearchId() {
+      return JSON.parse(this.process.launchpad_properties)?.saved_chart_id || null;
+    },
   },
   watch: {
     value: {
-      handler: function (value) {
+      handler(value) {
         this.transform(value);
       },
       deep: true,
     },
     chart: {
-      handler: function (value) {
+      handler(value) {
         this.$emit("input", value);
       },
       deep: true,
     },
   },
+  beforeMount() {
+    this.setDefaults();
+  },
   mounted() {
-    this.getChartSettings();
-    ProcessMaker.EventBus.$on("getChartId", () => {
-      this.getChartSettings();
+    this.fetchChart();
+    ProcessMaker.EventBus.$on("getChartId", (newChartId) => {
+      this.saveSearchId = newChartId;
+      this.fetchChart();
     });
   },
   methods: {
@@ -150,44 +164,34 @@ export default {
      * This method is validating installation of Package-savedsearch with package-collections
      * Both packages go always together
      */
-    fetchChart(idChart) {
-      if (!ProcessMaker.packages.includes("package-collections") || !idChart) return;
-      ProcessMaker.apiClient
-        .get(`saved-searches/charts/${idChart}`, { timeout: 0 })
-        .then((response) => {
-          this.charts = response.data;
-          this.transform(this.charts);
-        })
-        .catch((error) => {
-          console.error("Error", error);
-        });
-    },
-    getChartSettings() {
-      ProcessMaker.apiClient
-        .get(`processes/${this.process.id}/media`)
-        .then((response) => {
-          const firstResponse = response.data.data.shift();
-          const launchpadProperties = JSON.parse(
-            firstResponse?.launchpad_properties
-          );
-
-          if (
-            launchpadProperties &&
-            Object.keys(launchpadProperties).length > 0
-          ) {
-            this.selectedSavedChart = launchpadProperties.saved_chart_title
-              ? launchpadProperties.saved_chart_title
-              : "";
-            this.selectedSavedChartId = launchpadProperties.saved_chart_id;
-          } else {
-            this.selectedSavedChart = "";
-            this.selectedSavedChartId = 0;
-          }
-          this.fetchChart(this.selectedSavedChartId);
-        })
-        .catch((error) => {
-          console.error("Error getting chart id", error);
-        });
+    fetchChart() {
+      if (ProcessMaker.packages.includes("package-collections") && this.saveSearchId !== null) {
+        ProcessMaker.apiClient
+          .get(`saved-searches/charts/${this.saveSearchId}`, { timeout: 0 })
+          .then((response) => {
+            this.charts = response.data;
+            this.transform(this.charts);
+          })
+          .catch((error) => {
+            console.error("Error", error);
+          });
+      } else {
+        ProcessMaker.apiClient
+          .get(`requests/${this.process.id}/default-chart`)
+          .then((response) => {
+            const { data } = response.data;
+            this.defaultData = {
+              labels: data.labels,
+              datasets: [
+                {
+                  label: data.datasets.label,
+                  data: data.datasets.data,
+                  backgroundColor: Object.values(data.datasets.backgroundColor),
+                },
+              ],
+            };
+          });
+      }
     },
     refresh() {
       this.transform(this.chart);
@@ -251,37 +255,26 @@ export default {
         this.chartData = this.transformChartData(this.chart);
         this.chartConfig = this.chart.config;
         this.chartOptions = this.setupChartOptions();
-        this.hasData = true;
         this.error = null;
         this.hint = null;
-      } else {
-        this.hasData = false;
-        if (this.chart.chart_error) {
-          this.error = this.chart.chart_error;
-          this.hint = this.chart.chart_hint;
-        }
+      }
+      if (this.chart?.chart_error) {
+        this.error = this.chart.chart_error;
+        this.hint = this.chart.chart_hint;
       }
     },
   },
 };
 </script>
 <style scoped>
-.image-container {
-  width: 100%;
-  padding-top: 100%;
-  position: relative;
-  overflow: hidden;
+.default-chart {
+  width: 294px;
+  margin-top: 32px;
+  padding: 16px 0;
+  border-radius: 16px;
+  border: 0.883px solid rgba(205, 221, 238, 0.50);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
 }
-
-.image-container img {
-  position: absolute;
-  width: 90%;
-  height: 90%;
-  top: 0%;
-  left: 0%;
-  object-fit: cover;
-}
-
 .custom-settings {
   margin-top: 10px;
   width: 90%;
