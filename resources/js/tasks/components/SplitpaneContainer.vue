@@ -1,6 +1,11 @@
 
 <template>
-  <splitpanes ref="inspectorSplitPanes" class="splitpane default-theme" :dbl-click-splitter="false" @resize="sizeListener($event)">
+  <splitpanes 
+    ref="inspectorSplitPanes"
+    class="splitpane default-theme"
+    :class="[classInbox ? 'splitpane-inbox' : 'splitpane', 'default-theme']"
+    :dbl-click-splitter="false"
+    @resize="sizeListener($event)">
     <pane style="opacity: 0">
       <div />
     </pane>
@@ -19,7 +24,10 @@ export default {
   props: {
     size: {
       default: 50,
-    }
+    },
+    classInbox: {
+      default: false
+    },
   },
   data() {
     return {
@@ -51,6 +59,13 @@ export default {
   top: 0;
   min-height: 80vh;
   width: 99%;
+  position: absolute;
+}
+.splitpane-inbox {
+  top: 0;
+  min-height: 80vh;
+  width: 95%;
+  /* width: 76%; */
   position: absolute;
 }
 .pane-task-preview {

@@ -63,8 +63,8 @@
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
-        <div>
-        <splitpane-container v-if="showQuickFillPreview" :size="50">
+        
+        <splitpane-container v-if="showQuickFillPreview" :size="50" class-inbox="true">
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"
@@ -75,7 +75,7 @@
             @quick-fill-data-inbox="fillWithQuickFillData"
           ></quick-fill-preview>
            </splitpane-container>
-        </div>
+        
        
 
       </PMPanelWithCustomHeader>
