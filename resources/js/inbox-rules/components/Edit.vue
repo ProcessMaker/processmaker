@@ -292,7 +292,6 @@
   .button-actions {
     color: #556271;
     text-transform: capitalize;
-    font-family: Open Sans;
     font-size: 15px;
     font-weight: 400;
     line-height: 24px;
