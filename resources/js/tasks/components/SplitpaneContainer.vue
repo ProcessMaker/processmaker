@@ -63,13 +63,15 @@ export default {
 }
 .splitpane-inbox {
   top: 0;
+  right: 0;
   min-height: 80vh;
-  width: 95%;
-  /* width: 76%; */
+  /* width: 95%; */
+  width: 76%;
   position: absolute;
 }
 .pane-task-preview {
   flex-grow: 1;
   overflow-y: auto;
+  z-index: 2;
 }
 </style>

@@ -12,9 +12,22 @@
         {{ $t("Cancel And Go Back") }}
       </b-button>
     </div>
-    <div v-else>
-      <div class="button-container">
-        <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
+    <div
+      v-if="propFromButton === 'inboxRules'"
+      class="button-container"
+    >
+      <span class="quick-fill-text">{{ $t("Quick Fill") }}</span>
+      <b-button
+          class="close-button-prev button-cancel"
+          @click="$emit('close')"
+        >
+          {{ $t("Cancel") }}
+        </b-button>
+    </div>
+
+      <div v-if="propFromButton === 'previewTask'" 
+        class="button-container">
+        
         <b-button
           class="close-button-prev button-cancel"
           @click="$emit('close')"
@@ -22,20 +35,13 @@
           {{ $t("Cancel") }}
         </b-button>
       </div>
-    </div>
+
 
     <div class="second-container">
       <div class="span-message">
-        {{
-          this.processName
-            ? $t(
-                "Select a previous task to reuse its filled data on the current task"
-              ) +
-              ": " +
-              this.processName
-            : $t(
-                "Select a previous task to reuse its filled data on the current task."
-              )
+        {{ this.processName ? 
+          $t("Select a previous task to reuse its filled data on the current task") + ": " + this.processName : 
+          $t("Select a previous task to reuse its filled data on the current task.")
         }}
       </div>
       <div class="third-container">
@@ -51,7 +57,7 @@
           :from-button="propFromButton"
         >
           <template v-slot:preview-header="{ close, screenFilteredTaskData }">
-            <div v-if="propFromButton === 'inboxRules'" style="width: 50%">
+            <div v-if="propFromButton === 'inboxRules'" style="width: 94%">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
                   <span class="span-text">Data Preview</span>
@@ -66,7 +72,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task DataIn") }}
+                    />{{ $t("Use This Task Data") }}
                   </b-button>
                 </div>
                 <b-button
@@ -93,7 +99,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task DataP") }}
+                    />{{ $t("Use This Task Data") }}
                   </b-button>
                   <b-button
                     v-if="propFromButton === 'fullTask'"
@@ -106,7 +112,7 @@
                       src="../../../img/smartinbox-images/Stroke.svg"
                       class="img-styles"
                       :alt="$t('No Image')"
-                    />{{ $t("Use This Task DataF") }}
+                    />{{ $t("Use This Task Data") }}
                   </b-button>
                 </div>
                 <b-button
@@ -146,7 +152,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="previewTasks(tooltipRowData, 50, 'inboxRules')"
+              @click="previewTasks(tooltipRowData, 80, 'inboxRules')"
             >
               <i class="fas fa-eye" />
             </b-button>
@@ -427,10 +433,10 @@ img {
 }
 
 .second-container {
-  width: 98%;
+  width: 99%;
 }
 
 .third-container {
-  widows: 97%;
+  width: 99%;
 }
 </style>

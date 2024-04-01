@@ -63,21 +63,6 @@
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
-        
-        <splitpane-container v-if="showQuickFillPreview" :size="50" class-inbox="true">
-          <quick-fill-preview
-            class="quick-fill-preview"
-            :task="task"
-            :prop-from-button ="'inboxRules'"
-            :prop-columns="columns"
-            :prop-filters="filter"
-            @close="showQuickFillPreview = false"
-            @quick-fill-data-inbox="fillWithQuickFillData"
-          ></quick-fill-preview>
-           </splitpane-container>
-        
-       
-
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader
@@ -93,7 +78,20 @@
           @view-name="viewName($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
+
+     
     </div>
+ <splitpane-container v-if="showQuickFillPreview" :size="50" class-inbox="true">
+          <quick-fill-preview
+            class="quick-fill-preview"
+            :task="task"
+            :prop-from-button ="'inboxRules'"
+            :prop-columns="columns"
+            :prop-filters="filter"
+            @close="showQuickFillPreview = false"
+            @quick-fill-data-inbox="fillWithQuickFillData"
+          ></quick-fill-preview>
+           </splitpane-container>
   </div>
 </template>
 

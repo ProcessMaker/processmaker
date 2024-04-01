@@ -539,8 +539,6 @@ export default {
       return link;
     },
     previewTasks(info, size = null, fromButton = null) {
-      console.log("TasksList previewTasks size: ",size);
-      console.log("TasksList fromButton: ",fromButton);
       this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);

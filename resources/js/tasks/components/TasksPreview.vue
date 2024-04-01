@@ -158,7 +158,6 @@
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
             'frame-container-full': tooltipButton}">
-            <h4>size: {{this.splitpaneSize}}</h4>
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -343,7 +342,8 @@ export default {
 .frame-container-inbox {
   display: grid;
   height: 70vh;
-  width: 50%;
+  /* width: 50%; */
+  width: 97%;
 }
 .embed-responsive,
 .load-frame {

@@ -39,7 +39,7 @@
         this.$emit("data", this.formData);
       },
       propInboxQuickFill() {
-        this.formData = this.propInboxQuickFill;
+        this.formData = _.merge({}, this.formData, this.propInboxQuickFill);
         this.iframeContentWindow.location.reload();
       }
     },
