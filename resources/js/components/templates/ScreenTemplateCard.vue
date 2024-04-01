@@ -34,7 +34,7 @@
             <span class="checkbox-label">{{ $t('Set as Default Template') }}</span>
           </b-form-checkbox>
         </div>
-        <div class="preview-template pt-1">
+        <div v-if="!isBlankTemplate" class="preview-template pt-1">
           <b-link @click="showTemplatePreview">
             <i class="fas fa-eye fa-fw mr-0 pr-3 preview-icon" />
             {{ $t('Preview Template') }}
@@ -60,6 +60,9 @@ export default {
     thumbnail() {
       return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
     },
+    isBlankTemplate() {
+      return !this.template.hasOwnProperty('uuid') ? true : false;
+    }
   },
   watch: {
     template: {
