@@ -291,7 +291,7 @@
           <tree-view
             v-model="previewDataStringify"
             :iframe-height="iframeHeight"
-            style="border:1px; solid gray;"
+            style="border: 1px solid gray;"
           />
         </b-col>
       </b-row>
@@ -311,6 +311,20 @@
       ref="watchersPopup"
       v-model="watchers"
       @input="onInput()"
+    />
+    <create-template-modal
+      id="create-template-modal"
+      ref="create-template-modal"
+      asset-type="screen"
+      :current-user-id="user.id"
+      :asset-name="screen.title"
+      :asset-id="screen.id"
+      :screen-type="screen.type"
+      :permission="permission"
+      :types="{ [screen.type]: screen.type }"
+      header-class="border-0"
+      footer-class="border-0"
+      modal-size="lg"
     />
   </div>
 </template>
@@ -334,6 +348,7 @@ import formTypes from "./formTypes";
 import DataLoadingBasic from "../../components/shared/DataLoadingBasic.vue";
 import AssetRedirectMixin from "../../components/shared/AssetRedirectMixin";
 import autosaveMixins from "../../modules/autosave/mixins";
+import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 
 export default {
   components: {
@@ -345,6 +360,7 @@ export default {
     MonacoEditor,
     TopMenu,
     DataLoadingBasic,
+    CreateTemplateModal,
   },
   mixins: [...autosaveMixins, AssetRedirectMixin],
   props: {
@@ -373,6 +389,7 @@ export default {
       default: false,
     },
     processId: {
+      type: Number,
       default: 0,
     },
   },
@@ -441,11 +458,29 @@ export default {
         section: "right",
         items: [
           {
+            id: "undo",
+            type: "button",
+            title: this.$t("Undo"),
+            name: this.$t("Undo"),
+            variant: "link",
+            icon: "fas fa-undo",
+            action: "undoAction()",
+          },
+          {
+            id: "redo",
+            type: "button",
+            title: this.$t("Redo"),
+            name: this.$t("Redo"),
+            variant: "link",
+            icon: "fas fa-redo",
+            action: "redoAction()",
+          },
+          {
             id: "button_calcs",
             type: "button",
             title: this.$t("Calculated Properties"),
             name: this.$t("Calcs"),
-            variant: "secondary",
+            variant: "link",
             icon: "fas fa-flask",
             action: "openComputedProperties()",
           },
@@ -454,7 +489,7 @@ export default {
             type: "button",
             title: this.$t("Custom CSS"),
             name: this.$t("CSS"),
-            variant: "secondary",
+            variant: "link",
             icon: "fab fa-css3",
             action: "openCustomCSS()",
           },
@@ -463,21 +498,11 @@ export default {
             type: "button",
             title: this.$t("Watchers"),
             name: this.$t("Watchers"),
-            variant: "secondary",
+            variant: "link",
             icon: "fas fa-mask",
             action: "openWatchersPopup()",
           },
         ],
-      },
-      {
-        id: "button_export",
-        section: "right",
-        type: "button",
-        title: this.$t("Export Screen"),
-        name: "",
-        variant: "secondary",
-        icon: "fas fa-file-export",
-        action: "beforeExportScreen()",
       },
       {
         id: "button_save",
@@ -485,7 +510,7 @@ export default {
         type: "button",
         title: this.$t("Save Screen"),
         name: "",
-        variant: "secondary",
+        variant: "link",
         icon: "fas fa-save",
         action: () => {
           ProcessMaker.EventBus.$emit("save-screen", false);
@@ -494,6 +519,7 @@ export default {
     ];
 
     return {
+      user: {},
       previewDataStringify: "",
       numberOfElements: 0,
       preview: {
@@ -549,9 +575,21 @@ export default {
       ellipsisMenuOptions: {
         actions: [
           {
+            content: this.$t("Export Screen"),
+            icon: "fas fa-file-export",
+            value: "export-screen",
+            action: "beforeExportScreen()",
+          },
+          {
             value: "discard-draft",
             content: this.$t("Discard Draft"),
-            icon: "",
+            icon: "fas fa-angle-double-down",
+            hide: this.isVersionsInstalled,
+          },
+          {
+            value: "create-template",
+            content: this.$t("Save as Template"),
+            icon: "fas fa-file-image",
           },
         ],
       },
@@ -658,7 +696,8 @@ export default {
   },
   mounted() {
     // To include another language in the Validator with variable processmaker
-    if (window.ProcessMaker?.user?.lang) {
+    this.user = window.ProcessMaker?.user;
+    if (this.user?.lang) {
       Validator.useLang(window.ProcessMaker.user.lang);
     }
 
@@ -674,6 +713,9 @@ export default {
     this.setVersionIndicator();
     // Display ellipsis menu.
     this.setEllipsisMenu();
+    ProcessMaker.EventBus.$on("show-create-template-modal", () => {
+      this.$refs["create-template-modal"].show();
+    });
   },
   methods: {
     ...mapMutations("globalErrorsModule", { setStoreMode: "setMode" }),
@@ -742,9 +784,9 @@ export default {
           return;
         }
         warnings.push(
-          // eslint-disable-next-line max-len
           this.$t(
-            "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
+            "{{name}} on page {{pageName}} is not accessible to screen readers. "
+            + "Please add a Label in the Variable section or an Aria Label in the Advanced section.",
             {
               name: item.config.name,
               pageName,
@@ -968,6 +1010,12 @@ export default {
     openWatchersPopup() {
       this.$refs.watchersPopup.show();
     },
+    undoAction() {
+      this.$refs.builder.undo();
+    },
+    redoAction() {
+      this.$refs.builder.redo();
+    },
     openComputedProperties() {
       this.$refs.computedProperties.show();
     },
@@ -1118,7 +1166,7 @@ export default {
           {
             id: "VersionIndicator",
             type: "VersionIndicator",
-            section: "right",
+            section: "rightTop",
             options: {
               is_draft: isDraft ?? this.isDraft,
             },
@@ -1144,21 +1192,19 @@ export default {
       }
     },
     setEllipsisMenu() {
-      if (this.isVersionsInstalled) {
-        this.$refs.menuScreen.addItem(
-          {
-            id: "EllipsisMenu",
-            type: "EllipsisMenu",
-            section: "right",
-            options: {
-              actions: [...this.ellipsisMenuOptions.actions],
-              data: {},
-              divider: false,
-            },
+      this.$refs.menuScreen.addItem(
+        {
+          id: "EllipsisMenu",
+          type: "EllipsisMenu",
+          section: "right",
+          options: {
+            actions: [...this.ellipsisMenuOptions.actions],
+            data: {},
+            divider: false,
           },
-          4,
-        );
-      }
+        },
+        4,
+      );
     },
   },
 };
@@ -1215,5 +1261,23 @@ body {
 }
 .device-screen {
   width: 100%;
+}
+.btn-platform {
+  background-color: #ffff;
+  color: #6a7888;
+  padding: 8px 8px 2px 8px;
+  font-size: 1rem !important;
+}
+.btn-platform:hover {
+  color: #6a7888;
+}
+.page-dropdown-menu {
+  min-width: 333px;
+  max-height: 26rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  .dropdown-item {
+   font-size: 1rem !important;
+  };
 }
 </style>

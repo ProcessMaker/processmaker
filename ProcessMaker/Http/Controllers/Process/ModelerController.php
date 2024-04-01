@@ -28,51 +28,103 @@ class ModelerController extends Controller
     use ProcessMapTrait;
 
     /**
-     * Invokes the Process Modeler for rendering.
+     * Display the modeler interface for a specific process.
+     *
+     * This method renders the modeler interface for a specific process,
+     * allowing users to view and edit the process in the modeler.
+     * It checks for any plugin addons to customize the display,
+     * and if found, renders the custom blade view with the provided alternatives.
+     * Otherwise, it renders the default modeler interface view with prepared data.
+     *
+     * @param ModelerManager $manager The ModelerManager instance.
+     * @param Process $process The Process instance to be displayed.
+     * @param Request $request The current HTTP request.
+     * @return \Illuminate\View\View The view for the modeler interface.
      */
     public function show(ModelerManager $manager, Process $process, Request $request)
     {
+        // Default view for the modeler interface
+        $defaultView = 'processes.modeler.index';
+
+        // Get plugin addons for the 'show' action
+        $addons = $this->getPluginAddons('show', []);
+
+        // Retrieve custom blade view and alternatives from addons
+        $customBlade = ($addons[0] ?? [])['new-blade'] ?? null;
+        $alternatives = ($addons[0] ?? [])['alternatives'] ?? null;
+
+        // If a custom blade view and alternatives are provided, render the custom view
+        if ($customBlade && $alternatives) {
+            return view($customBlade, $this->prepareModelerData($manager, $process, $request, 'A'));
+        }
+
+        // Otherwise, render the default modeler interface view with prepared data
+        return view($defaultView, $this->prepareModelerData($manager, $process, $request, 'A'));
+    }
+    /**
+     * Prepare data for displaying a process in the modeler.
+     *
+     * This method prepares data required for displaying a process in the modeler interface,
+     * including process information, modeler manager instance, signal permissions, auto-save delay,
+     * and other necessary details for creating subprocess, screen, and script modals in the modeler.
+     * It also checks if certain packages are installed and handles draft versions of the process.
+     *
+     * @param ModelerManager $manager The ModelerManager instance.
+     * @param Process $process The Process instance to be displayed.
+     * @param Request $request The current HTTP request.
+     * @return array The prepared data array containing process information, manager instance,
+     *               signal permissions, auto-save delay, package installation status, draft status,
+     *               block list, external integrations list, screen types, script executors,
+     *               category counts, and other relevant information.
+     */
+    public function prepareModelerData(ModelerManager $manager, Process $process, Request $request, string $alternative)
+    {
+        // Retrieve PM block list and external integrations list
         $pmBlockList = $this->getPmBlockList();
         $externalIntegrationsList = $this->getExternalIntegrationsList();
 
-        /*
-         * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
-         * allow packages to add additional javascript for modeler initialization which
-         * can customize the modeler controls list.
-         */
+        // Emit ModelerStarting event to allow customization of modeler controls
         event(new ModelerStarting($manager));
 
-        // For create subprocess modal in modeler
+        // Count process categories for creating subprocess modal
         $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
-        // For create screen modal in modeler
-        $screenTypes = [];
-        foreach (ScreenType::pluck('name')->toArray() as $type) {
-            $screenTypes[$type] = __(ucwords(strtolower($type)));
-        }
-        asort($screenTypes);
+        // Retrieve screen types and count screen categories for creating screen modal
+        $screenTypes = ScreenType::pluck('name')->map(fn($type) => __(ucwords(strtolower($type))))->sort()->toArray();
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
+        // Check if Projects and AI packages are installed
         $isProjectsInstalled = PackageHelper::isPackageInstalled(PackageHelper::PM_PACKAGE_PROJECTS);
         $isPackageAiInstalled = hasPackage('package-ai');
 
-        // For create script modal in modeler
+        // Retrieve script executors and count script categories for creating script modal
         $scriptExecutors = ScriptExecutor::list();
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
-        $draft = $process->versions()->draft()->first();
+        // Retrieve draft version of the process
+        $draft = $process->getDraftOrPublishedLatestVersion($alternative);
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
 
+        // Retrieve the default user for running processes
         $runAsUserDefault = User::where('is_administrator', true)->first();
 
-        return view('processes.modeler.index', [
-            'process' => $process->append('notifications', 'task_notifications'),
+        // Append notifications to the process
+        $process->append('notifications', 'task_notifications');
+        // Load the alternative if the package is installed
+        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            $process->load('alternativeInfo');
+        }
+
+        return [
+            'process' => $process,
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
             'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
+            'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
             'externalIntegrationsList' => $externalIntegrationsList,
             'screenTypes' => $screenTypes,
@@ -84,7 +136,8 @@ class ModelerController extends Controller
             'isPackageAiInstalled' => $isPackageAiInstalled,
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
-        ]);
+            'alternative' => $alternative,
+        ];
     }
 
     /**
@@ -194,24 +247,20 @@ class ModelerController extends Controller
     /**
      * Invokes the Modeler for In-flight Process Map rendering for ai generative.
      */
-    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, Request $request)
+    public function inflightProcessAi(ModelerManager $manager, $promptVersionId, $choiceNumber, $type, Request $request)
     {
-        $aiMicroserviceHost = config('app.ai_microservice_host');
-        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
-        $headers = [
-            'Authorization' => 'token',
-        ];
-
-        $params = [
-            'promptVersionId' => $promptVersionId,
-        ];
-
-        $promptVersion = Http::withHeaders($headers)->post($url, $params);
-
+        $version = $this->getVersion($promptVersionId, $type);
         $bpmn = '';
+        $choicesCount = 0;
 
-        if (array_key_exists('version', $promptVersion->json())) {
-            $bpmn = $promptVersion->json()['version']['bpmn'];
+        if (array_key_exists('version', $version->json())) {
+            if (array_key_exists('bpmn', $version->json()['version'])) {
+                $bpmn = $version->json()['version']['bpmn'];
+            }
+            if (array_key_exists('choices', $version->json()['version'])) {
+                $bpmn = $version->json()['version']['choices'][$choiceNumber]['bpmn'];
+                $choicesCount = count($version->json()['version']['choices']);
+            }
         }
 
         event(new ModelerStarting($manager));
@@ -219,6 +268,29 @@ class ModelerController extends Controller
         return view('processes.modeler.inflight-generative-ai', [
             'manager' => $manager,
             'bpmn' => $bpmn,
+            'choiceNumber' => $choiceNumber,
+            'choicesCount' => $choicesCount,
         ]);
+    }
+
+    private function getVersion($promptVersionId, $type) {
+        $aiMicroserviceHost = config('app.ai_microservice_host');
+        $url = $aiMicroserviceHost . '/pm/getPromptVersion';
+
+        $headers = [
+            'Authorization' => 'token',
+        ];
+        $params = [
+            'promptVersionId' => $promptVersionId,
+        ];
+
+        if ($type === 'processVersion') {
+            $url = $aiMicroserviceHost . '/pm/getProcessVersion';
+            $params = [
+                'processVersionId' => $promptVersionId,
+            ];
+        }
+        
+        return Http::withHeaders($headers)->post($url, $params);
     }
 }

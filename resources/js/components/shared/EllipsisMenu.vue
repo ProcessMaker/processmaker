@@ -1,17 +1,16 @@
 <template>
   <b-dropdown
     v-if="filterActions.length > 0"
-    :variant="variant ? variant : 'ellipsis'"
+    :variant="variant ? variant : 'outlined-secondary'"
     toggle-class="static-header"
-    no-caret
     no-flip
     lazy
     right
     offset="0"
     class="ellipsis-dropdown-main static-header"
+    :popper-opts="{ placement: 'bottom-end' }"
     @show="onShow"
     @hide="onHide"
-    
   >
     <template v-if="customButton" #button-content>
       <i
@@ -26,7 +25,10 @@
       <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
     </template>
     <template v-else #button-content>
-      <i class="fas fa-ellipsis-h ellipsis-menu-icon" />
+      <span class="text-capitalize screen-toolbar-button">
+        <i class="fas fa-cog" />
+        {{ $t("Options") }}
+      </span>
     </template>
     <div v-if="divider === true">
       <b-dropdown-item
@@ -89,9 +91,11 @@
           >
             <div class="ellipsis-dropdown-content">
               <i
+                v-if="!action.image"
                 class="pr-1 fa-fw"
                 :class="action.icon"
               />
+              <img v-if="action.image" :src="action.image" :alt="$t('Priority')">
               <span>{{ $t(action.content) }}</span>
             </div>
           </b-dropdown-item>
@@ -279,6 +283,9 @@ export default {
   }
 .search-icon {
   color: #6C757D;
+}
+.screen-toolbar-button {
+  color: #556271;
 }
 </style>
 <style>

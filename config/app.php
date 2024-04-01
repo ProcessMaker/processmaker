@@ -109,7 +109,6 @@ return [
     // Allows to detect if OpenAI is enabled or not
     'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
 
-    // Allows to detect if OpenAI is enabled or not
     'open_ai_process_translations' => env('OPEN_AI_PROCESS_TRANSLATIONS_ENABLED', false) &&
         env('OPEN_AI_SECRET', false),
 

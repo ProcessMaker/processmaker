@@ -41,6 +41,7 @@
         :is="component.type"
         v-for="(component, index) in external"
         :key="`external-${index}`"
+        :ref="`external-${component.id}`"
         :options="component.options"
       />
       <create-template-modal
@@ -117,6 +118,7 @@ export default {
           projects: this.process.projects,
           bpmn: xml,
           svg: svgString,
+          alternative: window.ProcessMaker.modeler.draftAlternative || "A",
         })
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
@@ -169,8 +171,8 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
     window.ProcessMaker.EventBus.$emit("modeler-app-init", this);
 
-    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError, generatingAssets) => {
-      this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets);
+    window.ProcessMaker.EventBus.$on("modeler-save", (redirectUrl, nodeId, onSuccess, onError, generatingAssets, publishedVersion) => {
+      this.saveProcess(onSuccess, onError, redirectUrl, nodeId, generatingAssets, publishedVersion);
     });
     window.ProcessMaker.EventBus.$on("modeler-change", () => {
       window.ProcessMaker.EventBus.$emit("new-changes");
@@ -263,7 +265,7 @@ export default {
           window.location.reload();
         });
     },
-    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false) {
+    saveProcess(onSuccess, onError, redirectUrl = null, nodeId = null, generatingAssets = false, publishedVersion = null) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -271,6 +273,7 @@ export default {
         projects: this.process.projects,
         bpmn: this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
+        alternative: publishedVersion || window.ProcessMaker.modeler.draftAlternative || "A",
       };
 
       const savedSuccessfully = (response) => {

@@ -1,6 +1,12 @@
 import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
+  props: {
+    advancedFilterProp: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       advancedFilter: {},
@@ -10,9 +16,29 @@ const PMColumnFilterCommonMixin = {
       viewProcesses: []
     };
   },
+  watch: {
+    advancedFilterProp: {
+      deep: true,
+      handler() {
+        this.getFilterConfiguration();
+        this.fetch();
+      }
+    }
+  },
   methods: {
     storeFilterConfiguration() {
       const { order, type } = this.filterConfiguration();
+      
+      // If advanced filter was provided as a prop, do not save the filter
+      // or overwrite the global advanced_filter, instead emit the filter.
+      if (this.advancedFilterProp !== null) {
+        this.$emit("advanced-filter-updated", {
+          filters: this.formattedFilter(),
+          order
+        });
+        return;
+      }
+
       let url = "users/store_filter_configuration/";
       if (this.$props.columns && this.savedSearch) {
         url += "savedSearch|" + this.savedSearch;
@@ -256,8 +282,19 @@ const PMColumnFilterCommonMixin = {
     },
     getFilterConfiguration() {
       const filters = {};
-      get(window, 'ProcessMaker.advanced_filter.filters', []).forEach((filter) => {
-        const key = filter._column_field;
+      let inputAdvancedFilter;
+      let order = null;
+
+      if (this.advancedFilterProp !== null) {
+        inputAdvancedFilter = this.advancedFilterProp.filters;
+        order = this.advancedFilterProp.order;
+      } else {
+        inputAdvancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
+        order = get(window, 'ProcessMaker.advanced_filter.order');
+      }
+
+      inputAdvancedFilter.forEach((filter) => {
+        const key = filter._column_field || 'N/A';
         if (!(key in filters)) {
           filters[key] = [];
         }
@@ -265,13 +302,17 @@ const PMColumnFilterCommonMixin = {
       });
       this.advancedFilter = filters;
       
-      const order = get(window, 'ProcessMaker.advanced_filter.order');
       if (order?.by && order?.direction) {
         this.setOrderByProps(order.by, order.direction);
       }
       
-      this.markStyleWhenColumnSetAFilter();
-      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+      this.$nextTick(() => {
+        this.markStyleWhenColumnSetAFilter();
+      });
+      
+      if (this.advancedFilterProp === null) {
+        window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+      }
     },
   }
 };

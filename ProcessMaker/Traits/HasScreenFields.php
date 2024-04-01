@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Log;
 use ProcessMaker\Models\Column;
+use ProcessMaker\Models\Screen;
 
 trait HasScreenFields
 {

@@ -12,12 +12,12 @@
         <tr>
           <th
             class="pm-table-border"
-            :colspan="headers.length"
+            :colspan="visibleHeaders.length"
           />
         </tr>
         <tr>
           <th
-            v-for="(column, index) in headers"
+            v-for="(column, index) in visibleHeaders"
             :id="`${tableName}-column-${index}`"
             :key="index"
             class="pm-table-ellipsis-column"
@@ -35,7 +35,7 @@
               <slot :name="`filter-${column.field}`" />
             </div>
             <div
-              v-if="index !== headers.length - 1"
+              v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
               @mousedown="startResize($event, index)"
             />
@@ -53,7 +53,7 @@
         <tr>
           <th
             class="pm-table-border"
-            :colspan="headers.length"
+            :colspan="visibleHeaders.length"
           />
         </tr>
       </thead>
@@ -63,13 +63,17 @@
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
           :id="`row-${row.id}`"
-          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
-          @click="handleRowClick(row)"
-          @mouseover="handleRowMouseover(row)"
+          :class="{ 
+              'pm-table-unread-row': isUnread(row, unread),
+              'pm-table-selected-row': selectedRow !== 0 && selectedRow === row.id
+          }"
+          @click="handleRowClick(row, $event)"
+          @mouseover="$emit('table-row-mouseover', row, rowIndex)"
+          @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
         >
           <slot :name="`row-${rowIndex}`">
             <td
-              v-for="(header, index) in headers"
+              v-for="(header, index) in visibleHeaders"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -97,21 +101,23 @@
                   />
                 </template>
                 <template v-else>
-                  <div
-                    :id="`${tableName}-element-${rowIndex}-${index}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
-                    {{ getNestedPropertyValue(row, header) }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`${tableName}-element-${rowIndex}-${index}`"
-                      custom-class="pm-table-tooltip"
-                      @show="checkIfTooltipIsNeeded"
+                  <slot :name="'cell-' + header.field" :row="row" :header="header" :rowIndex="rowIndex">
+                    <div
+                      :id="`${tableName}-element-${rowIndex}-${index}`"
+                      :class="{ 'pm-table-truncate': header.truncate }"
+                      :style="{ maxWidth: header.width + 'px' }"
                     >
                       {{ getNestedPropertyValue(row, header) }}
-                    </b-tooltip>
-                  </div>
+                      <b-tooltip
+                        v-if="header.truncate"
+                        :target="`${tableName}-element-${rowIndex}-${index}`"
+                        custom-class="pm-table-tooltip"
+                        @show="checkIfTooltipIsNeeded"
+                      >
+                        {{ getNestedPropertyValue(row, header) }}
+                      </b-tooltip>
+                    </div>
+                  </slot> 
                 </template>
               </template>
             </td>
@@ -158,6 +164,10 @@ export default {
         return "";
       }
     },
+    selectedRow: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -167,6 +177,11 @@ export default {
       startWidth: 0,
       resizingColumnIndex: -1,
     };
+  },
+  computed: {
+    visibleHeaders() {
+      return this.headers.filter((column) => !column.hidden);
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -187,7 +202,7 @@ export default {
       this.calculateColumnWidth();
     },
     calculateColumnWidth() {
-      this.headers.forEach((headerColumn, index) => {
+      this.visibleHeaders.forEach((headerColumn, index) => {
         if (this.calculateContent(index) !== 0) {
           headerColumn.width = this.calculateContent(index) - 32;
         }
@@ -198,14 +213,14 @@ export default {
       this.calculateColumnWidth();
       this.resizingColumnIndex = index;
       this.startX = event.pageX;
-      this.startWidth = this.headers[index].width;
+      this.startWidth = this.visibleHeaders[index].width;
 
       document.addEventListener("mousemove", this.doResize);
       document.addEventListener("mouseup", this.stopResize);
     },
     calculateContent(index) {
       const miDiv = document.getElementById(`${this.tableName}-column-${index}`);
-      return miDiv.scrollWidth;
+      return miDiv ? miDiv.scrollWidth : 80;
     },
     doResize(event) {
       if (this.isResizing) {
@@ -214,7 +229,7 @@ export default {
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
         if ((contentWidth - currentWidth) <= 80) {
-          this.headers[this.resizingColumnIndex].width = currentWidth;
+          this.visibleHeaders[this.resizingColumnIndex].width = currentWidth;
         }
       }
     },
@@ -226,14 +241,11 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
-    handleRowClick(row) {
-      this.$emit("table-row-click", row);
-    },
-    handleRowMouseover(row) {
-      this.$emit('table-row-mouseover', row);
+    handleRowClick(row, event) {
+      this.$emit("table-row-click", row, event);
     },
     handleRowMouseleave() {
-      this.$emit('table-row-mouseleave', false);
+      this.$emit("table-row-mouseleave", false);
     },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
@@ -419,5 +431,9 @@ export default {
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
   overflow-y: auto;
+}
+.pm-table-selected-row {
+  background-color: #E8F0F9;
+  color: #1572C2;
 }
 </style>

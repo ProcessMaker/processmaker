@@ -126,9 +126,7 @@ export default {
   },
   computed: {
     icon() {
-      return this.inputType === "password"
-        ? "fa-eye-slash"
-        : "fa-eye";
+      return this.inputType === "password" ? "fa-eye-slash" : "fa-eye";
     },
   },
   watch: {
@@ -148,13 +146,16 @@ export default {
   },
   methods: {
     onCopy() {
-      this.$copyText(this.config.callback_url).then(() => {
-        this.$bvToast.toast(this.$t("Copied"), {
-          title: this.$t("Success"),
-          variant: "success",
-          solid: true,
-        });
-      });
+      if (navigator.clipboard) {
+        navigator.clipboard
+          .writeText(this.config.callback_url)
+          .then(() => {
+            const message = this.$t(`Copied: ${this.config.callback_url}`);
+            ProcessMaker.alert(message, "success");
+          });
+      } else {
+        ProcessMaker.alert(this.$t("Clipboard functionality not available"), "danger");
+      }
     },
     togglePassword() {
       this.inputType = this.inputType === "password" ? "text" : "password";

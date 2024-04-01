@@ -5,10 +5,14 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Templates\ProcessTemplate;
+use ProcessMaker\Templates\ScreenTemplate;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasUuids;
@@ -36,6 +40,7 @@ class Template extends ProcessMakerModel
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
         'update-assets' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+        'screen' => [Screen::class, ScreenTemplate::class, ScreenCategory::class, 'screen_category_id', 'screen_templates'],
     ];
 
     public function index(String $type, Request $request)
@@ -78,6 +83,11 @@ class Template extends ProcessMakerModel
         $id = $request->id;
 
         return (new $this->types[$type][1])->destroy($id);
+    }
+
+    public function publishTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->publishTemplate($request);
     }
 
     public function user()

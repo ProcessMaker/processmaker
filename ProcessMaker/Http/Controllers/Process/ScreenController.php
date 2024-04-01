@@ -12,6 +12,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -56,7 +57,19 @@ class ScreenController extends Controller
             'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
         ];
 
-        return view('processes.screens.index', compact('listConfig', 'catConfig'));
+        $listScreenTemplates = (object) [
+            'myScreenTemplates' => ScreenTemplates::nonSystem()->get(),
+            'publicScreenTemplates' => ScreenTemplates::nonSystem()->get(),
+        ];
+
+        return view(
+            'processes.screens.index',
+            compact(
+                'listConfig',
+                'catConfig',
+                'listScreenTemplates',
+            )
+        );
     }
 
     /**

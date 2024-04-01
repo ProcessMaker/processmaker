@@ -18,9 +18,9 @@
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable" 
-                                   :key="index" 
-                                   :id="'pm-table-column-'+index" 
+            <PMColumnFilterPopover v-if="column.sortable"
+                                   :key="index"
+                                   :id="'pm-table-column-'+index"
                                    :type="getTypeColumnFilter(column.field)"
                                    :value="column.field"
                                    :format="getFormat(column)"
@@ -93,13 +93,14 @@
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
-      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
     <pagination-table
-        :meta="data.meta"
-        @page-change="changePage"
+      :meta="data.meta"
+      @page-change="changePage"
+      @per-page-change="changePerPage"
     />
   </div>
 </template>
@@ -256,6 +257,18 @@ export default {
           truncate: true,
         },
         {
+          label: "Alternative",
+          field: "process_version_alternative",
+          sortable: true,
+          default: true,
+          width: 150,
+          truncate: true,
+          filter_subject: {
+            type: "Relationship",
+            value: "processVersion.alternative",
+          },
+        },
+        {
           label: "Task",
           field: "active_tasks",
           sortable: false,
@@ -372,6 +385,9 @@ export default {
         },
       };
     },
+    formatProcessVersionAlternative(value) {
+      return `Alternative ${value}`;
+    },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
       // Clean up fields for meta pagination so vue table pagination can understand
@@ -388,6 +404,7 @@ export default {
         }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
+        record["process_version_alternative"] = this.formatProcessVersionAlternative(record["process_version_alternative"]);
       }
       return data;
     },
@@ -418,7 +435,7 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams + 
+            this.additionalParams +
             advancedFilter,
             {
               cancelToken: new CancelToken((c) => {

@@ -2,9 +2,10 @@ import Vue from "vue";
 import TasksList from "./components/TasksList";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
+Vue.component("TasksList", TasksList);
+
 new Vue({
   el: "#tasks",
-  components: { TasksList },
   data: {
     columns: window.Processmaker.defaultColumns || null,
     filter: "",
@@ -15,11 +16,40 @@ new Vue({
     status: [],
     inOverdueMessage: "",
     additions: [],
+    priorityField: "is_priority",
+    draftField: "draft",
+    priorityFilter: [
+      {
+        "subject": {
+          "type": "Field",
+          "value": "is_priority"
+        },
+        "operator": "=",
+        "value": true,
+        "_column_field": "is_priority",
+        "_column_label": "Priority",
+        "_hide_badge": true
+      }
+    ],
+    draftFilter: [
+      {
+        "subject": {
+          "type": "Relationship",
+          "value": "draft.id"
+        },
+        "operator": ">",
+        "value": 0,
+        "_column_field": "draft",
+        "_column_label": "Draft",
+        "_hide_badge": true
+      }
+    ],
   },
   mounted() {
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
+    this.onInbox();
   },
   created() {
     const params = new URL(document.location).searchParams;
@@ -46,6 +76,46 @@ new Vue({
     }
   },
   methods: {
+    switchTab(tab) {
+      switch (tab) {
+        case "inbox":
+          this.onInbox();
+          break;
+        case "priority":
+          this.onSwitchTab("is_priority", this.priorityFilter);
+          break;
+        case "draft":
+          this.onSwitchTab("draft", this.draftFilter);
+          break;
+        default:
+          break;
+      }
+    },
+    onInbox() {
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
+      this.fetchTasks();
+    },
+
+    onSwitchTab(field, filter) {
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[field] = filter;
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      this.fetchTasks();
+    },
+    removeTabFilter(tab) {
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[tab] = [];
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+    },
+    fetchTasks() {
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.fetch(true);
+    },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
       this.fullPmql = this.getFullPmql();
@@ -63,6 +133,9 @@ new Vue({
       if (this.$refs.taskList) {
         this.$refs.taskList.fetch(true);
       }
+    },
+    onInboxRules() {
+      window.location.href = "/tasks/rules";
     },
     setInOverdueMessage(inOverdue) {
       let inOverdueMessage = '';

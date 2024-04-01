@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
@@ -19,6 +20,10 @@ use StdClass;
 
 class Task extends ApiResource
 {
+    private $loadedData = null;
+
+    private static $screenFields = [];
+
     /**
      * Transform the resource into an array.
      *
@@ -31,8 +36,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $task = $this->resource->loadTokenInstance();
-            $array['data'] = $dataManager->getData($task);
+            $array['data'] = $this->getData();
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -42,6 +46,9 @@ class Task extends ApiResource
         }
         if (in_array('processRequest', $include)) {
             $array['process_request'] = new Users($this->processRequest);
+        }
+        if (in_array('draft', $include)) {
+            $array['draft'] = $this->draft;
         }
 
         $parentProcessRequest = $this->processRequest->parentRequest;
@@ -185,5 +192,17 @@ class Task extends ApiResource
         }
 
         return $assignedUsers;
+    }
+
+    private function getData()
+    {
+        if ($this->loadedData) {
+            return $this->loadedData;
+        }
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $this->loadedData = $dataManager->getData($task);
+
+        return $this->loadedData;
     }
 }
