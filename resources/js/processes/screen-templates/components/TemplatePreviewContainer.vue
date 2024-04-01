@@ -8,6 +8,7 @@
         id="template-preview"
         ref="template-preview"
         class="h-100 p-3"
+        style="overflow-y: auto;"
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
