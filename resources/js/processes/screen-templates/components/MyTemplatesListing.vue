@@ -161,7 +161,6 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-import PreviewTemplate from "../../../components/templates/PreviewTemplate.vue";
 import TemplatePreviewContainer from "./TemplatePreviewContainer.vue";
 import ScreenTemplatesTooltip from "./ScreenTemplatesTooltip.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
@@ -176,7 +175,6 @@ export default {
   components: {
     EllipsisMenu,
     paginationTable,
-    PreviewTemplate,
     TemplatePreviewContainer,
     ScreenTemplatesTooltip,
   },
@@ -257,67 +255,6 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    },
-    previewTemplate(info, size = null) {
-      this.selectedRow = info.id;
-      this.selectedTemplate = info;
-      this.$refs.preview.showSideBar(info, this.data.data, true, size);
-    },
-    handleRowMouseover(row) {
-      this.clearHideTimer();
-
-      const tableContainer = document.getElementById("table-container");
-      const rectTableContainer = tableContainer.getBoundingClientRect();
-      const topAdjust = rectTableContainer.top;
-
-      let elementHeight = 36;
-
-      this.isTooltipVisible = true;
-      this.tooltipRowData = row;
-
-      const rowElement = document.getElementById(`row-${row.id}`);
-      const rect = rowElement.getBoundingClientRect();
-
-      const selectedFiltersBar = document.querySelector(
-        ".selected-filters-bar",
-      );
-      const selectedFiltersBarHeight = selectedFiltersBar
-        ? selectedFiltersBar.offsetHeight
-        : 0;
-
-      elementHeight -= selectedFiltersBarHeight;
-
-      const leftBorderX = rect.left;
-      const topBorderY = rect.top - topAdjust - 203 + elementHeight;
-
-      this.rowPosition = {
-        x: leftBorderX,
-        y: topBorderY,
-      };
-    },
-    hideTooltip() {
-      this.isTooltipVisible = false;
-    },
-    clearHideTimer() {
-      clearTimeout(this.hideTimer);
-    },
-    handleRowMouseleave(visible) {
-      this.startHideTimer();
-    },
-    startHideTimer() {
-      this.hideTimer = setTimeout(() => {
-        this.hideTooltip();
-      }, 700);
-    },
-    getTemplate(templateId) {
-      return this.data.find((template) => template.id === templateId);
-    },
-    markSelectedRow(value) {
-      this.selectedRow = value;
-    },
-    hidePreview() {
-      this.showTemplatePreview = false;
-      this.selectedTemplate = null;
     },
   },
 };

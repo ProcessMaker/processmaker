@@ -35,6 +35,64 @@ const templatePreviewMixin = {
     hideButton() {
       this.isMouseOver = false;
     },
+    previewTemplate(info, size = null) {
+      this.selectedRow = info.id;
+      this.selectedTemplate = info;
+      this.$refs.preview.showSideBar(info, this.data.data, true, size);
+    },
+    handleRowMouseover(row) {
+      this.clearHideTimer();
+
+      const tableContainer = document.getElementById("table-container");
+      const rectTableContainer = tableContainer.getBoundingClientRect();
+      const topAdjust = rectTableContainer.top;
+
+      let elementHeight = 36;
+
+      this.isTooltipVisible = true;
+      this.tooltipRowData = row;
+
+      const rowElement = document.getElementById(`row-${row.id}`);
+      const rect = rowElement.getBoundingClientRect();
+
+      const selectedFiltersBar = document.querySelector(
+        ".selected-filters-bar",
+      );
+      const selectedFiltersBarHeight = selectedFiltersBar
+        ? selectedFiltersBar.offsetHeight
+        : 0;
+
+      elementHeight -= selectedFiltersBarHeight;
+
+      const leftBorderX = rect.left;
+      const topBorderY = rect.top - topAdjust - 203 + elementHeight;
+
+      this.rowPosition = {
+        x: leftBorderX,
+        y: topBorderY,
+      };
+    },
+    hideTooltip() {
+      this.isTooltipVisible = false;
+    },
+    clearHideTimer() {
+      clearTimeout(this.hideTimer);
+    },
+    handleRowMouseleave(visible) {
+      this.startHideTimer();
+    },
+    startHideTimer() {
+      this.hideTimer = setTimeout(() => {
+        this.hideTooltip();
+      }, 700);
+    },
+    markSelectedRow(value) {
+      this.selectedRow = value;
+    },
+    hidePreview() {
+      this.showTemplatePreview = false;
+      this.selectedTemplate = null;
+    },
     onClose() {
       this.$emit('mark-selected-row', 0);
       this.showPreview = false;
