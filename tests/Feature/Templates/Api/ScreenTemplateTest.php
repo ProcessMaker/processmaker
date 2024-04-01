@@ -3,7 +3,9 @@
 namespace Tests\Feature\Templates\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
 use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
@@ -179,26 +181,56 @@ class ScreenTemplateTest extends TestCase
 
     public function testShowScreenTemplate()
     {
-        // Create screen and save it in the manifest
-        $screen = $this->createScreen('basic-form-screen', ['title' => 'Test Screen']);
-        $exporter = new Exporter();
-        $exporter->exportScreen($screen);
-        $manifest = (object) $exporter->payload();
-        Screen::query()->delete();
         // Create screen template
+        $name = 'Test Screen Template';
         $screenTemplate = ScreenTemplates::factory()->create(
             [
-                'name' => 'Test Screen Template',
-                'manifest' => json_encode($manifest),
-            ]
-        );
+                'name' => $name,
+                'description' => 'Test Screen Template Description',
+            ]);
 
         $route = route('api.screenBuilder.template.show', ['screen', $screenTemplate->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
-        $newScreen = Screen::find($response->json('id'));
 
-        $this->assertDatabaseHas('screen_templates', ['id' => $screenTemplate->id]);
-        $this->assertDatabaseHas('screens', ['title' => $newScreen->title]);
+        // Assert that our database has the screen template and the editing screen for that screen we created
+        $editingScreen = Screen::where('id', $response->json()['id'])->firstOrFail();
+        $screenTemplate = ScreenTemplates::where('editing_screen_uuid', $editingScreen->uuid)->firstOrFail();
+
+        $this->assertEquals($editingScreen->title, $screenTemplate->name);
+        $this->assertEquals($editingScreen->description, $screenTemplate->description);
+        $this->assertEquals(1, $editingScreen->is_template);
+        $this->assertEquals('SCREEN_TEMPLATE', $editingScreen->asset_type);
+    }
+
+    public function testImportExportScreenTemplate()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template Import Export']);
+        $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
+        $screenTemplate->delete();
+        $this->assertDatabaseMissing('screen_templates', ['name' => $screenTemplate->name]);
+        $this->import($payload);
+        $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
+    }
+
+    public function testImportExportScreenTemplatesRoutes()
+    {
+        $screenTemplate = ScreenTemplates::factory()->create(['is_public' => true, 'name' => 'Screen Template Routes']);
+        // Test download route
+        $route = route('api.export.download', ['screen-template', $screenTemplate->id]);
+        $response = $this->apiCall('POST', $route);
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Disposition', 'attachment; filename=screen_template_routes.json');
+        // Test import route
+        $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
+        $jsonFileName = 'screen_template_routes.json';
+        $file = UploadedFile::fake()->createWithContent($jsonFileName, json_encode($payload));
+        // API call to import screen template
+        $url = '/import/screen-template';
+        $params = ['file' => $file];
+        $importResponse = $this->apiCall('POST', $url, $params);
+        $importResponse->assertStatus(200);
+        $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name . ' 2']);
+        $this->get('/screen-template/import')->assertStatus(200)->assertSee('Import Screen Template');
     }
 }
