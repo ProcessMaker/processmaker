@@ -135,7 +135,7 @@
             <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
             </notifications>
             <li class="separator d-none d-lg-block"></li>
-            <li class="d-none d-lg-block">
+            <li class="d-lg-block">
                 @php
                     $user = Auth::user();
                     $permissions = json_encode([
