@@ -194,6 +194,7 @@ export default {
     this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
+      this.apiNoResults = false;
     });
   },
   methods: {

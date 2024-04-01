@@ -190,8 +190,8 @@ export default {
   created() {
     this.fields = this.commonFields;
     ProcessMaker.EventBus.$on("api-data-my-screen-templates", () => {
-      console.log('ON api-data-my-screen-templates');
       this.fetch();
+      this.apiNoResults = false;
     });
   },
   methods: {
@@ -213,7 +213,6 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
           this.apiDataLoading = false;
-          this.apiNoResults = false;
         })
         .catch((error) => {
           console.error(error);
