@@ -61,6 +61,7 @@ class ScreenTemplateTest extends TestCase
             'name' => 'Test Screen Template Update',
             'description' => 'Test Screen Template Updated Description',
             'version' => '1.0.1',
+            'template_media' => [],
         ];
         $response = $this->apiCall('PUT', $route, $data);
         // Assert response status

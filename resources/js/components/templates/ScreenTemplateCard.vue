@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     thumbnail() {
-      return this.template?.thumbnails && this.template.thumbnails.length > 0 ? this.template.thumbnails[0] : null;
+      return this.template?.template_media && this.template.template_media.length > 0 ? this.template.template_media[0].url : null;
     },
     isBlankTemplate() {
       return !this.template.hasOwnProperty('uuid') ? true : false;
