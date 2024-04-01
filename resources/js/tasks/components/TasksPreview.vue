@@ -2,16 +2,16 @@
   <div v-if="showPreview">
     
     <div v-if="tooltipButton === 'inboxRules'">
-      <splitpane-container v-if="showPreview" :size="splitpaneSize">
+      <splitpane-container v-if="showPreview" :size="93">
         <div
         id="tasks-preview"
         ref="tasks-preview"
-        class="h-100 p-3"
+        class="w-100 h-100 p-3"
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData">
-              <b-button-group>
+             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData">
+              <!-- <b-button-group>
                 <b-button
                   class="arrow-button"
                   variant="outline-secondary"
@@ -109,12 +109,14 @@
                 >
                   <i class="fas fa-times" />
                 </b-button>
-              </div>
+              </div> -->
             </slot>
           </div>
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
-            'frame-container-full': tooltipButton}">
+            'frame-container-full': tooltipButton,
+            'frame-container-inbox': tooltipButton
+            }">
         
             <b-embed
               v-if="showFrame1"
@@ -139,18 +141,6 @@
             />
           </div>
         </div>
-        <h1>Replace QuickF Comp  </h1>
-        <!-- <splitpane-container v-if="showQuickFillPreview" :size="93">
-          <quick-fill-preview
-            class="quick-fill-preview"
-            :task="task"
-            :prop-from-button ="'previewTask'"
-            :prop-columns="propColumns"
-            :prop-filters="propFilters"
-            @quick-fill-data="fillWithQuickFillData"
-            @close="showQuickFillPreview = false"
-          ></quick-fill-preview>
-        </splitpane-container> -->
       </div>
           </splitpane-container>
     </div>
@@ -454,7 +444,8 @@ export default {
 .frame-container-inbox {
   display: grid;
   height: 70vh;
-  width: 93%
+  width: 50%;
+  background-color: aqua;
 }
 .embed-responsive,
 .load-frame {

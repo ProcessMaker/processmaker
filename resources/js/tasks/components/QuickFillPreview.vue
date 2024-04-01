@@ -201,12 +201,10 @@ export default {
     buttonThisData(data) {
       if(this.propFromButton === 'inboxRules'){
         this.$emit("quick-fill-data-inbox", data);
-        this.$emit("close");
       } else {
         this.$emit("quick-fill-data", data);
-        this.$emit("close");
       }
-      
+      this.$emit("close");
     },
     buttonThisDataFromFullTask(data) {
       return ProcessMaker.apiClient
