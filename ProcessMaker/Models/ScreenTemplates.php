@@ -233,4 +233,16 @@ class ScreenTemplates extends Template implements HasMedia
             $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
         }
     }
+
+    /**
+     * Listen for the deleting event on a ScreenTemplate
+     * instance and delete any associated Screen if exists
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($screenTemplate) {
+            Screen::where('uuid', $screenTemplate->editing_screen_uuid)->delete();
+        });
+    }
 }

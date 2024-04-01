@@ -351,7 +351,7 @@ class ScreenTemplate implements TemplateInterface
      */
     public function destroy(int $id) : bool
     {
-        return ScreenTemplates::where('id', $id)->delete();
+        return ScreenTemplates::find($id)->delete();
     }
 
     /**
