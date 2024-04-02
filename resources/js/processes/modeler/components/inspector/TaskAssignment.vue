@@ -334,7 +334,7 @@
       },
       assignmentSupportsSelfService (assignmentType) {
         let options = ['process_variable', 'user_group', 'rule_expression'];
-        if (_.get(this.node, "loopCharacteristics") !== 'undefined') {
+        if (assignmentType === "process_variable" && _.get(this.node, "loopCharacteristics") !== undefined) {
           options = ['user_group', 'rule_expression'];
         }
         return options.includes(assignmentType);
