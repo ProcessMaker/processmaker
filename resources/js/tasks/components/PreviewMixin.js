@@ -70,7 +70,6 @@ const PreviewMixin = {
      * Show the sidebar
      */
     showSideBar(info, data, firstTime = false, size = null) {
-      console.log("SIZE: ", size);
       if (size) {
         this.splitpaneSize = size;
       }

@@ -2,7 +2,7 @@
   <div v-if="showPreview">
     
     <div v-if="tooltipButton === 'inboxRules'">
-      <splitpane-container  :size="95" :class-inbox="true">
+      <splitpane-container  :size="50" :class-inbox="true">
         <div
         id="tasks-preview"
         ref="tasks-preview"
@@ -14,8 +14,8 @@
           </div>
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
-            'frame-container-full': tooltipButton,
-            'frame-container-inbox': tooltipButton
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
             }">
             <b-embed
               v-if="showFrame1"
@@ -157,7 +157,9 @@
           </div>
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
-            'frame-container-full': tooltipButton}">
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
+          }">
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -326,6 +328,7 @@ export default {
   display: block;
   overflow: hidden;
   position: relative;
+
 }
 .loadingFrame {
   opacity: 0.5;
@@ -342,7 +345,7 @@ export default {
 .frame-container-inbox {
   display: grid;
   height: 70vh;
-  width: 97%;
+  width: 98%;
 }
 .embed-responsive,
 .load-frame {

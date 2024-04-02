@@ -81,7 +81,7 @@
 
      
     </div>
- <splitpane-container v-if="showQuickFillPreview" :size="50" class-inbox="true">
+ <splitpane-container v-if="showQuickFillPreview" :size="100" class-inbox="true">
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"

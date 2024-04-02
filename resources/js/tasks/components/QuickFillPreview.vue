@@ -57,7 +57,7 @@
           :from-button="propFromButton"
         >
           <template v-slot:preview-header="{ close, screenFilteredTaskData }">
-            <div v-if="propFromButton === 'inboxRules'" style="width: 94%">
+            <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
                   <span class="span-text">Data Preview</span>
@@ -152,7 +152,7 @@
               class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
-              @click="previewTasks(tooltipRowData, 80, 'inboxRules')"
+              @click="previewTasks(tooltipRowData, 50, 'inboxRules')"
             >
               <i class="fas fa-eye" />
             </b-button>

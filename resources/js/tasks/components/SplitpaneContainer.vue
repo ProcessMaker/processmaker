@@ -65,7 +65,7 @@ export default {
   top: 0;
   right: 0;
   min-height: 80vh;
-  width: 76%;
+  width: 85%;
   position: absolute;
 }
 .pane-task-preview {
