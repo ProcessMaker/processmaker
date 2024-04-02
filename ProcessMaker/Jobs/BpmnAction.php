@@ -40,6 +40,8 @@ abstract class BpmnAction implements ShouldQueue
 
     protected $disableGlobalEvents = false;
 
+    protected $data;
+
     /**
      * @var ProcessRequestLock
      */
@@ -93,7 +95,7 @@ abstract class BpmnAction implements ShouldQueue
             $instance = $engine->loadProcessRequest($instance);
         } else {
             $processModel = Definitions::find($this->definitionsId);
-            $definitions = $processModel->getPublishedVersion()->getDefinitions();
+            $definitions = $processModel->getPublishedVersion($this->data ?: [])->getDefinitions();
             $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }

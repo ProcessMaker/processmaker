@@ -261,6 +261,7 @@
   "Cannot edit system signals.": "Cannot edit system signals.",
   "CAPTCHA controls cannot be placed within a Loop control.": "CAPTCHA controls cannot be placed within a Loop control.",
   "Case": "Case",
+  "Case by Status": "Case by Status",
   "Catch Events": "Catch Events",
   "Categories are required to create a process": "Categories are required to create a process",
   "Categories": "Categories",
