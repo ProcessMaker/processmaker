@@ -68,7 +68,7 @@
           enabledTransports: ['ws', 'wss'],
           disableStats: true,
         };
-        
+
         @if(config('broadcasting.connections.pusher.options.host'))
           window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
           window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
@@ -146,6 +146,9 @@
 @foreach ($addons as $addon)
   @if (!empty($addon['script_mix']))
     <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+  @endif
+  @if (!empty($addon['script_mix_module']))
+    <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
   @endif
 @endforeach
 @endisset

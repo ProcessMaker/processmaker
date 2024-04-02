@@ -26,6 +26,9 @@ const app = new Vue({
     reload() {
       this.$refs.publicTemplatesListing.fetch();
     },
+    goToImport() {
+      window.location = "/screen-template/import";
+    },
   },
 });
 

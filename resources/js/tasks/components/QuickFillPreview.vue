@@ -48,7 +48,6 @@
         <tasks-list
           ref="taskList"
           class="custom-table-class"
-          :disable-tooltip="true"
           :columns="columns"
           :selected-row-quick="selectedRowQuick"
           @selected="selected"
