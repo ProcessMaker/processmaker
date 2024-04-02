@@ -1274,6 +1274,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Get the associated launchpad
+     */
+    public function launchpad()
+    {
+        return $this->hasOne(ProcessLaunchpad::class, 'process_id', 'id');
+    }
+
+    /**
      * Assignments of the process.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
