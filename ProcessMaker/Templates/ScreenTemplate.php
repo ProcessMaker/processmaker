@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +13,12 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
+use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Summary of ScreenTemplate
@@ -57,6 +60,11 @@ class ScreenTemplate implements TemplateInterface
             }
         }
 
+        if (!$isPublic) {
+            $authUserId = Auth::user()->id;
+            $templates->where('user_id', $authUserId);
+        }
+
         return $templates
             ->select(
                 'screen_templates.id',
@@ -70,6 +78,7 @@ class ScreenTemplate implements TemplateInterface
                 'screen_templates.screen_category_id',
                 'screen_templates.screen_type',
                 'screen_templates.is_public',
+                'screen_templates.is_default_template',
                 'screen_templates.is_system',
                 'screen_templates.asset_type',
                 'screen_templates.media_collection',
@@ -261,21 +270,21 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplate(Request $request): JsonResponse
     {
-        $request->validate([
-            'is_public' => 'sometimes|boolean',
-        ]);
-
-        $template = ScreenTemplates::findOrFail($request->id);
+        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
 
         try {
-            $template->update($request->all());
+            $request->validate([
+                'is_public' => 'sometimes|boolean',
+            ]);
+
+            $template = ScreenTemplates::findOrFail($templateId);
+            $template->update($request->except('media_collection'));
 
             $response = response()->json();
+        } catch (ModelNotFoundException $e) {
+            $response = response()->json(['message' => 'Template not found.'], 404);
         } catch (Exception $e) {
-            $response = response([
-                'message' => $e->getMessage(),
-                'errors' => $e->getMessage(),
-            ], 422);
+            $response = response()->json(['message' => $e->getMessage()], 500);
         }
 
         return $response;
@@ -288,12 +297,13 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateConfigs($request) : JsonResponse
     {
-        $id = (int) $request->id;
-        $template = ScreenTemplates::where('id', $id)->firstOrFail();
-        $template->fill($request->except('id'));
-        $template->user_id = Auth::user()->id;
-
         try {
+            $id = (int) $request->id;
+            $template = ScreenTemplates::where('id', $id)->firstOrFail();
+            $this->syncTemplateMedia($template, $request->template_media);
+            $template->fill($request->except('id'));
+            $template->user_id = Auth::user()->id;
+
             $template->saveOrFail();
 
             return response()->json();
@@ -339,17 +349,48 @@ class ScreenTemplate implements TemplateInterface
      */
     public function configure(int $id) : array
     {
-        // TODO: Implement showing selected screen template configurations
+        $template = (object) [];
+
+        $template = ScreenTemplates::select([
+            'id',
+            'uuid',
+            'media_collection',
+            'name',
+            'description',
+            'screen_category_id',
+            'version',
+        ])->where('id', $id)->firstOrFail();
+
+        $categories = ScreenCategory::orderBy('name')
+            ->where('status', 'ACTIVE')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+        $addons = $this->getPluginAddons('edit', compact(['template']));
+        $route = ['label' => 'Screens', 'action' => 'screens'];
+
+        $screenTypes = ScreenType::all()->pluck('name')->toArray();
+
+        return ['screen', $template, $addons, $categories, $route, $screenTypes];
     }
 
     /**
-     *  Delete process template
+     *  Delete screen template
      * @param mixed $request
      * @return bool
      */
     public function destroy(int $id) : bool
     {
-        return ScreenTemplates::where('id', $id)->delete();
+        return ScreenTemplates::find($id)->delete();
+    }
+
+    /**
+     * Delete screen template media
+     * @param mixed $request
+     * @return bool
+     */
+    public function deleteMediaImages(Request $request)
+    {
     }
 
     /**
@@ -593,6 +634,50 @@ class ScreenTemplate implements TemplateInterface
                     ]);
                 }
             }
+        }
+    }
+
+    private function syncTemplateMedia($template, $media)
+    {
+        // Get the UUIDs of updated media
+        $updatedTemplateMediaUuids = $this->getMediaUuids($media);
+
+        // Delete media that is missing from the request media
+        $this->deleteMissingMedia($template, $updatedTemplateMediaUuids);
+
+        // Get the UUIDs of existing media associated with the template
+        $existingMediaUuids = $this->getMediaUuids($template->template_media);
+
+        // Add new media that is not already associated with the template
+        $this->addNewMedia($template, $media, $existingMediaUuids);
+    }
+
+    private function getMediaUuids($media)
+    {
+        return array_map(function ($obj) {
+            return $obj['uuid'];
+        }, $media);
+    }
+
+    private function deleteMissingMedia($template, $updatedTemplateMediaUuids)
+    {
+        $result = array_filter($template->template_media, function ($obj) use ($updatedTemplateMediaUuids) {
+            return !in_array($obj['uuid'], $updatedTemplateMediaUuids);
+        });
+
+        foreach ($result as $media) {
+            Media::where('uuid', $media['uuid'])->delete();
+        }
+    }
+
+    private function addNewMedia($template, $media, $existingMediaUuids)
+    {
+        $result = array_filter($media, function ($obj) use ($existingMediaUuids) {
+            return !in_array($obj['uuid'], $existingMediaUuids);
+        });
+
+        foreach ($result as $media) {
+            $template->addMediaFromBase64($media['url'])->toMediaCollection($template->media_collection);
         }
     }
 }
