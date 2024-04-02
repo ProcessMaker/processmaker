@@ -3,23 +3,23 @@
     <h4>{{$t('New Inbox Rule')}}</h4>
     <div class="d-flex">
       <PMPanelWithCustomHeader 
-        v-if="isViewName(1)"
+        v-if="viewIs('main')"
         class="filters"
         :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
         <template v-slot:header-right-content>
           <InboxRuleButtons
+            ref="editInboxRuleButtons"
             :show-saved-search-selector="showSavedSearchSelector"
-            :saved-search-id="newSavedSearchIdFromSelector"
-            @saved-search-id-changed="newSavedSearchIdFromSelector = $event"
+            :saved-search-id="savedSearchIdSelected"
+            @saved-search-id-changed="savedSearchIdSelected = $event"
             @showColumns="showColumns"
             @reset-filters="resetFilters">
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
-          v-if="inboxRule || isNew"
           ref="inboxRuleFilters"
-          :saved-search-id="savedSearchIdForFilters"
-          :task-id="taskId"
+          :savedSearchId="getSavedSearchId"
+          :taskId="taskId"
           :show-column-selector-button="false"
           @count="count = $event"
           @saved-search-data="savedSearchData = $event">
@@ -27,7 +27,7 @@
       </PMPanelWithCustomHeader>
 
       <PMPanelWithCustomHeader 
-        v-if="isViewName(2)"
+        v-if="viewIs('nextConfiguration')"
         class="filters"
         :title="$t('Step 3:') + ' ' + $t('Enter form data')">
         <template v-slot:header-right-content>
@@ -54,7 +54,8 @@
           :task-id="taskId"
           :data="data"
           :select-submit-button="submitButton"
-          @view-name="viewName($event)">
+          @onSavedSearchNotSelected="$refs.editInboxRuleButtons.showPopoverMessage()"
+          @onChangeViews="viewsTo($event)">
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
     </div>
@@ -95,7 +96,7 @@
       return {
         count: 0,
         inboxRule: null,
-        newSavedSearchIdFromSelector: null,
+        savedSearchIdSelected: null,
         savedSearchData: {},
         taskId: null,
         data: {},
@@ -104,14 +105,14 @@
     },
     computed: {
       rightPanelTitle() {
-        if (this.view_name === 1) {
+        if (this.viewIs('main')) {
           return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
         }
-        if (this.view_name === 2) {
+        if (this.viewIs('nextConfiguration')) {
           return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
         }
       },
-      savedSearchIdForFilters() {
+      getSavedSearchId() {
         // All existing inbox rules have a saved search id.
         // If this is a new inbox rule, we could have a saved search id or a process id and element id
         if (this.inboxRule) {
@@ -120,8 +121,8 @@
         if (this.newSavedSearchId) {
           return this.newSavedSearchId;
         }
-        if (this.newSavedSearchIdFromSelector) {
-          return this.newSavedSearchIdFromSelector;
+        if (this.savedSearchIdSelected) {
+          return this.savedSearchIdSelected;
         }
         return null;
       },
@@ -140,6 +141,7 @@
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
                 .then(response => {
                   this.inboxRule = response.data;
+                  this.submitButton = this.inboxRule.submit_button;
                   this.data = this.inboxRule.data;
                   this.taskId = this.inboxRule.process_request_token_id;
                 });
