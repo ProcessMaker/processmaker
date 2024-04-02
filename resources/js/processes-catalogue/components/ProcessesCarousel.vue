@@ -20,6 +20,7 @@
             v-if="image.type === 'embed'"
             class="d-block iframe-carousel"
             :src="image.url"
+            title="embed media"
           />
           <img
             v-else

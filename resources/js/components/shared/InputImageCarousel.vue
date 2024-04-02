@@ -311,7 +311,7 @@ export default {
       return this.images;
     },
     /**
-     * Check if embed files are valid
+     * Check if embed media are valid
      */
     checkImages() {
       let isValid = true;
@@ -563,7 +563,7 @@ export default {
 
       this.embedUrls[index] = '';
       this.notURL = false;
-      
+
       // Call API to delete
       ProcessMaker.apiClient
         .delete(`processes/${this.processId}/embed`, {

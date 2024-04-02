@@ -1716,15 +1716,13 @@ class ProcessController extends Controller
         // Saving Carousel Images into Media table related to process_id
         if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
             foreach ($request->imagesCarousel as $image) {
-                if (is_string($image['url']) && !empty($image['url'])) {
-                    if ($image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
-                        if (!$process->media()->where('collection_name', 'images_carousel')
-                        ->where('uuid', $image['uuid'])->exists()) {
-                            $process
-                            ->addMediaFromBase64($image['url'])
-                            ->withCustomProperties(['type' => $image['type']])
-                            ->toMediaCollection('images_carousel');
-                        }
+                if (is_string($image['url']) && !empty($image['url']) && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
+                    if (!$process->media()->where('collection_name', 'images_carousel')
+                    ->where('uuid', $image['uuid'])->exists()) {
+                        $process
+                        ->addMediaFromBase64($image['url'])
+                        ->withCustomProperties(['type' => $image['type']])
+                        ->toMediaCollection('images_carousel');
                     }
                 }
                 if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
@@ -1739,11 +1737,11 @@ class ProcessController extends Controller
                         ]),
                     ];
                     if (!is_null($image['uuid']) && $image['uuid'] !== '') {
-                        $newEmbed = $embed->updateOrCreate([
+                        $embed->updateOrCreate([
                             'uuid' => $image['uuid']
                         ], $values);
                     } else {
-                        $newEmbed = $embed->fill($values);
+                        $embed->fill($values);
                         $embed->saveOrFail();
                     }
                 }
