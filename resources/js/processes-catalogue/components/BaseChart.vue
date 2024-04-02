@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="saveSearchId !== null">
+    <template v-if="saveSearchId !== null && saveSearchId !== 0">
       <div class="base-chart h-85 w-85 custom-settings">
         <component
           :is="chartComponent"
