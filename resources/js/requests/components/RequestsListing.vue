@@ -360,6 +360,13 @@ export default {
       }).join('<br/>');
       return htmlString;
     },
+    formatId(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         # ${value.id}
+      </a>`;
+    },
     formatCaseNumber(value) {
       return `
       <a href="${this.openRequest(value, 1)}"
@@ -405,6 +412,7 @@ export default {
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
         record["process_version_alternative"] = this.formatProcessVersionAlternative(record["process_version_alternative"]);
+        record["id"] = this.formatId(record);
       }
       return data;
     },
