@@ -23,10 +23,6 @@
           </div>
         </div>
         <div class="options-launchpad">
-          <label>
-            {{ $t("Launchpad Icon") }}
-          </label>
-          <icon-dropdown ref="icon-dropdown" />
           <label>{{ $t("Launch Screen") }}</label>
           <div class="dropdown">
             <button
@@ -56,6 +52,10 @@
               </a>
             </div>
           </div>
+          <label>
+            {{ $t("Launchpad Icon") }}
+          </label>
+          <icon-dropdown ref="icon-dropdown" />
           <label>{{ $t("Chart") }}</label>
           <div class="dropdown">
             <button
