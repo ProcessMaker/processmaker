@@ -40,7 +40,7 @@
 .process-counter {
   display: flex;
   justify-content: space-between;
-  width: 250px;
+  width: 294px;
   height: 111px;
   padding: 22px 24px;
   border-radius: 16px;
