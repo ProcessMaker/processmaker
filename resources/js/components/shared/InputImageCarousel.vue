@@ -566,7 +566,7 @@ export default {
 
       // Call API to delete
       ProcessMaker.apiClient
-        .delete(`processes/${this.processId}/embed`, {
+        .delete(`process_launchpad/${this.processId}/embed`, {
           data: { uuid },
         })
         .then((response) => {

@@ -168,6 +168,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('launchpad.store')->middleware($middlewareCatalog);
     Route::delete('process_launchpad/{process}', [ProcessLaunchpadController::class, 'destroy'])
         ->name('launchpad.destroy')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{process}/embed', [ProcessLaunchpadController::class, 'deleteEmbed'])
+        ->name('launchpad.destroy-embed')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -179,8 +181,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     //Process Launchpad
     Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
     Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
-    Route::get('processes/{process}/embed', [ProcessController::class, 'getEmbed'])->name('processes.embed')->middleware('can:view-processes');
-    Route::delete('processes/{process}/embed', [ProcessController::class, 'deleteEmbed'])->name('processes.delete-embed')->middleware('can:view-processes');
 
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');

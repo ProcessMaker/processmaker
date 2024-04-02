@@ -88,4 +88,18 @@ class ProcessLaunchpadController extends Controller
             }
         }
     }
+
+    public function deleteEmbed(Request $request, Process $process)
+    {
+        // Get UUID in the table
+        $uuid = $request->input('uuid');
+
+        $embedUrl = Embed::where('uuid', $uuid)
+            ->first();
+
+        // Check if embed before delete
+        if ($embedUrl) {
+            $embedUrl->delete();
+        }
+    }
 }
