@@ -304,6 +304,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         return $this->hasMany(ProcessNotificationSetting::class);
     }
 
+    /**
+     * Get the associated embed
+     */
     public function embed()
     {
         return $this->hasMany(Embed::class, 'model_id', 'id');

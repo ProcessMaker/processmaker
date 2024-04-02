@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
@@ -17,8 +18,9 @@ class ProcessLaunchpadController extends Controller
         // Get the processes launchpad configuration
         // Get the images related
         // Get the embed related
-        $processes = Process::with('launchpad')->with('media')
-            //->with('embed')
+        $processes = Process::with('launchpad')
+            ->with('media')
+            ->with('embed')
             ->where('id', $process->id)
             ->get()
             ->collect();
@@ -75,6 +77,8 @@ class ProcessLaunchpadController extends Controller
                         break;
                     case 'embed':
                         // Store the embed related into the Embed table
+                        $embed = new Embed();
+                        $embed->saveProcessEmbed($process, $row, 'uuid');
                         break;
                     default:
                         // Nothing

@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\ProcessArchived;
 use ProcessMaker\Events\ProcessCreated;
@@ -1719,10 +1718,12 @@ class ProcessController extends Controller
             foreach ($request->imagesCarousel as $image) {
                 if (is_string($image['url']) && !empty($image['url'])
                 && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
-                    $this->saveImageMedia($process, $image);
+                    $media = new \ProcessMaker\Models\Media();
+                    $media->saveProcessMedia($process, $image, 'uuid');
                 }
                 if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
-                    $this->saveEmbedMedia($process, $image);
+                    $embed = new \ProcessMaker\Models\Embed();
+                    $embed->saveProcessEmbed($process, $image, 'uuid');
                 }
             }
         }

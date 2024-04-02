@@ -53,4 +53,42 @@ class Embed extends ProcessMakerModel
     {
         return $this->hasMany(Process::class, 'id');
     }
+
+    /**
+     * Save the embed related to the Process
+     *
+     * @param  Process $process
+     * @param array $properties
+     * @param string $key
+     *
+     * @return void
+     */
+    public function saveProcessEmbed(Process $process, $properties, $key = 'uuid')
+    {
+        $embed = new Embed();
+        // Define the values
+        $values = [
+            'model_id' => $process->id,
+            'model_type' => Process::class,
+            'mime_type' => 'text/url',
+            'custom_properties' => json_encode([
+                'url' => $properties['url'],
+                'type' => $properties['type']
+            ]),
+        ];
+        // Review if the uuid was defined
+        if (!empty($properties[$key])) {
+            $existingEmbed = $embed->where($key, $properties[$key])->first();
+            if ($existingEmbed) {
+                // Update
+                $existingEmbed->update($values);
+            } else {
+                // Create
+                $embed->fill($values)->saveOrFail();
+            }
+        } else {
+            // If the key does not exist create
+            $embed->fill($values)->saveOrFail();
+        }
+    }
 }
