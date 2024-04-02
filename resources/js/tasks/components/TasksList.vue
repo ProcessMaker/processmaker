@@ -283,6 +283,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    openQuickFillFromRow: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -622,9 +626,20 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if (!isPriorityIcon && !this.disableRowClick) {
-        window.location.href = this.openTask(row);
+      if(this.fromButton === 'previewTask') {
+        return this.previewTasks(this.tooltipRowData, 93);
       }
+      if(this.fromButton === 'fullTask') {
+        return this.previewTasks(this.tooltipRowData, 50);
+      }
+      if(this.fromButton === 'inboxRules') {
+        return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
+      }  
+        if (!isPriorityIcon && !this.disableRowClick) {
+          window.location.href = this.openTask(row);
+        }
+      
+      
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
