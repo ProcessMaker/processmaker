@@ -66,6 +66,8 @@ export default {
       selectedItem: "",
       firstTime: true,
       collapsedMenus: {},
+      oldMenuGroups: [],
+      changeEmailServers: false,
     };
   },
   mounted() {
@@ -80,6 +82,9 @@ export default {
           if (this.firstTime) {
             this.selectFirstItem();
           }
+          if (this.changeEmailServers) {
+            this.checkChangeEmailServer();
+          }
         });
     },
     transformResponse(response) {
@@ -90,16 +95,31 @@ export default {
         element.groups = this.orderGroupAlphabetic(element.groups);
       });
     },
-    orderGroupAlphabetic(groups) {
-      const newGroups = groups.map(group => {
-        // Check if starts with "-"
-        if (group.name.startsWith('-')) {
-          // Remplace with the vignette
-          group.name = '•' + group.name.substring(1);
+    checkChangeEmailServer() {
+      const oldEmailMenu = this.oldMenuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
+      const newEmailMenu = this.menuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
+      // Check if a Email Server was addded
+      if (oldEmailMenu.length < newEmailMenu.length) {
+        const newGroup = newEmailMenu.filter((group) => !oldEmailMenu.some((oldGroup) => group.id === oldGroup.id));
+        if (newGroup[0].id.includes("Email Server")) {
+          this.selectItem(newGroup[0]);
         }
-        return group;
-      }).sort((a, b) => {
-        // Ordenar los grupos alfabéticamente por el nombre
+      }
+      // Check if a Email Server was deleted
+      if (oldEmailMenu.length > newEmailMenu.length) {
+        this.selectFirstItem();
+      }
+      this.changeEmailServers = false;
+      this.refreshing = false;
+    },
+    refresh() {
+      this.oldMenuGroups = this.menuGroups;
+      this.getMenuGrups();
+    },
+    orderGroupAlphabetic(groups) {
+      // Ignore upper and lowercase
+      const newGroups = groups.sort((a, b) => {
+        // Alphabetic order
         const nameA = a.name.toUpperCase();
         const nameB = b.name.toUpperCase();
         if (nameA < nameB) {

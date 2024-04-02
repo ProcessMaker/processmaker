@@ -39,6 +39,21 @@
         {{ $t('No saved searches available') }}
       </div>
     </b-popover>
+    <b-popover :show.sync="popoverMessage"
+               target="inboxRuleButtonsDropdown"
+               triggers=""
+               placement="bottom"
+               boundary="window"
+               custom-class="inbox-rule-buttons-popover-message border border-danger">
+      <div class="mt-2 mb-2 ml-3 mr-3">
+        <b-icon icon="exclamation-circle"
+                variant="danger"
+                aria-hidden="true"></b-icon>
+        <span class="text-danger">
+          {{ $t('Select a saved search.') }}
+        </span>
+      </div>
+    </b-popover>
     <b-button size="sm"
               variant="light"
               class="button-border button-font"
@@ -62,7 +77,8 @@
       return {
         selectedOption: null,
         options: [],
-        showMessageEmpty: false
+        showMessageEmpty: false,
+        popoverMessage: false
       };
     },
     watch: {
@@ -98,6 +114,9 @@
                     });
                   });
                 });
+      },
+      showPopoverMessage() {
+        this.popoverMessage = true;
       }
     }
   };
@@ -110,6 +129,9 @@
   }
   .button-border button:first-child {
     min-width: 172px;
+  }
+  .inbox-rule-buttons-popover-message .arrow::before{
+    border-bottom-color: #e50130;
   }
 </style>
 <style scoped>

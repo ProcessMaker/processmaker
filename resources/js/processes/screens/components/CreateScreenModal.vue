@@ -214,6 +214,18 @@ export default {
     templateTypeLabel() {
       return this.$t("Styles for the Screen Type").toUpperCase();
     },
+    hasTemplateId() {
+      return this.formData.templateId !== null && this.formData.templateId !== undefined; 
+    },
+    hasDefaultTemplateId() {
+      return this.formData.defaultTemplateId !== null;
+    },
+    otherTemplateSelected() {
+      return this.formData.selectedTemplate;
+    },
+    getTemplateId() {
+      return this.hasTemplateId ? this.formData.templateId : this.formData.defaultTemplateId;
+    }
   },
   mounted() {
     this.resetFormData();
@@ -273,15 +285,9 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.formData.templateId !== null && this.formData.templateId !== undefined && this.formData.defaultTemplateId !== null) {
+      if (this.otherTemplateSelected && this.hasTemplateId || this.hasDefaultTemplateId && !this.otherTemplateSelected || this.hasTemplateId) {
         this.handleCreateFromTemplate();
-      } else if (this.formData.defaultTemplateId !== null && this.formData.templateId === undefined) {
-        this.handleCreateFromBlank();
-      } else if (this.formData.templateId === undefined) {
-        this.handleCreateFromBlank();
-      } else if (this.formData.defaultTemplateId === null && this.formData.templateId !== null) {
-        this.handleCreateFromTemplate();
-      } else if (this.formData.defaultTemplateId === null && this.formData.templateId === null) {
+      } else {
         this.handleCreateFromBlank();
       }
     },
@@ -300,7 +306,7 @@ export default {
     },
     handleCreateFromTemplate() {
       ProcessMaker.apiClient.post(
-        `template/create/screen/${this.formData.templateId}`,
+        `template/create/screen/${this.getTemplateId}`,
         this.formData,
         {
           headers: {
@@ -365,6 +371,7 @@ export default {
     },
     handleSelectedTemplate(templateId) {
       this.formData.templateId =  templateId;
+      this.formData.selectedTemplate = true;
       this.formData.templateOptions = JSON.stringify(['CSS', 'Layout', 'Fields']);
     },
     handleSelectedTemplateOptions(options) {

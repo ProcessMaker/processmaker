@@ -1,5 +1,50 @@
 <template>
-  <div>
+  <div v-if="showPreview">
+    
+    <div v-if="tooltipButton === 'inboxRules'">
+      <splitpane-container  :size="50" :class-inbox="true">
+        <div
+        id="tasks-preview"
+        ref="tasks-preview"
+        class="w-100 h-100 p-3"
+      >
+        <div>
+          <div class="d-flex w-100 h-100 mb-3">
+             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData"></slot>
+          </div>
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
+            }">
+            <b-embed
+              v-if="showFrame1"
+              ref="tasksFrame1"
+              width="100%"
+              :class="showFrame2 ? 'loadingFrame' : ''"
+              :src="linkTasks1"
+              @load="frameLoaded('tasksFrame1')"
+            />
+            <b-embed
+              v-if="showFrame2"
+              ref="tasksFrame2"
+              width="100%"
+              :class="showFrame1 ? 'loadingFrame' : ''"
+              :src="linkTasks2"
+              @load="frameLoaded('tasksFrame2')"
+            />
+
+            <task-loading
+              v-show="stopFrame"
+              class="load-frame"
+            />
+          </div>
+        </div>
+      </div>
+          </splitpane-container>
+    </div>
+
+    <div v-else>
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         id="tasks-preview"
@@ -169,7 +214,11 @@
               {{ $t('Cancel') }}
             </button>
           </div>
-          <div :class="{'frame-container': !tooltipButton, 'frame-container-full': tooltipButton}">
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
+          }">
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
@@ -206,7 +255,8 @@
         </splitpane-container>
       </div>
     </splitpane-container>
-  </div>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -221,7 +271,7 @@ import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
-  props: ["tooltipButton"],
+  props: ["tooltipButton", "propPreview"],
   watch: {
     task: {
       deep: true,
@@ -243,6 +293,9 @@ export default {
     },
   },
   mounted() {
+    if(this.propPreview){
+      this.showPreview = true;
+    }
     this.receiveEvent("dataUpdated", (data) => {
       this.formData = data;
       if (this.userHasInteracted) {
@@ -290,6 +343,7 @@ export default {
       this.sendEvent("fillData", data);
       this.showUseThisTask = false;
       ProcessMaker.alert(message, 'success');
+      this.handleAutosave();
     },
     sendEvent(name, data)
     {
@@ -386,6 +440,7 @@ export default {
   display: block;
   overflow: hidden;
   position: relative;
+
 }
 .loadingFrame {
   opacity: 0.5;
@@ -398,6 +453,11 @@ export default {
   display: grid;
   height: 70vh;
   width: 93%
+}
+.frame-container-inbox {
+  display: grid;
+  height: 70vh;
+  width: 98%;
 }
 .embed-responsive,
 .load-frame {
@@ -460,7 +520,7 @@ export default {
   margin-right: 10px;
 }
 .button-priority {
-    background-color: #FEF2F3;
-    color: #C56363;
+  background-color: #FEF2F3;
+  color: #C56363;
 }
 </style>

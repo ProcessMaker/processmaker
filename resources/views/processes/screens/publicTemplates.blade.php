@@ -15,6 +15,23 @@
                         @pmqlchange="onChange">
                     </pmql-input>
                 </div>
+                @canany(['import-screen-templates', 'create-screen-templates'])
+                    <div class="d-flex ml-md-0 flex-column flex-md-row">
+                        @can('import-screen-templates')
+                            <div class="mb-3 mb-md-0 ml-md-2">
+                                <a
+                                    href="#"
+                                    aria-label="{{ __('Import Template') }}"
+                                    id="import_template"
+                                    class="btn btn-outline-secondary w-100"
+                                    @click="goToImport"
+                                >
+                                    <i class="fas fa-file-import"></i> {{__('Import')}}
+                                </a>
+                            </div>
+                        @endcan
+                    </div>
+                @endcan
             </div>
         </div>
 

@@ -183,7 +183,11 @@
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
         :data-loading-id="dataLoadingId"
-      />
+        >
+        <template v-slot:no-results>
+          <slot name="no-results"></slot>
+        </template>
+      </data-loading>
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -272,6 +276,10 @@ export default {
       default: "",
     },
     disableRowClick: {
+      type: Boolean,
+      default: false,
+    },
+    disableRuleTooltip: {
       type: Boolean,
       default: false,
     },
@@ -539,8 +547,8 @@ export default {
       }
       return link;
     },
-    previewTasks(info, size = null) {
-      this.tooltipFromButton = size;
+    previewTasks(info, size = null, fromButton = null) {
+      this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
@@ -627,7 +635,7 @@ export default {
 
       let elementHeight = 36;
 
-      this.isTooltipVisible = true;
+      this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
@@ -642,12 +650,16 @@ export default {
 
       elementHeight -= selectedFiltersBarHeight;
 
-      const rightBorderX = rect.right;
+      let rightBorderX = rect.right;
       let bottomBorderY = 0
       if(this.fromButton === "" || this.fromButton === "previewTask"){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
-      }else{
+      }
+      if(this.fromButton === "fullTask"){
         bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+      }
+      if(this.fromButton === "inboxRules"){
+        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,

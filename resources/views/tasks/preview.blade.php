@@ -108,7 +108,14 @@
                           @redirect="redirectToTask"
                           :task-preview="true"
                           :always-allow-editing="alwaysAllowEditing"
+                          :disable-interstitial="disableInterstitial"
                         ></task>
+                        <data-loading
+                          v-show="showLoading"
+                          :empty="$t('All clear')"
+                          :empty-desc="$t('No new tasks at this moment.')"
+                          empty-icon="noTasks"
+                        />
                     </div>
                 </div>
             </div>
@@ -160,6 +167,7 @@
         store: store,
         el: "#task",
         data: {
+          showLoading: true,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -188,7 +196,8 @@
           autoSaveDelay: 5000,
           userHasInteracted: false,
           initialFormDataSet: false,
-          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1')
+          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
+          disableInterstitial: window.location.search.includes('disableInterstitial=1')
         },
         watch: {
           task: {
@@ -414,7 +423,8 @@
           },
           taskUpdated(task) {
             this.task = task;
-            this.formData = _.cloneDeep(task.request_data);
+            this.formData = _.cloneDeep(this.$refs.task.requestData);
+            this.showLoading = false;
             this.$nextTick(() => {
               this.sendEvent('readyForFillData', true);
             });
