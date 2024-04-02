@@ -25,7 +25,7 @@ class ScreenTemplates extends Template implements HasMedia
     protected $table = 'screen_templates';
 
     protected $appends = [
-        'thumbnails',
+        'template_media',
     ];
 
     const categoryClass = ScreenCategory::class;
@@ -193,32 +193,37 @@ class ScreenTemplates extends Template implements HasMedia
         return $query;
     }
 
-    public function getTemplateMediaAttribute()
-    {
-        $mediaCollectionName = 'st-' . $this->uuid . '-media';
-        $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
-        $previewThumbsUrls = $previewThumbs->map(function ($slide) {
-            return $slide->getFullUrl();
-        });
-        $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
-
-        return [
-            'thumbnail' => !is_null($thumbnailMedia) ? $thumbnailMedia->getFullUrl() : '',
-            'previewThumbs' => $previewThumbsUrls,
-        ];
-    }
-
     /**
      * Get the associated thumbnails for the given screen template
      */
-    public function getThumbnailsAttribute()
+    public function getTemplateMediaAttribute()
     {
         $mediaCollectionName = 'st-' . $this->uuid . '-media';
-        $previewThumbs = $this->getMedia($mediaCollectionName);
 
-        return $previewThumbs->map(function ($thumb) {
-            return $thumb->getFullUrl();
-        });
+        // Get preview thumbs
+        $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
+        $previewThumbsUrls = $previewThumbs->pluck('url')->all();
+
+        // Get thumbnail media
+        $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
+
+        // If thumbnail media is not found and no preview thumbs are available,
+        // get any media associated with the template
+        if (is_null($thumbnailMedia) && empty($previewThumbsUrls)) {
+            $allMedia = $this->getMedia($mediaCollectionName);
+
+            return $allMedia->map(function ($media) {
+                $media->url = $media->getFullUrl();
+
+                return $media;
+            })->all();
+        } else {
+            // Return thumbnail and preview thumbs URLs
+            return [
+                'thumbnail' => $thumbnailMedia ? $thumbnailMedia->getFullUrl() : '',
+                'previewThumbs' => $previewThumbsUrls,
+            ];
+        }
     }
 
     /**

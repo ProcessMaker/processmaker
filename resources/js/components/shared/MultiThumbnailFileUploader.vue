@@ -204,23 +204,6 @@ export default {
             this.images.splice(index, 1);
             this.$set(this.showDeleteIcons, index, false);
             this.$set(this.focusIcons, index, false);
-
-            // Call API to delete
-            window.ProcessMaker.apiClient
-            .delete(`${this.modelType}/${this.modelId}/media`, {
-                data: { uuid },
-            })
-            .then((response) => {
-                window.ProcessMaker.alert(this.$t("The image was deleted"), "success");
-            })
-            .catch((error) => {
-                console.error("Error", error);
-            });
-            const params = {
-            indexImage: index,
-            type: "delete",
-            };
-            window.ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
         },
         /**
          * Generic Method to manage drag and drop and selected images

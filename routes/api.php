@@ -315,7 +315,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
     Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('template.show')->middleware('can:edit-screen-templates');
-    Route::delete('template/{type}/{id}/media', [TemplateController::class, 'deleteMediaImages'])->name('template.deleteMediaImages')->middleware('template-authorization');
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');

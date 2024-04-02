@@ -50,7 +50,7 @@
                 class="mb-3"
                 modelType="template/screen"
                 :modelId="template.id"
-                :value="template.thumbnails"
+                :value="template.media"
                 @input="handleThumbnails"
             />
 
@@ -112,17 +112,15 @@ export default {
         responseErrors: {
             deep: true,
             handler() {
-                console.log("responseErrors", this.responseErrors);
                 this.errors = this.responseErrors;
-                console.log("errors", this.errors)
             }
         }
 
     },
     methods: {
         handleThumbnails(images) {
-            this.template.thumbnails = JSON.stringify(images);
-        }
+            this.template.template_media = images;
+        },
     }
 }
 </script>
