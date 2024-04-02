@@ -1,5 +1,7 @@
 import Index from './components/Index.vue';
 import Edit from './components/Edit.vue';
+import TasksList from "../tasks/components/TasksList.vue";
+Vue.component("TasksList", TasksList);
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -35,7 +37,7 @@ const router = new VueRouter({
           ruleId: parseInt(route.params.id)
         };
       }
-    },
+    }
   ]
 });
 

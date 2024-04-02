@@ -37,20 +37,20 @@
               class="button-actions"
               v-b-tooltip.hover title="Erase Draft"
               @click="eraseQuickFill()"
-            >
+              >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-              {{ $t('Clear Task') }}
+                {{ $t('Clear Task') }}
             </button>
             <button
               type="button"
               v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
               class="button-actions"
               @click="showQuickFillPreview = true"
-            >
-            <img
-            src="/img/smartinbox-images/fill.svg"
-            :alt="$t('No Image')"
-            /> {{ $t('Quick Fill') }}
+              >
+              <img
+                src="/img/smartinbox-images/fill.svg"
+                :alt="$t('No Image')"
+                /> {{ $t('Quick Fill') }}
             </button>
           </div>
         </template>
@@ -80,19 +80,18 @@
         </InboxRuleEdit>
       </PMPanelWithCustomHeader>
 
-     
     </div>
- <splitpane-container v-if="showQuickFillPreview" :size="100" class-inbox="true">
-          <quick-fill-preview
-            class="quick-fill-preview"
-            :task="task"
-            :prop-from-button ="'inboxRules'"
-            :prop-columns="columns"
-            :prop-filters="filter"
-            @close="showQuickFillPreview = false"
-            @quick-fill-data-inbox="fillWithQuickFillData"
-          ></quick-fill-preview>
-           </splitpane-container>
+    <splitpane-container v-if="showQuickFillPreview" :size="100" class-inbox="true">
+      <quick-fill-preview
+        class="quick-fill-preview"
+        :task="task"
+        :prop-from-button ="'inboxRules'"
+        :prop-columns="columns"
+        :prop-filters="filter"
+        @close="showQuickFillPreview = false"
+        @quick-fill-data-inbox="fillWithQuickFillData"
+        ></quick-fill-preview>
+    </splitpane-container>
   </div>
 </template>
 
@@ -114,7 +113,7 @@
       InboxRuleButtons,
       InboxRuleFillData,
       QuickFillPreview,
-      SplitpaneContainer,
+      SplitpaneContainer
     },
     mixins: [IsViewMixin],
     props: {
@@ -137,7 +136,7 @@
       processId: {
         type: Number,
         default: null
-      },
+      }
     },
     data() {
       return {
@@ -153,19 +152,19 @@
         submitButton: null,
         pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.processId})`,
         filter: {
-          order: { by: 'created_at', direction: 'desc' },
+          order: {by: 'created_at', direction: 'desc'},
           filters: [
             {
-              subject: { type: "Field", value: "process_id" },
+              subject: {type: "Field", value: "process_id"},
               operator: "=",
-              value: this.processId,
+              value: this.processId
             },
             {
-              subject: { type: "Field", value: "element_id" },
+              subject: {type: "Field", value: "element_id"},
               operator: "=",
-              value: this.elementId,
-            },
-          ],
+              value: this.elementId
+            }
+          ]
         },
         columns: [
           {
@@ -173,9 +172,9 @@
             field: "case_number",
             filter_subject: {
               type: "Relationship",
-              value: "processRequest.case_number",
+              value: "processRequest.case_number"
             },
-            order_column: "process_requests.case_number",
+            order_column: "process_requests.case_number"
           },
           {
             label: "Case title",
@@ -183,9 +182,9 @@
             name: "__slot:case_number",
             filter_subject: {
               type: "Relationship",
-              value: "processRequest.case_title",
+              value: "processRequest.case_title"
             },
-            order_column: "process_requests.case_title",
+            order_column: "process_requests.case_title"
           },
           {
             label: "Completed",
@@ -193,10 +192,10 @@
             format: "datetime",
             filter_subject: {
               type: "Field",
-              value: "completed_at",
-            },
+              value: "completed_at"
+            }
           }
-        ],
+        ]
       };
     },
     computed: {
@@ -230,10 +229,10 @@
       }
     },
     mounted() {
-      this.task = { 
-        "process_id" : this.processId,
-        "element_id" : this.elementId,
-        "id" : this.newTaskId,
+      this.task = {
+        process_id: this.processId,
+        element_id: this.elementId,
+        id: this.newTaskId
       };
       if (this.newTaskId) {
         this.taskId = this.newTaskId;

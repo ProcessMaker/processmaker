@@ -328,7 +328,7 @@
           submit_button: this.submitButton,
           make_draft: this.makeDraft,
           submit_data: this.submitAfterFilling,
-          ...this.savedSearchData,
+          ...this.savedSearchData
         };
         if (this.inboxRule) {
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
