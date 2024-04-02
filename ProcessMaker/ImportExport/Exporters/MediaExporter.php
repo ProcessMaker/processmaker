@@ -13,6 +13,8 @@ class MediaExporter extends ExporterBase
 
     public function import(): bool
     {
-        return true;
+        $media = $this->model;
+
+        return $media->saveOrFail();
     }
 }

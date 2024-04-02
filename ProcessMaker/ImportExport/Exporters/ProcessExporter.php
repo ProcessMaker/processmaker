@@ -5,6 +5,7 @@ namespace ProcessMaker\ImportExport\Exporters;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
@@ -117,6 +118,8 @@ class ProcessExporter extends ExporterBase
                 $process->notification_settings()->create($setting);
             }
         }
+
+        $this->importMedia();
 
         return true;
     }
@@ -414,10 +417,34 @@ class ProcessExporter extends ExporterBase
     /**
      * Export the media associated with the process.
      */
-    public function exportMedia()
+    public function exportMedia(): void
     {
-        $this->model->media->each(function ($media) {
-            $this->addDependent('media', $media, MediaExporter::class);
+        $media = $this->model->media->map(function ($media) {
+            $filePath = $media->id . '/' . $media->file_name;
+            $file = Storage::disk('public')->path($filePath);
+            $media->base64 = base64_encode(file_get_contents($file));
+
+            return $media;
         });
+
+        $this->addReference('media', $media->toArray());
+    }
+
+    /**
+     * Imports media for the process.
+     */
+    public function importMedia(): void
+    {
+        $process = $this->model;
+
+        $mediaArray = $this->getReference('media') ?? [];
+        foreach ($mediaArray as $mediaElement) {
+            $encodedFile = $mediaElement['base64'];
+            unset($mediaElement['base64']);
+
+            $process->addMediaFromBase64($encodedFile)
+                ->usingFileName($mediaElement['file_name'])
+                ->toMediaCollection($mediaElement['collection_name']);
+        }
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\ImportExport\Exporters;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Options;
@@ -67,12 +69,8 @@ class ProcessExporterTest extends TestCase
             'notification_type' => 'assigned',
             'element_id' => 'node_3',
         ]);
-        $media = Media::factory()->create([
-            'model_type' => Process::class,
-            'model_id' => $process->id,
-            'collection_name' => 'images_carousel',
-            'name' => 'image1',
-        ]);
+
+        $media = $this->createFakeImage($process);
 
         return [
             'process' => $process,
@@ -92,7 +90,6 @@ class ProcessExporterTest extends TestCase
             'process' => $process,
             'cancelScreen' => $cancelScreen,
             'requestDetailScreen' => $requestDetailScreen,
-            'media' => $media
         ] = $this->fixtures();
 
         $exporter = new Exporter();
@@ -105,7 +102,6 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($process->category->uuid, $processDependentUuids);
         $this->assertContains($cancelScreen->uuid, $processDependentUuids);
         $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
-        $this->assertContains($media->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -117,21 +113,26 @@ class ProcessExporterTest extends TestCase
             'user' => $user,
         ] = $this->fixtures();
 
-        $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
-            \DB::delete('delete from process_notification_settings');
-            $process->forceDelete();
-            $cancelScreen->delete();
-            $requestDetailScreen->delete();
-            $user->groups->first()->manager->delete();
-            $user->groups()->delete();
-            $user->delete();
+        $this->runExportAndImport(
+            $process,
+            ProcessExporter::class,
+            function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
+                \DB::delete('delete from process_notification_settings');
+                $process->forceDelete();
+                $cancelScreen->delete();
+                $requestDetailScreen->delete();
+                $user->groups->first()->manager->delete();
+                $user->groups()->delete();
+                $user->delete();
 
-            $this->assertEquals(0, Process::where('name', 'Process')->count());
-            $this->assertEquals(0, Screen::where('title', 'Request Detail Screen')->count());
-            $this->assertEquals(0, Screen::where('title', 'Cancel Screen')->count());
-            $this->assertEquals(0, User::where('username', 'testuser')->count());
-            $this->assertEquals(0, Group::where('name', 'Group')->count());
-        });
+                $this->assertEquals(0, Process::where('name', 'Process')->count());
+                $this->assertEquals(0, Screen::where('title', 'Request Detail Screen')->count());
+                $this->assertEquals(0, Screen::where('title', 'Cancel Screen')->count());
+                $this->assertEquals(0, User::where('username', 'testuser')->count());
+                $this->assertEquals(0, Group::where('name', 'Group')->count());
+                $this->assertEquals(0, Media::where('name', 'Image')->count());
+            }
+        );
 
         $process = Process::where('name', 'Process')->firstOrFail();
         $this->assertEquals(1, Screen::where('title', 'Request Detail Screen')->count());
@@ -146,6 +147,10 @@ class ProcessExporterTest extends TestCase
         $this->assertCount(2, $notificationSettings);
         $this->assertEquals('assigned', $notificationSettings[0]['notification_type']);
         $this->assertEquals('node_3', $notificationSettings[1]['element_id']);
+        $this->assertEquals(1, $process->media()->count());
+        $media = $process->media()->first();
+        $fakeFilePath = $media->id . '/' . $media->file_name;
+        $this->assertFileExists(Storage::disk('public')->path($fakeFilePath));
     }
 
     public function testSignals()
@@ -410,9 +415,10 @@ class ProcessExporterTest extends TestCase
     public function testDiscardOnExport()
     {
         $this->addGlobalSignalProcess();
-
-        $user = User::factory()->create(['username' => 'manager']);
-        $process = Process::factory()->create(['user_id' => $user->id]);
+        [
+            'user' => $user,
+            'process' => $process,
+        ] = $this->fixtures();
 
         $payload = $this->export($process, ProcessExporter::class, null, false);
 
@@ -424,5 +430,25 @@ class ProcessExporterTest extends TestCase
 
         $manifest = $payload['export'];
         $this->assertArrayHasKey($user->uuid, $manifest);
+    }
+
+    private function createFakeImage(Process $process)
+    {
+        $media = Media::factory()->create([
+            'model_type' => Process::class,
+            'model_id' => $process->id,
+            'collection_name' => 'images_carousel',
+            'name' => 'image',
+            'file_name' => 'image.png',
+        ]);
+
+        // Create a fake image and save it directly to the fake storage.
+        Storage::fake('public');
+        $fileName = $media->name . '.png';
+        $fileUpload = UploadedFile::fake()->image($fileName);
+        $fakeFilePath = $media->id . '/' . $fileName;
+        Storage::disk('public')->put($fakeFilePath, $fileUpload->getContent());
+
+        return $media;
     }
 }
