@@ -5,22 +5,17 @@ namespace Tests\Feature\ImportExport\Exporters;
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
-use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\SignalHelper;
-use ProcessMaker\ImportExport\Tree;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
-use ProcessMaker\Models\SignalData;
-use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\User;
 use Tests\Feature\ImportExport\HelperTrait;
 use Tests\TestCase;
@@ -38,14 +33,18 @@ class ProcessExporterTest extends TestCase
         $this->createAdminUser();
     }
 
-    private function fixtures()
+    private function fixtures(): array
     {
         // Create simple screens. Extensive screen tests are in ScreenExporterTest.php
         $cancelScreen = $this->createScreen('basic-form-screen', ['title' => 'Cancel Screen']);
         $requestDetailScreen = $this->createScreen('basic-display-screen', ['title' => 'Request Detail Screen']);
 
         $manager = User::factory()->create(['username' => 'manager']);
-        $group = Group::factory()->create(['name' => 'Group', 'description' => 'My Example Group', 'manager_id' => $manager->id]);
+        $group = Group::factory()->create([
+            'name' => 'Group',
+            'description' => 'My Example Group',
+            'manager_id' => $manager->id,
+        ]);
         $user = User::factory()->create(['username' => 'testuser']);
         $user->groups()->sync([$group->id]);
 
@@ -68,15 +67,33 @@ class ProcessExporterTest extends TestCase
             'notification_type' => 'assigned',
             'element_id' => 'node_3',
         ]);
+        $media = Media::factory()->create([
+            'model_type' => Process::class,
+            'model_id' => $process->id,
+            'collection_name' => 'images_carousel',
+            'name' => 'image1',
+        ]);
 
-        return [$process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2];
+        return [
+            'process' => $process,
+            'cancelScreen' => $cancelScreen,
+            'requestDetailScreen' => $requestDetailScreen,
+            'user' => $user,
+            'processNotificationSetting1' => $processNotificationSetting1,
+            'processNotificationSetting2' => $processNotificationSetting2,
+            'media' => $media,
+        ];
     }
 
     public function testExport()
     {
         $this->addGlobalSignalProcess();
-
-        list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
+        [
+            'process' => $process,
+            'cancelScreen' => $cancelScreen,
+            'requestDetailScreen' => $requestDetailScreen,
+            'media' => $media
+        ] = $this->fixtures();
 
         $exporter = new Exporter();
         $exporter->exportProcess($process);
@@ -88,11 +105,17 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($process->category->uuid, $processDependentUuids);
         $this->assertContains($cancelScreen->uuid, $processDependentUuids);
         $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
+        $this->assertContains($media->uuid, $processDependentUuids);
     }
 
     public function testImport()
     {
-        list($process, $cancelScreen, $requestDetailScreen, $user, $processNotificationSetting1, $processNotificationSetting2) = $this->fixtures();
+        [
+            'process' => $process,
+            'cancelScreen' => $cancelScreen,
+            'requestDetailScreen' => $requestDetailScreen,
+            'user' => $user,
+        ] = $this->fixtures();
 
         $this->runExportAndImport($process, ProcessExporter::class, function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
             \DB::delete('delete from process_notification_settings');
