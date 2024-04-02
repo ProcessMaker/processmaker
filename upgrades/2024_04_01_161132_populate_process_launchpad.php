@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
-use Log;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateProcessLaunchpad extends Upgrade
@@ -60,11 +59,13 @@ class PopulateProcessLaunchpad extends Upgrade
      */
     private function updateLaunchpadProperties(Process $process): void
     {
-        $launch = new ProcessLaunchpad();
-        $launch->process_id = $process->id;
-        $launch->user_id = $process->user_id;
-        $launch->launchpad_properties = $process->launchpad_properties;
-        $launch->save();
+        DB::table('process_launchpad')->insert([
+            'process_id' => $process->id,
+            'user_id' => $process->user_id,
+            'launchpad_properties' => $process->launchpad_properties,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         Log::info("Process Launchpad process_id {$process->id} migrated successfully");
     }
 }
