@@ -178,7 +178,6 @@ class Media extends MediaLibraryModel
     public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
     {
         $exist = $process->media()->where($key, $properties[$key])->exists();
-        //$processMediaCollectionName = $process->uuid . '_images_carousel';
         $processMediaCollectionName = 'images_carousel';
         if (!$exist) {
             // Store the images related move to MEDIA
