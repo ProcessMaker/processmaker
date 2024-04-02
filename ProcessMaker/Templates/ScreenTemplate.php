@@ -59,6 +59,11 @@ class ScreenTemplate implements TemplateInterface
             }
         }
 
+        if (!$isPublic) {
+            $authUserId = Auth::user()->id;
+            $templates->where('user_id', $authUserId);
+        }
+
         return $templates
             ->select(
                 'screen_templates.id',
