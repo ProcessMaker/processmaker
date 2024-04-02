@@ -25,31 +25,25 @@
       </span>
       <i class="fas fa-caret-down" style="font-size: 16px;"></i>
     </button>
-    <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
-      <p
-        class="font-weight-bold px-1 text-uppercase"
-        style="font-size: 14px"
-      >
-        {{ $t('Starting events') }}
-      </p>
+    <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
         v-for="event in processEvents"
         :key="event.id"
-        class="mt-2"
+        class="dropdown-item start-event"
+        type="button"
       >
         <p
-          class="text-capitalize mb-1"
-          style="font-weight: 600"
+          class="start-event-title"
         >
           {{ event.name }}
         </p>
         <button
           v-if="event.webEntry"
           type="button"
-          class="btn btn-outline-primary border-0 p-1 text-capitalize"
+          class="btn btn-outline-success border-0 py-1 px-2 text-capitalize"
           @click="copyLink(event)"
         >
-          <i class="fas fa-link p-1" />
+          <i class="fas fa-link pr-1" />
           {{ $t('Copy Link') }}
         </button>
         <button
@@ -59,9 +53,9 @@
           @click="goToNewRequest(event.id)"
         >
           <i class="fas fa-play-circle p-1" />
-          {{ $t('Start') }}
+          {{ $t('Start Here') }}
         </button>
-        <hr class="mt-2 mb-0">
+        <hr class="line-item">
       </div>
     </div>
   </div>
@@ -163,15 +157,37 @@ export default {
   text-align: left;
   text-transform: capitalize;
   padding: 5px 16px;
-}s
+}
 .scrollable-menu {
     height: auto;
     max-height: 280px;
     overflow-x: hidden;
-    width: 294px;
-    border-radius: 4px;
+}
+.dropdown-menu.show {
+  width: 316px;
+  border-radius: 8px;
+  border: 1px solid #cdddee;
+  box-shadow: 0px 10px 20px 4px #00000021;
 }
 .dropdown-toggle::after {
-    display: none;
+  display: none;
+}
+.start-event {
+  padding: 16px;
+  padding-bottom: 0px;
+}
+.start-event-title {
+  color: #566877;
+  text-transform: uppercase;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.line-item {
+  margin-top: 16px;
+  margin-bottom: 0px;
 }
 </style>
