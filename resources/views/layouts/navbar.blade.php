@@ -134,16 +134,18 @@
 
             <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
             </notifications>
-            <li class="separator d-none d-lg-block"></li>
-            <li class="d-lg-block">
-                @php
-                    $user = Auth::user();
-                    $permissions = json_encode([
-                        'edit-personal-profile' => $user->can('edit-personal-profile'),
-                    ]);
-                @endphp
-                <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
-            </li>
+            <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>
+            <ol class="separator-ol">
+                <li class="d-lg-block">
+                    @php
+                        $user = Auth::user();
+                        $permissions = json_encode([
+                            'edit-personal-profile' => $user->can('edit-personal-profile'),
+                        ]);
+                    @endphp
+                    <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
+                </li>
+            </ol>
         </b-navbar-nav>
     </b-collapse>
 </b-navbar>
@@ -163,5 +165,8 @@
         height: 30px;
         margin-left: 0.5rem;
         margin-right: 1rem;
+    }
+    .separator-ol {
+        padding: 0px 0px 0px 2px;
     }
 </style>
