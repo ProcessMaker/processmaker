@@ -74,7 +74,7 @@ class ProcessLaunchpadController extends Controller
                         $media->saveProcessMedia($process, $row, 'uuid');
                         break;
                     case 'embed':
-                        // TODO Store the embed related into the Embed table
+                        // Store the embed related into the Embed table
                         break;
                     default:
                         // Nothing

@@ -175,15 +175,24 @@ class Media extends MediaLibraryModel
         }
     }
 
+    /**
+     * Save the media related to the Process
+     *
+     * @param  Process $process
+     * @param array $properties
+     * @param string $key
+     *
+     * @return void
+     */
     public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
     {
+        $collectionName = 'images_carousel';
         $exist = $process->media()->where($key, $properties[$key])->exists();
-        $processMediaCollectionName = 'images_carousel';
         if (!$exist) {
             // Store the images related move to MEDIA
             $process->addMediaFromBase64($properties['url'])
                 ->withCustomProperties(['type' => $properties['type']])
-                ->toMediaCollection($processMediaCollectionName);
+                ->toMediaCollection($collectionName);
         }
     }
 
