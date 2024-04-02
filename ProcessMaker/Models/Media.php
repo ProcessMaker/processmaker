@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
 
@@ -171,6 +172,19 @@ class Media extends MediaLibraryModel
                 'request' => $this->model,
                 'filePath' => $this->custom_properties['data_name'],
             ]);
+        }
+    }
+
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
+    {
+        $exist = $process->media()->where($key, $properties[$key])->exists();
+        //$processMediaCollectionName = $process->uuid . '_images_carousel';
+        $processMediaCollectionName = 'images_carousel';
+        if (!$exist) {
+            // Store the images related move to MEDIA
+            $process->addMediaFromBase64($properties['url'])
+                ->withCustomProperties(['type' => $properties['type']])
+                ->toMediaCollection($processMediaCollectionName);
         }
     }
 

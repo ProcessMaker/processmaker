@@ -166,7 +166,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('launchpad.index')->middleware($middlewareCatalog);
     Route::post('process_launchpad/{process}', [ProcessLaunchpadController::class, 'store'])
         ->name('launchpad.store')->middleware($middlewareCatalog);
-    Route::delete('process_launchpad/{bookmark}', [ProcessLaunchpadController::class, 'destroy'])
+    Route::delete('process_launchpad/{process}', [ProcessLaunchpadController::class, 'destroy'])
         ->name('launchpad.destroy')->middleware($middlewareCatalog);
 
     // Process Categories
