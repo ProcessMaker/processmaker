@@ -78,7 +78,7 @@
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -153,7 +153,7 @@
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -227,7 +227,7 @@
       selectSubmitButton: {
         type: Object,
         default: null
-      },
+      }
     },
     data() {
       return {
@@ -240,6 +240,7 @@
         deactivationDate: "",
         ruleName: "",
         ruleNameState: null,
+        ruleNameMessageError: "",
         makeDraft: false,
         submitAfterFilling: false
       };
@@ -308,6 +309,7 @@
           return;
         }
         if (this.ruleName.trim() === "") {
+          this.ruleNameMessageError = this.$t("This field is required!");
           this.ruleNameState = false;
           return;
         }
@@ -337,8 +339,13 @@
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         } else {
@@ -346,12 +353,17 @@
                   .then(response => {
                     this.$refs.openModal.show();
 
-                    let message = "The inbox rule {{name}} was created.";
+                    let message = "The inbox rule '{{name}}' was created.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         }
