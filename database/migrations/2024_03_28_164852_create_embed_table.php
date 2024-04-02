@@ -17,7 +17,10 @@ return new class extends Migration
             $table->morphs('model');
             $table->string('mime_type')->nullable();
             $table->json('custom_properties');
+            $table->unsignedInteger('order_column')->nullable();
             $table->timestamps();
+            // Indexes
+            $table->index('order_column');
         });
     }
 
