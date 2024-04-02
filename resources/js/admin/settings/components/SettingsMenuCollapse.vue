@@ -66,6 +66,8 @@ export default {
       selectedItem: "",
       firstTime: true,
       collapsedMenus: {},
+      oldMenuGroups: [],
+      changeEmailServers: false,
     };
   },
   mounted() {
@@ -80,6 +82,9 @@ export default {
           if (this.firstTime) {
             this.selectFirstItem();
           }
+          if (this.changeEmailServers) {
+            this.checkChangeEmailServer();
+          }
         });
     },
     transformResponse(response) {
@@ -89,6 +94,27 @@ export default {
         this.menuGroups.push(element);
         element.groups = this.orderGroupAlphabetic(element.groups);
       });
+    },
+    checkChangeEmailServer() {
+      const oldEmailMenu = this.oldMenuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
+      const newEmailMenu = this.menuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
+      // Check if a Email Server was addded
+      if (oldEmailMenu.length < newEmailMenu.length) {
+        const newGroup = newEmailMenu.filter((group) => !oldEmailMenu.some((oldGroup) => group.id === oldGroup.id));
+        if (newGroup[0].id.includes("Email Server")) {
+          this.selectItem(newGroup[0]);
+        }
+      }
+      // Check if a Email Server was deleted
+      if (oldEmailMenu.length > newEmailMenu.length) {
+        this.selectFirstItem();
+      }
+      this.changeEmailServers = false;
+      this.refreshing = false;
+    },
+    refresh() {
+      this.oldMenuGroups = this.menuGroups;
+      this.getMenuGrups();
     },
     orderGroupAlphabetic(groups) {
       // Ignore upper and lowercase
