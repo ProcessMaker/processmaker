@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -269,21 +270,21 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplate(Request $request): JsonResponse
     {
-        $request->validate([
-            'is_public' => 'sometimes|boolean',
-        ]);
-
-        $template = ScreenTemplates::findOrFail($request->id);
+        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
 
         try {
-            $template->update($request->all());
+            $request->validate([
+                'is_public' => 'sometimes|boolean',
+            ]);
+
+            $template = ScreenTemplates::findOrFail($templateId);
+            $template->update($request->except('media_collection'));
 
             $response = response()->json();
+        } catch (ModelNotFoundException $e) {
+            $response = response()->json(['message' => 'Template not found.'], 404);
         } catch (Exception $e) {
-            $response = response([
-                'message' => $e->getMessage(),
-                'errors' => $e->getMessage(),
-            ], 422);
+            $response = response()->json(['message' => $e->getMessage()], 500);
         }
 
         return $response;
