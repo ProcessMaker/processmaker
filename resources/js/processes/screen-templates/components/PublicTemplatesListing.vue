@@ -137,6 +137,7 @@ import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixi
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
 import navigationMixin from "../mixins/navigationMixin";
+import templateMixin from "../mixins/templateMixin.js";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -150,6 +151,7 @@ export default {
     uniqIdsMixin,
     fieldsMixin,
     navigationMixin,
+    templateMixin,
   ],
   props: {
     permission: {
