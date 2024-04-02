@@ -15,11 +15,13 @@ class ProcessLaunchpadController extends Controller
     public function index(Request $request, Process $process)
     {
         // Get the processes launchpad configuration
-        $processes = ProcessLaunchpad::where('process_id', $process->id)
-            ->get()
-            ->collect();
         // Get the images related
         // Get the embed related
+        $processes = Process::with('launchpad')->with('media')
+            //->with('embed')
+            ->where('id', $process->id)
+            ->get()
+            ->collect();
 
         return new ApiResource($processes);
     }
