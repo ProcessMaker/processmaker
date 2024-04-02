@@ -319,8 +319,8 @@ export default {
               return [];
             });
 
-            this.dropdownSavedCharts = [this.defaultChart].concat(resultArray);
-            this.selectOption(this.dropdownSavedCharts[0]);
+            this.dropdownSavedCharts = [this.defaultChart].concat(resultArray);;
+            this.selectOption(this.defaultChart);
           }
         })
         .catch((error) => {
@@ -345,7 +345,7 @@ export default {
               }
             });
             this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
-            this.selectScreenOption(this.dropdownSavedScreen[0]);
+            this.selectScreenOption(this.defaultScreen);
           }
         })
         .catch((error) => {
