@@ -368,6 +368,7 @@ export default {
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
+          record["process_obj"] = record["process"];
           record["process"] = this.formatProcess(record);
           record["task_name"] = this.formatActiveTask(record);
         }
