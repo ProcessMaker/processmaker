@@ -227,7 +227,7 @@
       selectSubmitButton: {
         type: Object,
         default: null
-      }
+      },
     },
     data() {
       return {

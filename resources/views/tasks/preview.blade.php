@@ -110,6 +110,12 @@
                           :always-allow-editing="alwaysAllowEditing"
                           :disable-interstitial="disableInterstitial"
                         ></task>
+                        <data-loading
+                          v-show="showLoading"
+                          :empty="$t('All clear')"
+                          :empty-desc="$t('No new tasks at this moment.')"
+                          empty-icon="noTasks"
+                        />
                     </div>
                 </div>
             </div>
@@ -161,6 +167,7 @@
         store: store,
         el: "#task",
         data: {
+          showLoading: true,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -416,6 +423,7 @@
           },
           taskUpdated(task) {
             this.task = task;
+            this.showLoading = false;
             this.$nextTick(() => {
               this.sendEvent('readyForFillData', true);
             });
