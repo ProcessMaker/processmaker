@@ -1716,7 +1716,8 @@ class ProcessController extends Controller
         // Saving Carousel Images into Media table related to process_id
         if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
             foreach ($request->imagesCarousel as $image) {
-                if (is_string($image['url']) && !empty($image['url']) && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
+                if (is_string($image['url']) && !empty($image['url']) 
+                    && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
                     if (!$process->media()->where('collection_name', 'images_carousel')
                     ->where('uuid', $image['uuid'])->exists()) {
                         $process
