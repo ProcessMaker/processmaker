@@ -178,6 +178,7 @@ export default {
 }
 .start-event-title {
   color: #566877;
+  margin-bottom: 8px;
   text-transform: uppercase;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
