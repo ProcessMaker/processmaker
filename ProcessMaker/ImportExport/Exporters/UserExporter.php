@@ -5,7 +5,6 @@ namespace ProcessMaker\ImportExport\Exporters;
 use Illuminate\Support\Arr;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\User;
 
 class UserExporter extends ExporterBase
 {
@@ -51,6 +50,6 @@ class UserExporter extends ExporterBase
 
     public function getName($model) : string
     {
-        return $model->username;
+        return $model->username ?? '';
     }
 }
