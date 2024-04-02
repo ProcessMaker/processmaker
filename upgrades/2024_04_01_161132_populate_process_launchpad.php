@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 
 class PopulateProcessLaunchpad extends Upgrade
@@ -60,6 +61,7 @@ class PopulateProcessLaunchpad extends Upgrade
     private function updateLaunchpadProperties(Process $process): void
     {
         DB::table('process_launchpad')->insert([
+            'uuid' => ProcessLaunchpad::generateUuid(),
             'process_id' => $process->id,
             'user_id' => $process->user_id,
             'launchpad_properties' => $process->launchpad_properties,
