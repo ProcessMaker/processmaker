@@ -146,6 +146,15 @@ export default {
       description: "",
       errors: "",
       selectedSavedChart: "",
+      defaultScreen:{
+        id: 0,
+        uuid: "",
+        title: this.$t("Default Launchpad"),
+      },
+      defaultChart:{
+        id: 0,
+        title: this.$t("Default Launchpad Chart"),
+      },
       dropdownSavedCharts: [],
       dropdownSavedScreen: [],
       processDescription: "",
@@ -185,22 +194,20 @@ export default {
             firstResponse?.launchpad_properties,
           );
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
-            this.selectedSavedChart = launchpadProperties.saved_chart_title
-              ? launchpadProperties.saved_chart_title
-              : "";
-            this.selectedSavedChartId = launchpadProperties.saved_chart_id;
+            this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
+            this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
             this.selectedLaunchpadIcon = launchpadProperties.icon;
             this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
-            this.selectedScreen = launchpadProperties.screen_title;
-            this.selectedScreenId = launchpadProperties.screen_id;
-            this.selectedScreenUuid = launchpadProperties.screen_uuid;
+            this.selectedScreen = launchpadProperties.screen_title ?? this.defaultScreen.title;
+            this.selectedScreenId = launchpadProperties.screen_id ?? this.defaultScreen.id;
+            this.selectedScreenUuid = launchpadProperties.screen_uuid ?? this.defaultScreen.uuid;
             this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
           } else {
-            this.selectedSavedChart = "";
-            this.selectedSavedChartId = "";
-            this.selectedScreenUuid = "";
-            this.selectedScreen = "";
-            this.selectedScreenId = "";
+            this.selectedSavedChart = this.defaultChart.title;
+            this.selectedSavedChartId = this.defaultChart.id;
+            this.selectedScreenUuid = this.defaultScreen.uuid;
+            this.selectedScreen = this.defaultScreen.title;
+            this.selectedScreenId = this.defaultScreen.id;
           }
           // Load Images into Carousel Container
           const mediaArray = firstResponse.media;
@@ -312,8 +319,8 @@ export default {
               return [];
             });
 
-            this.dropdownSavedCharts = resultArray;
-            this.selectedSavedChart = "";
+            this.dropdownSavedCharts = [this.defaultChart].concat(resultArray);
+            this.selectOption(this.dropdownSavedCharts[0]);
           }
         })
         .catch((error) => {
@@ -337,8 +344,8 @@ export default {
                 uuid: item.uuid,
               }
             });
-            this.dropdownSavedScreen = resultArray;
-            this.selectedScreen = "";
+            this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
+            this.selectScreenOption(this.dropdownSavedScreen[0]);
           }
         })
         .catch((error) => {
