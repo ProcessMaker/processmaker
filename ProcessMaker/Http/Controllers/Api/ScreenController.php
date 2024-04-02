@@ -10,6 +10,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
+use ProcessMaker\ImportExport\Exporter;
+use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
@@ -283,6 +285,7 @@ class ScreenController extends Controller
         //Creating temporary Key to store multiple id categories
         $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
+        $this->updateScreenTemplate($screen);
 
         return response([], 204);
     }
@@ -588,5 +591,17 @@ class ScreenController extends Controller
             ->where('is_public', $isPublic)
             ->where('is_default_template', 1)
             ->update(['is_default_template' => 0]);
+    }
+
+    private function updateScreenTemplate($screen)
+    {
+        if ($screen->is_template && $screen->asset_type === 'SCREEN_TEMPLATE') {
+            $screen->update(['is_template' => 0, 'asset_type' => null]);
+            $exporter = new Exporter();
+            $exporter->exportScreen($screen);
+            ScreenTemplates::where('editing_screen_uuid', $screen->uuid)
+                ->update(['manifest' => json_encode($exporter->payload())]);
+            $screen->update(['is_template' => 1, 'asset_type' => 'SCREEN_TEMPLATE']);
+        }
     }
 }
