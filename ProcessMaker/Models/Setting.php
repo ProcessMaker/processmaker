@@ -393,9 +393,6 @@ class Setting extends ProcessMakerModel implements HasMedia
         $result = [];
         foreach ($response as &$value) {
             // Technical debts: we need to add int key to identify a group, currently this is a label
-            if (strpos($value, "SSO -") === 0) {
-                $value = "- " . $value;
-            }
             $result[] = [
                 'id' => $value,
                 'name' => $value,
