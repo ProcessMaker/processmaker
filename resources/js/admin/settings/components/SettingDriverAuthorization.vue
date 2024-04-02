@@ -74,7 +74,7 @@
           type="button"
           class="btn btn-secondary ml-3"
           data-cy="authorize-button"
-          @click="onSave"
+          @click="authorizeConnection()"
         >
           {{ $t("Authorize") }}
         </button>
@@ -132,7 +132,6 @@ export default {
       selected: null,
       showModal: false,
       showAuthorizingModal: false,
-      transformed: null,
       errors: {},
       resetData: true,
       componentsMap: {
@@ -159,12 +158,10 @@ export default {
     },
   },
   mounted() {
+    this.formData = this.value;
     if (this.value === null) {
       this.resetFormData();
-    } else {
-      this.formData = this.value;
     }
-    this.transformed = this.copy(this.formData);
   },
   methods: {
     authSchemeToComponent(scheme) {
@@ -234,12 +231,6 @@ export default {
           this.showAuthorizingModal = false;
         });
     },
-    onSave() {
-      this.formData.name = this.setting.config?.name;
-      this.formData.driver = this.setting.config?.name;
-      this.transformed = { ...this.formData };
-      this.authorizeConnection();
-    },
     resetFormData() {
       if (this.resetData) {
         this.formData = {
@@ -249,8 +240,8 @@ export default {
         };
       }
     },
-    updateFormData(val) {
-      this.formData = { ...this.formData, ...val };
+    updateFormData(values) {
+      this.formData = { ...this.formData, ...values };
     },
   },
 };

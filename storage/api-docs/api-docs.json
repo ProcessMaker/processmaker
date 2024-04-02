@@ -1735,6 +1735,96 @@
                 }
             }
         },
+        "/processes/{processId}/start_events": {
+            "get": {
+                "tags": [
+                    "Processes"
+                ],
+                "summary": "Get start events of a process by Id",
+                "description": "Display the specified resource.",
+                "operationId": "getStartEventsProcessById",
+                "parameters": [
+                    {
+                        "name": "processId",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the start events process",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProcessStartEvents"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/metadata"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/processes/{processId}/draft": {
+            "put": {
+                "tags": [
+                    "Processes"
+                ],
+                "summary": "Update a draft process",
+                "description": "Update draft process.",
+                "operationId": "updateDraftProcess",
+                "parameters": [
+                    {
+                        "name": "processId",
+                        "in": "path",
+                        "description": "ID of process to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProcessEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Process"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/start_processes": {
             "get": {
                 "tags": [
@@ -1936,6 +2026,44 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ProcessImport"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/processes/{processId}/bpmn": {
+            "get": {
+                "tags": [
+                    "Processes"
+                ],
+                "summary": "Download the BPMN definition of a process",
+                "description": "Download the BPMN definition of a process",
+                "operationId": "processBpmn",
+                "parameters": [
+                    {
+                        "name": "processId",
+                        "in": "path",
+                        "description": "ID of process",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully built the process for export",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2848,6 +2976,42 @@
                 }
             }
         },
+        "/screens/{screens_id}/draft": {
+            "put": {
+                "tags": [
+                    "Screens"
+                ],
+                "summary": "Update a draft screen",
+                "description": "Update a draft Screen.",
+                "operationId": "updateDraftScreen",
+                "parameters": [
+                    {
+                        "name": "screens_id",
+                        "in": "path",
+                        "description": "ID of screen to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/screensEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
         "/screens/{screens_id}/duplicate": {
             "put": {
                 "tags": [
@@ -3504,13 +3668,49 @@
                 }
             }
         },
+        "/scripts/{script_id}/draft": {
+            "put": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Update a draft script",
+                "description": "Update a draft script.",
+                "operationId": "updateDraftScript",
+                "parameters": [
+                    {
+                        "name": "script_id",
+                        "in": "path",
+                        "description": "ID of script to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/scriptsEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
         "/scripts/{scripts_id}/duplicate": {
             "put": {
                 "tags": [
                     "Scripts"
                 ],
                 "summary": "duplicate a script",
-                "description": "duplicate a Script.",
+                "description": "Duplicate a Script.",
                 "operationId": "duplicateScript",
                 "parameters": [
                     {
@@ -4681,6 +4881,84 @@
                 }
             }
         },
+        "/users/{user_id}/get_pinned_controls": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get the pinned BPMN elements of a specific user",
+                "description": "Return the user's pinned nodes.",
+                "operationId": "getPinnnedControls",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user to return the pinned nodes of",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pinned nodes returned succesfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/update_pinned_controls": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user's pinned BPMN elements on Modeler",
+                "description": "Update a user's pinned BPMN elements on Modeler",
+                "operationId": "updatePinnedControls",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                }
+            }
+        },
         "/users/{user_id}/groups": {
             "put": {
                 "tags": [
@@ -4738,6 +5016,76 @@
                 "responses": {
                     "200": {
                         "description": "success"
+                    }
+                }
+            }
+        },
+        "/users/get_filter_configuration/{name}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get filter configuration by name",
+                "description": "Get filter configuration.",
+                "operationId": "getFilterConfiguration",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    }
+                }
+            }
+        },
+        "/users/store_filter_configuration/{name}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Store filter configuration by name",
+                "description": "Store filter configuration.",
+                "operationId": "storeFilterConfiguration",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -5038,7 +5386,8 @@
                             "in_overdue": {
                                 "type": "integer"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5191,7 +5540,8 @@
                                 "type": "string",
                                 "format": "date-time"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5484,7 +5834,8 @@
                                 "type": "string",
                                 "format": "date-time"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5567,6 +5918,9 @@
                         "format": "id"
                     },
                     "name": {
+                        "type": "string"
+                    },
+                    "case_title": {
                         "type": "string"
                     },
                     "description": {
@@ -5829,7 +6183,8 @@
                                 "type": "string",
                                 "format": "date-time"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5858,6 +6213,18 @@
                     },
                     "name": {
                         "type": "string"
+                    },
+                    "case_title": {
+                        "type": "string"
+                    },
+                    "case_title_formatted": {
+                        "type": "string"
+                    },
+                    "user_viewed_at": {
+                        "type": "string"
+                    },
+                    "case_number": {
+                        "type": "integer"
                     },
                     "process_id": {
                         "type": "integer"
@@ -6056,7 +6423,8 @@
                                 "type": "string",
                                 "format": "date-time"
                             }
-                        }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -6315,6 +6683,9 @@
                     },
                     "config": {
                         "type": "string"
+                    },
+                    "is_system": {
+                        "type": "boolean"
                     }
                 },
                 "type": "object"
