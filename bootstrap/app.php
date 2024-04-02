@@ -35,7 +35,7 @@ $app = new Application(
 | incoming requests to this application from both the web and CLI.
 |
 */
-
+ini_set("memory_limit", -1);
 $app->singleton(
     HttpKernelContract::class,
     HttpKernel::class

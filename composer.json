@@ -204,6 +204,18 @@
         {
             "type": "vcs",
             "url": "https://github.com/ProcessMaker/SocialiteProviders"
+        },
+        {
+            "type": "path",
+            "url": "/opt/package-ab-testing"
+        },
+        {
+            "type": "path",
+            "url": "/opt/package-versions"
+        },
+        {
+            "type": "path",
+            "url": "/opt/package-testing"
         }
     ],
     "config": {
