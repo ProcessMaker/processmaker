@@ -215,6 +215,12 @@ class ProcessTemplate implements TemplateInterface
         $payload = json_decode($template->manifest, true);
         // Check for existing assets
         $existingAssets = $request->existingAssets;
+        $existingAssetModes = array_reduce($existingAssets, function ($carry, $item) {
+            $carry[$item['uuid']] = $item['mode'];
+
+            return $carry;
+        }, []);
+
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
         $payload['name'] = $requestData['name'];
@@ -237,21 +243,12 @@ class ProcessTemplate implements TemplateInterface
                     continue;
                 }
             }
-
+            // dd($existingAssetModes[$key]);
             $postOptions[$key] = [
-                'mode' => 'copy',
+                'mode' => isset($existingAssetModes[$key]) ? $existingAssetModes[$key] : 'copy',
                 'isTemplate' => false,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
-
-            if ($existingAssets) {
-                foreach ($existingAssets as $item) {
-                    $uuid = $item['uuid'];
-                    if (isset($postOptions[$uuid])) {
-                        $postOptions[$uuid]['mode'] = $item['mode'];
-                    }
-                }
-            }
 
             if ($payload['root'] === $key) {
                 // Set name and description for the new process
