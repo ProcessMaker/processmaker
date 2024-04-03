@@ -103,6 +103,7 @@ export default {
       submitResponse: {},
       postComplete: false,
       processName: "",
+      importIsRunning: false,
     };
   },
   watch: {
@@ -113,6 +114,44 @@ export default {
   mounted() {
     this.templateAssets = this.assets;
     this.templateName = this.name;
+
+    this.$root.queue = window.ProcessMaker.queueImports;
+    this.importIsRunning = window.ProcessMaker.importIsRunning;
+
+    const userId = window.ProcessMaker.user.id;
+    this.$root.log({type: 'init', message: 'Ready for import'});
+    window.Echo.private(`ProcessMaker.Models.User.${userId}`).listen(
+      '.ImportLog',
+        (response) => {
+            console.log("import log response handle on complete", response);
+        //     this.$root.log({type: response.type, message: response.message});
+
+        //     if (_.has(response, 'additionalParams.processId')) {
+        //         this.handleOnComplete(response.additionalParams);
+        //     }
+
+        //     if (response.message === 'preview') {
+        //         DataProvider.getImportManifest().then((manifestResponse) => {
+        //             this.handleValidationResponse({
+        //                 data: {
+        //                     manifest: manifestResponse.data,
+        //                     rootUuid: response.additionalParams.rootUuid,
+        //                     processVersion: response.additionalParams.processVersion,
+        //                 },
+        //             });
+        //         });
+        //     }
+
+        //     if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: password required') {
+        //         this.showEnterPasswordModal();
+        //     } else if (response.message === 'ProcessMaker\\Exception\\ImportPasswordException: incorrect password') {
+        //         this.passwordError = "Incorrect password";
+        //     } else if (response.type === 'error') {
+        //         this.$root.allowDownloadDebug = true;
+        //         ProcessMaker.alert(response.message, 'danger');
+        //     }
+        }
+    );
   },
   methods: {
     reload() {
@@ -126,21 +165,15 @@ export default {
       formData.append("id", this.responseId);
       formData.append("request", JSON.stringify(this.request));
       formData.append("existingAssets", JSON.stringify(this.updatedAssets));
+      formData.append("queue", this.$root.queue);
       if (this.wizardTemplateUuid !== null) {
         formData.append("wizardTemplateUuid", this.wizardTemplateUuid);
       }
       ProcessMaker.apiClient.post(`/template/create/${this.assetType}/${this.responseId}`, formData)
         .then((response) => {
-          this.$nextTick(() => {
-            this.$refs.assetLoadingModal.close();
-          });
-          // Remove the state from local storage.
-          localStorage.removeItem("templateAssetsState");
-
-          this.processName = response.data.processName;
-          this.submitResponse = response.data;
-          this.postComplete = true;
-          this.$refs.assetConfirmationModal.show();
+          if (!this.$root.queue) {
+            this.handleOnComplete(response);
+          }
         }).catch((error) => {
           const message = error.response?.data?.error;
           ProcessMaker.alert(this.$t(message), "danger");
@@ -169,6 +202,18 @@ export default {
 
       this.updatedAssets = formattedAssets;
     },
+    handleOnComplete(response) {
+      this.$nextTick(() => {
+        this.$refs.assetLoadingModal.close();
+      });
+      // Remove the state from local storage.
+      localStorage.removeItem("templateAssetsState");
+
+      this.processName = response.data.processName;
+      this.submitResponse = response.data;
+      this.postComplete = true;
+      this.$refs.assetConfirmationModal.show();
+    }
   },
 };
 </script>

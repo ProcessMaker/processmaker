@@ -13,6 +13,7 @@ use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
+use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -243,7 +244,7 @@ class ProcessTemplate implements TemplateInterface
                     continue;
                 }
             }
-            // dd($existingAssetModes[$key]);
+
             $postOptions[$key] = [
                 'mode' => isset($existingAssetModes[$key]) ? $existingAssetModes[$key] : 'copy',
                 'isTemplate' => false,
@@ -282,15 +283,18 @@ class ProcessTemplate implements TemplateInterface
             }
         }
         $options = new Options($postOptions);
+        if ($request->queue) {
+            dd('run on qeue');
+        } else {
+            $importer = new Importer($payload, $options);
+            $existingAssetsInDatabase = null;
+            $importingFromTemplate = true;
+            $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
+            $rootLog = $manifest[$payload['root']]->log;
+            $processId = $rootLog['newId'];
 
-        $importer = new Importer($payload, $options);
-        $existingAssetsInDatabase = null;
-        $importingFromTemplate = true;
-        $manifest = $importer->doImport($existingAssetsInDatabase, $importingFromTemplate);
-        $rootLog = $manifest[$payload['root']]->log;
-        $processId = $rootLog['newId'];
-
-        $process = Process::findOrFail($processId);
+            $process = Process::findOrFail($processId);
+        }
 
         $this->syncLaunchpadAssets($request, $process);
 

@@ -42,31 +42,33 @@ class Importer
     public function doImport($existingAssetInDatabase = null, $importingFromTemplate = false)
     {
         $this->logger->log('Starting Transaction');
+
         DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
-            // First, we save the model so we have IDs set for all assets
             Schema::disableForeignKeyConstraints();
 
-            $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
+            $manifest = collect($this->manifest->all())->filter(function ($exporter) {
+                return $exporter->mode !== 'discard';
+            });
+
+            $count = count($manifest);
             $this->logger->log("Importing $count assets");
-            foreach ($this->manifest->all() as $exporter) {
-                if ($exporter->mode !== 'discard') {
-                    $this->logger->log('Importing ' . get_class($exporter->model));
-                    if ($exporter->disableEventsWhenImporting) {
-                        $exporter->model->saveQuietly();
-                    } else {
-                        $exporter->model->save();
-                    }
-                    $exporter->log('newId', $exporter->model->id);
+
+            foreach ($manifest as $exporter) {
+                $this->logger->log('Importing ' . get_class($exporter->model));
+                if ($exporter->disableEventsWhenImporting) {
+                    $exporter->model->saveQuietly();
+                } else {
+                    $exporter->model->save();
                 }
+                $exporter->log('newId', $exporter->model->id);
             }
+
             Schema::enableForeignKeyConstraints();
 
-            // Now, run the import method in each Exporter class
-            foreach ($this->manifest->all() as $exporter) {
-                if ($exporter->mode !== 'discard') {
-                    $this->logger->log('Associating ' . get_class($exporter->model));
-                    $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
-                }
+            $this->logger->log('Associating models');
+            foreach ($manifest as $exporter) {
+                $this->logger->log('Associating ' . get_class($exporter->model));
+                $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
             }
 
             $this->manifest->runAfterImport();
@@ -78,6 +80,44 @@ class Importer
         $this->logger->log('Done Importing', ['processId' => $newProcessId, 'message' => self::getMessages()]);
 
         return $manifest;
+
+        // $this->logger->log('Starting Transaction');
+        // DB::transaction(function () use ($existingAssetInDatabase, $importingFromTemplate) {
+        //     // First, we save the model so we have IDs set for all assets
+        //     Schema::disableForeignKeyConstraints();
+
+        //     $count = count(Arr::where($this->manifest->all(), fn ($exporter) => $exporter->mode !== 'discard'));
+        //     $this->logger->log("Importing $count assets");
+        //     foreach ($this->manifest->all() as $exporter) {
+        //         if ($exporter->mode !== 'discard') {
+        //             $this->logger->log('Importing ' . get_class($exporter->model));
+        //             if ($exporter->disableEventsWhenImporting) {
+        //                 $exporter->model->saveQuietly();
+        //             } else {
+        //                 $exporter->model->save();
+        //             }
+        //             $exporter->log('newId', $exporter->model->id);
+        //         }
+        //     }
+        //     Schema::enableForeignKeyConstraints();
+
+        //     // Now, run the import method in each Exporter class
+        //     foreach ($this->manifest->all() as $exporter) {
+        //         if ($exporter->mode !== 'discard') {
+        //             $this->logger->log('Associating ' . get_class($exporter->model));
+        //             $exporter->runImport($existingAssetInDatabase, $importingFromTemplate);
+        //         }
+        //     }
+
+        //     $this->manifest->runAfterImport();
+        // });
+
+        // $manifest = $this->manifest->all();
+        // $newProcessId = $manifest[$this->payload['root']]->log['newId'];
+
+        // $this->logger->log('Done Importing', ['processId' => $newProcessId, 'message' => self::getMessages()]);
+
+        // return $manifest;
     }
 
     public static function getMessages()

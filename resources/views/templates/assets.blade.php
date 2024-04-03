@@ -31,5 +31,9 @@
 @endsection
 
 @section('js')
+  <script>
+    window.ProcessMaker.importIsRunning = {{ $importIsRunning ? 'true' : 'false' }};
+    window.ProcessMaker.queueImports = {{ config('app.queue_imports') ? 'true' : 'false' }};
+  </script>
   <script src="{{ mix('js/templates/assets.js') }}"></script>
 @endsection
