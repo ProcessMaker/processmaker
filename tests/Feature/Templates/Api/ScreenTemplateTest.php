@@ -189,8 +189,7 @@ class ScreenTemplateTest extends TestCase
                 'description' => 'Test Screen Template Description',
             ]);
 
-        // Make API call to show screen template
-        $route = route('api.template.show', ['screen', $screenTemplate->id]);
+        $route = route('api.screenBuilder.template.show', ['screen', $screenTemplate->id]);
         $response = $this->apiCall('GET', $route);
         $response->assertStatus(200);
 
