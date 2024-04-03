@@ -58,14 +58,11 @@ class ProcessLaunchpad extends ProcessMakerModel
      */
     public static function getLaunchpad($showLaunchpad, $proId)
     {
-        $result = [];
+        $response = null;
         if ($showLaunchpad) {
             $response = self::where('process_id', $proId)->first();
-            if (!is_null($response)) {
-                $result = $response;
-            }
         }
 
-        return $result;
+        return $response;
     }
 }
