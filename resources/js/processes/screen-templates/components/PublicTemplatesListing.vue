@@ -3,7 +3,7 @@
   <div class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/screens/"
+      :for="/\/screens\?/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -16,6 +16,7 @@
       <filter-table
         :headers="fields"
         :data="data"
+        :loading="shouldShowLoader"
         table-name="public-screen-templates"
         style="height: calc(100vh - 355px)"
       >
@@ -133,7 +134,6 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
-import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
 import navigationMixin from "../mixins/navigationMixin";
@@ -147,7 +147,6 @@ export default {
     datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
-    FilterTableBodyMixin,
     uniqIdsMixin,
     fieldsMixin,
     navigationMixin,
@@ -203,6 +202,7 @@ export default {
   methods: {
     fetch() {
       this.loading = true;
+      this.apiDataLoading = true;
       // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
@@ -216,7 +216,12 @@ export default {
         )
         .then((response) => {
           this.data = this.transform(response.data);
+          this.apiDataLoading = false;
+          this.apiNoResults = false;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
   },

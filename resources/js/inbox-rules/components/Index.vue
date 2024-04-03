@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4>{{$t('Inbox Rules')}}</h4>
+    <h4 class="ml-3">{{$t('Inbox Rules')}}</h4>
     <b-tabs class="m-3" 
             content-class="p-3 pm-tab-content">
       <b-tab :title="$t('Rules')" 
