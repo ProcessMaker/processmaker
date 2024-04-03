@@ -141,7 +141,6 @@
     },
     data() {
       return {
-        eraseButton: null,
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -242,10 +241,8 @@
     
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
-        this.eraseButton = "new_inbox";
       }
       if (this.ruleId) {
-        this.eraseButton = "existing_inbox";
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
           .then(response => {
             this.inboxRule = response.data;
