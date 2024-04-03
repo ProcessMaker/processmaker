@@ -53,6 +53,7 @@ class Task extends ApiResource
 
         $parentProcessRequest = $this->processRequest->parentRequest;
         $array['can_view_parent_request'] = $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);
+        $process = Process::findOrFail($this->processRequest->process_id);
 
         if (in_array('component', $include)) {
             $array['component'] = $this->getScreenVersion() ? $this->getScreenVersion()->parent->renderComponent() : null;
@@ -72,7 +73,6 @@ class Task extends ApiResource
 
             if ($array['screen']) {
                 // Apply translations to screen
-                $process = Process::findOrFail($this->processRequest->process_id);
                 $processTranslation = new ProcessTranslation($process);
                 $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
 
@@ -105,6 +105,12 @@ class Task extends ApiResource
         if (in_array('interstitial', $include)) {
             $interstitial = $this->getInterstitial();
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
+
+            // Translate interstitials
+            $processTranslation = new ProcessTranslation($process);
+            $translatedConf = $processTranslation->applyTranslations($interstitial['interstitial_screen']);
+            $interstitial['interstitial_screen']['config'] = $translatedConf;
+
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
         if (in_array('userRequestPermission', $include)) {
