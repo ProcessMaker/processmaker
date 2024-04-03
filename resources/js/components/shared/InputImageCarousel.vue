@@ -26,8 +26,8 @@
           <div>
             {{ $t("Formats: PNG, JPG. 2 MB") }}
           </div>
-            {{ $t("Recommended: 1800 x 750 px") }}
-          </div>
+          {{ $t("Recommended: 1800 x 750 px") }}
+        </div>
       </div>
       <div
         v-else
@@ -103,49 +103,55 @@
               ref="popover"
               :show.sync="focusIcons[index]"
               :target="`popover-embed-event-${index}`"
-              triggers="focus"
               placement="bottom"
             >
               <div class="popover-embed">
-                <label>
+                <label class="mt-0">
                   {{ $t("Embed URL") }}
                 </label>
                 <input
                   :id="`embed-input-${index}`"
                   v-model="embedUrls[index]"
-                  class="form-control input-custom"
-                  type="text"
+                  class="form-control input-custom mb-0"
+                  type="url"
                   rows="5"
                   :aria-label="$t('Embed URL')"
-                />
-                  <div
-                    v-if="!deleteEmbed"
-                    class="d-flex justify-content-between"
-                  >
-                    <i
-                      class="fas fa-trash-alt custom-trash-icon"
-                      @click="deleteEmbed = true"
-                    />
-                    <div class="d-flex">
-                      <button
-                        type="button"
-                        class="btn btn-cancel-delete btns-popover"
-                        @click="cancelEmbed(index)"
-                      >
-                        {{ $t("Cancel") }}
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn-delete-image btns-popover"
-                        @click="saveEmbed(index)"
-                      >
-                        {{ $t("Apply") }}
-                      </button>
+                >
+                <span
+                  v-if="notURL"
+                  class="error-message"
+                >
+                  {{ $t("The URL is required.") }}
+                  <br>
+                </span>
+                <div
+                  v-if="!deleteEmbed"
+                  class="d-flex justify-content-between mt-3"
+                >
+                  <i
+                    class="fas fa-trash-alt custom-trash-icon"
+                    @click="deleteEmbed = true"
+                  />
+                  <div class="d-flex">
+                    <button
+                      type="button"
+                      class="btn btn-cancel-delete btns-popover"
+                      @click="cancelEmbed(index)"
+                    >
+                      {{ $t("Cancel") }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-delete-image btns-popover"
+                      @click="saveEmbed(index)"
+                    >
+                      {{ $t("Apply") }}
+                    </button>
                   </div>
                 </div>
                 <div
                   v-else
-                  class="d-flex justify-content-between"
+                  class="d-flex justify-content-between mt-3"
                 >
                   <span
                     class="text-delete-embed"
@@ -263,22 +269,21 @@ export default {
       deleteEmbed: false,
       processId: "",
       validSizeImageMB: 2,
+      notURL: false,
     };
-  },
-  computed: {
   },
   methods: {
     /**
      * Converts Image from URL to Base64
      */
-     convertImageUrlToBase64(media) {
+    convertImageUrlToBase64(media) {
       fetch(media.original_url)
         .then((response) => response.blob())
         .then((blob) => {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64Data = reader.result;
-            this.images.push({ url: base64Data, uuid: media.uuid });
+            this.images.push({ url: base64Data, uuid: media.uuid, type: media.custom_properties.url ?? "image" });
           };
           reader.readAsDataURL(blob);
         })
@@ -286,17 +291,37 @@ export default {
           console.error("Error loading image:", error);
         });
     },
-    cleanCarousel() {
-      this.images = [];
-      this.embedUrls = Array(4).fill("");
-      this.notValidImage = false;
-      this.loadingImage = false;
+    /**
+     * Adding File embed url
+     */
+    addEmbedFile(media) {
+      const customProperties = JSON.parse(media.custom_properties)
+      const mediaURL = customProperties.url;
+      this.images.push({
+        url: mediaURL,
+        uuid: media.uuid,
+        type: customProperties.type,
+      });
+      this.embedUrls[this.images.length - 1] = mediaURL;
     },
     setProcessId(processId) {
       this.processId = processId;
     },
     getImages() {
       return this.images;
+    },
+    /**
+     * Check if embed media are valid
+     */
+    checkImages() {
+      let isValid = true;
+      this.images.forEach((image) => {
+        if (image.url === "") {
+          ProcessMaker.alert(this.$t("Invalid embed media"), "danger");
+          isValid = false;
+        }
+      });
+      return isValid;
     },
     /**
      * Method to add image files to thumbnails container
@@ -403,16 +428,30 @@ export default {
       this.focusIcon(this.images.length - 1);
     },
     cancelEmbed(index) {
+      if (this.images[index] && !this.images[index].url) {
+        this.notURL = true;
+        return;
+      }
       this.$set(this.embedUrls, index, this.images[index].url);
       this.unfocusIcon(index);
+      this.notURL = false;
     },
     saveEmbed(index) {
+      if (!this.embedUrls[index] || !this.isValidURL(this.embedUrls[index])) {
+        this.notURL = true;
+        return;
+      }
       this.images[index].url = this.embedUrls[index];
       this.unfocusIcon(index);
+      this.notURL = false;
     },
-    deleteEmbedMedia(index) {
-      this.embedUrls[index] = '';
-      this.deleteImage(index);
+    isValidURL(urlString) {
+      try {
+        const url = new URL(urlString);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch (error) {
+        return false;
+      }
     },
     /**
      * Validate image extensions
@@ -475,7 +514,9 @@ export default {
      */
     focusIcon(index) {
       this.focusIcons = Array(4).fill(false);
+      this.$set(this.embedUrls, index, this.images[index].url);
       this.deleteEmbed = false;
+      this.notURL = false;
       this.$set(this.focusIcons, index, true);
     },
     /**
@@ -500,7 +541,36 @@ export default {
           data: { uuid },
         })
         .then((response) => {
-          ProcessMaker.alert(this.deleteEmbed ? this.$t("The embed media was deleted") : this.$t("The image was deleted"), "success");
+          ProcessMaker.alert(this.$t("The image was deleted"), "success");
+        })
+        .catch((error) => {
+          console.error("Error", error);
+        });
+      const params = {
+        indexImage: index,
+        type: "delete",
+      };
+      ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+    },
+    /**
+     * Method to delete image from carousel container
+     */
+     deleteEmbedMedia(index) {
+      const { uuid } = this.images[index];
+      this.images.splice(index, 1);
+      this.$set(this.showDeleteIcons, index, false);
+      this.$set(this.focusIcons, index, false);
+
+      this.embedUrls[index] = '';
+      this.notURL = false;
+
+      // Call API to delete
+      ProcessMaker.apiClient
+        .delete(`process_launchpad/${this.processId}/embed`, {
+          data: { uuid },
+        })
+        .then((response) => {
+          ProcessMaker.alert(this.$t("The embed media was deleted"), "success");
         })
         .catch((error) => {
           console.error("Error", error);

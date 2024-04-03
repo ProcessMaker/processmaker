@@ -16,7 +16,14 @@
         class="custom-style"
       >
         <template #img>
+          <iframe
+            v-if="image.type === 'embed'"
+            class="d-block iframe-carousel"
+            :src="image.url"
+            title="embed media"
+          />
           <img
+            v-else
             :src="image.url"
             :alt="process.name"
             class="d-block img-carousel"
@@ -71,8 +78,20 @@ export default {
         .then((response) => {
           const firstResponse = response.data.data.shift();
           const mediaArray = firstResponse.media;
+          const embedArray = firstResponse.embed;
           mediaArray.forEach((media) => {
-            this.images.push({ url: media.original_url });
+            const mediaType = media.custom_properties.type ?? 'image';
+            this.images.push({
+              url: media.original_url,
+              type: mediaType
+            });
+          });
+          embedArray.forEach((embed) => {
+            let customProperties = JSON.parse(embed.custom_properties)
+            this.images.push({ 
+              url: customProperties.url,
+              type: customProperties.type
+            });
           });
         })
         .catch((error) => {
@@ -114,6 +133,11 @@ export default {
 }
 .img-carousel {
   max-width: 800px;
+  height: 400px;
+}
+.iframe-carousel {
+  border: 0px;
+  width: 800px;
   height: 400px;
 }
 .carousel-container {

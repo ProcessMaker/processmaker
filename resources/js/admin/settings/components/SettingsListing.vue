@@ -287,7 +287,7 @@ export default {
     ProcessMaker.EventBus.$on('setting-added-from-modal', () => {
       this.shouldDisplayNoDataMessage = false;
       this.$nextTick(() => {
-        this.$emit('refresh-all');
+        this.refresh();
       });
     });
   },
@@ -410,11 +410,7 @@ export default {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
-            if (_.get(setting, 'ui.refreshOnSave')) {
-              this.$emit('refresh-all');
-            } else {
-              this.refresh();
-            }
+            this.refresh();
           }
         }).finally(() => {
           this.savingSetting = null;
@@ -510,8 +506,7 @@ export default {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
         if (btn.ui.handler === "addMailServer") {
-          this.$parent.$refs["menu-collapse"].firstTime = false;
-          this.$parent.$refs["menu-collapse"].getMenuGrups();
+          this.$parent.$refs["menu-collapse"].changeEmailServers = true;
         }
       }
     },
