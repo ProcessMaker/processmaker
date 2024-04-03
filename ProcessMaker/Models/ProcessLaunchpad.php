@@ -37,7 +37,7 @@ class ProcessLaunchpad extends ProcessMakerModel
         'uuid',
         'user_id',
         'process_id',
-        'launchpad_properties'
+        'properties'
     ];
 
     public static function rules(): array
@@ -58,14 +58,11 @@ class ProcessLaunchpad extends ProcessMakerModel
      */
     public static function getLaunchpad($showLaunchpad, $proId)
     {
-        $result = [];
+        $response = null;
         if ($showLaunchpad) {
             $response = self::where('process_id', $proId)->first();
-            if (!is_null($response)) {
-                $result = $response;
-            }
         }
 
-        return $result;
+        return $response;
     }
 }
