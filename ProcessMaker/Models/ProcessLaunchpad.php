@@ -66,6 +66,6 @@ class ProcessLaunchpad extends ProcessMakerModel
             }
         }
 
-        return $result ;
+        return $result;
     }
 }
