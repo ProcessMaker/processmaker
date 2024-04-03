@@ -37,7 +37,7 @@ class ProcessLaunchpad extends ProcessMakerModel
         'uuid',
         'user_id',
         'process_id',
-        'launchpad_properties'
+        'properties'
     ];
 
     public static function rules(): array

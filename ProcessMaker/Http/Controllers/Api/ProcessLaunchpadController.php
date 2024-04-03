@@ -31,14 +31,14 @@ class ProcessLaunchpadController extends Controller
     public function store(Request $request, Process $process)
     {
         $launch = new ProcessLaunchpad();
-        $properties = $request->input('launchpad_properties');
+        $properties = $request->input('properties');
         try {
             // Store the launchpad configuration
             $newLaunch = $launch->updateOrCreate([
                 'process_id' => $process->id,
             ], [
                 'user_id' => Auth::user()->id,
-                'launchpad_properties' => $properties,
+                'properties' => $properties,
             ]);
             $launch->newId = $newLaunch->id;
             // If there are configure the carousel
