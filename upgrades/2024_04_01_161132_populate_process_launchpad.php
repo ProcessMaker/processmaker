@@ -64,7 +64,7 @@ class PopulateProcessLaunchpad extends Upgrade
             'uuid' => ProcessLaunchpad::generateUuid(),
             'process_id' => $process->id,
             'user_id' => $process->user_id,
-            'launchpad_properties' => $process->launchpad_properties,
+            'properties' => $process->launchpad_properties,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
