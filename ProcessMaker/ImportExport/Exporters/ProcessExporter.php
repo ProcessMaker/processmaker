@@ -419,15 +419,9 @@ class ProcessExporter extends ExporterBase
      */
     public function exportMedia(): void
     {
-        $media = $this->model->media->map(function ($media) {
-            $filePath = $media->id . '/' . $media->file_name;
-            $file = Storage::disk('public')->path($filePath);
-            $media->base64 = base64_encode(file_get_contents($file));
-
-            return $media;
+        $this->model->media->each(function ($media) {
+            $this->addDependent(DependentType::MEDIA, $media, MediaExporter::class);
         });
-
-        $this->addReference('media', $media->toArray());
     }
 
     /**
@@ -435,16 +429,8 @@ class ProcessExporter extends ExporterBase
      */
     public function importMedia(): void
     {
-        $process = $this->model;
-
-        $mediaArray = $this->getReference('media') ?? [];
-        foreach ($mediaArray as $mediaElement) {
-            $encodedFile = $mediaElement['base64'];
-            unset($mediaElement['base64']);
-
-            $process->addMediaFromBase64($encodedFile)
-                ->usingFileName($mediaElement['file_name'])
-                ->toMediaCollection($mediaElement['collection_name']);
+        foreach ($this->getDependents(DependentType::MEDIA) as $media) {
+            $media->model->setAttribute('model_id', $this->model->id);
         }
     }
 }

@@ -90,6 +90,7 @@ class ProcessExporterTest extends TestCase
             'process' => $process,
             'cancelScreen' => $cancelScreen,
             'requestDetailScreen' => $requestDetailScreen,
+            'media' => $media,
         ] = $this->fixtures();
 
         $exporter = new Exporter();
@@ -102,6 +103,7 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($process->category->uuid, $processDependentUuids);
         $this->assertContains($cancelScreen->uuid, $processDependentUuids);
         $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
+        $this->assertContains($media->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -432,7 +434,7 @@ class ProcessExporterTest extends TestCase
         $this->assertArrayHasKey($user->uuid, $manifest);
     }
 
-    private function createFakeImage(Process $process)
+    private function createFakeImage(Process $process): Media
     {
         $media = Media::factory()->create([
             'model_type' => Process::class,
