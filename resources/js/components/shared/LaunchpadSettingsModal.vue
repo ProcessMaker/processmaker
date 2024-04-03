@@ -171,6 +171,7 @@ export default {
       processId: "",
       mediaImageId: [],
       dataProcess: {},
+      oldScreen: 0,
     };
   },
   mounted() {
@@ -210,6 +211,7 @@ export default {
             this.selectedScreen = this.defaultScreen.title;
             this.selectedScreenId = this.defaultScreen.id;
           }
+          this.oldScreen = this.selectedScreenId;
           // Load media into Carousel Container
           const mediaArray = firstResponse.media;
           const embedArray = firstResponse.embed;
@@ -284,6 +286,9 @@ export default {
             indexImage: null,
             type: "add",
           };
+          if (this.oldScreen !== this.selectedScreenId) {
+            ProcessMaker.EventBus.$emit("reloadByNewScreen", this.selectedScreenId);
+          }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChartId);
           this.hideModal();

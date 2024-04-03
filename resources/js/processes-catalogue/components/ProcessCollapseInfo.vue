@@ -170,6 +170,11 @@ export default {
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   mounted() {
     this.verifyDescription();
+    console.log('HOLAAAA');
+    ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
+    console.log('SE PUEDEEE');
+      window.location.reload();
+    });
   },
   methods: {
     /**
