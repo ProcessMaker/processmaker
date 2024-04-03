@@ -1,21 +1,32 @@
 <template>
     <div class="jumbotron jumbotron-fluid">
         <div class="container text-center">
-
             <div v-if="noResults" data-cy="no-results-message">
-                <div class="empty-title">{{ emptyText() }}</div>
-                <div class="img-container">
-                    <div v-if="emptyIconType() === 'beach'">
-                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
+                <slot name="no-results">
+                    <div class="empty-title">
+                      <slot name="no-results-title">
+                        {{ emptyText() }}
+                      </slot>
                     </div>
-                    <div v-if="emptyIconType() === 'noData'">
-                        <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
+                    <div class="img-container">
+                        <slot name="no-results-image">
+                            <div v-if="emptyIconType() === 'beach'">
+                                <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
+                            </div>
+                            <div v-if="emptyIconType() === 'noData'">
+                                <img src="/img/no-results.svg" class="no-results-img" alt="no-results">
+                            </div>
+                            <div v-if="emptyIconType() === 'noTasks'">
+                                <img src="/img/all-cleared.svg" class="no-results-img" alt="no-results">
+                            </div>
+                        </slot>
                     </div>
-                    <div v-if="emptyIconType() === 'noTasks'">
-                        <img src="/img/all-cleared.svg" class="no-results-img" alt="no-results">
-                    </div>
-                </div>
-                <p class="empty-desc">{{ emptyDescText() }}</p>
+                    <p class="empty-desc">
+                      <slot name="no-results-message">
+                        {{ emptyDescText() }}
+                      </slot>
+                    </p>
+                </slot>
             </div>
             <div v-else-if="error" data-cy="error-message">
                 <div class="icon-container">
@@ -44,35 +55,35 @@
             return {
                 noResults: false,
                 dataLoading: true,
-                error: false,
+                error: false
             };
         },
         props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon', 'for', 'dataLoadingId'],
         watch: {
             dataLoading() {
-                ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading)
+                ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading);
             },
             noResults() {
-                ProcessMaker.EventBus.$emit('api-data-no-results', this.noResults)
+                ProcessMaker.EventBus.$emit('api-data-no-results', this.noResults);
             }
         },
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
                 if (this.requestIdCheck(request) || (this.for?.test(request.url) && request.method.toLowerCase() === 'get')) {
-                    this.dataLoading = true
-                    this.error = false
-                    this.noResults = false
+                    this.dataLoading = true;
+                    this.error = false;
+                    this.noResults = false;
                 }
-            })
+            });
             ProcessMaker.EventBus.$on('api-client-done', (response) => {
                 if (this.responseIdCheck(response) || (response.config && this.for && this.for.test(response.config.url))) {
                     if (response.data && response.data.data && response.data.data.length === 0) {
-                        this.noResults = true
+                        this.noResults = true;
                     }
-                    this.dataLoading = false
+                    this.dataLoading = false;
                 }
-            })
+            });
             ProcessMaker.EventBus.$on('api-client-error', (error) => {
                 if (error && error.response?.data?.error == 'Not Found') {
                     this.noResults = true;
@@ -88,7 +99,7 @@
                     this.noResults = false;
                     this.error = true;
                 }
-            })
+            });
         },
         methods: {
             requestIdCheck(request) {
@@ -96,7 +107,7 @@
                     return false;
                 }
                 if (this.dataLoadingId === request.dataLoadingId) {
-                    return true
+                    return true;
                 }
             },
             responseIdCheck(response) {
@@ -104,34 +115,34 @@
                     return false;
                 }
                 if (this.dataLoadingId === response.config.dataLoadingId) {
-                    return true
+                    return true;
                 }
             },
             loadingText() {
-                return this.loading ? this.loading : this.$t('Loading')
+                return this.loading ? this.loading : this.$t('Loading');
             },
             descText() {
-                return this.desc ? this.desc: this.$t('Please wait while your content is loaded')
+                return this.desc ? this.desc: this.$t('Please wait while your content is loaded');
             },
             emptyText() {
-                return this.empty? this.empty: this.$t('No Results')
+                return this.empty? this.empty: this.$t('No Results');
             },
             emptyDescText() {
-                return this.emptyDesc ? this.emptyDesc : ''
+                return this.emptyDesc ? this.emptyDesc : '';
             },
             iconType() {
-                return this.icon ? this.icon : 'gear'
+                return this.icon ? this.icon : 'gear';
             },
             emptyIconType() {
-                return this.emptyIcon ? this.emptyIcon : 'none'
+                return this.emptyIcon ? this.emptyIcon : 'none';
             },
             errorTitleText() {
-                return this.$t('Sorry! API failed to load')
+                return this.$t('Sorry! API failed to load');
             },
             errorDescText() {
-                return this.$t('Something went wrong. Try refreshing the application')
+                return this.$t('Something went wrong. Try refreshing the application');
             }
-        },
+        }
     }
 </script>
 

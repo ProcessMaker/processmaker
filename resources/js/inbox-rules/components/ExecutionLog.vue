@@ -4,24 +4,41 @@
       :headers="columns()"
       :data="response"
       @page-change="changePage"
-      :empty="$t('No rules were executed yet')"
-      :empty-desc="$t('Once rules start running, you can see the results here.')"
       empty-icon="noData"
-      />
+      >
+      <template v-slot:no-results>
+        <PMMessageScreen>
+          <template v-slot:content>
+            <img src="/img/inbox-rule-suggest-lg.svg" 
+                 :alt="$t('Inbox rules empty')" />
+            <b>
+              {{ $t("No rules were executed yet") }}
+            </b>
+            <span v-html="$t('Once rules start running, you can see the results here.')">
+            </span>
+          </template>
+        </PMMessageScreen>
+      </template>
+    </PMTable>
   </div>
 </template>
 
 <script>
   import PMTable from "../../components/PMTable.vue";
+  import PMMessageScreen from "../../components/PMMessageScreen.vue";
   export default {
     components: {
       PMTable,
+      PMMessageScreen
     },
     data() {
       return {
-        response: {data: [], meta: {}},
-        page: 1,
-      }
+        response: {
+          data: [],
+          meta: {}
+        },
+        page: 1
+      };
     },
     methods: {
       load() {
@@ -41,35 +58,35 @@
         return [
           {
             label: this.$t("Case #"),
-            field: "task.process_request.case_number",
+            field: "task.process_request.case_number"
           },
           {
             label: this.$t("Case Name"),
-            field: "task.process_request.case_title",
+            field: "task.process_request.case_title"
           },
           {
             label: this.$t("Run Date"),
             field: "created_at",
-            format: "datetime",
+            format: "datetime"
           },
           {
             label: this.$t("Applied Rule"),
-            field: "inbox_rule_attributes.name",
+            field: "inbox_rule_attributes.name"
           },
           {
             label: this.$t("Task Due Date"),
             field: "task.due_at",
-            format: "datetime",
+            format: "datetime"
           },
           {
             label: this.$t("Task Name"),
-            field: "task.element_name",
+            field: "task.element_name"
           },
           {
             label: this.$t("Status"),
-            field: "task.status",
+            field: "task.status"
           }
-        ]
+        ];
       }
     }
   }

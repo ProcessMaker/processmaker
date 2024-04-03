@@ -16,6 +16,8 @@ class Column
 
     public $mask;
 
+    public $isSubmitButton;
+
     /**
      * @OA\Schema(
      *   schema="columns",

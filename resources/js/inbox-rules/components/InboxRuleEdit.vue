@@ -1,6 +1,6 @@
 <template>
   <div class="pm-inbox-rule-edit">
-    <template v-if="isViewName(1)">
+    <template v-if="viewIs('main')">
       <b-form-group>
         <template v-slot:label>
           <b>{{ $t('What do we do with tasks that fit this filter?') }}</b>
@@ -78,7 +78,7 @@
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -99,14 +99,14 @@
             </b-button>
             <b-button v-if="makeDraft"
                       variant="primary"
-                      @click="viewName(2)">
+                      @click="viewsTo('nextConfiguration')">
               {{ $t('Next') }}
             </b-button>
           </div>
         </div>
       </b-form-group>
     </template>
-    <template v-if="isViewName(2)">
+    <template v-if="viewIs('nextConfiguration')">
       <b-form-group>
         <span>
           {{ $t('If you want to establish an automatic submit for this rule,') }}
@@ -134,7 +134,7 @@
         <template v-slot:label>
           {{ $t('Submit action') }}
         </template>
-        <b-form-input :placeholder="$t('Waiting selection')"
+        <b-form-input :placeholder="$t('Waiting for selection')"
                       v-model="submitButtonLabel"
                       :state="submitButtonState"
                       :readonly="true">
@@ -153,7 +153,7 @@
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -164,7 +164,7 @@
           </div>
           <div class="flex-grow-0">
             <b-button variant="secondary"
-                      @click="viewName(1)">
+                      @click="viewsTo('main')">
               {{ $t('Back') }}
             </b-button>
             <b-button variant="primary"
@@ -176,6 +176,20 @@
       </b-form-group>
 
     </template>
+
+    <b-modal ref="openModal"
+             @hidden="onModalHidden"
+             centered
+             hide-footer
+             modal-class="pm-inbox-rule-edit-modal"
+             header-class="pm-inbox-rule-edit-modal-header"
+             footer-class="pm-inbox-rule-edit-modal-footer">
+      <div class="pm-inbox-rule-edit-modal-content mb-4 mr-4 ml-4">
+        <img src="/img/check-circle-lg.svg" :alt="$t('Rule successfully created')"/>
+        <b>{{ inboxRule ? $t('Rule successfully updated'): $t('Rule successfully created') }}</b>
+        <span>{{ $t('Check it out in the "Rules" section of your inbox.') }}</span>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -226,33 +240,41 @@
         deactivationDate: "",
         ruleName: "",
         ruleNameState: null,
+        ruleNameMessageError: "",
         makeDraft: false,
-        submitAfterFilling: false,
-        submitButton: null,
-        submitButtonState: null,
-        submitButtonLabel: ""
+        submitAfterFilling: false
       };
+    },
+    computed: {
+      submitButton() {
+        if (!this.selectSubmitButton || !this.submitAfterFilling) {
+          return null;
+        }
+        return {
+          label: this.selectSubmitButton.label || null,
+          value: this.selectSubmitButton.value || null,
+          name: this.selectSubmitButton.name || null,
+          loopContext: this.selectSubmitButton.loopContext || null
+        };
+      },
+      submitButtonState() {
+        if (!this.submitAfterFilling) {
+          return null;
+        }
+
+        return !!this.submitButton;
+      },
+      submitButtonLabel() {
+        if (!this.submitAfterFilling || !this.selectSubmitButton?.label) {
+          return "";
+        }
+        return this.selectSubmitButton.label;
+      }
     },
     watch: {
       makeDraft() {
         if (!this.makeDraft) {
           this.submitAfterFilling = false;
-        }
-      },
-      submitAfterFilling() {
-        if (!this.submitAfterFilling) {
-          this.submitButton = null;
-        }
-      },
-      selectSubmitButton() {
-        if (!this.selectSubmitButton) {
-          this.submitButton = null;
-          return;
-        }
-        this.submitButton = {
-          label: this.selectSubmitButton.label || null,
-          value: this.selectSubmitButton.value || null,
-          name: this.selectSubmitButton.name || null,
         }
       },
       reassign() {
@@ -271,12 +293,6 @@
           this.setInboxRuleData();
         },
         deep: true
-      },
-      submitButton(value) {
-        this.submitButtonLabel = this.submitAfterFilling ? value.label : "";
-        if (value) {
-          this.submitButtonState = true;
-        }
       }
     },
     mounted() {
@@ -288,12 +304,16 @@
         this.$router.push({name: 'index'});
       },
       onSave() {
+        if (!this.savedSearchData.columns) {
+          this.$emit("onSavedSearchNotSelected", true);
+          return;
+        }
         if (this.ruleName.trim() === "") {
+          this.ruleNameMessageError = this.$t("This field is required!");
           this.ruleNameState = false;
           return;
         }
-        if (this.submitAfterFilling && !this.submitButton) {
-          this.submitButtonState = false;
+        if (this.submitButtonState === false) {
           return;
         }
         let params = {
@@ -308,35 +328,48 @@
           submit_button: this.submitButton,
           make_draft: this.makeDraft,
           submit_data: this.submitAfterFilling,
-          ...this.savedSearchData,
+          ...this.savedSearchData
         };
         if (this.inboxRule) {
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
                   .then(response => {
-                    this.$router.push({name: 'index'});
+                    this.$refs.openModal.show();
 
                     let message = "The inbox rule '{{name}}' was updated.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         } else {
           ProcessMaker.apiClient.post('/tasks/rules', params)
                   .then(response => {
-                    this.$router.push({name: 'index'});
+                    this.$refs.openModal.show();
 
-                    let message = "The inbox rule {{name}} was created.";
+                    let message = "The inbox rule '{{name}}' was created.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         }
+      },
+      onModalHidden() {
+        this.$router.push({name: 'index'});
       },
       onChangeRuleName() {
         this.ruleNameState = this.ruleName.trim() !== "";
@@ -353,7 +386,6 @@
           this.makeDraft = this.inboxRule.make_draft;
           this.submitAfterFilling = this.inboxRule.submit_data;
           this.applyToFutureTasks = this.inboxRule.active;
-          this.submitButton = this.inboxRule.submit_button;
         }
       },
       requestUser(filter) {
@@ -384,6 +416,25 @@
 <style>
   .pm-inbox-rule-edit-radio>.custom-control-inline{
     display: flex;
+  }
+  .pm-inbox-rule-edit-modal .modal-content{
+    border-radius: 12px;
+  }
+  .pm-inbox-rule-edit-modal-content>:not(img):not(svg){
+    display: flex;
+    flex-direction: column;
+  }
+  .pm-inbox-rule-edit-modal-content>b{
+    font-size: 24px;
+    color: #4EA075;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .pm-inbox-rule-edit-modal-header{
+    border-color: white;
+  }
+  .pm-inbox-rule-edit-modal-footer{
+    border-color: white;
   }
 </style>
 <style scoped>
