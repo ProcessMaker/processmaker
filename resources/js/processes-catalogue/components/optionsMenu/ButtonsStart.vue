@@ -40,7 +40,7 @@
         <button
           v-if="event.webEntry"
           type="button"
-          class="btn btn-outline-success border-0 py-1 px-2 text-capitalize"
+          class="btn button-start-event"
           @click="copyLink(event)"
         >
           <i class="fas fa-link pr-1" />
@@ -49,10 +49,10 @@
         <button
           v-else
           type="button"
-          class="btn btn-outline-success border-0 p-1 text-capitalize"
+          class="btn button-start-event"
           @click="goToNewRequest(event.id)"
         >
-          <i class="fas fa-play-circle p-1" />
+          <i class="fas fa-play-circle pr-1" />
           {{ $t('Start Here') }}
         </button>
         <hr class="line-item">
@@ -190,5 +190,21 @@ export default {
 .line-item {
   margin-top: 16px;
   margin-bottom: 0px;
+}
+.button-start-event {
+  color: #4ea075;
+  text-transform: capitalize;
+  padding: 4px 6px;
+  border: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.button-start-event:hover {
+  color: white;
+  background-color: #4ea075;
 }
 </style>
