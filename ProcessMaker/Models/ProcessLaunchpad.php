@@ -52,4 +52,20 @@ class ProcessLaunchpad extends ProcessMakerModel
     {
         return $this->hasMany(User::class, 'id');
     }
+
+    /**
+     * Get the launchpad related
+     */
+    public static function getLaunchpad($showLaunchpad, $proId)
+    {
+        $result = [];
+        if ($showLaunchpad) {
+            $response = self::where('process_id', $proId)->first();
+            if (!is_null($response)) {
+                $result = $response;
+            }
+        }
+
+        return $result ;
+    }
 }

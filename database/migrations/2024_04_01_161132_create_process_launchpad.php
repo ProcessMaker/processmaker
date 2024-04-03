@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->unsignedInteger('process_id')->unique();
             $table->unsignedInteger('user_id')->nullable();
-            $table->json('launchpad_properties');
+            $table->json('properties');
             $table->timestamps();
             // Foreign keys
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');

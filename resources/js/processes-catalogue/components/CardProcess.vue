@@ -106,6 +106,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
@@ -114,6 +115,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
       }
       return `process_bookmarks/processes?page=${this.currentPage}`
@@ -121,6 +123,7 @@ export default {
           + `&category=${this.category.id}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
     },
     /**
