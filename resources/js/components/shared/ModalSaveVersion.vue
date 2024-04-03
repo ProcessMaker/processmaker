@@ -281,7 +281,7 @@ export default {
         .put(`processes/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
-          launchpad_properties: this.dataProcess.launchpad_properties,
+          properties: this.dataProcess.properties,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);

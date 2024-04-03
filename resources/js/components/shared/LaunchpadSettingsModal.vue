@@ -190,9 +190,8 @@ export default {
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
           const firstResponse = response.data.shift();
-          const launchpadProperties = JSON.parse(
-            firstResponse?.launchpad.launchpad_properties,
-          );
+          const unParseLaunchpadoperties = firstResponse?.launchpad?.properties;
+          const launchpadProperties = unParseLaunchpadoperties ? JSON.parse(unParseLaunchpadoperties) : '';
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
             this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
@@ -261,7 +260,7 @@ export default {
       if (!this.processDescription) return;
       if (!this.$refs["image-carousel"].checkImages()) return;
       this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
-      this.dataProcess.launchpad_properties = JSON.stringify({
+      this.dataProcess.properties = JSON.stringify({
         saved_chart_id: this.selectedSavedChartId,
         saved_chart_title: this.selectedSavedChart,
         screen_id: this.selectedScreenId,
@@ -275,7 +274,7 @@ export default {
         .put(`process_launchpad/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
-          launchpad_properties: this.dataProcess.launchpad_properties,
+          properties: this.dataProcess.properties,
         })
         .then((response) => {
           ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);

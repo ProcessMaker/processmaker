@@ -143,6 +143,8 @@ class ProcessController extends Controller
 
         // Get with bookmark
         $bookmark = $request->input('bookmark', false);
+        // Get with launchpad
+        $launchpad = $request->input('launchpad', false);
 
         $processes = $processes->with('events')
             ->select('processes.*')
@@ -176,6 +178,8 @@ class ProcessController extends Controller
 
             // Get the id bookmark related
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
