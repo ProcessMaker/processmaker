@@ -36,7 +36,7 @@
             <button
               type="button"
               class="button-actions"
-              v-b-tooltip.hover title="Erase Draft"
+              v-b-tooltip.hover title='Reset to saved data'
               @click="eraseQuickFill()"
               >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
@@ -141,6 +141,7 @@
     },
     data() {
       return {
+        eraseButton: null,
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -200,6 +201,9 @@
       };
     },
     computed: {
+      iframeInboxContentWindow() {
+        return this.$refs.inboxRuleFillData["preview"].firstChild.contentWindow;
+      },
       rightPanelTitle() {
         if (this.viewIs('main')) {
           return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
@@ -238,8 +242,10 @@
     
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
+        this.eraseButton = "new_inbox";
       }
       if (this.ruleId) {
+        this.eraseButton = "existing_inbox";
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
           .then(response => {
             this.inboxRule = response.data;
@@ -264,7 +270,9 @@
         }
       },
       eraseQuickFill() {
-        this.propInboxData = {};
+          this.propInboxData = {};
+          this.data = null;
+          this.$refs.inboxRuleFillData.reload();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
