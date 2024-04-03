@@ -187,11 +187,11 @@ export default {
      */
     getLaunchpadSettings() {
       ProcessMaker.apiClient
-        .get(`processes/${this.processId}/media`)
+        .get(`process_launchpad/${this.processId}`)
         .then((response) => {
-          const firstResponse = response.data.data.shift();
+          const firstResponse = response.data.shift();
           const launchpadProperties = JSON.parse(
-            firstResponse?.launchpad_properties,
+            firstResponse?.launchpad.launchpad_properties,
           );
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
@@ -272,7 +272,7 @@ export default {
       });
 
       ProcessMaker.apiClient
-        .put(`processes/${this.options.id}`, {
+        .put(`process_launchpad/${this.options.id}`, {
           imagesCarousel: this.dataProcess.imagesCarousel,
           description: this.dataProcess.description,
           launchpad_properties: this.dataProcess.launchpad_properties,

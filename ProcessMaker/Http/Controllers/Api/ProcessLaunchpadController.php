@@ -68,7 +68,7 @@ class ProcessLaunchpadController extends Controller
         $contentCarousel = $request->input('imagesCarousel');
         if (!empty($contentCarousel)) {
             foreach ($contentCarousel as $row) {
-                $content = !empty($row['url']) ? $row['url'] : '';
+                $content = !empty($row['type']) ? $row['type'] : '';
                 switch ($content) {
                     case 'image':
                         // Store the images related into the Media table
