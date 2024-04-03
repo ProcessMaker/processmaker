@@ -34,7 +34,7 @@
                     <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
                     {{__('This task is unassigned, click Claim Task to assign yourself.')}}
                 </div>
-                <div class="container-fluid h-100 d-flex flex-column">
+                <div class="container-fluid h-100 d-flex flex-column" id="interactionListener">
                     @can('editData', $task->processRequest)
                         <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                             <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
@@ -64,7 +64,7 @@
                               @@error="error"
                               @closed="closed"
                               @redirect="redirectToTask"
-                              @form-data-changed="handleAutosave()"
+                              @form-data-changed="handleFormDataChange"
                           ></task>
                           @endcan
                           <div v-if="taskHasComments">
@@ -416,7 +416,6 @@
           showTree: false,
           is_loading: false,
           autoSaveDelay: 2000,
-          firstChange: true,
           options: {
             is_loading: false,
           },
@@ -426,6 +425,7 @@
           showTabs: true,
           showInfo: true,
           isPriority: false,
+          userHasInteracted: false,
         },
         watch: {
           task: {
@@ -445,12 +445,11 @@
           formData: {
             deep: true,
             handler(formData) {
-              if (this.firstChange) {
-                this.firstChange = false;
-              } else {
+              if (this.userHasInteracted) {
                 if (this.formDataWatcherActive)
                 {
                   this.handleAutosave();
+                  this.userHasInteracted = false;
                 } else {
                   this.formDataWatcherActive = true;
                 }
@@ -517,7 +516,10 @@
         },
         methods: {
           createRule() {
-            window.location.href = `/tasks/rules/new?task_id=${this.task.id}`;
+            window.location.href = '/tasks/rules/new?' +
+            `task_id=${this.task.id}&` +
+            `element_id=${this.task.element_id}&` +
+            `process_id=${this.task.process_id}`;
           },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
@@ -695,6 +697,17 @@
               this.isPriority = !this.isPriority;
             });
           },
+          sendUserHasInteracted() {
+            if (!this.userHasInteracted) {
+              this.userHasInteracted = true;
+            }
+          },
+          handleFormDataChange() {
+            if (this.userHasInteracted) {
+              this.handleAutosave();
+              this.userHasInteracted = false;
+            }
+          },
           switchTabInfo(tab) {
             this.showInfo = !this.showInfo;
           },
@@ -706,6 +719,14 @@
           this.prepareData();
           window.ProcessMaker.isSelfService = this.isSelfService;
           this.isPriority = task.is_priority;
+          // listen for keydown on element with id interactionListener
+          const interactionListener = document.getElementById('interactionListener');
+          interactionListener.addEventListener('mousedown', (event) => {
+            this.sendUserHasInteracted();
+          });
+          interactionListener.addEventListener('keydown', (event) => {
+            this.sendUserHasInteracted();
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name);

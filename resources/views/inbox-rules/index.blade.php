@@ -24,6 +24,7 @@
         window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>
     <script src="{{mix('js/inbox-rules/index.js')}}"></script>
+    <script src="{{mix('js/inbox-rules/show.js')}}"></script>
 @endsection
 
 @section('css')
