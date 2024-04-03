@@ -74,7 +74,7 @@ class InboxRulesController extends Controller
             'pmql' => $request->input('pmql') ?? '',
             'user_id' => $request->user()->id,
         ]);
-
+        
         $inboxRule = InboxRule::create([
             'name' => $request->input('name'),
             'user_id' => $request->user()->id,
@@ -87,7 +87,7 @@ class InboxRulesController extends Controller
             'make_draft' => $request->input('make_draft', false),
             'submit_data' => $request->input('submit_data', false),
             'submit_button' => $request->input('submit_button'),
-            'data' => $request->input('data'),
+            'data' => (object) $request->input('data'),
         ]);
 
         if ($request->get('apply_to_current_tasks', false)) {
@@ -119,7 +119,7 @@ class InboxRulesController extends Controller
         ]);
 
         $inboxRule->savedSearch->update([
-            'columns' => $request->input('columns'),
+            'meta' => ['columns' => $request->input('columns')],
             'advanced_filter' => $request->input('advanced_filter'),
         ]);
 

@@ -16,7 +16,7 @@ class InboxRule extends ProcessMakerModel
     protected $table = 'inbox_rules';
 
     protected $casts = [
-        'data' => 'array',
+        'data' => 'object',
         'submit_button' => 'array',
         'end_date' => 'datetime',
         'active' => 'boolean',
