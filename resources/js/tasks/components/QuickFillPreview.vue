@@ -221,8 +221,10 @@ export default {
     };
   },
   mounted() {
-    if (this.propFilters !== "") {
+    if (this.propFilters !== "" && !this.propFilters.filters.some(filter => filter.value === null)) {
       this.quickFilter = this.propFilters;
+    } else {
+      this.quickFilter = this.filter;
     }
 
     if (this.propColumns.length > 0) {
