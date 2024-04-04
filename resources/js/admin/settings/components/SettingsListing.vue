@@ -1,174 +1,190 @@
 <template>
-  <div class="settings-listing data-table">
-    <pmql-input
-      class="mb-2"
-      :search-type="'settings'"
-      :value="pmql"
-      :ai-enabled="false"
-      :aria-label="$t('Advanced Search (PMQL)')"
-      @submit="onNLQConversion">
-      <template v-slot:right-buttons>
-        <div v-if="topButtons" class="d-flex">
-          <b-button
-            v-for="(btn, index) in topButtons"
-            v-bind="btn.ui.props"
-            :key="`btn-${index}`"
-            :ref="formatGroupName(btn.group)"
-            :data-cy="btn.key"
-            :disabled="false"
-            class="ml-2 nowrap"
-            @click="handler(btn)"
-          >
-            <b-spinner ref="b-spinner" small :hidden="true" />
-            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon" />
-            {{ btn.name }}
-          </b-button>
-        </div>
-      </template>
-    </pmql-input>
-
-    <div class="p-5 text-center" v-if="shouldDisplayNoDataMessage">
-      <h3>{{ noDataMessageConfig.name }}</h3>
-      <small>{{noDataMessageConfig.helper }}</small>
+  <div>
+    <div
+      v-show="loading"
+      class="bg-white w-100 h-100 p-5"
+    >
+      <data-loading
+        :for="/groups\?page/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
     </div>
-
-    <div v-else class="card card-body table-card">
-      <b-table
-        class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :items="dataProvider"
-        :fields="fields"
-        :sort-by="orderBy"
-        :sort-desc="orderDesc"
-        ref="table"
-        :filter="searchQuery"
-        show-empty
-        responsive
-        >
-        <template v-slot:cell(name)="row">
-          <div v-if="row.item.name" v-uni-id="row.item.id.toString()" class="capitalize">{{ $t(row.item.name) }}</div>
-          <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
-          <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
-        </template>
-        <template v-slot:cell(config)="row">
-          <keep-alive>
-            <component
-              :is="component(row.item)"
-              v-if="row.item && !isSwitch(row.item)"
-              v-show="!savingSetting || savingSetting.id !== settings[row.index].id"
-              :ref="`settingComponent_${row.index}`"
-              :key="row.item.key"
-              v-model="row.item.config"
-              :setting="settings[row.index]"
-              @saved="onChange"
-            />
-          </keep-alive>
-          <i
-            v-if="savingSetting && savingSetting.id === settings[row.index].id"
-            class="fas fa-cog fa-spin text-secondary"
-          />
-        </template>
-        <template v-slot:cell(actions)="row">
-          <keep-alive>
-            <component
-              :is="component(row.item)"
-              v-if="isSwitch(row.item)"
-              :ref="`settingComponent_${row.index}`"
-              :key="row.item.key"
-              v-model="row.item.config"
-              :setting="settings[row.index]"
-              @saved="onChange"
-            />
-          </keep-alive>
-          <template v-if="row.item && row.item.format !== 'boolean'">
-            <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button
-                v-uni-aria-describedby="row.item.id.toString()"
-                variant="link"
-                class="settings-listing-button"
-                :data-cy="`edit-${row.item.key}`"
-                :aria-label="$t('Edit')"
-                :disabled="row.item.readonly"
-                @click="onEdit(row)"
-              >
-                <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
-              </b-button>
-            </span>
-            <template v-if="row.item.key !== 'sso.default.login'">
-              <b-button
-                v-if="!disabledCopySetting(row)"
-                v-uni-aria-describedby="row.item.id.toString()"
-                v-b-tooltip.hover
-                variant="link"
-                class="settings-listing-button"
-                :data-cy="`copy-${row.item.key}`"
-                :aria-label="$t('Copy to Clipboard')"
-                :disabled="row.item.key.includes('cdata.')"
-                :title="$t('Copy to Clipboard')"
-                @click="onCopy(row)"
-              >
-                <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
-              </b-button>
-
-              <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
-                <b-button
-                  v-uni-aria-describedby="row.item.id.toString()"
-                  variant="link"
-                  class="settings-listing-button"
-                  :data-cy="`delete-${row.item.key}`"
-                  :aria-label="$t('Delete')"
-                  @click="onDelete(row)"
-                >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
-                </b-button>
-              </span>
-
-              <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
-                <b-button
-                  :aria-label="$t('Clear')"
-                  v-uni-aria-describedby="row.item.id.toString()"
-                  :disabled="disableClear(row.item)"
-                  @click="onClear(row)"
-                  variant="link"
-                  class="settings-listing-button"
-                  >
-                  <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
-                </b-button>
-              </span>
-              <span v-else class="invisible">
-                <b-button
-                  variant="link"
-                  class="settings-listing-button"
-                  v-uni-aria-describedby="row.item.id.toString()">
-                  <i class="fas fa-trash-alt settings-listing-button"></i>
-                </b-button>
-              </span>
-            </template>
-          </template>
-        </template>
-        <template v-slot:bottom-row><div class="bottom-padding"></div></template>
-        <template v-slot:emptyfiltered>
-          <div class="h-100 w-100 text-center">
-            <SettingsEmpty />
+    <div
+      v-show="!loading"
+      class="settings-listing data-table"
+    >
+      <pmql-input
+        class="mb-2"
+        :search-type="'settings'"
+        :value="pmql"
+        :ai-enabled="false"
+        :aria-label="$t('Advanced Search (PMQL)')"
+        @submit="onNLQConversion">
+        <template v-slot:right-buttons>
+          <div v-if="topButtons" class="d-flex">
+            <b-button
+              v-for="(btn, index) in topButtons"
+              v-bind="btn.ui.props"
+              :key="`btn-${index}`"
+              :ref="formatGroupName(btn.group)"
+              :data-cy="btn.key"
+              :disabled="false"
+              class="ml-2 nowrap"
+              @click="handler(btn)"
+            >
+              <b-spinner ref="b-spinner" small :hidden="true" />
+              <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon" />
+              {{ btn.name }}
+            </b-button>
           </div>
         </template>
-      </b-table>
-      <div class="text-right p-2">
-        <b-button
-          v-for="(btn,index) in bottomButtons"
-          :ref="formatGroupName(btn.group)"
-          :key="`btn-${index}`"
-          class="ml-2"
-          v-bind="btn.ui.props"
-          @click="handler(btn)"
-          :disabled="false"
+      </pmql-input>
+  
+      <div class="p-5 text-center" v-if="shouldDisplayNoDataMessage">
+        <h3>{{ noDataMessageConfig.name }}</h3>
+        <small>{{noDataMessageConfig.helper }}</small>
+      </div>
+  
+      <div v-else class="card card-body table-card">
+        <b-table
+          class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
+          :current-page="currentPage"
+          :per-page="perPage"
+          :items="dataProvider"
+          :fields="fields"
+          :sort-by="orderBy"
+          :sort-desc="orderDesc"
+          ref="table"
+          :filter="searchQuery"
+          show-empty
+          responsive
           >
-          <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
-          <span v-html="btn.icon"></span>
-          <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
-          {{btn.name}}
-        </b-button>
+          <template v-slot:cell(name)="row">
+            <div v-if="row.item.name" v-uni-id="row.item.id.toString()" class="capitalize">{{ $t(row.item.name) }}</div>
+            <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
+            <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
+          </template>
+          <template v-slot:cell(config)="row">
+            <keep-alive>
+              <component
+                :is="component(row.item)"
+                v-if="row.item && !isSwitch(row.item)"
+                v-show="!savingSetting || savingSetting.id !== settings[row.index].id"
+                :ref="`settingComponent_${row.index}`"
+                :key="row.item.key"
+                v-model="row.item.config"
+                :setting="settings[row.index]"
+                @saved="onChange"
+              />
+            </keep-alive>
+            <i
+              v-if="savingSetting && savingSetting.id === settings[row.index].id"
+              class="fas fa-cog fa-spin text-secondary"
+            />
+          </template>
+          <template v-slot:cell(actions)="row">
+            <keep-alive>
+              <component
+                :is="component(row.item)"
+                v-if="isSwitch(row.item)"
+                :ref="`settingComponent_${row.index}`"
+                :key="row.item.key"
+                v-model="row.item.config"
+                :setting="settings[row.index]"
+                @saved="onChange"
+              />
+            </keep-alive>
+            <template v-if="row.item && row.item.format !== 'boolean'">
+              <span v-b-tooltip.hover :title="getTooltip(row)">
+                <b-button
+                  v-uni-aria-describedby="row.item.id.toString()"
+                  variant="link"
+                  class="settings-listing-button"
+                  :data-cy="`edit-${row.item.key}`"
+                  :aria-label="$t('Edit')"
+                  :disabled="row.item.readonly"
+                  @click="onEdit(row)"
+                >
+                  <i class="fa-lg fas fa-edit settings-listing-button mr-1" />
+                </b-button>
+              </span>
+              <template v-if="row.item.key !== 'sso.default.login'">
+                <b-button
+                  v-if="!disabledCopySetting(row)"
+                  v-uni-aria-describedby="row.item.id.toString()"
+                  v-b-tooltip.hover
+                  variant="link"
+                  class="settings-listing-button"
+                  :data-cy="`copy-${row.item.key}`"
+                  :aria-label="$t('Copy to Clipboard')"
+                  :disabled="row.item.key.includes('cdata.')"
+                  :title="$t('Copy to Clipboard')"
+                  @click="onCopy(row)"
+                >
+                  <i class="fa-lg fas fa-copy settings-listing-button mr-1" />
+                </b-button>
+  
+                <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format) && enableDeleteSetting(row)" :title="$t('Delete')">
+                  <b-button
+                    v-uni-aria-describedby="row.item.id.toString()"
+                    variant="link"
+                    class="settings-listing-button"
+                    :data-cy="`delete-${row.item.key}`"
+                    :aria-label="$t('Delete')"
+                    @click="onDelete(row)"
+                  >
+                    <i class="fa-lg fas fa-trash-alt settings-listing-button mr-1"></i>
+                  </b-button>
+                </span>
+  
+                <span v-b-tooltip.hover v-else-if="!['boolean', 'object', 'button'].includes(row.item.format) && !disabledDeleteSetting(row)" :title="$t('Clear')">
+                  <b-button
+                    :aria-label="$t('Clear')"
+                    v-uni-aria-describedby="row.item.id.toString()"
+                    :disabled="disableClear(row.item)"
+                    @click="onClear(row)"
+                    variant="link"
+                    class="settings-listing-button"
+                    >
+                    <i class="fa-lg fas fa-trash-alt settings-listing-button"></i>
+                  </b-button>
+                </span>
+                <span v-else class="invisible">
+                  <b-button
+                    variant="link"
+                    class="settings-listing-button"
+                    v-uni-aria-describedby="row.item.id.toString()">
+                    <i class="fas fa-trash-alt settings-listing-button"></i>
+                  </b-button>
+                </span>
+              </template>
+            </template>
+          </template>
+          <template v-slot:bottom-row><div class="bottom-padding"></div></template>
+          <template v-slot:emptyfiltered>
+            <div class="h-100 w-100 text-center">
+              No Data Available
+            </div>
+          </template>
+        </b-table>
+        <div class="text-right p-2">
+          <b-button
+            v-for="(btn,index) in bottomButtons"
+            :ref="formatGroupName(btn.group)"
+            :key="`btn-${index}`"
+            class="ml-2"
+            v-bind="btn.ui.props"
+            @click="handler(btn)"
+            :disabled="false"
+            >
+            <b-spinner small ref="b-spinner" :hidden="true"></b-spinner>
+            <span v-html="btn.icon"></span>
+            <i v-if="btn.ui.props.icon" :class="btn.ui.props.icon"></i>
+            {{btn.name}}
+          </b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -177,6 +193,7 @@
 <script>
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import PmqlInput from "../../../components/shared/PmqlInput";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
@@ -215,7 +232,7 @@ export default {
     SettingSelect,
     SettingsEmpty,
   },
-  mixins:[uniqIdsMixin],
+  mixins:[dataLoadingMixin, uniqIdsMixin],
   props: ['group'],
   data() {
     return {
@@ -240,6 +257,7 @@ export default {
       url: '/settings',
       shouldDisplayNoDataMessage: false,
       noDataMessageConfig: null,
+      loading: true,
     };
   },
   computed: {
@@ -371,6 +389,8 @@ export default {
         this.orderByPrevious = this.orderBy;
         this.orderDescPrevious = this.orderDesc;
         this.$nextTick(() => callback(this.settings));
+
+        this.loading = false;
       });
     },
     separateSettings(settings) {
