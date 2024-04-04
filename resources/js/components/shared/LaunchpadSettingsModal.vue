@@ -155,6 +155,7 @@ export default {
         id: 0,
         title: this.$t("Default Launchpad Chart"),
       },
+      defaultIcon: "Default Icon",
       dropdownSavedCharts: [],
       dropdownSavedScreen: [],
       processDescription: "",
@@ -170,7 +171,6 @@ export default {
       processId: "",
       mediaImageId: [],
       dataProcess: {},
-      oldScreen: 0,
     };
   },
   mounted() {
@@ -196,8 +196,8 @@ export default {
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
             this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
-            this.selectedLaunchpadIcon = launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
+            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
             this.selectedScreen = launchpadProperties.screen_title ?? this.defaultScreen.title;
             this.selectedScreenId = launchpadProperties.screen_id ?? this.defaultScreen.id;
             this.selectedScreenUuid = launchpadProperties.screen_uuid ?? this.defaultScreen.uuid;
@@ -209,7 +209,6 @@ export default {
             this.selectedScreen = this.defaultScreen.title;
             this.selectedScreenId = this.defaultScreen.id;
           }
-          this.oldScreen = this.selectedScreenId;
           // Load media into Carousel Container
           const mediaArray = firstResponse.media;
           const embedArray = firstResponse.embed;
@@ -284,9 +283,6 @@ export default {
             indexImage: null,
             type: "add",
           };
-          if (this.oldScreen !== this.selectedScreenId) {
-            ProcessMaker.EventBus.$emit("reloadByNewScreen", this.selectedScreenId);
-          }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChartId);
           this.hideModal();
