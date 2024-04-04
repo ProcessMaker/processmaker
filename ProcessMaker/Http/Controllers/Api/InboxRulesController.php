@@ -41,14 +41,14 @@ class InboxRulesController extends Controller
     /**
      * Retrieve a specific inbox rule by its ID.
      *
-     * @param int $idInboxRule
+     * @param int $inboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Request $request, $idInboxRule)
+    public function show(InboxRule $inboxRule)
     {
-        return new ApiResource(
-            InboxRule::findOrFail($idInboxRule)
-        );
+        $inboxRuleArray = $inboxRule->toArray();
+        $inboxRuleArray["data"] = (object) $inboxRuleArray["data"];
+        return new ApiResource($inboxRuleArray);
     }
 
     /**
@@ -87,7 +87,7 @@ class InboxRulesController extends Controller
             'make_draft' => $request->input('make_draft', false),
             'submit_data' => $request->input('submit_data', false),
             'submit_button' => $request->input('submit_button'),
-            'data' => (object) $request->input('data'),
+            'data' => $request->input('data'),
         ]);
 
         if ($request->get('apply_to_current_tasks', false)) {
