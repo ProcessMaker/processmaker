@@ -8,7 +8,7 @@
             >
                 <template #header>
                     <h4>
-                        <b-button @click="hidePreview" variant="link" class="p-0 back-btn mr-2">
+                        <b-button v-if="!hideBackArrow" @click="hidePreview" variant="link" class="p-0 back-btn mr-2">
                             <i class="fas fa-arrow-circle-left text-secondary"></i>
                         </b-button>
                         {{ templateData?.name }}
@@ -35,7 +35,7 @@
                             {{ $t('View CSS') }}
                         </b-button>
 
-                        <b-form-group class="template-options-group">
+                        <b-form-group v-if="!hideTemplateOptions" class="template-options-group">
                             <b-form-checkbox-group
                                 id="template-options"
                                 v-model="selectedTemplateOptions"
@@ -84,7 +84,7 @@
 <script>
     export default {
         components: {},
-        props: ["template"],
+        props: ["template", "hideBackArrow", "hideTemplateOptions"],
         data: function() {
             return {
                 type: null,
@@ -137,7 +137,7 @@
             }
         },
         mounted() {
-            this.templateData = this.template.template;
+            this.templateData = this.template.template ? this.template.template : this.template;
             this.type = this.template.type;
         }
     }
