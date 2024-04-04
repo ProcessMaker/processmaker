@@ -41,7 +41,7 @@
               @click="eraseQuickFill()"
               >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                {{ $t('Clear All Fields In This Form') }}
+                {{ $t('Clear Task') }}
             </button>
             <button
               type="button"
