@@ -97,7 +97,7 @@
                     class="icon-button"
                     :aria-label="$t('Erase')"
                     variant="light"
-                    v-b-tooltip.hover title="Erase Draft"
+                    v-b-tooltip.hover title="Clear Draft"
                     @click="eraseDraft()"
                   >
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
