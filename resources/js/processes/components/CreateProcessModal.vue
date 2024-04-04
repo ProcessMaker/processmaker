@@ -172,8 +172,8 @@ export default {
   methods: {
     onShown() {
       if (this.generativeProcessData && !this.generativeProcessData.choices?.length) {
-        this.name = this.currentModel.process_title;
-        this.description = this.currentModel.process_description;
+        this.name = this.generativeProcessData.process_title;
+        this.description = this.generativeProcessData.process_description;
       }
       if (this.generativeProcessData && this.generativeProcessData.choices?.length > 0) {
         const currentChoice = this.generativeProcessData.choices[this.generativeProcessData.currentChoice];

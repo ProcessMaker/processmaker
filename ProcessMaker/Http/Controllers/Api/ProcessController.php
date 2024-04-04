@@ -26,8 +26,10 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -41,6 +43,11 @@ use Throwable;
 
 class ProcessController extends Controller
 {
+    const CAROUSEL_TYPES = [
+        'IMAGE' => 'image',
+        'EMBED' => 'embed'
+    ];
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -136,6 +143,8 @@ class ProcessController extends Controller
 
         // Get with bookmark
         $bookmark = $request->input('bookmark', false);
+        // Get with launchpad
+        $launchpad = $request->input('launchpad', false);
 
         $processes = $processes->with('events')
             ->select('processes.*')
@@ -169,6 +178,8 @@ class ProcessController extends Controller
 
             // Get the id bookmark related
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
@@ -1709,21 +1720,56 @@ class ProcessController extends Controller
         // Saving Carousel Images into Media table related to process_id
         if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
             foreach ($request->imagesCarousel as $image) {
-                if (is_string($image['url']) && !empty($image['url'])) {
-                    if (!$process->media()->where('collection_name', 'images_carousel')
-                        ->where('uuid', $image['uuid'])->exists()) {
-                        $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
-                    }
+                if (is_string($image['url']) && !empty($image['url'])
+                && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
+                    $media = new \ProcessMaker\Models\Media();
+                    $media->saveProcessMedia($process, $image, 'uuid');
+                }
+                if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
+                    $embed = new \ProcessMaker\Models\Embed();
+                    $embed->saveProcessEmbed($process, $image, 'uuid');
                 }
             }
         }
     }
 
+    public function saveImageMedia(Process $process, $image)
+    {
+        if (!$process->media()->where('collection_name', 'images_carousel')
+        ->where('uuid', $image['uuid'])->exists()) {
+            $process
+            ->addMediaFromBase64($image['url'])
+            ->withCustomProperties(['type' => $image['type']])
+            ->toMediaCollection('images_carousel');
+        }
+    }
+
+    public function saveEmbedMedia(Process $process, $image)
+    {
+        $embed = new Embed();
+        $values = [
+            'model_id' => $process->id,
+            'model_type' => Process::class,
+            'mime_type' => 'text/url',
+            'custom_properties' => json_encode([
+                'url' => $image['url'],
+                'type' => $image['type']
+            ]),
+        ];
+        if (!is_null($image['uuid']) && $image['uuid'] !== '') {
+            $embed->updateOrCreate([
+                'uuid' => $image['uuid']
+            ], $values);
+        } else {
+            $embed->fill($values);
+            $embed->saveOrFail();
+        }
+    }
+
     public function getMediaImages(Request $request, Process $process)
     {
-        $media = Process::with(['media' => function ($query) {
-            $query->orderBy('order_column', 'asc');
-        }])
+        $media = Process::with(['media'])
+        ->with(['embed'])
         ->where('id', $process->id)
         ->get();
 
@@ -1744,6 +1790,20 @@ class ProcessController extends Controller
         // Check if image exists before delete
         if ($mediaImagen) {
             $mediaImagen->delete();
+        }
+    }
+
+    public function deleteEmbed(Request $request, Process $process)
+    {
+        // Get UUID in the table
+        $uuid = $request->input('uuid');
+
+        $embedUrl = Embed::where('uuid', $uuid)
+            ->first();
+
+        // Check if embed before delete
+        if ($embedUrl) {
+            $embedUrl->delete();
         }
     }
 }
