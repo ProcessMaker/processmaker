@@ -140,7 +140,7 @@ export default {
         }).catch((error) => {
           if (error.response.status !== 404) {
             const errorMsg = error.response?.data?.message || error.message;
-            console.log(errorMsg);
+            console.error(errorMsg);
           }
           this.loadingSuggestions = false;
         });
