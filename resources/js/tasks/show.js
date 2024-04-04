@@ -12,6 +12,7 @@ import QuickFillPreview from "./components/QuickFillPreview.vue";
 import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
+import DataLoading from "../components/common/DataLoading.vue";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -24,6 +25,7 @@ Vue.component("TimelineItem", TimelineItem);
 Vue.component("QuickFillPreview", QuickFillPreview);
 Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
+Vue.component("DataLoading", DataLoading);
 
 Vue.mixin(autosaveMixins);
 

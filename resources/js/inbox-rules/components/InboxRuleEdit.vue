@@ -75,10 +75,11 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -136,6 +137,7 @@
         </template>
         <b-form-input :placeholder="$t('Waiting for selection')"
                       v-model="submitButtonLabel"
+                      autocomplete="off"
                       :state="submitButtonState"
                       :readonly="true">
         </b-form-input>
@@ -150,10 +152,11 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
-          {{ $t('This field is required!') }}
+          {{ ruleNameMessageError }}
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -240,6 +243,7 @@
         deactivationDate: "",
         ruleName: "",
         ruleNameState: null,
+        ruleNameMessageError: "",
         makeDraft: false,
         submitAfterFilling: false
       };
@@ -281,12 +285,6 @@
           this.reassignToUserId = null;
         }
       },
-      savedSearchData: {
-        handler() {
-        },
-        deep: true,
-        immediate: true
-      },
       inboxRule: {
         handler() {
           this.setInboxRuleData();
@@ -308,6 +306,7 @@
           return;
         }
         if (this.ruleName.trim() === "") {
+          this.ruleNameMessageError = this.$t("This field is required!");
           this.ruleNameState = false;
           return;
         }
@@ -326,7 +325,7 @@
           submit_button: this.submitButton,
           make_draft: this.makeDraft,
           submit_data: this.submitAfterFilling,
-          ...this.savedSearchData,
+          ...this.savedSearchData
         };
         if (this.inboxRule) {
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
@@ -337,8 +336,13 @@
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         } else {
@@ -346,12 +350,17 @@
                   .then(response => {
                     this.$refs.openModal.show();
 
-                    let message = "The inbox rule {{name}} was created.";
+                    let message = "The inbox rule '{{name}}' was created.";
                     message = this.$t(message, {name: this.ruleName});
                     ProcessMaker.alert(message, "success");
                   })
-                  .catch((err) => {
+                  .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
+                    if (error.response.status && error.response.status === 422) {
+                      message = error.response.data.message;
+                      this.ruleNameMessageError = this.$t(message);
+                      this.ruleNameState = false;
+                    }
                     ProcessMaker.alert(this.$t(message), "danger");
                   });
         }

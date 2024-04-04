@@ -1,23 +1,23 @@
 <script>
-import { Pie } from "vue-chartjs"
+import { Pie } from "vue-chartjs";
 
 export default {
   extends: Pie,
   props: ["data", "options", "preview"],
   computed: {
-    chartData: function() {
+    chartData() {
       return this.data;
     },
-    previewData: function() {
+    previewData() {
       return {
         datasets: [{
-          data: [ 25, 75 ],
+          data: [25, 75],
           borderWidth: 0,
         }],
-        labels: [ 1, 2 ]
+        labels: [1, 2],
       };
     },
-    previewOptions: function() {
+    previewOptions() {
       return {
         layout: {
           padding: {
@@ -33,7 +33,7 @@ export default {
         maintainAspectRatio: true,
         responsive: true,
         tooltips: {
-          enabled: false
+          enabled: false,
         },
         scales: {
           xAxes: [{
@@ -42,16 +42,21 @@ export default {
           yAxes: [{
             display: false,
           }],
-        }
-      }
-    }
+        },
+      };
+    },
   },
-  mounted () {
+  watch: {
+    data() {
+      this.render();
+    },
+  },
+  mounted() {
     this.render();
   },
   methods: {
     render() {
-      if (! this.preview) {
+      if (!this.preview) {
         this.renderChart(this.chartData, this.options);
       } else {
         this.renderChart(this.previewData, this.previewOptions);
@@ -62,10 +67,5 @@ export default {
       return this.$t("Pie Chart");
     },
   },
-  watch: {
-    data: function() {
-      this.render();
-    }
-  }
-}
+};
 </script>

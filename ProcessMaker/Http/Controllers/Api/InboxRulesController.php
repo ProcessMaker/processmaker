@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -40,14 +41,16 @@ class InboxRulesController extends Controller
     /**
      * Retrieve a specific inbox rule by its ID.
      *
-     * @param int $idInboxRule
+     * @param int $inboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Request $request, $idInboxRule)
+    public function show(InboxRule $inboxRule)
     {
-        return new ApiResource(
-            InboxRule::findOrFail($idInboxRule)
-        );
+        $inboxRuleArray = $inboxRule->toArray();
+        if (empty($inboxRule->data)) {
+            $inboxRuleArray['data'] = (object) [];
+        }
+        return new ApiResource($inboxRuleArray);
     }
 
     /**
@@ -58,6 +61,14 @@ class InboxRulesController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => [
+                'required',
+                Rule::unique('inbox_rules')->ignore(null),
+                'alpha_spaces'
+            ]
+        ]);
+
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
             'columns' => $request->input('columns'),
@@ -110,7 +121,7 @@ class InboxRulesController extends Controller
         ]);
 
         $inboxRule->savedSearch->update([
-            'columns' => $request->input('columns'),
+            'meta' => ['columns' => $request->input('columns')],
             'advanced_filter' => $request->input('advanced_filter'),
         ]);
 

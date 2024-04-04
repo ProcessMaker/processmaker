@@ -1,6 +1,11 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="loaded()" :disable-interstitial="true" ref="preview" /> 
+    <b-embed
+      :src="linkTasks"
+      @load="loaded()"
+      :disable-interstitial="true"
+      ref="preview"
+      :event-parent-id="_uid" /> 
   </div>
 </template>
 
@@ -15,7 +20,11 @@
       inboxRuleData: {
         type: Object,
         default: null
-      }
+      },
+      propInboxQuickFill: {
+        type: Object,
+        default: null
+      },
     },
     data() {
       return {
@@ -33,6 +42,10 @@
     watch: {
       formData() {
         this.$emit("data", this.formData);
+      },
+      propInboxQuickFill() {
+        this.formData = _.merge({}, this.formData, this.propInboxQuickFill);
+        this.iframeContentWindow.location.reload();
       }
     },
     mounted() {

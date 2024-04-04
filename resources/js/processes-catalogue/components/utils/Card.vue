@@ -90,9 +90,11 @@ export default {
     },
     getIconProcess() {
       let icon = "Default Icon";
-      if (this.process.launchpad_properties) {
-        icon = JSON.parse(this.process.launchpad_properties).icon || "Default Icon";
+      const unparseProperties = this.process.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        icon = JSON.parse(unparseProperties)?.icon || "Default Icon";
       }
+
       return `/img/launchpad-images/icons/${icon}.svg`;
     },
   },

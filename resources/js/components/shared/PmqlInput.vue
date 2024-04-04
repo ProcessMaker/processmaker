@@ -362,6 +362,7 @@ export default {
           this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
           this.$emit("inputresize", this.$refs.search_input.scrollHeight);
         }
+        this.$refs.search_input.focus();
       });
     },
     onInput() {

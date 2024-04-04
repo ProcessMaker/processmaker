@@ -11,6 +11,10 @@ enum ExporterMap
         'process_templates' => [\ProcessMaker\Models\ProcessTemplates::class, \ProcessMaker\ImportExport\Exporters\TemplateExporter::class],
         'data_source' => [\ProcessMaker\Packages\Connectors\DataSources\Models\DataSource::class, \ProcessMaker\Packages\Connectors\DataSources\ImportExport\DataSourceExporter::class],
         'decision_table' => [\ProcessMaker\Package\PackageDecisionEngine\Models\DecisionTable::class, \ProcessMaker\Package\PackageDecisionEngine\ImportExport\DecisionTableExporter::class],
+        'screen-template' => [
+            \ProcessMaker\Models\ScreenTemplates::class,
+            \ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter::class,
+        ],
     ];
 
     public static function getModelClass(string $type): ?string
