@@ -47,7 +47,7 @@ class InboxRulesController extends Controller
     public function show(InboxRule $inboxRule)
     {
         $inboxRuleArray = $inboxRule->toArray();
-        $inboxRuleArray["data"] = (object) $inboxRuleArray["data"];
+        $inboxRuleArray['data'] = (object) $inboxRuleArray['data'];
         return new ApiResource($inboxRuleArray);
     }
 
@@ -74,7 +74,7 @@ class InboxRulesController extends Controller
             'pmql' => $request->input('pmql') ?? '',
             'user_id' => $request->user()->id,
         ]);
-        
+
         $inboxRule = InboxRule::create([
             'name' => $request->input('name'),
             'user_id' => $request->user()->id,
