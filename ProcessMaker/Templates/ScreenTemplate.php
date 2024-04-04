@@ -83,6 +83,7 @@ class ScreenTemplate implements TemplateInterface
                 'screen_templates.asset_type',
                 'screen_templates.media_collection',
                 'screen_templates.screen_custom_css',
+                'screen_templates.updated_at',
             )
             ->leftJoin('screen_categories as category', 'screen_templates.screen_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'screen_templates.user_id', '=', 'user.id')

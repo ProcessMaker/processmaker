@@ -268,8 +268,13 @@ export default {
      * Verify if the process open the info or Screen
      */
     verifyScreen(process) {
-      const screen_id = JSON.parse(process.launchpad.properties)?.screen_id || 0
-      return screen_id !== 0;
+      let screenId = 0;
+      const unparseProperties = process.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        screenId = JSON.parse(unparseProperties)?.screen_id || 0
+      }
+
+      return screenId !== 0;
     },
   },
 };

@@ -20,6 +20,7 @@
           ref="inboxRuleFilters"
           :savedSearchId="getSavedSearchId"
           :taskId="taskId"
+          :propTask="task"
           :show-column-selector-button="false"
           @count="count = $event"
           @saved-search-data="savedSearchData = $event">
@@ -234,20 +235,34 @@
         element_id: this.elementId,
         id: this.newTaskId
       };
+    
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
       }
       if (this.ruleId) {
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
-                .then(response => {
-                  this.inboxRule = response.data;
-                  this.submitButton = this.inboxRule.submit_button;
-                  this.data = this.inboxRule.data;
-                  this.taskId = this.inboxRule.process_request_token_id;
-                });
+          .then(response => {
+            this.inboxRule = response.data;
+            this.submitButton = this.inboxRule.submit_button;
+            this.data = this.inboxRule.data;
+            this.taskId = this.inboxRule.process_request_token_id;
+
+            if(this.task.process_id === null){
+              this.getTask(this.taskId); 
+            }
+          });
+        
       }
     },
     methods: {
+      getTask(taskId) {
+        if (this.task.process_id === null){
+          ProcessMaker.apiClient.get("tasks/" + taskId)
+                  .then(response => {
+                    this.task = response.data;
+                  });
+        }
+      },
       eraseQuickFill() {
         this.propInboxData = {};
       },

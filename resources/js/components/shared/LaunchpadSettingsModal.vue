@@ -191,8 +191,8 @@ export default {
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
           const firstResponse = response.data.shift();
-          const unParseLaunchpadoperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unParseLaunchpadoperties ? JSON.parse(unParseLaunchpadoperties) : '';
+          const unparseProperties = firstResponse?.launchpad?.properties;
+          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : '';
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
             this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;

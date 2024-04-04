@@ -132,7 +132,13 @@ export default {
       }
     },
     saveSearchId() {
-      return JSON.parse(this.process.launchpad.properties)?.saved_chart_id || null;
+      let chartId = null;
+      const unparseProperties = this.process.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
+      }
+
+      return chartId;
     },
   },
   watch: {
