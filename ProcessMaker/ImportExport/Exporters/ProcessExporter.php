@@ -4,19 +4,17 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use DOMXPath;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
-use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\ExportManager;
-use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
@@ -60,7 +58,7 @@ class ProcessExporter extends ExporterBase
             if ($screen) {
                 $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
             } else {
-                \Log::debug("Cancel ScreenId: $process->cancel_screen_id not exists");
+                Log::debug("Cancel ScreenId: {$process->cancel_screen_id} not exists");
             }
         }
         if ($process->request_detail_screen_id) {
@@ -68,11 +66,13 @@ class ProcessExporter extends ExporterBase
             if ($screen) {
                 $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
             } else {
-                \Log::debug("Request Detail ScreenId: $process->request_detail_screen_id not exists");
+                Log::debug("Request Detail ScreenId: {$process->request_detail_screen_id} not exists");
             }
         }
 
         $this->exportSubprocesses();
+
+        $this->exportMedia();
     }
 
     public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
@@ -118,6 +118,8 @@ class ProcessExporter extends ExporterBase
                 $process->notification_settings()->create($setting);
             }
         }
+
+        $this->importMedia();
 
         return true;
     }
@@ -315,7 +317,7 @@ class ProcessExporter extends ExporterBase
                 if ($screen) {
                     $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
                 } else {
-                    \Log::debug("ScreenId: $screenId not exists");
+                    Log::debug("ScreenId: {$screenId} not exists");
                 }
             }
 
@@ -325,7 +327,7 @@ class ProcessExporter extends ExporterBase
                 if ($interstitialScreen) {
                     $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
                 } else {
-                    \Log::debug("Interstitial screenId: $interstitialScreenId not exists");
+                    Log::debug("Interstitial screenId: {$interstitialScreenId} not exists");
                 }
             }
         }
@@ -365,7 +367,7 @@ class ProcessExporter extends ExporterBase
                 if ($script) {
                     $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
                 } else {
-                    \Log::debug("ScriptId: $scriptId not exists");
+                    Log::debug("ScriptId: {$scriptId} not exists");
                 }
             }
         }
@@ -409,6 +411,26 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
+        }
+    }
+
+    /**
+     * Export the media associated with the process.
+     */
+    public function exportMedia(): void
+    {
+        $this->model->media->each(function ($media) {
+            $this->addDependent(DependentType::MEDIA, $media, MediaExporter::class);
+        });
+    }
+
+    /**
+     * Imports media for the process.
+     */
+    public function importMedia(): void
+    {
+        foreach ($this->getDependents(DependentType::MEDIA) as $media) {
+            $media->model->setAttribute('model_id', $this->model->id);
         }
     }
 }

@@ -305,6 +305,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Get the associated embed
+     */
+    public function embed()
+    {
+        return $this->hasMany(Embed::class, 'model_id', 'id');
+    }
+
+    /**
      * Notification settings of the process.
      *
      * @return object
@@ -1266,6 +1274,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function webentryRoute()
     {
         return $this->hasOne(WebentryRoute::class);
+    }
+
+    /**
+     * Get the associated launchpad
+     */
+    public function launchpad()
+    {
+        return $this->hasOne(ProcessLaunchpad::class, 'process_id', 'id');
     }
 
     /**

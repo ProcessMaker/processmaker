@@ -6,21 +6,21 @@
       lazy
     >
       <b-tab
-        :title="$t('My Tasks')"
-        active
-      >
-        <task-tab
-          :currentUser="currentUser"
-          :process="process"
-        ></task-tab>
-      </b-tab>
-      <b-tab
         :title="$t('My Requests')"
+        active
       >
         <request-tab
           :currentUser="currentUser"
           :process="process"
         ></request-tab>
+      </b-tab>
+      <b-tab
+        :title="$t('My Tasks')"
+      >
+        <task-tab
+          :currentUser="currentUser"
+          :process="process"
+        ></task-tab>
       </b-tab>
     </b-tabs>
   </div>
