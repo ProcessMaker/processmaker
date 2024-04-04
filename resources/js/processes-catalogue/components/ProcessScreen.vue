@@ -117,13 +117,7 @@ export default {
      * Get the screen for the process in Launchpad
      */
     getScreen() {
-      const unparseProperties = this.process.launchpad?.properties || null;
-      if (unparseProperties !== null) {
-        this.screen_id = JSON.parse(unparseProperties)?.screen_id || null;
-      }
-      if (this.screen_id === null) {
-        return;
-      }
+      this.screen_id = JSON.parse(this.process.launchpad.properties).screen_id;
       ProcessMaker.apiClient
         .get(`screens/${this.screen_id}`)
         .then((response) => {
