@@ -48,7 +48,7 @@ const PreviewMixin = {
       actions: [
         {
           value: "clear-draft",
-          content: "Clear Task",
+          content: "Clear Draft",
           image: "/img/smartinbox-images/eraser.svg",
         },
         {
@@ -205,14 +205,6 @@ const PreviewMixin = {
     frameLoaded(iframe) {
       this.isDisabled = false;
       this.$root.$emit('disable-button', this.isDisabled);
-      if (iframe === "tasksFrame1") {
-        this.iframe1ContentWindow.event_parent_id = this._uid;
-      }
-
-      if (iframe === "tasksFrame2") {
-        this.iframe2ContentWindow.event_parent_id = this._uid;
-      }
-
       const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);

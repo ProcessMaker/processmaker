@@ -75,6 +75,7 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
@@ -136,6 +137,7 @@
         </template>
         <b-form-input :placeholder="$t('Waiting for selection')"
                       v-model="submitButtonLabel"
+                      autocomplete="off"
                       :state="submitButtonState"
                       :readonly="true">
         </b-form-input>
@@ -150,6 +152,7 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
@@ -281,12 +284,6 @@
         if (!this.reassign) {
           this.reassignToUserId = null;
         }
-      },
-      savedSearchData: {
-        handler() {
-        },
-        deep: true,
-        immediate: true
       },
       inboxRule: {
         handler() {
