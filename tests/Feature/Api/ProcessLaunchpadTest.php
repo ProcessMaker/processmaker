@@ -35,7 +35,7 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id);
         // Validate the header status code
         $response->assertStatus(200);
-        $this->assertEmpty($response['data']);
+        $this->assertEmpty($response);
         // Create data related with the auth user
         $user = Auth::user();
         $process = Process::factory()->create();
@@ -47,7 +47,7 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id);
         // Validate the header status code
         $response->assertStatus(200);
-        $this->assertNotEmpty($response['data']);
+        $this->assertNotEmpty($response);
     }
 
     /**
@@ -90,7 +90,7 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id . '/media');
         // Validate the header status code
         $response->assertStatus(200);
-        $this->assertEmpty($response['data']);
+        $this->assertEmpty($response);
     }
 
     /**
@@ -104,6 +104,6 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id . '/embed');
         // Validate the header status code
         $response->assertStatus(200);
-        $this->assertEmpty($response['data']);
+        $this->assertEmpty($response);
     }
 }
