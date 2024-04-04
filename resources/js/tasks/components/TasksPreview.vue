@@ -279,7 +279,7 @@ export default {
   watch: {
     task: {
       deep: true,
-      handler(task) {
+      handler(task, previousTask) {
         if (task.draft) {
           this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
         } else {
@@ -291,8 +291,12 @@ export default {
           priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
         }
         if (this.task.id) {
-          this.singleTask();
+          this.getTaskDefinitionForReassignmentPermission();
         }
+
+        if (task?.id !== previousTask?.id) {
+          this.userHasInteracted = false;
+        } 
       },
     },
   },
@@ -420,7 +424,7 @@ export default {
     openReassignment() {
       this.showReassignment = !this.showReassignment;
     },
-    singleTask() {
+    getTaskDefinitionForReassignmentPermission() {
       ProcessMaker.apiClient
         .get(`tasks/${this.task.id}?include=definition`)
         .then((response) => {
