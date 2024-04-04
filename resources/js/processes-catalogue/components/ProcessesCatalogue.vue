@@ -204,6 +204,7 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
+      this.key += 1;
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
