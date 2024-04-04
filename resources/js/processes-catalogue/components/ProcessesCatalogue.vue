@@ -204,7 +204,6 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      window.history.replaceState(null, null, `/process-browser`);
       this.category = value;
       this.selectedProcess = null;
       this.showCardProcesses = true;
