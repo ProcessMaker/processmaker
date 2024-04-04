@@ -188,7 +188,6 @@ export default {
     checkSelectedProcess() {
       if (this.process) {
         this.process.launchpad = this.launchpad;
-        console.log(this.process, this.launchpad);
         this.openProcess(this.process);
         this.fromProcessList = true;
         const categories = this.process.process_category_id;
