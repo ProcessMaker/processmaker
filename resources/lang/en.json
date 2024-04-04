@@ -2189,5 +2189,6 @@
   "The inbox rule '{{name}}' was created.": "The inbox rule '{{name}}' was created.",
   "The inbox rule '{{name}}' was updated.": "The inbox rule '{{name}}' was updated.",
   "Select a saved search.": "Select a saved search.",
-  "The Name has already been taken.": "The Name has already been taken."
+  "The Name has already been taken.": "The Name has already been taken.",
+  "Clear All Fields In This Form": "Clear All Fields In This Form"
 }
