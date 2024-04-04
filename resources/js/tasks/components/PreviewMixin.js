@@ -202,14 +202,6 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded(iframe) {
-      if (iframe === "tasksFrame1") {
-        this.iframe1ContentWindow.event_parent_id = this._uid;
-      }
-
-      if (iframe === "tasksFrame2") {
-        this.iframe2ContentWindow.event_parent_id = this._uid;
-      }
-
       const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
