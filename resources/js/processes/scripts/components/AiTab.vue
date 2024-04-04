@@ -232,7 +232,7 @@ export default {
             this.promptSessionId = "";
             this.getPromptSession();
           } else {
-            window.ProcessMaker.alert(errorMsg, "danger");
+            console.error(errorMsg);
           }
         });
     },
@@ -314,8 +314,8 @@ export default {
             this.$emit("request-started", this.progress, this.$t("Generating"));
           }
         })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
+        .catch(() => {
+          const errorMsg = this.$t("Replace error message");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -354,7 +354,7 @@ export default {
           }
         })
         .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
+          const errorMsg = this.$t("Replace error message");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -392,12 +392,12 @@ export default {
             this.$emit(
               "request-started",
               this.progress,
-              this.$t("Documenting")
+              this.$t("Documenting"),
             );
           }
         })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
+        .catch(() => {
+          const errorMsg = this.$t("Replace error message");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -438,8 +438,8 @@ export default {
             );
           }
         })
-        .catch((error) => {
-          const errorMsg = error.response?.data?.message || error.message;
+        .catch(() => {
+          const errorMsg = this.$t("Replace error message");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
