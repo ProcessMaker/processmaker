@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Log;
@@ -45,7 +46,9 @@ class SyncScreenTemplates implements ShouldQueue
         try {
             // Fetch configuration from the environment
             $config = config('services.screen_templates_github');
-
+            if (!$config) {
+                return;
+            }
             // Build the URL to fetch the guided templates list from GitHub
             $url = $config['base_url'] . $config['template_repo'] . '/' . $config['template_branch'] . '/index.json';
 
@@ -104,10 +107,18 @@ class SyncScreenTemplates implements ShouldQueue
     private function importTemplate($template, $config, $screenTemplateCategoryId)
     {
         // Configure URLs for the screen
-        $screenUrl = $this->buildTemplateUrl($config, $template['screen']);
+        $screenUrl = $this->buildTemplateUrl($config, $template['screen_template']);
 
         // Get manifests of the exported screen
-        $screenPayload = $this->fetchPayload($screenUrl);
+        $templatePayload = $this->fetchPayload($screenUrl);
+        $rootKey = $templatePayload['root'] ?? null;
+
+        $screenType = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.screen_type") : null;
+        $screenPayload = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.manifest") : null;
+        $screenCustomCss = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.screen_custom_css") : null;
+
+        Arr::set($template, 'template_details.screen_type', $screenType);
+        Arr::set($template, 'template_details.screen_custom_css', $screenCustomCss);
 
         // Update or create the screen template in the database
         try {
@@ -152,8 +163,9 @@ class SyncScreenTemplates implements ShouldQueue
             'screen_type' => $template['template_details']['screen_type'],
             'screen_category_id' => $screenTemplateCategoryId,
             'media_collection' => '',
+            'screen_custom_css' => $template['template_details']['screen_custom_css'],
             'user_id' => null,
-            'manifest' => json_encode($screenPayload),
+            'manifest' => $screenPayload,
             'is_public' => 1,
         ]);
     }
