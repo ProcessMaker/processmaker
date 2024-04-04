@@ -315,7 +315,7 @@ export default {
           }
         })
         .catch(() => {
-          const errorMsg = this.$t("Replace error message");
+          const errorMsg = this.$t("ProcessMaker AI is currently offline. Please try again later.");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -353,8 +353,8 @@ export default {
             this.$emit("request-started", this.progress, this.$t("Cleaning"));
           }
         })
-        .catch((error) => {
-          const errorMsg = this.$t("Replace error message");
+        .catch(() => {
+          const errorMsg = this.$t("ProcessMaker AI is currently offline. Please try again later.");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -397,7 +397,7 @@ export default {
           }
         })
         .catch(() => {
-          const errorMsg = this.$t("Replace error message");
+          const errorMsg = this.$t("ProcessMaker AI is currently offline. Please try again later.");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },
@@ -439,7 +439,7 @@ export default {
           }
         })
         .catch(() => {
-          const errorMsg = this.$t("Replace error message");
+          const errorMsg = this.$t("ProcessMaker AI is currently offline. Please try again later.");
           window.ProcessMaker.alert(errorMsg, "danger");
         });
     },

@@ -140,7 +140,7 @@ export default {
         }).catch((error) => {
           if (error.response.status !== 404) {
             const errorMsg = error.response?.data?.message || error.message;
-            window.ProcessMaker.alert(errorMsg, "danger");
+            console.log(errorMsg);
           }
           this.loadingSuggestions = false;
         });
