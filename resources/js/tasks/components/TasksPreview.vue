@@ -97,7 +97,7 @@
                 >
                   <b-button
                     class="icon-button"
-                    :aria-label="$t('Erase')"
+                    :aria-label="$t('Clear Draft')"
                     variant="light"
                     v-b-tooltip.hover title="Clear Draft"
                     @click="eraseDraft()"
