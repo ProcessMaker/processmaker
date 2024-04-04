@@ -43,7 +43,7 @@ const templatePreviewMixin = {
     handleRowMouseover(row) {
       this.clearHideTimer();
 
-      const tableContainer = document.getElementById("table-container");
+      const tableContainer = document.getElementById(this.tableId);
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
@@ -52,20 +52,12 @@ const templatePreviewMixin = {
       this.isTooltipVisible = true;
       this.tooltipRowData = row;
 
-      const rowElement = document.getElementById(`row-${row.id}`);
+      const rowElement = tableContainer.querySelector(`#row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();
 
-      const selectedFiltersBar = document.querySelector(
-        ".selected-filters-bar",
-      );
-      const selectedFiltersBarHeight = selectedFiltersBar
-        ? selectedFiltersBar.offsetHeight
-        : 0;
-
-      elementHeight -= selectedFiltersBarHeight;
-
       const leftBorderX = rect.left;
-      const topBorderY = rect.top - topAdjust - 203 + elementHeight;
+      // The higher the value added to the topAdjust, the lower the tooltip appears
+      const topBorderY = rect.top - topAdjust + 110 - elementHeight;
 
       this.rowPosition = {
         x: leftBorderX,

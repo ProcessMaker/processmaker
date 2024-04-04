@@ -13,6 +13,7 @@
       data-cy="my-templates-table"
     >
       <filter-table
+        filter-table-id="my-templates-table"
         :headers="fields"
         :data="data"
         :selected-row="selectedRow"
@@ -46,7 +47,7 @@
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          #[`row-${rowIndex}`]
+          v-slot:[`row-${rowIndex}`]
         >
           <td
             v-for="(header, colIndex) in fields"
@@ -91,7 +92,10 @@
                   </b-tooltip>
                 </template>
                 <template v-if="header.field !== 'name'">
-                  <div :style="{ maxWidth: header.width + 'px' }">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                  >
                     {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
@@ -115,10 +119,14 @@
               :previewTemplate="previewTemplate"
             >
               <span>
-                <i
-                  class="fa fa-eye py-2"
+                <b-button
+                  class="icon-button"
+                  variant="light"
+                  :aria-label="$t('Public Screen Template Preview')"
                   @click="previewTemplate(tooltipRowData)"
-                />
+                >
+                  <i class="fas fa-eye py-2" />
+                </b-button>
               </span>
               <ellipsis-menu
                 :actions="myTemplateActions"
@@ -229,6 +237,7 @@ export default {
       selectedRow: 0,
       showTemplatePreview: false,
       selectedTemplate: null,
+      tableId: "my-templates-table",
     };
   },
   created() {
@@ -270,5 +279,11 @@ export default {
 .my-templates-table-card {
   padding: 0;
   border: none;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
 }
 </style>

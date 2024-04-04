@@ -14,6 +14,7 @@ export default {
           label: this.$t("Description"),
           field: "description",
           width: 200,
+          truncate: true,
           sortable: true,
           direction: "none",
           sortField: "description",
