@@ -292,7 +292,7 @@ export default {
             this.promptSessionId = '';
             this.fetchHistory();
           } else {
-            window.ProcessMaker.alert(errorMsg, 'danger');
+            console.error(errorMsg);
           }
         });
     },
