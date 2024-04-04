@@ -268,7 +268,7 @@ export default {
      */
     verifyScreen(process) {
       let screenId = 0;
-      const unparseProperties = this.process.launchpad?.properties || null;
+      const unparseProperties = process.launchpad?.properties || null;
       if (unparseProperties !== null) {
         screenId = JSON.parse(unparseProperties)?.screen_id || 0
       }
