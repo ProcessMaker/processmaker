@@ -5,7 +5,6 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessCategory;
 
 /**
@@ -18,8 +17,6 @@ class ProcessesCatalogueController extends Controller
 {
     public function index(Request $request, Process $process = null)
     {
-        $processLaunchpad = new ProcessLaunchpad();
-        $launchpad = $processLaunchpad::getLaunchpad(true, $process->id);
-        return view('processes-catalogue.index', compact('process', 'launchpad'));
+        return view('processes-catalogue.index', compact('process'));
     }
 }
