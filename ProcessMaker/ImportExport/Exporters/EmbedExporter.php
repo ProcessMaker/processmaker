@@ -7,9 +7,7 @@ use ProcessMaker\Models\Embed;
 
 class EmbedExporter extends ExporterBase
 {
-    public static $fallbackMatchColumn = 'name';
-
-    public $handleDuplicatesByIncrementing = ['name'];
+    public $discard = false;
 
     public function export(): void
     {
@@ -19,9 +17,9 @@ class EmbedExporter extends ExporterBase
 
     public function import(): bool
     {
-        $embedElement = $this->getReference(DependentType::EMBED);
-        $modelWithEmbed = $this->model->model_type::findOrFail($this->model->model_id);
-        //
+        $this->model->value  = $this->getReference(DependentType::EMBED);
+        $this->model->save();
+
         return true;
     }
 }
