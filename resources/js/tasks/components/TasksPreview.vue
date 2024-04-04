@@ -24,6 +24,7 @@
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
               @load="frameLoaded('tasksFrame1')"
+              :event-parent-id="_uid"
             />
             <b-embed
               v-if="showFrame2"
@@ -32,6 +33,7 @@
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
               @load="frameLoaded('tasksFrame2')"
+              :event-parent-id="_uid"
             />
 
             <task-loading
