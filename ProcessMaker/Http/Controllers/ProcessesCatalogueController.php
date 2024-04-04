@@ -17,6 +17,7 @@ class ProcessesCatalogueController extends Controller
 {
     public function index(Request $request, Process $process = null)
     {
-        return view('processes-catalogue.index', compact('process'));
+        $currentUser = \Auth::user();
+        return view('processes-catalogue.index', compact('process' , 'currentUser'));
     }
 }
