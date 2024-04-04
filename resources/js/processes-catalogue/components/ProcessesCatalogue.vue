@@ -50,7 +50,7 @@
             @goBackCategory="returnedFromInfo"
           />
           <ProcessScreen
-            v-if="showProcessScreen && !showCardProcesses"
+            v-if="showProcessScreen && !showCardProcesses && !showWizardTemplates"
             :process="selectedProcess"
             :current-user-id="currentUserId"
             :permission="permission"
