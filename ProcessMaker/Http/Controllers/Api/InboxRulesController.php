@@ -47,7 +47,9 @@ class InboxRulesController extends Controller
     public function show(InboxRule $inboxRule)
     {
         $inboxRuleArray = $inboxRule->toArray();
-        $inboxRuleArray['data'] = (object) $inboxRuleArray['data'];
+        if (empty($inboxRule->data)) {
+            $inboxRuleArray['data'] = (object) [];
+        }
         return new ApiResource($inboxRuleArray);
     }
 
