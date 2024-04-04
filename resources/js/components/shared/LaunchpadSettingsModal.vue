@@ -156,6 +156,7 @@ export default {
         title: this.$t("Default Launchpad Chart"),
       },
       dropdownSavedCharts: [],
+      defaultIcon: "Default Icon",
       dropdownSavedScreen: [],
       processDescription: "",
       processDescriptionInitial: "",
@@ -196,8 +197,8 @@ export default {
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
             this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
-            this.selectedLaunchpadIcon = launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
+            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
             this.selectedScreen = launchpadProperties.screen_title ?? this.defaultScreen.title;
             this.selectedScreenId = launchpadProperties.screen_id ?? this.defaultScreen.id;
             this.selectedScreenUuid = launchpadProperties.screen_uuid ?? this.defaultScreen.uuid;
