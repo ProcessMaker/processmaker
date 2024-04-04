@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
@@ -70,7 +71,7 @@ class SyncScreenTemplates implements ShouldQueue
 
             // Check if the request was successful
             if (!$response->successful()) {
-                throw new Exception('Unable to fetch screen template list.');
+                throw new RequestException('Unable to fetch screen template list.');
             }
 
             // Extract the JSON data from the response
@@ -108,14 +109,17 @@ class SyncScreenTemplates implements ShouldQueue
     {
         // Configure URLs for the screen
         $screenUrl = $this->buildTemplateUrl($config, $template['screen_template']);
-
-        // Get manifests of the exported screen
         $templatePayload = $this->fetchPayload($screenUrl);
         $rootKey = $templatePayload['root'] ?? null;
+        $screenType = null;
+        $screenPayload = null;
+        $screenCustomCss = null;
 
-        $screenType = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.screen_type") : null;
-        $screenPayload = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.manifest") : null;
-        $screenCustomCss = $rootKey ? Arr::get($templatePayload, "export.$rootKey.attributes.screen_custom_css") : null;
+        if ($rootKey) {
+            $screenType = Arr::get($templatePayload, "export.$rootKey.attributes.screen_type");
+            $screenPayload = Arr::get($templatePayload, "export.$rootKey.attributes.manifest");
+            $screenCustomCss = Arr::get($templatePayload, "export.$rootKey.attributes.screen_custom_css");
+        }
 
         Arr::set($template, 'template_details.screen_type', $screenType);
         Arr::set($template, 'template_details.screen_custom_css', $screenCustomCss);
