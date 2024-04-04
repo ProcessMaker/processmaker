@@ -347,7 +347,7 @@
                           </li>
                         @endif
                         <div :class="classStatusCard">
-                          <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
+                          <span style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</span>
                         </div>
                         @if ($request->participants->count())
                           <li class="list-group-item">
@@ -459,13 +459,6 @@
           </div>
         </div>
       @endif
-      <div v-if="panCommentInVueOptionsComponents">
-          <pan-comment commentable_id="{{ $request->getKey() }}"
-                       commentable_type="{{ get_class($request) }}"
-                       :readonly="request.status === 'COMPLETED'"
-                       name="{{ $request->name }}"
-                       />
-      </div>
     </div>
   </div>
 
@@ -599,12 +592,12 @@
         },
         classStatusCard() {
           let header = {
-            'ACTIVE': 'bg-success',
-            'COMPLETED': 'bg-secondary',
-            'CANCELED': 'bg-danger',
-            'ERROR': 'bg-danger',
+            'ACTIVE': 'active-style',
+            'COMPLETED': 'active-style',
+            'CANCELED': 'canceled-style ',
+            'ERROR': 'canceled-style',
           };
-          return 'card-header text-capitalize text-white text-status ' + header[this.request.status.toUpperCase()];
+          return 'card-header text-status ' + header[this.request.status.toUpperCase()];
         },
         labelDate() {
           let label = {
@@ -863,6 +856,15 @@
     align-items: center;
     gap: 16px;
     margin: 16px;
+    color: white;
+    border-radius: 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    text-transform: uppercase;
   }
   .nav-collapse {
     padding: 0 16px;
@@ -891,6 +893,12 @@
     max-width:400px;
     width:317px;
     height:calc(100vh - 215px)
+  }
+  .active-style {
+    background-color: #4ea075;
+  }
+  .canceled-style {
+    background-color: #ed4858;
   }
 </style>
 @endsection

@@ -95,9 +95,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
-        ->name('process.browser.index')
-        ->middleware('can:view-process-catalog');
+    Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
+       ->name('process.browser.index')
+       ->middleware('can:view-process-catalog');
     //------------------------------------------------------------------------------------------
     // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
     //------------------------------------------------------------------------------------------
@@ -152,6 +152,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->name('tasks.index')
         ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::get('tasks/{task}/edit/quickfill', [TaskController::class, 'quickFillEdit'])->name('tasks.edit.quickfill');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
 
     Route::get('tasks/rules/{path?}', [InboxRulesController::class, 'index'])->name('inbox-rules.index')->where('path', '.*');
@@ -162,7 +163,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
     Route::get('template/assets', [TemplateController::class, 'chooseTemplateAssets'])->name('templates.assets');
     Route::get('modeler/templates/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization', 'can:edit-process-templates');
-
+    Route::get('screen-template/{screen}/export', [TemplateController::class, 'export'])->name('screens-template.export')->middleware('can:export-screens');
+    Route::get('screen-template/import', [TemplateController::class, 'importScreen'])->name('screens-template.importScreen')->middleware('can:import-screens');
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {
         return response()->view('errors.404', [], 404);

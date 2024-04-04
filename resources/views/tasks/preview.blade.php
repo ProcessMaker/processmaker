@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -84,7 +83,7 @@
   <div id="sidebar" style="display: 'none'"></div>
   <div id="navbar" style="display: 'none'"></div>
     <div v-cloak id="task" class="container-fluid px-3">
-        <div class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-md-row" id="interactionListener">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
                     <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
@@ -108,7 +107,15 @@
                           @closed="closed"
                           @redirect="redirectToTask"
                           :task-preview="true"
+                          :always-allow-editing="alwaysAllowEditing"
+                          :disable-interstitial="disableInterstitial"
                         ></task>
+                        <data-loading
+                          v-show="showLoading"
+                          :empty="$t('All clear')"
+                          :empty-desc="$t('No new tasks at this moment.')"
+                          empty-icon="noTasks"
+                        />
                     </div>
                 </div>
             </div>
@@ -146,6 +153,7 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
+    const screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -159,6 +167,7 @@
         store: store,
         el: "#task",
         data: {
+          showLoading: true,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -183,6 +192,12 @@
           submitting: false,
           userIsAdmin,
           userIsProcessManager,
+          is_loading: false,
+          autoSaveDelay: 5000,
+          userHasInteracted: false,
+          initialFormDataSet: false,
+          alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
+          disableInterstitial: window.location.search.includes('disableInterstitial=1')
         },
         watch: {
           task: {
@@ -194,8 +209,17 @@
               }
             }
           },
+          screenFilteredData: {
+            deep: true,
+            handler() {
+              this.sendEvent('dataUpdated', this.screenFilteredData);
+            }
+          },
         },
         computed: {
+          screenFilteredData () {
+            return this.filterScreenFields(this.formData);
+          },
           taskDefinitionConfig () {
             let config = {};
             if (this.task.definition && this.task.definition.config) {
@@ -235,6 +259,28 @@
           }
         },
         methods: {
+          filterScreenFields(taskData) {
+            const filteredData = {};
+            screenFields.forEach(field => {
+              _.set(filteredData, field, _.get(taskData, field));
+            });
+            return filteredData;
+          },
+          sendEvent(name, data) {
+              const event = new CustomEvent(name, {
+                detail: {
+                  event_parent_id: window.event_parent_id,
+                  data: data
+                },
+              });
+              window.parent.dispatchEvent(event);
+          },
+          sendUserHasInteracted() {
+            if (!this.userHasInteracted) {
+              this.userHasInteracted = true;
+              this.sendEvent('userHasInteracted', true);
+            }
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
@@ -337,9 +383,13 @@
           updateTask(val) {
             this.$set(this, 'task', val);
           },
-          submit(task) {
-            if (this.isSelfService) {
+          submit(task, loading, buttonInfo) {
+            if (window.location.search.includes('dispatchSubmit=1')) {
+              this.sendEvent('formSubmit', buttonInfo);
+
+            } else if (this.isSelfService) {
               this.windowParent.alert(this.$t('Claim the Task to continue.'), 'warning');
+
             } else {
               if (this.submitting) {
                 return;
@@ -373,14 +423,42 @@
           },
           taskUpdated(task) {
             this.task = task;
-          }
+            this.formData = _.cloneDeep(this.$refs.task.requestData);
+            this.showLoading = false;
+            this.$nextTick(() => {
+              this.sendEvent('readyForFillData', true);
+            });
+          },
+          autosaveApiCall() {
+            return ProcessMaker.apiClient
+            .put("drafts/" + this.task.id, this.formData)
+            .then(() => {
+              this.is_loading = true;
+            })
+            .finally(() => {
+              this.is_loading = false;
+            });
+          },
         },
         mounted() {
           this.prepareData();
-          window.ProcessMaker.isSelfService = this.isSelfService;
+
+          window.addEventListener('fillData', event => {
+            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
+          });
+
+          // listen for keydown on element with id interactionListener
+          const interactionListener = document.getElementById('interactionListener');
+          interactionListener.addEventListener('mousedown', (event) => {
+            this.sendUserHasInteracted();
+          });
+          interactionListener.addEventListener('keydown', (event) => {
+            this.sendUserHasInteracted();
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
+    
     </script>
 
 

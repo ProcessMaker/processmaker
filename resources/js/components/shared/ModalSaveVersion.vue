@@ -4,227 +4,72 @@
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Publish New Version')"
+    :hide-footer="true"
     @ok.prevent="saveModal()"
     @hidden="hideModal()"
   >
-    <div class="form-group">
+    <template
+      v-if="isABTestingInstalled && alternative?.version_b_enabled"
+    >
+      <keep-alive>
+        <component
+          :is="publishVersionComponent"
+          :alternative="alternative"
+          @ab-publish-version="abPublishVersion"
+          @ab-cancel="hideModal()"
+        />
+      </keep-alive>
+    </template>
+    <div
+      v-else
+      class="form-group"
+    >
       <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
       <div>
-        <b-card no-body>
-          <b-tabs card>
-            <button
-              type="button"
-              class="btn btn-custom-button btn-sm position-absolute modeler-save-button custom-button"
-              :style="btnStyle"
-              @click="swapLabel"
-            >
-              <i class="fas fa-book mr-1" />
-              {{ labelButton }}
-            </button>
-            <b-tab :title="labelTab">
-              <b-card v-show="showVersionInfo">
-                <b-row>
-                  <b-col>
-                    <label class="mt-2">
-                      {{ $t("Description of Process") }}
-                    </label>
-                    <textarea
-                      id="additional-details"
-                      v-model="processDescription"
-                      class="form-control"
-                      type="text"
-                      rows="5"
-                      :aria-label="$t('Description')"
-                    />
-                    <span v-if="!processDescription" class="error-message">
-                      {{ $t("The Description field is required.") }}
-                      <br>
-                    </span>
-                    <label class="mt-2">
-                      {{ $t("Launchpad Icon") }}
-                    </label>
-                    <icon-dropdown ref="icon-dropdown" />
-                    <label class="mt-2">{{ $t("Chart") }}</label>
-                    <div class="dropdown">
-                      <button
-                        id="statusDropdown"
-                        class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-                        type="button"
-                        data-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <div class="d-flex align-items-center">
-                          <i class="far fa-chart-bar" />
-                          <span class="ml-2 custom-text">{{ selectedSavedChart || 'Select Chart' }}</span>
-                        </div>
-                      </button>
-                      <div
-                        class="dropdown-menu custom-dropdown"
-                        aria-labelledby="statusDropdown"
-                      >
-                        <a
-                          v-for="(item, index) in dropdownSavedCharts"
-                          :key="index"
-                          class="dropdown-item"
-                          @click="selectOption(item)"
-                        >
-                          <i class="far fa-chart-bar custom-text" />
-                          {{ item.title || 'Select Chart' }}
-                        </a>
-                      </div>
-                    </div>
-                  </b-col>
-                  <b-col>
-                    <div
-                      md="12"
-                      class="no-padding"
-                    >
-                      <div class="d-flex align-items-center w-100 mt-2">
-                        <label>{{ $t("Images for carousel") }}</label>
-                        <input
-                          ref="fileInput"
-                          type="file"
-                          style="display: none"
-                          accept="image/*"
-                          @change="handleImageUpload"
-                        >
-                        <i
-                          class="fas fa-plus-square ml-auto"
-                          style="cursor: pointer"
-                          @click="openFileInput"
-                        />
-                      </div>
-                    </div>
-                    <b-row
-                      ref="thumbnailsContainer"
-                      class="image-thumbnails-container"
-                      @drop="handleDrop"
-                      @dragover.prevent
-                      @dragstart.prevent="handleDragStart"
-                    >
-                      <b-col
-                        v-for="(image, index) in images"
-                        :key="index"
-                        md="6"
-                      >
-                        <div
-                          class="d-flex justify-content-end align-items-end thumbnail"
-                          @mouseover="showDeleteIcon(index)"
-                          @mouseleave="hideDeleteIcon(index)"
-                        >
-                          <div
-                            v-if="showDeleteIcons[index] || focusIcons[index]"
-                            class="m-1 delete-icon"
-                          >
-                            <button
-                              id="popover-button-event"
-                              type="button"
-                              class="btn btn-light p-0 px-1"
-                              @click="focusIcon(index)"
-                            >
-                              <i class="fas fa-trash-alt p-0 custom-color" />
-                            </button>
-                            <b-popover
-                              ref="popover"
-                              :show.sync="focusIcons[index]"
-                              target="popover-button-event"
-                              triggers="focus"
-                              placement="bottom"
-                            >
-                              <div class="p-3">
-                                <p class="text-center">
-                                  {{ $t("Do you really want to delete this image?") }}
-                                </p>
-                                <div class="d-flex justify-content-around">
-                                  <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    @click="unfocusIcon(index)"
-                                  >
-                                    {{ $t("Cancel") }}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="btn btn-danger"
-                                    @click="deleteImage(index)"
-                                  >
-                                    {{ $t("Delete") }}
-                                  </button>
-                                </div>
-                              </div>
-                            </b-popover>
-                          </div>
-                          <img
-                            v-if="image.url"
-                            :src="image.url"
-                            :alt="$t('No Image')"
-                            class="img-fluid"
-                          >
-                        </div>
-                      </b-col>
-                      <b-col
-                        v-if="images.length === 0"
-                        md="12"
-                        class="text-center"
-                      >
-                        <div
-                          class="drag-and-drop-container"
-                          @dragover.prevent
-                        >
-                          <i class="fas fa-cloud-upload-alt" />
-                          <div>
-                            <strong>{{ $t("Drop your images here") }}</strong>
-                          </div>
-                          <div>
-                            {{ $t("Supported formats are PNG and JPG. ") }}
-                          </div>
-                          <b-button
-                            class="btn-custom-button"
-                            @click="openFileInput"
-                          >
-                            {{ $t("Upload Images") }}
-                          </b-button>
-                        </div>
-                      </b-col>
-                    </b-row>
-                  </b-col>
-                </b-row>
-              </b-card>
-              <b-card v-show="!showVersionInfo">
-                <label for="name">{{ $t("Version Name") }} </label>
-                <input
-                  id="name"
-                  v-model="subject"
-                  class="form-control mt-2"
-                  type="text"
-                  name="name"
-                >
-                <div
-                  v-if="errors.subject"
-                  class="invalid-feedback d-block"
-                  role="alert"
-                >
-                  {{ errors.subject[0] }}
-                </div>
-                <label
-                  class="mt-2"
-                  for="additional-details"
-                >
-                  {{ $t("Description") }}
-                </label>
-                <textarea
-                  id="additional-details"
-                  v-model="description"
-                  class="form-control mt-2"
-                  type="text"
-                  rows="8"
-                  :aria-label="$t('Description')"
-                />
-              </b-card>
-            </b-tab>
-          </b-tabs>
-        </b-card>
+        <label for="name">{{ $t("Version Name") }} </label>
+        <input
+          id="name"
+          v-model="subject"
+          class="form-control mt-2"
+          type="text"
+          name="name"
+        >
+        <div
+          v-if="errors.subject"
+          class="invalid-feedback d-block"
+          role="alert"
+        >
+          {{ errors.subject[0] }}
+        </div>
+        <label
+          class="mt-2"
+          for="additional-details"
+        >
+          {{ $t("Description") }}
+        </label>
+        <textarea
+          id="additional-details"
+          v-model="description"
+          class="form-control mt-2"
+          type="text"
+          rows="8"
+          :aria-label="$t('Description')"
+        />
+      </div>
+
+      <hr class="long-hr mt-4 mb-4">
+
+      <div class="d-flex justify-content-end pv-actions">
+        <button class="btn btn-outline-secondary text-uppercase mr-3" @click.prevent="hideModal()">
+          Cancel
+        </button>
+        <button
+          class="btn btn-secondary text-uppercase"
+          data-test="btn-save-publish"
+          @click.prevent="abPublishVersion"
+        >
+          Save and Publish
+        </button>
       </div>
     </div>
   </modal>
@@ -291,9 +136,12 @@ export default {
       btnColorClass: "btn-custom-button",
       isSecondaryColor: false,
       selectedSavedChartId: "",
-      processId: "",
       mediaImageId: [],
       dataProcess: {},
+      // AB Testing
+      isABTestingInstalled: false,
+      publishVersionComponent: null,
+      alternative: null,
     };
   },
   computed: {
@@ -308,6 +156,14 @@ export default {
       this.redirectUrl = redirectUrl;
       this.nodeId = nodeId;
       this.showModal();
+
+      // AB Testing installed
+      this.isABTestingInstalled = ProcessMaker.modeler.abPublish;
+      // AB Testing component
+      if (this.isABTestingInstalled && ProcessMaker?.AbTesting?.PublishVersion) {
+        this.alternative = ProcessMaker?.modeler?.process?.alternative_info;
+        this.publishVersionComponent = ProcessMaker?.AbTesting?.PublishVersion;
+      }
     });
     this.retrieveSavedSearchCharts();
     this.getDescriptionInitial();
@@ -317,6 +173,12 @@ export default {
     this.$root.$on("launchpadIcon", this.launchpadIconSelected);
   },
   methods: {
+    abPublishVersion(alternativeData) {
+      this.subject = alternativeData.subject;
+      this.description = alternativeData.description;
+
+      this.saveModal(alternativeData);
+    },
     /**
      * Get all information related to Launchpad Settings Modal
      */
@@ -515,7 +377,7 @@ export default {
           if(ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
-        } 
+        }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
@@ -611,26 +473,46 @@ export default {
       this.showVersionInfo = true;
       this.isSecondaryColor = false;
     },
-    saveModal() {
+    /**
+     * Method to save modal
+     * @param alternativeData {
+     * publishedVersion: string A|B|AB,
+     * subject: string,
+     * description: string,
+     * } | null - Alternative data from AB Testing
+     *
+     * @returns {Promise<void>}
+     */
+    saveModal(alternativeData = null) {
+      const eventType = this.types[this.options.type];
+
+      let publishedVersion = 'A';
+
+      if (eventType === "modeler-save" && alternativeData) {
+        publishedVersion = alternativeData.publishedVersion;
+      }
+
       // if method is called from ProcessMaker core
       if (this.origin === "core") {
         this.saveFromEditLaunchpad();
         this.dataProcess = this.process;
         this.dataProcess.description = this.processDescription;
-        this.saveProcessDescription();
+        this.saveProcessDescription(publishedVersion);
         return;
       }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
+
       const promise = new Promise((resolve, reject) => {
         // emit save types
         window.ProcessMaker.EventBus.$emit(
-          this.types[this.options.type],
+          eventType,
           this.redirectUrl,
           this.nodeId,
           this.options.type === "Screen" ? (false, resolve) : resolve,
           reject,
-          this.types[this.options.type] === "modeler-save" ? false : null,
+          eventType === "modeler-save" ? false : null,
+          "",
         );
       });
 
@@ -658,10 +540,12 @@ export default {
         });
 
       // Save only process description field using Process API
-      this.saveProcessDescription();
+      this.saveProcessDescription(publishedVersion);
     },
     /**
      * Save description field in Process
+     *
+     * @param {string} publishedVersion
      */
     saveProcessDescription() {
       if (!this.processDescription) return;
@@ -714,7 +598,7 @@ export default {
     saveFromEditLaunchpad() {
       if (!this.processDescription) {
         ProcessMaker.alert(this.$t("The Description field is required."), "danger");
-        return; 
+        return;
       }
       ProcessMaker.apiClient
         .post("/version_histories", {
@@ -862,5 +746,9 @@ $multiselect-height: 38px;
 
 .custom-text {
   font-size: 16px;
+}
+
+.long-hr {
+  margin: auto -24px;
 }
 </style>

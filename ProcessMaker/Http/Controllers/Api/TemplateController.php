@@ -10,7 +10,6 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
-use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -40,7 +39,7 @@ class TemplateController extends Controller
      * Get list Process Templates
      *
      * @param string $type
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return TemplateCollection
      */
     public function index(string $type, Request $request)
@@ -63,7 +62,7 @@ class TemplateController extends Controller
      * Store a newly created template
      *
      * @param string $type
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(string $type, Request $request)
@@ -124,15 +123,13 @@ class TemplateController extends Controller
             $template = ProcessTemplates::select()->find($request->id);
             $changes = $request->all();
             $original = array_intersect_key($template->getOriginal(), $changes);
-            //Call event to log Template Config changes
+            // Call event to log Template Config changes
             TemplateUpdated::dispatch($changes, $original, false, $template);
         } elseif ($type === 'screen') {
             $template = ScreenTemplates::select()->find($request->id);
         }
 
-        $response = $this->template->updateTemplateConfigs($type, $request);
-
-        return $response;
+        return $this->template->updateTemplateConfigs($type, $request);
     }
 
     /**
@@ -156,7 +153,7 @@ class TemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \ProcessMaker\Models\Template  $template
+     * @param  Template  $template
      * @return \Illuminate\Http\Response
      */
     public function delete(string $type, Request $request)
@@ -188,12 +185,23 @@ class TemplateController extends Controller
     /**
      * Set a template as a Public Template
      *
-     * @param  \ProcessMaker\Models\Template  $template
+     * @param  Template  $template
      * @return \Illuminate\Http\Response
      */
     public function publishTemplate(string $type, Request $request)
     {
         return $this->template->publishTemplate($type, $request);
+    }
+
+    /**
+     * Delete media from the template
+     *
+     * @param  Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteMediaImages(string $type, Request $request)
+    {
+        return $this->template->deleteMediaImages($type, $request);
     }
 
     private function validateImportedFile($content, $request)
@@ -246,7 +254,7 @@ class TemplateController extends Controller
 
     protected function createProcess(Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types['process'][4]));
+        $request->validate(Process::rules($request->id));
         $postOptions = $this->checkIfAssetsExist($request);
 
         if (!empty($postOptions)) {
@@ -270,7 +278,7 @@ class TemplateController extends Controller
 
     protected function createScreen(Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types['screen'][4]));
+        $request->validate(Screen::rules($request->id));
         $response = $this->template->create('screen', $request);
 
         if ($request->has('projects')) {

@@ -20,7 +20,7 @@
         <i class="type-icon-placeholder pr-3" :class="props.option.icon" />
         <span class="type-desc">
           <span class="type-title-placeholder">{{ props.option.typeHuman }}</span>
-          <span class="type-desc-placeholder">{{ props.option.description }}</span>
+          <span v-if="!hideDescription" class="type-desc-placeholder">{{ props.option.description }}</span>
         </span>
       </div>
     </template>
@@ -29,7 +29,7 @@
         <i class="type-icon p-3" :class="props.option.icon" />
         <span class="type-desc">
           <span class="type-title-option">{{ props.option.typeHuman }}</span>
-          <span class="type-desc-option">{{ props.option.description }}</span>
+          <span v-if="!hideDescription" class="type-desc-option">{{ props.option.description }}</span>
         </span>
       </div>
     </template>
@@ -39,7 +39,7 @@
 <script>
 
 export default {
-  props: ["copyAssetMode", "screenTypes"],
+  props: ["value", "copyAssetMode", "screenTypes", "hideDescription"],
   data() {
     return {
       isDisabled: false,
@@ -115,7 +115,10 @@ export default {
       this.isDisabled = true;
     }
 
-    this.selectedType.type = "FORM";
+     // Find the matching value in screenTypeOptions or default to FORM
+     if (this.value) {
+      this.selectedType = this.screenTypeOptions.find(item => item.type === this.value);
+     }
     this.$emit("input", this.selectedType.type);
   },
   methods: {

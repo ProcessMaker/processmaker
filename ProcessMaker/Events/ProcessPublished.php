@@ -98,4 +98,14 @@ class ProcessPublished implements SecurityLogEventInterface
     {
         return 'ProcessUpdated';
     }
+
+    /**
+     * Get the Process
+     *
+     * @return Process
+     */
+    public function getProcess(): Process
+    {
+        return $this->process;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
@@ -19,6 +20,10 @@ use StdClass;
 
 class Task extends ApiResource
 {
+    private $loadedData = null;
+
+    private static $screenFields = [];
+
     /**
      * Transform the resource into an array.
      *
@@ -31,8 +36,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $task = $this->resource->loadTokenInstance();
-            $array['data'] = $dataManager->getData($task);
+            $array['data'] = $this->getData();
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -43,9 +47,13 @@ class Task extends ApiResource
         if (in_array('processRequest', $include)) {
             $array['process_request'] = new Users($this->processRequest);
         }
+        if (in_array('draft', $include)) {
+            $array['draft'] = $this->draft;
+        }
 
         $parentProcessRequest = $this->processRequest->parentRequest;
         $array['can_view_parent_request'] = $parentProcessRequest && $request->user()->can('view', $parentProcessRequest);
+        $process = Process::findOrFail($this->processRequest->process_id);
 
         if (in_array('component', $include)) {
             $array['component'] = $this->getScreenVersion() ? $this->getScreenVersion()->parent->renderComponent() : null;
@@ -65,7 +73,6 @@ class Task extends ApiResource
 
             if ($array['screen']) {
                 // Apply translations to screen
-                $process = Process::findOrFail($this->processRequest->process_id);
                 $processTranslation = new ProcessTranslation($process);
                 $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
 
@@ -98,6 +105,12 @@ class Task extends ApiResource
         if (in_array('interstitial', $include)) {
             $interstitial = $this->getInterstitial();
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
+
+            // Translate interstitials
+            $processTranslation = new ProcessTranslation($process);
+            $translatedConf = $processTranslation->applyTranslations($interstitial['interstitial_screen']);
+            $interstitial['interstitial_screen']['config'] = $translatedConf;
+
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
         if (in_array('userRequestPermission', $include)) {
@@ -185,5 +198,17 @@ class Task extends ApiResource
         }
 
         return $assignedUsers;
+    }
+
+    private function getData()
+    {
+        if ($this->loadedData) {
+            return $this->loadedData;
+        }
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $this->loadedData = $dataManager->getData($task);
+
+        return $this->loadedData;
     }
 }

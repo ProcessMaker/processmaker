@@ -12,6 +12,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ScreenTemplates extends Template implements HasMedia
 {
@@ -22,6 +23,10 @@ class ScreenTemplates extends Template implements HasMedia
     use InteractsWithMedia;
 
     protected $table = 'screen_templates';
+
+    protected $appends = [
+        'template_media',
+    ];
 
     const categoryClass = ScreenCategory::class;
 
@@ -188,19 +193,37 @@ class ScreenTemplates extends Template implements HasMedia
         return $query;
     }
 
+    /**
+     * Get the associated thumbnails for the given screen template
+     */
     public function getTemplateMediaAttribute()
     {
         $mediaCollectionName = 'st-' . $this->uuid . '-media';
+
+        // Get preview thumbs
         $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
-        $previewThumbsUrls = $previewThumbs->map(function ($slide) {
-            return $slide->getFullUrl();
-        });
+        $previewThumbsUrls = $previewThumbs->pluck('url')->all();
+
+        // Get thumbnail media
         $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
 
-        return [
-            'thumbnail' => !is_null($thumbnailMedia) ? $thumbnailMedia->getFullUrl() : '',
-            'previewThumbs' => $previewThumbsUrls,
-        ];
+        // If thumbnail media is not found and no preview thumbs are available,
+        // get any media associated with the template
+        if (is_null($thumbnailMedia) && empty($previewThumbsUrls)) {
+            $allMedia = $this->getMedia($mediaCollectionName);
+
+            return $allMedia->map(function ($media) {
+                $media->url = $media->getFullUrl();
+
+                return $media;
+            })->all();
+        } else {
+            // Return thumbnail and preview thumbs URLs
+            return [
+                'thumbnail' => $thumbnailMedia ? $thumbnailMedia->getFullUrl() : '',
+                'previewThumbs' => $previewThumbsUrls,
+            ];
+        }
     }
 
     /**
@@ -214,5 +237,17 @@ class ScreenTemplates extends Template implements HasMedia
         foreach ($files as $file) {
             $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
         }
+    }
+
+    /**
+     * Listen for the deleting event on a ScreenTemplate
+     * instance and delete any associated Screen if exists
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($screenTemplate) {
+            Screen::where('uuid', $screenTemplate->editing_screen_uuid)->delete();
+        });
     }
 }

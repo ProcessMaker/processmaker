@@ -2,10 +2,10 @@
   <div>
     <slot name="top-content"></slot>
 
-    <FilterTable v-show="!shouldShowLoader"
-                 ref="filterTable"
+    <FilterTable ref="filterTable"
                  :headers="headers"
-                 :data="data"
+                 :data="data?data:defaultData"
+                 :loading="shouldShowLoader"
                  @table-row-mouseover="tableRowMouseover"
                  @table-tr-mouseleave="(row, rowIndex) => $emit('onTrMouseleave', row, rowIndex)">
       <template v-for="header in headers" v-slot:[getSlotName(header.field)]="slotProps">
@@ -13,18 +13,28 @@
       </template>
     </FilterTable>
 
-    <data-loading v-show="shouldShowLoader"
-                  :for="/rule-execution-log/"
-                  :empty="empty"
-                  :empty-desc="emptyDesc"
-                  :empty-icon="emptyIcon"
-                  ref="dataLoading"
-                  >
-    </data-loading>
+    <DataLoading v-show="shouldShowLoader"
+                 :for="new RegExp(baseURL)"
+                 :empty="empty"
+                 :empty-desc="emptyDesc"
+                 :empty-icon="emptyIcon">
+      <template v-slot:no-results>
+        <slot name="no-results"></slot>
+      </template>
+      <template v-slot:no-results-title>
+        <slot name="no-results-title"></slot>
+      </template>
+      <template v-slot:no-results-image>
+        <slot name="no-results-image"></slot>
+      </template>
+      <template v-slot:no-results-message>
+        <slot name="no-results-message"></slot>
+      </template>
+    </DataLoading>
 
-    <pagination-table :meta="data.meta"
-                      @page-change="changePage">
-    </pagination-table>
+    <PaginationTable :meta="data?.meta"
+                     @page-change="changePage">
+    </PaginationTable>
   </div>
 </template>
 
@@ -47,9 +57,11 @@
       empty: null,
       emptyDesc: null,
       emptyIcon: null,
+      baseURL: null
     },
     data() {
       return {
+        defaultData: {data: [], meta: []}
       };
     },
     methods: {
@@ -64,7 +76,7 @@
         return `cell-${field}`;
       },
       changePage(page) {
-        this.$emit('page-change', page);
+        this.$emit('onPageChange', page);
       }
     }
   }

@@ -375,9 +375,14 @@ export default {
       const params = {
         language: this.selectedLanguage,
         processId: this.processId,
-        screenId: this.selectedScreen.id,
+        manualTranslation: this.manualTranslation,
+        promptSessionId: this.getPromptSessionForUser(),
+        nonce: localStorage.getItem("currentNonce"),
+        includeImages: true,
+        justStored: false,
         option,
-      };
+      }
+
       ProcessMaker.apiClient.post("/package-ai/language-translation", params)
         .then((response) => {
           this.screensTranslations = response.data.screensTranslations;

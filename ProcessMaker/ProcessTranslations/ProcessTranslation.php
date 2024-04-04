@@ -319,7 +319,7 @@ class ProcessTranslation
                 // Specific for Select list
                 if ($item['component'] === 'FormSelectList') {
                     if (isset($item['config']) && isset($item['config']['options']) && isset($item['config']['options']['optionsList'])) {
-                        foreach ($item['config']['options']['optionsList'] as $option) {
+                        foreach ($item['config']['options']['optionsList'] as &$option) {
                             if ($option['content'] === $key) {
                                 $option['content'] = $translatedString;
                             }
@@ -438,10 +438,6 @@ class ProcessTranslation
         if ($processTranslationToken) {
             $token = $processTranslationToken->token;
             $processTranslationToken->delete();
-
-            // Cancel pending batch jobs
-            $batch = Bus::findBatch($token);
-            $batch->cancel();
         }
 
         return true;
