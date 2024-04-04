@@ -225,6 +225,7 @@
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame1')"
             />
             <b-embed
@@ -233,6 +234,7 @@
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame2')"
             />
 

@@ -269,7 +269,7 @@
           sendEvent(name, data) {
               const event = new CustomEvent(name, {
                 detail: {
-                  event_parent_id: window.event_parent_id,
+                  event_parent_id: Number(window.frameElement.getAttribute('event-parent-id')),
                   data: data
                 },
               });
