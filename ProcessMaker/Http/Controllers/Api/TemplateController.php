@@ -24,8 +24,20 @@ class TemplateController extends Controller
     use ProjectAssetTrait;
 
     protected array $types = [
-        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
-        'screen' => [Screen::class, ScreenTemplate::class, ScreenCategory::class, 'screen_category_id', 'screen_templates'],
+        'process' => [
+            Process::class,
+            ProcessTemplates::class,
+            ProcessCategory::class,
+            'process_category_id',
+            'process_templates',
+        ],
+        'screen' => [
+            Screen::class,
+            ScreenTemplates::class,
+            ScreenCategory::class,
+            'screen_category_id',
+            'screen_templates',
+        ],
     ];
 
     private $template;
@@ -254,7 +266,7 @@ class TemplateController extends Controller
 
     protected function createProcess(Request $request)
     {
-        $request->validate(Process::rules($request->id));
+        $request->validate(Template::rules($request->id, $this->types['process'][4]));
         $postOptions = $this->checkIfAssetsExist($request);
 
         if (!empty($postOptions)) {

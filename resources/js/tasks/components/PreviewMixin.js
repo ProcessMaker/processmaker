@@ -40,6 +40,10 @@ const PreviewMixin = {
       size: 50,
       screenWidthPx: 0,
       ellipsisButton: false,
+      selectedUser: [],
+      showReassignment: false,
+      taskDefinition: {},
+      user: {},
       actions: [
         {
           value: "clear-draft",

@@ -18,6 +18,7 @@ use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
+use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
 use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
@@ -160,6 +161,15 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('bookmarks.store')->middleware($middlewareCatalog);
     Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])
         ->name('bookmarks.destroy')->middleware($middlewareCatalog);
+    // Process Launchpad
+    Route::get('process_launchpad/{process}', [ProcessLaunchpadController::class, 'index'])
+        ->name('launchpad.index')->middleware($middlewareCatalog);
+    Route::put('process_launchpad/{process}', [ProcessLaunchpadController::class, 'store'])
+        ->name('launchpad.store')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{process}', [ProcessLaunchpadController::class, 'destroy'])
+        ->name('launchpad.destroy')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{process}/embed', [ProcessLaunchpadController::class, 'deleteEmbed'])
+        ->name('launchpad.destroy-embed')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -203,6 +213,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
+    Route::get('requests/{process}/default-chart', [ProcessRequestController::class, 'getDefaultChart'])->name('requests.default.chart');
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
@@ -314,7 +325,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
-    Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('template.show')->middleware('can:edit-screen-templates');
+    Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');

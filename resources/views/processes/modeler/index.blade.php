@@ -95,8 +95,6 @@ div.main {
     abPublish: @json($abPublish),
     alternative: @json($alternative),
     draftAlternative: @json($draftAlternative),
-    startingPoints: @json($startingPoints),
-    resumePoints: @json($resumePoints),
   }
   const warnings = @json($process->warnings);
 

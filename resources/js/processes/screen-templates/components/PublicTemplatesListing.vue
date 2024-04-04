@@ -3,7 +3,7 @@
   <div class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/screens/"
+      :for="/\/screens\?/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -18,6 +18,7 @@
         :headers="fields"
         :data="data"
         :selected-row="selectedRow"
+        :loading="shouldShowLoader"
         table-name="public-screen-templates"
         style="height: calc(100vh - 355px)"
         @table-row-mouseover="handleRowMouseover"
@@ -258,6 +259,7 @@ export default {
   methods: {
     fetch() {
       this.loading = true;
+      this.apiDataLoading = true;
       // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
@@ -271,7 +273,12 @@ export default {
         )
         .then((response) => {
           this.data = this.transform(response.data);
+          this.apiDataLoading = false;
+          this.apiNoResults = false;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
   },

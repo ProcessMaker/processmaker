@@ -2,7 +2,7 @@
   <div class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/screens/"
+      :for="/\/screens\?/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
@@ -16,6 +16,7 @@
         filter-table-id="my-templates-table"
         :headers="fields"
         :data="data"
+        :loading="shouldShowLoader"
         :selected-row="selectedRow"
         table-name="my-screen-templates"
         style="height: calc(100vh - 355px)"
@@ -246,11 +247,13 @@ export default {
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
+      this.loading = false;
     });
   },
   methods: {
     fetch() {
       this.loading = true;
+      this.apiDataLoading = true;
       // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
@@ -265,6 +268,10 @@ export default {
         .then((response) => {
           this.data = this.transform(response.data);
           this.loading = false;
+          this.apiDataLoading = false;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     },
   },

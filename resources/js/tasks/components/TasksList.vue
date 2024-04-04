@@ -183,7 +183,11 @@
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
         :data-loading-id="dataLoadingId"
-      />
+        >
+        <template v-slot:no-results>
+          <slot name="no-results"></slot>
+        </template>
+      </data-loading>
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
@@ -279,6 +283,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    openQuickFillFromRow: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -364,6 +372,7 @@ export default {
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
+          record["process_obj"] = record["process"];
           record["process"] = this.formatProcess(record);
           record["task_name"] = this.formatActiveTask(record);
         }
@@ -542,8 +551,8 @@ export default {
       }
       return link;
     },
-    previewTasks(info, size = null) {
-      this.tooltipFromButton = size;
+    previewTasks(info, size = null, fromButton = null) {
+      this.tooltipFromButton = fromButton;
       this.selectedRow = info.id;
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
@@ -617,9 +626,20 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if (!isPriorityIcon && !this.disableRowClick) {
-        window.location.href = this.openTask(row);
+      if(this.fromButton === 'previewTask') {
+        return this.previewTasks(this.tooltipRowData, 93);
       }
+      if(this.fromButton === 'fullTask') {
+        return this.previewTasks(this.tooltipRowData, 50);
+      }
+      if(this.fromButton === 'inboxRules') {
+        return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
+      }  
+        if (!isPriorityIcon && !this.disableRowClick) {
+          window.location.href = this.openTask(row);
+        }
+      
+      
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
@@ -645,12 +665,16 @@ export default {
 
       elementHeight -= selectedFiltersBarHeight;
 
-      const rightBorderX = rect.right;
+      let rightBorderX = rect.right;
       let bottomBorderY = 0
       if(this.fromButton === "" || this.fromButton === "previewTask"){
         bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
-      }else{
+      }
+      if(this.fromButton === "fullTask"){
         bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+      }
+      if(this.fromButton === "inboxRules"){
+        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,
