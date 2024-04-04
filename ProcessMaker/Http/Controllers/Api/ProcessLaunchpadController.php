@@ -91,17 +91,31 @@ class ProcessLaunchpadController extends Controller
         }
     }
 
+    public function getMedia(Request $request, Process $process)
+    {
+        $media = Media::where('model_id', $process->id)->get();
+
+        return new ApiResource($media);
+    }
+
+    public function deleteMedia(Request $request, Process $process)
+    {
+        // Get key
+        $key = $request->input('id');
+        Media::destroy($key);
+    }
+
+    public function getEmbed(Request $request, Process $process)
+    {
+        $embed = Embed::where('model_id', $process->id)->get();
+
+        return new ApiResource($embed);
+    }
+
     public function deleteEmbed(Request $request, Process $process)
     {
-        // Get UUID in the table
-        $uuid = $request->input('uuid');
-
-        $embedUrl = Embed::where('uuid', $uuid)
-            ->first();
-
-        // Check if embed before delete
-        if ($embedUrl) {
-            $embedUrl->delete();
-        }
+        // Get key
+        $key = $request->input('id');
+        Embed::destroy($key);
     }
 }
