@@ -47,7 +47,7 @@ const PreviewMixin = {
       actions: [
         {
           value: "clear-draft",
-          content: "Clear Task",
+          content: "Clear Draft",
           image: "/img/smartinbox-images/eraser.svg",
         },
         {
