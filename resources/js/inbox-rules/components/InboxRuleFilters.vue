@@ -95,7 +95,7 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
-      }
+      },
     },
     data() {
       return {

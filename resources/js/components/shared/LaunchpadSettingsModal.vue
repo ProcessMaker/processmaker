@@ -155,6 +155,7 @@ export default {
         id: 0,
         title: this.$t("Default Launchpad Chart"),
       },
+      defaultIcon: "Default Icon",
       dropdownSavedCharts: [],
       dropdownSavedScreen: [],
       processDescription: "",
@@ -190,13 +191,13 @@ export default {
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
           const firstResponse = response.data.shift();
-          const unParseLaunchpadoperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unParseLaunchpadoperties ? JSON.parse(unParseLaunchpadoperties) : '';
+          const unparseProperties = firstResponse?.launchpad?.properties;
+          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : '';
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
             this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
-            this.selectedLaunchpadIcon = launchpadProperties.icon;
-            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label;
+            this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
+            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
             this.selectedScreen = launchpadProperties.screen_title ?? this.defaultScreen.title;
             this.selectedScreenId = launchpadProperties.screen_id ?? this.defaultScreen.id;
             this.selectedScreenUuid = launchpadProperties.screen_uuid ?? this.defaultScreen.uuid;
