@@ -64,6 +64,7 @@
                     v-if="propFromButton === 'inboxRules'"
                     class="button-task mr-2"
                     variant="primary"
+                    :disabled="isDisabled"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
                   >
@@ -90,6 +91,7 @@
                   <b-button
                     v-if="propFromButton === 'previewTask'"
                     class="button-task mr-2"
+                    :disabled="isDisabledQuick"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
@@ -103,6 +105,7 @@
                   <b-button
                     v-if="propFromButton === 'fullTask'"
                     class="button-task mr-2"
+                    :disabled="isDisabled"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisDataFromFullTask(screenFilteredTaskData)"
@@ -163,9 +166,10 @@
 </template>
 <script>
 export default {
-  props: ["task", "propColumns", "propFilters", "propFromButton"],
+  props: ["task", "propColumns", "propFilters", "propFromButton", "isDisabled"],
   data() {
     return {
+      isDisabledQuick: true,
       processName: "",
       selectedRowQuick: 0,
       fromQuickFill: true,
@@ -230,6 +234,9 @@ export default {
     if (this.propColumns.length > 0) {
       this.columns = this.propColumns;
     }
+    this.$root.$on('disable-button', (val) => {
+      this.isDisabledQuick = false;
+    });
   },
   methods: {
     verifyURL(string) {

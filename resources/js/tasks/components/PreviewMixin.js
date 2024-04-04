@@ -1,6 +1,7 @@
 const PreviewMixin = {
   data() {
     return {
+      isDisabled: true,
       tooltipFromButton: "",
       showPreview: false,
       showRight: true,
@@ -202,6 +203,8 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded(iframe) {
+      this.isDisabled = false;
+      this.$root.$emit('disable-button', this.isDisabled);
       if (iframe === "tasksFrame1") {
         this.iframe1ContentWindow.event_parent_id = this._uid;
       }

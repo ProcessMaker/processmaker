@@ -249,6 +249,7 @@
             :prop-from-button ="'previewTask'"
             :prop-columns="propColumns"
             :prop-filters="propFilters"
+            :is-disabled="isDisabled"
             @quick-fill-data="fillWithQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
@@ -307,6 +308,11 @@ export default {
       this.userHasInteracted = true;
     });
 
+    this.$root.$on('disable-button', (val) => {
+      if(this.tooltipButton === 'previewTask') {
+        this.isDisabled = val;
+      }
+    });
     this.$root.$on('pane-size', (value) => {
       this.size = value;
     });

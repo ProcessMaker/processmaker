@@ -34,6 +34,7 @@
     class="quick-fill-preview"
     :task="{{ $task }}"
     :prop-from-button ="'fullTask'"
+    :is-disabled="isDisabled"
     :prop-columns="columns"
     :prop-filters="filters"
     ></quick-fill-preview>
@@ -48,6 +49,7 @@
       store: store,
       el: "#quickfill",
       data: {
+          isDisabled: true,
           data: {},
           filters: {
             order: { by: "created_at", direction: "desc" },
@@ -123,6 +125,11 @@
             width: 140,
           }
         ],
+      },
+      mounted () {
+        this.$root.$on('disable-button', (val) => {
+          this.isDisabled = val;
+        });
       },
     });
 </script>
