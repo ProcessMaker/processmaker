@@ -18,8 +18,11 @@ class ProcessesCatalogueController extends Controller
 {
     public function index(Request $request, Process $process = null)
     {
-        $processLaunchpad = new ProcessLaunchpad();
-        $launchpad = $processLaunchpad::getLaunchpad(true, $process->id);
+        $launchpad = null;
+        if (!is_null($process)) {
+            $processLaunchpad = new ProcessLaunchpad();
+            $launchpad = $processLaunchpad::getLaunchpad(true, $process->id);
+        }
         return view('processes-catalogue.index', compact('process', 'launchpad'));
     }
 }
