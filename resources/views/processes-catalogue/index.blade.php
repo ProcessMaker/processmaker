@@ -23,4 +23,7 @@
 
 @section('js')
   <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
+  <script>
+    window.Processmaker.user = @json($currentUser);
+  </script>
 @endsection
