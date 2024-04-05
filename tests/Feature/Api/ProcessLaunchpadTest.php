@@ -3,7 +3,6 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\User;
@@ -29,6 +28,7 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testGetProcessLaunchpad()
     {
+        ProcessLaunchpad::query()->delete();
         // Create data
         $process = Process::factory()->create();
         // Call the api GET
@@ -39,7 +39,7 @@ class ProcessLaunchpadTest extends TestCase
         // Create data related with the auth user
         $user = Auth::user();
         $process = Process::factory()->create();
-        ProcessLaunchpad::factory()->count(10)->create([
+        ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
             'user_id' => $user->id,
         ]);
@@ -48,6 +48,9 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
+        $this->assertArrayHasKey('launchpad', $response);
+        $this->assertArrayHasKey('embed', $response);
+        $this->assertArrayHasKey('media', $response);
     }
 
     /**
@@ -55,10 +58,17 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testStoreProcessLaunchpad()
     {
+        ProcessLaunchpad::query()->delete();
         // Create data
         $process = Process::factory()->create();
+        ProcessLaunchpad::factory()->create([
+            'process_id' => $process->id,
+            'user_id' => $user->id,
+        ]);
         // Call the api PUT
-        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $process->id, ['properties' => '']);
+        $values = json_encode(["icon" => "fa-user"]);
+        $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $process->id, ['properties' => $values]);
+        $this->assertArrayHasKey('properties', $response);
         // Validate the header status code
         $response->assertStatus(200);
     }
@@ -68,6 +78,7 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testDeleteProcessLaunchpad()
     {
+        ProcessLaunchpad::query()->delete();
         // Create data
         $launchpad = ProcessLaunchpad::factory()->create();
         // Call the api DELETE
@@ -77,33 +88,5 @@ class ProcessLaunchpadTest extends TestCase
         // Review if the item was deleted
         $result = ProcessLaunchpad::where('id', $launchpad->id)->get()->toArray();
         $this->assertCount(0, $result);
-    }
-
-    /**
-     * Test get  media
-     */
-    public function testGetMedia()
-    {
-        // Create data
-        $process = Process::factory()->create();
-        // Call the api GET
-        $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id . '/media');
-        // Validate the header status code
-        $response->assertStatus(200);
-        $this->assertEmpty($response);
-    }
-
-    /**
-     * Test get embed
-     */
-    public function testGetEmbed()
-    {
-        // Create data
-        $process = Process::factory()->create();
-        // Call the api GET
-        $response = $this->apiCall('GET', self::API_TEST_URL .'/' . $process->id . '/embed');
-        // Validate the header status code
-        $response->assertStatus(200);
-        $this->assertEmpty($response);
     }
 }

@@ -168,14 +168,6 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         ->name('launchpad.store')->middleware($middlewareCatalog);
     Route::delete('process_launchpad/{process}', [ProcessLaunchpadController::class, 'destroy'])
         ->name('launchpad.destroy')->middleware($middlewareCatalog);
-    Route::get('process_launchpad/{process}/media', [ProcessLaunchpadController::class, 'getMedia'])
-        ->name('launchpad.media')->middleware($middlewareCatalog);
-    Route::delete('process_launchpad/{process}/media', [ProcessLaunchpadController::class, 'deleteMedia'])
-        ->name('launchpad.destroy-media')->middleware($middlewareCatalog);
-    Route::get('process_launchpad/{process}/embed', [ProcessLaunchpadController::class, 'getEmbed'])
-        ->name('launchpad.embed')->middleware($middlewareCatalog);
-    Route::delete('process_launchpad/{process}/embed', [ProcessLaunchpadController::class, 'deleteEmbed'])
-        ->name('launchpad.destroy-embed')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');

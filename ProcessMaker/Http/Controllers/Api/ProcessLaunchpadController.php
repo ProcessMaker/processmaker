@@ -22,7 +22,9 @@ class ProcessLaunchpadController extends Controller
             ->with(['media' => function ($query) {
                 $query->orderBy('order_column', 'asc');
             }])
-            ->with('embed')
+            ->with(['embed' => function ($query) {
+                $query->orderBy('order_column', 'asc');
+            }])
             ->where('id', $process->id)
             ->get()
             ->collect();
@@ -89,33 +91,5 @@ class ProcessLaunchpadController extends Controller
 
             }
         }
-    }
-
-    public function getMedia(Request $request, Process $process)
-    {
-        $media = Media::where('model_id', $process->id)->get();
-
-        return new ApiResource($media);
-    }
-
-    public function deleteMedia(Request $request, Process $process)
-    {
-        // Get key
-        $key = $request->input('id');
-        Media::destroy($key);
-    }
-
-    public function getEmbed(Request $request, Process $process)
-    {
-        $embed = Embed::where('model_id', $process->id)->get();
-
-        return new ApiResource($embed);
-    }
-
-    public function deleteEmbed(Request $request, Process $process)
-    {
-        // Get key
-        $key = $request->input('id');
-        Embed::destroy($key);
     }
 }
