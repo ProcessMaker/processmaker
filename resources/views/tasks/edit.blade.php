@@ -211,11 +211,10 @@
                               <button
                                 type="button"
                                 class="btn btn-block button-actions"
-                                v-b-tooltip.hover title="Erase Draft"
                                 @click="eraseDraft()"
                               >
                                 <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                                {{ __('Clear Task') }}
+                                {{ __('Clear Draft') }}
                               </button>
                             </li>
                             <div :class="statusCard">

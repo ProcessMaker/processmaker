@@ -12,8 +12,8 @@
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="savedSearchIdSelected"
             @saved-search-id-changed="savedSearchIdSelected = $event"
-            @showColumns="showColumns"
-            @reset-filters="resetFilters">
+            @showColumns="$refs.inboxRuleFilters.showColumns()"
+            @reset-filters="$refs.inboxRuleFilters.resetFilters()">
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
@@ -36,7 +36,8 @@
             <button
               type="button"
               class="button-actions"
-              v-b-tooltip.hover title="Erase Draft"
+              v-b-tooltip.hover
+              :title="$t('Clear All Fields In This Form')"
               @click="eraseQuickFill()"
               >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
@@ -235,28 +236,25 @@
         element_id: this.elementId,
         id: this.newTaskId
       };
-    
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
       }
       if (this.ruleId) {
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
-          .then(response => {
-            this.inboxRule = response.data;
-            this.submitButton = this.inboxRule.submit_button;
-            this.data = this.inboxRule.data;
-            this.taskId = this.inboxRule.process_request_token_id;
-
-            if(this.task.process_id === null){
-              this.getTask(this.taskId); 
-            }
-          });
-        
+                .then(response => {
+                  this.inboxRule = response.data;
+                  this.submitButton = this.inboxRule.submit_button;
+                  this.data = this.inboxRule.data;
+                  this.taskId = this.inboxRule.process_request_token_id;
+                  if (this.taskId) {
+                    this.getTask(this.taskId);
+                  }
+                });
       }
     },
     methods: {
       getTask(taskId) {
-        if (this.task.process_id === null){
+        if (this.task.process_id === null) {
           ProcessMaker.apiClient.get("tasks/" + taskId)
                   .then(response => {
                     this.task = response.data;
@@ -264,7 +262,7 @@
         }
       },
       eraseQuickFill() {
-        this.propInboxData = {};
+        this.$refs.inboxRuleFillData.eraseData();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
@@ -276,22 +274,9 @@
         const isInUrl = currentUrl.includes(string);
         return isInUrl;
       },
-      showColumns() {
-        this.$refs.inboxRuleFilters.showColumns();
-      },
-      resetFilters() {
-        this.$refs.inboxRuleFilters.resetFilters();
-      },
       resetData() {
         this.data = null;
         this.$refs.inboxRuleFillData.reload();
-      }
-    },
-    watch: {
-      inboxRule: {
-        deep: true,
-        handler() {
-        }
       }
     }
   };
