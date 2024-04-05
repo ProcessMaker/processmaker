@@ -386,6 +386,7 @@ class Setting extends ProcessMakerModel implements HasMedia
             ->select('group')
             ->groupBy('group')
             ->where('group_id', $menuId)
+            ->orderBy('group', 'ASC')
             ->notHidden()
             ->pluck('group');
         $response = $query->toArray();

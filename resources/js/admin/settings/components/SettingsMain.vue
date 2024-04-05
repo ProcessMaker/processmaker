@@ -46,29 +46,10 @@ export default {
       this.setListingKey += 1;
     },
     refresh() {
-      this.apiGet().then((response) => {
-        response.data.data.forEach((group) => {
-          if (!this.groups.includes(group.group)) {
-            this.groups.push(group.group);
-          }
-        });
-        this.groups.forEach((group, index) => {
-          const match = response.data.data.find((serverGroup) => serverGroup.group === group);
-          if (!match) {
-            this.groups.splice(index, 1);
-          }
-        });
-        this.groups.sort();
-        this.selectTab();
-        this.$emit("groups-refreshed");
-      });
+      this.$refs["menu-collapse"].refresh();
     },
     refreshAll() {
-      if (Array.isArray(this.$refs.listings)) {
-        this.$refs.listings.forEach((listing) => {
-          listing.refresh();
-        });
-      }
+      this.$refs["menu-collapse"].refresh();
     },
   },
 };
@@ -95,5 +76,9 @@ export default {
   margin-right: 16px;
   height: calc(100vh - 150px);
   overflow-y: auto;
+  background-color: #fff;
+  padding: 16px 16px 106px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--borders, #CDDDEE);
 }
 </style>

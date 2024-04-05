@@ -8,7 +8,7 @@
             >
                 <template #header>
                     <h4>
-                        <b-button @click="hidePreview" variant="link" class="p-0 back-btn mr-2">
+                        <b-button v-if="!hideBackArrow" @click="hidePreview" variant="link" class="p-0 back-btn mr-2">
                             <i class="fas fa-arrow-circle-left text-secondary"></i>
                         </b-button>
                         {{ templateData?.name }}
@@ -17,11 +17,11 @@
                 <div class="thumbnail-preview">
                     <div v-if="templateHasThumbnails" class="text-center">
                         <img 
-                            v-for="thumbnail in templateData?.thumbnails"
+                            v-for="thumbnail in templateData?.template_media"
                             class="thumb mb-2"
-                            :src="thumbnail"
+                            :src="thumbnail?.url"
                             fluid
-                            :alt="templateData?.name + ' thumbnail preview'"
+                            :alt="templateData?.name + $t('thumbnail preview')"
                         />
                     </div> 
                     <div v-else>
@@ -35,7 +35,7 @@
                             {{ $t('View CSS') }}
                         </b-button>
 
-                        <b-form-group class="template-options-group">
+                        <b-form-group v-if="!hideTemplateOptions" class="template-options-group">
                             <b-form-checkbox-group
                                 id="template-options"
                                 v-model="selectedTemplateOptions"
@@ -84,7 +84,7 @@
 <script>
     export default {
         components: {},
-        props: ["template"],
+        props: ["template", "hideBackArrow", "hideTemplateOptions"],
         data: function() {
             return {
                 type: null,
@@ -105,7 +105,7 @@
                 return this.templateData.screen_custom_css !== null;
             },
             templateHasThumbnails() {
-                return this.templateData?.thumbnails.length > 0;
+                return this.templateData?.template_media.length > 0;
             }
         },
         watch: {
@@ -126,7 +126,7 @@
             }
         },
         mounted() {
-            this.templateData = this.template.template;
+            this.templateData = this.template.template ? this.template.template : this.template;
             this.type = this.template.type;
         }
     }

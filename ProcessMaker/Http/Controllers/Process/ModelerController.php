@@ -49,12 +49,11 @@ class ModelerController extends Controller
         // Get plugin addons for the 'show' action
         $addons = $this->getPluginAddons('show', []);
 
-        // Retrieve custom blade view and alternatives from addons
+        // Retrieve custom blade from addons
         $customBlade = ($addons[0] ?? [])['new-blade'] ?? null;
-        $alternatives = ($addons[0] ?? [])['alternatives'] ?? null;
 
-        // If a custom blade view and alternatives are provided, render the custom view
-        if ($customBlade && $alternatives) {
+        // If a custom blade view is provided, render the custom view
+        if ($customBlade) {
             return view($customBlade, $this->prepareModelerData($manager, $process, $request, 'A'));
         }
 
@@ -102,7 +101,7 @@ class ModelerController extends Controller
         $countScriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve draft version of the process
-        $draft = $process->getDraftVersion($alternative);
+        $draft = $process->getDraftOrPublishedLatestVersion($alternative);
         if ($draft) {
             $process->fill($draft->only(['svg', 'bpmn']));
         }
@@ -112,6 +111,7 @@ class ModelerController extends Controller
 
         // Append notifications to the process
         $process->append('notifications', 'task_notifications');
+
         // Load the alternative if the package is installed
         if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
             $process->load('alternativeInfo');
@@ -122,7 +122,8 @@ class ModelerController extends Controller
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
-            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
+            'isVersionsInstalled' =>
+                PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
             'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
@@ -137,6 +138,8 @@ class ModelerController extends Controller
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
+            'abPublish' =>
+                PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
         ];
     }
 

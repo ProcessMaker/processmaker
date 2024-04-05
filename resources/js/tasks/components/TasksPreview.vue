@@ -1,5 +1,52 @@
 <template>
-  <div>
+  <div v-if="showPreview">
+    
+    <div v-if="tooltipButton === 'inboxRules'">
+      <splitpane-container  :size="50" :class-inbox="true">
+        <div
+        id="tasks-preview"
+        ref="tasks-preview"
+        class="w-100 h-100 p-3"
+      >
+        <div>
+          <div class="d-flex w-100 h-100 mb-3">
+             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData"></slot>
+          </div>
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
+            }">
+            <b-embed
+              v-if="showFrame1"
+              ref="tasksFrame1"
+              width="100%"
+              :class="showFrame2 ? 'loadingFrame' : ''"
+              :src="linkTasks1"
+              @load="frameLoaded('tasksFrame1')"
+              :event-parent-id="_uid"
+            />
+            <b-embed
+              v-if="showFrame2"
+              ref="tasksFrame2"
+              width="100%"
+              :class="showFrame1 ? 'loadingFrame' : ''"
+              :src="linkTasks2"
+              @load="frameLoaded('tasksFrame2')"
+              :event-parent-id="_uid"
+            />
+
+            <task-loading
+              v-show="stopFrame"
+              class="load-frame"
+            />
+          </div>
+        </div>
+      </div>
+          </splitpane-container>
+    </div>
+
+    <div v-else>
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
         id="tasks-preview"
@@ -50,14 +97,15 @@
                 >
                   <b-button
                     class="icon-button"
-                    :aria-label="$t('Erase')"
+                    :aria-label="$t('Clear Draft')"
                     variant="light"
-                    v-b-tooltip.hover title="Erase Draft"
+                    v-b-tooltip.hover title="Clear Draft"
                     @click="eraseDraft()"
                   >
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                   </b-button>
                   <b-button
+                    v-if="showQuickFillPreview === false"
                     class="icon-button"
                     :aria-label="$t('Quick fill')"
                     variant="light"
@@ -90,6 +138,15 @@
                     >
                   </b-button>
                   <b-button
+                    v-if="isAllowReassignment || isUserAdmin || isProcessManager"
+                    class="btn text-secondary icon-button"
+                    variant="light"
+                    :aria-label="$t('Reassign')"
+                    @click="openReassignment()"
+                  >
+                    <i class="fas fa-user-friends" />
+                  </b-button>
+                  <b-button
                     class="btn text-secondary icon-button"
                     variant="light"
                     :aria-label="$t('Open Task')"
@@ -109,13 +166,68 @@
               </div>
             </slot>
           </div>
-          <div class="frame-container">
+          <div
+            id="reassign-container"
+            class="d-flex w-100 h-100 mb-3 align-items-center"
+            v-if="showReassignment"
+          >
+            <div class="mr-3">
+              <label for="user">Assign to:</label>
+            </div>
+            <div class="flex-grow-1">
+              <select-from-api
+                id='user'
+                v-model="selectedUser"
+                :placeholder="$t('Type here to search')"
+                api="users"
+                :multiple="false"
+                :show-labels="false"
+                :searchable="true"
+                :store-id="false"
+                label="fullname"
+              >
+                <template slot="noResult">
+                  {{ $t('No elements found. Consider changing the search query.') }}
+                </template>
+                <template slot="noOptions">
+                  {{ $t('No Data Available') }}
+                </template>
+                <template slot="tag" slot-scope="props">
+                  <span class="multiselect__tag  d-flex align-items-center" style="width:max-content;">
+                    <span class="option__desc mr-1">
+                      <span class="option__title">{{ props.option.fullname }}</span>
+                    </span>
+                    <i aria-hidden="true" tabindex="1"
+                      @click="props.remove(props.option)"
+                      class="multiselect__tag-icon"></i>
+                  </span>
+                </template>
+                <template slot="option" slot-scope="props">
+                  <div class="option__desc d-flex align-items-center">
+                    <span class="option__title mr-1">{{ props.option.fullname }}</span>
+                  </div>
+                </template>
+              </select-from-api>
+            </div>
+            <button type="button" class="btn btn-secondary ml-2" @click="reassignUser" :disabled="disabled">
+              {{ $t('Assign') }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary ml-2" @click="cancelReassign">
+              {{ $t('Cancel') }}
+            </button>
+          </div>
+          <div :class="{
+            'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
+            'frame-container-full': tooltipButton === 'fullTask',
+            'frame-container-inbox': tooltipButton === 'inboxRules'
+          }">
             <b-embed
               v-if="showFrame1"
               ref="tasksFrame1"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame1')"
             />
             <b-embed
@@ -124,6 +236,7 @@
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame2')"
             />
 
@@ -137,14 +250,17 @@
           <quick-fill-preview
             class="quick-fill-preview"
             :task="task"
-            :data="data"
+            :prop-from-button ="'previewTask'"
+            :prop-columns="propColumns"
+            :prop-filters="propFilters"
             @quick-fill-data="fillWithQuickFillData"
             @close="showQuickFillPreview = false"
           ></quick-fill-preview>
         </splitpane-container>
       </div>
     </splitpane-container>
-  </div>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -159,10 +275,11 @@ import autosaveMixins from "../../modules/autosave/autosaveMixin.js"
 export default {
   components: { SplitpaneContainer, TaskLoading, QuickFillPreview, TaskSaveNotification, EllipsisMenu },
   mixins: [PreviewMixin, autosaveMixins],
+  props: ["tooltipButton", "propPreview"],
   watch: {
     task: {
       deep: true,
-      handler(task) {
+      handler(task, previousTask) {
         if (task.draft) {
           this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
         } else {
@@ -173,10 +290,20 @@ export default {
         if (priorityAction) {
           priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
         }
+        if (this.task.id) {
+          this.getTaskDefinitionForReassignmentPermission();
+        }
+
+        if (task?.id !== previousTask?.id) {
+          this.userHasInteracted = false;
+        } 
       },
     },
   },
   mounted() {
+    if(this.propPreview){
+      this.showPreview = true;
+    }
     this.receiveEvent("dataUpdated", (data) => {
       this.formData = data;
       if (this.userHasInteracted) {
@@ -187,19 +314,29 @@ export default {
     this.receiveEvent('userHasInteracted', () => {
       this.userHasInteracted = true;
     });
-    
+
     this.$root.$on('pane-size', (value) => {
       this.size = value;
     });
     this.screenWidthPx = window.innerWidth;
     window.addEventListener('resize', this.updateScreenWidthPx);
+    this.getUser();
   },
   computed: {
-    iframe1ContentWindow() {
-      return this.$refs["tasksFrame1"].firstChild.contentWindow;
+    disabled() {
+      return this.selectedUser ? this.selectedUser.length === 0 : true;
     },
-    iframe2ContentWindow() {
-      return this.$refs["tasksFrame2"].firstChild.contentWindow;
+    isAllowReassignment() {
+      if (this.taskDefinition.definition) {
+        return this.taskDefinition.definition.allowReassignment === "true";
+      }
+      return false;
+    },
+    isUserAdmin() {
+      return this.user.is_administrator;
+    },
+    isProcessManager() {
+      return this.task.process_obj.properties.manager_id === ProcessMaker.user.id;
     },
   },
   methods: {
@@ -208,6 +345,7 @@ export default {
       this.sendEvent("fillData", data);
       this.showUseThisTask = false;
       ProcessMaker.alert(message, 'success');
+      this.handleAutosave();
     },
     sendEvent(name, data)
     {
@@ -215,10 +353,10 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        this.iframe1ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame1"].firstChild.contentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        this.iframe2ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame2"].firstChild.contentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {
@@ -261,6 +399,39 @@ export default {
           this.task.draft = null;
         });
     },
+    reassignUser() {
+      if (this.selectedUser) {
+        ProcessMaker.apiClient
+          .put("tasks/" + this.task.id, {
+            user_id: this.selectedUser.id
+          })
+          .then(response => {
+            this.showReassignment = false;
+            this.selectedUser = [];
+          });
+      }
+    },
+    cancelReassign() {
+      this.showReassignment = false;
+      this.selectedUser = [];
+    },
+    openReassignment() {
+      this.showReassignment = !this.showReassignment;
+    },
+    getTaskDefinitionForReassignmentPermission() {
+      ProcessMaker.apiClient
+        .get(`tasks/${this.task.id}?include=definition`)
+        .then((response) => {
+          this.taskDefinition = response.data;
+        });
+    },
+    getUser() {
+      ProcessMaker.apiClient
+        .get(`users/${ProcessMaker.user.id}`)
+        .then((response) => {
+          this.user = response.data;
+        });
+    },
   },
 };
 </script>
@@ -271,6 +442,7 @@ export default {
   display: block;
   overflow: hidden;
   position: relative;
+
 }
 .loadingFrame {
   opacity: 0.5;
@@ -278,6 +450,16 @@ export default {
 .frame-container {
   display: grid;
   height: 70vh;
+}
+.frame-container-full {
+  display: grid;
+  height: 70vh;
+  width: 93%
+}
+.frame-container-inbox {
+  display: grid;
+  height: 70vh;
+  width: 98%;
 }
 .embed-responsive,
 .load-frame {
@@ -340,7 +522,7 @@ export default {
   margin-right: 10px;
 }
 .button-priority {
-    background-color: #FEF2F3;
-    color: #C56363;
+  background-color: #FEF2F3;
+  color: #C56363;
 }
 </style>

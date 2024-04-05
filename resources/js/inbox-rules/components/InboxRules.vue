@@ -45,7 +45,21 @@
       </template>
 
       <template v-slot:no-results>
-        <PMMessageScreen></PMMessageScreen>
+        <PMMessageScreen>
+          <template v-slot:content>
+            <img src="/img/inbox-rule-suggest-lg.svg" 
+                 :alt="$t('Inbox rules empty')" />
+            <b>
+              {{ $t("You haven't set up any Inbox Rules yet") }}
+            </b>
+            <span v-html="$t('Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.')">
+            </span>
+            <a href="#"
+               @click="onCreateRule">
+              {{ $t("Create an Inbox Rule Now") }}
+            </a>
+          </template>
+        </PMMessageScreen>
       </template>
     </PMTable>
   </div>
@@ -70,7 +84,7 @@
         baseURL: "tasks/rules",
         page: 1,
         per_page: 10,
-        order_by: "id",
+        order_by: "name",
         order_direction: "asc",
         filter: ""
       };

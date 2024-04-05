@@ -14,6 +14,7 @@ export default {
           label: this.$t("Description"),
           field: "description",
           width: 200,
+          truncate: true,
           sortable: true,
           direction: "none",
           sortField: "description",
@@ -33,11 +34,6 @@ export default {
           width: 160,
           sortable: true,
           direction: "none",
-        },
-        {
-          name: "__slot:actions",
-          field: "actions",
-          width: 60,
         },
       ],
     };
