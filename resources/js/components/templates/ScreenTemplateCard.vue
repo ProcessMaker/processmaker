@@ -23,10 +23,10 @@
           </div>
           <div class="template-details">
             <span class="template-name d-block pt-1">{{ template.name | str_limit(30) }}</span>
-            <span class="template-description d-block pb-1">{{ template.description | str_limit(150) }}</span>
+            <span class="template-description d-block">{{ template.description | str_limit(150) }}</span>
           </div>
         </div>
-        <div class="default-template d-flex align-items-end">
+        <div class="default-template-container d-flex align-items-end">
           <b-form-checkbox
             v-model="isDefaultTemplate"
             name="default-template"
@@ -129,6 +129,7 @@ export default {
 .screen-template-card {
   border: none;
 }
+
 .card-image {
   border-radius: 6px;
 }
@@ -157,7 +158,7 @@ export default {
   color: #CDDDEE;
   font-size: 59px;
 }
-.template-details, .default-template {
+.template-details, .checkbox-label {
   color: #556271;
 }
 
@@ -167,7 +168,7 @@ export default {
   line-height: 24px;
 }
 
-.template-description, .default-template, .preview-template {
+.template-description, .checkbox-label, .preview-template {
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
@@ -176,7 +177,7 @@ export default {
 .checkbox-label {
   vertical-align: bottom;
   display: inline-block;
-  margin-bottom: -3px;
+  margin-bottom: 1px;
 }
 
 .preview-icon {

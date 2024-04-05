@@ -395,7 +395,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 label {
   color: #556271;
   margin-top: 16px;
