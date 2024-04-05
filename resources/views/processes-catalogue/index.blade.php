@@ -13,6 +13,7 @@
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :launchpad="{{$launchpad ?? 0}}"
+      :bookmark-id="{{$bookmarkId ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
       :current-user="{{ \Auth::user() }}"
