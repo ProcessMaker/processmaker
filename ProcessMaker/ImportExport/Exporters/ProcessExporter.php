@@ -73,6 +73,8 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
 
         $this->exportMedia();
+
+        $this->exportEmbed();
     }
 
     public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
@@ -120,6 +122,8 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->importMedia();
+
+        $this->importEmbed();
 
         return true;
     }
@@ -411,6 +415,26 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
+        }
+    }
+
+    /**
+     * Export the embed associated with the process.
+     */
+    public function exportEmbed(): void
+    {
+        $this->model->embed->each(function ($embed) {
+            $this->addDependent(DependentType::EMBED, $embed, EmbedExporter::class);
+        });
+    }
+
+    /**
+     * Imports embed for the process.
+     */
+    public function importEmbed(): void
+    {
+        foreach ($this->getDependents(DependentType::EMBED) as $embed) {
+            $embed->model->setAttribute('model_id', $this->model->id);
         }
     }
 

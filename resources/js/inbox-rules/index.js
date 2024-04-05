@@ -37,7 +37,7 @@ const router = new VueRouter({
           ruleId: parseInt(route.params.id)
         };
       }
-    }
+    },
   ]
 });
 

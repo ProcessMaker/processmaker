@@ -58,7 +58,12 @@ export default {
   },
   computed: {
     thumbnail() {
-      return this.template?.template_media && this.template.template_media.length > 0 ? this.template.template_media[0].url : null;
+      if (this.template?.template_media && this.template.template_media.length > 0) {
+        return this.template.template_media[0].url;
+      } else if (this.template?.template_media?.thumbnail?.url) {
+        return this.template?.template_media.thumbnail.url
+      }
+      return null;
     },
     isBlankTemplate() {
       return !this.template.hasOwnProperty('uuid') ? true : false;

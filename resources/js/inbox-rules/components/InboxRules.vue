@@ -84,7 +84,7 @@
         baseURL: "tasks/rules",
         page: 1,
         per_page: 10,
-        order_by: "id",
+        order_by: "name",
         order_direction: "asc",
         filter: ""
       };
