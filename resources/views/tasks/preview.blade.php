@@ -262,7 +262,7 @@
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
-              _.set(filteredData, field, _.get(taskData, field));
+              _.set(filteredData, field, _.get(taskData, field, null));
             });
             return filteredData;
           },
@@ -445,6 +445,10 @@
 
           window.addEventListener('fillData', event => {
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
+          });
+
+          window.addEventListener('eraseData', event => {
+            this.formData = {};
           });
 
           // listen for keydown on element with id interactionListener
