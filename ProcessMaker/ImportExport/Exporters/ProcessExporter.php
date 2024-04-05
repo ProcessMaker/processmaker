@@ -5,11 +5,9 @@ namespace ProcessMaker\ImportExport\Exporters;
 use DOMXPath;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
-use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -23,13 +21,9 @@ class ProcessExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
-    public ExportManager $manager;
-
     public function export() : void
     {
         $process = $this->model;
-
-        $this->manager = resolve(ExportManager::class);
 
         if ($process->user) {
             $this->addDependent('user', $process->user, UserExporter::class);
@@ -71,8 +65,8 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->exportSubprocesses();
-
         $this->exportMedia();
+        $this->exportProcessLaunchpad();
     }
 
     public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
@@ -95,7 +89,6 @@ class ProcessExporter extends ExporterBase
         if (!$importingFromTemplate) {
             $this->associateCategories(ProcessCategory::class, 'process_category_id');
         }
-
         $this->importSignals();
 
         foreach ($this->getDependents('cancel-screen') as $dependent) {
@@ -411,6 +404,7 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
+            $this->importProcessLaunchpad();
         }
     }
 
@@ -431,6 +425,31 @@ class ProcessExporter extends ExporterBase
     {
         foreach ($this->getDependents(DependentType::MEDIA) as $media) {
             $media->model->setAttribute('model_id', $this->model->id);
+        }
+    }
+
+    /**
+     * Export the process launchpad associated with the process.
+     */
+    public function exportProcessLaunchpad(): void
+    {
+        $launchpad = $this->model->launchpad;
+        if ($launchpad) {
+            $this->addDependent(
+                'process_launchpad',
+                $launchpad,
+                ProcessLaunchpadExporter::class
+            );
+        }
+    }
+
+    /**
+     * Import the process launchpad for the process.
+     */
+    public function importProcessLaunchpad(): void
+    {
+        foreach ($this->getDependents('process_launchpad') as $launchpad) {
+            $launchpad->model->setAttribute('process_id', $this->model->id);
         }
     }
 }
