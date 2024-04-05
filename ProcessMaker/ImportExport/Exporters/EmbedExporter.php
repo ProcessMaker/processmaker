@@ -7,10 +7,6 @@ use ProcessMaker\Models\Embed;
 
 class EmbedExporter extends ExporterBase
 {
-    public $handleDuplicatesByIncrementing = ['name'];
-
-    public static $fallbackMatchColumn = 'name';
-
     public $discard = false;
 
     public function export(): void
