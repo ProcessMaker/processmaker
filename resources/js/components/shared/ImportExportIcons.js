@@ -22,7 +22,7 @@ const ICONS = {
   SavedSearchReport: "fa-clock",
   Media: "fa-photo-video",
   Embed: "fa-link",
-  Launchpad: "fa-rocket",
+  LaunchpadSetting: "fa-rocket",
 };
 
 export default {
