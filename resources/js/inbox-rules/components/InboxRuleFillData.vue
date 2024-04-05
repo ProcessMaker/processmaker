@@ -53,7 +53,6 @@
       }
     },
     mounted() {
-      console.log("erase inbox: ", this.eraseInbox);
       this.receiveEvent('dataUpdated', (data) => {
         this.formData = data;
       });
@@ -61,15 +60,14 @@
         this.$emit("submit", data);
       });
       this.receiveEvent('readyForFillData', () => {
-        this.sendEvent("fillData", this.inboxRuleData);
+        if(this.eraseInbox){
+          this.sendEvent("eraseData", {});
+        } else {
+          this.sendEvent("fillData", this.inboxRuleData);
+        }       
       });
     },
     methods: {
-      clearScreen() {
-        console.log("clear screen");
-        this.sendEvent("eraseData", {});
-        this.eraseInbox = true;
-      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();

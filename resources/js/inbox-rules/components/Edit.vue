@@ -269,8 +269,6 @@
           this.propInboxData = {};
           this.data = null;
           this.eraseInbox = true;
-          //this.$root.$emit('erase', true);
-          //this.$refs.inboxRuleFillData.clearScreen();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
