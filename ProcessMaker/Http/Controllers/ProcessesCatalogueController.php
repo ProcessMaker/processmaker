@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessCategory;
 
 /**

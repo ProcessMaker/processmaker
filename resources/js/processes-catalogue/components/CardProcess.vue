@@ -130,7 +130,6 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      window.history.replaceState(null, null, `/process-browser/${process.id}`);
       this.$emit("openProcess", process);
     },
     /**
