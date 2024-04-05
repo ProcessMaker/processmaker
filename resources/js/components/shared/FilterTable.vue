@@ -1,6 +1,6 @@
 <template>
   <div
-    id="table-container"
+    :id="filterTableId"
     class="pm-table-container"
   >
     <table
@@ -168,6 +168,10 @@ export default {
       type: Number,
       default: 0,
     },
+    filterTableId: {
+      type: String,
+      default: "table-container",
+    }
   },
   data() {
     return {

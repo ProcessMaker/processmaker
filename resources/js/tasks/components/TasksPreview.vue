@@ -329,12 +329,6 @@ export default {
     this.getUser();
   },
   computed: {
-    iframe1ContentWindow() {
-      return this.$refs["tasksFrame1"].firstChild.contentWindow;
-    },
-    iframe2ContentWindow() {
-      return this.$refs["tasksFrame2"].firstChild.contentWindow;
-    },
     disabled() {
       return this.selectedUser ? this.selectedUser.length === 0 : true;
     },
@@ -365,10 +359,10 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        this.iframe1ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame1"].firstChild.contentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        this.iframe2ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame2"].firstChild.contentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {

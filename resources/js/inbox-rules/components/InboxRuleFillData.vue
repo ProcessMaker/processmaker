@@ -60,6 +60,9 @@
       });
     },
     methods: {
+      eraseData() {
+        this.sendEvent("eraseData", true);
+      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();

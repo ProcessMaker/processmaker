@@ -516,8 +516,7 @@ label {
   font-size: 32px;
 }
 .modal-dialog, .modal-content {
-  max-width: 727px;
-  width: 727px;
+  min-width: 800px;
 }
 .options-launchpad {
   width: 285px;
