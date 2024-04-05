@@ -108,15 +108,7 @@
                 return _.isArray(this.allThumbnails) && this.allThumbnails.length > 0 || !_.isEmpty(this.allThumbnails);
             },
             allThumbnails() {
-                if (this.templateData && this.templateData.template_media) {
-                    if (this.templateData.template_media.previewThumbs) {
-                        return this.templateData.template_media.previewThumbs;
-                    } else {
-                        return this.templateData.template_media;
-                    }
-                } else {
-                    return [];
-                }
+                return this.templateData?.template_media?.previewThumbs ?? (this.templateData?.template_media ? [this.templateData.template_media] : []);
             },
         },
         watch: {
