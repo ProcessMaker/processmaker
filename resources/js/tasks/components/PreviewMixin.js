@@ -23,7 +23,7 @@ const PreviewMixin = {
       options: {
         is_loading: false,
       },
-      autoSaveDelay: 2000,
+      autoSaveDelay: 500,
       savedIcon: null,
       lastAutosave: "",
       errorAutosave: false,
@@ -44,6 +44,7 @@ const PreviewMixin = {
       showReassignment: false,
       taskDefinition: {},
       user: {},
+      disbaleNavigation: false,
       actions: [
         {
           value: "clear-draft",
