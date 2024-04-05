@@ -4,9 +4,11 @@ namespace Tests\Feature\ImportExport\Exporters;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
+use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
@@ -119,7 +121,7 @@ class ProcessExporterTest extends TestCase
             $process,
             ProcessExporter::class,
             function () use ($process, $cancelScreen, $requestDetailScreen, $user) {
-                \DB::delete('delete from process_notification_settings');
+                DB::delete('delete from process_notification_settings');
                 $process->forceDelete();
                 $cancelScreen->delete();
                 $requestDetailScreen->delete();
@@ -207,7 +209,7 @@ class ProcessExporterTest extends TestCase
     {
         $this->addGlobalSignalProcess();
 
-        \DB::beginTransaction();
+        DB::beginTransaction();
         $parentProcess = $this->createProcess('process-with-different-kinds-of-call-activities', ['name' => 'parent']);
         $subProcess = $this->createProcess('basic-process', ['name' => 'sub']);
 
@@ -218,7 +220,7 @@ class ProcessExporterTest extends TestCase
         $parentProcess->save();
 
         $payload = $this->export($parentProcess, ProcessExporter::class, null, false);
-        \DB::rollBack(); // Delete all created items since DB::beginTransaction
+        DB::rollBack(); // Delete all created items since DB::beginTransaction
 
         $this->import($payload);
         $process = Process::where('name', 'parent')->firstOrFail();
@@ -434,9 +436,33 @@ class ProcessExporterTest extends TestCase
         $this->assertArrayHasKey($user->uuid, $manifest);
     }
 
+    public function testImportMediaWithCopy()
+    {
+        $this->addGlobalSignalProcess();
+        [
+            'process' => $process,
+            'media' => $media,
+        ] = $this->fixtures();
+
+        $exporter = new Exporter();
+        $exporter->exportProcess($process);
+        $payload = $exporter->payload();
+
+        $optionsArray[$process->uuid] = ['mode' => 'copy'];
+        $optionsArray[$media->uuid] = ['mode' => 'copy'];
+        $options = new Options($optionsArray);
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
+
+        $this->assertEquals(1, $process->media()->count());
+        $newProcess = Process::where('name', 'Process 2')->first();
+        $this->assertEquals(1, $newProcess->media()->count());
+    }
+
     private function createFakeImage(Process $process): Media
     {
         $media = Media::factory()->create([
+            'uuid' => '8ef7550c-2544-4642-91e1-732fb267179a',
             'model_type' => Process::class,
             'model_id' => $process->id,
             'collection_name' => 'images_carousel',
