@@ -95,7 +95,7 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
-      },
+      }
     },
     data() {
       return {
@@ -123,6 +123,7 @@
       },
       applyColumns() {
         this.columns = this.$refs.columnChooserAdapter.modifiedCurrentColumns;
+        this.emitSavedSearchData();
         this.resetFilters();
       },
       resetFilters() {
