@@ -9,6 +9,10 @@ class EmbedExporter extends ExporterBase
 {
     public $discard = false;
 
+    public $handleDuplicatesByIncrementing = ['uuid'];
+
+    public $incrementStringSeparator = null;
+
     public function export(): void
     {
         $embed = $this->model;

@@ -12,10 +12,8 @@ use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -74,10 +72,6 @@ class ProcessExporterTest extends TestCase
 
         $media = $this->createFakeImage($process);
 
-        $embed = ProcessLaunchpad::factory()->create([
-            'process_id' => $process->id,
-        ]);
-
         return [
             'process' => $process,
             'cancelScreen' => $cancelScreen,
@@ -86,7 +80,6 @@ class ProcessExporterTest extends TestCase
             'processNotificationSetting1' => $processNotificationSetting1,
             'processNotificationSetting2' => $processNotificationSetting2,
             'media' => $media,
-            'embed' => $embed,
         ];
     }
 
@@ -98,7 +91,6 @@ class ProcessExporterTest extends TestCase
             'cancelScreen' => $cancelScreen,
             'requestDetailScreen' => $requestDetailScreen,
             'media' => $media,
-            'embed' => $embed,
         ] = $this->fixtures();
 
         $exporter = new Exporter();
@@ -112,7 +104,6 @@ class ProcessExporterTest extends TestCase
         $this->assertContains($cancelScreen->uuid, $processDependentUuids);
         $this->assertContains($requestDetailScreen->uuid, $processDependentUuids);
         $this->assertContains($media->uuid, $processDependentUuids);
-        $this->assertContains($embed->uuid, $processDependentUuids);
     }
 
     public function testImport()
@@ -142,7 +133,6 @@ class ProcessExporterTest extends TestCase
                 $this->assertEquals(0, User::where('username', 'testuser')->count());
                 $this->assertEquals(0, Group::where('name', 'Group')->count());
                 $this->assertEquals(0, Media::where('name', 'Image')->count());
-                $this->assertEquals(0, Embed::where('name', 'Icon')->count());
             }
         );
 
