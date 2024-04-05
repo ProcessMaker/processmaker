@@ -1,6 +1,11 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="loaded()" :disable-interstitial="true" ref="preview" /> 
+    <b-embed
+      :src="linkTasks"
+      @load="loaded()"
+      :disable-interstitial="true"
+      ref="preview"
+      :event-parent-id="_uid" /> 
   </div>
 </template>
 

@@ -12,8 +12,8 @@
             :show-saved-search-selector="showSavedSearchSelector"
             :saved-search-id="savedSearchIdSelected"
             @saved-search-id-changed="savedSearchIdSelected = $event"
-            @showColumns="showColumns"
-            @reset-filters="resetFilters">
+            @showColumns="$refs.inboxRuleFilters.showColumns()"
+            @reset-filters="$refs.inboxRuleFilters.resetFilters()">
           </InboxRuleButtons>
         </template>
         <InboxRuleFilters
@@ -240,32 +240,37 @@
         element_id: this.elementId,
         id: this.newTaskId
       };
-    
       if (this.newTaskId) {
         this.taskId = this.newTaskId;
       }
       if (this.ruleId) {
         ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
-          .then(response => {
-            this.inboxRule = response.data;
-            this.submitButton = this.inboxRule.submit_button;
-            this.data = this.inboxRule.data;
-            this.taskId = this.inboxRule.process_request_token_id;
-
-            if(this.task.process_id === null){
-              this.getTask(this.taskId); 
-            }
-          });
-        
+                .then(response => {
+                  this.inboxRule = response.data;
+                  this.submitButton = this.inboxRule.submit_button;
+                  this.data = this.inboxRule.data;
+                  this.taskId = this.inboxRule.process_request_token_id;
+                  if (this.taskId) {
+                    this.getTask(this.taskId);
+                  }
+                });
       }
     },
     methods: {
       getTask(taskId) {
+<<<<<<< HEAD
         if (this.task.process_id === null){
         ProcessMaker.apiClient.get("tasks/" + taskId)
                 .then(response => {
                   this.task = response.data;
                 });
+=======
+        if (this.task.process_id === null) {
+          ProcessMaker.apiClient.get("tasks/" + taskId)
+                  .then(response => {
+                    this.task = response.data;
+                  });
+>>>>>>> 0dc6241581d4df0a8e97dcfde74429e80e980bfb
         }
       },
       eraseQuickFill() {
@@ -285,22 +290,9 @@
         const isInUrl = currentUrl.includes(string);
         return isInUrl;
       },
-      showColumns() {
-        this.$refs.inboxRuleFilters.showColumns();
-      },
-      resetFilters() {
-        this.$refs.inboxRuleFilters.resetFilters();
-      },
       resetData() {
         this.data = null;
         this.$refs.inboxRuleFillData.reload();
-      }
-    },
-    watch: {
-      inboxRule: {
-        deep: true,
-        handler() {
-        }
       }
     }
   };

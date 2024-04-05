@@ -453,7 +453,7 @@
             this.formData = {};
           });
 
-          this.$root.$on('jajaja', (val)=>{
+          this.$root.$on('erase', (val)=>{
             console.log("llega por EMIT");
           });
           // listen for keydown on element with id interactionListener

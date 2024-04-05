@@ -112,6 +112,7 @@ class Screen extends ProcessMakerModel implements ScreenInterface
      */
     protected $columns = [
         'id',
+        'uuid',
         'screen_category_id',
         'title',
         'description',

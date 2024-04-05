@@ -394,7 +394,11 @@
                         @endif
                         @if ($eligibleRollbackTask)
                           @can('rollback', $errorTask)
-                            <li class="list-group-item">
+                            <li
+                              v-if="{{ $isProcessManager ? 'true' : 'false' }} ||
+                                {{ Auth::user()->is_administrator ? 'true' : 'false' }}"
+                              class="list-group-item"
+                            >
                               <p class="section-title">{{ __('Rollback Request') }}</p>
                               <button
                                 id="retryRequestButton"
