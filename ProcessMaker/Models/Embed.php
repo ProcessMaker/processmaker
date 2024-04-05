@@ -91,4 +91,10 @@ class Embed extends ProcessMakerModel
             $embed->fill($values)->saveOrFail();
         }
     }
+
+    public function getTitleAttribute()
+    {
+        // This is used by ExporterBase
+        return 'Embed Url';
+    }
 }
