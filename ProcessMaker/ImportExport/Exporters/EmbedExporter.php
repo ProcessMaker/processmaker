@@ -21,7 +21,6 @@ class EmbedExporter extends ExporterBase
 
     public function import(): bool
     {
-        $this->model  = $this->getReference(DependentType::EMBED);
         $this->model->save();
 
         return true;
