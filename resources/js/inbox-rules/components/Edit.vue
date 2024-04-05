@@ -258,19 +258,11 @@
     },
     methods: {
       getTask(taskId) {
-<<<<<<< HEAD
-        if (this.task.process_id === null){
-        ProcessMaker.apiClient.get("tasks/" + taskId)
-                .then(response => {
-                  this.task = response.data;
-                });
-=======
         if (this.task.process_id === null) {
           ProcessMaker.apiClient.get("tasks/" + taskId)
                   .then(response => {
                     this.task = response.data;
                   });
->>>>>>> 0dc6241581d4df0a8e97dcfde74429e80e980bfb
         }
       },
       eraseQuickFill() {
