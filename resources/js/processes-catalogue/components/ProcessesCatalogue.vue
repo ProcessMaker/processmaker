@@ -190,7 +190,6 @@ export default {
         this.process.launchpad = this.launchpad;
         this.process.bookmark_id = this.bookmarkId;
         this.openProcess(this.process);
-        console.log(this.process);
         this.fromProcessList = true;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
