@@ -17,7 +17,7 @@
                 <div class="thumbnail-preview">
                     <div v-if="templateHasThumbnails" class="text-center">
                         <img 
-                            v-for="thumbnail in templateData?.template_media"
+                            v-for="thumbnail in allThumbnails"
                             class="thumb mb-2"
                             :src="thumbnail?.url"
                             fluid
@@ -105,8 +105,19 @@
                 return this.templateData.screen_custom_css !== null;
             },
             templateHasThumbnails() {
-                return this.templateData?.template_media.length > 0;
-            }
+                return _.isArray(this.allThumbnails) && this.allThumbnails.length > 0 || !_.isEmpty(this.allThumbnails);
+            },
+            allThumbnails() {
+               if (this.templateData?.template_media) {
+                    if (this.templateData.template_media?.previewThumbs) {
+                        return this.templateData.template_media?.previewThumbs;
+                    } else {
+                        return this.templateData.template_media;
+                    }
+               } else {
+                return [];
+               }
+            },
         },
         watch: {
             selectedTemplateOptions() {
