@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use ProcessMaker\Exception\ExportModelNotFoundException;
 use ProcessMaker\ImportExport\Dependent;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Extension;
@@ -15,7 +14,6 @@ use ProcessMaker\ImportExport\Logger;
 use ProcessMaker\ImportExport\Manifest;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\ImportExport\Psudomodels\Psudomodel;
-use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\Traits\HasVersioning;
 
@@ -449,6 +447,8 @@ abstract class ExporterBase implements ExporterInterface
             if (is_array($this->incrementStringSeparator)) {
                 $seperator = $this->incrementStringSeparator[$index];
                 $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
+            } elseif (is_null($this->incrementStringSeparator)) {
+                $handlers[$attr] = fn ($value) => $this->incrementNumber($value);
             } else {
                 $seperator = $this->incrementStringSeparator;
                 $handlers[$attr] = fn ($name) => $this->incrementString($name, $seperator);
@@ -477,6 +477,11 @@ abstract class ExporterBase implements ExporterInterface
         }
 
         return $string . $seperator . '2';
+    }
+
+    protected function incrementNumber(int $value): int
+    {
+        return $value + 1;
     }
 
     protected function exportCategories()
@@ -528,7 +533,8 @@ abstract class ExporterBase implements ExporterInterface
                 $foundCategory = $categoryClass::find($this->model->process_category_id);
 
                 if (!$foundCategory instanceof $categoryClass) {
-                    Log::warning("Import/Export: Unable to find ".$categoryClass::class." with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
+                    Log::warning('Import/Export: Unable to find ' . $categoryClass::class .
+                        " with id {$this->model->process_category_id}, updated to 'Uncategorized'.");
                 }
 
                 $categories->push($foundCategory ?? $uncategorizedCategory());
