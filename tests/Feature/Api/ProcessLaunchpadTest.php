@@ -63,7 +63,6 @@ class ProcessLaunchpadTest extends TestCase
         $process = Process::factory()->create();
         ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
-            'user_id' => $user->id,
         ]);
         // Call the api PUT
         $values = json_encode(["icon" => "fa-user"]);
