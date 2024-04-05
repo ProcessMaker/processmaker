@@ -391,6 +391,7 @@ export default {
     if (successRouting) {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
+    this.$emit('onRendered', this);
   },
   methods: {
     markSelectedRow(value) {
