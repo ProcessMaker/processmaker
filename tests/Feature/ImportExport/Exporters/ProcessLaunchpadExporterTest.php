@@ -31,7 +31,13 @@ class ProcessLaunchpadExporterTest extends TestCase
         $launchpad = ProcessLaunchpad::factory()->create([
             'process_id' => $process->id,
             'user_id' => $user->id,
-            'properties' => json_encode(['foo' => 'bar']),
+            'properties' => json_encode([
+                'icon' => 'Alarm',
+                'icon_label' => 'Alarm',
+                'screen_id' => $cancelScreen->id,
+                'screen_uuid' => $cancelScreen->uuid,
+                'screen_title' => 'Cancel Screen',
+            ]),
         ]);
 
         return [
