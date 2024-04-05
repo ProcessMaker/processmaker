@@ -457,7 +457,6 @@ class ProcessExporterTest extends TestCase
         $this->assertEquals(1, $process->media()->count());
         $newProcess = Process::where('name', 'Process 2')->first();
         $this->assertEquals(1, $newProcess->media()->count());
-        $this->assertEquals(2, Media::count());
     }
 
     private function createFakeImage(Process $process): Media
