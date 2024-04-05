@@ -20,6 +20,10 @@
         type: Object,
         default: null
       },
+      eraseInbox: {
+        type: Boolean,
+        default: false
+      },
     },
     data() {
       return {
@@ -44,6 +48,7 @@
       }
     },
     mounted() {
+      console.log("erase inbox: ", this.eraseInbox);
       this.receiveEvent('dataUpdated', (data) => {
         this.formData = data;
       });
@@ -55,6 +60,11 @@
       });
     },
     methods: {
+      clearScreen() {
+        console.log("clear screen");
+        this.sendEvent("eraseData", {});
+        this.eraseInbox = true;
+      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();

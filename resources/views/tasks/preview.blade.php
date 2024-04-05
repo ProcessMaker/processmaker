@@ -444,9 +444,18 @@
           this.prepareData();
 
           window.addEventListener('fillData', event => {
+            console.log("llega a preview BLADE fillData");
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
           });
 
+          window.addEventListener('eraseData', event => {
+            console.log("llega a preview BLADE eraseData");
+            this.formData = {};
+          });
+
+          this.$root.$on('jajaja', (val)=>{
+            console.log("llega por EMIT");
+          });
           // listen for keydown on element with id interactionListener
           const interactionListener = document.getElementById('interactionListener');
           interactionListener.addEventListener('mousedown', (event) => {

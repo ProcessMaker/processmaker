@@ -61,6 +61,7 @@
           :task-id="taskId"
           :inbox-rule-data="data"
           :prop-inbox-quick-fill="propInboxData"
+          :erase-inbox="eraseInbox"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
@@ -141,6 +142,7 @@
     },
     data() {
       return {
+        eraseInbox: false,
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -260,16 +262,18 @@
     methods: {
       getTask(taskId) {
         if (this.task.process_id === null){
-          ProcessMaker.apiClient.get("tasks/" + taskId)
-                  .then(response => {
-                    this.task = response.data;
-                  });
+        ProcessMaker.apiClient.get("tasks/" + taskId)
+                .then(response => {
+                  this.task = response.data;
+                });
         }
       },
       eraseQuickFill() {
           this.propInboxData = {};
           this.data = null;
-          this.$refs.inboxRuleFillData.reload();
+          this.eraseInbox = true;
+          //this.$root.$emit('erase', true);
+          //this.$refs.inboxRuleFillData.clearScreen();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
