@@ -417,7 +417,7 @@ label {
   height: 80px;
   border-radius: 4px;
 }
-.modal-title div {
+#launchpadSettingsModal .modal-title div {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
   font-size: 21px;
@@ -426,14 +426,14 @@ label {
   letter-spacing: -0.02em;
   text-align: left;
 }
-.modal-header {
+#launchpadSettingsModal .modal-header {
   align-items: center;
 }
-.modal-footer {
+#launchpadSettingsModal .modal-footer {
   margin-top: 0px;
   padding: 20px 24px;
 }
-.modal-footer .btn-outline-secondary {
+#launchpadSettingsModal .modal-footer .btn-outline-secondary {
   color: #556271;
   background-color: white;
   margin: 0px;
@@ -450,7 +450,7 @@ label {
   gap: 6px;
   border: 1px solid #6A7888;
 }
-.modal-footer .btn-secondary {
+#launchpadSettingsModal .modal-footer .btn-secondary {
   color: white;
   background-color: #6A7888;
   width: 99px;
@@ -507,7 +507,7 @@ label {
   height: 128px;
   margin-bottom: 12px;
 }
-.drag-and-drop-container {
+#launchpadSettingsModal .drag-and-drop-container {
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -517,10 +517,10 @@ label {
   color: #6a7888;
   margin-bottom: 9px
 }
-.drag-and-drop-container i {
+#launchpadSettingsModal .drag-and-drop-container i {
   font-size: 32px;
 }
-.modal-dialog, .modal-content {
+#launchpadSettingsModal .modal-dialog, .modal-content {
   min-width: 800px;
 }
 .options-launchpad {
@@ -545,10 +545,10 @@ label {
   letter-spacing: -0.02em;
   text-align: center;
 }
-.modal-content-custom {
+#launchpadSettingsModal .modal-content-custom {
   padding: 11px 8px 0px 8px;
 }
-b-row, b-col {
+#launchpadSettingsModal b-row, b-col {
   margin: 0px;
   padding: 0px;
 }
