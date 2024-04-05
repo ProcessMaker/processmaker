@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
@@ -20,9 +21,9 @@ class ProcessesCatalogueController extends Controller
     {
         $launchpad = null;
         if (!is_null($process)) {
-            $processLaunchpad = new ProcessLaunchpad();
-            $launchpad = $processLaunchpad::getLaunchpad(true, $process->id);
+            $launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
         }
-        return view('processes-catalogue.index', compact('process', 'launchpad'));
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+        return view('processes-catalogue.index', compact('process' , 'launchpad', 'currentUser'));
     }
 }
