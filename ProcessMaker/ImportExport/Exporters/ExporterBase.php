@@ -261,8 +261,18 @@ abstract class ExporterBase implements ExporterInterface
     public function getClassName(): string
     {
         $modelClass = get_class($this->model);
+        $baseName = class_basename($modelClass);
 
-        return class_basename($modelClass);
+        // Map the aliases for base class names.
+        $aliases = [
+            'ProcessLaunchpad' => 'LaunchpadSetting',
+        ];
+
+        if (array_key_exists($baseName, $aliases)) {
+            $baseName = $aliases[$baseName];
+        }
+
+        return $baseName;
     }
 
     public function getTypeHuman($type)
