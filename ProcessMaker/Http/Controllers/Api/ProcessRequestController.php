@@ -205,8 +205,8 @@ class ProcessRequestController extends Controller
 
     public function getDefaultChart(Request $request, $process)
     {
-        $countCompleted = ProcessRequest::where('process_id', $process)->inProgress()->count();
-        $countInProgress = ProcessRequest::where('process_id', $process)->completed()->count();
+        $countInProgress = ProcessRequest::where('process_id', $process)->inProgress()->count();
+        $countCompleted = ProcessRequest::where('process_id', $process)->completed()->count();
 
         return [
             'data' => [
