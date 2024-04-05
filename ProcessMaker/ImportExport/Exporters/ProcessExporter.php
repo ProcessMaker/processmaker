@@ -65,8 +65,8 @@ class ProcessExporter extends ExporterBase
         }
 
         $this->exportSubprocesses();
-        $this->exportMedia();
         $this->exportProcessLaunchpad();
+        $this->exportMedia();
     }
 
     public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
