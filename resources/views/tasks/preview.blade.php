@@ -262,14 +262,14 @@
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
-              _.set(filteredData, field, _.get(taskData, field));
+              _.set(filteredData, field, _.get(taskData, field, null));
             });
             return filteredData;
           },
           sendEvent(name, data) {
               const event = new CustomEvent(name, {
                 detail: {
-                  event_parent_id: window.event_parent_id,
+                  event_parent_id: Number(window.frameElement.getAttribute('event-parent-id')),
                   data: data
                 },
               });

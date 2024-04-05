@@ -62,7 +62,6 @@
           :task-id="taskId"
           :inbox-rule-data="data"
           :prop-inbox-quick-fill="propInboxData"
-          :erase-inbox="eraseInbox"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
@@ -143,7 +142,6 @@
     },
     data() {
       return {
-        eraseInbox: false,
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -203,9 +201,6 @@
       };
     },
     computed: {
-      iframeInboxContentWindow() {
-        return this.$refs.inboxRuleFillData["preview"].firstChild.contentWindow;
-      },
       rightPanelTitle() {
         if (this.viewIs('main')) {
           return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
@@ -267,9 +262,7 @@
         }
       },
       eraseQuickFill() {
-          this.propInboxData = {};
-          this.data = null;
-          this.eraseInbox = true;
+        this.$refs.inboxRuleFillData.eraseData();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
