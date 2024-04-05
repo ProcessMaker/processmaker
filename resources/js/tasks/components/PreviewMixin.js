@@ -44,7 +44,7 @@ const PreviewMixin = {
       showReassignment: false,
       taskDefinition: {},
       user: {},
-      disbaleNavigation: false,
+      disableNavigation: false,
       actions: [
         {
           value: "clear-draft",
