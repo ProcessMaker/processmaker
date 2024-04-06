@@ -111,9 +111,6 @@ export default {
   },
   mounted() {
     this.getScreen();
-    ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
-      window.location.reload();
-    });
   },
   methods: {
     /**

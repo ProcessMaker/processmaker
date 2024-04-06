@@ -80,7 +80,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser", "launchpad", "bookmarkId"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [],
@@ -187,10 +187,7 @@ export default {
      */
     checkSelectedProcess() {
       if (this.process) {
-        this.process.launchpad = this.launchpad;
-        this.process.bookmark_id = this.bookmarkId;
         this.openProcess(this.process);
-        console.log(this.process);
         this.fromProcessList = true;
         const categories = this.process.process_category_id;
         const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
@@ -207,7 +204,6 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      window.history.replaceState(null, null, `/process-browser`);
       this.key += 1;
       this.category = value;
       this.selectedProcess = null;
