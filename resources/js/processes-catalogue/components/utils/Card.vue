@@ -35,6 +35,7 @@
           triggers="hover focus"
           :content="process.name"
           variant="custom"
+          class="popover-custom-text"
         />
       </div>
     </b-card-text>
@@ -186,5 +187,14 @@ export default {
   letter-spacing: -0.02em;
   text-align: left;
   padding: 20px;
+}
+.popover-custom-text {
+  color: var(--text-only, #556271);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.32px;
 }
 </style>
