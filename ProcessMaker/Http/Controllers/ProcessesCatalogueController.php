@@ -35,7 +35,7 @@ class ProcessesCatalogueController extends Controller
             $bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
         }
         return view(
-            'processes-catalogue.index', 
+            'processes-catalogue.index',
             compact('process', 'launchpad', 'currentUser', 'manager', 'bookmarkId')
         );
     }
