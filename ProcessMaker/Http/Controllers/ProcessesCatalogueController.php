@@ -4,11 +4,14 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Traits\HasControllerAddons;
 
 /**
  * @param Request $request
@@ -18,8 +21,12 @@ use ProcessMaker\Models\ProcessCategory;
  */
 class ProcessesCatalogueController extends Controller
 {
+    use HasControllerAddons;
+    
     public function index(Request $request, Process $process = null)
     {
+        $manager = app(ScreenBuilderManager::class);
+        event(new ScreenBuilderStarting($manager, 'DISPLAY'));
         $launchpad = null;
         $bookmarkId = 0;
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
@@ -27,6 +34,6 @@ class ProcessesCatalogueController extends Controller
             $launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
             $bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
         }
-        return view('processes-catalogue.index', compact('process' , 'launchpad', 'currentUser', 'bookmarkId'));
+        return view('processes-catalogue.index', compact('process', 'launchpad', 'currentUser', 'manager', 'bookmarkId'));
     }
 }

@@ -24,6 +24,7 @@
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
               @load="frameLoaded('tasksFrame1')"
+              :event-parent-id="_uid"
             />
             <b-embed
               v-if="showFrame2"
@@ -32,6 +33,7 @@
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
               @load="frameLoaded('tasksFrame2')"
+              :event-parent-id="_uid"
             />
 
             <task-loading
@@ -95,9 +97,9 @@
                 >
                   <b-button
                     class="icon-button"
-                    :aria-label="$t('Erase')"
+                    :aria-label="$t('Clear Draft')"
                     variant="light"
-                    v-b-tooltip.hover title="Erase Draft"
+                    v-b-tooltip.hover title="Clear Draft"
                     @click="eraseDraft()"
                   >
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
@@ -225,6 +227,7 @@
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
               :src="linkTasks1"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame1')"
             />
             <b-embed
@@ -233,6 +236,7 @@
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
               :src="linkTasks2"
+              :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame2')"
             />
 
@@ -275,7 +279,7 @@ export default {
   watch: {
     task: {
       deep: true,
-      handler(task) {
+      handler(task, previousTask) {
         if (task.draft) {
           this.lastAutosave = moment(task.draft.updated_at).format("DD MMMM YYYY | HH:mm");
         } else {
@@ -287,8 +291,12 @@ export default {
           priorityAction.content = this.isPriority ? 'Unmark Priority' : 'Mark as Priority';
         }
         if (this.task.id) {
-          this.singleTask();
+          this.getTaskDefinitionForReassignmentPermission();
         }
+
+        if (task?.id !== previousTask?.id) {
+          this.userHasInteracted = false;
+        } 
       },
     },
   },
@@ -315,12 +323,6 @@ export default {
     this.getUser();
   },
   computed: {
-    iframe1ContentWindow() {
-      return this.$refs["tasksFrame1"].firstChild.contentWindow;
-    },
-    iframe2ContentWindow() {
-      return this.$refs["tasksFrame2"].firstChild.contentWindow;
-    },
     disabled() {
       return this.selectedUser ? this.selectedUser.length === 0 : true;
     },
@@ -351,10 +353,10 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        this.iframe1ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame1"].firstChild.contentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        this.iframe2ContentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame2"].firstChild.contentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {
@@ -416,7 +418,7 @@ export default {
     openReassignment() {
       this.showReassignment = !this.showReassignment;
     },
-    singleTask() {
+    getTaskDefinitionForReassignmentPermission() {
       ProcessMaker.apiClient
         .get(`tasks/${this.task.id}?include=definition`)
         .then((response) => {

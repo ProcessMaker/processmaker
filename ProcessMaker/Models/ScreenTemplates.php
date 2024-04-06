@@ -202,14 +202,13 @@ class ScreenTemplates extends Template implements HasMedia
 
         // Get preview thumbs
         $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
-        $previewThumbsUrls = $previewThumbs->pluck('url')->all();
 
         // Get thumbnail media
         $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
 
         // If thumbnail media is not found and no preview thumbs are available,
         // get any media associated with the template
-        if (is_null($thumbnailMedia) && empty($previewThumbsUrls)) {
+        if (is_null($thumbnailMedia) && $previewThumbs->isEmpty()) {
             $allMedia = $this->getMedia($mediaCollectionName);
 
             return $allMedia->map(function ($media) {
@@ -218,10 +217,19 @@ class ScreenTemplates extends Template implements HasMedia
                 return $media;
             })->all();
         } else {
-            // Return thumbnail and preview thumbs URLs
+            // Prepare URLs for thumbnail and preview thumbs
+            if ($thumbnailMedia) {
+                $thumbnailMedia->url = $thumbnailMedia->getFullUrl();
+            }
+            $previewThumbs = $previewThumbs->map(function ($thumb) {
+                $thumb->url = $thumb->getFullUrl();
+
+                return $thumb;
+            })->all();
+
             return [
-                'thumbnail' => $thumbnailMedia ? $thumbnailMedia->getFullUrl() : '',
-                'previewThumbs' => $previewThumbsUrls,
+                'thumbnail' => $thumbnailMedia ? $thumbnailMedia : '',
+                'previewThumbs' => $previewThumbs,
             ];
         }
     }
