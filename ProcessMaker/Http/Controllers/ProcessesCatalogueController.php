@@ -8,6 +8,8 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\HasControllerAddons;
 
@@ -25,7 +27,16 @@ class ProcessesCatalogueController extends Controller
     {
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
+        $launchpad = null;
+        $bookmarkId = 0;
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager'));
+        if (!is_null($process)) {
+            $launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
+            $bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
+        }
+        return view(
+            'processes-catalogue.index',
+            compact('process', 'launchpad', 'currentUser', 'manager', 'bookmarkId')
+        );
     }
 }
