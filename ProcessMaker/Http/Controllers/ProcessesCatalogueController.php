@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Bookmark;
-use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessCategory;
 
 /**
@@ -20,13 +18,7 @@ class ProcessesCatalogueController extends Controller
 {
     public function index(Request $request, Process $process = null)
     {
-        $launchpad = null;
-        $bookmarkId = 0;
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-        if (!is_null($process)) {
-            $launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
-            $bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
-        }
-        return view('processes-catalogue.index', compact('process' , 'launchpad', 'currentUser', 'bookmarkId'));
+        return view('processes-catalogue.index', compact('process' , 'currentUser'));
     }
 }
