@@ -658,10 +658,13 @@
           },
           autosaveApiCall() {
             this.options.is_loading = true;
-            const draftData = {};
+            var draftData = {};
             screenFields.forEach((field) => {
               _.set(draftData, field, _.get(this.formData, field));
             });
+            if (screenFields.length === 0) {
+              draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
+            }
             return ProcessMaker.apiClient
             .put("drafts/" + this.task.id, draftData)
             .then((response) => {
