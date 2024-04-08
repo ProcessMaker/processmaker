@@ -21,7 +21,7 @@ export default {
         case "delete-template":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the screen template {{item}}?", { item: data.title }),
+            this.$t("Are you sure you want to delete the screen template {{item}}?", { item: data.name }),
             "",
             () => {
               ProcessMaker.apiClient.delete(`template/screen/${data.id}`).then(() => {

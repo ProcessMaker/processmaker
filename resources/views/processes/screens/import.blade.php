@@ -27,7 +27,7 @@
                         <h5 class="card-title" v-if="!fileName">
                           {{__('You are about to import a Screen.')}}
                         </h5>
-                        <h5 class="card-title" v-else>
+                        <h5 class="card-title" v-else v-cloak>
                           {{__('You are about to import ')}} @{{ fileName }}
                         </h5>
                         <input

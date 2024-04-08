@@ -1,86 +1,99 @@
 <template>
-  <modal
-    ref="my-modal-save"
-    size="lg"
-    class="modal-dialog modal-dialog-centered"
-    :title="$t('Publish New Version')"
-    :hide-footer="true"
-    @ok.prevent="saveModal()"
-    @hidden="hideModal()"
-  >
-    <template
-      v-if="isABTestingInstalled && alternative?.version_b_enabled"
+  <div>
+    <modal
+      ref="my-modal-save"
+      size="lg"
+      class="modal-dialog modal-dialog-centered"
+      :title="$t('Publish New Version')"
+      :hide-footer="true"
+      @ok.prevent="saveModal()"
+      @hidden="hideModal()"
     >
-      <keep-alive>
-        <component
-          :is="publishVersionComponent"
-          :alternative="alternative"
-          @ab-publish-version="abPublishVersion"
-          @ab-cancel="hideModal()"
-        />
-      </keep-alive>
-    </template>
-    <div
-      v-else
-      class="form-group"
-    >
-      <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
-      <div>
-        <label for="name">{{ $t("Version Name") }} </label>
-        <input
-          id="name"
-          v-model="subject"
-          class="form-control mt-2"
-          type="text"
-          name="name"
-        >
-        <div
-          v-if="errors.subject"
-          class="invalid-feedback d-block"
-          role="alert"
-        >
-          {{ errors.subject[0] }}
+      <template
+        v-if="isABTestingInstalled && alternative?.version_b_enabled"
+      >
+        <keep-alive>
+          <component
+            :is="publishVersionComponent"
+            :alternative="alternative"
+            @ab-publish-version="abPublishVersion"
+            @ab-cancel="hideModal()"
+          />
+        </keep-alive>
+      </template>
+      <div
+        v-else
+        class="form-group"
+      >
+        <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
+        <div>
+          <label for="name">{{ $t("Version Name") }} </label>
+          <input
+            id="name"
+            v-model="subject"
+            class="form-control mt-2"
+            type="text"
+            name="name"
+          >
+          <div
+            v-if="errors.subject"
+            class="invalid-feedback d-block"
+            role="alert"
+          >
+            {{ errors.subject[0] }}
+          </div>
+          <label
+            class="mt-2"
+            for="additional-details"
+          >
+            {{ $t("Description") }}
+          </label>
+          <textarea
+            id="additional-details"
+            v-model="description"
+            class="form-control mt-2"
+            type="text"
+            rows="8"
+            :aria-label="$t('Description')"
+          />
         </div>
-        <label
-          class="mt-2"
-          for="additional-details"
-        >
-          {{ $t("Description") }}
-        </label>
-        <textarea
-          id="additional-details"
-          v-model="description"
-          class="form-control mt-2"
-          type="text"
-          rows="8"
-          :aria-label="$t('Description')"
-        />
-      </div>
 
-      <hr class="long-hr mt-4 mb-4">
+        <hr class="long-hr mt-4 mb-4">
 
-      <div class="d-flex justify-content-end pv-actions">
-        <button class="btn btn-outline-secondary text-uppercase mr-3" @click.prevent="hideModal()">
-          Cancel
-        </button>
-        <button
-          class="btn btn-secondary text-uppercase"
-          data-test="btn-save-publish"
-          @click.prevent="abPublishVersion"
-        >
-          Save and Publish
-        </button>
+        <div class="d-flex justify-content-end pv-actions">
+          <button
+            class="btn btn-outline-secondary text-uppercase mr-3"
+            @click.prevent="hideModal()"
+          >
+            {{ $t("Cancel") }}
+          </button>
+          <button
+            class="btn btn-secondary text-uppercase"
+            data-test="btn-save-publish"
+            @click.prevent="abPublishVersion"
+          >
+            {{ $t("Publish") }}
+          </button>
+        </div>
       </div>
-    </div>
-  </modal>
+    </modal>
+    <launchpad-settings-modal
+      ref="launchpad-modal"
+      :options="options"
+      :filter="filter"
+      :origin="origin"
+      :description-settings="descriptionSettings"
+      :process="process"
+    />
+  </div>
 </template>
 
 <script>
+import LaunchpadSettingsModal from "./LaunchpadSettingsModal.vue";
 import Modal from "./Modal.vue";
-import IconDropdown from "./IconDropdown.vue";
 
 export default {
-  components: { Modal, IconDropdown },
+  components: { Modal, LaunchpadSettingsModal },
   props: {
     options: {
       type: Object,
@@ -119,13 +132,8 @@ export default {
       },
       redirectUrl: null,
       nodeId: null,
-      selectedSavedChart: "",
-      dropdownSavedCharts: [],
-      maxImages: 4,
       processDescription: "",
       processDescriptionInitial: "",
-      btnColorClass: "btn-custom-button",
-      isSecondaryColor: false,
       processId: "",
       dataProcess: {},
       // AB Testing
@@ -133,13 +141,6 @@ export default {
       publishVersionComponent: null,
       alternative: null,
     };
-  },
-  computed: {
-    btnStyle() {
-      return this.isSecondaryColor
-        ? { backgroundColor: "#6a7888", color: "white" }
-        : { backgroundColor: "white", color: "#6a7888" };
-    },
   },
   mounted() {
     ProcessMaker.EventBus.$on("open-modal-versions", (redirectUrl, nodeId) => {
@@ -157,7 +158,6 @@ export default {
     });
     this.getDescriptionInitial();
     this.getProcessDescription();
-  
   },
   methods: {
     abPublishVersion(alternativeData) {
@@ -186,16 +186,16 @@ export default {
         if (ProcessMaker.modeler?.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
           this.processId = ProcessMaker.modeler.process.id;
-          if(ProcessMaker.modeler.process.description === "") {
+          if (ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
         }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
-          if(!this.processDescription) {
-            this.processDescription = this.processDescriptionInitial;
-          }
+        if (!this.processDescription) {
+          this.processDescription = this.processDescriptionInitial;
+        }
       }
     },
     hideModal() {
@@ -203,30 +203,12 @@ export default {
     },
     /**
      * Method to save modal
-     * @param alternativeData {
-     * publishedVersion: string A|B|AB,
-     * subject: string,
-     * description: string,
-     * } | null - Alternative data from AB Testing
      *
      * @returns {Promise<void>}
      */
-    saveModal(alternativeData = null) {
+    saveModal() {
       const eventType = this.types[this.options.type];
 
-      let publishedVersion = 'A';
-
-      if (eventType === "modeler-save" && alternativeData) {
-        publishedVersion = alternativeData.publishedVersion;
-      }
-
-      // if method is called from ProcessMaker core
-      if (this.origin === "core") {
-        this.dataProcess = this.process;
-        this.dataProcess.description = this.processDescription;
-        this.saveProcessDescription(publishedVersion);
-        return;
-      }
       this.dataProcess = ProcessMaker.modeler.process;
       this.dataProcess.description = this.processDescription;
 
@@ -252,6 +234,12 @@ export default {
               versionable_id: this.options.id,
               versionable_type: this.options.type,
             })
+            .then((response) => {
+              ProcessMaker.alert(this.$t("The version was saved."), "success");
+              this.saving = false;
+              this.verifyLaunchPad();
+              this.hideModal();
+            })
             .catch((error) => {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
@@ -265,42 +253,27 @@ export default {
         .catch((err) => {
           console.error(err);
         });
-
-      // Save only process description field using Process API
-      this.saveProcessDescription(publishedVersion);
-    },
-    /**
-     * Save description field in Process
-     *
-     * @param {string} publishedVersion
-     */
-    saveProcessDescription() {
-      if (!this.processDescription) return;
-
-      ProcessMaker.apiClient
-        .put(`processes/${this.options.id}`, {
-          imagesCarousel: this.dataProcess.imagesCarousel,
-          description: this.dataProcess.description,
-          properties: this.dataProcess.properties,
-        })
-        .then((response) => {
-          ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
-          const params = {
-            indexImage: null,
-            type: "add",
-          };
-          ProcessMaker.EventBus.$emit("getChartId");
-          this.hideModal();
-        })
-        .catch((error) => {
-          console.error("Error: ", error);
-        });
     },
     showModal() {
       this.subject = "";
       this.description = "";
       this.errors = "";
       this.$refs["my-modal-save"].show();
+    },
+    /**
+     * Verify if the process has launchpad.
+     */
+    verifyLaunchPad() {
+      ProcessMaker.apiClient
+        .get(`process_launchpad/${this.processId}`)
+        .then((response) => {
+          const alternative = window.ProcessMaker.AbTesting?.alternative;
+          const iFrame = window.parent[`alternative${alternative}`];
+          const isActive = iFrame ? iFrame.classList.contains("active") : false;
+          if (!response.data?.[0].launchpad && (!this.isABTestingInstalled || isActive)) {
+            this.$refs["launchpad-modal"].showModal();
+          }
+        });
     },
   },
 };

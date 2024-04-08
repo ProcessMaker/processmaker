@@ -2215,5 +2215,14 @@
   "The inbox rule '{{name}}' was created.": "The inbox rule '{{name}}' was created.",
   "The inbox rule '{{name}}' was updated.": "The inbox rule '{{name}}' was updated.",
   "Select a saved search.": "Select a saved search.",
-  "The Name has already been taken.": "The Name has already been taken."
+  "The Name has already been taken.": "The Name has already been taken.",
+  "Clear Task": "Clear Task",
+  "Clear Draft": "Clear Draft",
+  "The task is loading": "The task is loading",
+  "Some assets can take some time to load": "Some assets can take some time to load",
+  "Task Filled succesfully": "Task Filled succesfully",
+  "Update Rule": "Update Rule",
+  "This is an AI feature and can provide inaccurate or biased responses.": "This is an AI feature and can provide inaccurate or biased responses.",
+  "ProcessMaker AI is currently offline. Please try again later.": "ProcessMaker AI is currently offline. Please try again later.",
+  "Clear All Fields In This Form": "Clear All Fields In This Form"
 }
