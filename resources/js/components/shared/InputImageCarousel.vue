@@ -611,10 +611,10 @@ label {
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #CDDDEE;
+  border: 1px solid #cdddee;
 }
 .image-thumbnails-container {
-  border: 1px solid #CDDDEE;
+  border: 1px solid #cdddee;
   width: 369px;
   height: 204px;
   border-radius: 4px;
@@ -736,7 +736,7 @@ label {
   font-size: 24px;
   color: #6a7888;
   background-color: #f6f9fb;
-  border: 1px solid #CDDDEE;
+  border: 1px solid #cdddee;
 }
 .custom-trash-icon {
   color: #6a7888;

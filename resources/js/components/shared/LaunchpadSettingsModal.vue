@@ -443,11 +443,11 @@ label {
   padding: 0px 15px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #6A7888;
+  border: 1px solid #6a7888;
 }
 .modal-footer .btn-secondary {
   color: white;
-  background-color: #6A7888;
+  background-color: #6a7888;
   width: 99px;
   height: 40px;
   margin: 0px;
@@ -481,7 +481,7 @@ label {
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #CDDDEE;
+  border: 1px solid #cdddee;
 }
 .modal-dialog, .modal-content {
   min-width: 800px;
@@ -506,7 +506,7 @@ label {
   padding: 9px 12px;
   color: #556271;
   border-radius: 4px;
-  border: 1px solid #CDDDEE;
+  border: 1px solid #cdddee;
 }
 #launchpadSettingsModal .dropdown-menu.show {
   width: 285px;
