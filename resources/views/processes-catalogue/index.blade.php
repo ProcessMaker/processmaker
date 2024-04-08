@@ -12,16 +12,21 @@
   <div class="px-3 page-content mb-0" id="processes-catalogue">
     <processes-catalogue
       :process="{{$process ?? 0}}"
+      :launchpad="{{$launchpad ?? 0}}"
+      :bookmark-id="{{$bookmarkId ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
       :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
       :current-user="{{ \Auth::user() }}"
       is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
     >
-  </processes-catalogue>
+    </processes-catalogue>
   </div>
 @endsection
 
 @section('js')
+  @foreach($manager->getScripts() as $script)
+    <script src="{{$script}}"></script>
+  @endforeach
   <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
   <script>
     window.Processmaker.user = @json($currentUser);
