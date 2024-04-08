@@ -55,7 +55,7 @@
       this.receiveEvent('formSubmit', (data) => {
         this.$emit("submit", data);
       });
-      this.receiveEvent('readyForFillData', () => {
+      this.receiveEvent('taskReady', () => {
         this.sendEvent("fillData", this.inboxRuleData);
       });
     },

@@ -1,7 +1,6 @@
 const PreviewMixin = {
   data() {
     return {
-      isDisabled: true,
       tooltipFromButton: "",
       showPreview: false,
       showRight: true,
@@ -67,7 +66,7 @@ const PreviewMixin = {
           icon: "fas fa-external-link-alt",
         },
       ],
-
+      taskReady: false,
     };
   },
   methods: {
@@ -75,6 +74,7 @@ const PreviewMixin = {
      * Show the sidebar
      */
     showSideBar(info, data, firstTime = false, size = null) {
+      this.taskReady = false;
       if (size) {
         this.splitpaneSize = size;
       }
@@ -203,8 +203,6 @@ const PreviewMixin = {
      * Show the frame when this is loaded
      */
     frameLoaded(iframe) {
-      this.isDisabled = false;
-      this.$root.$emit('disable-button', this.isDisabled);
       const successMessage = this.$t('Task Filled successfully');
       this.loading = false;
       clearTimeout(this.isLoading);
