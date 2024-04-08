@@ -90,7 +90,6 @@
         :prop-from-button ="'inboxRules'"
         :prop-columns="columns"
         :prop-filters="filter"
-        :is-disabled="isDisabled"
         @close="showQuickFillPreview = false"
         @quick-fill-data-inbox="fillWithQuickFillData"
         ></quick-fill-preview>
@@ -143,7 +142,6 @@
     },
     data() {
       return {
-        isDisabled: true,
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -253,9 +251,6 @@
                   }
                 });
       }
-      this.$root.$on('disable-button', (val) => {
-        this.isDisabled = val;
-      });
     },
     methods: {
       getTask(taskId) {

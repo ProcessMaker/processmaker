@@ -55,7 +55,7 @@
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
         >
-          <template v-slot:preview-header="{ close, screenFilteredTaskData }">
+          <template v-slot:preview-header="{ close, screenFilteredTaskData, taskReady }">
             <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
@@ -64,7 +64,7 @@
                     v-if="propFromButton === 'inboxRules'"
                     class="button-task mr-2"
                     variant="primary"
-                    :disabled="isDisabled"
+                    :disabled="!taskReady"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
                   >
@@ -91,7 +91,7 @@
                   <b-button
                     v-if="propFromButton === 'previewTask'"
                     class="button-task mr-2"
-                    :disabled="isDisabledQuick"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
@@ -105,7 +105,7 @@
                   <b-button
                     v-if="propFromButton === 'fullTask'"
                     class="button-task mr-2"
-                    :disabled="isDisabled"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisDataFromFullTask(screenFilteredTaskData)"
@@ -166,10 +166,9 @@
 </template>
 <script>
 export default {
-  props: ["task", "propColumns", "propFilters", "propFromButton", "isDisabled"],
+  props: ["task", "propColumns", "propFilters", "propFromButton"],
   data() {
     return {
-      isDisabledQuick: true,
       processName: "",
       selectedRowQuick: 0,
       fromQuickFill: true,
@@ -234,9 +233,6 @@ export default {
     if (this.propColumns.length > 0) {
       this.columns = this.propColumns;
     }
-    this.$root.$on('disable-button', (val) => {
-      this.isDisabledQuick = false;
-    });
   },
   methods: {
     verifyURL(string) {
