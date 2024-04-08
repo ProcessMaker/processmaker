@@ -4,31 +4,35 @@
       <splitpane-container  :size="50" :class-inbox="true">
         <div
         ref="tasks-preview"
-        class="tasks-preview w-100 h-100 p-3"
-      >
-        <div>
-          <div class="d-flex w-100 h-100 mb-3">
+        class="tasks-preview h-100 p-3"
+        >
+          <div class="d-flex w-100 mb-3">
              <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
           </div>
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
             'frame-container-full': tooltipButton === 'fullTask',
             'frame-container-inbox': tooltipButton === 'inboxRules'
-            }">
-            <b-embed
+            }"
+            class="iframe-container">
+            <iframe
               v-if="showFrame1"
+              :title="$t('Preview')"
               ref="tasksFrame1"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
+              class="iframe"
               :src="linkTasks1"
               @load="frameLoaded('tasksFrame1')"
               :event-parent-id="_uid"
             />
-            <b-embed
+            <iframe
               v-if="showFrame2"
+              :title="$t('Preview')"
               ref="tasksFrame2"
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
+              class="iframe"
               :src="linkTasks2"
               @load="frameLoaded('tasksFrame2')"
               :event-parent-id="_uid"
@@ -39,7 +43,6 @@
               class="load-frame"
             />
           </div>
-        </div>
       </div>
           </splitpane-container>
     </div>
@@ -50,8 +53,7 @@
         ref="tasks-preview"
         class="tasks-preview h-100 p-3"
       >
-        <div>
-          <div class="d-flex w-100 h-100 mb-3">
+          <div class="d-flex w-100 mb-3">
             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
               <b-button-group>
                 <b-button
@@ -217,21 +219,26 @@
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
             'frame-container-full': tooltipButton === 'fullTask',
             'frame-container-inbox': tooltipButton === 'inboxRules'
-          }">
-            <b-embed
+          }"
+          class="iframe-container">
+            <iframe
               v-if="showFrame1"
+              :title="$t('Preview')"
               ref="tasksFrame1"
               width="100%"
               :class="showFrame2 ? 'loadingFrame' : ''"
+              class="iframe"
               :src="linkTasks1"
               :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame1')"
             />
-            <b-embed
+            <iframe
               v-if="showFrame2"
+              :title="$t('Preview')"
               ref="tasksFrame2"
               width="100%"
               :class="showFrame1 ? 'loadingFrame' : ''"
+              class="iframe"
               :src="linkTasks2"
               :event-parent-id="_uid"
               @load="frameLoaded('tasksFrame2')"
@@ -241,7 +248,6 @@
               v-show="stopFrame"
               class="load-frame"
             />
-          </div>
         </div>
         <splitpane-container v-if="showQuickFillPreview" :size="93">
           <quick-fill-preview
@@ -357,10 +363,10 @@ export default {
         detail: data
       });
       if(this.showFrame1) {
-        this.$refs["tasksFrame1"].firstChild.contentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame1"].contentWindow.dispatchEvent(event);
       }
       if(this.showFrame2) {
-        this.$refs["tasksFrame2"].firstChild.contentWindow.dispatchEvent(event);
+        this.$refs["tasksFrame2"].contentWindow.dispatchEvent(event);
       }
     },
     receiveEvent(name, callback) {
@@ -455,19 +461,15 @@ export default {
 }
 .frame-container {
   display: grid;
-  height: 70vh;
 }
 .frame-container-full {
   display: grid;
-  height: 70vh;
   width: 93%
 }
 .frame-container-inbox {
   display: grid;
-  height: 70vh;
   width: 98%;
 }
-.embed-responsive,
 .load-frame {
   position: relative;
   display: block;
@@ -531,4 +533,20 @@ export default {
   background-color: #FEF2F3;
   color: #C56363;
 }
+
+
+.iframe-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.iframe {
+  border: none;
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+}
+
 </style>
