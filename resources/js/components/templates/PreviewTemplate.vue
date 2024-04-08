@@ -144,13 +144,14 @@
 </script>
 
 <style type="text/css" scoped>
-
     .template-preview-card .card-body {
         overflow-y:auto;
     }
+
     .back-btn {
         font-size: 25px;
     }
+
     .preview-card {
         height: 100vh;
         max-height: 600px;
@@ -171,14 +172,14 @@
     }
 
     .template-options-group {
-        margin: 0!important;
+        margin: 0 !important;
         border: 1px solid #6A7888;
-        padding: 6px 15px!important;
+        padding: 6px 15px !important;
         border-radius: 7px;
     }
 
     .template-options-group .template-options:last-child {
-        margin:0;
+        margin: 0;
     }
 
     .css-preview-card .card-body {
