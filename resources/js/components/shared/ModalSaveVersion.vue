@@ -235,7 +235,6 @@ export default {
               versionable_type: this.options.type,
             })
             .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
               this.saving = false;
               this.verifyLaunchPad();
               this.hideModal();
@@ -272,6 +271,8 @@ export default {
           const isActive = iFrame ? iFrame.classList.contains("active") : false;
           if (!response.data?.[0].launchpad && (!this.isABTestingInstalled || isActive)) {
             this.$refs["launchpad-modal"].showModal();
+          } else {
+            ProcessMaker.alert(this.$t("The version was saved."), "success");
           }
         });
     },
