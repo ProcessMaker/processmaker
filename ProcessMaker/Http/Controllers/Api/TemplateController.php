@@ -179,6 +179,23 @@ class TemplateController extends Controller
         return $this->template->deleteTemplate($type, $request);
     }
 
+    /**
+     * Import template
+     *
+     * @param  Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function import(string $type, Request $request)
+    {
+        $result = $this->preimportValidation($type, $request);
+
+        if ($result->getStatusCode() === 422) {
+            return $result;
+        }
+
+        return $this->template->importTemplate($type, $request);
+    }
+
     public function preimportValidation(string $type, Request $request)
     {
         $content = $request->file('file')->get();
@@ -221,7 +238,8 @@ class TemplateController extends Controller
         $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
         $isDecoded = $decoded && is_object($decoded);
         $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
-        $validType = $hasType && $decoded->type === 'process_templates_package';
+        // $validType = $hasType && $decoded->type === 'process_templates_package';
+        $validType = $hasType && ($decoded->type === 'process_templates_package' || $decoded->type === 'screen_templates_package');
 
         if ($validType) {
             return (new ImportController())->preview($request, $decoded->version);

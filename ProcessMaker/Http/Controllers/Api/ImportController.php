@@ -89,41 +89,44 @@ class ImportController extends Controller
         return response()->json(['processId' => $newProcessId, 'message' => Importer::getMessages()], 200);
     }
 
-    public function importTemplate(String $type, Request $request): JsonResponse
-    {
-        $jsonData = $request->file('file')->get();
-        $payload = json_decode($jsonData, true);
+    // public function importTemplate(String $type, Request $request): JsonResponse
+    // {
+    //     $jsonData = $request->file('file')->get();
+    //     // $payload = json_decode($jsonData, true);
+    //     // $fileOptions = !is_null($request->file('options')) ? $request->file('options') : [];
+    //     // // dd($type, json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
+    //     // $options = new Options($fileOptions);
+    //     // $importer = new Importer($payload, $options);
+    //     // $manifest = $importer->doImport();
+    //     // // dd($manifest);
 
-        $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
-        $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
+    //     // // Call Event to store Template Changes in Log
+    //     // TemplateCreated::dispatch($payload);
 
-        // Call Event to store Template Changes in Log
-        TemplateCreated::dispatch($payload);
+    //     // return response()->json([], 200);
+    // }
 
-        return response()->json([], 200);
-    }
+    // public function importScreenTemplate(Request $request)
+    // {
+    //     $request->validate(['file' => 'required|file|mimes:json|max:5000']);
+    //     $jsonData = $request->file('file')->get();
+    //     $payload = json_decode($jsonData, true);
 
-    public function importScreenTemplate(Request $request)
-    {
-        $request->validate(['file' => 'required|file|mimes:json|max:5000']);
-        $jsonData = $request->file('file')->get();
-        $payload = json_decode($jsonData, true);
+    //     $postOptions = [];
+    //     foreach ($payload['export'] as $key => $asset) {
+    //         $postOptions[$key] = [
+    //             'mode' => 'copy',
+    //         ];
+    //     }
 
-        $postOptions = [];
-        foreach ($payload['export'] as $key => $asset) {
-            $postOptions[$key] = [
-                'mode' => 'copy',
-            ];
-        }
+    //     $options = new Options($postOptions);
+    //     $importer = new Importer($payload, $options);
+    //     $manifest = $importer->doImport();
+    //     dd('here ');
+    //     TemplateCreated::dispatch($payload);
 
-        $options = new Options($postOptions);
-        $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
-        TemplateCreated::dispatch($payload);
-
-        return $manifest;
-    }
+    //     return $manifest;
+    // }
 
     private function handlePasswordDecrypt(Request $request, array $payload)
     {

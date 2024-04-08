@@ -5,7 +5,9 @@ namespace ProcessMaker\Templates;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
@@ -383,6 +385,41 @@ class ScreenTemplate implements TemplateInterface
     public function destroy(int $id) : bool
     {
         return ScreenTemplates::find($id)->delete();
+    }
+
+    /**
+     *  Update process template configurations
+     * @param Request
+     * @return JsonResponse
+     */
+    public function importTemplate($request) : JsonResponse
+    {
+        try {
+            $jsonData = $request->file('file')->get();
+
+            $payload = json_decode($jsonData, true);
+            $postOptions = [];
+
+            foreach ($payload['export'] as $key => $asset) {
+                $postOptions[$key] = [
+                    'mode' => 'copy',
+                ];
+                $payload['export'][$key]['attributes']['editing_screen_uuid'] = null;
+            }
+
+            $options = new Options($postOptions);
+            $importer = new Importer($payload, $options);
+            $importer->doImport();
+
+            // Call Event to store Template Changes in Log
+            TemplateCreated::dispatch($payload);
+
+            return response()->json([], 200);
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     /**

@@ -32,6 +32,10 @@ class ScreenTemplates extends Template implements HasMedia
 
     public $screen_category_id;
 
+    // public $handleDuplicatesByIncrementing = ['name'];
+
+    // public static $fallbackMatchColumn = 'name';
+
     /**
      * Category of the screen template
      *
