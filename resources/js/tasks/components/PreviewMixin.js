@@ -66,7 +66,7 @@ const PreviewMixin = {
           icon: "fas fa-external-link-alt",
         },
       ],
-
+      taskReady: false,
     };
   },
   methods: {
@@ -74,6 +74,7 @@ const PreviewMixin = {
      * Show the sidebar
      */
     showSideBar(info, data, firstTime = false, size = null) {
+      this.taskReady = false;
       if (size) {
         this.splitpaneSize = size;
       }

@@ -269,8 +269,8 @@ export default {
         .then((response) => {
           const alternative = window.ProcessMaker.AbTesting?.alternative;
           const iFrame = window.parent[`alternative${alternative}`];
-          const isActive = this.isABTestingInstalled && iFrame ? iFrame.classList.contains("active") : false;
-          if (!response.data?.[0].launchpad && isActive) {
+          const isActive = iFrame ? iFrame.classList.contains("active") : false;
+          if (!response.data?.[0].launchpad && (!this.isABTestingInstalled || isActive)) {
             this.$refs["launchpad-modal"].showModal();
           }
         });
