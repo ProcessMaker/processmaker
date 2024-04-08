@@ -118,6 +118,8 @@
                 "&per_page=30" +
                 "&filter=" + filter +
                 "&type=task" +
+                "&key=" +
+                "&is_system=false" +
                 "&subset=mine" +
                 "&order_by=title" +
                 "&order_direction=asc";
