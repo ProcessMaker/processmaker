@@ -57,7 +57,7 @@
                 <b-button
                   class="arrow-button"
                   variant="outline-secondary"
-                  :disabled="!existPrev"
+                  :disabled="!existPrev || disableNavigation"
                   @click="goPrevNext('Prev')"
                 >
                   <i class="fas fa-chevron-left" />
@@ -65,7 +65,7 @@
                 <b-button
                   class="arrow-button"
                   variant="outline-secondary"
-                  :disabled="!existNext"
+                  :disabled="!existNext || disableNavigation"
                   @click="goPrevNext('Next')"
                 >
                   <i class="fas fa-chevron-right" />
@@ -310,6 +310,7 @@ export default {
       this.formData = data;
       if (this.userHasInteracted) {
         this.handleAutosave();
+        this.disableNavigation = true;
       }
     });
 
@@ -348,6 +349,7 @@ export default {
       this.showUseThisTask = false;
       ProcessMaker.alert(message, 'success');
       this.handleAutosave();
+      this.disableNavigation = false;
     },
     sendEvent(name, data)
     {
@@ -387,6 +389,7 @@ export default {
         .finally(() => {
           this.options.is_loading = false;
           this.errorAutosave = false;
+          this.disableNavigation = false;
         });
     },
     eraseDraft() {
@@ -399,6 +402,7 @@ export default {
           }, 4900);
           this.showSideBar(this.task, this.data);
           this.task.draft = null;
+          this.userHasInteracted = false;
         });
     },
     reassignUser() {
