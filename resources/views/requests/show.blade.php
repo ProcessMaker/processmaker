@@ -601,7 +601,7 @@
         },
         labelDate() {
           let label = {
-            'ACTIVE': 'Created',
+            'ACTIVE': 'In Progress Since',
             'COMPLETED': 'Completed On',
             'CANCELED': 'Canceled ',
             'ERROR': 'Failed On',
