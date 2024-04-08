@@ -46,6 +46,7 @@
         :columns="columns"
         @submit=""
         @count="$emit('count', $event)"
+        @onRendered="onTaskListRendered"
         >
         <template v-slot:no-results>
           <PMMessageScreen>
@@ -237,6 +238,12 @@
       },
       showColumns() {
         this.$bvModal.show("columns");
+      },
+      onTaskListRendered() {
+        if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
+          let defaultColumns = this.$refs.taskList.tableHeaders;
+          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
+        }
       }
     },
     watch: {

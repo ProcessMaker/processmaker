@@ -20,6 +20,9 @@ const ICONS = {
   SavedSearchChart: "fa-chart-line",
   SavedSearchOption: "",
   SavedSearchReport: "fa-clock",
+  Media: "fa-photo-video",
+  Embed: "fa-link",
+  LaunchpadSetting: "fa-rocket",
 };
 
 export default {
