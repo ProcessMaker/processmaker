@@ -267,7 +267,10 @@ export default {
       ProcessMaker.apiClient
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
-          if (!response.data[0].launchpad) {
+          const alternative = window.ProcessMaker.AbTesting?.alternative;
+          const iFrame = window.parent[`alternative${alternative}`];
+          const isActive = iFrame ? iFrame.classList.contains("active") : false;
+          if (!response.data?.[0].launchpad && (!this.isABTestingInstalled || isActive)) {
             this.$refs["launchpad-modal"].showModal();
           }
         });
