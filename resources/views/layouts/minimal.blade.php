@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';"> 
+    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'none';">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="i18n-mdate" content='{!! json_encode(ProcessMaker\i18nHelper::mdates()) !!}'>
@@ -16,6 +16,9 @@
     <div class="container" id="app">
 @yield('content')
     </div>
+    @if(config('services.userway.enabled'))
+        <script src="https://cdn.userway.org/widget.js" data-account="{{ config('services.userway.account_id') }}"></script>
+    @endif
 @yield('js')
 </body>
 </html>
