@@ -1,6 +1,11 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="loaded()" :disable-interstitial="true" ref="preview" /> 
+    <b-embed
+      :src="linkTasks"
+      @load="loaded()"
+      :disable-interstitial="true"
+      ref="preview"
+      :event-parent-id="_uid" /> 
   </div>
 </template>
 
@@ -55,6 +60,9 @@
       });
     },
     methods: {
+      eraseData() {
+        this.sendEvent("eraseData", true);
+      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();
