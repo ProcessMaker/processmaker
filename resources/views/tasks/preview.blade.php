@@ -110,12 +110,6 @@
                           :always-allow-editing="alwaysAllowEditing"
                           :disable-interstitial="disableInterstitial"
                         ></task>
-                        <data-loading
-                          v-show="showLoading"
-                          :empty="$t('All clear')"
-                          :empty-desc="$t('No new tasks at this moment.')"
-                          empty-icon="noTasks"
-                        />
                     </div>
                 </div>
             </div>
@@ -167,7 +161,6 @@
         store: store,
         el: "#task",
         data: {
-          showLoading: true,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -262,7 +255,7 @@
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
-              _.set(filteredData, field, _.get(taskData, field));
+              _.set(filteredData, field, _.get(taskData, field, null));
             });
             return filteredData;
           },
@@ -424,9 +417,8 @@
           taskUpdated(task) {
             this.task = task;
             this.formData = _.cloneDeep(this.$refs.task.requestData);
-            this.showLoading = false;
             this.$nextTick(() => {
-              this.sendEvent('readyForFillData', true);
+              this.sendEvent('taskReady', this.task?.id);
             });
           },
           autosaveApiCall() {
@@ -445,6 +437,10 @@
 
           window.addEventListener('fillData', event => {
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
+          });
+
+          window.addEventListener('eraseData', event => {
+            this.formData = {};
           });
 
           // listen for keydown on element with id interactionListener

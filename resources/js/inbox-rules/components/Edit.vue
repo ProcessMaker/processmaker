@@ -36,7 +36,8 @@
             <button
               type="button"
               class="button-actions"
-              v-b-tooltip.hover title="Erase Draft"
+              v-b-tooltip.hover
+              :title="$t('Clear All Fields In This Form')"
               @click="eraseQuickFill()"
               >
               <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
@@ -261,7 +262,7 @@
         }
       },
       eraseQuickFill() {
-        this.propInboxData = {};
+        this.$refs.inboxRuleFillData.eraseData();
       },
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="data-table">
     <data-loading
@@ -14,11 +13,15 @@
       data-cy="my-templates-table"
     >
       <filter-table
+        filter-table-id="my-templates-table"
         :headers="fields"
         :data="data"
         :loading="shouldShowLoader"
+        :selected-row="selectedRow"
         table-name="my-screen-templates"
         style="height: calc(100vh - 355px)"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -28,6 +31,7 @@
           <div
             v-if="column.sortable"
             :key="index"
+            style="display: inline-block"
             @click="handleEllipsisClick(column)"
           >
             <i
@@ -45,7 +49,7 @@
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          #[`row-${rowIndex}`]
+          v-slot:[`row-${rowIndex}`]
         >
           <td
             v-for="(header, colIndex) in fields"
@@ -89,19 +93,11 @@
                     {{ row[header.field] }}
                   </b-tooltip>
                 </template>
-                <template v-if="header.field === 'actions'">
-                  <ellipsis-menu
-                    class="my-template-table"
-                    :actions="myTemplateActions"
-                    :permission="permission"
-                    :data="row"
-                    :divider="true"
-                    :screen-template="true"
-                    @navigate="onTemplateNavigate"
-                  />
-                </template>
                 <template v-if="header.field !== 'name'">
-                  <div :style="{ maxWidth: header.width + 'px' }">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                  >
                     {{ getNestedPropertyValue(row, header) }}
                   </div>
                 </template>
@@ -110,7 +106,42 @@
           </td>
         </template>
       </filter-table>
-
+      <screen-templates-tooltip
+        v-show="isTooltipVisible"
+        :position="rowPosition"
+      >
+        <template #screen-templates-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+            <slot
+              name="tooltip"
+              :tooltipRowData="tooltipRowData"
+              :previewTemplate="previewTemplate"
+            >
+              <span>
+                <b-button
+                  class="icon-button"
+                  variant="light"
+                  :aria-label="$t('Public Screen Template Preview')"
+                  @click="previewTemplate(tooltipRowData)"
+                >
+                  <i class="fas fa-eye py-2" />
+                </b-button>
+              </span>
+              <ellipsis-menu
+                :actions="myTemplateActions"
+                :data="tooltipRowData"
+                :divider="false"
+                :permission="permission"
+                :screen-template="true"
+                @navigate="onTemplateNavigate"
+              />
+            </slot>
+          </div>
+        </template>
+      </screen-templates-tooltip>
       <pagination-table
         :meta="data.meta"
         data-cy="my-templates-pagination"
@@ -126,6 +157,11 @@
         @vuetable-pagination:change-page="onPageChange"
       />
     </div>
+    <template-preview-container
+      ref="preview"
+      :selected-template="selectedTemplate"
+      @mark-selected-row="markSelectedRow"
+    />
   </div>
 </template>
 
@@ -135,23 +171,34 @@ import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import TemplatePreviewContainer from "./TemplatePreviewContainer.vue";
+import ScreenTemplatesTooltip from "./ScreenTemplatesTooltip.vue";
+import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
 import fieldsMixin from "../mixins/fieldsMixin";
 import navigationMixin from "../mixins/navigationMixin";
 import templateMixin from "../mixins/templateMixin.js";
+import templatePreviewMixin from "../mixins/templatePreviewMixin";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, paginationTable },
+  components: {
+    EllipsisMenu,
+    paginationTable,
+    TemplatePreviewContainer,
+    ScreenTemplatesTooltip,
+  },
   mixins: [
     datatableMixin,
     dataLoadingMixin,
     uniqIdsMixin,
     ellipsisMenuMixin,
+    FilterTableBodyMixin,
     fieldsMixin,
     navigationMixin,
     templateMixin,
+    templatePreviewMixin,
   ],
   props: {
     permission: {
@@ -185,6 +232,14 @@ export default {
         },
       ],
       fields: [],
+      isTooltipVisible: false,
+      rowPosition: {},
+      tooltipRowData: {},
+      hideTimer: null,
+      selectedRow: 0,
+      showTemplatePreview: false,
+      selectedTemplate: null,
+      tableId: "my-templates-table",
     };
   },
   created() {
@@ -231,5 +286,12 @@ export default {
 
 .my-templates-table-card {
   padding: 0;
+  border: none;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
 }
 </style>

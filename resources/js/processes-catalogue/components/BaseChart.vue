@@ -92,7 +92,7 @@ export default {
           display: true,
         },
       },
-      chartId: "",
+      chartId: null,
       chartName: "",
       defaultData: {},
       defaultOptions: {
@@ -132,13 +132,12 @@ export default {
       }
     },
     saveSearchId() {
-      let chartId = null;
       const unparseProperties = this.process.launchpad?.properties || null;
       if (unparseProperties !== null) {
-        chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
+        this.chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
       }
 
-      return chartId;
+      return this.chartId;
     },
   },
   watch: {
@@ -161,7 +160,7 @@ export default {
   mounted() {
     this.fetchChart();
     ProcessMaker.EventBus.$on("getChartId", (newChartId) => {
-      this.saveSearchId = newChartId;
+      this.chartId = newChartId;
       this.fetchChart();
     });
   },

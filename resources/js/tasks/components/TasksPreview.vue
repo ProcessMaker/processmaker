@@ -1,16 +1,14 @@
 <template>
-  <div v-if="showPreview">
-    
+  <div>
     <div v-if="tooltipButton === 'inboxRules'">
       <splitpane-container  :size="50" :class-inbox="true">
         <div
-        id="tasks-preview"
         ref="tasks-preview"
-        class="w-100 h-100 p-3"
+        class="tasks-preview w-100 h-100 p-3"
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData"></slot>
+             <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
           </div>
           <div :class="{
             'frame-container': tooltipButton === 'previewTask' || tooltipButton === '',
@@ -49,13 +47,12 @@
     <div v-else>
     <splitpane-container v-if="showPreview" :size="splitpaneSize">
       <div
-        id="tasks-preview"
         ref="tasks-preview"
-        class="h-100 p-3"
+        class="tasks-preview h-100 p-3"
       >
         <div>
           <div class="d-flex w-100 h-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData">
+            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
               <b-button-group>
                 <b-button
                   class="arrow-button"
@@ -260,7 +257,7 @@
       </div>
     </splitpane-container>
     </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -304,6 +301,11 @@ export default {
     if(this.propPreview){
       this.showPreview = true;
     }
+    
+    this.receiveEvent('taskReady', (taskId) => {
+      this.taskReady = true;
+    });
+
     this.receiveEvent("dataUpdated", (data) => {
       this.formData = data;
       if (this.userHasInteracted) {
@@ -437,7 +439,7 @@ export default {
 </script>
 
 <style>
-#tasks-preview {
+.tasks-preview {
   box-sizing: border-box;
   display: block;
   overflow: hidden;

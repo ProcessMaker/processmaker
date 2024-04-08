@@ -35,4 +35,6 @@ abstract class DependentType
     const GROUP_RECIPIENT = 'group_recipient';
 
     const MEDIA = 'media';
+
+    const EMBED = 'embed';
 }

@@ -55,11 +55,14 @@
       this.receiveEvent('formSubmit', (data) => {
         this.$emit("submit", data);
       });
-      this.receiveEvent('readyForFillData', () => {
+      this.receiveEvent('taskReady', () => {
         this.sendEvent("fillData", this.inboxRuleData);
       });
     },
     methods: {
+      eraseData() {
+        this.sendEvent("eraseData", true);
+      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();

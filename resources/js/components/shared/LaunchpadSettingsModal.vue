@@ -167,10 +167,11 @@ export default {
       selectedSavedChartId: "",
       selectedScreen: "",
       selectedScreenId: "",
-      selectedScreenUuid:"",
+      selectedScreenUuid: "",
       processId: "",
       mediaImageId: [],
       dataProcess: {},
+      oldScreen: 0,
     };
   },
   mounted() {
@@ -209,6 +210,7 @@ export default {
             this.selectedScreen = this.defaultScreen.title;
             this.selectedScreenId = this.defaultScreen.id;
           }
+          this.oldScreen = this.selectedScreenId;
           // Load media into Carousel Container
           const mediaArray = firstResponse.media;
           const embedArray = firstResponse.embed;
@@ -283,6 +285,9 @@ export default {
             indexImage: null,
             type: "add",
           };
+          if (this.oldScreen !== this.selectedScreenId) {
+            ProcessMaker.EventBus.$emit("reloadByNewScreen", this.selectedScreenId);
+          }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChartId);
           this.hideModal();
@@ -290,7 +295,7 @@ export default {
         .catch((error) => {
           console.error("Error: ", error);
         });
-      },
+    },
     saveModal() {
       this.dataProcess = this.process;
       // if method is not called from ProcessMaker core
@@ -395,7 +400,7 @@ export default {
 };
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 label {
   color: #556271;
   margin-top: 16px;
@@ -516,8 +521,7 @@ label {
   font-size: 32px;
 }
 .modal-dialog, .modal-content {
-  max-width: 727px;
-  width: 727px;
+  min-width: 800px;
 }
 .options-launchpad {
   width: 285px;

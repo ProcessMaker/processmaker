@@ -49,6 +49,9 @@
   height: 32px;
   margin: 0px 8px;
 }
+.ellipsis-border .dropdown-toggle::after {
+    display:none;
+} 
 .read-more {
   cursor: pointer;
   color: #1572C2;
