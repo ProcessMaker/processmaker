@@ -666,51 +666,37 @@
           autosaveApiCall() {
             this.options.is_loading = true;
             const draftData = {};
+
+            const saveDraft = () => {
+              screenFields.forEach((field) => {
+                _.set(draftData, field, _.get(this.formData, field));
+              });
+                
+              return ProcessMaker.apiClient
+              .put("drafts/" + this.task.id, draftData)
+              .then((response) => {
+                ProcessMaker.alert(this.$t('Saved'), 'success')
+                this.task.draft = _.merge(
+                  {},
+                  this.task.draft,
+                  response.data
+                );
+              })
+              .catch(() => {
+                this.errorAutosave = true;
+              })
+              .finally(() => {
+                this.options.is_loading = false;
+              });
+            };
             if (screenFields.length === 0) {
               return this.updateScreenFields(this.task.id)
               .then(() => {
-                screenFields.forEach((field) => {
-                  _.set(draftData, field, _.get(this.formData, field));
-                });
-                
-                return ProcessMaker.apiClient
-                .put("drafts/" + this.task.id, draftData)
-                .then((response) => {
-                  ProcessMaker.alert(this.$t('Saved'), 'success')
-                  this.task.draft = _.merge(
-                    {},
-                    this.task.draft,
-                    response.data
-                  );
-                })
-                .catch(() => {
-                  this.errorAutosave = true;
-                })
-                .finally(() => {
-                  this.options.is_loading = false;
-                });
-              
+                return saveDraft();
               });
+            } else {
+              return saveDraft();
             }
-            screenFields.forEach((field) => {
-              _.set(draftData, field, _.get(this.formData, field));
-            });
-            return ProcessMaker.apiClient
-            .put("drafts/" + this.task.id, draftData)
-            .then((response) => {
-              ProcessMaker.alert(this.$t('Saved'), 'success')
-              this.task.draft = _.merge(
-                {},
-                this.task.draft,
-                response.data
-              );
-            })
-            .catch(() => {
-              this.errorAutosave = true;
-            })
-            .finally(() => {
-              this.options.is_loading = false;
-            });
           },
           eraseDraft() {
             this.formDataWatcherActive = false;
