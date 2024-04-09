@@ -235,7 +235,7 @@ export default {
               versionable_type: this.options.type,
             })
             .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
+              ProcessMaker.alert(this.$t("The process version was saved."), "success");
               this.saving = false;
               this.verifyLaunchPad();
               this.hideModal();
