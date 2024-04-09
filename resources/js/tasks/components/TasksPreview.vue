@@ -54,7 +54,7 @@
         class="tasks-preview h-100 p-3"
       >
           <div class="d-flex w-100 mb-3">
-            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady"></slot>
+            <slot name="header" v-bind:close="onClose" v-bind:screenFilteredTaskData="formData" v-bind:taskReady="taskReady">
               <b-button-group>
                 <b-button
                   class="arrow-button"
