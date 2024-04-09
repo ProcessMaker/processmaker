@@ -73,7 +73,7 @@
                     value="true"
                     unchecked-value="false"
                 >
-                {{ $t('Make Public') }}
+                {{ $t('Share Template') }}
                 </b-form-checkbox>
             </b-form-group>
 
