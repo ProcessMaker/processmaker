@@ -241,6 +241,8 @@ export default {
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
     }
+    this.formData.selectedTemplate = true;
+    this.formData.templateId = undefined;
   },
   methods: {
     show() {
