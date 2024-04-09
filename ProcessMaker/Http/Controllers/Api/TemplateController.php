@@ -30,6 +30,7 @@ class TemplateController extends Controller
             ProcessCategory::class,
             'process_category_id',
             'process_templates',
+            'process_templates_package',
         ],
         'screen' => [
             Screen::class,
@@ -37,6 +38,7 @@ class TemplateController extends Controller
             ScreenCategory::class,
             'screen_category_id',
             'screen_templates',
+            'screen_templates_package',
         ],
     ];
 
@@ -252,7 +254,7 @@ class TemplateController extends Controller
 
         // Validate the type
         $validTypes = ['process_templates_package', 'screen_templates_package'];
-        if (!in_array($decoded->type, $validTypes) || $decoded->type !== $type) {
+        if (!in_array($decoded->type, $validTypes) || $decoded->type !== $this->types[$type][5]) {
             return null; // Invalid package type
         }
 
