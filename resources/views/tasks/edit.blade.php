@@ -148,16 +148,13 @@
                               <!-- ADD THE OTHER BUTTONS -->
                               <div class="row button-group">
                                 <div class="col-6">
-                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
-                                    <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-                                      type="button"
-                                      class="btn btn-block button-actions"
-                                      @click="show"
-                                    >
-                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                    </button>
-                                  </template>
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    @click="createRule"
+                                  >
+                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                  </button>
                                 </div>
                                 <div class="col-6">
                                   <button
@@ -180,18 +177,8 @@
                               </div>
                               <div class="row button-group">
                                 <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    @click="createRule"
-                                  >
-                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                  </button>
-                                </div>
-                                <div class="col-6">
                                   <template>
                                     <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                       type="button"
                                       v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
                                       class="btn btn-block button-actions"
@@ -201,6 +188,18 @@
                                     src="../../img/smartinbox-images/fill.svg"
                                     :alt="$t('No Image')"
                                   /> {{__('Quick Fill')}}
+                                    </button>
+                                  </template>
+                                </div>
+                                <div class="col-6">
+                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                    <button
+                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      type="button"
+                                      class="btn btn-block button-actions"
+                                      @click="show"
+                                    >
+                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                     </button>
                                   </template>
                                 </div>
