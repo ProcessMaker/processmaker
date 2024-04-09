@@ -172,7 +172,6 @@
                 "packages": "^0"
             },
             "docker-executors": {
-                "package-ab-testing": "1.0.0",
                 "docker-executor-java": "1.0.4",
                 "docker-executor-python": "1.0.1",
                 "docker-executor-csharp": "1.0.2"
