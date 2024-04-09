@@ -474,7 +474,7 @@ class ProcessTemplate implements TemplateInterface
 
             $this->preparePayloadForImport($payload);
 
-            $importOptions = $this->configureImportOptions($payload);
+            $importOptions = $this->configureImportOptions($request);
 
             $this->performImport($payload, $importOptions);
 
@@ -634,16 +634,9 @@ class ProcessTemplate implements TemplateInterface
      * @param  array  $payload
      * @return \Importer\Options
      */
-    private function configureImportOptions(array $payload): Options
+    private function configureImportOptions(Request $request): Options
     {
-        $postOptions = [];
-        foreach ($payload['export'] as $key => $asset) {
-            $postOptions[$key] = [
-                'mode' => 'copy',
-            ];
-        }
-
-        return new Options($postOptions);
+        return new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
     }
 
     /**
