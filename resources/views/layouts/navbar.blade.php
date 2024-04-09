@@ -17,6 +17,7 @@
     <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback" :size="confirmSize"
+                            :data-test-close="confirmDataTestClose" :data-test-ok="confirmDataTestOk"
                             @close="confirmShow=false">
         </confirmation-modal>
         <message-modal class="d-none d-lg-block" id="messageModal" :show="messageShow" :title="messageTitle" :message="messageMessage"
@@ -111,7 +112,7 @@
                     left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
-                        :key="subItem.url"                    
+                        :key="subItem.url"
                         :href="subItem.url"
                         :target="subItem.attributes.target"
                     >
