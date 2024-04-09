@@ -381,7 +381,7 @@ export default {
       this.formData.defaultTemplateId = templateId;
     },
     handleDefaultTemplateType(type) {
-      const isPublic = type === "Public Templates" ? 1 : 0;
+      const isPublic = type === "Shared Templates" ? 1 : 0;
       this.formData.is_public = isPublic;
     },
 
