@@ -216,7 +216,7 @@ class ScreenTemplate implements TemplateInterface
             $screen->description = $requestData['description'];
             $screen->save();
 
-            $this->syncProjectAssets($requestData);
+            $this->syncProjectAssets($requestData, $screen->id);
 
             return response()->json(['id' => $newScreenId, 'title' => $screen->title]);
         } catch (Exception $e) {
@@ -535,6 +535,12 @@ class ScreenTemplate implements TemplateInterface
         return ScreenTemplates::where('name', $screenTemplate)->firstOrFail();
     }
 
+    /**
+     * Imports a screen using the provided data and existing assets.
+     *
+     * @param array $data The data for the screen import.
+     * @param array $existingAssets The existing assets to be considered during the import.
+     */
     protected function importScreen($data, $existingAssets)
     {
         $templateId = (int) $data['templateId'];
@@ -631,7 +637,10 @@ class ScreenTemplate implements TemplateInterface
         $newScreen->save();
     }
 
-    public function syncProjectAssets($data)
+    /**
+     * Synchronizes project assets with the given data and new screen ID.
+     */
+    public function syncProjectAssets($data, int $newScreenId): void
     {
         if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($data['projects'])) {
             $manifest = $this->getManifest('screen', $newScreenId);
