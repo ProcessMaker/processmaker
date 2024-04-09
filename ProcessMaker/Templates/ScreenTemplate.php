@@ -388,7 +388,7 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     *  Update process template configurations
+     *  Import screen template
      * @param Request
      * @return JsonResponse
      */
@@ -398,27 +398,19 @@ class ScreenTemplate implements TemplateInterface
             $jsonData = $request->file('file')->get();
 
             $payload = json_decode($jsonData, true);
-            $postOptions = [];
 
-            foreach ($payload['export'] as $key => $asset) {
-                $postOptions[$key] = [
-                    'mode' => 'copy',
-                ];
-                $payload['export'][$key]['attributes']['editing_screen_uuid'] = null;
-            }
+            $this->preparePayloadForImport($payload);
 
-            $options = new Options($postOptions);
-            $importer = new Importer($payload, $options);
-            $importer->doImport();
+            $importOptions = $this->configureImportOptions($payload);
 
-            // Call Event to store Template Changes in Log
+            $this->performImport($payload, $importOptions);
+
+            // Dispatch event for template creation
             TemplateCreated::dispatch($payload);
 
             return response()->json([], 200);
         } catch (\Exception $e) {
-            return response([
-                'message' => $e->getMessage(),
-            ], 422);
+            return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
@@ -717,5 +709,50 @@ class ScreenTemplate implements TemplateInterface
         foreach ($result as $media) {
             $template->addMediaFromBase64($media['url'])->toMediaCollection($template->media_collection);
         }
+    }
+
+    /**
+     * Prepare payload for import.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    private function preparePayloadForImport(array &$payload): void
+    {
+        foreach ($payload['export'] as &$asset) {
+            // Modify asset attributes as needed
+            $asset['attributes']['editing_screen_uuid'] = null;
+        }
+    }
+
+    /**
+     * Configure import options.
+     *
+     * @param  array  $payload
+     * @return \Importer\Options
+     */
+    private function configureImportOptions(array $payload): Options
+    {
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            // Set import mode for each asset
+            $postOptions[$key] = ['mode' => 'copy'];
+        }
+
+        return new Options($postOptions);
+    }
+
+    /**
+     * Perform the import operation.
+     *
+     * @param  array  $payload
+     * @param  \Importer\Options  $options
+     * @return void
+     */
+    private function performImport(array $payload, Options $options): void
+    {
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
     }
 }

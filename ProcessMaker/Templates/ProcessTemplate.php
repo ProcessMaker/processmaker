@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
@@ -460,6 +461,33 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
+     *  Import process template
+     * @param Request
+     * @return JsonResponse
+     */
+    public function importTemplate($request) : JsonResponse
+    {
+        try {
+            $jsonData = $request->file('file')->get();
+
+            $payload = json_decode($jsonData, true);
+
+            $this->preparePayloadForImport($payload);
+
+            $importOptions = $this->configureImportOptions($payload);
+
+            $this->performImport($payload, $importOptions);
+
+            // Dispatch event for template creation
+            TemplateCreated::dispatch($payload);
+
+            return response()->json([], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
      * Get process template manifest.
      *
      * @param string $type
@@ -583,5 +611,51 @@ class ProcessTemplate implements TemplateInterface
         }
 
         return null;
+    }
+
+    /**
+     * Prepare payload for import.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    private function preparePayloadForImport(array &$payload): void
+    {
+        foreach ($payload['export'] as &$asset) {
+            // Modify asset attributes as needed
+            $asset['attributes']['editing_process_uuid'] = null;
+            $asset['attributes']['process_id'] = null;
+        }
+    }
+
+    /**
+     * Configure import options.
+     *
+     * @param  array  $payload
+     * @return \Importer\Options
+     */
+    private function configureImportOptions(array $payload): Options
+    {
+        $postOptions = [];
+        foreach ($payload['export'] as $key => $asset) {
+            $postOptions[$key] = [
+                'mode' => 'copy',
+            ];
+        }
+
+        return new Options($postOptions);
+    }
+
+    /**
+     * Perform the import operation.
+     *
+     * @param  array  $payload
+     * @param  \Importer\Options  $options
+     * @return void
+     */
+    private function performImport(array $payload, Options $options): void
+    {
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
     }
 }
