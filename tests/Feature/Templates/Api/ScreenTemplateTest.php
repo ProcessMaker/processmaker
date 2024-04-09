@@ -193,6 +193,10 @@ class ScreenTemplateTest extends TestCase
 
     public function testCreateScreenFromTemplateWithProjects()
     {
+        if (!class_exists(Project::class)) {
+            $this->markTestSkipped('Package Projects is not installed.');
+        }
+
         $project = Project::factory()->create();
         $screenTemplateId = ScreenTemplates::factory()->create()->id;
         $screen_category_id = ScreenCategory::factory()->create()->id;
