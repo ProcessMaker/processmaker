@@ -10,6 +10,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Projects\Models\Project;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -188,6 +189,31 @@ class ScreenTemplateTest extends TestCase
             'is_public' => 0,
             'is_default_template' => 1,
         ]);
+    }
+
+    public function testCreateScreenFromTemplateWithProjects()
+    {
+        if (!class_exists(Project::class)) {
+            $this->markTestSkipped('Package Projects is not installed.');
+        }
+
+        $project = Project::factory()->create();
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $screen_category_id = ScreenCategory::factory()->create()->id;
+        $user = User::factory()->create();
+
+        $route = route('api.template.create', ['screen', $screenTemplateId]);
+        $data = [
+            'title' => 'Test Screen Creation',
+            'description' => 'Test Screen Creation from Template',
+            'screen_category_id' => $screen_category_id,
+            'type' => 'FORM',
+            'templateId' => $screenTemplateId,
+            'projects' => implode(',', [$project->id]),
+        ];
+
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
     }
 
     public function testMakePublicScreenTemplate()
