@@ -374,7 +374,7 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-    const screenFields = @json($screenFields);
+    var screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -655,28 +655,47 @@
           taskUpdated(task) {
             this.task = task;
           },
+          updateScreenFields(taskId) {
+            return ProcessMaker.apiClient
+            .get(`tasks/${taskId}/screen_fields`)
+            .then((response)=> {
+              screenFields = response.data;
+            });
+          },
           autosaveApiCall() {
             this.options.is_loading = true;
             const draftData = {};
-            screenFields.forEach((field) => {
-              _.set(draftData, field, _.get(this.formData, field));
-            });
-            return ProcessMaker.apiClient
-            .put("drafts/" + this.task.id, draftData)
-            .then((response) => {
-              ProcessMaker.alert(this.$t('Saved'), 'success')
-              this.task.draft = _.merge(
-                {},
-                this.task.draft,
-                response.data
-              );
-            })
-            .catch(() => {
-              this.errorAutosave = true;
-            })
-            .finally(() => {
-              this.options.is_loading = false;
-            });
+
+            const saveDraft = () => {
+              screenFields.forEach((field) => {
+                _.set(draftData, field, _.get(this.formData, field));
+              });
+                
+              return ProcessMaker.apiClient
+              .put("drafts/" + this.task.id, draftData)
+              .then((response) => {
+                ProcessMaker.alert(this.$t('Saved'), 'success')
+                this.task.draft = _.merge(
+                  {},
+                  this.task.draft,
+                  response.data
+                );
+              })
+              .catch(() => {
+                this.errorAutosave = true;
+              })
+              .finally(() => {
+                this.options.is_loading = false;
+              });
+            };
+            if (screenFields.length === 0) {
+              return this.updateScreenFields(this.task.id)
+              .then(() => {
+                return saveDraft();
+              });
+            } else {
+              return saveDraft();
+            }
           },
           eraseDraft() {
             this.formDataWatcherActive = false;
