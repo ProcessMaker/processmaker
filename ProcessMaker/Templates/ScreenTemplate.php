@@ -186,20 +186,21 @@ class ScreenTemplate implements TemplateInterface
      *
      * @throws ModelNotFoundException if the screen template is not found
      */
-    public function create($request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
+        $request->validate([
+            'templateId' => 'required|integer',
+        ]);
+
         // Check for existing assets
         $existingAssets = $request->existingAssets;
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
-        $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
-        if ($defaultTemplate) {
-            $requestData['templateId'] = $defaultTemplate->id;
-        }
+        // The created screen should be based on the selected screen template,
+        // regardless of the default template configuration.
 
         $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
         if ($defaultTemplateId) {
-            $requestData['templateId'] = $defaultTemplateId;
             $this->updateDefaultTemplate(
                 $defaultTemplateId,
                 $requestData['type'],
@@ -232,10 +233,14 @@ class ScreenTemplate implements TemplateInterface
      * @param string $screenType The type of the screen (DISPLAY, FORM, CONVERSATIONAL, EMAIL)
      * @return ScreenTemplates|null The default screen template or null if not found
      */
-    public function getDefaultTemplate(string $screenType): ?ScreenTemplates
+    public function getDefaultTemplate(string $screenType, int $isPublic): ?ScreenTemplates
     {
-        return ScreenTemplates::where('screen_type', $screenType)
-            ->where('is_default_template', 1)
+        return ScreenTemplates::query()
+            ->where([
+                'screen_type' => $screenType,
+                'is_public' => $isPublic,
+                'is_default_template' => 1,
+            ])
             ->first();
     }
 
@@ -250,8 +255,8 @@ class ScreenTemplate implements TemplateInterface
     {
         ScreenTemplates::query()
             ->where([
-                ['screen_type', $screenType],
-                ['is_public', $isPublic],
+                'screen_type' => $screenType,
+                'is_public' => $isPublic,
             ])
             ->update([
                 'is_default_template' => 0,
