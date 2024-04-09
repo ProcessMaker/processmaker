@@ -4,9 +4,9 @@
       <PMMessageScreen>
         <template v-slot:content>
           <img src="/img/funnel-fill-elements-blue.svg" 
-               :alt="$t('Select a saved search above.')"/>
-          <b>{{ $t('Select the Load a saved search control above.') }}</b>
-          <span v-html="$t('Select the <b>Load a saved search</b> control above.')">
+                :alt="$t('Select a saved search above.')"/>
+          <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
+          <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
           </span>
         </template>
       </PMMessageScreen>
@@ -46,14 +46,15 @@
         :columns="columns"
         @submit=""
         @count="$emit('count', $event)"
+        @onRendered="onTaskListRendered"
         >
         <template v-slot:no-results>
           <PMMessageScreen>
             <template v-slot:content>
               <img src="/img/funnel-fill-elements-blue.svg" 
                    :alt="$t('Select a saved search above.')"/>
-              <b>{{ $t('Filter the tasks for this rule') }}</b>
-              <span v-html="$t('Please choose the tasks in your inbox that this new rule should apply to. <b>Use the column filters</b> to achieve this.')">
+              <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
+              <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
               </span>
             </template>
           </PMMessageScreen>
@@ -237,6 +238,12 @@
       },
       showColumns() {
         this.$bvModal.show("columns");
+      },
+      onTaskListRendered() {
+        if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
+          let defaultColumns = this.$refs.taskList.tableHeaders;
+          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
+        }
       }
     },
     watch: {
@@ -299,4 +306,13 @@
 </script>
 
 <style scoped>
+.no-rule-class-title {
+  color: #556271;
+  font-size: 24px;
+}
+
+.no-rule-class-text {
+  color: #556271;
+  font-size: 16px;
+}
 </style>
