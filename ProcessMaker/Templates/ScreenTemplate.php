@@ -14,7 +14,6 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
@@ -185,24 +184,27 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request The HTTP request data
      * @return JsonResponse The JSON response containing the new screen ID
      *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the screen template is not found
+     * @throws ModelNotFoundException if the screen template is not found
      */
-    public function create($request) : JsonResponse
+    public function create($request): JsonResponse
     {
         // Check for existing assets
         $existingAssets = $request->existingAssets;
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
         $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
-        $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
-
         if ($defaultTemplate) {
             $requestData['templateId'] = $defaultTemplate->id;
         }
 
-        if ($defaultTemplateId !== null) {
+        $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
+        if ($defaultTemplateId) {
             $requestData['templateId'] = $defaultTemplateId;
-            $this->updateDefaultTemplate($defaultTemplateId, $requestData['type']);
+            $this->updateDefaultTemplate(
+                $defaultTemplateId,
+                $requestData['type'],
+                $requestData['is_public']
+            );
         }
 
         $newScreenId = $this->importScreen($requestData, $existingAssets);
@@ -242,13 +244,23 @@ class ScreenTemplate implements TemplateInterface
      *
      * @param int $defaultTemplateId The ID of the new default template
      * @param string $screenType The type of screen (FORM, DISPLAY, EMAIL, CONVERSATIONAL)
-     * @return void
+     * @param int $isPublic The visibility of the template (0 = private, 1 = public)
      */
-    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType)
+    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType, int $isPublic): void
     {
-        ScreenTemplates::where('screen_type', $screenType)->update(['is_default_template' => 0]);
+        ScreenTemplates::query()
+            ->where([
+                ['screen_type', $screenType],
+                ['is_public', $isPublic],
+            ])
+            ->update([
+                'is_default_template' => 0,
+            ]);
 
-        ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
+        ScreenTemplates::where('id', $defaultTemplateId)
+            ->update([
+                'is_default_template' => 1,
+            ]);
     }
 
     /**

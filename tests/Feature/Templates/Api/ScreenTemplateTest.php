@@ -4,7 +4,6 @@ namespace Tests\Feature\Templates\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
@@ -136,6 +135,59 @@ class ScreenTemplateTest extends TestCase
         ];
         $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
         $response->assertStatus(200);
+    }
+
+    public function testCreateScreenFromTemplateWithDefault()
+    {
+        $user = User::factory()->create();
+        $screenCategory = ScreenCategory::factory()->create();
+        $publicScreenTemplate = ScreenTemplates::factory()->create([
+            'name' => 'My Public Template',
+            'is_public' => true,
+            'is_default_template' => true,
+        ]);
+        $myScreenTemplate = ScreenTemplates::factory()->create([
+            'name' => 'My Template',
+            'is_public' => false,
+            'is_default_template' => true,
+        ]);
+
+        // Create a screen from a public template.
+        $data = [
+            'title' => $this->faker->name(),
+            'type' => 'FORM',
+            'description' => $this->faker->sentence(),
+            'is_public' => false,
+            'screen_category_id' => $screenCategory->id,
+            'defaultTemplateId' => $publicScreenTemplate->id,
+        ];
+        $route = route('api.template.create', ['screen', $publicScreenTemplate->id]);
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+
+        // Create a screen from my template.
+        $data = [
+            'title' => $this->faker->name(),
+            'type' => 'FORM',
+            'description' => $this->faker->sentence(),
+            'is_public' => false,
+            'screen_category_id' => $screenCategory->id,
+            'defaultTemplateId' => $myScreenTemplate->id,
+        ];
+        $route = route('api.template.create', ['screen', $myScreenTemplate->id]);
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'My Public Template',
+            'is_public' => 1,
+            'is_default_template' => 1,
+        ]);
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'My Template',
+            'is_public' => 0,
+            'is_default_template' => 1,
+        ]);
     }
 
     public function testMakePublicScreenTemplate()
