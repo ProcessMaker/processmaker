@@ -17,10 +17,11 @@ class ProcessLaunchpadTest extends TestCase
 
     const STRUCTURE = [
         'id',
-        'user_id',
-        'process_id',
-        'updated_at',
-        'created_at',
+        'uuid',
+        'name',
+        'launchpad',
+        'media',
+        'embed'
     ];
 
     /**
@@ -36,7 +37,7 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $this->assertEmpty($response->launchpad);
+        $response->assertJsonStructure(self::STRUCTURE);
         
         // Create data related with the auth user
         $user = Auth::user();
@@ -50,9 +51,8 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $this->assertArrayHasKey('launchpad', $response);
-        $this->assertArrayHasKey('embed', $response);
-        $this->assertArrayHasKey('media', $response);
+        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure(['launchpad' => ['id', 'uuid']]);
     }
 
     /**
