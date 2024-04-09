@@ -226,7 +226,7 @@ class ScreenTemplateTest extends TestCase
         $jsonFileName = 'screen_template_routes.json';
         $file = UploadedFile::fake()->createWithContent($jsonFileName, json_encode($payload));
         // API call to import screen template
-        $url = '/import/screen-template';
+        $url = '/template/screen/do-import';
         $params = ['file' => $file];
         $importResponse = $this->apiCall('POST', $url, $params);
         $importResponse->assertStatus(200);
