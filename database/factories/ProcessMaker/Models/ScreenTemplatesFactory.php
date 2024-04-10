@@ -29,7 +29,7 @@ class ScreenTemplatesFactory extends Factory
             'name' => $this->faker->unique()->name(),
             'description' => $this->faker->unique()->sentence(20),
             'user_id' => User::factory()->create()->getKey(),
-            'editing_screen_uuid' => $screen->uuid,
+            'editing_screen_uuid' => null,
             'screen_type' => 'FORM',
             'media_collection' => $this->faker->unique()->name(),
             'manifest' => $manifest,
@@ -47,14 +47,14 @@ class ScreenTemplatesFactory extends Factory
 
     public function withCustomCss()
     {
-        return $this->state(function (array $attributes) {
-            $screen = Screen::where('uuid', $attributes['editing_screen_uuid'])->first();
-            $screen->fill(['custom_css' => 'body { background-color: red; }'])->save();
+        return $this->state(function () {
+            $screen = Screen::factory()->create([
+                'custom_css' => 'body { background-color: red; }',
+            ]);
             $response = (new ExportController)->manifest('screen', $screen->id);
-            $manifest = $response->getContent();
 
             return [
-                'manifest' => $manifest,
+                'manifest' => $response->getContent(),
             ];
         });
     }
