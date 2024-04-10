@@ -5,12 +5,12 @@
       class="pagination-button"
       @click="previousPage"
     >
-      <strong><</strong>
+      <strong>&lt;</strong>
     </button>
 
     <input
-      type="text"
       v-model="pageInput"
+      type="text"
       :placeholder="`${currentPage}-${totalPageCount}`"
       class="pagination-button pagination-input"
       @keyup.enter="redirectPage(pageInput)"
@@ -21,19 +21,26 @@
       class="pagination-button"
       @click="nextPage"
     >
-      <strong>></strong>
+      <span>&gt;</span>
     </button>
     <span class="pagination-total">
       {{ totalItems }}
     </span>
     <div class="btn-group dropup pagination-dropdown-group">
-      <button type="button" class="btn dropdown-toggle pagination-dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button
+        type="button"
+        class="btn dropdown-toggle pagination-dropup"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
         {{ perPageButton }}
       </button>
       <div class="dropdown-menu">
         <a
           v-for="(item, index) in itemsPerPage"
-          :key="index" class="dropdown-item pagination-dropdown-items"
+          :key="index"
+          class="dropdown-item pagination-dropdown-items"
           href="#"
           @click="changePerPage(item.value)"
         >
@@ -96,12 +103,12 @@ export default {
     },
     totalItems() {
       if (this.meta.total === 1) {
-        return this.meta.total + " item";
+        return `${this.meta.total} item`;
       }
-      return this.meta.total + " items";
+      return `${this.meta.total} items`;
     },
     perPageButton() {
-      return this.meta.per_page + " per Page"
+      return `${this.meta.per_page} per Page`;
     },
   },
   methods: {
@@ -116,13 +123,13 @@ export default {
       }
     },
     goToPage(page) {
-      this.$emit('page-change', page);
+      this.$emit("page-change", page);
     },
     changePerPage(value) {
-      this.$emit('per-page-change', value);
+      this.$emit("per-page-change", value);
     },
     redirectPage(value) {
-      this.$emit('page-change', value);
+      this.$emit("page-change", value);
       this.pageInput = "";
     },
   },
