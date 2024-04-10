@@ -29,20 +29,23 @@
       <div class="col-sm-12">
         <ul class="nav nav-tabs task-nav" id="requestTab" role="tablist">
           <li class="nav-item">
-            <a class="nav-link task-nav-link active" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab"
-              aria-controls="inbox" @click="switchTab('inbox')" aria-selected="true">
+            <a class="nav-link task-nav-link" id="inbox-tab" :data-toggle="isDataLoading ? '' : 'tab'" href="#inbox" role="tab"
+              aria-controls="inbox" @click.prevent="!isDataLoading ? switchTab('inbox') : null" aria-selected="true"
+              :class="{ 'active': inbox }">
               {{ __('Inbox') }}
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link task-nav-link" id="priority-tab" data-toggle="tab" href="#inbox" role="tab"
-              aria-controls="inbox" @click="switchTab('priority')" aria-selected="true">
+            <a class="nav-link task-nav-link" id="priority-tab" :data-toggle="isDataLoading ? '' : 'tab'" href="#inbox" role="tab"
+              aria-controls="inbox" @click.prevent="!isDataLoading ? switchTab('priority') : null" aria-selected="true"
+              :class="{ 'active': priority }">
               {{ __('Priority') }}
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link task-nav-link" id="drafts-tab" data-toggle="tab" href="#inbox" role="tab"
-              aria-controls="inbox" @click="switchTab('draft')" aria-selected="true">
+            <a class="nav-link task-nav-link" id="drafts-tab" :data-toggle="isDataLoading ? '' : 'tab'" href="#inbox" role="tab"
+              aria-controls="inbox" @click.prevent="!isDataLoading ? switchTab('draft') : null" aria-selected="true"
+              :class="{ 'active': draft }">
               {{ __('Drafts') }}
             </a>
           </li>
@@ -125,6 +128,7 @@
                 :disable-tooltip="false"
                 :disable-quick-fill-tooltip="false"
                 @in-overdue="setInOverdueMessage"
+                @data-loading="dataLoading"
               ></tasks-list>
             </div>
 
