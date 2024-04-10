@@ -128,6 +128,7 @@
       requestData() {
         let url = this.baseURL + "?"
                 + "page=" + this.page + "&"
+                + "user_id=" + Processmaker.userId + "&"
                 + "per_page=" + this.per_page + "&"
                 + "order_by=" + this.order_by + "&"
                 + "order_direction=" + this.order_direction + "&"

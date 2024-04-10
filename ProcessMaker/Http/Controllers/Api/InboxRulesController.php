@@ -23,8 +23,9 @@ class InboxRulesController extends Controller
         $order_direction = $request->input('order_direction', 'desc');
         $per_page = $request->input('per_page', 10);
         $filter = $request->input('filter', '');
+        $user_id = $request->input('user_id', 'userId');
 
-        $query = InboxRule::query();
+        $query = InboxRule::query()->where('user_id', $user_id);
 
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
