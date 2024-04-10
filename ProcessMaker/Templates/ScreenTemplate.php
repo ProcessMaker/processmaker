@@ -379,6 +379,7 @@ class ScreenTemplate implements TemplateInterface
             'description',
             'screen_category_id',
             'version',
+            'screen_type',
         ])->where('id', $id)->firstOrFail();
 
         $categories = ScreenCategory::orderBy('name')
