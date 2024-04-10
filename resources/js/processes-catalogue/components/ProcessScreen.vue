@@ -125,7 +125,7 @@ export default {
         .get(`screens/${this.screen_id}`)
         .then((response) => {
           this.screen = response.data;
-          this.showScreen = true;
+          this.showScreen = response.data.config !== null;
         });
     },
   },

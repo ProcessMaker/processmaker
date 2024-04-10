@@ -1,5 +1,6 @@
 <template>
   <multiselect
+    id="screenTypeDropdown"
     v-model="selectedType"
     :options="screenTypeOptions"
     track-by="type"

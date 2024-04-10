@@ -331,10 +331,6 @@
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
                   .then(response => {
                     this.$refs.openModal.show();
-
-                    let message = "The inbox rule '{{name}}' was updated.";
-                    message = this.$t(message, {name: this.ruleName});
-                    ProcessMaker.alert(message, "success");
                   })
                   .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
@@ -349,10 +345,6 @@
           ProcessMaker.apiClient.post('/tasks/rules', params)
                   .then(response => {
                     this.$refs.openModal.show();
-
-                    let message = "The inbox rule '{{name}}' was created.";
-                    message = this.$t(message, {name: this.ruleName});
-                    ProcessMaker.alert(message, "success");
                   })
                   .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";

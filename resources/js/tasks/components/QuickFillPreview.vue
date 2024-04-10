@@ -55,7 +55,7 @@
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
         >
-          <template v-slot:preview-header="{ close, screenFilteredTaskData }">
+          <template v-slot:preview-header="{ close, screenFilteredTaskData, taskReady }">
             <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
@@ -64,6 +64,7 @@
                     v-if="propFromButton === 'inboxRules'"
                     class="button-task mr-2"
                     variant="primary"
+                    :disabled="!taskReady"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
                   >
@@ -90,6 +91,7 @@
                   <b-button
                     v-if="propFromButton === 'previewTask'"
                     class="button-task mr-2"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
@@ -103,6 +105,7 @@
                   <b-button
                     v-if="propFromButton === 'fullTask'"
                     class="button-task mr-2"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisDataFromFullTask(screenFilteredTaskData)"

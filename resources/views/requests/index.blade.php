@@ -51,14 +51,6 @@
                 @endcan
             </counter-card-group>
 
-            <ul class="nav nav-tabs requests-nav" id="requestTab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link requests-nav-link active" id="inbox-tab" data-toggle="tab" href="#inbox" role="tab"
-                  aria-controls="inbox" aria-selected="true">
-                  {{ __('Inbox') }}
-                </a>
-              </li>
-            </ul>
             <div class="tab-content" id="requests-tabContent">
                 <div class="tab-pane fade show active" id="inbox" role="tabpanel" aria-labelledby="inbox-tab">
 
