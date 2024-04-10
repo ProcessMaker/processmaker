@@ -379,6 +379,9 @@ export default {
       }
       this.$emit('count', newData.meta?.count);
     },
+    shouldShowLoader(value) {
+      this.$emit("data-loading", value);
+    },
   },
   mounted: function mounted() {
     this.getAssignee("");

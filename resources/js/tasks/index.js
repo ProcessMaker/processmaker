@@ -18,6 +18,10 @@ new Vue({
     additions: [],
     priorityField: "is_priority",
     draftField: "draft",
+    isDataLoading: false,
+    inbox: true,
+    priority: false,
+    draft: false,
     priorityFilter: [
       {
         "subject": {
@@ -77,6 +81,9 @@ new Vue({
   },
   methods: {
     switchTab(tab) {
+      this.inbox = tab === "inbox";
+      this.draft = tab === "draft";
+      this.priority = tab === "priority";
       switch (tab) {
         case "inbox":
           this.onInbox();
@@ -90,6 +97,9 @@ new Vue({
         default:
           break;
       }
+    },
+    dataLoading(value) {
+      this.isDataLoading = value;
     },
     onInbox() {
       this.removeTabFilter(this.priorityField);
