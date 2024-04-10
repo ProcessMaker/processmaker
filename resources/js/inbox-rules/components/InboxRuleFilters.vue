@@ -4,7 +4,7 @@
       <PMMessageScreen>
         <template v-slot:content>
           <img src="/img/funnel-fill-elements-blue.svg" 
-                :alt="$t('Select a saved search above.')"/>
+               :alt="$t('Select a saved search above.')"/>
           <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
           <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
           </span>
@@ -106,7 +106,8 @@
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
         ready: false,
-        task: null
+        task: null,
+        loadInitialAdvancedFilter: null
       };
     },
     components: {
@@ -129,6 +130,9 @@
       },
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
+        if (this.$refs.taskList) {
+          this.$refs.taskList.refreshData(this.loadInitialAdvancedFilter);
+        }
       },
       defaultTaskFilters() {
         return {
@@ -244,6 +248,12 @@
           let defaultColumns = this.$refs.taskList.tableHeaders;
           this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
         }
+        this.saveInitialAdvancedFilterConfiguration();
+      },
+      saveInitialAdvancedFilterConfiguration() {
+        if (this.loadInitialAdvancedFilter === null) {
+          this.loadInitialAdvancedFilter = _.cloneDeep(this.$refs.taskList.advancedFilter);
+        }
       }
     },
     watch: {
@@ -306,13 +316,13 @@
 </script>
 
 <style scoped>
-.no-rule-class-title {
-  color: #556271;
-  font-size: 24px;
-}
+  .no-rule-class-title {
+    color: #556271;
+    font-size: 24px;
+  }
 
-.no-rule-class-text {
-  color: #556271;
-  font-size: 16px;
-}
+  .no-rule-class-text {
+    color: #556271;
+    font-size: 16px;
+  }
 </style>
