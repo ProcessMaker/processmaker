@@ -142,9 +142,11 @@
         this.showMenu(true);
       },
       showMenu(sw) {
-        let obj = document.getElementById("inboxRuleButtonsDropdown")
-                .querySelector(".dropdown-menu")
-                .classList;
+        let button = document.getElementById("inboxRuleButtonsDropdown");
+        if (!button) {
+          return;
+        }
+        let obj = button.querySelector(".dropdown-menu").classList;
         if (sw === true) {
           obj.add("inbox-rule-buttons-show");
         } else {

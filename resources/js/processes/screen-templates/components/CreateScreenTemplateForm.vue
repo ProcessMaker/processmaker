@@ -44,6 +44,7 @@
                             :invalid-feedback="errorMessage('type', errors)"
                         >
                             <screen-type-dropdown
+                                id="createTemplateScreenType"
                                 :value="screenType"
                                 :screen-types="types"
                                 copy-asset-mode="true"
