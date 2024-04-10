@@ -85,6 +85,11 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->destroy($id);
     }
 
+    public function importTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->importTemplate($request);
+    }
+
     public function publishTemplate(string $type, Request $request)
     {
         return (new $this->types[$type][1])->publishTemplate($request);
