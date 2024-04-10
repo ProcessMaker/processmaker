@@ -531,13 +531,13 @@ export default {
       }
     },
     removeElement() {
-      this.$parent.$refs["menu-collapse"].firstTime = true;
-      this.$parent.$refs["menu-collapse"].getMenuGrups();
+      this.$parent.$refs["menu-collapse"].changeEmailServers = true;
+      this.$parent.$refs["menu-collapse"].refresh();
     },
     refresh() {
       this.$refs.table.refresh();
       this.$parent.$refs["menu-collapse"].firstTime = false;
-      this.$parent.$refs["menu-collapse"].getMenuGrups();
+      this.$parent.$refs["menu-collapse"].refresh();
     },
     formatGroupName(name) {
       return name.toLowerCase().replaceAll(" ", "-");
