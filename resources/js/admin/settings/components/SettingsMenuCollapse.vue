@@ -82,8 +82,7 @@ export default {
           this.checkCollapedMenus();
           if (this.changeEmailServers) {
             this.checkChangeEmailServer();
-          }
-          if (this.firstTime) {
+          } else if (this.firstTime) {
             this.selectFirstItem();
           }
         });
