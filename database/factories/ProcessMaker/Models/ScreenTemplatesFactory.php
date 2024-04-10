@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\User;
 
 /**
@@ -44,5 +43,19 @@ class ScreenTemplatesFactory extends Factory
                 return ScreenCategory::factory()->create()->getKey();
             },
         ];
+    }
+
+    public function withCustomCss()
+    {
+        return $this->state(function () {
+            $screen = Screen::factory()->create([
+                'custom_css' => 'body { background-color: red; }',
+            ]);
+            $response = (new ExportController)->manifest('screen', $screen->id);
+
+            return [
+                'manifest' => $response->getContent(),
+            ];
+        });
     }
 }
