@@ -16,22 +16,14 @@
         {{ taskTitle }}
       </div>
       <div class="mb-3">
-        <pmql-input ref="pmql_input"
-                    :value="pmql"
-                    search-type="tasks"
-                    :ai-enabled="false"
-                    :show-filters="true"
-                    :aria-label="$t('Advanced Search (PMQL)')"
-                    :advanced-filter-prop="savedSearchAdvancedFilter"
-                    :show-search-bar="false"
-                    :show-pmql-badge="!!savedSearchId"
-                    >
+        <PMBadgesFilters :value="pmql"
+                         :advancedFilterProp="savedSearchAdvancedFilter">
           <template v-slot:right-of-badges v-if="showColumnSelectorButton">
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
             </b-button>
           </template>
-        </pmql-input>
+        </PMBadgesFilters>
       </div>
 
       <tasks-list
@@ -83,6 +75,7 @@
   import TasksList from "../../tasks/components/TasksList.vue";
   import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
   import PMMessageScreen from "../../components/PMMessageScreen.vue";
+  import PMBadgesFilters from "../../components/PMBadgesFilters.vue";
   export default {
     props: {
       savedSearchId: {
@@ -113,7 +106,8 @@
     components: {
       TasksList,
       ColumnChooserAdapter,
-      PMMessageScreen
+      PMMessageScreen,
+      PMBadgesFilters
     },
     methods: {
       emitSavedSearchData() {
@@ -265,6 +259,7 @@
       savedSearchAdvancedFilter: {
         deep: true,
         handler() {
+          //to do: reviewing this assignment may result in a loop.
           this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(this.savedSearchAdvancedFilter);
           this.emitSavedSearchData();
         }
