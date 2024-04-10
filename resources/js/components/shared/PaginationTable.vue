@@ -22,7 +22,7 @@
       class="pagination-button"
       @click="nextPage"
     >
-      <span>&gt;</span>
+      <strong>&gt;</strong>
     </button>
     <span class="pagination-total">
       {{ totalItems }}
