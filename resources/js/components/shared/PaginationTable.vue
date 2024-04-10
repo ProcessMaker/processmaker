@@ -9,9 +9,10 @@
     </button>
 
     <input
+      ref="pageInput"
       v-model="pageInput"
       type="text"
-      :placeholder="`${currentPage}-${totalPageCount}`"
+      :placeholder="pageInputPlaceholder"
       class="pagination-button pagination-input"
       @keyup.enter="redirectPage(pageInput)"
     >
@@ -110,6 +111,19 @@ export default {
     perPageButton() {
       return `${this.meta.per_page} per Page`;
     },
+    pageInputPlaceholder() {
+      return `${this.currentPage}-${this.totalPageCount}`;
+    },
+  },
+  watch: {
+    pageInputPlaceholder() {
+      this.adjustInputWidth();
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.adjustInputWidth();
+    });
   },
   methods: {
     previousPage() {
@@ -131,6 +145,23 @@ export default {
     redirectPage(value) {
       this.$emit("page-change", value);
       this.pageInput = "";
+    },
+    adjustInputWidth() {
+      const input = this.$refs.pageInput;
+      const span = document.createElement("span");
+      document.body.appendChild(span);
+
+      span.style.font = window.getComputedStyle(input).font;
+      span.style.position = "absolute";
+      span.style.visibility = "hidden";
+      span.style.whiteSpace = "nowrap";
+
+      span.textContent = input.value || input.placeholder;
+
+      const width = span.offsetWidth;
+      document.body.removeChild(span);
+
+      input.style.width = `${width + 30}px`;
     },
   },
 };
@@ -179,9 +210,6 @@ export default {
   font-weight: 400;
   font-size: 14.5px;
   color: #5C5C63;
-}
-.pagination-input {
-  width: 50px;
 }
 .pagination-input::placeholder {
   text-align: center;
