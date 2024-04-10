@@ -4,7 +4,6 @@
     class="screen-templates-tooltip"
   >
     <slot
-      class="screen-templates-tooltip-body"
       name="screen-templates-tooltip-body"
     />
   </div>
@@ -24,7 +23,6 @@ export default {
 <style scoped>
 .screen-templates-tooltip {
   position: absolute;
-  padding: 8px;
   border-radius: 4px;
   height: 45px;
   background-color: #FFFFFF;
