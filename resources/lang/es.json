@@ -1375,6 +1375,7 @@
   "Signal": "Señal",
   "Signals": "Señales",
   "Subscriber": "Suscriptor",
+  "The process version was saved.": "La versión del proceso se ha guardado.",
   "The version was saved.": "Se ha guardado la versión.",
   "The Process field is required.": "El campo Proceso es obligatorio.",
   "The start event of the call activity is not a start event": "El evento de inicio de la actividad de llamada no es un evento de inicio",
