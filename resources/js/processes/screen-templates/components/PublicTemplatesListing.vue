@@ -300,5 +300,6 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+  margin-top: 4px;
 }
 </style>
