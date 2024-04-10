@@ -5,7 +5,9 @@ namespace ProcessMaker\Templates;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
@@ -398,6 +400,33 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
+     *  Import screen template
+     * @param Request
+     * @return JsonResponse
+     */
+    public function importTemplate($request) : JsonResponse
+    {
+        try {
+            $jsonData = $request->file('file')->get();
+
+            $payload = json_decode($jsonData, true);
+
+            $this->preparePayloadForImport($payload);
+
+            $importOptions = $this->configureImportOptions($payload);
+
+            $this->performImport($payload, $importOptions);
+
+            // Dispatch event for template creation
+            TemplateCreated::dispatch($payload);
+
+            return response()->json([], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
      * Delete screen template media
      * @param mixed $request
      * @return bool
@@ -701,5 +730,50 @@ class ScreenTemplate implements TemplateInterface
         foreach ($result as $media) {
             $template->addMediaFromBase64($media['url'])->toMediaCollection($template->media_collection);
         }
+    }
+
+    /**
+     * Prepare payload for import.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    private function preparePayloadForImport(array &$payload): void
+    {
+        foreach ($payload['export'] as &$asset) {
+            // Modify asset attributes as needed
+            $asset['attributes']['editing_screen_uuid'] = null;
+        }
+    }
+
+    /**
+     * Configure import options.
+     *
+     * @param  array  $payload
+     * @return \Importer\Options
+     */
+    private function configureImportOptions(array $payload): Options
+    {
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            // Set import mode for each asset
+            $postOptions[$key] = ['mode' => 'copy'];
+        }
+
+        return new Options($postOptions);
+    }
+
+    /**
+     * Perform the import operation.
+     *
+     * @param  array  $payload
+     * @param  \Importer\Options  $options
+     * @return void
+     */
+    private function performImport(array $payload, Options $options): void
+    {
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
     }
 }
