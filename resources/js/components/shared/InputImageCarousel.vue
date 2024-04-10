@@ -279,7 +279,7 @@
           <button
             type="button"
             class="btn btn-cancel-delete btns-popover"
-            @click="showNewEmbed = false"
+            @click="cancelNewEmbed"
           >
             {{ $t('Cancel') }}
           </button>
@@ -637,6 +637,10 @@ export default {
         type: "delete",
       };
       ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
+    },
+    cancelNewEmbed() {
+      this.newEmbed = "";
+      this.showNewEmbed = false;
     },
   },
 };
