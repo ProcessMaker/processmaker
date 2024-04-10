@@ -280,7 +280,7 @@ export default {
           properties: this.dataProcess.properties,
         })
         .then((response) => {
-          ProcessMaker.alert(this.$t("The process was saved."), "success", 5, true);
+          ProcessMaker.alert(this.$t("The launchpad settings were saved."), "success", 5, true);
           const params = {
             indexImage: null,
             type: "add",
