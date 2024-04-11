@@ -827,6 +827,6 @@ label {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 .popover-embed {
-  width: 474px;
+  width: 432px;
 }
 </style>
