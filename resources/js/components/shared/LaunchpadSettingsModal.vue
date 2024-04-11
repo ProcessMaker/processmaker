@@ -5,9 +5,11 @@
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Launchpad Settings')"
-    @ok.prevent="saveModal()"
-    @hidden="hideModal()"
-  > 
+    :setCustomButtons="true"
+    :customButtons="customModalButtons"
+    @saveModal="saveModal"
+    @closeModal="closeModal"
+  >
     <div class="modal-content-custom">
       <p class="text-info-custom">
         {{ $t('Here you can personalize how your process will be shown in the process browser') }}
@@ -163,6 +165,10 @@ export default {
       mediaImageId: [],
       dataProcess: {},
       oldScreen: 0,
+      customModalButtons: [
+        {"content": "Cancel", "action": "closeModal", "variant": "outline-secondary", "dataTest": "launchpad-modal-btn-cancel"},
+        {"content": "Save", "action": "saveModal", "variant": "secondary", "dataTest": "launchpad-modal-btn-ok"},
+      ],
     };
   },
   mounted() {
@@ -228,6 +234,10 @@ export default {
       this.errors = "";
       this.getLaunchpadSettings();
       this.$refs["my-modal-save"].show();
+    },
+    closeModal() {
+      this.$bvModal.hide('launchpadSettingsModal');
+      this.errors = "";
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
@@ -369,7 +379,7 @@ export default {
           if(ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
-        } 
+        }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;

@@ -152,8 +152,8 @@
       />
       <pagination
         ref="pagination"
-        :single="$t('Public Template')"
-        :plural="$t('Public Templates')"
+        :single="$t('Shared Template')"
+        :plural="$t('Shared Templates')"
         :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -300,5 +300,6 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+  margin-top: 4px;
 }
 </style>

@@ -247,7 +247,7 @@ class ScreenTemplateTest extends TestCase
         ];
         $response = $this->apiCall('PUT', $route, $params);
 
-        // Check that the screen template is now public.
+        // Check that the screen template is now shared.
         $response->assertStatus(200);
         $screenTemplate->refresh();
         $this->assertEquals(1, $screenTemplate->is_public);

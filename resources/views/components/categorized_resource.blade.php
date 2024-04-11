@@ -71,7 +71,7 @@
                     onclick="loadPublicScreenTemplates()"
                     aria-controls="nav-publicTemplates"
                     aria-selected="true">
-                        {{ $tabs[3] ?? __('Public Templates') }}
+                        {{ $tabs[3] ?? __('Shared Templates') }}
                 </a>
             </li>
         @else

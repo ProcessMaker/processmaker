@@ -75,7 +75,7 @@ export default {
   },
   computed: {
     isDefaultTemplatePublic() {
-      return this.templateType === 'Public Templates' ? 1 : 0;
+      return this.templateType === 'Shared Templates' ? 1 : 0;
     }
   },
   watch: {
@@ -106,14 +106,14 @@ export default {
       let url;
 
       if (this.templateType === "") {
-        this.templateType = "Public Templates";
+        this.templateType = "Shared Templates";
       }
 
       this.loading = true;
       this.apiDataLoading = true;
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
 
-      if (this.templateType === "Public Templates") {
+      if (this.templateType === "Shared Templates") {
         url = `templates/screen?screen_type=${this.selectedScreenType}&is_public=1`;
       } else if (this.templateType === "My Templates") {
         url = `templates/screen?screen_type=${this.selectedScreenType}&is_public=0`;
