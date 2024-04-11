@@ -754,12 +754,12 @@ export default {
         };
       }
       if (!("process" in record)) {
-        record.process = {
+          record.process = {
           name: null
         };
       }
     }
-  }
+  },
 };
 </script>
 
