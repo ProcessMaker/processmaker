@@ -21,7 +21,7 @@
             __('Screens'),
             __('Categories'),
             __('My Templates'),
-            __('Public Templates'),
+            __('Shared Templates'),
         ],
         'listConfig' => $listConfig,
         'catConfig' => $catConfig,
