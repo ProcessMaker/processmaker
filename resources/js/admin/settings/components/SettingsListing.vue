@@ -30,7 +30,7 @@
               :key="`btn-${index}`"
               :ref="formatGroupName(btn.group)"
               :data-cy="btn.key"
-              :disabled="false"
+              :disabled="disableButton"
               class="ml-2 nowrap"
               @click="handler(btn)"
             >
@@ -258,6 +258,7 @@ export default {
       shouldDisplayNoDataMessage: false,
       noDataMessageConfig: null,
       loading: true,
+      disableButton: false,
     };
   },
   computed: {
@@ -526,6 +527,7 @@ export default {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
         if (btn.ui.handler === "addMailServer") {
+          this.disableButton = true;
           this.$parent.$refs["menu-collapse"].changeEmailServers = true;
         }
       }
