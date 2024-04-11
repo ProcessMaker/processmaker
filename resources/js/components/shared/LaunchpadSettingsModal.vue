@@ -483,7 +483,7 @@ label {
   min-width: 800px;
 }
 .options-launchpad {
-  width: 285px;
+  width: 350px;
 }
 .modal-content-custom {
   padding: 11px 8px 0px 8px;
