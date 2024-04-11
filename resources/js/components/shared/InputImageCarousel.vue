@@ -254,7 +254,7 @@
       placement="topright"
       triggers="hover focus"
     >
-      <div>
+      <div class="popover-embed">
         <label class="mt-0">
           {{ $t("Embed URL") }}
         </label>
@@ -826,7 +826,7 @@ label {
   width: 474px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
-.popover-body {
-  max-width: 474px;
+.popover-embed {
+  width: 474px;
 }
 </style>
