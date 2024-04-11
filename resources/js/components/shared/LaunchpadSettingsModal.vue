@@ -5,9 +5,11 @@
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Launchpad Settings')"
-    @ok.prevent="saveModal()"
-    @hidden="hideModal()"
-  > 
+    :setCustomButtons="true"
+    :customButtons="customModalButtons"
+    @saveModal="saveModal"
+    @closeModal="closeModal"
+  >
     <div class="modal-content-custom">
       <p class="text-info-custom">
         {{ $t('Here you can personalize how your process will be shown in the process browser') }}
@@ -24,66 +26,60 @@
         </div>
         <div class="options-launchpad">
           <label>{{ $t("Launch Screen") }}</label>
-          <div class="dropdown">
-            <button
-              id="statusDropdownScreen"
-              class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-              type="button"
-              data-toggle="dropdown"
-              data-bs-auto-close="outside"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              <div class="d-flex align-items-center">
-                <span class="custom-text">{{ selectedScreen || $t('Select Screen') }}</span>
-              </div>
-            </button>
-            <div
-              class="dropdown-menu custom-dropdown"
-              aria-labelledby="statusDropdownScreen"
-            >
-              <a
-                v-for="(item, index) in dropdownSavedScreen"
-                :key="index"
-                class="dropdown-item"
-                @click="selectScreenOption(item)"
+          <div class="multiselect-screen custom-multiselect">
+            <b-input-group>
+              <multiselect
+                v-model="selectedScreen"
+                :placeholder="$t('Type to search Screen')"
+                :options="dropdownSavedScreen"
+                :multiple="false"
+                track-by="id"
+                label="title"
+                :show-labels="false"
+                :searchable="true"
+                :internal-search="true"
+                :allow-empty="false"
+                @open="retrieveDisplayScreen"
+                @search-change="retrieveDisplayScreen"
               >
-                {{ item.title || $t('Select Screen') }}
-              </a>
-            </div>
+                <template slot="noResult">
+                  {{ $t("No elements found. Consider changing the search query.") }}
+                </template>
+                <template slot="noOptions">
+                  {{ $t("No Data Available") }}
+                </template>
+              </multiselect>
+            </b-input-group>
           </div>
           <label>
             {{ $t("Launchpad Icon") }}
           </label>
           <icon-dropdown ref="icon-dropdown" />
           <label>{{ $t("Chart") }}</label>
-          <div class="dropdown">
-            <button
-              id="statusDropdown"
-              class="btn dropdown-toggle dropdown-style w-100 d-flex justify-content-between align-items-center btn-custom"
-              type="button"
-              data-toggle="dropdown"
-              data-bs-auto-close="outside"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              <div class="d-flex align-items-center">
-                  <span class="custom-text">{{ selectedSavedChart || $t('Select Chart') }}</span>
-              </div>
-            </button>
-            <div
-              class="dropdown-menu custom-dropdown"
-              aria-labelledby="statusDropdown"
-            >
-              <a
-                v-for="(item, index) in dropdownSavedCharts"
-                :key="index"
-                class="dropdown-item"
-                @click="selectOption(item)"
+          <div class="multiselect-chart custom-multiselect">
+            <b-input-group>
+              <multiselect
+                v-model="selectedSavedChart"
+                :placeholder="$t('Type to search Chart')"
+                :options="dropdownSavedCharts"
+                :multiple="false"
+                track-by="id"
+                label="title"
+                :show-labels="false"
+                :searchable="true"
+                :internal-search="true"
+                :allow-empty="false"
+                @open="retrieveSavedSearchCharts"
+                @search-change="retrieveSavedSearchCharts"
               >
-                {{ item.title || $t('Select Chart') }}
-              </a>
-            </div>
+                <template slot="noResult">
+                  {{ $t("No elements found. Consider changing the search query.") }}
+                </template>
+                <template slot="noOptions">
+                  {{ $t("No Data Available") }}
+                </template>
+              </multiselect>
+            </b-input-group>
           </div>
         </div>
       </div>
@@ -145,7 +141,7 @@ export default {
       subject: "",
       description: "",
       errors: "",
-      selectedSavedChart: "",
+      selectedSavedChart: null,
       defaultScreen:{
         id: 0,
         uuid: "",
@@ -164,14 +160,15 @@ export default {
       selectedLaunchpadIconLabel: "",
       showVersionInfo: true,
       isSecondaryColor: false,
-      selectedSavedChartId: "",
-      selectedScreen: "",
-      selectedScreenId: "",
-      selectedScreenUuid: "",
+      selectedScreen: null,
       processId: "",
       mediaImageId: [],
       dataProcess: {},
       oldScreen: 0,
+      customModalButtons: [
+        {"content": "Cancel", "action": "closeModal", "variant": "outline-secondary", "dataTest": "launchpad-modal-btn-cancel"},
+        {"content": "Save", "action": "saveModal", "variant": "secondary", "dataTest": "launchpad-modal-btn-ok"},
+      ],
     };
   },
   mounted() {
@@ -195,22 +192,30 @@ export default {
           const unparseProperties = firstResponse?.launchpad?.properties;
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : '';
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
-            this.selectedSavedChart = launchpadProperties.saved_chart_title ?? this.defaultChart.title;
-            this.selectedSavedChartId = launchpadProperties.saved_chart_id ?? this.defaultChart.id;
+            this.selectedSavedChart = {
+              id: launchpadProperties.saved_chart_id ?? this.defaultChart.id,
+              title: launchpadProperties.saved_chart_title ?? this.defaultChart.title,
+            };
             this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
             this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
-            this.selectedScreen = launchpadProperties.screen_title ?? this.defaultScreen.title;
-            this.selectedScreenId = launchpadProperties.screen_id ?? this.defaultScreen.id;
-            this.selectedScreenUuid = launchpadProperties.screen_uuid ?? this.defaultScreen.uuid;
+            this.selectedScreen = {
+              id: launchpadProperties.screen_id ?? this.defaultScreen.id,
+              uuid: launchpadProperties.screen_uuid ?? this.defaultScreen.uuid,
+              title: launchpadProperties.screen_title ?? this.defaultScreen.title,
+            };
             this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
           } else {
-            this.selectedSavedChart = this.defaultChart.title;
-            this.selectedSavedChartId = this.defaultChart.id;
-            this.selectedScreenUuid = this.defaultScreen.uuid;
-            this.selectedScreen = this.defaultScreen.title;
-            this.selectedScreenId = this.defaultScreen.id;
+            this.selectedSavedChart = {
+              id: this.defaultChart.id,
+              title: this.defaultChart.title,
+            };
+            this.selectedScreen = {
+              id: this.defaultScreen.id,
+              uuid: this.defaultScreen.uuid,
+              title: this.defaultScreen.title,
+            };
           }
-          this.oldScreen = this.selectedScreenId;
+          this.oldScreen = this.selectedScreen.id;
           // Load media into Carousel Container
           const mediaArray = firstResponse.media;
           const embedArray = firstResponse.embed;
@@ -230,20 +235,9 @@ export default {
       this.getLaunchpadSettings();
       this.$refs["my-modal-save"].show();
     },
-    /**
-     * Method to set selected option to custom dropdown
-     */
-    selectOption(option) {
-      this.selectedSavedChart = option.title;
-      this.selectedSavedChartId = option.id;
-    },
-    /**
-     * Method to set selected option to screen dropdown
-     */
-    selectScreenOption(option) {
-      this.selectedScreen = option.title;
-      this.selectedScreenId = option.id;
-      this.selectedScreenUuid = option.uuid;
+    closeModal() {
+      this.$bvModal.hide('launchpadSettingsModal');
+      this.errors = "";
     },
     hideModal() {
       this.$refs["my-modal-save"].hide();
@@ -264,11 +258,11 @@ export default {
       if (!this.$refs["image-carousel"].checkImages()) return;
       this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.properties = JSON.stringify({
-        saved_chart_id: this.selectedSavedChartId,
-        saved_chart_title: this.selectedSavedChart,
-        screen_id: this.selectedScreenId,
-        screen_uuid: this.selectedScreenUuid,
-        screen_title: this.selectedScreen,
+        saved_chart_id: this.selectedSavedChart.id,
+        saved_chart_title: this.selectedSavedChart.title,
+        screen_id: this.selectedScreen.id,
+        screen_uuid: this.selectedScreen.uuid,
+        screen_title: this.selectedScreen.title,
         icon: this.selectedLaunchpadIcon,
         icon_label: this.selectedLaunchpadIconLabel,
       });
@@ -285,11 +279,11 @@ export default {
             indexImage: null,
             type: "add",
           };
-          if (this.oldScreen !== this.selectedScreenId) {
+          if (this.oldScreen !== this.selectedScreen.id) {
             ProcessMaker.EventBus.$emit("reloadByNewScreen", this.selectedScreenId);
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
-          ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChartId);
+          ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
           this.hideModal();
         })
         .catch((error) => {
@@ -309,11 +303,13 @@ export default {
      * Initial method to retrieve Saved Search Charts and populate dropdown
      * Package Collections and Package SavedSearch always go together
      */
-    retrieveSavedSearchCharts() {
+    retrieveSavedSearchCharts(query = "") {
       if (!ProcessMaker.packages.includes("package-collections")) return;
+      const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          "saved-searches?has=charts&include=charts&per_page=100&filter=&get=id,title,charts.id,charts.title,charts.saved_search_id,type",
+          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
+          + filter,
         )
         .then((response) => {
           if (response.data.data[0].charts) {
@@ -327,8 +323,7 @@ export default {
               return [];
             });
 
-            this.dropdownSavedCharts = [this.defaultChart].concat(resultArray);;
-            this.selectOption(this.defaultChart);
+            this.dropdownSavedCharts = [this.defaultChart].concat(resultArray);
           }
         })
         .catch((error) => {
@@ -338,10 +333,12 @@ export default {
     /**
      * Initial method to retrieve Screens and populate dropdown
      */
-     retrieveDisplayScreen() {
+     retrieveDisplayScreen(query = "") {
+      const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          "screens?page=1&per_page=10&filter=&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY",
+          "screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY"
+          + filter,
         )
         .then((response) => {
           if (response.data.data) {
@@ -353,7 +350,6 @@ export default {
               }
             });
             this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
-            this.selectScreenOption(this.defaultScreen);
           }
         })
         .catch((error) => {
@@ -383,7 +379,7 @@ export default {
           if(ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
-        } 
+        }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
@@ -411,11 +407,6 @@ label {
   line-height: 22px;
   letter-spacing: 0px;
   text-align: left;
-}
-.image-style {
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
 }
 .modal-title div {
   color: #556271;
@@ -448,11 +439,11 @@ label {
   padding: 0px 15px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #6A7888;
+  border: 1px solid #6a7888;
 }
 .modal-footer .btn-secondary {
   color: white;
-  background-color: #6A7888;
+  background-color: #6a7888;
   width: 99px;
   height: 40px;
   margin: 0px;
@@ -486,39 +477,7 @@ label {
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #CDDDEE;
-}
-.image-thumbnails-container {
-  border: 1px solid #CDDDEE;
-  width: 369px;
-  height: 204px;
-  border-radius: 4px;
-  gap: 10px;
-  padding: 12px;
-}
-.images-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.images-container {
-  display: flex;
-  width: 345px;
-  height: 128px;
-  margin-bottom: 12px;
-}
-.drag-and-drop-container {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 19.07px;
-  letter-spacing: -0.02em;
-  text-align: center;
-  color: #6a7888;
-  margin-bottom: 9px
-}
-.drag-and-drop-container i {
-  font-size: 32px;
+  border: 1px solid #cdddee;
 }
 .modal-dialog, .modal-content {
   min-width: 800px;
@@ -526,150 +485,84 @@ label {
 .options-launchpad {
   width: 285px;
 }
-.input-file-custom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #6a7888;
-  width: 344px;
-  height: 40px;
-  padding: 10px 0px;
-  background-color: #ebeef2;
-  border: 1px dashed #6a7888;
-  border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 20.43px;
-  letter-spacing: -0.02em;
-  text-align: center;
-}
 .modal-content-custom {
   padding: 11px 8px 0px 8px;
 }
-b-row, b-col {
-  margin: 0px;
-  padding: 0px;
-}
-.delete-icon {
-  cursor: pointer;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-  background-color: #00000080;
-  
-}
-.delete-icon i {
-  font-size: 24px;
-  color: white;
-}
-.btns-popover {
-  height: 32px;
-  padding: 0px 14px;
-  border-radius: 4px;
-  border: 0px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  margin-left: 11px;
-}
-.btn-delete-image {
-  color: white;
-  background-color: #6a7888;
-}
-.btn-delete-embed {
-  color: white;
-  background-color: #ed4858;
-}
-.btn-cancel-delete {
-  color: #556271;
-  background-color: #d8e0e9;
-}
-.text-delete-embed {
-  color: #556271;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 27px;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-.popover {
-  max-width: 474px;
-}
-.popover-custom {
-  display: flex;
-  align-items: center;
-  color: #556271;
-  padding: 16px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 21.79px;
-  letter-spacing: -0.02em;
-}
-.square-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  font-size: 24px;
-  color: #6a7888;
-  background-color: #f6f9fb;
-  border: 1px solid #CDDDEE;
-}
-.custom-trash-icon {
-  color: #6a7888;
-  font-size: 24px;
-}
-#idDropdownMenuUpload .dropdown-toggle::after {
-    display:none;
-}
-#idDropdownMenuUpload .dropdown-menu.show {
-  width: 229px;
-  padding: 0px;
-}
-#launchpadSettingsModal .dropdown-item {
-  color: #556271;
-  padding: 12px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 21.79px;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-.popover-embed {
-  padding: 21px;
-  width: 474px;
-}
-.dropdown-style {
-  padding: 9px 12px;
-  color: #556271;
-  border-radius: 4px;
-  border: 1px solid #CDDDEE;
-}
-#launchpadSettingsModal .dropdown-menu.show {
-  width: 285px;
-  padding: 0px;
-}
-.custom-text {
-  width: 239px;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: ellipsis;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 21.79px;
-  letter-spacing: -0.02em;
+</style>
+
+<style lang="scss">
+.multiselect-chart.custom-multiselect,
+.multiselect-screen.custom-multiselect {
+  .input-group {
+    width: 100%;
+  }
+  .multiselect,
+  .multiselect__tags {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    border-radius: 4px;
+    border-color: #cdddee;
+  }
+  .multiselect__tags {
+    padding: 9px 12px;
+  }
+  .multiselect__single {
+    width: 239px;
+    height: 20px;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21.79px;
+    letter-spacing: -0.02em;
+    color: #556271;
+    padding-left: 0px;
+  }
+  .multiselect__select:before {
+    border-width: 4px 4px 0 4px;
+    border-color: #556271 transparent;
+  }
+  .multiselect__option--selected {
+    font-weight: 400;
+    background: white;
+    color: #556271;
+  }
+  .multiselect__input::placeholder {
+    color: #ebeef2;
+    color: #556271;
+  }
+  .multiselect__input {
+    max-width: 239px;
+    height: 20px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21.79px;
+    letter-spacing: -0.02em;
+    color: #556271;
+    padding-left: 0px;
+  }
+  .multiselect__option--highlight {
+    background: #ebeef2;
+    color: #556271;
+  }
+  .multiselect__content-wrapper {
+    max-height: 200px !important;
+    position: static;
+  }
+
+  .multiselect__option {
+    color: #556271;
+    padding: 12px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21.79px;
+    letter-spacing: -0.02em;
+    text-align: left;
+  }
 }
 </style>

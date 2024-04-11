@@ -12,9 +12,10 @@ export default {
               description: data.description,
               version: data.version,
               is_public: true,
+              is_default_template: false,
             })
             .then(() => {
-              ProcessMaker.alert(this.$t("The template is now public."), "success");
+              ProcessMaker.alert(this.$t("The template has been successfully shared!"), "success");
               this.fetch();
             });
           break;

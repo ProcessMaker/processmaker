@@ -241,6 +241,8 @@ export default {
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
     }
+    this.formData.selectedTemplate = true;
+    this.formData.templateId = undefined;
   },
   methods: {
     show() {
@@ -381,7 +383,7 @@ export default {
       this.formData.defaultTemplateId = templateId;
     },
     handleDefaultTemplateType(type) {
-      const isPublic = type === "Public Templates" ? 1 : 0;
+      const isPublic = type === "Shared Templates" ? 1 : 0;
       this.formData.is_public = isPublic;
     },
 
