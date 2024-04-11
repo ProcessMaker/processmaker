@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="tooltipButton === 'inboxRules'">
+    <div v-if="tooltipButton === 'inboxRules' && showPreview">
       <splitpane-container  :size="50" :class-inbox="true">
         <div
         ref="tasks-preview"
