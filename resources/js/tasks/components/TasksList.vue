@@ -359,6 +359,7 @@ export default {
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
+          this.setDefaultProperties(record);
           //format Status
           record["case_number"] = this.formatCaseNumber(
             record.process_request,
@@ -746,6 +747,18 @@ export default {
         type: "taskFilter",
       };
     },
+    setDefaultProperties(record) {
+      if (!("process_request" in record)) {
+        record.process_request = {
+          id: null
+        };
+      }
+      if (!("process" in record)) {
+          record.process = {
+          name: null
+        };
+      }
+    }
   },
 };
 </script>
