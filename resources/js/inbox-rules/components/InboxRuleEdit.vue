@@ -298,7 +298,7 @@
     },
     methods: {
       onCancel() {
-        this.$router.push({name: 'index'});
+        window.history.back();
       },
       onSave() {
         if (!this.savedSearchData.columns) {
