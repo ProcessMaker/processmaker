@@ -1,8 +1,5 @@
 <template>
   <div>
-    <search-tab
-      :filter-pmql="onFilter"
-    />
     <div
       class="bg-white"
       v-if="!showTabRequests"
