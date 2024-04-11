@@ -137,9 +137,11 @@ new Vue({
     handleTabCount(value) {
       if (this.tab === "inbox") {
         this.inboxCount = value;
-      } if(this.tab === "draft") {
+      }
+      if(this.tab === "draft") {
         this.draftCount = value;
-      } if (this.tab === "priority") {
+      }
+      if (this.tab === "priority") {
         this.priorityCount = value;
       }
     },
