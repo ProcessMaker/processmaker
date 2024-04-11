@@ -124,6 +124,9 @@ return [
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
 
+    // PM Analytics Chart
+    'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
+
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
 
