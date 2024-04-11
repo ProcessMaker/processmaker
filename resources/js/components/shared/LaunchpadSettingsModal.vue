@@ -486,7 +486,6 @@ label {
   .input-group {
     width: 100%;
   }
-
   .multiselect,
   .multiselect__tags {
     height: 40px;
@@ -495,11 +494,9 @@ label {
     border-radius: 4px;
     border-color: #cdddee;
   }
-
   .multiselect__tags {
     padding: 9px 12px;
   }
-
   .multiselect__single {
     width: 239px;
     height: 20px;
