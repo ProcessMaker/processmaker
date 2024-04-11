@@ -287,4 +287,10 @@ export default {
   background-color: white;
   max-height: 250px;
 }
+@media (width < 1200px) {
+  .default-chart {
+    margin-top: 0;
+    margin-left: 32px;
+  }
+}
 </style>

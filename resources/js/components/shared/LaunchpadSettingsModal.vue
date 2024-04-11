@@ -398,11 +398,6 @@ label {
   letter-spacing: 0px;
   text-align: left;
 }
-.image-style {
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-}
 .modal-title div {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
@@ -434,11 +429,11 @@ label {
   padding: 0px 15px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #6A7888;
+  border: 1px solid #6a7888;
 }
 .modal-footer .btn-secondary {
   color: white;
-  background-color: #6A7888;
+  background-color: #6a7888;
   width: 99px;
   height: 40px;
   margin: 0px;
@@ -472,39 +467,7 @@ label {
   padding: 0px, 12px, 0px, 12px;
   border-radius: 4px;
   gap: 6px;
-  border: 1px solid #CDDDEE;
-}
-.image-thumbnails-container {
-  border: 1px solid #CDDDEE;
-  width: 369px;
-  height: 204px;
-  border-radius: 4px;
-  gap: 10px;
-  padding: 12px;
-}
-.images-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.images-container {
-  display: flex;
-  width: 345px;
-  height: 128px;
-  margin-bottom: 12px;
-}
-.drag-and-drop-container {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 19.07px;
-  letter-spacing: -0.02em;
-  text-align: center;
-  color: #6a7888;
-  margin-bottom: 9px
-}
-.drag-and-drop-container i {
-  font-size: 32px;
+  border: 1px solid #cdddee;
 }
 .modal-dialog, .modal-content {
   min-width: 800px;
@@ -512,120 +475,8 @@ label {
 .options-launchpad {
   width: 285px;
 }
-.input-file-custom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #6a7888;
-  width: 344px;
-  height: 40px;
-  padding: 10px 0px;
-  background-color: #ebeef2;
-  border: 1px dashed #6a7888;
-  border-radius: 4px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 20.43px;
-  letter-spacing: -0.02em;
-  text-align: center;
-}
 .modal-content-custom {
   padding: 11px 8px 0px 8px;
-}
-b-row, b-col {
-  margin: 0px;
-  padding: 0px;
-}
-.delete-icon {
-  cursor: pointer;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 4px;
-  background-color: #00000080;
-  
-}
-.delete-icon i {
-  font-size: 24px;
-  color: white;
-}
-.btns-popover {
-  height: 32px;
-  padding: 0px 14px;
-  border-radius: 4px;
-  border: 0px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  text-align: left;
-  margin-left: 11px;
-}
-.btn-delete-image {
-  color: white;
-  background-color: #6a7888;
-}
-.btn-delete-embed {
-  color: white;
-  background-color: #ed4858;
-}
-.btn-cancel-delete {
-  color: #556271;
-  background-color: #d8e0e9;
-}
-.text-delete-embed {
-  color: #556271;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 27px;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-.popover {
-  max-width: 474px;
-}
-.popover-custom {
-  display: flex;
-  align-items: center;
-  color: #556271;
-  padding: 16px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 21.79px;
-  letter-spacing: -0.02em;
-}
-.square-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  font-size: 24px;
-  color: #6a7888;
-  background-color: #f6f9fb;
-  border: 1px solid #CDDDEE;
-}
-.custom-trash-icon {
-  color: #6a7888;
-  font-size: 24px;
-}
-#idDropdownMenuUpload .dropdown-toggle::after {
-    display:none;
-}
-#idDropdownMenuUpload .dropdown-menu.show {
-  width: 229px;
-  padding: 0px;
-}
-.popover-embed {
-  padding: 21px;
-  width: 474px;
 }
 </style>
 
@@ -708,3 +559,4 @@ b-row, b-col {
   }
 }
 </style>
+
