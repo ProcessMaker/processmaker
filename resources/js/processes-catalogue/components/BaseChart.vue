@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="chartId !== null && chartId !== 0 && chart !== null">
-      <div class="base-chart h-85 w-85 custom-settings">
+      <div class="base-chart custom-settings">
         <component
           :is="chartComponent"
           ref="chart"
