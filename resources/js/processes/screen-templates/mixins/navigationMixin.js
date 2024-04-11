@@ -14,7 +14,7 @@ export default {
               is_public: true,
             })
             .then(() => {
-              ProcessMaker.alert(this.$t("The template is now public."), "success");
+              ProcessMaker.alert(this.$t("The template has been successfully shared!"), "success");
               this.fetch();
             });
           break;

@@ -271,7 +271,7 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     *  Publish a Screen Template to display in the Public Templates tab
+     *  Publish a Screen Template to display in the Shared Templates tab
      * @param mixed $request
      * @return JsonResponse
      */

@@ -152,8 +152,8 @@
       />
       <pagination
         ref="pagination"
-        :single="$t('Public Template')"
-        :plural="$t('Public Templates')"
+        :single="$t('Shared Template')"
+        :plural="$t('Shared Templates')"
         :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

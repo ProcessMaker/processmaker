@@ -276,7 +276,7 @@ export default {
         },
         {
           value: "make-public",
-          content: "Make Public",
+          content: "Share Template",
           permission: "publish-screen-templates",
           icon: "fas fa-globe",
         },
