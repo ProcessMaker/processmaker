@@ -39,6 +39,11 @@
               aria-selected="true"
               :class="{ 'active': inbox }"
             >
+              <tasks-list-counter
+                v-if="inboxCount"
+                :loading="isDataLoading"
+                :count="inboxCount"
+              ></tasks-list-counter>
               {{ __('Inbox') }}
             </a>
           </li>
@@ -53,6 +58,11 @@
               aria-selected="true"
               :class="{ 'active': priority }"
             >
+              <tasks-list-counter
+                v-if="priorityCount"
+                :loading="isDataLoading"
+                :count="priorityCount"
+              ></tasks-list-counter>
               {{ __('Priority') }}
             </a>
           </li>
@@ -68,6 +78,11 @@
               aria-selected="true"
               :class="{ 'active': draft }"
             >
+              <tasks-list-counter
+                v-if="draftCount"
+                :loading="isDataLoading"
+                :count="draftCount"
+              ></tasks-list-counter>
               {{ __('Drafts') }}
             </a>
           </li>
@@ -151,6 +166,7 @@
                 :disable-quick-fill-tooltip="false"
                 @in-overdue="setInOverdueMessage"
                 @data-loading="dataLoading"
+                @tab-count="handleTabCount"
               ></tasks-list>
             </div>
 
