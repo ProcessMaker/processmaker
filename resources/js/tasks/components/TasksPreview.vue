@@ -158,7 +158,7 @@
                 <b-button
                   class="btn-light text-secondary"
                   :aria-label="$t('Close')"
-                  @click="onClose()"
+                  @click="onClose();showReassignment=false;"
                 >
                   <i class="fas fa-times" />
                 </b-button>
@@ -167,7 +167,7 @@
           </div>
           <div
             id="reassign-container"
-            class="d-flex w-100 h-100 mb-3 align-items-center"
+            class="d-flex mb-3"
             v-if="showReassignment"
           >
             <div class="mr-3">
@@ -220,7 +220,8 @@
             'frame-container-full': tooltipButton === 'fullTask',
             'frame-container-inbox': tooltipButton === 'inboxRules'
           }"
-          class="iframe-container">
+          class="iframe-container"
+          v-show="!showReassignment">
             <iframe
               v-if="showFrame1"
               :title="$t('Preview')"
