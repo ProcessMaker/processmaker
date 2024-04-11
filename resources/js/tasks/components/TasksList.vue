@@ -200,8 +200,8 @@
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
     >
-      <template v-slot:header="{ close, screenFilteredTaskData }">
-        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
+      <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
       </template>
     </tasks-preview>
   </div>
@@ -391,6 +391,7 @@ export default {
     if (successRouting) {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
+    this.$emit('onRendered', this);
   },
   methods: {
     markSelectedRow(value) {

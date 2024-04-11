@@ -186,6 +186,7 @@
           <i class="fas fa-solid fa-circle-notch fa-spin" />
         </div>
       </div>
+      <hr id="invisiblehr">
       <div
         v-show="!loadingImage && !notValidImage"
         id="idDropdownMenuUpload"
@@ -217,7 +218,7 @@
           <a
             class="dropdown-item"
             href="#"
-            @click="addEmbedMedia"
+            @click="showNewEmbed = !showNewEmbed"
           >
             {{ $t("Embed Media") }}
           </a>
@@ -245,6 +246,53 @@
         </div>
       </div>
     </div>
+    <b-popover
+      ref="popover"
+      disabled.sync="false"
+      :show.sync="showNewEmbed"
+      target="invisiblehr"
+      placement="topright"
+      triggers="hover focus"
+    >
+      <div class="popover-embed shadow">
+        <label class="mt-0">
+          {{ $t("Embed URL") }}
+        </label>
+        <input
+          id="newEmbed"
+          v-model="newEmbed"
+          class="form-control input-custom mb-0"
+          type="url"
+          rows="5"
+          :aria-label="$t('Embed URL')"
+        >
+        <span
+          v-if="notURL"
+          class="error-message"
+        >
+          {{ $t("The URL is required.") }}
+          <br>
+        </span>
+        <div
+          class="d-flex justify-content-end mt-3"
+        >
+          <button
+            type="button"
+            class="btn btn-cancel-delete btns-popover"
+            @click="showNewEmbed = false"
+          >
+            {{ $t('Cancel') }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-delete-image btns-popover"
+            @click="addEmbedMedia"
+          >
+            {{ $t("Apply") }}
+          </button>
+        </div>
+      </div>
+    </b-popover>
   </div>
 </template>
 
@@ -270,6 +318,8 @@ export default {
       processId: "",
       validSizeImageMB: 2,
       notURL: false,
+      newEmbed: "",
+      showNewEmbed: false,
     };
   },
   methods: {
@@ -420,12 +470,19 @@ export default {
         );
         return;
       }
+      if (!this.newEmbed || !this.isValidURL(this.newEmbed)) {
+        this.notURL = true;
+        return;
+      }
       this.images.push({
-        url: "",
+        url: this.newEmbed,
         uuid: "",
         type: "embed",
       });
-      this.focusIcon(this.images.length - 1);
+      this.embedUrls[this.images.length - 1] = this.newEmbed;
+      this.newEmbed = "";
+      this.showNewEmbed = false;
+      this.notURL = false;
     },
     cancelEmbed(index) {
       if (this.images[index] && !this.images[index].url) {
@@ -584,3 +641,11 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+#invisiblehr {
+  margin: 0px;
+  width: 0.1px;
+  border-color: white;
+}
+</style>

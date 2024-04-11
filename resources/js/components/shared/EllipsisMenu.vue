@@ -88,6 +88,7 @@
             :href="action.link ? itemLink(action, data) : null"
             class="ellipsis-dropdown-item mx-auto"
             @click="!action.link ? onClick(action, data) : null"
+            :data-test="action.dataTest"
           >
             <div class="ellipsis-dropdown-content">
               <i
@@ -125,7 +126,7 @@ export default {
     filterActions() {
       let btns = this.filterActionsByPermissions();
       btns = this.filterActionsByConditionals(btns);
-      
+
       return btns;
     },
     filterAboveDivider() {

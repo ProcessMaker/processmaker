@@ -4,13 +4,13 @@ namespace Tests\Feature\Templates\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ScreenTemplatesExporter;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\Projects\Models\Project;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Templates\HelperTrait;
 use Tests\TestCase;
@@ -134,6 +134,84 @@ class ScreenTemplateTest extends TestCase
             'type' => 'FORM',
             'templateId' => $screenTemplateId,
         ];
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+    }
+
+    public function testCreateScreenFromTemplateWithDefault()
+    {
+        $user = User::factory()->create();
+        $screenCategory = ScreenCategory::factory()->create();
+        $publicScreenTemplate = ScreenTemplates::factory()->create([
+            'name' => 'My Public Template',
+            'is_public' => true,
+            'is_default_template' => true,
+        ]);
+        $myScreenTemplate = ScreenTemplates::factory()->create([
+            'name' => 'My Template',
+            'is_public' => false,
+            'is_default_template' => true,
+        ]);
+
+        // Create a screen from a public template.
+        $data = [
+            'title' => $this->faker->name(),
+            'type' => 'FORM',
+            'description' => $this->faker->sentence(),
+            'is_public' => false,
+            'screen_category_id' => $screenCategory->id,
+            'defaultTemplateId' => $publicScreenTemplate->id,
+        ];
+        $route = route('api.template.create', ['screen', $publicScreenTemplate->id]);
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+
+        // Create a screen from my template.
+        $data = [
+            'title' => $this->faker->name(),
+            'type' => 'FORM',
+            'description' => $this->faker->sentence(),
+            'is_public' => false,
+            'screen_category_id' => $screenCategory->id,
+            'defaultTemplateId' => $myScreenTemplate->id,
+        ];
+        $route = route('api.template.create', ['screen', $myScreenTemplate->id]);
+        $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'My Public Template',
+            'is_public' => 1,
+            'is_default_template' => 1,
+        ]);
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'My Template',
+            'is_public' => 0,
+            'is_default_template' => 1,
+        ]);
+    }
+
+    public function testCreateScreenFromTemplateWithProjects()
+    {
+        if (!class_exists(Project::class)) {
+            $this->markTestSkipped('Package Projects is not installed.');
+        }
+
+        $project = Project::factory()->create();
+        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $screen_category_id = ScreenCategory::factory()->create()->id;
+        $user = User::factory()->create();
+
+        $route = route('api.template.create', ['screen', $screenTemplateId]);
+        $data = [
+            'title' => 'Test Screen Creation',
+            'description' => 'Test Screen Creation from Template',
+            'screen_category_id' => $screen_category_id,
+            'type' => 'FORM',
+            'templateId' => $screenTemplateId,
+            'projects' => implode(',', [$project->id]),
+        ];
+
         $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
         $response->assertStatus(200);
     }

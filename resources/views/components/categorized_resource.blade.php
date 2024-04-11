@@ -1,4 +1,4 @@
-<div class="px-3 page-content" id="categorizedList">
+<div class="px-3 page-content" id="categorizedList" style="display:none">
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
@@ -191,6 +191,13 @@
 
 @section('js')
     <script>
+      window.addEventListener('load', function() {
+        let categorizedListElement = document.getElementById('categorizedList');
+        if (categorizedListElement) {
+            categorizedListElement.style.display = 'block';
+        }
+      });
+
       loadCategory = function () {
         ProcessMaker.EventBus.$emit("api-data-category", true);
       };
