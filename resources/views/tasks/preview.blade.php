@@ -98,6 +98,7 @@
                           :initial-task-id="{{ $task->id }}"
                           :initial-request-id="{{ $task->process_request_id }}"
                           :user-id="{{ Auth::user()->id }}"
+                          :clear-task="clearTask"
                           csrf-token="{{ csrf_token() }}"
                           initial-loop-context="{{ $task->getLoopContext() }}"
                           @task-updated="taskUpdated"
@@ -161,6 +162,7 @@
         store: store,
         el: "#task",
         data: {
+          clearTask: false,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -441,6 +443,7 @@
 
           window.addEventListener('eraseData', event => {
             this.formData = {};
+            this.clearTask = true;
           });
 
           // listen for keydown on element with id interactionListener

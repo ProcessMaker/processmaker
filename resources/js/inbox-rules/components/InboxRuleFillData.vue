@@ -61,7 +61,7 @@
     },
     methods: {
       eraseData() {
-        this.sendEvent("eraseData", true);
+        this.sendEvent("eraseData", {});
       },
       reload() {
         this.formData = {};
