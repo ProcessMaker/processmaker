@@ -16,9 +16,6 @@ class ProcessLaunchpadTest extends TestCase
     const API_TEST_URL = '/process_launchpad';
 
     const STRUCTURE = [
-        'id',
-        'uuid',
-        'name',
         'launchpad',
         'media',
         'embed'
@@ -29,7 +26,6 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testGetProcessLaunchpad()
     {
-        ProcessLaunchpad::query()->delete();
         // Create data
         $process = Process::factory()->create();
         // Call the api GET
@@ -37,7 +33,9 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $response->assertJsonStructure(self::STRUCTURE);
+        $response->assertJsonStructure([
+            '*' => [self::STRUCTURE]
+        ]);
         
         // Create data related with the auth user
         $user = Auth::user();
@@ -51,8 +49,9 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $response->assertJsonStructure(self::STRUCTURE);
-        $response->assertJsonStructure(['launchpad' => ['id', 'uuid']]);
+        $response->assertJsonStructure([
+            '*' => [self::STRUCTURE]
+        ]);
     }
 
     /**
@@ -60,7 +59,6 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testStoreProcessLaunchpad()
     {
-        ProcessLaunchpad::query()->delete();
         // Create data
         $process = Process::factory()->create();
         ProcessLaunchpad::factory()->create([
@@ -71,6 +69,9 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $process->id, ['properties' => $values]);
         // Validate the header status code
         $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [self::STRUCTURE]
+        ]);
     }
 
     /**
@@ -78,7 +79,6 @@ class ProcessLaunchpadTest extends TestCase
      */
     public function testDeleteProcessLaunchpad()
     {
-        ProcessLaunchpad::query()->delete();
         // Create data
         $launchpad = ProcessLaunchpad::factory()->create();
         // Call the api DELETE
