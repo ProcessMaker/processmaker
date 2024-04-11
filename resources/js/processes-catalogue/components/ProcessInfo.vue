@@ -1,16 +1,16 @@
 <template>
   <div>
-      <process-collapse-info
-          :process="process"
-          :permission="permission"
-          :current-user-id="currentUserId"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="goBackCategory"
-        />
-      <process-tab
-        :current-user="currentUser"
-        :process="process"
-      />
+    <process-collapse-info
+      :process="process"
+      :permission="permission"
+      :current-user-id="currentUserId"
+      :is-documenter-installed="isDocumenterInstalled"
+      @goBackCategory="goBackCategory"
+    />
+    <process-tab
+      :current-user="currentUser"
+      :process="process"
+    />
   </div>
 </template>
 

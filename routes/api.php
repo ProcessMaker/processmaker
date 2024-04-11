@@ -311,11 +311,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
     Route::get('import/get-manifest', [ImportController::class, 'getImportManifest'])->name('import.get-import-manifest')->middleware('can:import-processes');
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:import-processes');
-    Route::post('import/screen-template', [ImportController::class, 'importScreenTemplate'])->name('import.import_screen')->middleware('can:import-screens');
 
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index')->middleware('template-authorization');
-    Route::post('template/{type}/do-import', [ImportController::class, 'importTemplate'])->name('import.do_importTemplate')->middleware('template-authorization');
+    Route::post('template/{type}/do-import', [TemplateController::class, 'import'])->name('import.do_importTemplate')->middleware('template-authorization');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
     Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
     Route::put('template/{type}/{processId}', [TemplateController::class, 'updateTemplateManifest'])->name('template.update')->middleware('template-authorization');
