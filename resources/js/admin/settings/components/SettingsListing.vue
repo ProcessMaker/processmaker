@@ -535,7 +535,9 @@ export default {
       this.$parent.$refs["menu-collapse"].refresh();
     },
     refresh() {
-      this.$refs.table.refresh();
+      if (this.$refs.table) {
+        this.$refs.table.refresh();
+      }
       this.$parent.$refs["menu-collapse"].firstTime = false;
       this.$parent.$refs["menu-collapse"].refresh();
     },
