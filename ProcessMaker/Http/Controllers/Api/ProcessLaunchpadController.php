@@ -27,7 +27,7 @@ class ProcessLaunchpadController extends Controller
             }])
             ->where('id', $process->id)
             ->get()
-            ->collect();
+            ->toArray();
 
         return new ApiResource($processes);
     }

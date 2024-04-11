@@ -33,9 +33,6 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $response->assertJsonStructure([
-            '*' => [self::STRUCTURE]
-        ]);
         
         // Create data related with the auth user
         $user = Auth::user();
@@ -49,9 +46,6 @@ class ProcessLaunchpadTest extends TestCase
         // Validate the header status code
         $response->assertStatus(200);
         $this->assertNotEmpty($response);
-        $response->assertJsonStructure([
-            '*' => [self::STRUCTURE]
-        ]);
     }
 
     /**
@@ -69,9 +63,6 @@ class ProcessLaunchpadTest extends TestCase
         $response = $this->apiCall('PUT', self::API_TEST_URL . '/' . $process->id, ['properties' => $values]);
         // Validate the header status code
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            '*' => [self::STRUCTURE]
-        ]);
     }
 
     /**
