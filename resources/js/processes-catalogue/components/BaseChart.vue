@@ -64,7 +64,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 294,
+      default: 274,
     },
     width: {
       type: Number,
@@ -274,14 +274,14 @@ export default {
 <style scoped>
 .default-chart {
   width: 294px;
-  margin-top: 32px;
+  margin-top: 16px;
   padding: 16px 0;
   border-radius: 16px;
   border: 0.883px solid rgba(205, 221, 238, 0.50);
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
 }
 .custom-settings {
-  margin-top: 10px;
+  margin-top: 32px;
   width: 90%;
   height: 90%;
   background-color: white;
