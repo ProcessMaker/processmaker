@@ -64,13 +64,14 @@ export default {
       groups: [],
       menuGroups: [],
       selectedItem: "",
-      firstTime: true,
+      firstTime: false,
       collapsedMenus: {},
       oldMenuGroups: [],
       changeEmailServers: false,
     };
   },
   mounted() {
+    this.firstTime = true;
     this.getMenuGrups();
   },
   methods: {
@@ -79,11 +80,11 @@ export default {
         .then((response) => {
           this.transformResponse(response.data.data);
           this.checkCollapedMenus();
-          if (this.firstTime) {
-            this.selectFirstItem();
-          }
           if (this.changeEmailServers) {
             this.checkChangeEmailServer();
+          }
+          if (this.firstTime) {
+            this.selectFirstItem();
           }
         });
     },
@@ -96,9 +97,9 @@ export default {
       });
     },
     checkChangeEmailServer() {
-      const oldEmailMenu = this.oldMenuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
-      const newEmailMenu = this.menuGroups.filter((menu) => menu.menu_group === "Email")[0].groups;
-      // Check if a Email Server was addded
+      const oldEmailMenu = this.oldMenuGroups.find((menu) => menu.menu_group === "Email").groups;
+      const newEmailMenu = this.menuGroups.find((menu) => menu.menu_group === "Email").groups;
+      // Check if a Email Server was added
       if (oldEmailMenu.length < newEmailMenu.length) {
         const newGroup = newEmailMenu.filter((group) => !oldEmailMenu.some((oldGroup) => group.id === oldGroup.id));
         if (newGroup[0].id.includes("Email Server")) {
@@ -107,8 +108,12 @@ export default {
       }
       // Check if a Email Server was deleted
       if (oldEmailMenu.length > newEmailMenu.length) {
-        this.selectFirstItem();
+        const emailDefaultItem = this.menuGroups[0].groups.find((group) => {
+          return group.name === "Email Default Settings"
+        })
+        this.selectItem(emailDefaultItem);
       }
+      this.firstTime = false;
       this.changeEmailServers = false;
       this.refreshing = false;
     },
