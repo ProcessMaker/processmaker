@@ -48,6 +48,7 @@
       store: store,
       el: "#quickfill",
       data: {
+          isDisabled: true,
           data: {},
           filters: {
             order: { by: "created_at", direction: "desc" },
@@ -123,6 +124,8 @@
             width: 140,
           }
         ],
+      },
+      mounted () {
       },
     });
 </script>

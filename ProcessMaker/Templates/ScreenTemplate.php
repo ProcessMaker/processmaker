@@ -5,7 +5,9 @@ namespace ProcessMaker\Templates;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
@@ -14,7 +16,6 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\Templates\ScreenComponents;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
 use SebastianBergmann\CodeUnit\Exception;
@@ -185,24 +186,28 @@ class ScreenTemplate implements TemplateInterface
      * @param mixed $request The HTTP request data
      * @return JsonResponse The JSON response containing the new screen ID
      *
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException if the screen template is not found
+     * @throws ModelNotFoundException if the screen template is not found
      */
-    public function create($request) : JsonResponse
+    public function create(Request $request): JsonResponse
     {
+        $request->validate([
+            'templateId' => 'required|integer',
+        ]);
+
         // Check for existing assets
         $existingAssets = $request->existingAssets;
         $requestData = $existingAssets ? $request->toArray()['request'] : $request;
 
-        $defaultTemplate = $this->getDefaultTemplate($requestData['type']);
+        // The created screen should be based on the selected screen template,
+        // regardless of the default template configuration.
+
         $defaultTemplateId = $requestData['defaultTemplateId'] ?? null;
-
-        if ($defaultTemplate) {
-            $requestData['templateId'] = $defaultTemplate->id;
-        }
-
-        if ($defaultTemplateId !== null) {
-            $requestData['templateId'] = $defaultTemplateId;
-            $this->updateDefaultTemplate($defaultTemplateId, $requestData['type']);
+        if ($defaultTemplateId) {
+            $this->updateDefaultTemplate(
+                $defaultTemplateId,
+                $requestData['type'],
+                $requestData['is_public']
+            );
         }
 
         $newScreenId = $this->importScreen($requestData, $existingAssets);
@@ -214,7 +219,7 @@ class ScreenTemplate implements TemplateInterface
             $screen->description = $requestData['description'];
             $screen->save();
 
-            $this->syncProjectAssets($requestData);
+            $this->syncProjectAssets($requestData, $screen->id);
 
             return response()->json(['id' => $newScreenId, 'title' => $screen->title]);
         } catch (Exception $e) {
@@ -230,10 +235,14 @@ class ScreenTemplate implements TemplateInterface
      * @param string $screenType The type of the screen (DISPLAY, FORM, CONVERSATIONAL, EMAIL)
      * @return ScreenTemplates|null The default screen template or null if not found
      */
-    public function getDefaultTemplate(string $screenType): ?ScreenTemplates
+    public function getDefaultTemplate(string $screenType, int $isPublic): ?ScreenTemplates
     {
-        return ScreenTemplates::where('screen_type', $screenType)
-            ->where('is_default_template', 1)
+        return ScreenTemplates::query()
+            ->where([
+                'screen_type' => $screenType,
+                'is_public' => $isPublic,
+                'is_default_template' => 1,
+            ])
             ->first();
     }
 
@@ -242,13 +251,23 @@ class ScreenTemplate implements TemplateInterface
      *
      * @param int $defaultTemplateId The ID of the new default template
      * @param string $screenType The type of screen (FORM, DISPLAY, EMAIL, CONVERSATIONAL)
-     * @return void
+     * @param int $isPublic The visibility of the template (0 = private, 1 = public)
      */
-    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType)
+    public function updateDefaultTemplate(int $defaultTemplateId, string $screenType, int $isPublic): void
     {
-        ScreenTemplates::where('screen_type', $screenType)->update(['is_default_template' => 0]);
+        ScreenTemplates::query()
+            ->where([
+                'screen_type' => $screenType,
+                'is_public' => $isPublic,
+            ])
+            ->update([
+                'is_default_template' => 0,
+            ]);
 
-        ScreenTemplates::where('id', $defaultTemplateId)->update(['is_default_template' => 1]);
+        ScreenTemplates::where('id', $defaultTemplateId)
+            ->update([
+                'is_default_template' => 1,
+            ]);
     }
 
     /**
@@ -360,6 +379,7 @@ class ScreenTemplate implements TemplateInterface
             'description',
             'screen_category_id',
             'version',
+            'screen_type',
         ])->where('id', $id)->firstOrFail();
 
         $categories = ScreenCategory::orderBy('name')
@@ -383,6 +403,33 @@ class ScreenTemplate implements TemplateInterface
     public function destroy(int $id) : bool
     {
         return ScreenTemplates::find($id)->delete();
+    }
+
+    /**
+     *  Import screen template
+     * @param Request
+     * @return JsonResponse
+     */
+    public function importTemplate($request) : JsonResponse
+    {
+        try {
+            $jsonData = $request->file('file')->get();
+
+            $payload = json_decode($jsonData, true);
+
+            $this->preparePayloadForImport($payload);
+
+            $importOptions = $this->configureImportOptions($payload);
+
+            $this->performImport($payload, $importOptions);
+
+            // Dispatch event for template creation
+            TemplateCreated::dispatch($payload);
+
+            return response()->json([], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**
@@ -523,6 +570,12 @@ class ScreenTemplate implements TemplateInterface
         return ScreenTemplates::where('name', $screenTemplate)->firstOrFail();
     }
 
+    /**
+     * Imports a screen using the provided data and existing assets.
+     *
+     * @param array $data The data for the screen import.
+     * @param array $existingAssets The existing assets to be considered during the import.
+     */
     protected function importScreen($data, $existingAssets)
     {
         $templateId = (int) $data['templateId'];
@@ -619,7 +672,10 @@ class ScreenTemplate implements TemplateInterface
         $newScreen->save();
     }
 
-    public function syncProjectAssets($data)
+    /**
+     * Synchronizes project assets with the given data and new screen ID.
+     */
+    public function syncProjectAssets($data, int $newScreenId): void
     {
         if (class_exists(self::PROJECT_ASSET_MODEL_CLASS) && !empty($data['projects'])) {
             $manifest = $this->getManifest('screen', $newScreenId);
@@ -680,5 +736,50 @@ class ScreenTemplate implements TemplateInterface
         foreach ($result as $media) {
             $template->addMediaFromBase64($media['url'])->toMediaCollection($template->media_collection);
         }
+    }
+
+    /**
+     * Prepare payload for import.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    private function preparePayloadForImport(array &$payload): void
+    {
+        foreach ($payload['export'] as &$asset) {
+            // Modify asset attributes as needed
+            $asset['attributes']['editing_screen_uuid'] = null;
+        }
+    }
+
+    /**
+     * Configure import options.
+     *
+     * @param  array  $payload
+     * @return \Importer\Options
+     */
+    private function configureImportOptions(array $payload): Options
+    {
+        $postOptions = [];
+
+        foreach ($payload['export'] as $key => $asset) {
+            // Set import mode for each asset
+            $postOptions[$key] = ['mode' => 'copy'];
+        }
+
+        return new Options($postOptions);
+    }
+
+    /**
+     * Perform the import operation.
+     *
+     * @param  array  $payload
+     * @param  \Importer\Options  $options
+     * @return void
+     */
+    private function performImport(array $payload, Options $options): void
+    {
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
     }
 }

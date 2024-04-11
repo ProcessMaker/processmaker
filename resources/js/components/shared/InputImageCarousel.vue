@@ -186,6 +186,7 @@
           <i class="fas fa-solid fa-circle-notch fa-spin" />
         </div>
       </div>
+      <hr id="invisiblehr">
       <div
         v-show="!loadingImage && !notValidImage"
         id="idDropdownMenuUpload"
@@ -217,7 +218,7 @@
           <a
             class="dropdown-item"
             href="#"
-            @click="addEmbedMedia"
+            @click="showNewEmbed = !showNewEmbed"
           >
             {{ $t("Embed Media") }}
           </a>
@@ -245,6 +246,53 @@
         </div>
       </div>
     </div>
+    <b-popover
+      ref="popover"
+      disabled.sync="false"
+      :show.sync="showNewEmbed"
+      target="invisiblehr"
+      placement="topright"
+      triggers="hover focus"
+    >
+      <div class="popover-embed shadow">
+        <label class="mt-0">
+          {{ $t("Embed URL") }}
+        </label>
+        <input
+          id="newEmbed"
+          v-model="newEmbed"
+          class="form-control input-custom mb-0"
+          type="url"
+          rows="5"
+          :aria-label="$t('Embed URL')"
+        >
+        <span
+          v-if="notURL"
+          class="error-message"
+        >
+          {{ $t("The URL is required.") }}
+          <br>
+        </span>
+        <div
+          class="d-flex justify-content-end mt-3"
+        >
+          <button
+            type="button"
+            class="btn btn-cancel-delete btns-popover"
+            @click="showNewEmbed = false"
+          >
+            {{ $t('Cancel') }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-delete-image btns-popover"
+            @click="addEmbedMedia"
+          >
+            {{ $t("Apply") }}
+          </button>
+        </div>
+      </div>
+    </b-popover>
   </div>
 </template>
 
@@ -270,6 +318,8 @@ export default {
       processId: "",
       validSizeImageMB: 2,
       notURL: false,
+      newEmbed: "",
+      showNewEmbed: false,
     };
   },
   methods: {
@@ -420,12 +470,19 @@ export default {
         );
         return;
       }
+      if (!this.newEmbed || !this.isValidURL(this.newEmbed)) {
+        this.notURL = true;
+        return;
+      }
       this.images.push({
-        url: "",
+        url: this.newEmbed,
         uuid: "",
         type: "embed",
       });
-      this.focusIcon(this.images.length - 1);
+      this.embedUrls[this.images.length - 1] = this.newEmbed;
+      this.newEmbed = "";
+      this.showNewEmbed = false;
+      this.notURL = false;
     },
     cancelEmbed(index) {
       if (this.images[index] && !this.images[index].url) {
@@ -584,3 +641,188 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+#invisiblehr {
+  margin: 0px;
+  width: 0.1px;
+  border-color: white;
+}
+label {
+  color: #556271;
+  margin-top: 16px;
+  margin-bottom: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0px;
+  text-align: left;
+}
+.image-style {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+}
+.custom-row {
+  margin: 16px 0px;
+}
+.input-custom {
+  height: 40px;
+  margin-bottom: 16px;
+  padding: 0px, 12px, 0px, 12px;
+  border-radius: 4px;
+  gap: 6px;
+  border: 1px solid #cdddee;
+}
+.image-thumbnails-container {
+  border: 1px solid #cdddee;
+  width: 369px;
+  height: 204px;
+  border-radius: 4px;
+  gap: 10px;
+  padding: 12px;
+}
+.images-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.images-container {
+  display: flex;
+  width: 345px;
+  height: 128px;
+  margin-bottom: 12px;
+}
+.drag-and-drop-container {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.07px;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #6a7888;
+  margin-bottom: 9px
+}
+.drag-and-drop-container i {
+  font-size: 32px;
+}
+.input-file-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6a7888;
+  width: 344px;
+  height: 40px;
+  padding: 10px 0px;
+  background-color: #ebeef2;
+  border: 1px dashed #6a7888;
+  border-radius: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20.43px;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.delete-icon {
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #00000080;
+  
+}
+.delete-icon i {
+  font-size: 24px;
+  color: white;
+}
+.btns-popover {
+  height: 32px;
+  padding: 0px 14px;
+  border-radius: 4px;
+  border: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  margin-left: 11px;
+}
+.btn-delete-image {
+  color: white;
+  background-color: #6a7888;
+}
+.btn-delete-embed {
+  color: white;
+  background-color: #ed4858;
+}
+.btn-cancel-delete {
+  color: #556271;
+  background-color: #d8e0e9;
+}
+.text-delete-embed {
+  color: #556271;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 27px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.popover {
+  max-width: 474px;
+}
+.popover-custom {
+  display: flex;
+  align-items: center;
+  color: #556271;
+  padding: 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+}
+.square-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  font-size: 24px;
+  color: #6a7888;
+  background-color: #f6f9fb;
+  border: 1px solid #cdddee;
+}
+.custom-trash-icon {
+  color: #6a7888;
+  font-size: 24px;
+}
+#idDropdownMenuUpload .dropdown-toggle::after {
+    display:none;
+}
+#idDropdownMenuUpload .dropdown-menu.show {
+  width: 229px;
+  padding: 0px;
+}
+.dropdown-item {
+  color: #556271;
+  padding: 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.popover-embed {
+  padding: 21px;
+  width: 474px;
+}
+</style>

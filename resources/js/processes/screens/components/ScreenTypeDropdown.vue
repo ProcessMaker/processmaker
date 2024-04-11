@@ -1,5 +1,6 @@
 <template>
   <multiselect
+    id="screenTypeDropdown"
     v-model="selectedType"
     :options="screenTypeOptions"
     track-by="type"
@@ -53,61 +54,15 @@ export default {
   },
   computed: {
     screenTypeOptions() {
-      // Add icons and descriptions to the appropriate screen type options
-      const optionsArray = Object.entries(this.screenTypes).map(([key, value]) => {
-        let type;
-        let typeHuman;
-        let icon;
-        let description;
+      // Check if this.screenTypes is an array or an object and map accordingly
+      let optionsArray;
+      if (Array.isArray(this.screenTypes)) {
+        optionsArray = this.screenTypes.map(screenType => this.createScreenTypeOption(screenType));
+      } else if (typeof this.screenTypes === 'object' && this.screenTypes !== null) {
+        optionsArray = Object.entries(this.screenTypes).map(([key, value]) => this.createScreenTypeOption(key));
+      }
 
-        switch (key) {
-          case "FORM":
-            type = "FORM";
-            typeHuman = "Form";
-            icon = "fas fa-file";
-            description = this.$t("Design interactive and complex multi-page forms.");
-            break;
-          case "EMAIL":
-            type = "EMAIL";
-            typeHuman = "E-mail";
-            icon = "fas fa-envelope";
-            description = this.$t("Compose the email body for email messages.");
-            break;
-          case "DISPLAY":
-            type = "DISPLAY";
-            typeHuman = "Display";
-            icon = "fas fa-desktop";
-            description = this.$t("Display information or allow Request participants to download files.");
-            break;
-          case "CONVERSATIONAL":
-            type = "CONVERSATIONAL";
-            typeHuman = "Conversational";
-            icon = "fas fa-comment";
-            description = this.$t("Design functional rule-based modern chat style experiences.");
-            break;
-
-          default:
-            type = "FORM";
-            typeHuman = this.$t("Form");
-            icon = "fas fa-file";
-            description = this.$t("Design interactive and complex multi-page forms.");
-            break;
-        }
-
-        return {
-          type,
-          typeHuman,
-          icon,
-          description,
-        };
-      });
-
-      // Update the order of the options in the optionsArray
-      const order = ["FORM", "EMAIL", "DISPLAY", "CONVERSATIONAL"];
-
-      const sortedOptionsArray = optionsArray.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
-
-      return sortedOptionsArray;
+      return this.sortOptions(optionsArray);
     },
   },
   mounted() {
@@ -115,15 +70,66 @@ export default {
       this.isDisabled = true;
     }
 
-     // Find the matching value in screenTypeOptions or default to FORM
-     if (this.value) {
+    // Find the matching value in screenTypeOptions or default to FORM
+    if (this.value) {
       this.selectedType = this.screenTypeOptions.find(item => item.type === this.value);
-     }
+    }
     this.$emit("input", this.selectedType.type);
   },
   methods: {
     emitSelectedType() {
       this.$emit("input", this.selectedType.type);
+    },
+    createScreenTypeOption(screenType) {
+      let type;
+      let typeHuman;
+      let icon;
+      let description;
+
+      switch (screenType) {
+        case "FORM":
+          type = "FORM";
+          typeHuman = "Form";
+          icon = "fas fa-file";
+          description = this.$t("Design interactive and complex multi-page forms.");
+          break;
+        case "EMAIL":
+          type = "EMAIL";
+          typeHuman = "E-mail";
+          icon = "fas fa-envelope";
+          description = this.$t("Compose the email body for email messages.");
+          break;
+        case "DISPLAY":
+          type = "DISPLAY";
+          typeHuman = "Display";
+          icon = "fas fa-desktop";
+          description = this.$t("Display information or allow Request participants to download files.");
+          break;
+        case "CONVERSATIONAL":
+          type = "CONVERSATIONAL";
+          typeHuman = "Conversational";
+          icon = "fas fa-comment";
+          description = this.$t("Design functional rule-based modern chat style experiences.");
+          break;
+
+        default:
+          type = "FORM";
+          typeHuman = this.$t("Form");
+          icon = "fas fa-file";
+          description = this.$t("Design interactive and complex multi-page forms.");
+          break;
+      }
+
+      return {
+        type,
+        typeHuman,
+        icon,
+        description,
+      };
+    },
+    sortOptions(optionsArray) {
+      const order = ["FORM", "EMAIL", "DISPLAY", "CONVERSATIONAL"];
+      return optionsArray.sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type));
     },
   },
 };
