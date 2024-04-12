@@ -86,21 +86,15 @@
       <label>
         {{ $t("Description") }}
       </label>
-      <input
+      <textarea
         id="additional-details"
         v-model="processDescription"
         class="form-control input-custom mb-0"
         type="text"
         rows="5"
         :aria-label="$t('Description')"
-      >
-      <span
-        v-if="!processDescription"
-        class="error-message"
-      >
-        {{ $t("The description field is required.") }}
-        <br>
-      </span>
+        disabled
+      />
     </div>
     <template #modal-footer>
       <b-button
@@ -283,7 +277,6 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
-      if (!this.processDescription) return;
       if (!this.$refs["image-carousel"].checkImages()) return;
       this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.properties = JSON.stringify({
@@ -327,7 +320,6 @@ export default {
       if (this.origin !== "core") {
         this.dataProcess = ProcessMaker.modeler.process;
       }
-      this.dataProcess.description = this.processDescription;
       this.saveProcessDescription();
     },
     /**
@@ -501,11 +493,16 @@ label {
 }
 .input-custom {
   height: 40px;
-  margin-bottom: 16px;
-  padding: 0px, 12px, 0px, 12px;
+  color: #556271;
+  background: white;
   border-radius: 4px;
-  gap: 6px;
   border: 1px solid #cdddee;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+  gap: 6px;
 }
 .modal-dialog, .modal-content {
   min-width: 800px;
