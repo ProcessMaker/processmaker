@@ -13,7 +13,6 @@ const PMColumnFilterCommonMixin = {
       userId: window.Processmaker.userId,
       viewAssignee: [],
       viewParticipants: [],
-      viewProcesses: []
     };
   },
   watch: {
@@ -238,16 +237,6 @@ const PMColumnFilterCommonMixin = {
         for (let i in response.data.data) {
           this.viewParticipants.push({
             text: response.data.data[i].username,
-            value: response.data.data[i].id
-          });
-        }
-      });
-    },
-    getProcess() {
-      ProcessMaker.apiClient.get('/processes?per_page=100').then(response => {
-        for (let i in response.data.data) {
-          this.viewProcesses.push({
-            text: response.data.data[i].name,
             value: response.data.data[i].id
           });
         }
