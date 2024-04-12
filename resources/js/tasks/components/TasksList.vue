@@ -379,6 +379,7 @@ export default {
         }
       }
       this.$emit('count', newData.meta?.count);
+      this.$emit("tab-count", newData.meta?.total);
     },
     shouldShowLoader(value) {
       this.$emit("data-loading", value);

@@ -1,8 +1,10 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
+import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
 Vue.component("TasksList", TasksList);
+Vue.component("TasksListCounter", TasksListCounter);
 
 new Vue({
   el: "#tasks",
@@ -22,6 +24,10 @@ new Vue({
     inbox: true,
     priority: false,
     draft: false,
+    tab: "inbox",
+    inboxCount: null,
+    draftCount: null,
+    priorityCount: null,
     priorityFilter: [
       {
         "subject": {
@@ -84,6 +90,7 @@ new Vue({
       this.inbox = tab === "inbox";
       this.draft = tab === "draft";
       this.priority = tab === "priority";
+      this.tab = tab;
       switch (tab) {
         case "inbox":
           this.onInbox();
@@ -125,6 +132,17 @@ new Vue({
     fetchTasks() {
       const taskListComponent = this.$refs.taskList;
       taskListComponent.fetch(true);
+    },
+    handleTabCount(value) {
+      if (this.tab === "inbox") {
+        this.inboxCount = value;
+      }
+      if(this.tab === "draft") {
+        this.draftCount = value;
+      }
+      if (this.tab === "priority") {
+        this.priorityCount = value;
+      }
     },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
