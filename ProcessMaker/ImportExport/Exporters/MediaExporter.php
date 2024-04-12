@@ -8,8 +8,6 @@ use ProcessMaker\ImportExport\DependentType;
 
 class MediaExporter extends ExporterBase
 {
-    public $discard = false;
-
     public function export(): void
     {
         $media = $this->model;

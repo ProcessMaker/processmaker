@@ -4,9 +4,11 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Traits\HasUuids;
+use ProcessMaker\Traits\Exportable;
 
 class ProcessLaunchpad extends ProcessMakerModel
 {
+    use Exportable;
     use HasFactory;
     use HasUuids;
 
