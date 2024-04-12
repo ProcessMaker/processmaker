@@ -56,11 +56,6 @@ class ProcessLaunchpad extends ProcessMakerModel
         return $this->belongsTo(Process::class, 'process_id');
     }
 
-    public function users()
-    {
-        return $this->hasMany(User::class, 'id');
-    }
-
     /**
      * Get the launchpad related
      */
