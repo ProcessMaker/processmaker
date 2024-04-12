@@ -25,7 +25,7 @@
         v-else
         class="form-group"
       >
-        <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
+        <p>{{ $t("New requests will use the published process") }}</p>
         <div>
           <label for="name">{{ $t("Version Name") }} </label>
           <input
