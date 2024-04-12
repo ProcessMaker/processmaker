@@ -271,7 +271,7 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     *  Publish a Screen Template to display in the Public Templates tab
+     *  Publish a Screen Template to display in the Shared Templates tab
      * @param mixed $request
      * @return JsonResponse
      */
@@ -279,6 +279,7 @@ class ScreenTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ScreenTemplates::where('id', $id)->firstOrFail();
+        $template->is_default_template = false;
         $template->is_public = true;
         $template->saveOrFail();
 
@@ -321,6 +322,11 @@ class ScreenTemplate implements TemplateInterface
             $id = (int) $request->id;
             $template = ScreenTemplates::where('id', $id)->firstOrFail();
             $this->syncTemplateMedia($template, $request->template_media);
+
+            if ($request->is_public !== $template->is_public) {
+                $template->is_default_template = false;
+            }
+
             $template->fill($request->except('id'));
             $template->user_id = Auth::user()->id;
 
@@ -328,7 +334,7 @@ class ScreenTemplate implements TemplateInterface
 
             return response()->json();
         } catch (\Exception $e) {
-            return response([
+            return response()->json([
                 'message' => $e->getMessage(),
             ], 422);
         }

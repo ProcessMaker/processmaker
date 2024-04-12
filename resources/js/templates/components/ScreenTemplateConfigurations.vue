@@ -71,10 +71,10 @@
                     id="make-screen-template-public"
                     v-model="template.is_public"
                     name="make-screen-template-public"
-                    value="true"
-                    unchecked-value="false"
+                    :value="true"
+                    :unchecked-value="false"
                 >
-                {{ $t('Make Public') }}
+                {{ $t('Share Template') }}
                 </b-form-checkbox>
             </b-form-group>
 

@@ -254,7 +254,7 @@
       placement="topright"
       triggers="hover focus"
     >
-      <div class="popover-embed shadow">
+      <div class="popover-embed">
         <label class="mt-0">
           {{ $t("Embed URL") }}
         </label>
@@ -279,7 +279,7 @@
           <button
             type="button"
             class="btn btn-cancel-delete btns-popover"
-            @click="showNewEmbed = false"
+            @click="cancelNewEmbed"
           >
             {{ $t('Cancel') }}
           </button>
@@ -638,6 +638,10 @@ export default {
       };
       ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
     },
+    cancelNewEmbed() {
+      this.newEmbed = "";
+      this.showNewEmbed = false;
+    },
   },
 };
 </script>
@@ -821,8 +825,12 @@ label {
   letter-spacing: -0.02em;
   text-align: left;
 }
-.popover-embed {
+.b-popover {
   padding: 21px;
   width: 474px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+.popover-embed {
+  width: 432px;
 }
 </style>
