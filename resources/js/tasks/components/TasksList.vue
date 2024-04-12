@@ -641,11 +641,6 @@ export default {
       if(this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
       }  
-        if (!isPriorityIcon && !this.disableRowClick) {
-          window.location.href = this.openTask(row);
-        }
-      
-      
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
