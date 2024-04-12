@@ -233,6 +233,10 @@ export default {
     if (this.propColumns.length > 0) {
       this.columns = this.propColumns;
     }
+    this.reCalculateZIndex(true);
+  },
+  beforeDestroy(){
+    this.reCalculateZIndex(false);
   },
   methods: {
     verifyURL(string) {
@@ -267,9 +271,32 @@ export default {
           console.error("Error", error);
         });
     },
+    /*
+     * To do: There's a global-search-bar class with a large z-index. We added a class 
+     * that modifies this class when this panel is displayed. If it's destroyed, we 
+     * remove it to maintain compatibility.
+     */
+    reCalculateZIndex(sw) {
+      let searchBar = document.querySelector('.global-search-bar');
+      if(!searchBar){
+        return;
+      }
+      let obj = searchBar.classList;
+      if (sw === true) {
+        obj.add("global-search-bar-z-index");
+      } else {
+        obj.remove("global-search-bar-z-index");
+      }
+    }
   },
 };
 </script>
+<style>
+  /*To do: Read description of method reCalculateZIndex()*/
+  .global-search-bar-z-index {
+    z-index: auto !important;
+  }
+</style>
 <style scoped>
 .btn-cancel {
   background-color: #fff;
