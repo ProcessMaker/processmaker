@@ -1,7 +1,7 @@
 <template>
   <div>
-    <template v-if="saveSearchId !== null && saveSearchId !== 0">
-      <div class="base-chart h-85 w-85 custom-settings">
+    <template v-if="chartId !== null && chartId !== 0 && chart !== null">
+      <div class="base-chart custom-settings">
         <component
           :is="chartComponent"
           ref="chart"
@@ -131,14 +131,6 @@ export default {
           return "bar-horizontal-chart";
       }
     },
-    saveSearchId() {
-      const unparseProperties = this.process.launchpad?.properties || null;
-      if (unparseProperties !== null) {
-        this.chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
-      }
-
-      return this.chartId;
-    },
   },
   watch: {
     value: {
@@ -158,6 +150,10 @@ export default {
     this.setDefaults();
   },
   mounted() {
+    const unparseProperties = this.process.launchpad?.properties || null;
+    if (unparseProperties !== null) {
+      this.chartId = JSON.parse(unparseProperties)?.saved_chart_id || null;
+    }
     this.fetchChart();
     ProcessMaker.EventBus.$on("getChartId", (newChartId) => {
       this.chartId = newChartId;
@@ -170,9 +166,9 @@ export default {
      * Both packages go always together
      */
     fetchChart() {
-      if (ProcessMaker.packages.includes("package-collections") && this.saveSearchId !== null) {
+      if (ProcessMaker.packages.includes("package-collections") && this.chartId !== null && this.chartId !== 0) {
         ProcessMaker.apiClient
-          .get(`saved-searches/charts/${this.saveSearchId}`, { timeout: 0 })
+          .get(`saved-searches/charts/${this.chartId}`, { timeout: 0 })
           .then((response) => {
             this.charts = response.data;
             this.transform(this.charts);
@@ -281,11 +277,8 @@ export default {
   background: linear-gradient(0deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.92) 100%), #57D490;
 }
 .custom-settings {
-  margin-top: 10px;
-  width: 90%;
-  height: 90%;
+  margin-top: 32px;
   background-color: white;
-  max-height: 250px;
 }
 @media (width < 1200px) {
   .default-chart {
