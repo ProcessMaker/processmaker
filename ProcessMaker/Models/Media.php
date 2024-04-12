@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Traits\Exportable;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
 
 /**
@@ -56,6 +57,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
  */
 class Media extends MediaLibraryModel
 {
+    use Exportable;
     use HasFactory;
 
     protected $connection = 'processmaker';

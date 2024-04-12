@@ -210,4 +210,20 @@ trait TaskControllerIndexMethods
             return new Resource($processRequestToken);
         });
     }
+
+    private function applyForCurrentUser($query, $user)
+    {
+        if ($user->is_administrator) {
+            return $query;
+        }
+
+        if ($user->can('view-all_requests')) {
+            return $query;
+        }
+
+        $query->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                ->orWhereIn('id', $user->availableSelfServiceTaskIds());
+        });
+    }
 }

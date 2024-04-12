@@ -5,9 +5,11 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Traits\HasUuids;
+use ProcessMaker\Traits\Exportable;
 
 class Embed extends ProcessMakerModel
 {
+    use Exportable;
     use HasFactory;
     use HasUuids;
 

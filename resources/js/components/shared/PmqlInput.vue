@@ -383,7 +383,7 @@ export default {
       } else if (this.aiEnabledLocal) {
         this.runNLQToPMQL();
       } else if (!this.query.isPMQL() && !this.aiEnabledLocal) {
-        const fullTextSearch = encodeURIComponent(`(fulltext LIKE "%${this.query}%")`);
+        const fullTextSearch = `(fulltext LIKE "%${this.query}%")`;
         this.pmql = fullTextSearch;
         this.$emit("submit", fullTextSearch);
         this.$emit("input", fullTextSearch);

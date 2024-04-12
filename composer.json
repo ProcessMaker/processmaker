@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.10.0+next-20240410",
+    "version": "4.10.0+next-20240411",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -103,7 +103,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "2a976c79",
+            "build": "ee16de36",
             "custom": {
                 "package-ellucian-ethos": "1.15.3",
                 "package-plaid": "1.5.0",
@@ -144,7 +144,7 @@
                 "package-ab-testing": "1.0.2",
                 "package-actions-by-email": "1.17.0",
                 "package-advanced-user-manager": "1.11.0",
-                "package-ai": "1.7.7",
+                "package-ai": "1.7.8",
                 "package-analytics-reporting": "1.5.1",
                 "package-auth": "1.17.3",
                 "package-cdata": "1.4.2",
@@ -156,8 +156,8 @@
                 "package-dynamic-ui": "1.18.1",
                 "package-files": "1.14.0",
                 "package-googleplaces": "1.11.0",
-                "package-photo-video": "1.4.2",
-                "package-pm-blocks": "1.6.1",
+                "package-photo-video": "1.5.0",
+                "package-pm-blocks": "1.6.2",
                 "package-process-documenter": "1.9.0",
                 "package-process-optimization": "1.10.0",
                 "package-product-analytics": "1.5.8",
@@ -165,7 +165,7 @@
                 "package-savedsearch": "1.33.7",
                 "package-sentry": "1.8.0",
                 "package-signature": "1.12.0",
-                "package-testing": "1.2.6",
+                "package-testing": "1.2.7",
                 "package-translations": "2.9.0",
                 "package-versions": "1.10.1",
                 "package-vocabularies": "2.15.0",

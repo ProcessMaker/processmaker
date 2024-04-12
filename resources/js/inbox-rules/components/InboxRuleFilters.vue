@@ -4,7 +4,7 @@
       <PMMessageScreen>
         <template v-slot:content>
           <img src="/img/funnel-fill-elements-blue.svg" 
-                :alt="$t('Select a saved search above.')"/>
+               :alt="$t('Select a saved search above.')"/>
           <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
           <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
           </span>
@@ -16,22 +16,14 @@
         {{ taskTitle }}
       </div>
       <div class="mb-3">
-        <pmql-input ref="pmql_input"
-                    :value="pmql"
-                    search-type="tasks"
-                    :ai-enabled="false"
-                    :show-filters="true"
-                    :aria-label="$t('Advanced Search (PMQL)')"
-                    :advanced-filter-prop="savedSearchAdvancedFilter"
-                    :show-search-bar="false"
-                    :show-pmql-badge="!!savedSearchId"
-                    >
+        <PMBadgesFilters :value="pmql"
+                         :advancedFilterProp="savedSearchAdvancedFilter">
           <template v-slot:right-of-badges v-if="showColumnSelectorButton">
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
             </b-button>
           </template>
-        </pmql-input>
+        </PMBadgesFilters>
       </div>
 
       <tasks-list
@@ -83,6 +75,7 @@
   import TasksList from "../../tasks/components/TasksList.vue";
   import ColumnChooserAdapter from "./ColumnChooserAdapter.vue";
   import PMMessageScreen from "../../components/PMMessageScreen.vue";
+  import PMBadgesFilters from "../../components/PMBadgesFilters.vue";
   export default {
     props: {
       savedSearchId: {
@@ -106,13 +99,15 @@
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
         ready: false,
-        task: null
+        task: null,
+        loadInitialAdvancedFilter: null
       };
     },
     components: {
       TasksList,
       ColumnChooserAdapter,
-      PMMessageScreen
+      PMMessageScreen,
+      PMBadgesFilters
     },
     methods: {
       emitSavedSearchData() {
@@ -129,6 +124,9 @@
       },
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
+        if (this.$refs.taskList) {
+          this.$refs.taskList.refreshData(this.loadInitialAdvancedFilter);
+        }
       },
       defaultTaskFilters() {
         return {
@@ -244,6 +242,12 @@
           let defaultColumns = this.$refs.taskList.tableHeaders;
           this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
         }
+        this.saveInitialAdvancedFilterConfiguration();
+      },
+      saveInitialAdvancedFilterConfiguration() {
+        if (this.loadInitialAdvancedFilter === null) {
+          this.loadInitialAdvancedFilter = _.cloneDeep(this.$refs.taskList.advancedFilter);
+        }
       }
     },
     watch: {
@@ -255,6 +259,7 @@
       savedSearchAdvancedFilter: {
         deep: true,
         handler() {
+          //to do: reviewing this assignment may result in a loop.
           this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(this.savedSearchAdvancedFilter);
           this.emitSavedSearchData();
         }
@@ -306,13 +311,13 @@
 </script>
 
 <style scoped>
-.no-rule-class-title {
-  color: #556271;
-  font-size: 24px;
-}
+  .no-rule-class-title {
+    color: #556271;
+    font-size: 24px;
+  }
 
-.no-rule-class-text {
-  color: #556271;
-  font-size: 16px;
-}
+  .no-rule-class-text {
+    color: #556271;
+    font-size: 16px;
+  }
 </style>

@@ -19,11 +19,15 @@ class ProcessLaunchpadController extends Controller
         // Get the images related
         // Get the embed related
         $processes = Process::with('launchpad')
-            ->with('media')
-            ->with('embed')
+            ->with(['media' => function ($query) {
+                $query->orderBy('order_column', 'asc');
+            }])
+            ->with(['embed' => function ($query) {
+                $query->orderBy('order_column', 'asc');
+            }])
             ->where('id', $process->id)
             ->get()
-            ->collect();
+            ->toArray();
 
         return new ApiResource($processes);
     }
