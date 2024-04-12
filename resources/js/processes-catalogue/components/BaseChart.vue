@@ -64,7 +64,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 294,
+      default: 274,
     },
     width: {
       type: Number,
@@ -270,7 +270,7 @@ export default {
 <style scoped>
 .default-chart {
   width: 294px;
-  margin-top: 32px;
+  margin-top: 16px;
   padding: 16px 0;
   border-radius: 16px;
   border: 0.883px solid rgba(205, 221, 238, 0.50);
