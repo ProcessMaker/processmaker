@@ -40,7 +40,7 @@ class BookmarkController extends Controller
             ->get()
             ->collect();
         
-        foreach ($processes as $key => $process) {
+        foreach ($processes as $process) {
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
         }
