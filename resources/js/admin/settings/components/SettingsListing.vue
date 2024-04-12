@@ -492,13 +492,14 @@ export default {
       this.searchQuery = pmql;
     },
     pageUrl(page) {
+      const urlEncodedPmql = encodeURIComponent(this.pmql);
       let url = `${this.url}?` +
         `page=${page}&` +
         `per_page=${this.perPage}&` +
         `order_by=${encodeURIComponent(this.orderBy)}&` +
         `order_direction=${this.orderDirection}&` +
         `filter=${this.filter}&` +
-        `pmql=${this.pmql}&` +
+        `pmql=${urlEncodedPmql}&` +
         `group=${this.group}`;
 
       if (this.additionalPmql && this.additionalPmql.length) {
