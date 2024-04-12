@@ -382,7 +382,11 @@ export default {
       this.$emit("tab-count", newData.meta?.total);
     },
     shouldShowLoader(value) {
-      this.$emit("data-loading", value);
+      if (this.apiNoResults) {
+        this.$emit("data-loading", false);
+      } else {
+        this.$emit("data-loading", value);
+      }
     },
   },
   mounted: function mounted() {
