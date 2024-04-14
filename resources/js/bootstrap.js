@@ -368,7 +368,7 @@ if (userID) {
         }, 100);
       }
     })
-    .listen(".SecurityLogDownloadJobCompleted", (e) => {
+    .listen(".SecurityLogDownloadJobDone", (e) => {
       if (e.success) {
         const { link } = e;
         const { message } = e;
