@@ -537,8 +537,16 @@ class ProcessController extends Controller
                     $element->setAttribute('name', $request->input('name'));
                 }
             }
-            $parentProcess->bpmn = $definitions->saveXML();
-            $parentProcess->saveOrFail();
+            try {
+                $parentProcess->bpmn = $definitions->saveXML();
+                $process->saveDraft();
+            } catch (TaskDoesNotHaveUsersException $e) {
+                return response(
+                    ['message' => $e->getMessage(),
+                        'errors' => ['bpmn' => $e->getMessage()], ],
+                    422
+                );
+            }
         }
 
         return response()->json([

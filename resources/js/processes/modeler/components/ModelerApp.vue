@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     autosaveApiCall() {
-      return async (generatingAssets = false) => {
+      return async (generatingAssets = false, redirectUrl = null, nodeId = null) => {
         const svg = document.querySelector(".mini-paper svg");
         const css = "text { font-family: sans-serif; }";
         const style = document.createElement("style");
@@ -129,7 +129,7 @@ export default {
             alternative: window.ProcessMaker.modeler.draftAlternative || "A",
           });
           this.process.updated_at = response.data.updated_at;
-          window.ProcessMaker.EventBus.$emit("save-changes", null, null, generatingAssets);
+          window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
           this.$set(this, "warnings", response.data.warnings || []);
           if (response.data.warnings && response.data.warnings.length > 0) {
             window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
@@ -243,7 +243,7 @@ export default {
       this.dataXmlSvg.svg = svg;
 
       if (redirectUrl && nodeId) {
-        this.handleAutosave(true, false);
+        this.handleAutosave(true, false, redirectUrl, nodeId);
         window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
         return;
       }
