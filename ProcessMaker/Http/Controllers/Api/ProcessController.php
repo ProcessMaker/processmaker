@@ -505,7 +505,7 @@ class ProcessController extends Controller
     public function updateBpmn(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
-
+        
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
@@ -530,28 +530,32 @@ class ProcessController extends Controller
         // If is a subprocess, we need to update the name in the BPMN too
         if ($request->input('parentProcessId') && $request->input('nodeId')) {
             $parentProcess = Process::findOrFail($request->input('parentProcessId'));
-            $definitions = $parentProcess->getDefinitions();
-            $elements = $definitions->getElementsByTagName('callActivity');
-            foreach ($elements as $element) {
-                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
-                    $element->setAttribute('name', $request->input('name'));
-                }
-            }
-            try {
-                $parentProcess->bpmn = $definitions->saveXML();
-                $process->saveDraft();
-            } catch (TaskDoesNotHaveUsersException $e) {
-                return response(
-                    ['message' => $e->getMessage(),
-                        'errors' => ['bpmn' => $e->getMessage()], ],
-                    422
-                );
-            }
+            $this->updateSubprocessElement($parentProcess, $request, $process);   
         }
 
         return response()->json([
             'success' => true,
         ], 200);
+    }
+
+    private function updateSubprocessElement($parentProcess, $request, $process) {
+        $definitions = $parentProcess->getDefinitions();
+        $elements = $definitions->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                $element->setAttribute('name', $request->input('name'));
+            }
+        }
+        try {
+            $parentProcess->bpmn = $definitions->saveXML();
+            $process->saveDraft();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
     }
 
     /**
