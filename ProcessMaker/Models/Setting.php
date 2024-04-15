@@ -461,8 +461,8 @@ class Setting extends ProcessMakerModel implements HasMedia
                     case 'External Integrations': // Enterprise Integrations
                         $id = SettingsMenus::getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
-                    default:
-                        $id = null;
+                    default: // The default configuration will Integration
+                        $id = SettingsMenus::getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
                 }
                 if ($id !== null) {
