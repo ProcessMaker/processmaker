@@ -130,7 +130,6 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      debugger;
       const categoryId = this.category ? this.category.id : -1;
       window.history.replaceState(null, null, `/process-browser/${process.id}?categorySelected=${categoryId}`);
       this.$emit("openProcess", process);
