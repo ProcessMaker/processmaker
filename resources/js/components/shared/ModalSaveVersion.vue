@@ -97,10 +97,10 @@ export default {
   props: {
     options: {
       type: Object,
-      default: {
+      default: () => ({
         id: "",
         type: "",
-      },
+      }),
     },
     filter: {
       type: String,
@@ -161,11 +161,17 @@ export default {
   },
   methods: {
     abPublishVersion(alternativeData) {
-      this.subject = alternativeData.subject;
-      this.description = alternativeData.description;
+      const {
+        subject = this.subject,
+        description = this.description,
+      } = alternativeData || {};
 
-      this.saveModal(alternativeData);
+      this.subject = subject;
+      this.description = description;
+
+      this.saveModal();
     },
+
     /**
      * Method to store initial data from process description field
      */
@@ -226,7 +232,7 @@ export default {
       });
 
       promise
-        .then((response) => {
+        .then(() => {
           ProcessMaker.apiClient
             .post("/version_histories", {
               subject: this.subject,
@@ -234,7 +240,7 @@ export default {
               versionable_id: this.options.id,
               versionable_type: this.options.type,
             })
-            .then((response) => {
+            .then(() => {
               ProcessMaker.alert(this.$t("The process version was saved."), "success");
               this.saving = false;
               this.verifyLaunchPad();
@@ -244,15 +250,9 @@ export default {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
               }
-              if (error.response.status === 404) {
-                // version_histories route not found because package-versions is not installed
-                console.error(err);
-              }
             });
         })
-        .catch((err) => {
-          console.error(err);
-        });
+        .catch(() => {});
     },
     showModal() {
       this.subject = "";
