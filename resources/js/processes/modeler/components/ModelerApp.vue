@@ -244,6 +244,12 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
+      if (redirectUrl && nodeId) {
+        this.handleAutosave(true, false);
+        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
+        return;
+      }
+
       if (this.externalEmit.includes("open-modal-versions") && !generatingAssets) {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
