@@ -190,7 +190,7 @@ export default {
         this.openProcess(this.process);
         this.fromProcessList = true;
         const { searchParams } = new URL(window.location);
-        let categoryId = "default";
+        let categoryId;
         if (searchParams.get("categorySelected") !== null) {
           categoryId = searchParams.get("categorySelected");
         } else {
