@@ -199,6 +199,7 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
+      @onWatchShowPreview="onWatchShowPreview"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
@@ -757,6 +758,9 @@ export default {
           name: null
         };
       }
+    },
+    onWatchShowPreview(value) {
+      this.$emit('onWatchShowPreview', value);
     }
   },
 };
