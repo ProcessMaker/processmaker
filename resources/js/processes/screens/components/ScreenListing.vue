@@ -14,7 +14,6 @@
         :sortOrder="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
