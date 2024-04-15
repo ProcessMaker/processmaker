@@ -530,7 +530,7 @@ class ProcessController extends Controller
         // If is a subprocess, we need to update the name in the BPMN too
         if ($request->input('parentProcessId') && $request->input('nodeId')) {
             $parentProcess = Process::findOrFail($request->input('parentProcessId'));
-            $this->updateSubprocessElement($parentProcess, $request, $process);   
+            $this->updateSubprocessElement($parentProcess, $request, $process);
         }
 
         return response()->json([
