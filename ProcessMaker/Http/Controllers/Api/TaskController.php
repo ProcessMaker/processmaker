@@ -120,6 +120,8 @@ class TaskController extends Controller
 
         $this->applyAdvancedFilter($query, $request);
 
+        $this->applyForCurrentUser($query, $user);
+
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();

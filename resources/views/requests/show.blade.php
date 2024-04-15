@@ -357,7 +357,7 @@
                           </li>
                         @endif
                         <li class="list-group-item">
-                          <p class="section-title">{{ __('In Progress Since') }}:</p>
+                          <p class="section-title">@{{ __(labelDate) }}:</p>
                           <i class="far fa-calendar-alt"></i>
                           <small>@{{ moment(statusDate).format() }}</small>
                         </li>
@@ -601,7 +601,7 @@
         },
         labelDate() {
           let label = {
-            'ACTIVE': 'Created',
+            'ACTIVE': 'In Progress Since',
             'COMPLETED': 'Completed On',
             'CANCELED': 'Canceled ',
             'ERROR': 'Failed On',
@@ -645,6 +645,9 @@
         },
         switchTabInfo(tab) {
           this.showInfo = !this.showInfo;
+          if (window.Intercom) {
+            window.Intercom('update', { "hide_default_launcher": tab === 'comments' });
+          }
         },
         onLoadedObject() {
           this.isObjectLoading = false;

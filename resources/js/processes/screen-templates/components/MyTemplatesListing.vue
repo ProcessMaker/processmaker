@@ -32,6 +32,7 @@
             v-if="column.sortable"
             :key="index"
             style="display: inline-block"
+            @click="handleEllipsisClick(column)"
           >
             <i
               :class="[
@@ -292,5 +293,6 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+  margin-top: 4px;
 }
 </style>

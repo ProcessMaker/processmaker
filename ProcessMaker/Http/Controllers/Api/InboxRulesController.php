@@ -23,8 +23,8 @@ class InboxRulesController extends Controller
         $order_direction = $request->input('order_direction', 'desc');
         $per_page = $request->input('per_page', 10);
         $filter = $request->input('filter', '');
-
-        $query = InboxRule::query();
+        
+        $query = InboxRule::query()->where('user_id', $request->user()->id);
 
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
@@ -41,14 +41,16 @@ class InboxRulesController extends Controller
     /**
      * Retrieve a specific inbox rule by its ID.
      *
-     * @param int $idInboxRule
+     * @param int $inboxRule
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Request $request, $idInboxRule)
+    public function show(InboxRule $inboxRule)
     {
-        return new ApiResource(
-            InboxRule::findOrFail($idInboxRule)
-        );
+        $inboxRuleArray = $inboxRule->toArray();
+        if (empty($inboxRule->data)) {
+            $inboxRuleArray['data'] = (object) [];
+        }
+        return new ApiResource($inboxRuleArray);
     }
 
     /**
@@ -119,7 +121,7 @@ class InboxRulesController extends Controller
         ]);
 
         $inboxRule->savedSearch->update([
-            'columns' => $request->input('columns'),
+            'meta' => ['columns' => $request->input('columns')],
             'advanced_filter' => $request->input('advanced_filter'),
         ]);
 

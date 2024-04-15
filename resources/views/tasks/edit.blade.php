@@ -148,16 +148,13 @@
                               <!-- ADD THE OTHER BUTTONS -->
                               <div class="row button-group">
                                 <div class="col-6">
-                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
-                                    <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
-                                      type="button"
-                                      class="btn btn-block button-actions"
-                                      @click="show"
-                                    >
-                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                    </button>
-                                  </template>
+                                  <button
+                                    type="button"
+                                    class="btn btn-block button-actions"
+                                    @click="createRule"
+                                  >
+                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
+                                  </button>
                                 </div>
                                 <div class="col-6">
                                   <button
@@ -180,18 +177,8 @@
                               </div>
                               <div class="row button-group">
                                 <div class="col-6">
-                                  <button
-                                    type="button"
-                                    class="btn btn-block button-actions"
-                                    @click="createRule"
-                                  >
-                                  <i class="fas fa-plus"></i> {{ __('Create Rule') }}
-                                  </button>
-                                </div>
-                                <div class="col-6">
                                   <template>
                                     <button
-                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
                                       type="button"
                                       v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
                                       class="btn btn-block button-actions"
@@ -204,6 +191,18 @@
                                     </button>
                                   </template>
                                 </div>
+                                <div class="col-6">
+                                  <template v-if="isAllowReassignment || userIsAdmin || userIsProcessManager">
+                                    <button
+                                      v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'"
+                                      type="button"
+                                      class="btn btn-block button-actions"
+                                      @click="show"
+                                    >
+                                      <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                    </button>
+                                  </template>
+                                </div>
                               </div>
                             </li>
                             <li class="list-group-item">
@@ -211,11 +210,10 @@
                               <button
                                 type="button"
                                 class="btn btn-block button-actions"
-                                v-b-tooltip.hover title="Erase Draft"
                                 @click="eraseDraft()"
                               >
                                 <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
-                                {{ __('Clear Task') }}
+                                {{ __('Clear Draft') }}
                               </button>
                             </li>
                             <div :class="statusCard">
@@ -376,7 +374,7 @@
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
-    const screenFields = @json($screenFields);
+    var screenFields = @json($screenFields);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -657,28 +655,47 @@
           taskUpdated(task) {
             this.task = task;
           },
+          updateScreenFields(taskId) {
+            return ProcessMaker.apiClient
+            .get(`tasks/${taskId}/screen_fields`)
+            .then((response)=> {
+              screenFields = response.data;
+            });
+          },
           autosaveApiCall() {
             this.options.is_loading = true;
             const draftData = {};
-            screenFields.forEach((field) => {
-              _.set(draftData, field, _.get(this.formData, field));
-            });
-            return ProcessMaker.apiClient
-            .put("drafts/" + this.task.id, draftData)
-            .then((response) => {
-              ProcessMaker.alert(this.$t('Saved'), 'success')
-              this.task.draft = _.merge(
-                {},
-                this.task.draft,
-                response.data
-              );
-            })
-            .catch(() => {
-              this.errorAutosave = true;
-            })
-            .finally(() => {
-              this.options.is_loading = false;
-            });
+
+            const saveDraft = () => {
+              screenFields.forEach((field) => {
+                _.set(draftData, field, _.get(this.formData, field));
+              });
+                
+              return ProcessMaker.apiClient
+              .put("drafts/" + this.task.id, draftData)
+              .then((response) => {
+                ProcessMaker.alert(this.$t('Saved'), 'success')
+                this.task.draft = _.merge(
+                  {},
+                  this.task.draft,
+                  response.data
+                );
+              })
+              .catch(() => {
+                this.errorAutosave = true;
+              })
+              .finally(() => {
+                this.options.is_loading = false;
+              });
+            };
+            if (screenFields.length === 0) {
+              return this.updateScreenFields(this.task.id)
+              .then(() => {
+                return saveDraft();
+              });
+            } else {
+              return saveDraft();
+            }
           },
           eraseDraft() {
             this.formDataWatcherActive = false;

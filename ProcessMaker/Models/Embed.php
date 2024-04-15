@@ -5,9 +5,11 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Traits\HasUuids;
+use ProcessMaker\Traits\Exportable;
 
 class Embed extends ProcessMakerModel
 {
+    use Exportable;
     use HasFactory;
     use HasUuids;
 
@@ -90,5 +92,11 @@ class Embed extends ProcessMakerModel
             // If the key does not exist create
             $embed->fill($values)->saveOrFail();
         }
+    }
+
+    public function getTitleAttribute()
+    {
+        // This is used by ExporterBase
+        return 'Embed Url';
     }
 }

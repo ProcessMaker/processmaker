@@ -49,10 +49,10 @@
           <template v-slot:content>
             <img src="/img/inbox-rule-suggest-lg.svg" 
                  :alt="$t('Inbox rules empty')" />
-            <b>
+            <b class="no-rule-class-title">
               {{ $t("You haven't set up any Inbox Rules yet") }}
             </b>
-            <span v-html="$t('Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.')">
+            <span class="no-rule-class-text" v-html="$t('Inbox Rules act as your personal task manager. You tell them what to look for, and <b>they take care of things automatically</b>.')">
             </span>
             <a href="#"
                @click="onCreateRule">
@@ -84,7 +84,7 @@
         baseURL: "tasks/rules",
         page: 1,
         per_page: 10,
-        order_by: "id",
+        order_by: "name",
         order_direction: "asc",
         filter: ""
       };
@@ -195,3 +195,13 @@
     }
   };
 </script>
+<style scoped>
+.no-rule-class-title {
+  color: #556271;
+  font-size: 24px;
+}
+.no-rule-class-text {
+  color: #556271;
+  font-size: 16px;
+}
+</style>

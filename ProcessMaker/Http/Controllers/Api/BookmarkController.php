@@ -9,6 +9,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 
 class BookmarkController extends Controller
 {
@@ -27,6 +28,8 @@ class BookmarkController extends Controller
                 return response(['error' => 'PMQL error'], 400);
             }
         }
+
+        $launchpad = $request->input('launchpad', false);
         // Get the processes
         $processes = $processes
             ->select('processes.*', 'bookmark.id as bookmark_id')
@@ -36,6 +39,11 @@ class BookmarkController extends Controller
             ->orderBy('processes.name', 'asc')
             ->get()
             ->collect();
+        
+        foreach ($processes as $process) {
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+        }
 
         return new ProcessCollection($processes);
     }

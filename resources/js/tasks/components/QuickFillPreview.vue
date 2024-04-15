@@ -55,7 +55,7 @@
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
         >
-          <template v-slot:preview-header="{ close, screenFilteredTaskData }">
+          <template v-slot:preview-header="{ close, screenFilteredTaskData, taskReady }">
             <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
               <div class="header-container-quick">
                 <div style="display: block; width: 100%">
@@ -64,6 +64,7 @@
                     v-if="propFromButton === 'inboxRules'"
                     class="button-task mr-2"
                     variant="primary"
+                    :disabled="!taskReady"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
                   >
@@ -90,6 +91,7 @@
                   <b-button
                     v-if="propFromButton === 'previewTask'"
                     class="button-task mr-2"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisData(screenFilteredTaskData)"
@@ -103,6 +105,7 @@
                   <b-button
                     v-if="propFromButton === 'fullTask'"
                     class="button-task mr-2"
+                    :disabled="!taskReady"
                     variant="primary"
                     :aria-label="$t('Use This Task Data')"
                     @click="buttonThisDataFromFullTask(screenFilteredTaskData)"
@@ -230,6 +233,10 @@ export default {
     if (this.propColumns.length > 0) {
       this.columns = this.propColumns;
     }
+    this.reCalculateZIndex(true);
+  },
+  beforeDestroy(){
+    this.reCalculateZIndex(false);
   },
   methods: {
     verifyURL(string) {
@@ -264,9 +271,32 @@ export default {
           console.error("Error", error);
         });
     },
+    /*
+     * To do: There's a global-search-bar class with a large z-index. We added a class 
+     * that modifies this class when this panel is displayed. If it's destroyed, we 
+     * remove it to maintain compatibility.
+     */
+    reCalculateZIndex(sw) {
+      let searchBar = document.querySelector('.global-search-bar');
+      if(!searchBar){
+        return;
+      }
+      let obj = searchBar.classList;
+      if (sw === true) {
+        obj.add("global-search-bar-z-index");
+      } else {
+        obj.remove("global-search-bar-z-index");
+      }
+    }
   },
 };
 </script>
+<style>
+  /*To do: Read description of method reCalculateZIndex()*/
+  .global-search-bar-z-index {
+    z-index: auto !important;
+  }
+</style>
 <style scoped>
 .btn-cancel {
   background-color: #fff;

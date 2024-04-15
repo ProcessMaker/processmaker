@@ -1189,6 +1189,7 @@
   "Placeholder": "Placeholder",
   "Please assign a run script user to: ": "Please assign a run script user to: ",
   "Please change your account password": "Please change your account password",
+  "Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.": "Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.",
   "Please contact your administrator to get started.": "Please contact your administrator to get started.",
   "Please log in to continue your work on this page.": "Please log in to continue your work on this page.",
   "Please use this link when you are not logged into ProcessMaker": "Please use this link when you are not logged into ProcessMaker",
@@ -1752,6 +1753,7 @@
   "The label describes the field's name": "The label describes the field's name",
   "The label describes the fields name": "The label describes the fields name",
   "The label describes this record list": "The label describes this record list",
+  "The launchpad settings were saved." : "The launchpad settings were saved.",
   "The name field is required.": "The name field is required.",
   "The name of the button": "The name of the button",
   "The Name of the data name": "The Name of the data name",
@@ -2216,6 +2218,13 @@
   "The inbox rule '{{name}}' was updated.": "The inbox rule '{{name}}' was updated.",
   "Select a saved search.": "Select a saved search.",
   "The Name has already been taken.": "The Name has already been taken.",
+  "Clear Task": "Clear Task",
+  "Clear Draft": "Clear Draft",
+  "The task is loading": "The task is loading",
+  "Some assets can take some time to load": "Some assets can take some time to load",
+  "Task Filled succesfully": "Task Filled succesfully",
+  "Update Rule": "Update Rule",
   "This is an AI feature and can provide inaccurate or biased responses.": "This is an AI feature and can provide inaccurate or biased responses.",
-  "ProcessMaker AI is currently offline. Please try again later.": "ProcessMaker AI is currently offline. Please try again later."
+  "ProcessMaker AI is currently offline. Please try again later.": "ProcessMaker AI is currently offline. Please try again later.",
+  "Clear All Fields In This Form": "Clear All Fields In This Form"
 }

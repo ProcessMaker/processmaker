@@ -253,3 +253,55 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.image-thumbnails-container {
+  border: 1px solid #CDDDEE;
+  height: 204px;
+  border-radius: 4px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.drag-and-drop-container {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 33px;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: #6a7888;
+  margin-bottom: 9px
+}
+
+.drag-and-drop-container i {
+  font-size: 32px;
+}
+
+.delete-icon {
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.delete-icon i {
+  font-size: 18px;
+  color: #000;
+}
+
+.btn-delete-image {
+  color: #000;
+  background-color: #6a7888;
+}
+
+.btn-cancel-delete {
+  color: #556271;
+  background-color: #d8e0e9;
+}
+
+.popover {
+  max-width: 474px;
+}
+
+</style>

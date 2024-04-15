@@ -75,6 +75,7 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
@@ -136,6 +137,7 @@
         </template>
         <b-form-input :placeholder="$t('Waiting for selection')"
                       v-model="submitButtonLabel"
+                      autocomplete="off"
                       :state="submitButtonState"
                       :readonly="true">
         </b-form-input>
@@ -150,6 +152,7 @@
         <b-form-input v-model="ruleName" 
                       :placeholder="$t('Enter your name')"
                       :state="ruleNameState"
+                      autocomplete="off"
                       @input="onChangeRuleName">
         </b-form-input>
         <b-form-invalid-feedback :state="ruleNameState">
@@ -282,12 +285,6 @@
           this.reassignToUserId = null;
         }
       },
-      savedSearchData: {
-        handler() {
-        },
-        deep: true,
-        immediate: true
-      },
       inboxRule: {
         handler() {
           this.setInboxRuleData();
@@ -301,7 +298,7 @@
     },
     methods: {
       onCancel() {
-        this.$router.push({name: 'index'});
+        window.history.back();
       },
       onSave() {
         if (!this.savedSearchData.columns) {
@@ -334,10 +331,6 @@
           ProcessMaker.apiClient.put('/tasks/rules/' + this.inboxRule.id, params)
                   .then(response => {
                     this.$refs.openModal.show();
-
-                    let message = "The inbox rule '{{name}}' was updated.";
-                    message = this.$t(message, {name: this.ruleName});
-                    ProcessMaker.alert(message, "success");
                   })
                   .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";
@@ -352,10 +345,6 @@
           ProcessMaker.apiClient.post('/tasks/rules', params)
                   .then(response => {
                     this.$refs.openModal.show();
-
-                    let message = "The inbox rule '{{name}}' was created.";
-                    message = this.$t(message, {name: this.ruleName});
-                    ProcessMaker.alert(message, "success");
                   })
                   .catch((error) => {
                     let message = "The operation cannot be performed. Please try again later.";

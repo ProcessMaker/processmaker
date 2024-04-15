@@ -17,7 +17,7 @@
                 <div class="thumbnail-preview">
                     <div v-if="templateHasThumbnails" class="text-center">
                         <img 
-                            v-for="thumbnail in templateData?.template_media"
+                            v-for="thumbnail in allThumbnails"
                             class="thumb mb-2"
                             :src="thumbnail?.url"
                             fluid
@@ -105,8 +105,19 @@
                 return this.templateData.screen_custom_css !== null;
             },
             templateHasThumbnails() {
-                return this.templateData?.template_media.length > 0;
-            }
+                return _.isArray(this.allThumbnails) && this.allThumbnails.length > 0 || !_.isEmpty(this.allThumbnails);
+            },
+            allThumbnails() {
+               if (this.templateData?.template_media) {
+                    if (this.templateData.template_media?.previewThumbs) {
+                        return this.templateData.template_media?.previewThumbs;
+                    } else {
+                        return this.templateData.template_media;
+                    }
+               } else {
+                return [];
+               }
+            },
         },
         watch: {
             selectedTemplateOptions() {
@@ -133,13 +144,14 @@
 </script>
 
 <style type="text/css" scoped>
-
     .template-preview-card .card-body {
         overflow-y:auto;
     }
+
     .back-btn {
         font-size: 25px;
     }
+
     .preview-card {
         height: 100vh;
         max-height: 600px;
@@ -160,14 +172,14 @@
     }
 
     .template-options-group {
-        margin: 0!important;
+        margin: 0 !important;
         border: 1px solid #6A7888;
-        padding: 6px 15px!important;
+        padding: 6px 15px !important;
         border-radius: 7px;
     }
 
     .template-options-group .template-options:last-child {
-        margin:0;
+        margin: 0;
     }
 
     .css-preview-card .card-body {

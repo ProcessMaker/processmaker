@@ -7,7 +7,10 @@
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <i class="fa fa-play-circle" style="font-size: 16px;" />
+      <i
+        class="fa fa-play-circle"
+        style="font-size: 16px;"
+      />
       <span class="pl-2"> {{ $t('Start this process') }} </span>
     </button>
     <button
@@ -20,10 +23,16 @@
       @click="getStartEvents()"
     >
       <span>
-        <i class="fa fa-play-circle" style="font-size: 16px;"></i>
+        <i
+          class="fa fa-play-circle"
+          style="font-size: 16px;"
+        />
         <span class="pl-2"> {{ $t('Start this process') }} </span>
       </span>
-      <i class="fas fa-caret-down" style="font-size: 16px;"></i>
+      <i
+        class="fas fa-caret-down"
+        style="font-size: 16px;"
+      />
     </button>
     <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
@@ -69,6 +78,7 @@ export default {
       processEvents: [],
       havelessOneStartEvent: false,
       startEvent: "",
+      anonUserId: "2",
     };
   },
   mounted() {
@@ -92,12 +102,12 @@ export default {
             }
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.disableButton();
           ProcessMaker.alert(err, "danger");
         });
     },
-    /** 
+    /**
      * Disable Start Button
      */
     disableButton() {
@@ -129,11 +139,11 @@ export default {
     copyLink(event) {
       const link = event.webEntry.webentryRouteConfig.entryUrl;
       navigator.clipboard.writeText(link);
-      if (event.assignment && ["user_group", "user"].includes(event.assignment)) {
+      if (event.assignedUsers && event.assignedUsers === this.anonUserId) {
         const msg = this.$t("Please use this link when you are not logged into ProcessMaker");
         ProcessMaker.alert(msg, "success", 5, false, false, "", "Anonymous Web Link Copied");
       } else {
-        this.$t("Link copied", "success");
+        ProcessMaker.alert(this.$t("Link copied"), "success");
       }
     },
   },

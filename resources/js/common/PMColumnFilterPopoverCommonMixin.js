@@ -13,7 +13,6 @@ const PMColumnFilterCommonMixin = {
       userId: window.Processmaker.userId,
       viewAssignee: [],
       viewParticipants: [],
-      viewProcesses: []
     };
   },
   watch: {
@@ -27,8 +26,8 @@ const PMColumnFilterCommonMixin = {
   },
   methods: {
     storeFilterConfiguration() {
-      const { order, type } = this.filterConfiguration();
-      
+      const {order, type} = this.filterConfiguration();
+
       // If advanced filter was provided as a prop, do not save the filter
       // or overwrite the global advanced_filter, instead emit the filter.
       if (this.advancedFilterProp !== null) {
@@ -220,7 +219,7 @@ const PMColumnFilterCommonMixin = {
       }
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];
-      }  
+      }
       return operators;
     },
     getAssignee(filter) {
@@ -238,16 +237,6 @@ const PMColumnFilterCommonMixin = {
         for (let i in response.data.data) {
           this.viewParticipants.push({
             text: response.data.data[i].username,
-            value: response.data.data[i].id
-          });
-        }
-      });
-    },
-    getProcess() {
-      ProcessMaker.apiClient.get('/processes?per_page=100').then(response => {
-        for (let i in response.data.data) {
-          this.viewProcesses.push({
-            text: response.data.data[i].name,
             value: response.data.data[i].id
           });
         }
@@ -301,19 +290,27 @@ const PMColumnFilterCommonMixin = {
         filters[key].push(filter);
       });
       this.advancedFilter = filters;
-      
+
       if (order?.by && order?.direction) {
         this.setOrderByProps(order.by, order.direction);
       }
-      
+
       this.$nextTick(() => {
         this.markStyleWhenColumnSetAFilter();
       });
-      
+
       if (this.advancedFilterProp === null) {
         window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
       }
     },
+    refreshData(advancedFilter) {
+      if (advancedFilter instanceof Object && !Array.isArray(advancedFilter)) {
+        this.advancedFilter = cloneDeep(advancedFilter);
+      }
+      this.markStyleWhenColumnSetAFilter();
+      this.storeFilterConfiguration();
+      this.fetch(true);
+    }
   }
 };
 export default PMColumnFilterCommonMixin;

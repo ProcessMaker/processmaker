@@ -3,12 +3,12 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ProcessMaker\Models\ProcessMakerModel;
-use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasUuids;
+use ProcessMaker\Traits\Exportable;
 
 class ProcessLaunchpad extends ProcessMakerModel
 {
+    use Exportable;
     use HasFactory;
     use HasUuids;
 
@@ -37,7 +37,7 @@ class ProcessLaunchpad extends ProcessMakerModel
         'uuid',
         'user_id',
         'process_id',
-        'properties'
+        'properties',
     ];
 
     public static function rules(): array
@@ -48,9 +48,14 @@ class ProcessLaunchpad extends ProcessMakerModel
         ];
     }
 
-    public function users()
+    public function user()
     {
-        return $this->hasMany(User::class, 'id');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function process()
+    {
+        return $this->belongsTo(Process::class, 'process_id');
     }
 
     /**

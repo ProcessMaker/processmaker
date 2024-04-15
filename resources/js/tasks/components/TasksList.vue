@@ -200,8 +200,8 @@
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
     >
-      <template v-slot:header="{ close, screenFilteredTaskData }">
-        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData"></slot>
+      <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
       </template>
     </tasks-preview>
   </div>
@@ -359,6 +359,7 @@ export default {
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
+          this.setDefaultProperties(record);
           //format Status
           record["case_number"] = this.formatCaseNumber(
             record.process_request,
@@ -379,10 +380,12 @@ export default {
       }
       this.$emit('count', newData.meta?.count);
     },
+    shouldShowLoader(value) {
+      this.$emit("data-loading", value);
+    },
   },
   mounted: function mounted() {
     this.getAssignee("");
-    this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration();
 
@@ -391,6 +394,7 @@ export default {
     if (successRouting) {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
+    this.$emit('onRendered', this);
   },
   methods: {
     markSelectedRow(value) {
@@ -742,6 +746,18 @@ export default {
         type: "taskFilter",
       };
     },
+    setDefaultProperties(record) {
+      if (!("process_request" in record)) {
+        record.process_request = {
+          id: null
+        };
+      }
+      if (!("process" in record)) {
+          record.process = {
+          name: null
+        };
+      }
+    }
   },
 };
 </script>

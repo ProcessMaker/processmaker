@@ -1,6 +1,11 @@
 <template>
   <div>
-    <b-embed :src="linkTasks" @load="loaded()" :disable-interstitial="true" ref="preview" /> 
+    <b-embed
+      :src="linkTasks"
+      @load="loaded()"
+      :disable-interstitial="true"
+      ref="preview"
+      :event-parent-id="_uid" /> 
   </div>
 </template>
 
@@ -50,11 +55,14 @@
       this.receiveEvent('formSubmit', (data) => {
         this.$emit("submit", data);
       });
-      this.receiveEvent('readyForFillData', () => {
+      this.receiveEvent('taskReady', () => {
         this.sendEvent("fillData", this.inboxRuleData);
       });
     },
     methods: {
+      eraseData() {
+        this.sendEvent("eraseData", true);
+      },
       reload() {
         this.formData = {};
         this.iframeContentWindow.location.reload();

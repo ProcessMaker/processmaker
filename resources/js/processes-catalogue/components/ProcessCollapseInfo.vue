@@ -12,30 +12,22 @@
               @click="goBack"
             />
             <button
-              v-if="infoCollapsed"
               class="btn border-0 title-process-button"
               type="button"
               data-toggle="collapse"
               data-target="#collapseProcessInfo"
-              aria-expanded="true"
               aria-controls="collapseProcessInfo"
+              :aria-expanded="infoCollapsed"
               @click="toogleInfoCollapsed()"
             >
-              {{ $t('Process Info') }}
-              <i class="fas fa-angle-up pl-2" />
-            </button>
-            <button
-              v-else
-              class="btn border-0 title-process-button"
-              type="button"
-              data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-expanded="false"
-              aria-controls="collapseProcessInfo"
-              @click="toogleInfoCollapsed()"
-            >
-              {{ process.name }}
-              <i class="fas fa-angle-down pl-2" />
+              <template v-if="infoCollapsed">
+                {{ $t('Process Info') }}
+                <i class="fas fa-angle-up pl-2" />
+              </template>
+              <template v-else>
+                {{ process.name }}
+                <i class="fas fa-angle-down pl-2" />
+              </template>
             </button>
           </div>
           <div class="d-flex align-items-center">
@@ -45,7 +37,7 @@
                 v-b-tooltip.hover.bottom
                 :title="$t(labelTooltip)"
                 class="fas fa-bookmark"
-                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon  }"
+                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
                 @click="checkBookmark(process)"
               />
             </div>
@@ -92,19 +84,17 @@
             >
               ...
             </a>
-          </p>  
-          <div
-            class="d-flex"
-          >
-            <b-col cols="9">
+          </p>
+          <b-row>
+            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-9">
               <processes-carousel
                 :process="process"
               />
             </b-col>
-            <b-col cols="3">
+            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-2">
               <process-options :process="process" />
             </b-col>
-          </div>
+          </b-row>
         </div>
       </div>
     </div>
@@ -170,6 +160,9 @@ export default {
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
   mounted() {
     this.verifyDescription();
+    ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
+      window.location.reload();
+    });
   },
   methods: {
     /**
@@ -198,4 +191,9 @@ export default {
 
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
+@media (width < 1200px) {
+  .process-options {
+    margin-top: 32px;
+  }
+}
 </style>

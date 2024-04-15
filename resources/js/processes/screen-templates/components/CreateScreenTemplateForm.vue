@@ -44,6 +44,7 @@
                             :invalid-feedback="errorMessage('type', errors)"
                         >
                             <screen-type-dropdown
+                                id="createTemplateScreenType"
                                 :value="screenType"
                                 :screen-types="types"
                                 copy-asset-mode="true"
@@ -92,7 +93,7 @@
                                 value="true"
                                 unchecked-value="false"
                             >
-                            {{ $t('Make Public') }}
+                            {{ $t('Share Template') }}
                             </b-form-checkbox>
                         </b-form-group>
                     </b-col>
