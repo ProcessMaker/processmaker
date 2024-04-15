@@ -80,7 +80,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser", "launchpad", "bookmarkId"],
+  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       listCategories: [],
@@ -187,26 +187,41 @@ export default {
      */
     checkSelectedProcess() {
       if (this.process) {
-        this.process.launchpad = this.launchpad;
-        this.process.bookmark_id = this.bookmarkId;
         this.openProcess(this.process);
         this.fromProcessList = true;
-        const categories = this.process.process_category_id;
-        const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
-        ProcessMaker.apiClient
-          .get(`process_bookmarks/${categoryId}`)
-          .then((response) => {
-            this.category = response.data;
-            this.markCategory = true;
-            this.filterCategories(this.category.name);
-          });
+        const { searchParams } = new URL(window.location);
+        let categoryId = "default";
+        if (searchParams.get("categorySelected") !== null) {
+          categoryId = searchParams.get("categorySelected");
+        } else {
+          const categories = this.process.process_category_id;
+          categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
+        }
+        if (categoryId !== "0" && categoryId !== "-1") {
+          ProcessMaker.apiClient
+            .get(`process_bookmarks/${categoryId}`)
+            .then((response) => {
+              this.category = response.data;
+              this.markCategory = true;
+              this.filterCategories(this.category.name);
+            });
+        } else {
+          this.category = this.getDefaultCategory(categoryId);
+          this.$refs.categoryList.markCategory(this.category, false);
+        }
       }
+    },
+    /**
+     * Get the values of a default category from an id
+     */
+    getDefaultCategory(id) {
+      return this.defaultOptions.filter((item) => item.id === parseInt(id, 10))[0];
     },
     /**
      * Select a category and show display
      */
     selectCategorie(value) {
-      window.history.replaceState(null, null, `/process-browser`);
+      window.history.replaceState(null, null, "/process-browser");
       this.key += 1;
       this.category = value;
       this.selectedProcess = null;
@@ -273,7 +288,7 @@ export default {
       let screenId = 0;
       const unparseProperties = process.launchpad?.properties || null;
       if (unparseProperties !== null) {
-        screenId = JSON.parse(unparseProperties)?.screen_id || 0
+        screenId = JSON.parse(unparseProperties)?.screen_id || 0;
       }
 
       return screenId !== 0;
