@@ -105,7 +105,12 @@ class ScreenTemplate implements TemplateInterface
                             ->where('screen_categories.name', 'like', '%' . $filter . '%');
                     });
             })
-            ->paginate($request->input('per_page', 10));
+            ->paginate($request->input('per_page', 10))
+            ->through(function ($item) {
+                $item->is_owner = $item->user_id === Auth::user()->id;
+
+                return $item;
+            });
     }
 
     /**
