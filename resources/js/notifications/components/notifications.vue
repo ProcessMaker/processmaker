@@ -366,6 +366,10 @@ export default {
     margin-top: 100px;
     margin-bottom: 20px;
   }
+
+  .nav-tabs .nav-link:hover {
+    border: 0 !important;
+  }
 }
 
 .no-notifications-mobile {
@@ -393,7 +397,7 @@ export default {
 }
 
 .lighten {
-  background-color: lighten($warning, 40%);;
+  background-color: lighten($warning, 40%);
 }
 
 .has-messages {
@@ -415,19 +419,14 @@ export default {
     height: auto !important;
 }
 
-.notification-popover-wrapper .popover-body {
-  max-width: 450px !important;
-}
-
 .notification-popover::v-deep .tabs {
   .nav-tabs {
-    border: 0 !important;
+    // border-bottom: 0 !important;
     font-size: 1.2em;
     flex-direction: row;
   }
 
   .nav-link {
-    border: 0;
     color: $secondary;
     border-bottom: 3px solid transparent;
   }
@@ -435,12 +434,28 @@ export default {
   .nav-link.active {
     color: $primary;
     font-weight: bold;
-    border: 0;
     border-bottom: 3px solid $primary;
   }
 
-  .nav-link.hover {
-    border: 0;
+  .nav-tabs .nav-link {
+    border-bottom: 0 !important;
+    border: 0 !important;
+  }
+
+  .nav-tabs .nav-link:hover {
+    background-color: transparent !important;
+  }
+
+  .nav-tabs .nav-link {
+    .badge {
+      margin-right: 0.5em;
+    }
+  }
+
+  .nav-tabs .nav-link:not(.active) {
+    .badge {
+      background-color: lighten($warning, 40%) !important;
+    }
   }
 
 }
