@@ -123,7 +123,7 @@ export default {
      * This boolean method shows or hide elements
      */
     toggleInput() {
-      if (this.showInput) {
+      if (this.showInput || this.hideDropdown) {
         this.performSearch();
       }
       this.showInput = !this.showInput;
