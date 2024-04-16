@@ -459,8 +459,17 @@ class ScreenTemplate implements TemplateInterface
     {
         $templateId = $request->id;
         $name = $request->name;
+        $isPublic = $request->isPublic;
+        $user = Auth::user();
 
-        $template = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
+        $query = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId);
+
+        if (!$isPublic) {
+            $query->where('is_public', 0)->where('user_id', $user->id);
+        }
+
+        $template = $query->first();
+
         if ($template !== null) {
             // If same asset has been Saved as Template previously,
             // offer to choose between “Update Template” and “Save as New Template”

@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -115,7 +116,10 @@ class Template extends ProcessMakerModel
 
     public static function rules($existing = null, $table = null)
     {
-        $unique = Rule::unique($table ?? 'templates')->ignore($existing);
+        $user = Auth::user();
+        $unique = Rule::unique($table ?? 'templates')->where(function ($query) use ($user) {
+            return $query->where('user_id', $user->id);
+        })->ignore($existing);
 
         return [
             'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
