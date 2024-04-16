@@ -5,6 +5,9 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   #schedule:
   #  - cron: '30 2 * * *'  # every day at midnight
+  push:
+    branches:
+      - "CTT-62"
   workflow_dispatch:
   workflow_call:
 env:
