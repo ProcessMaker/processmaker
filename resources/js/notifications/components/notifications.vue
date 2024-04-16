@@ -477,7 +477,7 @@ export default {
 
 .items {
   height: 600px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
