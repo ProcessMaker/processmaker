@@ -123,6 +123,7 @@
       </b-popover>
       <b-popover
         v-if="shouldShowPopover"
+        id="notification-popover-wrapper"
         target="notification-menu-button"
         placement="bottomleft"
         offset="1"
@@ -414,6 +415,10 @@ export default {
     height: auto !important;
 }
 
+.notification-popover-wrapper .popover-body {
+  max-width: 450px;
+}
+
 .notification-popover::v-deep .tabs {
   .nav-tabs {
     border: 0;
@@ -469,6 +474,7 @@ export default {
   max-width: 450px;
   top: -8px;
 }
+
 .items {
   height: 600px;
   overflow-y: scroll;
