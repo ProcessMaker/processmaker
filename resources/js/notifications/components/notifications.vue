@@ -416,12 +416,12 @@ export default {
 }
 
 .notification-popover-wrapper .popover-body {
-  max-width: 450px;
+  max-width: 450px !important;
 }
 
 .notification-popover::v-deep .tabs {
   .nav-tabs {
-    border: 0;
+    border: 0 !important;
     font-size: 1.2em;
     flex-direction: row;
   }
