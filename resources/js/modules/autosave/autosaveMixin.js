@@ -5,7 +5,7 @@ export default {
     };
   },
   methods: {
-    async handleAutosave(force = false, generatingAssets = false) {
+    async handleAutosave(force = false, generatingAssets = false, redirectUrl = null, nodeId = null) {
       if (this.isVersionsInstalled === false) {
         return;
       }
@@ -15,7 +15,7 @@ export default {
       }
 
       if (force) {
-        this.autosaveApiCall(generatingAssets);
+        this.autosaveApiCall(generatingAssets, redirectUrl, nodeId);
       } else {
         if (this.debounceTimeout) {
           clearTimeout(this.debounceTimeout);
