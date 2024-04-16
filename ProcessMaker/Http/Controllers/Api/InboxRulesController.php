@@ -64,10 +64,12 @@ class InboxRulesController extends Controller
         $request->validate([
             'name' => [
                 'required',
-                Rule::unique('inbox_rules')->ignore(null),
+                Rule::unique('inbox_rules')->where(function ($query) use ($request) {
+                    return $query->where('user_id', $request->user()->id);
+                }),
                 'alpha_spaces'
             ]
-        ]);
+        ]);        
 
         // We always create a new saved search when we create a new inbox rule
         $savedSearch = InboxRule::createSavedSearch([
