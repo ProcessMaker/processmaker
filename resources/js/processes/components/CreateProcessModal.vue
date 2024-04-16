@@ -312,7 +312,7 @@ export default {
           } else {
             window.location =
               this.isAiGenerated
-                ? "/modeler/" + response.data.id + "?ai=true"
+                ? "/modeler/" + response.data.id + "?isAiGenerated=true"
                 : "/modeler/" + response.data.id;
           }
         })
