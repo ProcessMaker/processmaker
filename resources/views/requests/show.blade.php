@@ -645,6 +645,9 @@
         },
         switchTabInfo(tab) {
           this.showInfo = !this.showInfo;
+          if (window.Intercom) {
+            window.Intercom('update', { "hide_default_launcher": tab === 'comments' });
+          }
         },
         onLoadedObject() {
           this.isObjectLoading = false;

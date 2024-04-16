@@ -7,8 +7,6 @@ use ProcessMaker\Models\Embed;
 
 class EmbedExporter extends ExporterBase
 {
-    public $discard = false;
-
     public $handleDuplicatesByIncrementing = ['uuid'];
 
     public $incrementStringSeparator = null;

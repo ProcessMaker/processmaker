@@ -122,7 +122,7 @@ export default {
 }
 .img-carousel {
   max-width: 800px;
-  height: 400px;
+  height: 410px;
 }
 .iframe-carousel {
   border: 0px;

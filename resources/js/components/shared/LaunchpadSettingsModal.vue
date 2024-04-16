@@ -5,8 +5,8 @@
     size="lg"
     class="modal-dialog modal-dialog-centered"
     :title="$t('Launchpad Settings')"
-    :setCustomButtons="true"
-    :customButtons="customModalButtons"
+    :set-custom-buttons="true"
+    :custom-buttons="customModalButtons"
     @saveModal="saveModal"
     @closeModal="closeModal"
   >
@@ -86,19 +86,30 @@
       <label>
         {{ $t("Description") }}
       </label>
-      <input
+      <textarea
         id="additional-details"
         v-model="processDescription"
         class="form-control input-custom mb-0"
         type="text"
         rows="5"
         :aria-label="$t('Description')"
+        disabled
       />
-      <span v-if="!processDescription" class="error-message">
-        {{ $t("The description field is required.") }}
-        <br>
-      </span>
     </div>
+    <template #modal-footer>
+      <b-button
+        variant="outline-secondary"
+        @click="hideModal"
+      >
+        Cancel 2
+      </b-button>
+      <b-button
+        variant="secondary"
+        @click="saveModal"
+      >
+        Save 1
+      </b-button>
+    </template>
   </modal>
 </template>
 
@@ -142,12 +153,12 @@ export default {
       description: "",
       errors: "",
       selectedSavedChart: null,
-      defaultScreen:{
+      defaultScreen: {
         id: 0,
         uuid: "",
         title: this.$t("Default Launchpad"),
       },
-      defaultChart:{
+      defaultChart: {
         id: 0,
         title: this.$t("Default Launchpad Chart"),
       },
@@ -166,8 +177,20 @@ export default {
       dataProcess: {},
       oldScreen: 0,
       customModalButtons: [
-        {"content": "Cancel", "action": "closeModal", "variant": "outline-secondary", "dataTest": "launchpad-modal-btn-cancel"},
-        {"content": "Save", "action": "saveModal", "variant": "secondary", "dataTest": "launchpad-modal-btn-ok"},
+        {
+          content: "Cancel",
+          action: "closeModal",
+          variant: "outline-secondary",
+          dataTest: "launchpad-modal-btn-cancel",
+          disabled: false,
+        },
+        {
+          content: "Save",
+          action: "saveModal",
+          variant: "secondary",
+          dataTest: "launchpad-modal-btn-ok",
+          disabled: false,
+        },
       ],
     };
   },
@@ -190,7 +213,7 @@ export default {
         .then((response) => {
           const firstResponse = response.data.shift();
           const unparseProperties = firstResponse?.launchpad?.properties;
-          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : '';
+          const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = {
               id: launchpadProperties.saved_chart_id ?? this.defaultChart.id,
@@ -236,7 +259,7 @@ export default {
       this.$refs["my-modal-save"].show();
     },
     closeModal() {
-      this.$bvModal.hide('launchpadSettingsModal');
+      this.$bvModal.hide("launchpadSettingsModal");
       this.errors = "";
     },
     hideModal() {
@@ -254,7 +277,6 @@ export default {
      * Save description field in Process
      */
     saveProcessDescription() {
-      if (!this.processDescription) return;
       if (!this.$refs["image-carousel"].checkImages()) return;
       this.dataProcess.imagesCarousel = this.$refs["image-carousel"].getImages();
       this.dataProcess.properties = JSON.stringify({
@@ -284,6 +306,7 @@ export default {
           }
           ProcessMaker.EventBus.$emit("getLaunchpadImagesEvent", params);
           ProcessMaker.EventBus.$emit("getChartId", this.selectedSavedChart.id);
+          this.customModalButtons[1].disabled = false;
           this.hideModal();
         })
         .catch((error) => {
@@ -291,12 +314,12 @@ export default {
         });
     },
     saveModal() {
+      this.customModalButtons[1].disabled = true;
       this.dataProcess = this.process;
       // if method is not called from ProcessMaker core
       if (this.origin !== "core") {
         this.dataProcess = ProcessMaker.modeler.process;
       }
-      this.dataProcess.description = this.processDescription;
       this.saveProcessDescription();
     },
     /**
@@ -307,10 +330,9 @@ export default {
       if (!ProcessMaker.packages.includes("package-collections")) return;
       const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
-        .get(
-          "saved-searches?page=1&per_page=10&order_by=title&order_direction=asc&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
-          + filter,
-        )
+        .get("saved-searches?page=1&per_page=10&order_by=title&order_direction=asc"
+          + "&has=charts&include=charts&get=id,title,charts.id,charts.title,charts.saved_search_id,type"
+          + `${filter}`)
         .then((response) => {
           if (response.data.data[0].charts) {
             const resultArray = response.data.data.flatMap((item) => {
@@ -333,22 +355,20 @@ export default {
     /**
      * Initial method to retrieve Screens and populate dropdown
      */
-     retrieveDisplayScreen(query = "") {
+    retrieveDisplayScreen(query = "") {
       const filter = (query === "" || query === null) ? "" : `&filter=${query}`;
       ProcessMaker.apiClient
         .get(
-          "screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY"
-          + filter,
+          `screens?page=1&per_page=10&order_by=title&order_direction=asc&include=categories,category&exclude=config&type=DISPLAY${
+            filter}`,
         )
         .then((response) => {
           if (response.data.data) {
-            const resultArray = response.data.data.flatMap((item) => {
-              return {
-                id: item.id,
-                title: item.title,
-                uuid: item.uuid,
-              }
-            });
+            const resultArray = response.data.data.flatMap((item) => ({
+              id: item.id,
+              title: item.title,
+              uuid: item.uuid,
+            }));
             this.dropdownSavedScreen = [this.defaultScreen].concat(resultArray);
           }
         })
@@ -376,16 +396,16 @@ export default {
         if (ProcessMaker.modeler?.process) {
           this.processDescription = ProcessMaker.modeler.process.description;
           this.processId = ProcessMaker.modeler.process.id;
-          if(ProcessMaker.modeler.process.description === "") {
+          if (ProcessMaker.modeler.process.description === "") {
             this.processDescription = this.processDescriptionInitial;
           }
         }
       } else {
         this.processDescription = this.descriptionSettings;
         this.processId = this.process.id;
-          if(!this.processDescription) {
-            this.processDescription = this.processDescriptionInitial;
-          }
+        if (!this.processDescription) {
+          this.processDescription = this.processDescriptionInitial;
+        }
       }
     },
     launchpadIconSelected(iconData) {
@@ -473,17 +493,22 @@ label {
 }
 .input-custom {
   height: 40px;
-  margin-bottom: 16px;
-  padding: 0px, 12px, 0px, 12px;
+  color: #556271;
+  background: white;
   border-radius: 4px;
-  gap: 6px;
   border: 1px solid #cdddee;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 21.79px;
+  letter-spacing: -0.02em;
+  gap: 6px;
 }
 .modal-dialog, .modal-content {
   min-width: 800px;
 }
 .options-launchpad {
-  width: 285px;
+  width: 350px;
 }
 .modal-content-custom {
   padding: 11px 8px 0px 8px;
