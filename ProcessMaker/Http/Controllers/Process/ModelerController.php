@@ -135,7 +135,7 @@ class ModelerController extends Controller
             'countScriptCategories' => $countScriptCategories,
             'isProjectsInstalled' => $isProjectsInstalled,
             'isPackageAiInstalled' => $isPackageAiInstalled,
-            'isAiGenerated' => request()->query('isAiGenerated'),
+            'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
             'abPublish' =>
