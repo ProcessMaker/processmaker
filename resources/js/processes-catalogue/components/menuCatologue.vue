@@ -164,7 +164,7 @@ export default {
     this.checkPackageAiInstalled();
   },
   updated() {
-    if (!this.selectedProcessItem) {
+    if (!this.selectedProcessItem && !this.selectedTemplateItem) {
       this.selectDefault();
     }
   },
