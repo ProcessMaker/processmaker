@@ -275,8 +275,8 @@ export default {
      */
     reCalculateZIndex(sw) {
       let names = [".global-search-bar", ".navbar-nav"];
-      for (let i = 0; i < names.length; i++) {
-        let searchBar = document.querySelector(names[i]);
+      for (let value of names) {
+        let searchBar = document.querySelector(value);
         if (searchBar) {
           let obj = searchBar.classList;
           if (sw === true) {
