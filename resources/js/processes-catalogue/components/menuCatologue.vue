@@ -241,7 +241,6 @@ export default {
     selectDefault() {
       if (window.location.pathname === "/process-browser") {
         this.selectProcessItem(this.data[0]);
-        // this.selectedProcessItem = this.data[0];
       }
     },
   },
