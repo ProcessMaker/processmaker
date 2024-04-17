@@ -440,16 +440,14 @@ export default {
   .nav-tabs .nav-link {
     border-bottom: 0 !important;
     border: 0 !important;
+
+    .badge {
+      margin-right: 0.5em;
+    }
   }
 
   .nav-tabs .nav-link:hover {
     background-color: transparent !important;
-  }
-
-  .nav-tabs .nav-link {
-    .badge {
-      margin-right: 0.5em;
-    }
   }
 
   .nav-tabs .nav-link:not(.active) {
