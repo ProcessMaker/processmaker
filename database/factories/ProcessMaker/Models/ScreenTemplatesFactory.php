@@ -45,6 +45,15 @@ class ScreenTemplatesFactory extends Factory
         ];
     }
 
+    public function shared()
+    {
+        return $this->state(function () {
+            return [
+                'is_public' => true,
+            ];
+        });
+    }
+
     public function withCustomCss()
     {
         return $this->state(function () {

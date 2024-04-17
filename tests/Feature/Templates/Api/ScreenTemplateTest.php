@@ -155,8 +155,8 @@ class ScreenTemplateTest extends TestCase
     {
         $user = User::factory()->create();
         $screenCategory = ScreenCategory::factory()->create();
-        $publicScreenTemplate = ScreenTemplates::factory()->create([
-            'name' => 'My Public Template',
+        $sharedScreenTemplate = ScreenTemplates::factory()->create([
+            'name' => 'My Shared Template',
             'is_public' => true,
             'is_default_template' => true,
         ]);
@@ -173,10 +173,10 @@ class ScreenTemplateTest extends TestCase
             'description' => $this->faker->sentence(),
             'is_public' => false,
             'screen_category_id' => $screenCategory->id,
-            'defaultTemplateId' => $publicScreenTemplate->id,
-            'templateId' => $publicScreenTemplate->id,
+            'defaultTemplateId' => $sharedScreenTemplate->id,
+            'templateId' => $sharedScreenTemplate->id,
         ];
-        $route = route('api.template.create', ['screen', $publicScreenTemplate->id]);
+        $route = route('api.template.create', ['screen', $sharedScreenTemplate->id]);
         $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
         $response->assertStatus(200);
 
@@ -188,14 +188,14 @@ class ScreenTemplateTest extends TestCase
             'is_public' => false,
             'screen_category_id' => $screenCategory->id,
             'defaultTemplateId' => $myScreenTemplate->id,
-            'templateId' => $publicScreenTemplate->id,
+            'templateId' => $sharedScreenTemplate->id,
         ];
         $route = route('api.template.create', ['screen', $myScreenTemplate->id]);
         $response = $this->actingAs($user, 'api')->call('POST', $route, $data);
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('screen_templates', [
-            'name' => 'My Public Template',
+            'name' => 'My Shared Template',
             'is_public' => 1,
             'is_default_template' => 1,
         ]);
@@ -231,7 +231,7 @@ class ScreenTemplateTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testMakePublicScreenTemplate()
+    public function testShareScreenTemplate()
     {
         $screenTemplate = ScreenTemplates::factory()->create(['is_public' => false]);
 
@@ -325,5 +325,36 @@ class ScreenTemplateTest extends TestCase
         $importResponse->assertStatus(200);
         $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name . ' 2']);
         $this->get('/screen-template/import')->assertStatus(200)->assertSee('Import Screen Template');
+    }
+
+    public function testSharedTemplateAuthorization()
+    {
+        $user = User::factory()->create();
+        $sharedTemplate = ScreenTemplates::factory()->shared()->create(['user_id' => $user->id]);
+
+        // Owner of the template should be able to configure the template.
+        $route = route('templates.configure', [
+            'type' => 'screen',
+            'template' => $sharedTemplate->id,
+        ]);
+        $response = $this->actingAs($user, 'web')->call('GET', $route);
+        $response->assertStatus(200);
+
+        // Non-owner should not be able to configure the template.
+        $nonOwner = User::factory()->create();
+        $response = $this->actingAs($nonOwner, 'web')->call('GET', $route);
+        $response->assertStatus(403);
+
+        // Non-owner should not be able to delete the template.
+        $route = route('api.template.delete', [
+            'type' => 'screen',
+            'id' => $sharedTemplate->id,
+        ]);
+        $response = $this->actingAs($nonOwner, 'api')->call('DELETE', $route);
+        $response->assertStatus(403);
+
+        // Owner of the template should be able to delete the template.
+        $response = $this->actingAs($user, 'api')->call('DELETE', $route);
+        $response->assertStatus(200);
     }
 }
