@@ -5,9 +5,6 @@ on:
     types: [opened, reopened, synchronize, edited, closed]
   #schedule:
   #  - cron: '30 2 * * *'  # every day at midnight
-  #push:
-  #  branches:
-  #    - "CTT-62"
   workflow_dispatch:
   workflow_call:
 env:
@@ -34,68 +31,54 @@ env:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-jobs:
-  #testParam:
-  #  name: build-docker-image-EKS
-  #  if: github.event.action != 'closed'
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: Set image name
-  #      run: |
-  #          echo "Print branch"
-  #          echo "$K8S_BRANCH"
-  #          if [[ $K8S_BRANCH == "develop" ]] ; then
-  #            echo match              
-  #          else
-  #            echo false
-  #          fi                
-  #imageEKS:
-  #  name: build-docker-image-EKS
-  #  if: github.event.action != 'closed'
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: Set image name
-  #      run: |
-  #          RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
-  #          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
-  #    - name: Clone repo K8S
-  #      run: |
-  #        echo "IMAGE: ${{ env.IMAGE }}"
-  #        git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
-  #    - name: Generate image EKS
-  #      run: |
-  #        cd pm4-k8s-distribution/images
-  #        branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
-  #        echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
-  #    - name: List Images
-  #      run: |
-  #        docker images
-  #    - name: Run Trivy vulnerability scanner
-  #      uses: aquasecurity/trivy-action@master
-  #      with:
-  #        image-ref: processmaker/enterprise:${{ env.VERSION }}
-  #        format: 'table'
-  #        exit-code: '0'
-  #        ignore-unfixed: false
-  #        vuln-type: 'os,library'
-  #        scanners: 'vuln,secret'
-  #        severity: 'MEDIUM,HIGH,CRITICAL'
-  #      env:
-  #        TRIVY_TIMEOUT: 30m
-  #    - name: Login to Harbor
-  #      uses: docker/login-action@v2
-  #      with:
-  #        registry: ${{ secrets.REGISTRY_HOST  }}
-  #        username: ${{ secrets.REGISTRY_USERNAME }}
-  #        password: ${{ secrets.REGISTRY_PASSWORD }}
-  #    - name: Push Enterprise Image to Harbor
-  #      run: |          
-  #        docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
-  #        docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+jobs:               
+  imageEKS:
+    name: build-docker-image-EKS
+    if: github.event.action != 'closed'
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Set image name
+        run: |
+            RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
+            echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution/images
+          branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
+          echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+      - name: List Images
+        run: |
+          docker images
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: processmaker/enterprise:${{ env.VERSION }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret'
+          severity: 'MEDIUM,HIGH,CRITICAL'
+        env:
+          TRIVY_TIMEOUT: 30m
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Push Enterprise Image to Harbor
+        run: |          
+          docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
     if: contains(github.event.pull_request.body, 'ci:deploy')
-    #needs: imageEKS
+    needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
       - name: Clone private repository
@@ -134,9 +117,7 @@ jobs:
             kubectl apply -f template-db.yaml
             echo "Creating Deploy :: $deploy"
             #Sed PMAI
-            echo "$K8S_BRANCH"
             if [[ $K8S_BRANCH == "develop" ]] ; then
-              echo match
               sed -i "s/{{pmai-system}}/pmai-system/" template-instance.yaml
             else
               sed -i "s/{{pmai-system}}/pmai-system-next/" template-instance.yaml
@@ -164,52 +145,52 @@ jobs:
         run: |
           echo "Instance URL: '${INSTANCE_URL}'"
           bash argocd/gh_comment.sh "$CI_PROJECT" "$pull_req_id"
-  #deleteEKS:
-  #  name: Delete Instance
-  #  if: github.event.action == 'closed'
-  #  runs-on: self-hosted
-  #  steps:
-  #    - name: Delete instance EKS
-  #      run: |           
-  #        deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
-  #        if kubectl get namespace/ci-$deploy-ns-pm4 ; then
-  #          echo "Deleting Instace :: ci-$deploy"
-  #          helm delete ci-$deploy
-  #          kubectl delete namespace ci-$deploy-ns-pm4
-  #          #Drop database
-  #          deploy_db="\`pm4_ci-$deploy\`"
-  #          deploy_ai="\`pm4_ci-${deploy}_ai\`" 
-  #          mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_db" -h ${{ secrets.RDS_ENG }}
-  #          mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_ai" -h ${{ secrets.RDS_ENG }}
-  #          #Drop image Harbor        
-  #          curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "https://${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}"
-  #          echo "The instance [https://ci-$deploy.engk8s.processmaker.net] was deleted!!"
-  #        else
-  #          echo "The pull request does not have an instance on K8s [https://ci-$deploy.engk8s.processmaker.net] not found!!"
-  #        fi
-  #runPhpUnit:
-  #  name: run-phpunit
-  #  if: github.event.action != 'closed'
-  #  needs: imageEKS
-  #  runs-on: ${{ vars.RUNNER }}
-  #  steps:
-  #    - name: Export Params
-  #      run: |
-  #        echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
-  #    - name: Clone repo K8S
-  #      run: |
-  #        echo "IMAGE: ${{ env.IMAGE }}"
-  #        git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
-  #    - name: Login to Harbor
-  #      uses: docker/login-action@v2
-  #      with:
-  #        registry: ${{ secrets.REGISTRY_HOST  }}
-  #        username: ${{ secrets.REGISTRY_USERNAME }}
-  #        password: ${{ secrets.REGISTRY_PASSWORD }}
-  #    - name: PHPUnits
-  #      run: |          
-  #        cd pm4-k8s-distribution/images/pm4-tools
-  #        docker pull $IMAGE
-  #        docker-compose down -v
-  #        docker-compose build phpunit
-  #        docker-compose run phpunit
+  deleteEKS:
+    name: Delete Instance
+    if: github.event.action == 'closed'
+    runs-on: self-hosted
+    steps:
+      - name: Delete instance EKS
+        run: |           
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          if kubectl get namespace/ci-$deploy-ns-pm4 ; then
+            echo "Deleting Instace :: ci-$deploy"
+            helm delete ci-$deploy
+            kubectl delete namespace ci-$deploy-ns-pm4
+            #Drop database
+            deploy_db="\`pm4_ci-$deploy\`"
+            deploy_ai="\`pm4_ci-${deploy}_ai\`" 
+            mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_db" -h ${{ secrets.RDS_ENG }}
+            mysql -u${{ secrets.USER_MYSQL_ENG }} -p${{ secrets.PASS_MYSQL_ENG }} -e "DROP DATABASE $deploy_ai" -h ${{ secrets.RDS_ENG }}
+            #Drop image Harbor        
+            curl -X DELETE -u ${{ secrets.REGISTRY_USERNAME }}:${{ secrets.REGISTRY_PASSWORD }} "https://${{ secrets.REGISTRY_HOST }}/api/v2.0/projects/processmaker/repositories/enterprise/artifacts/${{env.IMAGE_TAG}}"
+            echo "The instance [https://ci-$deploy.engk8s.processmaker.net] was deleted!!"
+          else
+            echo "The pull request does not have an instance on K8s [https://ci-$deploy.engk8s.processmaker.net] not found!!"
+          fi
+  runPhpUnit:
+    name: run-phpunit
+    if: github.event.action != 'closed'
+    needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Export Params
+        run: |
+          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: PHPUnits
+        run: |          
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build phpunit
+          docker-compose run phpunit
