@@ -653,6 +653,11 @@ export default {
       const topAdjust = rectTableContainer.top;
 
       let elementHeight = 36;
+      const breadcrumbsDiv = document.getElementById('breadcrumbs');
+      const breadcrumbHeight = breadcrumbsDiv.offsetHeight;
+      if (breadcrumbHeight>65){
+        elementHeight = 15;
+      }
 
       this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
