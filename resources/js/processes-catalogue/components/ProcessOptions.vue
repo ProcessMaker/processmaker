@@ -1,18 +1,20 @@
 <template>
   <div class="section-options">
-    <process-counter :process="process" />
-    <b-button
-      v-if="createdFromWizardTemplate"
-      class="mt-2 wizard-link"
-      variant="link"
-      @click="getHelperProcess"
-    >
-      <img
-        src="../../../img/wizard-icon.svg"
-        :alt="$t('Guided Template Icon')"
+    <div class="counter-wizard">
+      <process-counter :process="process" />
+      <b-button
+        v-if="createdFromWizardTemplate"
+        class="mt-2 wizard-link"
+        variant="link"
+        @click="getHelperProcess"
       >
-      {{ $t('Re-run Wizard') }}
-    </b-button>
+        <img
+          src="../../../img/wizard-icon.svg"
+          :alt="$t('Guided Template Icon')"
+        >
+        {{ $t('Re-run Wizard') }}
+      </b-button>
+    </div>
     <chart-save-search :process="process" />
     <wizard-helper-process-modal
       v-if="createdFromWizardTemplate"
@@ -55,6 +57,7 @@ export default {
 .section-options {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 @media (width < 1200px) {
   .section-options {
