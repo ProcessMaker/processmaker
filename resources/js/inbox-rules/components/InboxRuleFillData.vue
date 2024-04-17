@@ -69,6 +69,7 @@
       },
       loaded() {
         this.iframeContentWindow.event_parent_id = this._uid;
+        this.sendEvent("sendValidateForm", false);
       },
       sendEvent(name, data) {
         const event = new CustomEvent(name, {
