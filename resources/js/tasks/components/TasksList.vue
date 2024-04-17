@@ -655,7 +655,7 @@ export default {
       let elementHeight = 36;
       const breadcrumbsDiv = document.getElementById('breadcrumbs');
       const breadcrumbHeight = breadcrumbsDiv.offsetHeight;
-      if (breadcrumbHeight>65){
+      if ( breadcrumbHeight > 65 ) {
         elementHeight = 15;
       }
 
