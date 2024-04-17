@@ -56,6 +56,7 @@ export default {
       showWarning: false,
       existingAssetId: null,
       existingAssetName: "",
+      existingAssetOwnerId: null,
       templateData: {},
       customModalButtons: [
         {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
@@ -77,6 +78,9 @@ export default {
       },
       descriptionText() {
         return this.$t('This will create a re-usable template based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
+      },
+      currentUserId() {
+        return Number(document.head.querySelector("meta[name=\"user-id\"]").content);
       }
     }, 
     methods: {
@@ -115,9 +119,11 @@ export default {
             this.errors = this.errors.errors;
           } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
-            this.toggleButtons();
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.templateName;
+            this.existingAssetOwnerId = error.response.data.owner_id;
+            this.toggleButtons();
+            console.log('udpated existing owner', this.existingAssetOwnerId);
           } else {
             const message = error.response.data.error;
             ProcessMaker.alert(this.$t(message), "danger");
@@ -136,15 +142,19 @@ export default {
             this.errors = this.errors.errors;
           } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
-            this.toggleButtons();
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.assetName;
+            this.existingAssetOwner = error.response.data?.owner_id;
+            this.toggleButtons();
           }
         });
       },
       toggleButtons() {
+        if (this.assetType === 'process' || this.assetType === 'screen' && this.existingAssetOwnerId === this.currentUserId) {
+          this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
+        }
+
         this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
-        this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
         this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
       },
       validateFormData(errors) {

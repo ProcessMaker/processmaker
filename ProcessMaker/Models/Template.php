@@ -117,8 +117,11 @@ class Template extends ProcessMakerModel
     public static function rules($existing = null, $table = null)
     {
         $user = Auth::user();
-        $unique = Rule::unique($table ?? 'templates')->where(function ($query) use ($user) {
-            return $query->where('user_id', $user->id);
+
+        $unique = Rule::unique($table ?? 'templates')->where(function ($query) use ($user, $table) {
+            if ($table === 'screen_templates') {
+                return $query->where('user_id', $user->id)->where('is_public', 0);
+            }
         })->ignore($existing);
 
         return [
@@ -131,8 +134,9 @@ class Template extends ProcessMakerModel
     public function checkForExistingTemplates($type, $request)
     {
         $result = (new $this->types[$type][1])->existingTemplate($request);
+
         if (!is_null($result)) {
-            return ['id' => $result['id'], 'name' => $result['name']];
+            return ['id' => $result['id'], 'name' => $result['name'], 'owner_id' => $result['owner_id']];
         }
 
         return null;

@@ -294,12 +294,9 @@ class ScreenTemplate implements TemplateInterface
         $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
 
         try {
-            $request->validate([
-                'is_public' => 'sometimes|boolean',
-            ]);
-
             $template = ScreenTemplates::findOrFail($templateId);
-            $template->update($request->except('media_collection'));
+            $template->is_public = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
+            $template->update($request->except('media_collection', 'is_public'));
 
             $response = response()->json();
         } catch (ModelNotFoundException $e) {
@@ -459,7 +456,10 @@ class ScreenTemplate implements TemplateInterface
     {
         $templateId = $request->id;
         $name = $request->name;
-        $isPublic = $request->isPublic;
+        $isPublic = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
+        if ($request->has('existingAssetId')) {
+            return null;
+        }
         $user = Auth::user();
 
         $query = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId);
@@ -473,7 +473,7 @@ class ScreenTemplate implements TemplateInterface
         if ($template !== null) {
             // If same asset has been Saved as Template previously,
             // offer to choose between “Update Template” and “Save as New Template”
-            return ['id' => $template->id, 'name' => $name];
+            return ['id' => $template->id, 'name' => $name, 'owner_id' => $template->user_id];
         }
 
         return null;
