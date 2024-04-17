@@ -23,8 +23,11 @@ class TemplateAuthorization
                 return $this->handleExportRoute($request, $next, $templateType);
             }
 
-            if ($this->isRoute($request, 'templates.configure')) {
-                return $this->handleConfigureRoute($request, $next, $templateType);
+            if ($templateType === 'screen' && $this->isRoute($request, [
+                'templates.configure',
+                'api.template.delete',
+            ])) {
+                $this->authorizeScreenTemplateAccess($request);
             }
         }
 
@@ -87,15 +90,6 @@ class TemplateAuthorization
         }
     }
 
-    protected function handleConfigureRoute(Request $request, Closure $next, string $templateType)
-    {
-        if ($templateType === 'screen') {
-            $this->authorizeScreenTemplateAccess($request);
-        }
-
-        return $next($request);
-    }
-
     /**
      * Authorize user access to the screen template based on ownership or admin status.
      *
@@ -104,11 +98,12 @@ class TemplateAuthorization
     protected function authorizeScreenTemplateAccess(Request $request): void
     {
         $templateParam = $request->route()->parameter('template');
-        $template = ScreenTemplates::findOrFail($templateParam);
-        $user = $request->user();
+        $idParam = $request->route()->parameter('id');
+        $id = $templateParam ?? $idParam;
+        $template = ScreenTemplates::findOrFail($id);
 
         abort_unless(
-            $user->is_administrator || $template->user_id === $user->id,
+            $template->is_owner,
             403,
             'Unauthorized access to the template.'
         );

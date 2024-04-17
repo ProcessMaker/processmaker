@@ -5,7 +5,6 @@ namespace ProcessMaker\Templates;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
@@ -62,8 +61,7 @@ class ScreenTemplate implements TemplateInterface
         }
 
         if (!$isPublic) {
-            $authUserId = Auth::user()->id;
-            $templates->where('user_id', $authUserId);
+            $templates->where('user_id', Auth::user()->id);
         }
 
         return $templates
@@ -106,10 +104,10 @@ class ScreenTemplate implements TemplateInterface
                     });
             })
             ->paginate($request->input('per_page', 10))
-            ->through(function ($item) {
-                $item->is_owner = $item->user_id === Auth::user()->id;
+            ->through(function ($template) {
+                $template->append(['is_owner']);
 
-                return $item;
+                return $template;
             });
     }
 

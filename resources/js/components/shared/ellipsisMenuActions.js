@@ -301,6 +301,7 @@ export default {
           content: "Edit Template",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
+          conditional: "if(is_owner, true, false)",
         },
         {
           value: "configure-template",
@@ -324,6 +325,7 @@ export default {
           content: "Delete Template",
           permission: ["publish-screen-templates"],
           icon: "fas fa-trash-alt",
+          conditional: "if(is_owner, true, false)",
         },
       ],
     };
