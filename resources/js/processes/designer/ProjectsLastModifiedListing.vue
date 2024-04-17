@@ -24,15 +24,19 @@
     v-else
     class="data-table"
   >
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/projects\?page/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
-    />
     <div
-      v-show="!shouldShowLoader"
+      class="loading-my-projects-box"
+    >
+      <data-loading
+        v-show="!shouldShowLoader"
+        :for="/projects\?page/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
+    </div>
+    <div
+      v-show="shouldShowLoader"
       class="card card-body processes-table-card"
       data-cy="processes-table"
     >
