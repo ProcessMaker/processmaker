@@ -154,6 +154,12 @@ class ProcessController extends Controller
             ->get()
             ->collect();
 
+        // the simplified parameter indicates to return just the main information of processes
+        if ($request->input('simplified_data', false)) {
+            return new ProcessCollection($processes);
+        }
+
+
         foreach ($processes as $key => $process) {
             // filter the start events that can be used manually (no timer start events);
             // TODO: startEvents is not a real property on Process.
