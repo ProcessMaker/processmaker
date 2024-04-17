@@ -14,10 +14,12 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
+            @click="showDropdown"
           >
             {{ $t("Filter by Type") }}
           </button>
           <div
+            v-if="hideDropdown"
             class="dropdown-menu dropdown-menu-right px-3"
             aria-labelledby="dropdownMenu"
           >
@@ -90,6 +92,7 @@ export default {
   props: ["currentUserId", "project", "permission", "isDocumenterInstalled"],
   data() {
     return {
+      hideDropdown: false,
       searchCriteria: "",
       showInput: false,
       optionsType: [],
@@ -113,14 +116,18 @@ export default {
           });
       }
     },
+    showDropdown() {
+      this.hideDropdown = true;
+    },
     /**
      * This boolean method shows or hide elements
      */
     toggleInput() {
-      if (this.showInput) {
+      if (this.showInput || this.hideDropdown) {
         this.performSearch();
       }
       this.showInput = !this.showInput;
+      this.hideDropdown = false;
     },
     /**
      * This method sends users's input criteria to filter specific tasks or requests

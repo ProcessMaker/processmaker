@@ -95,8 +95,7 @@
       :count-categories="categoryCount"
       :package-ai="hasPackageAI"
       hide-add-btn="true"
-    >
-    </select-template-modal>
+    />
   </div>
 </template>
 
@@ -151,7 +150,7 @@ export default {
      * Filters options regarding user permissions
      */
     filteredTemplateOptions() {
-      return this.templateOptions.filter(item => this.shouldShowTemplateItem(item));
+      return this.templateOptions.filter((item) => this.shouldShowTemplateItem(item));
     },
   },
   mounted() {
@@ -161,9 +160,13 @@ export default {
         this.loadMore();
       }
     });
-    this.selectDefault();
     this.comeFromProcess = this.fromProcessList;
     this.checkPackageAiInstalled();
+  },
+  updated() {
+    if (!this.selectedProcessItem && !this.selectedTemplateItem) {
+      this.selectDefault();
+    }
   },
   methods: {
     /**
@@ -172,11 +175,13 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
-    markCategory(item) {
+    markCategory(item, filter = true) {
       this.comeFromProcess = true;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
-      this.$refs.searchCategory.fillFilter(item.name);
+      if (filter) {
+        this.$refs.searchCategory.fillFilter(item.name);
+      }
     },
     selectProcessItem(item) {
       this.comeFromProcess = false;
@@ -192,20 +197,20 @@ export default {
     },
     selectTemplateItem(item) {
       if (item.id === "all_templates") {
-          this.addNewProcess();
-          return;
+        this.addNewProcess();
+        return;
       }
-        this.selectedTemplateItem = item;
-        this.selectedProcessItem = null;
-        this.select(item);
-        this.$emit("wizardLinkSelect");
+      this.selectedTemplateItem = item;
+      this.selectedProcessItem = null;
+      this.select(item);
+      this.$emit("wizardLinkSelect");
     },
     /**
      * This method opens New Process modal window
      */
     addNewProcess() {
       this.$nextTick(() => {
-        this.$refs["addProcessModal"].show();
+        this.$refs.addProcessModal.show();
       });
     },
     isSelectedProcess(item) {
@@ -227,7 +232,7 @@ export default {
       this.filterCategories(value);
     },
     hasPermission() {
-      return this.permission.includes("create-processes")
+      return this.permission.includes("create-processes");
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;

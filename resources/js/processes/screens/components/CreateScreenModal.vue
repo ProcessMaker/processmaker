@@ -287,10 +287,15 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.otherTemplateSelected && this.hasTemplateId || this.hasDefaultTemplateId && !this.otherTemplateSelected || this.hasTemplateId) {
-        this.handleCreateFromTemplate();
-      } else {
-        this.handleCreateFromBlank();
+      if (  
+          this.otherTemplateSelected && this.hasTemplateId || 
+          this.hasDefaultTemplateId && !this.otherTemplateSelected || 
+          this.hasTemplateId || 
+          this.hasDefaultTemplateId
+        ) {
+          this.handleCreateFromTemplate();
+        } else {
+          this.handleCreateFromBlank();
       }
     },
     handleCreateFromBlank() {

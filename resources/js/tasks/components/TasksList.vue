@@ -379,9 +379,14 @@ export default {
         }
       }
       this.$emit('count', newData.meta?.count);
+      this.$emit("tab-count", newData.meta?.total);
     },
     shouldShowLoader(value) {
-      this.$emit("data-loading", value);
+      if (this.apiNoResults) {
+        this.$emit("data-loading", false);
+      } else {
+        this.$emit("data-loading", value);
+      }
     },
   },
   mounted: function mounted() {
@@ -639,11 +644,6 @@ export default {
       if(this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
       }  
-        if (!isPriorityIcon && !this.disableRowClick) {
-          window.location.href = this.openTask(row);
-        }
-      
-      
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
