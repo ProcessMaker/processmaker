@@ -611,6 +611,7 @@
             }];
           },
           resizeMonaco () {
+            this.showTree = false;
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
