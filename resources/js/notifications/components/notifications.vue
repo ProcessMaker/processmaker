@@ -421,7 +421,7 @@ export default {
 
 .notification-popover::v-deep .tabs {
   .nav-tabs {
-    // border-bottom: 0 !important;
+    border-bottom: 0 !important;
     font-size: 1.2em;
     flex-direction: row;
   }
