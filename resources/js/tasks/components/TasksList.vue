@@ -652,18 +652,16 @@ export default {
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      let elementHeight = 36;
-      const breadcrumbsDiv = document.getElementById('breadcrumbs');
-      const breadcrumbHeight = breadcrumbsDiv.offsetHeight;
-      if ( breadcrumbHeight > 65 ) {
-        elementHeight = 15;
-      }
+      let elementHeight = 28;
 
       this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
+      let yPosition = 0;
+
       const rect = rowElement.getBoundingClientRect();
+      yPosition = rect.top + window.scrollY;
 
       const selectedFiltersBar = document.querySelector(
         ".selected-filters-bar"
@@ -675,15 +673,16 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       let rightBorderX = rect.right;
-      let bottomBorderY = 0
+
+      let bottomBorderY = 0;
       if(this.fromButton === "" || this.fromButton === "previewTask"){
-        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+        bottomBorderY = yPosition - topAdjust + 100 - elementHeight;
       }
       if(this.fromButton === "fullTask"){
-        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+        bottomBorderY = yPosition;
       }
       if(this.fromButton === "inboxRules"){
-        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
+        bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,
