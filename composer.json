@@ -103,7 +103,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "2ce2c2bd",
+            "build": "ebc9d43f",
             "custom": {
                 "package-ellucian-ethos": "1.15.3",
                 "package-plaid": "1.6.0",
