@@ -870,5 +870,8 @@
     background-color: #FEF2F3;
     color: #C56363;
   }
+  .card-header:first-child.text-status {
+    border-radius: 6px;
+  }
 </style>
 @endsection
