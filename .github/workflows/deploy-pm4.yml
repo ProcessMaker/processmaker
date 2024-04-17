@@ -95,7 +95,7 @@ jobs:
   deployEKS:
     name: build-deploy-EKS
     if: contains(github.event.pull_request.body, 'ci:deploy')
-    needs: imageEKS
+    #needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
       - name: Clone private repository
