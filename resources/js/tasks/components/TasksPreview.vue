@@ -303,6 +303,9 @@ export default {
         } 
       },
     },
+    showPreview(value) {
+      this.$emit("onWatchShowPreview", value);
+    }
   },
   mounted() {
     if(this.propPreview){

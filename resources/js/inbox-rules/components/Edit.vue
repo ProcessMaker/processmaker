@@ -85,6 +85,7 @@
     </div>
     <splitpane-container v-if="showQuickFillPreview" :size="100" class-inbox="true">
       <quick-fill-preview
+        ref="refQuickFillPreview"
         class="quick-fill-preview"
         :task="task"
         :prop-from-button ="'inboxRules'"
@@ -199,6 +200,17 @@
           }
         ]
       };
+    },
+    watch: {
+      showQuickFillPreview(value) {
+        if (value) {
+          this.$nextTick(() => {
+            this.$refs.refQuickFillPreview.onWatchShowPreview(value);
+          });
+        } else {
+          this.$refs.refQuickFillPreview.onWatchShowPreview(value);
+        }
+      }
     },
     computed: {
       rightPanelTitle() {
