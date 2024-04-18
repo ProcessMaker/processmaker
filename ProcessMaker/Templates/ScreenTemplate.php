@@ -533,7 +533,7 @@ class ScreenTemplate implements TemplateInterface
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => auth()->id(),
-            'screen_type' => $data['screenType'],
+            'screen_type' => $data['screen_type'],
             'screen_custom_css' => $customCss,
             'media_collection' => '',
             'is_public' => filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0,
