@@ -648,6 +648,9 @@ h1.page-title {
 #api-error {
   display: none;
 }
+.popover {
+  z-index: 500;
+}
 .popover-body {
   padding: 0 !important;
 }
