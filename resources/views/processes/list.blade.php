@@ -29,6 +29,7 @@
                             :count-categories="@json($config->countCategories)"
                             :package-ai="{{ hasPackage('package-ai') ? '1' : '0' }}"
                             is-projects-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_PROJECTS)}}"
+                            is-ab-testing-installed="{{\ProcessMaker\PackageHelper::isPackageInstalled(\ProcessMaker\PackageHelper::PM_PACKAGE_AB_TESTING)}}"
                             >
                             </select-template-modal>
                     @endcan

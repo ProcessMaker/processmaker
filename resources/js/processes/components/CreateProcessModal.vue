@@ -115,6 +115,7 @@ export default {
     "templateData",
     "generativeProcessData",
     "isProjectsInstalled",
+    "isAbTestingInstalled",
     "categoryType",
     "callFromAiModeler",
     "isProjectSelectionRequired",
@@ -310,16 +311,27 @@ export default {
             this.appendProjectIdToURL(url, this.projectId);
             this.handleRedirection(url, response.data);
           } else {
-            window.location =
-              this.isAiGenerated
-                ? "/modeler/" + response.data.id + "?ai=true"
-                : "/modeler/" + response.data.id;
+            const url = this.getRedirectUrlForAi(response.data.id);
+            window.location = url;
           }
         })
         .catch((error) => {
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
+    },
+    getRedirectUrlForAi(processId) {
+      let redirectUrl = `/modeler/${processId}`;
+
+      if (this.isAbTestingInstalled) {
+        redirectUrl = `/modeler/${processId}/alternative/A`;
+      }
+
+      if (this.isAiGenerated) {
+        redirectUrl += "?ai=true";
+      }
+
+      return redirectUrl;
     },
     handleRedirection(url, data) {
       if (this.callFromAiModeler) {
