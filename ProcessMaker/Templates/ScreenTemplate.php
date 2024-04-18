@@ -354,7 +354,6 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateManifest(int $screenId, $request)  : JsonResponse
     {
-        dd($screenId);
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $screenId);
         if (array_key_exists('error', $manifest)) {
