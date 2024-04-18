@@ -308,7 +308,8 @@ class ScreenTemplateTest extends TestCase
         $actingAsUser = User::factory()->create();
         $this->actingAs($actingAsUser)->import($payload);
         $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
-        $this->assertEquals($actingAsUser->id, ScreenTemplates::where('name', $screenTemplate->name)->first()->user_id);
+        $importedTemplate = ScreenTemplates::where('name', $screenTemplate->name)->first();
+        $this->assertEquals($actingAsUser->id, $importedTemplate->user_id);
     }
 
     public function testImportExportScreenTemplatesRoutes()
