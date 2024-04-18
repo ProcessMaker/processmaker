@@ -28,7 +28,7 @@
       class="loading-my-projects-box"
     >
       <data-loading
-        v-show="!shouldShowLoader"
+        v-show="shouldShowLoader"
         :for="/projects\?page/"
         :empty="$t('No Data Available')"
         :empty-desc="$t('')"
@@ -36,7 +36,7 @@
       />
     </div>
     <div
-      v-show="shouldShowLoader"
+      v-show="!shouldShowLoader"
       class="card card-body processes-table-card"
       data-cy="processes-table"
     >
