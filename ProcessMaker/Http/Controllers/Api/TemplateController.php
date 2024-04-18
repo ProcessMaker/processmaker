@@ -81,15 +81,9 @@ class TemplateController extends Controller
      */
     public function store(string $type, Request $request)
     {
-        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
-
-        if (!is_null($existingTemplate)) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $existingTemplate['id'],
-                'templateName' => $existingTemplate['name'],
-                'owner_id' => $existingTemplate['owner_id'],
-            ], 409);
+        $existingTemplate = $this->checkForExistingTemplates($type, $request);
+        if (!empty($existingTemplate)) {
+            return $existingTemplate;
         }
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         $storeTemplate = $this->template->store($type, $request);
@@ -119,14 +113,9 @@ class TemplateController extends Controller
      */
     public function updateTemplate(string $type, Request $request)
     {
-        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
-        if (!is_null($existingTemplate)) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $existingTemplate['id'],
-                'templateName' => $existingTemplate['name'],
-                'owner_id' => $existingTemplate['owner_id'],
-            ], 409);
+        $existingTemplate = $this->checkForExistingTemplates($type, $request);
+        if (!empty($existingTemplate)) {
+            return $existingTemplate;
         }
 
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
@@ -151,14 +140,9 @@ class TemplateController extends Controller
             // Call event to log Template Config changes
             TemplateUpdated::dispatch($changes, $original, false, $template);
         } elseif ($type === 'screen') {
-            $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
-            if (!is_null($existingTemplate)) {
-                return response()->json([
-                    'name' => ['The template name must be unique.'],
-                    'id' => $existingTemplate['id'],
-                    'templateName' => $existingTemplate['name'],
-                    'owner_id' => $existingTemplate['owner_id'],
-                ], 409);
+            $existingTemplate = $this->checkForExistingTemplates($type, $request);
+            if (!empty($existingTemplate)) {
+                return $existingTemplate;
             }
         }
 
@@ -372,6 +356,20 @@ class TemplateController extends Controller
         if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
+    }
+
+    protected function checkForExistingTemplates(string $type, Request $request)
+    {
+        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
+
+        if (!is_null($existingTemplate)) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplate['id'],
+                'templateName' => $existingTemplate['name'],
+                'owner_id' => $existingTemplate['owner_id'],
+            ], 409);
         }
     }
 }

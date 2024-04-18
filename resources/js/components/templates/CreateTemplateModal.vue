@@ -79,9 +79,6 @@ export default {
       descriptionText() {
         return this.$t('This will create a re-usable template based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
       },
-      currentUserId() {
-        return Number(document.head.querySelector("meta[name=\"user-id\"]").content);
-      }
     }, 
     methods: {
       show() {
@@ -123,7 +120,6 @@ export default {
             this.existingAssetName = error.response.data.templateName;
             this.existingAssetOwnerId = error.response.data.owner_id;
             this.toggleButtons();
-            console.log('udpated existing owner', this.existingAssetOwnerId);
           } else {
             const message = error.response.data.error;
             ProcessMaker.alert(this.$t(message), "danger");

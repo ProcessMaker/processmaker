@@ -465,7 +465,9 @@ class ScreenTemplate implements TemplateInterface
         $query = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId);
 
         if (!$isPublic) {
-            $query->where('is_public', 0)->where('user_id', $user->id);
+            $query->where('is_public', $isPublic)->where('user_id', $user->id);
+        } else {
+            $query->where('is_public', $isPublic);
         }
 
         $template = $query->first();
