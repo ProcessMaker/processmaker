@@ -453,7 +453,7 @@ class ScreenTemplate implements TemplateInterface
      */
     public function existingTemplate($request) : ?array
     {
-        $templateId = $request->id;
+        $templateId = (int) $request->id;
         $name = $request->name;
         $isPublic = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
         if ($request->has('existingAssetId')) {
@@ -461,7 +461,7 @@ class ScreenTemplate implements TemplateInterface
         }
         $user = Auth::user();
 
-        $query = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId);
+        $query = ScreenTemplates::where(['name' => $name]);
 
         if (!$isPublic) {
             $query->where('is_public', $isPublic)->where('user_id', $user->id);
