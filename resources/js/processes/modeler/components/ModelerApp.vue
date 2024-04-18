@@ -242,7 +242,7 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
-      if (redirectUrl && nodeId) {
+      if (redirectUrl && nodeId && this.isVersionsInstalled) {
         this.handleAutosave(true, false, redirectUrl, nodeId);
         window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
         return;
