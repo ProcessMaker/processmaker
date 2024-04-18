@@ -456,7 +456,6 @@ class ScreenTemplate implements TemplateInterface
      */
     public function existingTemplate($request) : ?array
     {
-        $templateId = (int) $request->id;
         $name = $request->name;
         $isPublic = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
         if ($request->has('existingAssetId')) {
