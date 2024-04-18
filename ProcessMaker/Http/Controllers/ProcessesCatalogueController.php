@@ -31,12 +31,9 @@ class ProcessesCatalogueController extends Controller
         $bookmarkId = 0;
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
         if (!is_null($process)) {
-            $launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
-            $bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
+            $process->launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
+            $process->bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
         }
-        return view(
-            'processes-catalogue.index',
-            compact('process', 'launchpad', 'currentUser', 'manager', 'bookmarkId')
-        );
+        return view('processes-catalogue.index', compact('process', 'currentUser', 'manager'));
     }
 }
