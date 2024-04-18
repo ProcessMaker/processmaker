@@ -71,6 +71,7 @@ export default {
       template: {},
       selectedTemplateId: null,
       defaultTemplateId: null,
+      cancelToken: null,
     };
   },
   computed: {
@@ -119,12 +120,21 @@ export default {
         url = `templates/screen?screen_type=${this.selectedScreenType}&is_public=0`;
       }
 
+      if (this.cancelToken !== null) {
+        this.cancelToken();
+        this.cancelToken = null;
+      }
+      const { CancelToken } = ProcessMaker.apiClient;
       // Load from our API client
       ProcessMaker.apiClient
         .get(
           `${url}&per_page=1000`
             + `&filter=${this.filter}&order_by=${this.orderBy}&order_direction=${this.orderDirection}`,
-        )
+            {
+              cancelToken: new CancelToken((c) => {
+                this.cancelToken = c;
+              }),
+          })
         .then(response => {
           this.blankTemplate[0].screen_type = this.selectedScreenType;
           this.blankTemplate[0].is_public = this.isDefaultTemplatePublic;
@@ -132,6 +142,9 @@ export default {
           this.apiDataLoading = false;
           this.apiNoResults = false;
           this.getDefaultTemplates();
+        })
+        .catch(error => {
+          console.log("error: " + error);
         })
         .finally(() => {
           this.loading = false;
