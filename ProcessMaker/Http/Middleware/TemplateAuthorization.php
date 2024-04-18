@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use ProcessMaker\Models\ScreenTemplates;
 
 class TemplateAuthorization
 {
@@ -14,12 +15,19 @@ class TemplateAuthorization
             $middlewares = $this->getMiddlewareForTemplateType($templateType);
             $request->route()->middleware($middlewares);
 
-            if ($this->isImportRoute($request)) {
+            if ($this->isRoute($request, ['import.do_import', 'processes.preimportValidation'])) {
                 return $this->handleImportRoute($request, $next, $templateType);
             }
 
-            if ($this->isExportRoute($request)) {
+            if ($this->isRoute($request, 'export.download')) {
                 return $this->handleExportRoute($request, $next, $templateType);
+            }
+
+            if ($templateType === 'screen' && $this->isRoute($request, [
+                'templates.configure',
+                'api.template.delete',
+            ])) {
+                $this->authorizeScreenTemplateAccess($request);
             }
         }
 
@@ -48,14 +56,16 @@ class TemplateAuthorization
         ];
     }
 
-    protected function isImportRoute(Request $request)
+    protected function isRoute(Request $request, string|array $routeNames): bool
     {
-        return $request->route()->named('import.do_import') || $request->route()->named('processes.preimportValidation');
-    }
+        $routeNames = (array) $routeNames;
+        foreach ($routeNames as $routeName) {
+            if ($request->route()->named($routeName)) {
+                return true;
+            }
+        }
 
-    protected function isExportRoute(Request $request)
-    {
-        return $request->route()->named('export.download');
+        return false;
     }
 
     protected function handleImportRoute(Request $request, Closure $next, $templateType)
@@ -67,8 +77,6 @@ class TemplateAuthorization
         if ($request->user()->can('import-processes')) {
             return $next($request);
         }
-
-        // abort(403);
     }
 
     protected function handleExportRoute(Request $request, Closure $next, $templateType)
@@ -80,7 +88,24 @@ class TemplateAuthorization
         if ($request->user()->can('export-processes')) {
             return $next($request);
         }
+    }
 
-        // abort(403);
+    /**
+     * Authorize user access to the screen template based on ownership or admin status.
+     *
+     * @throws HttpException If the user is unauthorized.
+     */
+    protected function authorizeScreenTemplateAccess(Request $request): void
+    {
+        $templateParam = $request->route()->parameter('template');
+        $idParam = $request->route()->parameter('id');
+        $id = $templateParam ?? $idParam;
+        $template = ScreenTemplates::findOrFail($id);
+
+        abort_unless(
+            $template->is_owner,
+            403,
+            'Unauthorized access to the template.'
+        );
     }
 }

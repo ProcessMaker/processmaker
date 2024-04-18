@@ -54,6 +54,7 @@
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
           :from-button="propFromButton"
+          @onWatchShowPreview="onWatchShowPreview"
         >
           <template v-slot:preview-header="{ close, screenFilteredTaskData, taskReady }">
             <div v-if="propFromButton === 'inboxRules'" style="width: 98%">
@@ -233,10 +234,6 @@ export default {
     if (this.propColumns.length > 0) {
       this.columns = this.propColumns;
     }
-    this.reCalculateZIndex(true);
-  },
-  beforeDestroy(){
-    this.reCalculateZIndex(false);
   },
   methods: {
     verifyURL(string) {
@@ -277,16 +274,21 @@ export default {
      * remove it to maintain compatibility.
      */
     reCalculateZIndex(sw) {
-      let searchBar = document.querySelector('.global-search-bar');
-      if(!searchBar){
-        return;
+      let names = [".global-search-bar", ".navbar-nav"];
+      for (let value of names) {
+        let searchBar = document.querySelector(value);
+        if (searchBar) {
+          let obj = searchBar.classList;
+          if (sw === true) {
+            obj.add("global-search-bar-z-index");
+          } else {
+            obj.remove("global-search-bar-z-index");
+          }
+        }
       }
-      let obj = searchBar.classList;
-      if (sw === true) {
-        obj.add("global-search-bar-z-index");
-      } else {
-        obj.remove("global-search-bar-z-index");
-      }
+    },
+    onWatchShowPreview(value) {
+      this.reCalculateZIndex(value);
     }
   },
 };

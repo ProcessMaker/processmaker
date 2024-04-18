@@ -903,5 +903,8 @@
   .canceled-style {
     background-color: #ed4858;
   }
+  .card-header:first-child.text-status {
+    border-radius: 6px;
+  }
 </style>
 @endsection
