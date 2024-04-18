@@ -273,4 +273,14 @@ export default {
   align-items: center;
   gap: 20px;
 }
+.data-table {
+  overflow: hidden;
+  height: 450px;
+  justify-items: center;
+  align-items: center;
+  /* place-items: center; */
+  justify-content: center;
+  width: 100%;
+  display: flex;
+}
 </style>

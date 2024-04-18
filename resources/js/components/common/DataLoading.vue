@@ -187,10 +187,4 @@
         font-size: 20px;
         white-space: pre-line
     }
-
-    .loading-my-projects-box .container {
-        align-items: baseline;
-        height: 450px;
-        margin-top: 50px;
-    }
 </style>
