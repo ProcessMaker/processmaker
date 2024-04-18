@@ -128,6 +128,8 @@ export default {
       },  
       updateTemplate() {   
         this.templateData.existingAssetId = this.existingAssetId;
+        this.templateData.asset_id = this.assetId;
+
         ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId + "/update", this.templateData)
         .then(response => {
           ProcessMaker.alert( this.$t("Template successfully updated"),"success");

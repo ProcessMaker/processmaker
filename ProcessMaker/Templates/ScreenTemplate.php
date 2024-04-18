@@ -120,11 +120,14 @@ class ScreenTemplate implements TemplateInterface
 
         $screen = Screen::where('uuid', $template->editing_screen_uuid)->where('is_template', 1)->first();
 
+        // If a screen exists with the editing screen uuid delete that screen and create a new screen.
+        // This ensures any updates to the template manifest will be reflected
+        // in the editing screen being shown in screen builder.
         if ($screen) {
-            return ['id' => $screen->id];
+            $screen->forceDelete();
         }
 
-        // Otherwise we need to import the template and create a new screen
+        // Import the template to create a new screen
         $payload = json_decode($template->manifest, true);
         $postOptions = [];
 
@@ -148,6 +151,7 @@ class ScreenTemplate implements TemplateInterface
             'asset_type' => 'SCREEN_TEMPLATE',
         ]);
 
+        // Update the screen template editing screen uuid to match the new screen uuid
         ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $newScreen->uuid]);
 
         return ['id' => $newScreen->id];
@@ -291,13 +295,8 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplate(Request $request): JsonResponse
     {
-        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
-
         try {
-            $template = ScreenTemplates::findOrFail($templateId);
-            $template->is_public = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
-            $template->update($request->except('media_collection', 'is_public'));
-
+            $this->updateTemplateManifest($request->asset_id, $request);
             $response = response()->json();
         } catch (ModelNotFoundException $e) {
             $response = response()->json(['message' => 'Template not found.'], 404);
@@ -346,8 +345,6 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateManifest(int $screenId, $request)  : JsonResponse
     {
-        $data = $request->all();
-
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $screenId);
         if (array_key_exists('error', $manifest)) {
@@ -355,7 +352,9 @@ class ScreenTemplate implements TemplateInterface
         }
 
         // Update the screen template manifest
-        $this->updateScreenTemplateData($data, $manifest);
+        $data = $request->all();
+        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
+        $this->updateScreenTemplateData($data, $manifest, $templateId);
 
         // Save screen template thumbnails
         $this->saveThumbnails($data['name'], $data['thumbnails']);
@@ -546,15 +545,17 @@ class ScreenTemplate implements TemplateInterface
         return $screenTemplate;
     }
 
-    private function updateScreenTemplateData(array $data, array $payload)
+    private function updateScreenTemplateData(array $data, array $payload, int $templateId)
     {
-        ScreenTemplates::where('name', $data['name'])->update([
-            'description' => $data['description'],
-            'is_public' => $data['make_public'] ? 1 : 0,
-            'screen_category_id' => $data['screen_category_id'],
-            'manifest' => json_encode($payload),
-            'user_id' => auth()->id(),
-        ]);
+        $template = ScreenTemplates::where('id', $templateId)->firstOrFail();
+
+        $data['is_public'] = filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
+        $data['media_collection'] = $template->media_collection;
+
+        $template->manifest = json_encode($payload);
+        $template->user_id = auth()->id();
+
+        $template->update($data);
     }
 
     protected function saveThumbnails($screenTemplate, string $thumbnails)
