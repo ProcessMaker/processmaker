@@ -278,7 +278,6 @@ export default {
   height: 450px;
   justify-items: center;
   align-items: center;
-  /* place-items: center; */
   justify-content: center;
   width: 100%;
   display: flex;
