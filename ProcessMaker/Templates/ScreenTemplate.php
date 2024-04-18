@@ -299,7 +299,13 @@ class ScreenTemplate implements TemplateInterface
     public function updateTemplate(Request $request): JsonResponse
     {
         try {
-            $this->updateTemplateManifest($request->asset_id, $request);
+            if ($request->has('asset_id')) {
+                $this->updateTemplateManifest($request->asset_id, $request);
+            } else {
+                $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
+                $this->updateScreenTemplateData($request->all(), $templateId);
+            }
+
             $response = response()->json();
         } catch (ModelNotFoundException $e) {
             $response = response()->json(['message' => 'Template not found.'], 404);
@@ -348,6 +354,7 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateManifest(int $screenId, $request)  : JsonResponse
     {
+        dd($screenId);
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $screenId);
         if (array_key_exists('error', $manifest)) {
@@ -357,7 +364,7 @@ class ScreenTemplate implements TemplateInterface
         // Update the screen template manifest
         $data = $request->all();
         $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
-        $this->updateScreenTemplateData($data, $manifest, $templateId);
+        $this->updateScreenTemplateData($data, $templateId, $manifest);
 
         // Save screen template thumbnails
         $this->saveThumbnails($data['name'], $data['thumbnails']);
@@ -547,14 +554,17 @@ class ScreenTemplate implements TemplateInterface
         return $screenTemplate;
     }
 
-    private function updateScreenTemplateData(array $data, array $payload, int $templateId)
+    private function updateScreenTemplateData(array $data, int $templateId, array $payload = null)
     {
         $template = ScreenTemplates::where('id', $templateId)->firstOrFail();
 
         $data['is_public'] = filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
         $data['media_collection'] = $template->media_collection;
 
-        $template->manifest = json_encode($payload);
+        if (!is_null($payload)) {
+            $template->manifest = json_encode($payload);
+        }
+
         $template->user_id = auth()->id();
 
         $template->update($data);
