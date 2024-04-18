@@ -327,6 +327,7 @@ class TemplateController extends Controller
 
     protected function createScreen(Request $request)
     {
+        $request['templateId'] = $request->templateId ?? $request->defaultTemplateId;
         $request->validate(Screen::rules($request->id));
         $response = $this->template->create('screen', $request);
 

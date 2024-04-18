@@ -429,7 +429,7 @@ class Setting extends ProcessMakerModel implements HasMedia
      */
     public static function updateAllSettingsGroupId()
     {
-        Setting::chunk(100, function ($settings) {
+        Setting::whereNull('group_id')->chunk(100, function ($settings) {
             foreach ($settings as $setting) {
                 // Define the value of 'menu_group' based on 'group'
                 switch ($setting->group) {
@@ -458,11 +458,15 @@ class Setting extends ProcessMakerModel implements HasMedia
                         break;
                     case 'IDP': // Intelligent Document Processing
                     case 'DocuSign':
+                    case 'Plaid':
                     case 'External Integrations': // Enterprise Integrations
                         $id = SettingsMenus::getId(SettingsMenus::INTEGRATIONS_MENU_GROUP);
                         break;
-                    default:
+                    case 'System': // System not related with settings menu
                         $id = null;
+                        break;
+                    default: // The default value
+                        $id = SettingsMenus::getId(SettingsMenus::EMAIL_MENU_GROUP);
                         break;
                 }
                 if ($id !== null) {
