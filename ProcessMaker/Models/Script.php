@@ -146,7 +146,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
-        return $this->callNayraRunScript($this->code, $data, $config);
+        // return $this->callNayraRunScript($this->code, $data, $config);
 
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
