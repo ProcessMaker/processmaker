@@ -426,7 +426,9 @@ class TaskController extends Controller
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
-            event(new ActivityAssigned($task));
+            if ($task->element_type === 'task') {
+                event(new ActivityAssigned($task));
+            }
 
             return new Resource($task->refresh());
         } else {
