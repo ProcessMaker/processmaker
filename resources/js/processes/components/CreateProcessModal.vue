@@ -324,7 +324,7 @@ export default {
       let redirectUrl = `/modeler/${processId}`;
 
       if (this.isAbTestingInstalled) {
-        redirectUrl = `/modeler/${processId}/alternative/A`;
+        redirectUrl += "/alternative/A";
       }
 
       if (this.isAiGenerated) {
