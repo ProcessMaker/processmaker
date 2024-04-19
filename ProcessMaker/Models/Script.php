@@ -147,11 +147,6 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ScriptLanguageNotSupported($this->language);
         }
 
-        $useNayraDocker = false; //!empty(config('app.nayra_rest_api_host'));
-        if ($useNayraDocker) {
-            return $this->callNayraRunScript($this->code, $data, $config);
-        }
-
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
@@ -159,7 +154,21 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ConfigurationException('A user is required to run scripts');
         }
 
-        return $runner->run($this->code, $data, $config, $timeout, $user);
+        $expectedResult = $runner->run($this->code, $data, $config, $timeout, $user);
+        try {
+            $useNayraDocker = !empty(config('app.nayra_rest_api_host'));
+            if ($useNayraDocker) {
+                $nayraResponse = $this->callNayraRunScript($this->code, $data, $config);
+                if (json_encode($expectedResult) !== json_encode($nayraResponse)) {
+                    \Log::error('Nayra response does not match expected response');
+                    \Log::error('Expected: ' . json_encode($expectedResult));
+                    \Log::error('Nayra: ' . json_encode($nayraResponse));
+                }
+            }
+        } catch (\Throwable $t) {
+            \Log::error($t->getMessage());
+        }
+        return $expectedResult;
     }
 
     public function callNayraRunScript(string $code, array $data, array $config)
