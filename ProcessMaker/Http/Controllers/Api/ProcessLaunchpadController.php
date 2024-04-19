@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\ProcessCollection;
+use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
@@ -13,6 +15,43 @@ use ProcessMaker\Models\ProcessLaunchpad;
 
 class ProcessLaunchpadController extends Controller
 {
+    public function getProcesses(Request $request)
+    {
+        // Get the user
+        $user = Auth::user();
+        // Get the processes  active
+        $processes = Process::nonSystem()->active();
+        // Filter pmql
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $processes->pmql($pmql);
+            } catch (\ProcessMaker\Query\SyntaxError $e) {
+                return response(['error' => 'PMQL error'], 400);
+            }
+        }
+
+        // Get with bookmark
+        $bookmark = $request->input('bookmark', false);
+        // Get with launchpad
+        $launchpad = $request->input('launchpad', false);
+        // Get the processes
+        $processes = $processes
+            ->select('processes.*')
+            ->orderBy('processes.name', 'asc')
+            ->get()
+            ->collect();
+
+        foreach ($processes as $process) {
+            // Get the id bookmark related
+            $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+        }
+
+        return new ProcessCollection($processes);
+    }
+
     public function index(Request $request, Process $process)
     {
         // Get the processes launchpad configuration
