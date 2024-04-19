@@ -146,7 +146,11 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
-        // return $this->callNayraRunScript($this->code, $data, $config);
+
+        $useNayraDocker = !empty(config('app.nayra_rest_api_host'));
+        if ($useNayraDocker) {
+            return $this->callNayraRunScript($this->code, $data, $config);
+        }
 
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
@@ -169,8 +173,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             'envVariables' => $engine->getEnvironmentVariables(),
         ];
         $body = json_encode($params);
-        // @todo config the pod address
-        $url = 'http://intembeko-nayra-svc.intembeko-ns-pm4.svc.cluster.local/run_script';
+        $url = config('app.nayra_rest_api_host') . '/run_script';
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -181,7 +184,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
         ]);
         $result = curl_exec($ch);
         curl_close($ch);
-        return $result;
+        if (!$result) {
+            return [
+                'error' => curl_error($ch)
+            ];
+        }
+        return json_decode($result, true);
     }
 
     /**
