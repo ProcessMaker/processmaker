@@ -187,8 +187,9 @@ export default {
     },
     getNameEllipsis() {
       const name = this.process.name;
-      const nameEllipsis = name.slice(0, 70);
-      return nameEllipsis + "..."
+      console.log(name.length);
+      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
+      return nameEllipsis;
     }
   },
 };

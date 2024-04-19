@@ -10,7 +10,7 @@
             class="fas fa-arrow-left text-secondary mr-2 iconTitle"
             @click="goBack"
           />
-          {{ process.name }}
+          {{ getNameEllipsis() }}
         </div>
         <div class="d-flex align-items-center">
           <div class="card-bookmark mx-2">
@@ -128,6 +128,12 @@ export default {
           this.showScreen = response.data.config !== null;
         });
     },
+    getNameEllipsis() {
+      const name = this.process.name;
+      console.log(name.length);
+      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
+      return nameEllipsis;
+    }
   },
 };
 </script>
