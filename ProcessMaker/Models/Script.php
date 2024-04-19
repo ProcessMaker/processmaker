@@ -147,7 +147,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ScriptLanguageNotSupported($this->language);
         }
 
-        \Log::debug("Script ID={$this->id} Token ID={$tokenId}");
+        \Log::error("Script ID={$this->id} Token ID={$tokenId}");
 
         $useNayraDocker = !empty(config('app.nayra_rest_api_host')) && !empty($this->id);
         if ($useNayraDocker) {
