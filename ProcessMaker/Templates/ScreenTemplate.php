@@ -378,8 +378,6 @@ class ScreenTemplate implements TemplateInterface
      */
     public function configure(int $id) : array
     {
-        $template = (object) [];
-
         $template = ScreenTemplates::select([
             'id',
             'uuid',
@@ -389,11 +387,11 @@ class ScreenTemplate implements TemplateInterface
             'screen_category_id',
             'version',
             'screen_type',
+            'is_public',
         ])->where('id', $id)->firstOrFail();
 
         $categories = ScreenCategory::orderBy('name')
             ->where('status', 'ACTIVE')
-            ->get()
             ->pluck('name', 'id')
             ->toArray();
         $addons = $this->getPluginAddons('edit', compact(['template']));

@@ -4,7 +4,6 @@ import TasksListCounter from "./components/TasksListCounter.vue";
 import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
 Vue.component("TasksList", TasksList);
-Vue.component("TasksListCounter", TasksListCounter);
 
 new Vue({
   el: "#tasks",

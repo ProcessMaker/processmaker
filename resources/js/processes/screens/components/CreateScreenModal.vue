@@ -24,7 +24,7 @@
           cols="7"
           class="type-style-col"
         >
-          <div v-if="!showTemplatePreview">
+          <div v-show="!showTemplatePreview">
             <screen-type-dropdown
               v-model="formData.type"
               :copy-asset-mode="copyAssetMode"

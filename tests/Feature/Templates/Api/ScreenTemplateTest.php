@@ -298,12 +298,18 @@ class ScreenTemplateTest extends TestCase
 
     public function testImportExportScreenTemplate()
     {
-        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'Test Screen Template Import Export']);
+        $adminUser = User::factory()->create();
+        $screenTemplate = ScreenTemplates::factory()->create(['name' => 'ScreenTemplate', 'user_id' => $adminUser->id]);
         $payload = $this->export($screenTemplate, ScreenTemplatesExporter::class);
         $screenTemplate->delete();
         $this->assertDatabaseMissing('screen_templates', ['name' => $screenTemplate->name]);
-        $this->import($payload);
+
+        // Import Screen Template
+        $actingAsUser = User::factory()->create();
+        $this->actingAs($actingAsUser)->import($payload);
         $this->assertDatabaseHas('screen_templates', ['name' => $screenTemplate->name]);
+        $importedTemplate = ScreenTemplates::where('name', $screenTemplate->name)->first();
+        $this->assertEquals($actingAsUser->id, $importedTemplate->user_id);
     }
 
     public function testImportExportScreenTemplatesRoutes()
