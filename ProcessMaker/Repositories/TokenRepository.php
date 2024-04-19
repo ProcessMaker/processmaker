@@ -154,7 +154,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
+        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED', $token);
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
     }
 
@@ -192,7 +192,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
+        $request->notifyProcessUpdated('START_EVENT_TRIGGERED', $token);
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -224,7 +224,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
+        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION', $token);
     }
 
     /**
@@ -258,7 +258,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->save();
         $token->setId($token->getKey());
         $request = $token->getInstance();
-        $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
+        $request->notifyProcessUpdated('ACTIVITY_COMPLETED', $token);
     }
 
     /**
