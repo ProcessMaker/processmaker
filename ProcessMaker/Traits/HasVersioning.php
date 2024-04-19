@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\Process;
 
 trait HasVersioning
 {
@@ -45,7 +45,11 @@ trait HasVersioning
      */
     public static function saveNewVersion(Model $model)
     {
-        $model->saveVersion();
+        if ($model->asset_type !== 'GUIDED_HELPER_PROCESS') {
+            // Prevent the saving of versions for Guided Template Helper processes.
+            // This is necessary due to the bloating of the versions table when syncing
+            $model->saveVersion();
+        }
     }
 
     /**
@@ -89,7 +93,7 @@ trait HasVersioning
                     $this->hasAlternative()
                     ? ['alternative' => $alternative]
                     : []
-                )
+                ),
             ],
             $attributes
         );
@@ -161,6 +165,7 @@ trait HasVersioning
                     'process' => $this,
                 ],
             );
+
             return $response['publishedVersion'];
         }
 
@@ -197,6 +202,7 @@ trait HasVersioning
     public function getDraftVersion(string $alternative = null)
     {
         $alternative = $alternative ?: ($this->alternative ?? null);
+
         return $this->versions()
             ->when(
                 $this->hasAlternative(),
