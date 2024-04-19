@@ -14,8 +14,8 @@
       <p class="text-info-custom">
         {{ $t('Here you can personalize how your process will be shown in the process browser') }}
       </p>
-      <div class="d-flex justify-content-between">
-        <div class="mr-3">
+      <div class="row">
+        <div class="col-sm-12 col-lg-6">
           <div
             md="12"
             class="no-padding"
@@ -24,7 +24,7 @@
             <input-image-carousel ref="image-carousel" />
           </div>
         </div>
-        <div class="options-launchpad">
+        <div class="col-sm-12 col-lg-6 options-launchpad">
           <label>{{ $t("Launch Screen") }}</label>
           <div class="multiselect-screen custom-multiselect">
             <b-input-group>
