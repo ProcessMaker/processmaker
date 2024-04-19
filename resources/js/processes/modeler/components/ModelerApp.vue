@@ -126,7 +126,7 @@ export default {
             projects: this.process.projects,
             bpmn: xml,
             svg: svgString,
-            alternative: window.ProcessMaker.AbTesting.alternative || window.ProcessMaker.modeler.draftAlternative || "A",
+            alternative: window.ProcessMaker.AbTesting?.alternative || window.ProcessMaker.modeler.draftAlternative || "A",
           });
           this.process.updated_at = response.data.updated_at;
           window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
@@ -244,7 +244,6 @@ export default {
 
       if (redirectUrl && nodeId && this.isVersionsInstalled) {
         this.handleAutosave(true, false, redirectUrl, nodeId);
-        window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
         return;
       }
 
@@ -252,7 +251,6 @@ export default {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
-
       if (this.externalEmit.includes("open-modal-versions") && generatingAssets) {
         window.ProcessMaker.EventBus.$emit("new-changes");
         this.refreshSession();
