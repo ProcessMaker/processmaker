@@ -51,7 +51,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.15.1",
         "@fortawesome/vue-fontawesome": "^0.1.9",
         "@panter/vue-i18next": "^0.15.2",
-        "@processmaker/modeler": "1.47.7",
+        "@processmaker/modeler": "1.47.8",
         "@processmaker/processmaker-bpmn-moddle": "0.14.1",
         "@processmaker/screen-builder": "2.85.9",
         "@processmaker/vue-form-elements": "0.52.1",
