@@ -120,6 +120,17 @@ class ProcessController extends Controller
             $processes = Process::active()->with($include);
         }
 
+        // The simplified parameter indicates to return just the main information of processes
+        if ($request->input('simplified_data', false)) {
+            $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
+            $modifiedCollection = $processes->map(function ($item) {
+                return [
+                    'id' => $item['id'],
+                    'events'=> $item['start_events']];
+            });
+            return new ApiCollection($modifiedCollection);
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
@@ -153,12 +164,6 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get()
             ->collect();
-
-        // the simplified parameter indicates to return just the main information of processes
-        if ($request->input('simplified_data', false)) {
-            return new ProcessCollection($processes);
-        }
-
 
         foreach ($processes as $key => $process) {
             // filter the start events that can be used manually (no timer start events);
