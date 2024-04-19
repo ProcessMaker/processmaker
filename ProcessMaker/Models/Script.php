@@ -164,6 +164,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
                     \Log::error('Nayra response does not match expected response');
                     \Log::error('Expected: ' . json_encode($expectedResult));
                     \Log::error('Nayra: ' . json_encode($nayraResponse));
+                } else {
+                    \Log::error('Nayra=Docker: ' . json_encode($nayraResponse));
                 }
             }
         } catch (\Throwable $t) {
