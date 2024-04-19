@@ -25,7 +25,7 @@
                 <i class="fas fa-angle-up pl-2" />
               </template>
               <template v-else>
-                {{ process.name }}
+                {{ getNameEllipsis() }}
                 <i class="fas fa-angle-down pl-2" />
               </template>
             </button>
@@ -185,6 +185,11 @@ export default {
     activateReadMore() {
       this.readActivated = true;
     },
+    getNameEllipsis() {
+      const name = this.process.name;
+      const nameEllipsis = name.slice(0, 50);
+      return nameEllipsis + "..."
+    }
   },
 };
 </script>
