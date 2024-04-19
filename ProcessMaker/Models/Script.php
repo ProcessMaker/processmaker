@@ -8,6 +8,7 @@ use ProcessMaker\Exception\ConfigurationException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Managers\WorkflowManagerRabbitMq;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -25,9 +26,9 @@ use ProcessMaker\Validation\CategoryRule;
  * @property int id
  * @property string key
  * @property string title
- * @property text description
+ * @property string description
  * @property string language
- * @property text code
+ * @property string code
  * @property int timeout
  *
  * @OA\Schema(
@@ -145,6 +146,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
         if (!$this->scriptExecutor) {
             throw new ScriptLanguageNotSupported($this->language);
         }
+        return $this->callNayraRunScript($this->code, $data, $config);
+
         $runner = new ScriptRunner($this->scriptExecutor);
         $runner->setTokenId($tokenId);
         $user = User::find($this->run_as_user_id);
@@ -153,6 +156,32 @@ class Script extends ProcessMakerModel implements ScriptInterface
         }
 
         return $runner->run($this->code, $data, $config, $timeout, $user);
+    }
+
+    public function callNayraRunScript(string $code, array $data, array $config)
+    {
+        $engine = new WorkflowManagerRabbitMq();
+        $params = [
+            'name' => uniqid('script_', true),
+            'script' => $code,
+            'data' => $data,
+            'config' => $config,
+            'envVariables' => $engine->getEnvironmentVariables(),
+        ];
+        $body = json_encode($params);
+        // @todo config the pod address
+        $url = 'http://intembeko-nayra-svc.intembeko-ns-pm4.svc.cluster.local/run_script';
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($body),
+        ]);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
     /**
