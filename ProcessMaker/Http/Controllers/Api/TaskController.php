@@ -321,6 +321,18 @@ class TaskController extends Controller
         return new Resource($task);
     }
 
+    public function showScreen(ProcessRequestToken $task)
+    {
+        $response = new Resource($task);
+        $response = response($response->toArray(request())['screen'], 200);
+        $now = time();
+        // 1 day of cache
+        $cacheTime = 86400;
+        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+        return $response;
+    }
+
     /**
      * Updates the current element
      *

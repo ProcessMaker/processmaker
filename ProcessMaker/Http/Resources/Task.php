@@ -41,7 +41,7 @@ class Task extends ApiResource
             $array['requestor'] = new Users($this->processRequest->user);
         }
         if (in_array('processRequest', $include)) {
-            $array['process_request'] = new Users($this->processRequest);
+            $array['process_request'] = $this->processRequest->attributesToArray();
         }
 
         $parentProcessRequest = $this->processRequest->parentRequest;
@@ -68,11 +68,13 @@ class Task extends ApiResource
                 $process = Process::findOrFail($this->processRequest->process_id);
                 $processTranslation = new ProcessTranslation($process);
                 $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+                $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
                 // Apply translations to nested screens
                 if (array_key_exists('nested', $array['screen'])) {
                     foreach ($array['screen']['nested'] as &$nestedScreen) {
                         $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                        $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                     }
                 }
             }
@@ -99,6 +101,7 @@ class Task extends ApiResource
             $interstitial = $this->getInterstitial();
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
+            $array['interstitial_screen']['config'] = $this->removeInspectorMetadata($array['interstitial_screen']['config']);
         }
         if (in_array('userRequestPermission', $include)) {
             $array['user_request_permission'] = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
@@ -132,6 +135,32 @@ class Task extends ApiResource
         }
 
         return $array;
+    }
+
+    private function removeInspectorMetadata(array $config)
+    {
+        foreach($config as $i => $page) {
+            $config[$i]['items'] = $this->removeInspectorMetadataItems($page['items']);
+        }
+        return $config;
+    }
+
+    private function removeInspectorMetadataItems(array $items)
+    {
+        foreach($items as $i => $item) {
+            if (isset($item['inspector'])) {
+                unset($item['inspector']);
+            }
+            if (isset($item['component']) && $item['component'] === 'FormMultiColumn') {
+                foreach($item['items'] as $c => $col) {
+                    $item['items'][$c] = $this->removeInspectorMetadataItems($col);
+                }
+            } elseif (isset($item['items']) && is_array($item['items'])) {
+                $item['items'] = $this->removeInspectorMetadataItems($item['items']);
+            }
+            $items[$i] = $item;
+        }
+        return $items;
     }
 
     private function loadUserRequestPermission(ProcessRequest $request, User $user = null, array $permissions)
