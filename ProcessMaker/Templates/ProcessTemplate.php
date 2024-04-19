@@ -82,9 +82,11 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::find($request->id);
         $process = Process::where('uuid', $template->editing_process_uuid)->where('is_template', 1)->first();
 
-        // If a process exists with the template name return that process
+        // If a process exists with the template editing process uuid delete that process and create a new process
+        // this ensures any updates to the template manifest will be reflected
+        // in the editing process being shown in modeler.
         if ($process) {
-            return ['id' => $process->id];
+            $process->forceDelete();
         }
         // Otherwise we need to import the template and create a new process
         $payload = json_decode($template->manifest, true);
@@ -326,8 +328,8 @@ class ProcessTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $manifest = $this->getManifest('process', $request->asset_id);
 
-        $manifest = $this->getManifest('process', $request->process_id);
         $rootUuid = Arr::get($manifest, 'root');
         $export = Arr::get($manifest, 'export');
         $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
@@ -549,7 +551,7 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return ['id' => $template->id, 'name' => $name];
+            return ['id' => $template->id, 'name' => $name, 'owner_id' => $template->user_id];
         }
 
         return null;

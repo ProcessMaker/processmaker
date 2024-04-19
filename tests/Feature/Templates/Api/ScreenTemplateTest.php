@@ -42,7 +42,7 @@ class ScreenTemplateTest extends TestCase
             'is_public' => false,
             'version'   => '1.0.0',
             'asset_id' => $screenId,
-            'screenType' => $screen->type,
+            'screen_type' => $screen->type,
             'saveAssetsMode' => 'saveAllAssets',
         ];
         $response = $this->apiCall('POST', $route, $data);
