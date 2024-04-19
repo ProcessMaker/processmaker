@@ -156,6 +156,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
 
         $expectedResult = $runner->run($this->code, $data, $config, $timeout, $user);
         try {
+            \Log::error('Script ID: ' . $this->id);
             $useNayraDocker = !empty(config('app.nayra_rest_api_host'));
             if ($useNayraDocker) {
                 $nayraResponse = $this->callNayraRunScript($this->code, $data, $config);
