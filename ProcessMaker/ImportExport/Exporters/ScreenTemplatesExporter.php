@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\ImportExport\Exporters;
 
+use Illuminate\Support\Facades\Auth;
+
 class ScreenTemplatesExporter extends ExporterBase
 {
     public $handleDuplicatesByIncrementing = ['name'];
@@ -12,6 +14,11 @@ class ScreenTemplatesExporter extends ExporterBase
 
     public function import() : bool
     {
+        $screenTemplate = $this->model;
+        $screenTemplate->user_id = Auth::user()->id;
+        $screenTemplate->is_default_template = 0;
+        $screenTemplate->save();
+
         return true;
     }
 }

@@ -16,9 +16,9 @@
                     </pmql-input>
                 </div>
             
-                @canany(['import-screen-templates', 'create-screen-templates'])
+                @canany(['import-screens', 'create-screens'])
                 <div class="d-flex ml-md-0 flex-column flex-md-row">
-                    @can('import-screen-templates')
+                    @can('import-screens')
                         <div class="mb-3 mb-md-0 ml-md-2">
                             <a
                                 href="#"
