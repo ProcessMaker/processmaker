@@ -60,4 +60,17 @@ class ActivityAssigned implements ShouldBroadcastNow
     {
         return $this->processRequestToken;
     }
+
+    /**
+     * Message body content
+     */
+    public function getData(): array
+    {
+        return [
+            'payloadUrl' => $this->payloadUrl,
+            'element_type' => $this->processRequestToken->element_type,
+            // trace 5 lines
+            'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5),
+        ];
+    }
 }
