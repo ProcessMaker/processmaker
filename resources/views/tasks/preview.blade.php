@@ -101,6 +101,7 @@
                           csrf-token="{{ csrf_token() }}"
                           initial-loop-context="{{ $task->getLoopContext() }}"
                           @task-updated="taskUpdated"
+                          @after-submit="afterSubmit"
                           @submit="submit"
                           @completed="completed"
                           @@error="error"
@@ -190,7 +191,8 @@
           userHasInteracted: false,
           initialFormDataSet: false,
           alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
-          disableInterstitial: window.location.search.includes('disableInterstitial=1')
+          disableInterstitial: window.location.search.includes('disableInterstitial=1'),
+          validateForm: false
         },
         watch: {
           task: {
@@ -252,6 +254,9 @@
           }
         },
         methods: {
+          afterSubmit(event) {
+            event.validation = this.validateForm;
+          },
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
@@ -434,6 +439,10 @@
         },
         mounted() {
           this.prepareData();
+
+          window.addEventListener('sendValidateForm', event => {
+            this.validateForm = event.detail;
+          });
 
           window.addEventListener('fillData', event => {
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);

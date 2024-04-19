@@ -30,7 +30,7 @@
               :key="`btn-${index}`"
               :ref="formatGroupName(btn.group)"
               :data-cy="btn.key"
-              :disabled="false"
+              :disabled="disableButton"
               class="ml-2 nowrap"
               @click="handler(btn)"
             >
@@ -258,6 +258,7 @@ export default {
       shouldDisplayNoDataMessage: false,
       noDataMessageConfig: null,
       loading: true,
+      disableButton: false,
     };
   },
   computed: {
@@ -491,13 +492,14 @@ export default {
       this.searchQuery = pmql;
     },
     pageUrl(page) {
+      const urlEncodedPmql = encodeURIComponent(this.pmql);
       let url = `${this.url}?` +
         `page=${page}&` +
         `per_page=${this.perPage}&` +
         `order_by=${encodeURIComponent(this.orderBy)}&` +
         `order_direction=${this.orderDirection}&` +
         `filter=${this.filter}&` +
-        `pmql=${this.pmql}&` +
+        `pmql=${urlEncodedPmql}&` +
         `group=${this.group}`;
 
       if (this.additionalPmql && this.additionalPmql.length) {
@@ -526,18 +528,21 @@ export default {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
         window[btn.ui.handler](this);
         if (btn.ui.handler === "addMailServer") {
+          this.disableButton = true;
           this.$parent.$refs["menu-collapse"].changeEmailServers = true;
         }
       }
     },
     removeElement() {
-      this.$parent.$refs["menu-collapse"].firstTime = true;
-      this.$parent.$refs["menu-collapse"].getMenuGrups();
+      this.$parent.$refs["menu-collapse"].changeEmailServers = true;
+      this.$parent.$refs["menu-collapse"].refresh();
     },
     refresh() {
-      this.$refs.table.refresh();
+      if (this.$refs.table) {
+        this.$refs.table.refresh();
+      }
       this.$parent.$refs["menu-collapse"].firstTime = false;
-      this.$parent.$refs["menu-collapse"].getMenuGrups();
+      this.$parent.$refs["menu-collapse"].refresh();
     },
     formatGroupName(name) {
       return name.toLowerCase().replaceAll(" ", "-");

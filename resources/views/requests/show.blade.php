@@ -645,6 +645,9 @@
         },
         switchTabInfo(tab) {
           this.showInfo = !this.showInfo;
+          if (window.Intercom) {
+            window.Intercom('update', { "hide_default_launcher": tab === 'comments' });
+          }
         },
         onLoadedObject() {
           this.isObjectLoading = false;
@@ -899,6 +902,9 @@
   }
   .canceled-style {
     background-color: #ed4858;
+  }
+  .card-header:first-child.text-status {
+    border-radius: 6px;
   }
 </style>
 @endsection

@@ -3,6 +3,7 @@
 namespace Database\Factories\ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
 
 class ProcessLaunchpadFactory extends Factory
@@ -16,7 +17,9 @@ class ProcessLaunchpadFactory extends Factory
     {
         return [
             'uuid' => $this->faker->uuid,
-            'process_id' => null,
+            'process_id' => function () {
+                return Process::factory()->create()->getKey();
+            },
             'user_id' => null,
             'properties' => json_encode([]),
         ];

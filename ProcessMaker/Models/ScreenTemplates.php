@@ -4,15 +4,11 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\PmqlMethodException;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ScreenTemplates extends Template implements HasMedia
 {
@@ -245,6 +241,22 @@ class ScreenTemplates extends Template implements HasMedia
         foreach ($files as $file) {
             $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
         }
+    }
+
+    /**
+     * Get the value of the "isOwner" attribute.
+     */
+    public function getIsOwnerAttribute(): bool
+    {
+        return $this->isOwner(auth()->user());
+    }
+
+    /**
+     * Checks if the given user is the owner of the screen template.
+     */
+    public function isOwner(User $user): bool
+    {
+        return $user->is_administrator || $this->user_id === $user->id;
     }
 
     /**

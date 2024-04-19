@@ -50,7 +50,7 @@
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          v-slot:[`row-${rowIndex}`]
+          #[`row-${rowIndex}`]
         >
           <td
             v-for="(header, colIndex) in fields"
@@ -152,8 +152,8 @@
       />
       <pagination
         ref="pagination"
-        :single="$t('Public Template')"
-        :plural="$t('Public Templates')"
+        :single="$t('Shared Template')"
+        :plural="$t('Shared Templates')"
         :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -233,7 +233,9 @@ export default {
       fields: [],
       isTooltipVisible: false,
       rowPosition: {},
-      tooltipRowData: {},
+      tooltipRowData: {
+        is_owner: true,
+      },
       hideTimer: null,
       selectedRow: 0,
       showTemplatePreview: false,
@@ -300,5 +302,6 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+  margin-top: 4px;
 }
 </style>

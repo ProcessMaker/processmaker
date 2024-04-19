@@ -69,12 +69,12 @@
             <b-form-group v-if="canMakePublicTemplates">
                 <b-form-checkbox
                     id="make-screen-template-public"
-                    v-model="template.is_public"
+                    v-model="isSharedTemplate"
                     name="make-screen-template-public"
-                    value="true"
-                    unchecked-value="false"
+                    :value="true"
+                    :unchecked-value="false"
                 >
-                {{ $t('Make Public') }}
+                {{ $t('Share Template') }}
                 </b-form-checkbox>
             </b-form-group>
 
@@ -101,7 +101,15 @@ export default {
     computed: {
         canMakePublicTemplates() {
             return this.permission.includes('publish-screen-templates');
-        }
+        },
+        isSharedTemplate: {
+          get() {
+              return this.template.is_public === 1;
+          },
+          set(value) {
+              this.template.is_public = value;
+          },
+        },
     },
     watch: {
         template: {

@@ -9,7 +9,7 @@
     </div>
 
     <div class="d-flex d-lg-none w-100">
-        @if(hasPackage('package-ai'))
+        @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
         <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
         @endif
     </div>
@@ -125,7 +125,7 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
-            @if(hasPackage('package-ai'))
+            @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
             <global-search v-if="!isMobile" class="d-none d-lg-block"></global-search>
             @endif
 

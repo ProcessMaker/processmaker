@@ -199,6 +199,7 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
+      @onWatchShowPreview="onWatchShowPreview"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
@@ -359,6 +360,7 @@ export default {
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
+          this.setDefaultProperties(record);
           //format Status
           record["case_number"] = this.formatCaseNumber(
             record.process_request,
@@ -378,11 +380,18 @@ export default {
         }
       }
       this.$emit('count', newData.meta?.count);
+      this.$emit("tab-count", newData.meta?.total);
+    },
+    shouldShowLoader(value) {
+      if (this.apiNoResults) {
+        this.$emit("data-loading", false);
+      } else {
+        this.$emit("data-loading", value);
+      }
     },
   },
   mounted: function mounted() {
     this.getAssignee("");
-    this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration();
 
@@ -636,11 +645,6 @@ export default {
       if(this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
       }  
-        if (!isPriorityIcon && !this.disableRowClick) {
-          window.location.href = this.openTask(row);
-        }
-      
-      
     },
     handleRowMouseover(row) {
       this.clearHideTimer();
@@ -649,13 +653,16 @@ export default {
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      let elementHeight = 36;
+      let elementHeight = 28;
 
       this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
+      let yPosition = 0;
+
       const rect = rowElement.getBoundingClientRect();
+      yPosition = rect.top + window.scrollY;
 
       const selectedFiltersBar = document.querySelector(
         ".selected-filters-bar"
@@ -667,15 +674,16 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       let rightBorderX = rect.right;
-      let bottomBorderY = 0
+
+      let bottomBorderY = 0;
       if(this.fromButton === "" || this.fromButton === "previewTask"){
-        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+        bottomBorderY = yPosition - topAdjust + 100 - elementHeight;
       }
       if(this.fromButton === "fullTask"){
-        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+        bottomBorderY = yPosition;
       }
       if(this.fromButton === "inboxRules"){
-        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
+        bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,
@@ -743,6 +751,21 @@ export default {
         type: "taskFilter",
       };
     },
+    setDefaultProperties(record) {
+      if (!("process_request" in record)) {
+        record.process_request = {
+          id: null
+        };
+      }
+      if (!("process" in record)) {
+          record.process = {
+          name: null
+        };
+      }
+    },
+    onWatchShowPreview(value) {
+      this.$emit('onWatchShowPreview', value);
+    }
   },
 };
 </script>

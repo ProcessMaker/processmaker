@@ -5,13 +5,14 @@
       class="pagination-button"
       @click="previousPage"
     >
-      <strong><</strong>
+      <strong>&lt;</strong>
     </button>
 
     <input
-      type="text"
+      ref="pageInput"
       v-model="pageInput"
-      :placeholder="`${currentPage}-${totalPageCount}`"
+      type="text"
+      :placeholder="pageInputPlaceholder"
       class="pagination-button pagination-input"
       @keyup.enter="redirectPage(pageInput)"
     >
@@ -21,19 +22,26 @@
       class="pagination-button"
       @click="nextPage"
     >
-      <strong>></strong>
+      <strong>&gt;</strong>
     </button>
     <span class="pagination-total">
       {{ totalItems }}
     </span>
     <div class="btn-group dropup pagination-dropdown-group">
-      <button type="button" class="btn dropdown-toggle pagination-dropup" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button
+        type="button"
+        class="btn dropdown-toggle pagination-dropup"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
         {{ perPageButton }}
       </button>
       <div class="dropdown-menu">
         <a
           v-for="(item, index) in itemsPerPage"
-          :key="index" class="dropdown-item pagination-dropdown-items"
+          :key="index"
+          class="dropdown-item pagination-dropdown-items"
           href="#"
           @click="changePerPage(item.value)"
         >
@@ -96,13 +104,26 @@ export default {
     },
     totalItems() {
       if (this.meta.total === 1) {
-        return this.meta.total + " item";
+        return `${this.meta.total} item`;
       }
-      return this.meta.total + " items";
+      return `${this.meta.total} items`;
     },
     perPageButton() {
-      return this.meta.per_page + " per Page"
+      return `${this.meta.per_page} per Page`;
     },
+    pageInputPlaceholder() {
+      return `${this.currentPage}-${this.totalPageCount}`;
+    },
+  },
+  watch: {
+    pageInputPlaceholder() {
+      this.adjustInputWidth();
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.adjustInputWidth();
+    });
   },
   methods: {
     previousPage() {
@@ -116,14 +137,31 @@ export default {
       }
     },
     goToPage(page) {
-      this.$emit('page-change', page);
+      this.$emit("page-change", page);
     },
     changePerPage(value) {
-      this.$emit('per-page-change', value);
+      this.$emit("per-page-change", value);
     },
     redirectPage(value) {
-      this.$emit('page-change', value);
+      this.$emit("page-change", value);
       this.pageInput = "";
+    },
+    adjustInputWidth() {
+      const input = this.$refs.pageInput;
+      const span = document.createElement("span");
+      document.body.appendChild(span);
+
+      span.style.font = window.getComputedStyle(input).font;
+      span.style.position = "absolute";
+      span.style.visibility = "hidden";
+      span.style.whiteSpace = "nowrap";
+
+      span.textContent = input.value || input.placeholder;
+
+      const width = span.offsetWidth;
+      document.body.removeChild(span);
+
+      input.style.width = `${width + 30}px`;
     },
   },
 };
@@ -172,9 +210,6 @@ export default {
   font-weight: 400;
   font-size: 14.5px;
   color: #5C5C63;
-}
-.pagination-input {
-  width: 50px;
 }
 .pagination-input::placeholder {
   text-align: center;

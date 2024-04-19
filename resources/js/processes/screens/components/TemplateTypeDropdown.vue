@@ -42,12 +42,12 @@ export default {
     return {
       selectedTemplateType: [
         {
-          type: "Public Templates",
+          type: "Shared Templates",
         },
       ],
       templateTypes: [
         {
-          type: "Public Templates",
+          type: "Shared Templates",
         },
         {
           type: "My Templates",
@@ -56,7 +56,7 @@ export default {
     };
   },
   mounted() {
-    this.selectedTemplateType.type = "Public Templates";
+    this.selectedTemplateType.type = "Shared Templates";
     this.$emit("selected-template", this.selectedTemplateType.type);
   },
   methods: {
