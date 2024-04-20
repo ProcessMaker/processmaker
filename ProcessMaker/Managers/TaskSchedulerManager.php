@@ -145,7 +145,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             $this->removeExpiredLocks();
 
             \Log::error('Get all scheduled tasks');
-            $tasks = ScheduledTask::all();
+            $tasks = ScheduledTask::cursor();
 
             foreach ($tasks as $task) {
                 try {
