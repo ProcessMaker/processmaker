@@ -134,7 +134,7 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
     ) {
         //Validate data
         $this->validateData($data, $definitions, $boundaryEvent);
-        BoundaryEvent::dispatch($definitions, $instance, $token, $boundaryEvent, $data);
+        BoundaryEvent::dispatchSync($definitions, $instance, $token, $boundaryEvent, $data);
     }
 
     /**
