@@ -147,13 +147,12 @@ class Script extends ProcessMakerModel implements ScriptInterface
             throw new ScriptLanguageNotSupported($this->language);
         }
 
-        \Log::error("Script ID={$this->id} Token ID={$tokenId}");
         $trace = "";
-        foreach(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4) as $i => $t) {
+        foreach(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4) as $t) {
             $trace .= "    " . $t['file'] . ":" . $t['line'] . "\n";
         }
         // log last 4 traces
-        \Log::error($trace);
+        \Log::error("Script ID={$this->id} Token ID={$tokenId}\n" . $trace);
 
         $useNayraDocker = !empty(config('app.nayra_rest_api_host')) && !empty($this->id);
         if ($useNayraDocker) {
