@@ -148,6 +148,8 @@ class Script extends ProcessMakerModel implements ScriptInterface
         }
 
         \Log::error("Script ID={$this->id} Token ID={$tokenId}");
+        // log last 4 traces
+        \Log::error(print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4), true));
 
         $useNayraDocker = !empty(config('app.nayra_rest_api_host')) && !empty($this->id);
         if ($useNayraDocker) {
