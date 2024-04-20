@@ -185,11 +185,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                 }
                                 break;
                             case 'BOUNDARY_TIMER_EVENT':
-                                // $executed = $this->executeBoundaryTimerEvent($task, $config);
-                                // $task->last_execution = $today->format('Y-m-d H:i:s');
-                                // if ($executed) {
-                                //     $task->save();
-                                // }
+                                $executed = $this->executeBoundaryTimerEvent($task, $config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                if ($executed) {
+                                    // $task->save();
+                                    // Disable cyclic timer events
+                                    $task->delete();
+                                }
                                 break;
                             default:
                                 throw new Exception('Unknown timer event: ' . $task->type);
