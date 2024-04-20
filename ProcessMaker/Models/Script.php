@@ -154,7 +154,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
         // // log last 4 traces
         // \Log::error("Script ID={$this->id} Token ID={$tokenId}\n" . $trace);
 
-        $useNayraDocker = false; // !empty(config('app.nayra_rest_api_host')) && !empty($this->id);
+        $useNayraDocker = !empty(config('app.nayra_rest_api_host')) && !empty($this->id);
         if ($useNayraDocker) {
             return $this->callNayraRunScript($this->code, $data, $config);
         }
