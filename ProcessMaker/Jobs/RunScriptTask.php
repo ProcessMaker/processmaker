@@ -88,7 +88,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 }
                 $script = $script->versionFor($instance);
             }
-            \Log::error(json_encode($element->getProperties()) . ' --> ' . $scriptRef . '. => ' . $script->id . '.');
+            \Log::error(
+                'token=' . $token->getId() . ' ' .
+                json_encode($element->getProperties()) . ' --> '
+                . $scriptRef . '. => ' . $script->id . '.'
+            );
 
             $errorHandling = new ErrorHandling($element, $token);
             $errorHandling->setDefaultsFromScript($script);
