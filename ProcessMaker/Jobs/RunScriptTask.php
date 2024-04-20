@@ -60,7 +60,6 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             return;
         }
         $scriptRef = $element->getProperty('scriptRef');
-        \Log::error(json_encode($element->getProperties()) . ' --> ' . $scriptRef . '.');
         $configuration = json_decode($element->getProperty('config'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
@@ -89,6 +88,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 }
                 $script = $script->versionFor($instance);
             }
+            \Log::error(json_encode($element->getProperties()) . ' --> ' . $scriptRef . '. => ' . $script->id . '.');
 
             $errorHandling = new ErrorHandling($element, $token);
             $errorHandling->setDefaultsFromScript($script);
