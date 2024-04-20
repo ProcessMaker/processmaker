@@ -144,6 +144,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $this->removeExpiredLocks();
 
+            \Log::error('Get all scheduled tasks');
             $tasks = ScheduledTask::all();
 
             foreach ($tasks as $task) {
@@ -335,6 +336,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $executed = false;
         foreach ($tokens as $token) {
+            \Log::error('TRIGGER BOUNDARY EVENT: ' . $token->id);
             WorkflowManager::triggerBoundaryEvent($request->process, $request, $token, $catch, []);
             $executed = true;
         }
