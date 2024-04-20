@@ -60,6 +60,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             return;
         }
         $scriptRef = $element->getProperty('scriptRef');
+        \Log::error(json_encode($element->getProperties()));
         $configuration = json_decode($element->getProperty('config'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
