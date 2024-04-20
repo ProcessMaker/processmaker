@@ -152,7 +152,7 @@ class Script extends ProcessMakerModel implements ScriptInterface
             $trace .= "    " . $t['file'] . ":" . $t['line'] . "\n";
         }
         // log last 4 traces
-        \Log::error("Script ID={$this->id} Token ID={$tokenId}\n" . $trace);
+        \Log::error("Script ID={$this->id} Script ID=" . $this->getKey() . " Token ID={$tokenId}\n" . $trace);
         // if (!$this->id) {
         //     \Log::error($this->code);
         // }
