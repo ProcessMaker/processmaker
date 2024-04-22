@@ -132,7 +132,8 @@ export default {
 .carousel-container {
   display: flex;
   justify-content: center;
-  background-color: #edf1f6;
+  border-radius: 16px;
+  background-color: white;
 }
 @media (width <= 1200px) {
   .img-carousel {
