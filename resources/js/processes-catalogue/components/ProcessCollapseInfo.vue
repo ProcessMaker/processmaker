@@ -12,7 +12,7 @@
               @click="goBack"
             />
             <button
-              class="btn border-0 title-process-button"
+              class="btn border-0 header-process title-process-button"
               type="button"
               data-toggle="collapse"
               data-target="#collapseProcessInfo"
