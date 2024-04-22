@@ -118,7 +118,8 @@ export default {
     },
     emitDefaultTemplateSelected() {
       const defaultTemplateId = this.template?.id || null;
-      this.$emit('template-default-selected', defaultTemplateId);
+      this.$emit("template-default-selected", defaultTemplateId);
+      this.$emit("template-selected", defaultTemplateId);
     },
   },
 };
