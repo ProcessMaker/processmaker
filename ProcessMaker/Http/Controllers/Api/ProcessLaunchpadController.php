@@ -19,6 +19,7 @@ class ProcessLaunchpadController extends Controller
     {
         // Get the user
         $user = Auth::user();
+        $perPage = $this->getPerPage($request);
         // Get the processes  active
         $processes = Process::nonSystem()->active();
         // Filter by category
@@ -44,8 +45,7 @@ class ProcessLaunchpadController extends Controller
         $processes = $processes
             ->select('processes.*')
             ->orderBy('processes.name', 'asc')
-            ->get()
-            ->collect();
+            ->paginate($perPage);
 
         foreach ($processes as $process) {
             // Get the id bookmark related
@@ -55,6 +55,18 @@ class ProcessLaunchpadController extends Controller
         }
 
         return new ProcessCollection($processes);
+    }
+
+    /**
+     * Get the size of the page.
+     * per_page=# (integer, the page requested) (Default: 10).
+     *
+     * @param Request $request
+     * @return type
+     */
+    protected function getPerPage(Request $request)
+    {
+        return $request->input('per_page', 10);
     }
 
     public function index(Request $request, Process $process)
