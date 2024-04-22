@@ -17,6 +17,7 @@ class BookmarkController extends Controller
     {
         // Get the user
         $user = Auth::user();
+        $perPage = $this->getPerPage($request);
         // Get the processes  active
         $processes = Process::nonSystem()->active();
         // Filter pmql
@@ -37,8 +38,7 @@ class BookmarkController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id') // Required for the pmql
             ->where('bookmark.user_id', $user->id)
             ->orderBy('processes.name', 'asc')
-            ->get()
-            ->collect();
+            ->paginate($perPage);
         
         foreach ($processes as $process) {
             // Get the launchpad configuration
@@ -46,6 +46,18 @@ class BookmarkController extends Controller
         }
 
         return new ProcessCollection($processes);
+    }
+
+    /**
+     * Get the size of the page.
+     * per_page=# (integer, the page requested) (Default: 10).
+     *
+     * @param Request $request
+     * @return type
+     */
+    protected function getPerPage(Request $request)
+    {
+        return $request->input('per_page', 10);
     }
 
     public function store(Request $request, Process $process)

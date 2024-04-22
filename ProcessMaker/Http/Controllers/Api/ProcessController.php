@@ -162,8 +162,7 @@ class ProcessController extends Controller
             ->leftJoin(\DB::raw('(select id, uuid, name from process_categories) as category'), 'processes.process_category_id', '=', 'category.id')
             ->leftJoin(\DB::raw('(select id, uuid, username, lastname, firstname from users) as user'), 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->get()
-            ->collect();
+            ->paginate($perPage);
 
         foreach ($processes as $key => $process) {
             // filter the start events that can be used manually (no timer start events);
