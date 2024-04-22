@@ -128,11 +128,6 @@ export default {
           this.showScreen = response.data.config !== null;
         });
     },
-    getNameEllipsis() {
-      const name = this.process.name;
-      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
-      return nameEllipsis;
-    }
   },
 };
 </script>

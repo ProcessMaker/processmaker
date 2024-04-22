@@ -185,11 +185,6 @@ export default {
     activateReadMore() {
       this.readActivated = true;
     },
-    getNameEllipsis() {
-      const name = this.process.name;
-      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
-      return nameEllipsis;
-    }
   },
 };
 </script>

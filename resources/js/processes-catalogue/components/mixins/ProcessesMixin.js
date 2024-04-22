@@ -113,6 +113,11 @@ const ProcessHeader = {
     goBack() {
       this.$emit("goBackCategory");
     },
+    getNameEllipsis() {
+      const name = this.process.name;
+      const nameEllipsis = name.length <= 70 ? name : name.slice(0, 70) + "...";
+      return nameEllipsis;
+    },
   },
 };
 
