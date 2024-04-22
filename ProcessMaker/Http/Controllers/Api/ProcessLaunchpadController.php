@@ -21,6 +21,11 @@ class ProcessLaunchpadController extends Controller
         $user = Auth::user();
         // Get the processes  active
         $processes = Process::nonSystem()->active();
+        // Filter by category
+        $category = $request->input('category', null);
+        if (!empty($category)) {
+            $processes->processCategory($category);
+        }
         // Filter pmql
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
