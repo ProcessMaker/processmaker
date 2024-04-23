@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.10.0+nightly-20240419",
+    "version": "4.10.0+nightly-20240422",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -103,7 +103,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "febb53cb",
+            "build": "8d8a65b8",
             "custom": {
                 "package-ellucian-ethos": "1.15.3",
                 "package-plaid": "1.6.0",
@@ -141,7 +141,7 @@
                 "connector-slack": "1.8.0",
                 "docker-executor-cdata": "1.4.1",
                 "docker-executor-node-ssr": "1.5.0",
-                "package-ab-testing": "1.0.8",
+                "package-ab-testing": "1.0.9",
                 "package-actions-by-email": "1.17.0",
                 "package-advanced-user-manager": "1.11.0",
                 "package-ai": "1.7.12",
@@ -149,11 +149,11 @@
                 "package-auth": "1.17.3",
                 "package-cdata": "1.4.3",
                 "package-collections": "2.17.0",
-                "package-comments": "1.12.4",
-                "package-conversational-forms": "1.7.0",
+                "package-comments": "1.12.5",
+                "package-conversational-forms": "1.8.0",
                 "package-data-sources": "1.26.0",
                 "package-decision-engine": "1.9.10",
-                "package-dynamic-ui": "1.18.1",
+                "package-dynamic-ui": "1.18.2",
                 "package-files": "1.15.0",
                 "package-googleplaces": "1.11.0",
                 "package-photo-video": "1.5.0",
@@ -165,7 +165,7 @@
                 "package-savedsearch": "1.33.9",
                 "package-sentry": "1.8.0",
                 "package-signature": "1.12.0",
-                "package-testing": "1.2.14",
+                "package-testing": "1.2.15",
                 "package-translations": "2.9.0",
                 "package-versions": "1.10.1",
                 "package-vocabularies": "2.15.1",

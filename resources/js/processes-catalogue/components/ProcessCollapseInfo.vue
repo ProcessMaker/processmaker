@@ -12,7 +12,7 @@
               @click="goBack"
             />
             <button
-              class="btn border-0 title-process-button"
+              class="btn border-0 header-process title-process-button"
               type="button"
               data-toggle="collapse"
               data-target="#collapseProcessInfo"
@@ -25,7 +25,7 @@
                 <i class="fas fa-angle-up pl-2" />
               </template>
               <template v-else>
-                {{ process.name }}
+                {{ getNameEllipsis() }}
                 <i class="fas fa-angle-down pl-2" />
               </template>
             </button>
