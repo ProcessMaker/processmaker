@@ -200,7 +200,6 @@ export default {
         item = this.templateOptions.find((obj) => {
           return obj.id === "guided_templates";
         });
-        console.log('wizard');
       }
       if (item.id === "all_templates") {
         this.addNewProcess();
