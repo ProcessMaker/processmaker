@@ -149,8 +149,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         'process_bookmarks/processes/{process}/start_events',
         [ProcessController::class, 'startEvents']
     )->name('processes.start.events')->middleware($middlewareCatalog);
-    Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
-        ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/processes', [ProcessLaunchpadController::class, 'getProcesses'])
+        ->name('processes.launchpad.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
         ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/{process_category}', [ProcessCategoryController::class, 'show'])
