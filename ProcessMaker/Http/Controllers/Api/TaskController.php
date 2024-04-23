@@ -321,6 +321,18 @@ class TaskController extends Controller
         return new Resource($task);
     }
 
+    public function showScreen(ProcessRequestToken $task)
+    {
+        $response = new Resource($task);
+        $response = response($response->toArray(request())['screen'], 200);
+        $now = time();
+        // screen cache time
+        $cacheTime = config('screen_task_cache_time', 86400);
+        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+        return $response;
+    }
+
     /**
      * Updates the current element
      *
@@ -414,7 +426,9 @@ class TaskController extends Controller
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
-            event(new ActivityAssigned($task));
+            if ($task->element_type === 'task') {
+                event(new ActivityAssigned($task));
+            }
 
             return new Resource($task->refresh());
         } else {
