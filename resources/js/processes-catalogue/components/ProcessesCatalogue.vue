@@ -121,12 +121,12 @@ export default {
     },
   },
   mounted() {
+    this.getCategories();
     if (this.hasGuidedTemplateParams) {
       // Loaded from URL with guided template parameters to show guided templates
       // Dynamically load the component
       this.wizardTemplatesSelected(true);
     } else {
-      this.getCategories();
       setTimeout(() => {
         this.checkSelectedProcess();
       }, 500);
