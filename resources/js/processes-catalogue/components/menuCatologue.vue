@@ -195,7 +195,7 @@ export default {
     shouldShowTemplateItem(item) {
       return !(item.id === "all_templates" && !this.hasPermission());
     },
-    selectTemplateItem(item) {
+    selectTemplateItem(item = this.templateOptions[1]) {
       if (item.id === "all_templates") {
         this.addNewProcess();
         return;
