@@ -101,7 +101,9 @@ class Task extends ApiResource
             $interstitial = $this->getInterstitial();
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
-            $array['interstitial_screen']['config'] = $this->removeInspectorMetadata($array['interstitial_screen']['config']);
+            $array['interstitial_screen']['config'] = $this->removeInspectorMetadata(
+                $array['interstitial_screen']['config']
+            );
         }
         if (in_array('userRequestPermission', $include)) {
             $array['user_request_permission'] = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
