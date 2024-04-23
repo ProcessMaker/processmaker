@@ -131,7 +131,7 @@ export default {
     },
     computed: {
         canMakePublicTemplates() {
-            return this.permission.includes('publish-screen-templates');
+            return this.permission.includes('create-screens');
         }
 
     },
