@@ -32,7 +32,7 @@ const ProcessHeader = {
     bookmarkIcon() {
       this.labelTooltip = this.process.bookmark_id !== 0
         ? this.$t("Remove from My Bookmarks") : this.$t("Add to My Bookmarks");
-      this.showBookmarkIcon = this.process.bookmark_id !== 0;
+      this.showBookmarkIcon = this.process.bookmark_id ? this.process.bookmark_id!== 0 : 0;
     },
     /**
      * Check the bookmark to add bookmarked list or remove it

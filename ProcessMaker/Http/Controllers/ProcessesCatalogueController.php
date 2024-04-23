@@ -28,11 +28,11 @@ class ProcessesCatalogueController extends Controller
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
         $launchpad = null;
-        $bookmarkId = 0;
+        $bookmark_id = 0;
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
         if (!is_null($process)) {
             $process->launchpad = ProcessLaunchpad::getLaunchpad(true, $process->id);
-            $process->bookmarkId = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
+            $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $currentUser['id']);
         }
         return view('processes-catalogue.index', compact('process', 'currentUser', 'manager'));
     }
