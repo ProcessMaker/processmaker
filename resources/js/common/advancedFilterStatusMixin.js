@@ -1,6 +1,12 @@
 import { get } from "lodash";
 
 export default {
+  props: {
+    advancedFilterProp: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       advancedFilter: [],
@@ -10,15 +16,28 @@ export default {
     this.setAdvancedFilter();
     window.ProcessMaker.EventBus.$on('advanced-filter-updated', this.setAdvancedFilter);
   },
+  watch: {
+    advancedFilterProp: {
+      deep: true,
+      handler() {
+        this.setAdvancedFilter();
+      }
+    }
+  },
   methods: {
     setAdvancedFilter() {
-      this.advancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
+      this.advancedFilter = get(this.advancedFilterProp, 'filters') || get(window, 'ProcessMaker.advanced_filter.filters', []);
+      const doNotFetchOnPmqlChange = true; 
+      this.$refs.pmqlInputFilters?.buildPmql(doNotFetchOnPmqlChange);
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {
+        if (filter._hide_badge) {
+          continue;
+        }
         result.push([
           this.formatBadgeSubject(filter),
-          [{name: this.formatBadgeValue(filter), advanced_filter: true}]
+          [{name: this.formatBadgeValue(filter), operator: filter.operator, advanced_filter: true}]
         ]);
 
         if (filter.or && filter.or.length > 0) {
@@ -27,13 +46,14 @@ export default {
       }
     },
     formatBadgeSubject(filter) {
-      return get(filter, '_column_label', '');
+      return get(filter, '_column_label', get(filter, 'subject.value', ''));
     },
     formatBadgeValue(filter) {
-      let result = filter.operator;
-      result = result + " " + filter.value;
-      return result;
-    },
+      if ('_display_value' in filter) {
+        return filter._display_value;
+      }
+      return filter.value
+    }
   },
   computed: {
     formatAdvancedFilterForBadges() {

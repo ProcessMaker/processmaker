@@ -14,13 +14,13 @@
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">{{ column.label }}</div>
+          <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
         <template v-for="(column, index) in tableHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable" 
-                                   :key="index" 
-                                   :id="'pm-table-column-'+index" 
+            <PMColumnFilterPopover v-if="column.sortable"
+                                   :key="index"
+                                   :id="'pm-table-column-'+index"
                                    :type="getTypeColumnFilter(column.field)"
                                    :value="column.field"
                                    :format="getFormat(column)"
@@ -93,13 +93,14 @@
       v-show="shouldShowLoader"
       :for="/requests\?page|results\?page/"
       :empty="$t('No results have been found')"
-      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search. 
+      :empty-desc="$t(`We apologize, but we were unable to find any results that match your search.
 Please consider trying a different search. Thank you`)"
       empty-icon="noData"
     />
     <pagination-table
-        :meta="data.meta"
-        @page-change="changePage"
+      :meta="data.meta"
+      @page-change="changePage"
+      @per-page-change="changePerPage"
     />
   </div>
 </template>
@@ -156,6 +157,7 @@ export default {
       fields: [],
       previousFilter: "",
       previousPmql: "",
+      previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
     };
@@ -232,14 +234,14 @@ export default {
       }
       return [
         {
-          label: this.$t("Case #"),
+          label: "Case #",
           field: "case_number",
           sortable: true,
           default: true,
           width: 80,
         },
         {
-          label: this.$t("Case title"),
+          label: "Case title",
           field: "case_title",
           sortable: true,
           default: true,
@@ -247,7 +249,7 @@ export default {
           width: 220,
         },
         {
-          label: this.$t("Process"),
+          label: "Process",
           field: "name",
           sortable: true,
           default: true,
@@ -255,7 +257,19 @@ export default {
           truncate: true,
         },
         {
-          label: this.$t("Task"),
+          label: "Alternative",
+          field: "process_version_alternative",
+          sortable: true,
+          default: true,
+          width: 150,
+          truncate: true,
+          filter_subject: {
+            type: "Relationship",
+            value: "processVersion.alternative",
+          },
+        },
+        {
+          label: "Task",
           field: "active_tasks",
           sortable: false,
           default: true,
@@ -264,7 +278,7 @@ export default {
           tooltip: this.$t("This column can not be sorted or filtered."),
         },
         {
-          label: this.$t("Participants"),
+          label: "Participants",
           field: "participants",
           sortable: true,
           default: true,
@@ -274,7 +288,7 @@ export default {
           hideSortingButtons: true,
         },
         {
-          label: this.$t("Status"),
+          label: "Status",
           field: "status",
           sortable: true,
           default: true,
@@ -282,7 +296,7 @@ export default {
           filter_subject: { type: 'Status' },
         },
         {
-          label: this.$t("Started"),
+          label: "Started",
           field: "initiated_at",
           format: "datetime",
           sortable: true,
@@ -290,7 +304,7 @@ export default {
           width: 160,
         },
         {
-          label: this.$t("Completed"),
+          label: "Completed",
           field: "completed_at",
           format: "datetime",
           sortable: true,
@@ -346,6 +360,13 @@ export default {
       }).join('<br/>');
       return htmlString;
     },
+    formatId(value) {
+      return `
+      <a href="${this.openRequest(value, 1)}"
+         class="text-nowrap">
+         # ${value.id}
+      </a>`;
+    },
     formatCaseNumber(value) {
       return `
       <a href="${this.openRequest(value, 1)}"
@@ -371,6 +392,9 @@ export default {
         },
       };
     },
+    formatProcessVersionAlternative(value) {
+      return `Alternative ${value}`;
+    },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
       // Clean up fields for meta pagination so vue table pagination can understand
@@ -387,10 +411,12 @@ export default {
         }
         record["status"] = this.formatStatus(record["status"]);
         record["participants"] = this.formatParticipants(record["participants"]);
+        record["process_version_alternative"] = this.formatProcessVersionAlternative(record["process_version_alternative"]);
+        record["id"] = this.formatId(record);
       }
       return data;
     },
-    fetch() {
+    fetch(navigateToFirstPage = false) {
       Vue.nextTick(() => {
         if (this.cancelToken) {
           this.cancelToken();
@@ -399,7 +425,7 @@ export default {
 
         const CancelToken = ProcessMaker.apiClient.CancelToken;
 
-        const { pmql, filter } = this.buildPmqlAndFilter();
+        const { pmql, filter, advancedFilter } = this.buildPmqlAndFilter(navigateToFirstPage);
 
         // Load from our api client
         ProcessMaker.apiClient
@@ -417,8 +443,8 @@ export default {
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
             this.orderDirection +
-            this.additionalParams + 
-            this.getAdvancedFilter(),
+            this.additionalParams +
+            advancedFilter,
             {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
@@ -442,7 +468,7 @@ export default {
           });
       });
     },
-    buildPmqlAndFilter() {
+    buildPmqlAndFilter(navigateToFirstPage) {
       let pmql = '';
 
       if (this.pmql !== undefined) {
@@ -470,7 +496,13 @@ export default {
 
       this.previousPmql = pmql;
 
-      return { pmql, filter };
+      const advancedFilter = this.getAdvancedFilter();
+
+      if (this.previousAdvancedFilter !== advancedFilter && navigateToFirstPage) {
+        this.page = 1;
+      }
+
+      return { pmql, filter, advancedFilter };
 
     },
     handleRowClick(row) {

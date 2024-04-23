@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Support\Arr;
 use Log;
 use ProcessMaker\Models\Column;
+use ProcessMaker\Models\Screen;
 
 trait HasScreenFields
 {
@@ -71,6 +73,7 @@ trait HasScreenFields
                 'label' => $this->parseItemLabel($item),
                 'format' => $this->parseItemFormat($item),
                 'mask' => $this->parseItemMask($item),
+                'isSubmitButton' => $this->parseIsSubmitButton($item),
                 'sortable' => true,
                 'default' => false,
             ]));
@@ -134,5 +137,22 @@ trait HasScreenFields
         return $item['config']['dataMask'] ?? null;
         if (isset($item['config']['dataMask'])) {
         }
+    }
+
+    public function parseIsSubmitButton($item)
+    {
+        return Arr::get($item, 'config.event') === 'submit';
+    }
+
+    /**
+     * Return an array of fields that can be included when
+     * saving a draft or doing a quick fill, so as not to
+     * overwrite fields not in the screen.
+     *
+     * @return array
+     */
+    public function screenFilteredFields()
+    {
+        return $this->fields->pluck('field');
     }
 }

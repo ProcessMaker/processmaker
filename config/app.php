@@ -47,10 +47,10 @@ return [
 
     // Option Fractal, Serializer
     // TODO Does the ProcessMakerSerializer class exist, if so, we need to fix its namespace :)
-    'serialize_fractal' => env('SERIALIZE_FRACTAL', \ProcessMaker\Transformers\ProcessMakerSerializer::class),
+    'serialize_fractal' => env('SERIALIZE_FRACTAL', ProcessMaker\Transformers\ProcessMakerSerializer::class),
 
     //Option Fractal, paginator
-    'paginate_fractal' => env('PAGINATE_FRACTAL', \League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
+    'paginate_fractal' => env('PAGINATE_FRACTAL', League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
 
     // The processmaker identifier of the web client application
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
@@ -109,6 +109,9 @@ return [
     // Allows to detect if OpenAI is enabled or not
     'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
 
+    'open_ai_process_translations' => env('OPEN_AI_PROCESS_TRANSLATIONS_ENABLED', false) &&
+        env('OPEN_AI_SECRET', false),
+
     // Microservice AI Host
     'ai_microservice_host' => env('AI_MICROSERVICE_HOST'),
 
@@ -120,6 +123,9 @@ return [
 
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
+
+    // PM Analytics Chart
+    'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
 
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),

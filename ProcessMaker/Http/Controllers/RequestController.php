@@ -24,6 +24,7 @@ use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
 use ProcessMaker\Package\SavedSearch\Models\SavedSearch;
+use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\RetryProcessRequest;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
@@ -70,7 +71,10 @@ class RequestController extends Controller
                 SavedSearch::KEY_REQUESTS,
             );
             if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_REQUEST
+                );
             } else {
                 $defaultColumns = null;
             }
@@ -183,6 +187,7 @@ class RequestController extends Controller
         if ($errorTask) {
             $eligibleRollbackTask = RollbackProcessRequest::eligibleRollbackTask($errorTask);
         }
+        $this->summaryScreenTranslation($request);
 
         if (isset($_SERVER['HTTP_USER_AGENT']) && MobileHelper::isMobile($_SERVER['HTTP_USER_AGENT'])) {
             return view('requests.showMobile', compact(
@@ -277,5 +282,19 @@ class RequestController extends Controller
         }
 
         return abort(response(__('File ID does not exist'), 404));
+    }
+
+    /**
+     * Translates the summary screen strings
+     * @param ProcessRequest $request
+     * @return void
+     */
+    public function summaryScreenTranslation(ProcessRequest $request): void
+    {
+        if ($request->summary_screen) {
+            $processTranslation = new ProcessTranslation($request->process);
+            $translatedConf = $processTranslation->applyTranslations($request->summary_screen);
+            $request->summary_screen['config'] = $translatedConf;
+        }
     }
 }

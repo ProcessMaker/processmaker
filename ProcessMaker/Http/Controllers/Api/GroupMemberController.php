@@ -408,8 +408,9 @@ class GroupMemberController extends Controller
             //filter by name group
             $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('firstname', 'like', $filter)
-                    ->orWhere('lastname', 'like', $filter);
+                $query->where('firstname', 'like', $filter)
+                      ->orWhere('lastname', 'like', $filter)
+                      ->orWhere('username', 'like', $filter);
             });
         }
         $response =

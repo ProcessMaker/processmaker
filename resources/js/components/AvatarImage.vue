@@ -34,7 +34,7 @@
           <span v-else>PM</span>
         </span>
       </b-button>
-      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">
+      <span v-if="!hideName" class="text-center text-capitalize new-wrap m-1" :key="'name-' + key">
           <span v-if="value.name">{{ limitCharacters(value.name)}}</span>
           <span v-else>ProcessMaker</span>
       </span>
@@ -261,5 +261,8 @@ export default {
   .vertical-view {
     padding-top: 4px;
     padding-bottom: 4px;
+  }
+  .new-wrap {
+    overflow-wrap: anywhere;
   }
 </style>

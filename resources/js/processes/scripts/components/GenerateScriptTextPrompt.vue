@@ -108,7 +108,7 @@ export default {
           this.tokens = response.data.tokens;
         }).catch((error) => {
           const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
+          console.error(errorMsg);
         });
     }, 500),
     onSuggestionApplied(suggestion) {
@@ -140,7 +140,7 @@ export default {
         }).catch((error) => {
           if (error.response.status !== 404) {
             const errorMsg = error.response?.data?.message || error.message;
-            window.ProcessMaker.alert(errorMsg, "danger");
+            console.error(errorMsg);
           }
           this.loadingSuggestions = false;
         });

@@ -3,6 +3,7 @@ import CounterCard from "./components/CounterCard";
 import CounterCardGroup from "./components/CounterCardGroup";
 import RequestsListing from "./components/RequestsListing";
 import AvatarImage from "../components/AvatarImage";
+import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
 
 Vue.component("AvatarImage", AvatarImage);
 
@@ -39,18 +40,8 @@ new Vue({
     }
 
     if (status) {
-      this.status.push({
-        name: status,
-        value: status,
-      });
+      setDefaultAdvancedFilterStatus(status, true, this.requester[0]);
     }
-
-    // translate status labels when available
-    window.ProcessMaker.i18nPromise.then(() => {
-      this.status.forEach((item) => {
-        item.name = this.$t(item.name);
-      });
-    });
 
     const urlParams = new URLSearchParams(window.location.search);
     this.urlPmql = urlParams.get("pmql");

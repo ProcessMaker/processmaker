@@ -17,6 +17,7 @@
 
           <pmql-input-filters
             v-if="showFilters"
+            ref="pmqlInputFilters"
             :type="searchType"
             :param-process="urlPmql ? '' : paramProcess"
             :param-status="urlPmql ? '' : paramStatus"
@@ -35,6 +36,7 @@
         </div>
 
         <div
+          v-if="showSearchBar !== false"
           class="search-bar flex-grow w-100"
           :class="{ 'is-invalid': validations }"
           :style="styles?.container"
@@ -144,6 +146,7 @@
         </div>
       </div>
 
+      <div style="display: flex;">
       <div
         v-if="filterBadges.length > 0"
         class="selected-filters-bar d-flex pt-2"
@@ -153,7 +156,14 @@
           class="selected-filter-item d-flex align-items-center"
         >
           <span class="selected-filter-key mr-1">{{ $t(capitalizeString(filter[0])) }}<template v-if="!get(filter, '1.0.advanced_filter', false)">:</template></span>
-          {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          {{ filter[1][0].operator ?? '' }}
+          <template v-if="filter[0] === 'Status'">
+            <!-- translate status label -->
+            {{ $t(filter[1][0].name) }}
+          </template>
+          <template v-else>
+            {{ filter[1][0].name ? filter[1][0].name : filter[1][0].fullname }}
+          </template>
           <span
             v-if="filter[1].length > 1"
             class="badge badge-pill ml-2 filter-counter"
@@ -167,6 +177,10 @@
             v-if="!get(filter, '1.0.advanced_filter', false)"
           />
         </span>
+      </div>
+      <div style="margin-left: auto">
+        <slot name="right-of-badges" />
+      </div>
       </div>
     </div>
   </div>
@@ -208,6 +222,8 @@ export default {
     "paramName",
     "permission",
     "updateQuery",
+    "showSearchBar",
+    "showPmqlBadge",
   ],
   data() {
     return {
@@ -236,8 +252,20 @@ export default {
       if (!this.showFilters) {
         return [];
       }
-      return [...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
+      return [...this.pmqlBadge, ...this.selectedFilters, ...this.formatAdvancedFilterForBadges];
     },
+
+    pmqlBadge() {
+      const result = [];
+      if (this.value && this.showPmqlBadge === true) {
+        result.push([
+          'pmql',
+          [{name: this.value, operator: '', advanced_filter: true}]
+        ]);
+      }
+      return result;
+    },
+
     showPmqlSection() {
       return (
         !this.hidePmqlSection
@@ -334,6 +362,7 @@ export default {
           this.$refs.search_input.style.height = `${this.$refs.search_input.scrollHeight}px`;
           this.$emit("inputresize", this.$refs.search_input.scrollHeight);
         }
+        this.$refs.search_input.focus();
       });
     },
     onInput() {
@@ -369,12 +398,13 @@ export default {
       const params = {
         question: this.query,
         type: this.searchType,
+        classifySearch: false,
       };
 
       this.aiLoading = true;
 
       ProcessMaker.apiClient
-        .post("/package-ai/nlqToPmql", params)
+        .post("/package-ai/naturalLanguageToPmql", params)
         .then((response) => {
           this.pmql = response.data.result;
           this.usage = response.data.usage;
@@ -397,7 +427,7 @@ export default {
         });
     },
     copyToClipboard() {
-      const textToCopy = document.getElementById("textToCopy").textContent;
+      const textToCopy = document.getElementById("textToCopy").textContent.replace(/\n/g, "");
       const textArea = document.createElement("textarea");
       textArea.value = textToCopy;
       document.body.appendChild(textArea);

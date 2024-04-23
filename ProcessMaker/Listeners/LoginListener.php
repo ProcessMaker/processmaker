@@ -2,15 +2,17 @@
 
 namespace ProcessMaker\Listeners;
 
-use ProcessMaker\Models\User;
 use Illuminate\Auth\Events\Login;
+use ProcessMaker\Models\InboxRuleLog;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\InboxRulesNotification;
 
 class LoginListener
 {
     /**
      * Updated the user "loggedin_at" attribute
      *
-     * @param  \Illuminate\Auth\Events\Login  $event
+     * @param  Login  $event
      *
      * @return void
      */
@@ -20,6 +22,10 @@ class LoginListener
 
         if (!$user instanceof User) {
             return;
+        }
+
+        if ($user->loggedin_at && InboxRuleLog::hasChangesSince($user->id, $user->loggedin_at)) {
+            $user->notify(new InboxRulesNotification($user->loggedin_at));
         }
 
         $user->timestamps = false;

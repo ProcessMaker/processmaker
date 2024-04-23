@@ -4,7 +4,9 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Traits\Exportable;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
 
 /**
@@ -55,6 +57,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
  */
 class Media extends MediaLibraryModel
 {
+    use Exportable;
     use HasFactory;
 
     protected $connection = 'processmaker';
@@ -171,6 +174,27 @@ class Media extends MediaLibraryModel
                 'request' => $this->model,
                 'filePath' => $this->custom_properties['data_name'],
             ]);
+        }
+    }
+
+    /**
+     * Save the media related to the Process
+     *
+     * @param  Process $process
+     * @param array $properties
+     * @param string $key
+     *
+     * @return void
+     */
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
+    {
+        $collectionName = 'images_carousel';
+        $exist = $process->media()->where($key, $properties[$key])->exists();
+        if (!$exist) {
+            // Store the images related move to MEDIA
+            $process->addMediaFromBase64($properties['url'])
+                ->withCustomProperties(['type' => $properties['type']])
+                ->toMediaCollection($collectionName);
         }
     }
 

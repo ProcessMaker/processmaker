@@ -333,7 +333,7 @@
         this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
       assignmentSupportsSelfService (assignmentType) {
-        return ['process_variable', 'user_group', 'rule_expression'].includes(assignmentType);
+        return ["process_variable", "user_group", "rule_expression"].includes(assignmentType);
       },
     },
     watch: {

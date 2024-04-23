@@ -1,4 +1,4 @@
-<div class="px-3 page-content" id="categorizedList">
+<div class="px-3 page-content" id="categorizedList" style="display:none">
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
@@ -46,6 +46,34 @@
                     </a>
                 </li>
             @endisset
+        @elseif (isset($listScreenTemplates))
+            @if ($catConfig->permissions['view'])
+                <li class="nav-item">
+                    <a class="nav-item nav-link" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
+                    role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
+                        {{ $tabs[1] ?? __('Categories') }}
+                    </a>
+                </li>
+            @endif
+            <li class="nav-item">
+                <a class="{{$secondTab}}" id="nav-myTemplates-tab" data-toggle="tab" href="#nav-myTemplates"
+                role="tab" onclick="loadMyScreenTemplates()" aria-controls="nav-myTemplates" aria-selected="true">
+                    {{ $tabs[2] ?? __('My Templates') }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a
+                    class="nav-item nav-link"
+                    id="nav-publicTemplates-tab"
+                    data-toggle="tab"
+                    href="#nav-publicTemplates"
+                    role="tab"
+                    onclick="loadPublicScreenTemplates()"
+                    aria-controls="nav-publicTemplates"
+                    aria-selected="true">
+                        {{ $tabs[3] ?? __('Shared Templates') }}
+                </a>
+            </li>
         @else
             @if ($catConfig->permissions['view'] && $catConfig->routes->itemsIndexWeb !== "data-sources.index")
             <li class="nav-item">
@@ -117,6 +145,32 @@
                         </div>
                     </div>
                 @endisset
+            @elseif(isset($listScreenTemplates))
+                <div
+                    class="{{$secondContent}}"
+                    id="nav-categories"
+                    role="tabpanel"
+                    aria-labelledby="nav-categories-tab"
+                >
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $categoryList }}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-myTemplates" role="tabpanel" aria-labelledby="nav-myTemplates-tab">
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $myTemplatesList }}
+                    </div>
+                </div>
+                <div
+                    class="tab-pane fade"
+                    id="nav-publicTemplates"
+                    role="tabpanel"
+                    aria-labelledby="nav-publicTemplates-tab"
+                >
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $publicTemplatesList }}
+                    </div>
+                </div>
             @else
                 <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
                     <div class="card card-body p-3 border-top-0">
@@ -137,6 +191,13 @@
 
 @section('js')
     <script>
+      window.addEventListener('load', function() {
+        let categorizedListElement = document.getElementById('categorizedList');
+        if (categorizedListElement) {
+            categorizedListElement.style.display = 'block';
+        }
+      });
+
       loadCategory = function () {
         ProcessMaker.EventBus.$emit("api-data-category", true);
       };
@@ -150,5 +211,11 @@
         ProcessMaker.EventBus.$emit("api-data-process-templates");
       }
       if ({{$listConfig->countCategories}} === 0) loadCategory();
+      loadMyScreenTemplates = function () {
+        ProcessMaker.EventBus.$emit("api-data-my-screen-templates");
+      };
+      loadPublicScreenTemplates = function () {
+        ProcessMaker.EventBus.$emit("api-data-public-screen-templates");
+      };
     </script>
 @append

@@ -1,9 +1,12 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
+import TasksListCounter from "./components/TasksListCounter.vue";
+import setDefaultAdvancedFilterStatus from "../common/setDefaultAdvancedFilterStatus";
+
+Vue.component("TasksList", TasksList);
 
 new Vue({
   el: "#tasks",
-  components: { TasksList },
   data: {
     columns: window.Processmaker.defaultColumns || null,
     filter: "",
@@ -14,11 +17,48 @@ new Vue({
     status: [],
     inOverdueMessage: "",
     additions: [],
+    priorityField: "is_priority",
+    draftField: "draft",
+    isDataLoading: false,
+    inbox: true,
+    priority: false,
+    draft: false,
+    tab: "inbox",
+    inboxCount: null,
+    draftCount: null,
+    priorityCount: null,
+    priorityFilter: [
+      {
+        "subject": {
+          "type": "Field",
+          "value": "is_priority"
+        },
+        "operator": "=",
+        "value": true,
+        "_column_field": "is_priority",
+        "_column_label": "Priority",
+        "_hide_badge": true
+      }
+    ],
+    draftFilter: [
+      {
+        "subject": {
+          "type": "Relationship",
+          "value": "draft.id"
+        },
+        "operator": ">",
+        "value": 0,
+        "_column_field": "draft",
+        "_column_label": "Draft",
+        "_hide_badge": true
+      }
+    ],
   },
   mounted() {
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
+    this.onInbox();
   },
   created() {
     const params = new URL(document.location).searchParams;
@@ -38,24 +78,71 @@ new Vue({
         status = "In Progress";
         break;
     }
-
-    this.status.push({
-      name: status,
-      value: status,
-    });
-
-    // translate status labels when available
-    window.ProcessMaker.i18nPromise.then(() => {
-      this.status.forEach((item) => {
-        item.name = this.$t(item.name);
-      });
-    });
+    setDefaultAdvancedFilterStatus(status);
 
     if (this.urlPmql && this.urlPmql !== "") {
       this.onSearch();
     }
   },
   methods: {
+    switchTab(tab) {
+      this.inbox = tab === "inbox";
+      this.draft = tab === "draft";
+      this.priority = tab === "priority";
+      this.tab = tab;
+      switch (tab) {
+        case "inbox":
+          this.onInbox();
+          break;
+        case "priority":
+          this.onSwitchTab("is_priority", this.priorityFilter);
+          break;
+        case "draft":
+          this.onSwitchTab("draft", this.draftFilter);
+          break;
+        default:
+          break;
+      }
+    },
+    dataLoading(value) {
+      this.isDataLoading = value;
+    },
+    onInbox() {
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
+      this.fetchTasks();
+    },
+
+    onSwitchTab(field, filter) {
+      this.removeTabFilter(this.priorityField);
+      this.removeTabFilter(this.draftField);
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[field] = filter;
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+      this.fetchTasks();
+    },
+    removeTabFilter(tab) {
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.advancedFilter[tab] = [];
+      taskListComponent.markStyleWhenColumnSetAFilter();
+      taskListComponent.storeFilterConfiguration();
+    },
+    fetchTasks() {
+      const taskListComponent = this.$refs.taskList;
+      taskListComponent.fetch(true);
+    },
+    handleTabCount(value) {
+      if (this.tab === "inbox") {
+        this.inboxCount = value;
+      }
+      if(this.tab === "draft") {
+        this.draftCount = value;
+      }
+      if (this.tab === "priority") {
+        this.priorityCount = value;
+      }
+    },
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
       this.fullPmql = this.getFullPmql();
@@ -73,6 +160,9 @@ new Vue({
       if (this.$refs.taskList) {
         this.$refs.taskList.fetch(true);
       }
+    },
+    onInboxRules() {
+      window.location.href = "/tasks/rules";
     },
     setInOverdueMessage(inOverdue) {
       let inOverdueMessage = '';

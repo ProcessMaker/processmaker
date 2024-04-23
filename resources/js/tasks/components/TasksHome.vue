@@ -31,7 +31,7 @@
         <b-button
           class="btn-light text-secondary"
           :aria-label="$t('Open Task')"
-          :href="openTask()"
+          @click="openTask()"
         >
           <i class="fas fa-external-link-alt" />
         </b-button>

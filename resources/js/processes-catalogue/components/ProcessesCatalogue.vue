@@ -6,8 +6,8 @@
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
-    <b-row>
-      <b-col cols="2">
+    <div class="d-flex">
+      <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="categoryList"
@@ -24,10 +24,10 @@
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
         />
-      </b-col>
-      <b-col cols="10">
+      </div>
+      <div class="processes-info">
         <div
-          v-if="!showWizardTemplates && !showCardProcesses && !showProcess"
+          v-if="!showWizardTemplates && !showCardProcesses && !showProcess && !showProcessScreen"
           class="d-flex justify-content-center py-5"
         >
           <CatalogueEmpty />
@@ -41,10 +41,18 @@
             @wizardLinkSelect="wizardTemplatesSelected"
           />
           <ProcessInfo
-            v-if="showProcess && !showWizardTemplates && !showCardProcesses"
+            v-if="showProcess && !showWizardTemplates && !showCardProcesses && !showProcessScreen"
             :process="selectedProcess"
             :current-user-id="currentUserId"
             :current-user="currentUser"
+            :permission="permission"
+            :is-documenter-installed="isDocumenterInstalled"
+            @goBackCategory="returnedFromInfo"
+          />
+          <ProcessScreen
+            v-if="showProcessScreen && !showCardProcesses && !showWizardTemplates"
+            :process="selectedProcess"
+            :current-user-id="currentUserId"
             :permission="permission"
             :is-documenter-installed="isDocumenterInstalled"
             @goBackCategory="returnedFromInfo"
@@ -54,8 +62,8 @@
             :template="guidedTemplates"
           />
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -66,10 +74,11 @@ import CatalogueEmpty from "./CatalogueEmpty.vue";
 import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 import WizardTemplates from "./WizardTemplates.vue";
+import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
   },
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
@@ -92,6 +101,7 @@ export default {
       showWizardTemplates: false,
       showCardProcesses: false,
       showProcess: false,
+      showProcessScreen: false,
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
@@ -152,7 +162,7 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            if(!this.checkDefaultOptions()) {
+            if (!this.checkDefaultOptions()) {
               this.listCategories = [...this.defaultOptions, ...this.listCategories];
             }
             this.listCategories = [...this.listCategories, ...response.data.data];
@@ -179,21 +189,39 @@ export default {
       if (this.process) {
         this.openProcess(this.process);
         this.fromProcessList = true;
-        const categories = this.process.process_category_id;
-        const categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
-        ProcessMaker.apiClient
-          .get(`process_bookmarks/${categoryId}`)
-          .then((response) => {
-            this.category = response.data;
-            this.markCategory = true;
-            this.filterCategories(this.category.name);
-          });
+        const { searchParams } = new URL(window.location);
+        let categoryId;
+        if (searchParams.get("categorySelected") !== null) {
+          categoryId = searchParams.get("categorySelected");
+        } else {
+          const categories = this.process.process_category_id;
+          categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
+        }
+        if (categoryId !== "0" && categoryId !== "-1") {
+          ProcessMaker.apiClient
+            .get(`process_bookmarks/${categoryId}`)
+            .then((response) => {
+              this.category = response.data;
+              this.markCategory = true;
+              this.filterCategories(this.category.name);
+            });
+        } else {
+          this.category = this.getDefaultCategory(categoryId);
+          this.$refs.categoryList.markCategory(this.category, false);
+        }
       }
+    },
+    /**
+     * Get the values of a default category from an id
+     */
+    getDefaultCategory(id) {
+      return this.defaultOptions.filter((item) => item.id === parseInt(id, 10))[0];
     },
     /**
      * Select a category and show display
      */
     selectCategorie(value) {
+      window.history.replaceState(null, null, "/process-browser");
       this.key += 1;
       this.category = value;
       this.selectedProcess = null;
@@ -238,7 +266,13 @@ export default {
     openProcess(process) {
       this.showCardProcesses = false;
       this.guidedTemplates = false;
-      this.showProcess = true;
+      if (this.verifyScreen(process)) {
+        this.showProcess = false;
+        this.showProcessScreen = true;
+      } else {
+        this.showProcess = true;
+        this.showProcessScreen = false;
+      }
       this.selectedProcess = process;
     },
     /**
@@ -247,11 +281,28 @@ export default {
     returnedFromInfo() {
       this.selectCategorie(this.category);
     },
+    /**
+     * Verify if the process open the info or Screen
+     */
+    verifyScreen(process) {
+      let screenId = 0;
+      const unparseProperties = process.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        screenId = JSON.parse(unparseProperties)?.screen_id || 0;
+      }
+
+      return screenId !== 0;
+    },
   },
 };
 </script>
 
 <style scoped>
+.menu {
+  min-width: 304px;
+  height: calc(100vh - 145px);
+  overflow-y: auto;
+}
 .menu-title {
   color: #556271;
   font-size: 22px;
@@ -259,5 +310,12 @@ export default {
   font-weight: 600;
   line-height: 46.08px;
   letter-spacing: -0.44px;
+}
+.processes-info {
+  width: 100%;
+  margin-right: 16px;
+  height: calc(100vh - 145px);
+  overflow-y: auto;
+  padding-left: 32px;
 }
 </style>

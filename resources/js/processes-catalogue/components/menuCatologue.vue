@@ -40,6 +40,12 @@
         >
           {{ item.name }}
         </b-list-group-item>
+        <p
+          v-if="data.length <= 2"
+          class="text-no-result"
+        >
+          {{ $t('No results') }}
+        </p>
       </b-list-group>
     </b-collapse>
     <hr class="my-12">
@@ -89,8 +95,7 @@
       :count-categories="categoryCount"
       :package-ai="hasPackageAI"
       hide-add-btn="true"
-    >
-    </select-template-modal>
+    />
   </div>
 </template>
 
@@ -145,7 +150,7 @@ export default {
      * Filters options regarding user permissions
      */
     filteredTemplateOptions() {
-      return this.templateOptions.filter(item => this.shouldShowTemplateItem(item));
+      return this.templateOptions.filter((item) => this.shouldShowTemplateItem(item));
     },
   },
   mounted() {
@@ -155,9 +160,13 @@ export default {
         this.loadMore();
       }
     });
-    this.selectDefault();
     this.comeFromProcess = this.fromProcessList;
     this.checkPackageAiInstalled();
+  },
+  updated() {
+    if (!this.selectedProcessItem && !this.selectedTemplateItem) {
+      this.selectDefault();
+    }
   },
   methods: {
     /**
@@ -166,11 +175,13 @@ export default {
     loadMore() {
       this.$emit("addCategories");
     },
-    markCategory(item) {
+    markCategory(item, filter = true) {
       this.comeFromProcess = true;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
-      this.$refs.searchCategory.fillFilter(item.name);
+      if (filter) {
+        this.$refs.searchCategory.fillFilter(item.name);
+      }
     },
     selectProcessItem(item) {
       this.comeFromProcess = false;
@@ -186,20 +197,20 @@ export default {
     },
     selectTemplateItem(item) {
       if (item.id === "all_templates") {
-          this.addNewProcess();
-          return;
+        this.addNewProcess();
+        return;
       }
-        this.selectedTemplateItem = item;
-        this.selectedProcessItem = null;
-        this.select(item);
-        this.$emit("wizardLinkSelect");
+      this.selectedTemplateItem = item;
+      this.selectedProcessItem = null;
+      this.select(item);
+      this.$emit("wizardLinkSelect");
     },
     /**
      * This method opens New Process modal window
      */
     addNewProcess() {
       this.$nextTick(() => {
-        this.$refs["addProcessModal"].show();
+        this.$refs.addProcessModal.show();
       });
     },
     isSelectedProcess(item) {
@@ -221,7 +232,7 @@ export default {
       this.filterCategories(value);
     },
     hasPermission() {
-      return this.permission.includes("create-processes")
+      return this.permission.includes("create-processes");
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;
@@ -255,14 +266,20 @@ i {
 }
 .list-item {
   cursor: pointer;
-  padding: 12px 14px 12px 20px;
-  margin-left: 1rem;
+  padding: 12px 16px 12px 18px;
+  margin-left: 16px;
   color: #4f606d;
+  border-radius: 8px;
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  text-align: left;
 }
 .list-item:hover {
   background: #e5edf3;
+  color: #4f606d;
 }
 .list-item-selected {
   background: #e5edf3;
@@ -276,5 +293,19 @@ i {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+.text-no-result {
+  color: #4F606D;
+  margin-left: 1rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  height: 44px;
+  padding: 12px 18px;
+  gap: 16px;
 }
 </style>

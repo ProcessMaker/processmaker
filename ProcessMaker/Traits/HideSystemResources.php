@@ -11,6 +11,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
@@ -115,6 +116,11 @@ trait HideSystemResources
             return $query->where('is_system', false);
         } elseif (static::class === 'ProcessMaker\Plugins\Collections\Models\Collection') {
             return $query->whereNull('collections.asset_type');
+        } elseif (static::class === ScreenTemplates::class) {
+            return $query->where('screen_templates.is_system', false)
+                ->when(Schema::hasColumn('screen_templates', 'asset_type'), function ($query) {
+                    return $query->whereNull('asset_type');
+                });
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

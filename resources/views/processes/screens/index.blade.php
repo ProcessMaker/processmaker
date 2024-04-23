@@ -20,9 +20,12 @@
             'tabs' => [
             __('Screens'),
             __('Categories'),
+            __('My Templates'),
+            __('Shared Templates'),
         ],
         'listConfig' => $listConfig,
-        'catConfig' => $catConfig
+        'catConfig' => $catConfig,
+        'listScreenTemplates' => $listScreenTemplates,
     ])
         @slot('itemList')
             @component('processes.screens.list', ['config' => $listConfig])
@@ -31,6 +34,16 @@
 
         @slot('categoryList')
             @component('categories.list', ['config' => $catConfig])
+            @endcomponent
+        @endslot
+
+        @slot('myTemplatesList')
+            @component('processes.screens.myTemplates', ['config' => $listScreenTemplates->myScreenTemplates])
+            @endcomponent
+        @endslot
+
+        @slot('publicTemplatesList')
+            @component('processes.screens.publicTemplates', ['config' => $listScreenTemplates->publicScreenTemplates])
             @endcomponent
         @endslot
     @endcomponent

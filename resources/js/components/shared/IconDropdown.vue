@@ -27,16 +27,13 @@
           slot="singleLabel"
           slot-scope="props"
         >
-          <span v-if="props.option.value">
+          <span>
             <img
               class="icon-selected"
               :src="`/img/launchpad-images/icons/${props.option.value}.svg`"
               :alt="props.option.value"
             >
             {{ props.option.label }}
-          </span>
-          <span v-else>
-            {{ placeholder }}
           </span>
         </template>
         <template
@@ -78,6 +75,10 @@ export default {
       icon: null,
       list: {},
       loading: true,
+      defaultIcon: {
+        value:'Default Icon',
+        label: this.$t("Default Icon"),
+      },
       placeholder: this.$t("Select Icon"),
       query: "",
     };
@@ -96,7 +97,8 @@ export default {
     this.list = this.all;
   },
   mounted() {
-    this.icon = this.value ? this.find(this.value) : this.find(this.default);
+    this.icon = this.value ? this.find(this.value) : this.defaultIcon;
+    this.onSelect(this.icon);
   },
   methods: {
     onSearch(query) {
@@ -114,7 +116,7 @@ export default {
       this.placeholder = this.$t("Select Icon");
     },
     find(value) {
-      return this.all.find((icon) => icon.value == value);
+      return this.all.find((icon) => icon.value === value);
     },
     onHover(icon) {
       this.placeholder = icon.label;
@@ -143,11 +145,11 @@ $multiselect-height: 33px;
 
   .multiselect,
   .multiselect__tags {
-    height: 33px;
-    min-height: 33px;
-    max-height: 33px;
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
     border-radius: 4px;
-    border-color: #6c757d;
+    border-color: #cdddee;
   }
 
   .multiselect__Select {
@@ -156,25 +158,39 @@ $multiselect-height: 33px;
   }
 
   .multiselect__tags {
-    padding: 3px 22px 3px 3px;
+    padding: 7px 22px 7px 12px;
   }
 
   .multiselect__single {
+    width: 239px;
+    height: 22px;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
     font-size: 16px;
     font-family: inherit;
     padding: 2px 0 0 0;
     border-width: 4px 4px 0 4px;
     border-color: #000000 transparent;
-    color: #212529;
+    color: #556271;
     margin-top: 0px;
-    margin-left: 5px;
   }
 
   .multiselect__select:before {
     border-width: 4px 4px 0 4px;
-    right: -8px;
-    top: 50%;
-    border-color: #000000 transparent;
+    top: 20px;
+    border-color: #556271 transparent;
+  }
+
+  .multiselect__input {
+    max-width: 239px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21.79px;
+    letter-spacing: -0.02em;
+    color: #556271;
+    padding-left: 0px;
   }
 
   .multiselect__content {

@@ -52,7 +52,10 @@ class TaskController extends Controller
                 SavedSearch::KEY_TASKS,
             );
             if ($defaultSavedSearch) {
-                $defaultColumns = SavedSearchController::adjustColumnsOf($defaultSavedSearch->columns);
+                $defaultColumns = SavedSearchController::adjustColumnsOf(
+                    $defaultSavedSearch->columns,
+                    SavedSearch::TYPE_TASK
+                );
             } else {
                 $defaultColumns = null;
             }
@@ -95,7 +98,9 @@ class TaskController extends Controller
         $task->allow_interstitial = $interstitial['allow_interstitial'];
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
+        $task->draft = $task->draft();
         $element = $task->getDefinition(true);
+        $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -110,6 +115,7 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenFields,
                 ]);
             }
 
@@ -148,7 +154,15 @@ class TaskController extends Controller
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
+                'screenFields' => $screenFields,
             ]);
         }
+    }
+
+    public function quickFillEdit(ProcessRequestToken $task)
+    {
+        return view('tasks.editQuickFill', [
+            'task' => $task,
+        ]);
     }
 }

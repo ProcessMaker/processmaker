@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use ProcessMaker\Exception\ExportEmptyProcessException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Nayra\Storage\BpmnElement;
+use ProcessMaker\Repositories\BpmnDocument;
 
 class Utils
 {
@@ -69,9 +70,10 @@ class Utils
         }
 
         $xpath = new DOMXPath($document);
-        $elements = $xpath->query(rtrim($path, '|'));
+        // add bpmn namespace
+        $xpath->registerNamespace('bpmn', BpmnDocument::BPMN_MODEL);
 
-        return $elements;
+        return $xpath->query(rtrim($path, '|'));
     }
 
     public static function setPmConfigValue(BpmnElement &$element, string $path, $value) : void

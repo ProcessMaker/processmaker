@@ -190,7 +190,7 @@ class SyncGuidedTemplates implements ShouldQueue
 
             return $rootLog['newId'];
         } catch (Exception $e) {
-            throw new Exception('Error:', $e->getMessage());
+            throw new Exception('Error: ' . $e->getMessage());
         }
     }
 
@@ -229,9 +229,21 @@ class SyncGuidedTemplates implements ShouldQueue
         $this->importMedia($templateIconUrl, 'icon', $mediaCollectionName, $guidedTemplate);
         $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $guidedTemplate);
 
+        if (!empty($template['assets']['launchpad']['process-card-background'])) {
+            $templateProcessCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['launchpad']['process-card-background']);
+            $this->importMedia($templateProcessCardBackgroundUrl, 'launchpadProcessCardBackground', $mediaCollectionName, $guidedTemplate);
+        }
+
         foreach ($template['assets']['slides'] as $slide) {
             $templateSlideUrl = $this->buildTemplateUrl($config, $slide);
             $this->importMedia($templateSlideUrl, 'slide', $mediaCollectionName, $guidedTemplate);
+        }
+
+        if (!empty($template['assets']['launchpad']['slides'])) {
+            foreach ($template['assets']['launchpad']['slides'] as $slide) {
+                $templateSlideUrl = $this->buildTemplateUrl($config, $slide);
+                $this->importMedia($templateSlideUrl, 'launchpadSlides', $mediaCollectionName, $guidedTemplate);
+            }
         }
     }
 

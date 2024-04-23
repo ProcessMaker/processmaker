@@ -24,6 +24,7 @@ import Required from "./components/shared/Required";
 import { FileUpload, FileDownload } from "./processes/screen-builder/components";
 import RequiredCheckbox from "./processes/screen-builder/components/inspector/RequiredCheckbox";
 import WelcomeModal from "./Mobile/WelcomeModal";
+import Menu from "./components/Menu.vue";
 /** ****
  * Global adjustment parameters for moment.js.
  */
@@ -90,6 +91,7 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 window.ProcessMaker.navbar = new Vue({
   el: "#navbar",
   components: {
+    TopMenu: Menu,
     "b-navbar": BNavbar,
     requestModal,
     notifications,
@@ -108,6 +110,7 @@ window.ProcessMaker.navbar = new Vue({
   },
   data() {
     return {
+      screenBuilder: null,
       messages: ProcessMaker.notifications,
       alerts: this.loadLocalAlerts(),
       confirmTitle: "",
@@ -115,6 +118,8 @@ window.ProcessMaker.navbar = new Vue({
       confirmVariant: "",
       confirmCallback: "",
       confirmSize: "md",
+      confirmDataTestClose: "confirm-btn-close",
+      confirmDataTestOk: "confirm-btn-ok",
       messageTitle: "",
       messageMessage: "",
       messageVariant: "",
@@ -148,6 +153,12 @@ window.ProcessMaker.navbar = new Vue({
             document.querySelector("meta[name='alertVariant']").getAttribute("content"),
           );
         }
+        const findSB = setInterval(() => {
+          this.screenBuilder = window.ProcessMaker.ScreenBuilder;
+          if (this.screenBuilder) {
+            clearInterval(findSB);
+          }
+        }, 80);
       });
   },
   methods: {
@@ -233,7 +244,7 @@ window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "") {
+window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScreen = false, showLoader = false, msgLink = "", msgTitle = "") {
   if (showValue === 0) {
     // Just show it indefinitely, no countdown
     showValue = true;
@@ -245,6 +256,7 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
   ProcessMaker.navbar.alerts.push({
     alertText: msg,
     alertLink: msgLink,
+    alertTitle: msgTitle,
     alertShow: showValue,
     alertVariant: String(variant),
     showLoader,
@@ -267,13 +279,15 @@ window.ProcessMaker.closeSessionModal = function () {
 };
 
 // Set out own specific confirm modal.
-window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md") {
+window.ProcessMaker.confirmModal = function (title, message, variant, callback, size = "md", dataTestClose = "confirm-btn-close", dataTestOk = "confirm-btn-ok") {
   ProcessMaker.navbar.confirmTitle = title || __("Confirm");
   ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
   ProcessMaker.navbar.confirmVariant = variant;
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
   ProcessMaker.navbar.confirmSize = size;
+  ProcessMaker.navbar.confirmDataTestClose = dataTestClose;
+  ProcessMaker.navbar.confirmDataTestOk = dataTestOk;
 };
 
 // Set out own specific message modal.

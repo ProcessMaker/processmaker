@@ -7,7 +7,9 @@ use Database\Seeders\PermissionSeeder;
 use Facades\ProcessMaker\RollbackProcessRequest;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Notification;
+use Mockery;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
@@ -17,6 +19,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Providers\AuthServiceProvider;
@@ -535,7 +538,7 @@ class TasksTest extends TestCase
         $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
+            ->with(Mockery::any(), Mockery::any(), Mockery::any(), ['foo' => 'bar']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
@@ -572,7 +575,7 @@ class TasksTest extends TestCase
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
+            ->with(Mockery::any(), Mockery::any(), Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
                 'richtext2' => '<p>another</p>',
@@ -783,5 +786,50 @@ class TasksTest extends TestCase
         $json = $response->json();
 
         $this->assertEquals($hitTask->id, $json['data'][0]['id']);
+    }
+
+    public function testGetScreenFields()
+    {
+        $this->be($this->user);
+
+        $screen = Screen::factory()->create([
+            'config' => json_decode(
+                file_get_contents(
+                    base_path('tests/Fixtures/rich_text_screen.json')
+                )
+            ),
+        ]);
+
+        $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id . '"', $bpmn);
+        $process = Process::factory()->create([
+            'bpmn' => $bpmn,
+        ]);
+
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('node_1');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
+
+        $task = $request->tokens->last();
+
+        // Calls new API by name
+        $route = route('api.getScreenFields.show', ['task' => $task->id]);
+        $response = $this->apiCall('GET', $route);
+
+        $response->assertStatus(200);
+
+        // Check JSON response
+        $jsonResponse = $response->json();
+
+        $expectedFields = [
+            "richtext1",
+            "textarea1",
+            "input1",
+            "richtext2",
+            "textarea2",
+            "submit1",
+        ];
+
+        $this->assertEquals($expectedFields, $jsonResponse);
     }
 }
