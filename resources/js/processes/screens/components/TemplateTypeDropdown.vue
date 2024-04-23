@@ -14,7 +14,7 @@
     @input="emitSelectedTemplate"
   >
     <template slot="singleLabel" slot-scope="props">
-      <div class="type-container">
+      <div class="type-container" :data-cy="`type-container-${props.option.type}`">
         <TemplateIcon class="template-type-icon" />
         <span class="type-desc">
           <span class="template-type-placeholder">{{ props.option.type }}</span>
@@ -22,7 +22,7 @@
       </div>
     </template>
     <template slot="option" slot-scope="props">
-      <div class="type-container">
+      <div class="type-container" :data-cy="`type-container-${props.option.typeHuman}`">
         <span class="type-desc">
           <span class="type-title-option">{{ props.option.type }}</span>
         </span>
