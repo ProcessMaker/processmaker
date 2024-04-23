@@ -48,6 +48,7 @@ const PMColumnFilterCommonMixin = {
         filters: this.formattedFilter(),
         order
       };
+
       ProcessMaker.apiClient.put(url, config);
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
@@ -143,6 +144,7 @@ const PMColumnFilterCommonMixin = {
     },
     onClear(index) {
       this.advancedFilter[index] = [];
+      this.advancedFilter["requester"] = [];
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);
