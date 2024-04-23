@@ -34,7 +34,6 @@ class BookmarkController extends Controller
         $processes = $processes
             ->select('processes.*', 'bookmark.id as bookmark_id')
             ->leftJoin('user_process_bookmarks as bookmark', 'bookmark.process_id', '=', 'processes.id')
-            ->leftJoin('users as user', 'processes.user_id', '=', 'user.id') // Required for the pmql
             ->where('bookmark.user_id', $user->id)
             ->orderBy('processes.name', 'asc')
             ->get()
