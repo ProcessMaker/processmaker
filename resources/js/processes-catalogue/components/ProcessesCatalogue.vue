@@ -129,7 +129,7 @@ export default {
         // Loaded from URL with guided template parameters to show guided templates
         // Dynamically load the component
         this.$refs.categoryList.selectTemplateItem();
-      } 
+      }
     }, 500)
   },
   methods: {
