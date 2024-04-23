@@ -8,6 +8,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
 class ProcessUpdated implements ShouldBroadcastNow
 {
@@ -16,6 +17,8 @@ class ProcessUpdated implements ShouldBroadcastNow
     public $payloadUrl;
 
     public $event;
+    public $tokenId;
+    public $elementType;
 
     private $processRequest;
 
@@ -24,12 +27,16 @@ class ProcessUpdated implements ShouldBroadcastNow
      *
      * @return void
      */
-    public function __construct(ProcessRequest $processRequest, $event)
+    public function __construct(ProcessRequest $processRequest, $event, TokenInterface $token = null)
     {
         $this->payloadUrl = route('api.requests.show', ['request' => $processRequest->getKey()]);
         $this->event = $event;
 
         $this->processRequest = $processRequest;
+        if ($token) {
+            $this->tokenId = $token->getId();
+            $this->elementType = $token->element_type;
+        }
     }
 
     /**
