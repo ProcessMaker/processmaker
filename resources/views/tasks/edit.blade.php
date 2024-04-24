@@ -308,7 +308,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users"
+                      api="users?status=ACTIVE"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"

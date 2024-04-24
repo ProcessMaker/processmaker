@@ -315,7 +315,6 @@ export default {
   width: 100%;
   margin-right: 16px;
   height: calc(100vh - 145px);
-  overflow-y: auto;
   padding-left: 32px;
 }
 </style>
