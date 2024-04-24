@@ -22,7 +22,7 @@
       </div>
     </template>
     <template slot="option" slot-scope="props">
-      <div class="type-container" :data-cy="`type-container-${props.option.typeHuman}`">
+      <div class="type-container" :data-cy="`type-container-${props.option.type}`">
         <span class="type-desc">
           <span class="type-title-option">{{ props.option.type }}</span>
         </span>

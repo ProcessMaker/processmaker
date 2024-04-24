@@ -74,6 +74,7 @@
                   autofocus
                   name="title"
                   required
+                  data-cy="create_screen_name"
                 />
               </b-form-group>
               <b-form-group
@@ -89,6 +90,7 @@
                   name="description"
                   required
                   rows="3"
+                  data-cy="create_screen_description"
                 />
               </b-form-group>
               <category-select
@@ -98,6 +100,7 @@
                 api-get="screen_categories"
                 api-list="screen_categories"
                 name="category"
+                data-cy="create_screen_category_select"
               />
               <project-select
                 v-if="isProjectsInstalled"
@@ -108,18 +111,21 @@
                 :required="isProjectSelectionRequired"
                 api-get="projects"
                 api-list="projects"
+                data-cy="create_screen_project_select"
               />
             </div>
             <div class="w-100 m-0 d-flex mt-auto">
               <button
                 type="button"
                 class="btn btn-outline-secondary ml-auto"
+                data-cy="create_screen_cancel_btn"
                 @click="close"
               >
                 {{ $t('Cancel') }}
               </button>
               <a
                 class="btn btn-secondary ml-3"
+                data-cy="create_screen_save_btn"
                 @click="onSubmit"
               >
                 {{ $t('Save') }}
