@@ -50,7 +50,6 @@ class TemplateController extends Controller
     {
         [$type, $template, $addons, $categories, $route, $screenTypes] =
             (new $this->types[$type][1])->configure($request);
-            dd((new $this->types[$type]));
 
         $templateBreadcrumb = '';
 
