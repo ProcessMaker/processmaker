@@ -2,6 +2,8 @@
 
 
 @section('content')
+    <div id="sidebar" style="display: none"></div>
+    <div id="navbar" style="display: none"></div>
     <div class="container" id="screenPreview">
         <div class="row">
             <div class="col-12 preview-item-title">
