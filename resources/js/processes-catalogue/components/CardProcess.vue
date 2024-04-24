@@ -16,7 +16,7 @@
       />
       <pagination
         :total-row="totalRow"
-        :total-pages="totalPages"
+        :per-page="perPage"
         @onPageChanged="onPageChanged"
       />
     </div>

@@ -140,7 +140,10 @@ class TemplateController extends Controller
             // Call event to log Template Config changes
             TemplateUpdated::dispatch($changes, $original, false, $template);
         } elseif ($type === 'screen') {
-            $existingTemplate = $this->checkForExistingTemplates($type, $request);
+            if (!$request->media_collection) {
+                $existingTemplate = $this->checkForExistingTemplates($type, $request);
+            }
+
             if (!empty($existingTemplate)) {
                 return $existingTemplate;
             }
