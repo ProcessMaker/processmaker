@@ -62,7 +62,11 @@ class RequestController extends Controller
             ));
         }
 
-        $userFilter = SaveSession::getConfigFilter('requestFilter', Auth::user());
+        $requestType = '';
+        if (!empty($type)) {
+            $requestType = '|' . $type;
+        }
+        $userFilter = SaveSession::getConfigFilter('requestFilter' . $requestType, Auth::user());
 
         // Get default Saved search config
         if (class_exists(SavedSearch::class)) {

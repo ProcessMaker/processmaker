@@ -37,9 +37,6 @@ new Vue({
       case "completed":
         status = "Completed";
         break;
-      case "all":
-        status = "all";
-        break;
     }
 
     if (status) {
