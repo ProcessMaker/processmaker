@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="process-info-main">
     <process-collapse-info
       :process="process"
       :permission="permission"
@@ -47,3 +47,9 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+.process-info-main {
+  overflow-y: auto;
+}
+</style>

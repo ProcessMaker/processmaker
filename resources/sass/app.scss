@@ -1082,3 +1082,15 @@ nav {
 #screenConfigsScreenType .multiselect__tags {
   padding: 6px 40px 0 6px;
 }
+
+.carousel-indicators li {
+  background-color: #ededed;
+  width: 32px;
+  height: 8px;
+  border-radius: 4px;
+  border-top: 0;
+  border-bottom: 0;
+}
+.carousel-indicators .active {
+  background-color: #9c9c9c;
+}
