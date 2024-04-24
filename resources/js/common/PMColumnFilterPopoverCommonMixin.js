@@ -144,7 +144,6 @@ const PMColumnFilterCommonMixin = {
     },
     onClear(index) {
       this.advancedFilter[index] = [];
-      //this.advancedFilter["requester"] = [];
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);
