@@ -16,7 +16,7 @@
       />
       <pagination
         :total-row="totalRow"
-        :total-pages="totalPages"
+        :per-page="perPage"
         @onPageChanged="onPageChanged"
       />
     </div>
@@ -130,7 +130,8 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      window.history.replaceState(null, null, `/process-browser/${process.id}`);
+      const categoryId = this.category ? this.category.id : -1;
+      window.history.replaceState(null, null, `/process-browser/${process.id}?categorySelected=${categoryId}`);
       this.$emit("openProcess", process);
     },
     /**

@@ -1,16 +1,16 @@
 <template>
-  <div>
-      <process-collapse-info
-          :process="process"
-          :permission="permission"
-          :current-user-id="currentUserId"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="goBackCategory"
-        />
-      <process-tab
-        :current-user="currentUser"
-        :process="process"
-      />
+  <div class="process-info-main">
+    <process-collapse-info
+      :process="process"
+      :permission="permission"
+      :current-user-id="currentUserId"
+      :is-documenter-installed="isDocumenterInstalled"
+      @goBackCategory="goBackCategory"
+    />
+    <process-tab
+      :current-user="currentUser"
+      :process="process"
+    />
   </div>
 </template>
 
@@ -47,3 +47,9 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+.process-info-main {
+  overflow-y: auto;
+}
+</style>

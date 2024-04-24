@@ -27,6 +27,11 @@
   };
 </script>
 
+<style>
+  .pm-popover-confirmation .popover-body{
+    max-width: 450px;
+  }
+</style>
 <style scoped>
   .pm-popover-confirmation {
     max-width: 450px;

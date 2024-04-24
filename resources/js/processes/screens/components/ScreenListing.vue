@@ -14,7 +14,6 @@
         :sortOrder="sortOrder"
         :css="css"
         :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
         :fields="fields"
         :data="data"
         data-path="data"
@@ -40,16 +39,12 @@
       </vuetable>
 
       <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
-
-      <pagination
-        single="Screen"
-        plural="Screens"
-        :perPageSelectEnabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
     </div>
+    <pagination-table
+      :meta="data.meta"
+      @page-change="changePage"
+      @per-page-change="changePerPage"
+    />
     <b-modal ref="myModalRef" :title="$t('Copy Screen')" centered header-close-content="&times;">
       <form>
         <div class="form-group">
@@ -112,13 +107,14 @@ import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import PaginationTable from "../../../components/shared/PaginationTable.vue";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal },
+  components: { EllipsisMenu, AddToProjectModal, CreateTemplateModal, PaginationTable },
   mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, screenNavigationMixin],
   props: ["filter", "id", "permission", "currentUserId", 'types'],
   data() {
@@ -244,6 +240,10 @@ export default {
       this.screenTemplateName = name;
       this.screenType = type;
       this.$refs["create-template-modal"].show();
+    },
+    changePage(page) {
+      this.page = page;
+      this.fetch();
     },
   },
 

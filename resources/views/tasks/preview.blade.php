@@ -101,6 +101,7 @@
                           csrf-token="{{ csrf_token() }}"
                           initial-loop-context="{{ $task->getLoopContext() }}"
                           @task-updated="taskUpdated"
+                          @after-submit="afterSubmit"
                           @submit="submit"
                           @completed="completed"
                           @@error="error"
@@ -110,12 +111,6 @@
                           :always-allow-editing="alwaysAllowEditing"
                           :disable-interstitial="disableInterstitial"
                         ></task>
-                        <data-loading
-                          v-show="showLoading"
-                          :empty="$t('All clear')"
-                          :empty-desc="$t('No new tasks at this moment.')"
-                          empty-icon="noTasks"
-                        />
                     </div>
                 </div>
             </div>
@@ -167,7 +162,6 @@
         store: store,
         el: "#task",
         data: {
-          showLoading: true,
           //Edit data
           fieldsToUpdate: [],
           jsonData: "",
@@ -197,7 +191,8 @@
           userHasInteracted: false,
           initialFormDataSet: false,
           alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
-          disableInterstitial: window.location.search.includes('disableInterstitial=1')
+          disableInterstitial: window.location.search.includes('disableInterstitial=1'),
+          validateForm: false
         },
         watch: {
           task: {
@@ -259,6 +254,9 @@
           }
         },
         methods: {
+          afterSubmit(event) {
+            event.validation = this.validateForm;
+          },
           filterScreenFields(taskData) {
             const filteredData = {};
             screenFields.forEach(field => {
@@ -424,9 +422,8 @@
           taskUpdated(task) {
             this.task = task;
             this.formData = _.cloneDeep(this.$refs.task.requestData);
-            this.showLoading = false;
             this.$nextTick(() => {
-              this.sendEvent('readyForFillData', true);
+              this.sendEvent('taskReady', this.task?.id);
             });
           },
           autosaveApiCall() {
@@ -442,6 +439,10 @@
         },
         mounted() {
           this.prepareData();
+
+          window.addEventListener('sendValidateForm', event => {
+            this.validateForm = event.detail;
+          });
 
           window.addEventListener('fillData', event => {
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);

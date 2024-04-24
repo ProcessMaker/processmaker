@@ -427,7 +427,7 @@ export default {
         });
     },
     copyToClipboard() {
-      const textToCopy = document.getElementById("textToCopy").textContent;
+      const textToCopy = document.getElementById("textToCopy").textContent.replace(/\n/g, "");
       const textArea = document.createElement("textarea");
       textArea.value = textToCopy;
       document.body.appendChild(textArea);

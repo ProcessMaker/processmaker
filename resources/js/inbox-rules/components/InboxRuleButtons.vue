@@ -8,7 +8,6 @@
       {{ $t('Clear unsaved filters') }}
     </b-button>
     <b-dropdown v-if="showSavedSearchSelector"
-                ref="inboxRuleButtonsDropdown"
                 id="inboxRuleButtonsDropdown"
                 size="sm"
                 variant="light"
@@ -23,7 +22,9 @@
                         size="sm"
                         class="inbox-rule-buttons-input"
                         autocomplete="off"
-                        @input="onInput">
+                        id="inboxRuleButtonsDropdownInput"
+                        @input="onInput"
+                        @click="showMenu(toggleShowMenu=!toggleShowMenu)">
           </b-form-input>
         </div>
       </template>
@@ -36,7 +37,7 @@
     </b-dropdown>
     <b-popover target="inboxRuleButtonsDropdown"
                triggers="hover focus"
-               placement="top"
+               placement="bottom"
                boundary="window"
                show
                v-if="showMessageEmpty">
@@ -47,7 +48,7 @@
     <b-popover :show.sync="popoverMessage"
                target="inboxRuleButtonsDropdown"
                triggers=""
-               placement="bottom"
+               placement="top"
                boundary="window"
                custom-class="inbox-rule-buttons-popover-message border border-danger">
       <div class="mt-2 mb-2 ml-3 mr-3">
@@ -84,7 +85,8 @@
         selectedText: "",
         options: [],
         showMessageEmpty: false,
-        popoverMessage: false
+        popoverMessage: false,
+        toggleShowMenu: false
       };
     },
     watch: {
@@ -97,6 +99,11 @@
     },
     mounted() {
       this.requestSavedSearch("");
+      document.addEventListener("click", (event) => {
+        if (event.target.id !== "inboxRuleButtonsDropdownInput") {
+          this.showMenu(false);
+        }
+      });
     },
     methods: {
       onSelect(option) {
@@ -111,6 +118,8 @@
                 "&per_page=30" +
                 "&filter=" + filter +
                 "&type=task" +
+                "&key=" +
+                "&is_system=false" +
                 "&subset=mine" +
                 "&order_by=title" +
                 "&order_direction=asc";
@@ -133,9 +142,11 @@
         this.showMenu(true);
       },
       showMenu(sw) {
-        let obj = document.getElementById("inboxRuleButtonsDropdown")
-                .querySelector(".dropdown-menu")
-                .classList;
+        let button = document.getElementById("inboxRuleButtonsDropdown");
+        if (!button) {
+          return;
+        }
+        let obj = button.querySelector(".dropdown-menu").classList;
         if (sw === true) {
           obj.add("inbox-rule-buttons-show");
         } else {
@@ -156,7 +167,11 @@
     padding-top: 0px;
     padding-bottom: 0px;
   }
+  .inbox-rule-buttons-border button:first-child:hover {
+    background-color: white;
+  }
   .inbox-rule-buttons-popover-message .arrow::before{
+    border-top-color: #e50130;
     border-bottom-color: #e50130;
   }
   .inbox-rule-buttons-show {

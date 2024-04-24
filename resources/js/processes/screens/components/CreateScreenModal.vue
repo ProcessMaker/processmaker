@@ -24,7 +24,7 @@
           cols="7"
           class="type-style-col"
         >
-          <div v-if="!showTemplatePreview">
+          <div v-show="!showTemplatePreview">
             <screen-type-dropdown
               v-model="formData.type"
               :copy-asset-mode="copyAssetMode"
@@ -215,17 +215,14 @@ export default {
       return this.$t("Styles for the Screen Type").toUpperCase();
     },
     hasTemplateId() {
-      return this.formData.templateId !== null && this.formData.templateId !== undefined; 
+      return this.formData.templateId != null;
     },
     hasDefaultTemplateId() {
-      return this.formData.defaultTemplateId !== null;
-    },
-    otherTemplateSelected() {
-      return this.formData.selectedTemplate;
+      return this.formData.defaultTemplateId != null;
     },
     getTemplateId() {
       return this.hasTemplateId ? this.formData.templateId : this.formData.defaultTemplateId;
-    }
+    },
   },
   mounted() {
     this.resetFormData();
@@ -253,7 +250,7 @@ export default {
         description: null,
         projects: [],
         templateId: null,
-        templateOptions: JSON.stringify(['CSS', 'Layout', 'Fields']),
+        templateOptions: JSON.stringify(["CSS", "Layout", "Fields"]),
       };
     },
     resetErrors() {
@@ -285,7 +282,8 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (this.otherTemplateSelected && this.hasTemplateId || this.hasDefaultTemplateId && !this.otherTemplateSelected || this.hasTemplateId) {
+
+      if (this.hasTemplateId) {
         this.handleCreateFromTemplate();
       } else {
         this.handleCreateFromBlank();
@@ -370,9 +368,8 @@ export default {
       this.formData.templateId = null;
     },
     handleSelectedTemplate(templateId) {
-      this.formData.templateId =  templateId;
-      this.formData.selectedTemplate = true;
-      this.formData.templateOptions = JSON.stringify(['CSS', 'Layout', 'Fields']);
+      this.formData.templateId = templateId;
+      this.formData.templateOptions = JSON.stringify(["CSS", "Layout", "Fields"]);
     },
     handleSelectedTemplateOptions(options) {
       this.formData.templateOptions = JSON.stringify(options);
@@ -381,7 +378,7 @@ export default {
       this.formData.defaultTemplateId = templateId;
     },
     handleDefaultTemplateType(type) {
-      const isPublic = type === "Public Templates" ? 1 : 0;
+      const isPublic = type === "Shared Templates" ? 1 : 0;
       this.formData.is_public = isPublic;
     },
 

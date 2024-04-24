@@ -149,8 +149,8 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         'process_bookmarks/processes/{process}/start_events',
         [ProcessController::class, 'startEvents']
     )->name('processes.start.events')->middleware($middlewareCatalog);
-    Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
-        ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/processes', [ProcessLaunchpadController::class, 'getProcesses'])
+        ->name('processes.launchpad.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
         ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/{process_category}', [ProcessCategoryController::class, 'show'])
@@ -311,11 +311,10 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('import/preview', [ImportController::class, 'preview'])->name('import.preview')->middleware('can:export-processes');
     Route::get('import/get-manifest', [ImportController::class, 'getImportManifest'])->name('import.get-import-manifest')->middleware('can:import-processes');
     Route::post('import/do-import', [ImportController::class, 'import'])->name('import.do_import')->middleware('can:import-processes');
-    Route::post('import/screen-template', [ImportController::class, 'importScreenTemplate'])->name('import.import_screen')->middleware('can:import-screens');
 
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index')->middleware('template-authorization');
-    Route::post('template/{type}/do-import', [ImportController::class, 'importTemplate'])->name('import.do_importTemplate')->middleware('template-authorization');
+    Route::post('template/{type}/do-import', [TemplateController::class, 'import'])->name('import.do_importTemplate')->middleware('template-authorization');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
     Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
     Route::put('template/{type}/{processId}', [TemplateController::class, 'updateTemplateManifest'])->name('template.update')->middleware('template-authorization');

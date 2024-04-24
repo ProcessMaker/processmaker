@@ -25,7 +25,7 @@
         v-else
         class="form-group"
       >
-        <p>{{ $t("Once published, all new requests will use the new process model.") }}</p>
+        <p>{{ $t("New requests will use the published process") }}</p>
         <div>
           <label for="name">{{ $t("Version Name") }} </label>
           <input
@@ -97,10 +97,10 @@ export default {
   props: {
     options: {
       type: Object,
-      default: {
+      default: () => ({
         id: "",
         type: "",
-      },
+      }),
     },
     filter: {
       type: String,
@@ -149,7 +149,7 @@ export default {
       this.showModal();
 
       // AB Testing installed
-      this.isABTestingInstalled = ProcessMaker.modeler.abPublish;
+      this.isABTestingInstalled = !!window.ProcessMaker.AbTesting;
       // AB Testing component
       if (this.isABTestingInstalled && ProcessMaker?.AbTesting?.PublishVersion) {
         this.alternative = ProcessMaker?.modeler?.process?.alternative_info;
@@ -161,11 +161,17 @@ export default {
   },
   methods: {
     abPublishVersion(alternativeData) {
-      this.subject = alternativeData.subject;
-      this.description = alternativeData.description;
+      const {
+        subject = this.subject,
+        description = this.description,
+      } = alternativeData || {};
 
-      this.saveModal(alternativeData);
+      this.subject = subject;
+      this.description = description;
+
+      this.saveModal();
     },
+
     /**
      * Method to store initial data from process description field
      */
@@ -226,7 +232,7 @@ export default {
       });
 
       promise
-        .then((response) => {
+        .then(() => {
           ProcessMaker.apiClient
             .post("/version_histories", {
               subject: this.subject,
@@ -234,8 +240,8 @@ export default {
               versionable_id: this.options.id,
               versionable_type: this.options.type,
             })
-            .then((response) => {
-              ProcessMaker.alert(this.$t("The version was saved."), "success");
+            .then(() => {
+              ProcessMaker.alert(this.$t("The process version was saved."), "success");
               this.saving = false;
               this.verifyLaunchPad();
               this.hideModal();
@@ -244,15 +250,9 @@ export default {
               if (error.response.status && error.response.status === 422) {
                 this.errors = error.response.data.errors;
               }
-              if (error.response.status === 404) {
-                // version_histories route not found because package-versions is not installed
-                console.error(err);
-              }
             });
         })
-        .catch((err) => {
-          console.error(err);
-        });
+        .catch(() => {});
     },
     showModal() {
       this.subject = "";
@@ -270,7 +270,8 @@ export default {
           const alternative = window.ProcessMaker.AbTesting?.alternative;
           const iFrame = window.parent[`alternative${alternative}`];
           const isActive = iFrame ? iFrame.classList.contains("active") : false;
-          if (!response.data?.[0].launchpad && (!this.isABTestingInstalled || isActive)) {
+          const isABTestingInstalled = !!window.ProcessMaker.AbTesting;
+          if (!response.data?.[0].launchpad && (!isABTestingInstalled || isActive)) {
             this.$refs["launchpad-modal"].showModal();
           }
         });

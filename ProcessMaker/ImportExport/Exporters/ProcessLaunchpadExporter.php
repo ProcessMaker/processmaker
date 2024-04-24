@@ -6,8 +6,6 @@ use ProcessMaker\Models\Screen;
 
 class ProcessLaunchpadExporter extends ExporterBase
 {
-    public $discard = false;
-
     public $handleDuplicatesByIncrementing = ['process_id'];
 
     public $incrementStringSeparator = null;

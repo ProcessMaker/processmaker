@@ -262,6 +262,10 @@
             item.value = this.viewConfig[i].input;
           }
         }
+        //If it is not found, we establish a default.
+        if (item.viewControl === "") {
+          item.viewControl = "PMColumnFilterOpInput";
+        }
       },
       updatedScroll() {
         if (this.viewItemsChanged === true) {

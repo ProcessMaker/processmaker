@@ -155,12 +155,7 @@ class ScreenTemplateHelper
         foreach ($column as $colItem) {
             if (isset($colItem['component']) && $colItem['component'] === 'FormMultiColumn') {
                 self::filterNestedMultiColumns($colItem, $components, $removeMultiColumn);
-
-                if (isset($colItem['items'])) {
-                    $filteredColumnItems[] = $colItem;
-                } else {
-                    $filteredColumnItems = $colItem;
-                }
+                $filteredColumnItems[] = $colItem;
             } elseif (!self::removeNestedComponents($colItem, $components)) {
                 $filteredColumnItems[] = $colItem;
             }

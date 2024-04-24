@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
 use ProcessMaker\ImportExport\Exporters\ProcessExporter;
@@ -81,9 +82,11 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::find($request->id);
         $process = Process::where('uuid', $template->editing_process_uuid)->where('is_template', 1)->first();
 
-        // If a process exists with the template name return that process
+        // If a process exists with the template editing process uuid delete that process and create a new process
+        // this ensures any updates to the template manifest will be reflected
+        // in the editing process being shown in modeler.
         if ($process) {
-            return ['id' => $process->id];
+            $process->forceDelete();
         }
         // Otherwise we need to import the template and create a new process
         $payload = json_decode($template->manifest, true);
@@ -325,8 +328,8 @@ class ProcessTemplate implements TemplateInterface
     {
         $id = (int) $request->id;
         $template = ProcessTemplates::where('id', $id)->firstOrFail();
+        $manifest = $this->getManifest('process', $request->asset_id);
 
-        $manifest = $this->getManifest('process', $request->process_id);
         $rootUuid = Arr::get($manifest, 'root');
         $export = Arr::get($manifest, 'export');
         $svg = Arr::get($export, $rootUuid . '.attributes.svg', null);
@@ -460,6 +463,33 @@ class ProcessTemplate implements TemplateInterface
     }
 
     /**
+     *  Import process template
+     * @param Request
+     * @return JsonResponse
+     */
+    public function importTemplate($request) : JsonResponse
+    {
+        try {
+            $jsonData = $request->file('file')->get();
+
+            $payload = json_decode($jsonData, true);
+
+            $this->preparePayloadForImport($payload);
+
+            $importOptions = $this->configureImportOptions($request);
+
+            $this->performImport($payload, $importOptions);
+
+            // Dispatch event for template creation
+            TemplateCreated::dispatch($payload);
+
+            return response()->json([], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    /**
      * Get process template manifest.
      *
      * @param string $type
@@ -521,7 +551,7 @@ class ProcessTemplate implements TemplateInterface
         $template = ProcessTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
         if ($template !== null) {
             // If same asset has been Saved as Template previously, offer to choose between “Update Template” and “Save as New Template”
-            return ['id' => $template->id, 'name' => $name];
+            return ['id' => $template->id, 'name' => $name, 'owner_id' => $template->user_id];
         }
 
         return null;
@@ -583,5 +613,44 @@ class ProcessTemplate implements TemplateInterface
         }
 
         return null;
+    }
+
+    /**
+     * Prepare payload for import.
+     *
+     * @param  array  $payload
+     * @return void
+     */
+    private function preparePayloadForImport(array &$payload): void
+    {
+        foreach ($payload['export'] as &$asset) {
+            // Modify asset attributes as needed
+            $asset['attributes']['editing_process_uuid'] = null;
+            $asset['attributes']['process_id'] = null;
+        }
+    }
+
+    /**
+     * Configure import options.
+     *
+     * @param  array  $payload
+     * @return \Importer\Options
+     */
+    private function configureImportOptions(Request $request): Options
+    {
+        return new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
+    }
+
+    /**
+     * Perform the import operation.
+     *
+     * @param  array  $payload
+     * @param  \Importer\Options  $options
+     * @return void
+     */
+    private function performImport(array $payload, Options $options): void
+    {
+        $importer = new Importer($payload, $options);
+        $importer->doImport();
     }
 }

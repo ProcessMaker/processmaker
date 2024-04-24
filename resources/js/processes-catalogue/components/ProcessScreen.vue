@@ -10,7 +10,9 @@
             class="fas fa-arrow-left text-secondary mr-2 iconTitle"
             @click="goBack"
           />
-          {{ process.name }}
+          <span class="header-process">
+            {{ getNameEllipsis() }}
+          </span>
         </div>
         <div class="d-flex align-items-center">
           <div class="card-bookmark mx-2">
@@ -125,7 +127,7 @@ export default {
         .get(`screens/${this.screen_id}`)
         .then((response) => {
           this.screen = response.data;
-          this.showScreen = true;
+          this.showScreen = response.data.config !== null;
         });
     },
   },

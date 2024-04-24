@@ -62,8 +62,8 @@
           class="pagination-nav-item pagination-nav-drop"
           :aria-label="$t('Per page')"
         >
-          <option value="10">10</option>
-          <option value="25">25</option>
+          <option value="15">15</option>
+          <option value="30">30</option>
           <option value="50">50</option>
         </select>
       </div>
@@ -78,7 +78,7 @@ export default {
   props: ["perPageSelectEnabled", "single", "plural"],
   data() {
     return {
-      perPage: 10
+      perPage: 15
     };
   },
   computed: {

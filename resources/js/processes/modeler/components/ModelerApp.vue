@@ -109,7 +109,7 @@ export default {
   },
   computed: {
     autosaveApiCall() {
-      return async (generatingAssets = false) => {
+      return async (generatingAssets = false, redirectUrl = null, nodeId = null) => {
         const svg = document.querySelector(".mini-paper svg");
         const css = "text { font-family: sans-serif; }";
         const style = document.createElement("style");
@@ -118,34 +118,32 @@ export default {
         const svgString = new XMLSerializer().serializeToString(svg);
         const xml = await this.$refs.modeler.getXmlFromDiagram();
         this.setLoadingState(true);
-        ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
-          name: this.process.name,
-          description: this.process.description,
-          task_notifications: this.getTaskNotifications(),
-          projects: this.process.projects,
-          bpmn: xml,
-          svg: svgString,
-          alternative: window.ProcessMaker.modeler.draftAlternative || "A",
-        })
-          .then((response) => {
-            this.process.updated_at = response.data.updated_at;
-            window.ProcessMaker.EventBus.$emit("save-changes", null, null, generatingAssets);
-            this.$set(this, "warnings", response.data.warnings || []);
-            if (response.data.warnings && response.data.warnings.length > 0) {
-              window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
-            }
-            // Set draft status.
-            this.setVersionIndicator(true);
-          })
-          .catch((error) => {
-            if (error.response) {
-              const { message } = error.response.data;
-              ProcessMaker.alert(message, "danger");
-            }
-          })
-          .finally(() => {
-            this.setLoadingState(false);
+        try {
+          const response = await ProcessMaker.apiClient.put(`/processes/${this.process.id}/draft`, {
+            name: this.process.name,
+            description: this.process.description,
+            task_notifications: this.getTaskNotifications(),
+            projects: this.process.projects,
+            bpmn: xml,
+            svg: svgString,
+            alternative: window.ProcessMaker.AbTesting?.alternative || window.ProcessMaker.modeler.draftAlternative || "A",
           });
+          this.process.updated_at = response.data.updated_at;
+          window.ProcessMaker.EventBus.$emit("save-changes", redirectUrl, nodeId, generatingAssets);
+          this.$set(this, "warnings", response.data.warnings || []);
+          if (response.data.warnings && response.data.warnings.length > 0) {
+            window.ProcessMaker.EventBus.$emit("save-changes-activate-autovalidate");
+          }
+          // Set draft status.
+          this.setVersionIndicator(true);
+        } catch (error) {
+          if (error.response) {
+            const { message } = error.response.data;
+            ProcessMaker.alert(message, "danger");
+          }
+        } finally {
+          this.setLoadingState(false);
+        }
       };
     },
     closeHref() {
@@ -244,11 +242,15 @@ export default {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
+      if (redirectUrl && nodeId && this.isVersionsInstalled) {
+        this.handleAutosave(true, false, redirectUrl, nodeId);
+        return;
+      }
+
       if (this.externalEmit.includes("open-modal-versions") && !generatingAssets) {
         window.ProcessMaker.EventBus.$emit("open-modal-versions", redirectUrl, nodeId);
         return;
       }
-
       if (this.externalEmit.includes("open-modal-versions") && generatingAssets) {
         window.ProcessMaker.EventBus.$emit("new-changes");
         this.refreshSession();

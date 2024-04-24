@@ -55,7 +55,7 @@
       this.receiveEvent('formSubmit', (data) => {
         this.$emit("submit", data);
       });
-      this.receiveEvent('readyForFillData', () => {
+      this.receiveEvent('taskReady', () => {
         this.sendEvent("fillData", this.inboxRuleData);
       });
     },
@@ -69,6 +69,7 @@
       },
       loaded() {
         this.iframeContentWindow.event_parent_id = this._uid;
+        this.sendEvent("sendValidateForm", false);
       },
       sendEvent(name, data) {
         const event = new CustomEvent(name, {

@@ -37,7 +37,7 @@ export default {
         }
         result.push([
           this.formatBadgeSubject(filter),
-          [{name: filter.value, operator: filter.operator, advanced_filter: true}]
+          [{name: this.formatBadgeValue(filter), operator: filter.operator, advanced_filter: true}]
         ]);
 
         if (filter.or && filter.or.length > 0) {
@@ -48,6 +48,12 @@ export default {
     formatBadgeSubject(filter) {
       return get(filter, '_column_label', get(filter, 'subject.value', ''));
     },
+    formatBadgeValue(filter) {
+      if ('_display_value' in filter) {
+        return filter._display_value;
+      }
+      return filter.value
+    }
   },
   computed: {
     formatAdvancedFilterForBadges() {

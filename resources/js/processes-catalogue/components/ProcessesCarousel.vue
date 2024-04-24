@@ -6,14 +6,12 @@
       no-animation
       :interval="interval"
       indicators
-      img-height="400px"
       @sliding-start="onSlideStart"
       @sliding-end="onSlideEnd"
     >
       <b-carousel-slide
         v-for="(image, index) in images.length > 0 ? images : defaultImage"
         :key="index"
-        class="custom-style"
       >
         <template #img>
           <iframe
@@ -80,17 +78,17 @@ export default {
           const mediaArray = firstResponse.media;
           const embedArray = firstResponse.embed;
           mediaArray.forEach((media) => {
-            const mediaType = media.custom_properties.type ?? 'image';
+            const mediaType = media.custom_properties.type ?? "image";
             this.images.push({
               url: media.original_url,
-              type: mediaType
+              type: mediaType,
             });
           });
           embedArray.forEach((embed) => {
-            let customProperties = JSON.parse(embed.custom_properties)
-            this.images.push({ 
+            const customProperties = JSON.parse(embed.custom_properties);
+            this.images.push({
               url: customProperties.url,
-              type: customProperties.type
+              type: customProperties.type,
             });
           });
         })
@@ -102,38 +100,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-#processes-carousel {
-  .carousel-indicators {
-    li {
-      background-color: #EDEDED;
-      width: 27px;
-      height: 8px;
-      border-radius: 5px;
-      border-top: 0;
-      border-bottom: 0;
-      opacity: 0.5;
-    }
-
-    .active {
-      background-color: #9C9C9C;
-      opacity: 1;
-    }
-  }
-}
-
 .carousel-inner {
   overflow: hidden;
 }
-
-.custom-style {
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 400px;
-}
 .img-carousel {
   max-width: 800px;
-  height: 400px;
+  height: 410px;
 }
 .iframe-carousel {
   border: 0px;
@@ -143,6 +115,19 @@ export default {
 .carousel-container {
   display: flex;
   justify-content: center;
+  border-radius: 16px;
   background-color: #edf1f6;
+}
+@media (width <= 1200px) {
+  .img-carousel {
+    max-width: 513px;
+    height: auto;
+  }
+}
+@media (width <= 992px) {
+  .img-carousel {
+    max-width: 486px;
+    height: auto;
+  }
 }
 </style>

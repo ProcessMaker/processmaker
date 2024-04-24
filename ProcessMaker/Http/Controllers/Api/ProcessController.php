@@ -120,6 +120,17 @@ class ProcessController extends Controller
             $processes = Process::active()->with($include);
         }
 
+        // The simplified parameter indicates to return just the main information of processes
+        if ($request->input('simplified_data', false)) {
+            $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
+            $modifiedCollection = $processes->map(function ($item) {
+                return [
+                    'id' => $item['id'],
+                    'events'=> $item['start_events']];
+            });
+            return new ApiCollection($modifiedCollection);
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
@@ -482,7 +493,6 @@ class ProcessController extends Controller
             }
         }
 
-        $this->saveImagesIntoMedia($request, $process);
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -506,7 +516,7 @@ class ProcessController extends Controller
     public function updateBpmn(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
-
+        
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
@@ -531,20 +541,32 @@ class ProcessController extends Controller
         // If is a subprocess, we need to update the name in the BPMN too
         if ($request->input('parentProcessId') && $request->input('nodeId')) {
             $parentProcess = Process::findOrFail($request->input('parentProcessId'));
-            $definitions = $parentProcess->getDefinitions();
-            $elements = $definitions->getElementsByTagName('callActivity');
-            foreach ($elements as $element) {
-                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
-                    $element->setAttribute('name', $request->input('name'));
-                }
-            }
-            $parentProcess->bpmn = $definitions->saveXML();
-            $parentProcess->saveOrFail();
+            $this->updateSubprocessElement($parentProcess, $request, $process);
         }
 
         return response()->json([
             'success' => true,
         ], 200);
+    }
+
+    private function updateSubprocessElement($parentProcess, $request, $process) {
+        $definitions = $parentProcess->getDefinitions();
+        $elements = $definitions->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                $element->setAttribute('name', $request->input('name'));
+            }
+        }
+        try {
+            $parentProcess->bpmn = $definitions->saveXML();
+            $process->saveDraft();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
     }
 
     /**
@@ -1715,61 +1737,11 @@ class ProcessController extends Controller
         return new ApiResource($newProcess);
     }
 
-    public function saveImagesIntoMedia(Request $request, Process $process)
-    {
-        // Saving Carousel Images into Media table related to process_id
-        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
-            foreach ($request->imagesCarousel as $image) {
-                if (is_string($image['url']) && !empty($image['url'])
-                && $image['type'] === self::CAROUSEL_TYPES['IMAGE']) {
-                    $media = new \ProcessMaker\Models\Media();
-                    $media->saveProcessMedia($process, $image, 'uuid');
-                }
-                if ($image['type'] === self::CAROUSEL_TYPES['EMBED']) {
-                    $embed = new \ProcessMaker\Models\Embed();
-                    $embed->saveProcessEmbed($process, $image, 'uuid');
-                }
-            }
-        }
-    }
-
-    public function saveImageMedia(Process $process, $image)
-    {
-        if (!$process->media()->where('collection_name', 'images_carousel')
-        ->where('uuid', $image['uuid'])->exists()) {
-            $process
-            ->addMediaFromBase64($image['url'])
-            ->withCustomProperties(['type' => $image['type']])
-            ->toMediaCollection('images_carousel');
-        }
-    }
-
-    public function saveEmbedMedia(Process $process, $image)
-    {
-        $embed = new Embed();
-        $values = [
-            'model_id' => $process->id,
-            'model_type' => Process::class,
-            'mime_type' => 'text/url',
-            'custom_properties' => json_encode([
-                'url' => $image['url'],
-                'type' => $image['type']
-            ]),
-        ];
-        if (!is_null($image['uuid']) && $image['uuid'] !== '') {
-            $embed->updateOrCreate([
-                'uuid' => $image['uuid']
-            ], $values);
-        } else {
-            $embed->fill($values);
-            $embed->saveOrFail();
-        }
-    }
-
     public function getMediaImages(Request $request, Process $process)
     {
-        $media = Process::with(['media'])
-        ->with(['embed'])
+        $media = Process::with(['media' => function ($query) {
+            $query->orderBy('order_column', 'asc');
+        }])
         ->where('id', $process->id)
         ->get();
 

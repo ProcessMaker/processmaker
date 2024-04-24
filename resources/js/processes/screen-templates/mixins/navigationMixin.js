@@ -12,10 +12,20 @@ export default {
               description: data.description,
               version: data.version,
               is_public: true,
+              is_default_template: false,
             })
             .then(() => {
-              ProcessMaker.alert(this.$t("The template is now public."), "success");
+              ProcessMaker.alert(this.$t("The template has been successfully shared!"), "success");
               this.fetch();
+            })
+            .catch(error => {
+              if (error?.response?.status === 409) {
+                error.response?.data?.name.forEach(message => {
+                  ProcessMaker.alert(message, 'danger');
+                });
+              } else {
+                ProcessMaker.alert(error.message, "danger");
+              }
             });
           break;
         case "delete-template":

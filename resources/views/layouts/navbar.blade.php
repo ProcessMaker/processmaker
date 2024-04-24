@@ -9,7 +9,7 @@
     </div>
 
     <div class="d-flex d-lg-none w-100">
-        @if(hasPackage('package-ai'))
+        @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
         <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
         @endif
     </div>
@@ -17,6 +17,7 @@
     <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback" :size="confirmSize"
+                            :data-test-close="confirmDataTestClose" :data-test-ok="confirmDataTestOk"
                             @close="confirmShow=false">
         </confirmation-modal>
         <message-modal class="d-none d-lg-block" id="messageModal" :show="messageShow" :title="messageTitle" :message="messageMessage"
@@ -111,7 +112,7 @@
                     left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
-                        :key="subItem.url"                    
+                        :key="subItem.url"
                         :href="subItem.url"
                         :target="subItem.attributes.target"
                     >
@@ -124,7 +125,7 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
-            @if(hasPackage('package-ai'))
+            @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
             <global-search v-if="!isMobile" class="d-none d-lg-block"></global-search>
             @endif
 
