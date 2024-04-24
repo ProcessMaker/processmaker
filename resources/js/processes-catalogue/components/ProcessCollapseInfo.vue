@@ -63,8 +63,8 @@
         class="collapse show"
       >
         <div class="info-collapse">
-          <div class="d-flex justify-content-between">
-            <div class="process-description">
+          <div class="row">
+            <div class="col-sm-9">
               <p class="title-process">
                 {{ process.name }}
               </p>
@@ -88,19 +88,21 @@
                 </a>
               </p>
             </div>
-            <div class="wizard">
-              <b-button
-                v-if="createdFromWizardTemplate"
-                class="mt-2 wizard-link"
-                variant="link"
-                @click="getHelperProcess"
-              >
-                <img
-                  src="../../../img/wizard-icon.svg"
-                  :alt="$t('Guided Template Icon')"
+            <div class="wizard-container col-sm-3">
+              <div class="wizard">
+                <b-button
+                  id="createdFromWizardTemplate"
+                  class="mt-2 wizard-link"
+                  variant="link"
+                  @click="getHelperProcess"
                 >
-                {{ $t('Re-run Wizard') }}
-              </b-button>
+                  <img
+                    src="../../../img/wizard-icon.svg"
+                    :alt="$t('Guided Template Icon')"
+                  >
+                  {{ $t('Re-run Wizard') }}
+                </b-button>
+              </div>
             </div>
           </div>
           <b-row>
@@ -232,9 +234,22 @@ export default {
 .wizard-link {
   text-transform: none;
 }
+.wizard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.wizard {
+  display: flex;
+  justify-items: end;
+  width: 294px;
+}
 @media (width < 1200px) {
   .process-options {
     margin-top: 32px;
+  }
+  .wizard {
+    width: 170px;
   }
 }
 </style>
