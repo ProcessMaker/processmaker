@@ -348,7 +348,8 @@ class GroupController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('username', 'like', $filter)
                     ->orWhere('firstname', 'like', $filter)
-                    ->orWhere('lastname', 'like', $filter);
+                    ->orWhere('lastname', 'like', $filter)
+                    ->orWhereRaw("trim(concat(firstname, ' ', lastname)) like '{$filter}'");
             });
         }
 
