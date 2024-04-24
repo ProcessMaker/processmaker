@@ -51,6 +51,8 @@ class TemplateController extends Controller
         [$type, $template, $addons, $categories, $route, $screenTypes] =
             (new $this->types[$type][1])->configure($request);
 
+        $templateBreadcrumb = '?#nav-templates';
+
         return view('templates.configure', compact(
             [
                 'type',
@@ -59,6 +61,7 @@ class TemplateController extends Controller
                 'categories',
                 'route',
                 'screenTypes',
+                'templateBreadcrumb',
             ]
         ));
     }
