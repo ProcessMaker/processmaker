@@ -53,6 +53,10 @@ class TemplateController extends Controller
 
         $templateBreadcrumb = '?#nav-templates';
 
+        if ($type === 'screen') {
+            $templateBreadcrumb = $template->is_public ? '?#nav-publicTemplates' : '?#nav-myTemplates';
+        }
+
         return view('templates.configure', compact(
             [
                 'type',
