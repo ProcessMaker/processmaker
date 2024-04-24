@@ -9,6 +9,13 @@ export default (status, ignoreSavedFilter = false, requester = null) => {
     // Already has a status filter set by the user
     return;
   }
+
+  if (status === "all") {
+    advancedFilter = [];
+    window.ProcessMaker.advanced_filter.filters = advancedFilter;
+    return;
+  }
+
   advancedFilter.push({
     subject: {
       type: "Status"
