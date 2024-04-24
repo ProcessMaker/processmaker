@@ -116,6 +116,12 @@ jobs:
             sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
             kubectl apply -f template-db.yaml
             echo "Creating Deploy :: $deploy"
+            #Sed PMAI
+            if [[ $K8S_BRANCH == "develop" ]] ; then
+              sed -i "s/{{pmai-system}}/pmai-system/" template-instance.yaml
+            else
+              sed -i "s/{{pmai-system}}/pmai-system-next/" template-instance.yaml
+            fi
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
