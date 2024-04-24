@@ -43,6 +43,9 @@ const PMColumnFilterCommonMixin = {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
+        if (Processmaker.status) {
+          url += "|" + Processmaker.status;
+        }
       }
       let config = {
         filters: this.formattedFilter(),
