@@ -21,7 +21,7 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-@media (width < 1200px) {
+@media (width < 1460px) {
   .section-options {
     align-items: flex-start;
     flex-direction: row;

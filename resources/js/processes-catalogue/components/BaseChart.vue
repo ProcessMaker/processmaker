@@ -280,7 +280,7 @@ export default {
   margin-top: 32px;
   background-color: white;
 }
-@media (width < 1200px) {
+@media (width < 1460px) {
   .default-chart {
     margin-top: 0;
     margin-left: 32px;

@@ -106,12 +106,12 @@
             </div>
           </div>
           <b-row>
-            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-9">
+            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-pm-9 col-9">
               <processes-carousel
                 :process="process"
               />
             </b-col>
-            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-2">
+            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-pm-3 col-2">
               <process-options :process="process" />
             </b-col>
           </b-row>
@@ -250,6 +250,29 @@ export default {
   }
   .wizard {
     width: 170px;
+  }
+}
+@media (1460px < width < 1600px) {
+  .col-pm-9 {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+  .col-pm-3 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+}
+@media (1200px <= width < 1460px) {
+  .col-pm-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .col-pm-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .process-options {
+    margin-top: 32px;
   }
 }
 </style>
