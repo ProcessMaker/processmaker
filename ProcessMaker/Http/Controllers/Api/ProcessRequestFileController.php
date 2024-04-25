@@ -109,22 +109,25 @@ class ProcessRequestFileController extends Controller
         if (!$filter) {
             return new ResourceCollection($media);
         } else {
-            $filtered = $media->reject(function ($item, $key) use ($filter, $name, $id) {
-                if ($filter === $name) {
-                    if ($item->custom_properties['data_name'] != $name) {
-                        return true;
-                    }
-                } elseif ($filter === $id) {
-                    if ($item->id != $id) {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-
-            return new ResourceCollection($filtered);
+            return new ResourceCollection($this->filter($media, $filter, $name, $id));
         }
+    }
+
+    private function filter($media, $filter, $name, $id)
+    {
+        return $media->reject(function ($item, $key) use ($filter, $name, $id) {
+            if ($filter === $name) {
+                if ($item->custom_properties['data_name'] != $name) {
+                    return true;
+                }
+            } elseif ($filter === $id) {
+                if ($item->id != $id) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     /**

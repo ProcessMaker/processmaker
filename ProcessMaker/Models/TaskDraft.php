@@ -47,13 +47,7 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
             return;
         }
 
-        // Handle deleted files
-        foreach (Arr::get($draft->data, '__deleted_files', []) as $fileId) {
-            $file = Media::find($fileId);
-            if ($file) {
-                $file->delete();
-            }
-        }
+        self::handleDeletedFiles($draft);
 
         // Associate draft files with the actual process request
         foreach ($draft->getMedia() as $mediaItem) {
@@ -61,28 +55,56 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
             if ($processRequestId) {
                 $processRequest = ProcessRequest::find($processRequestId);
                 if ($processRequest) {
-                    // Keep track to previous files to delete
-                    $delete = [];
-                    foreach ($task->processRequest->getMedia() as $existingMediaItem) {
-                        if (
-                            $existingMediaItem->getCustomProperty('data_name') === $mediaItem->getCustomProperty('data_name') &&
-                            !$mediaItem->getCustomProperty('is_multiple')
-                        ) {
-                            $delete[] = $existingMediaItem;
-                        }
-                    }
-
-                    $mediaItem->model_type = ProcessRequest::class;
-                    $mediaItem->model_id = $processRequest->id;
-                    $mediaItem->forgetCustomProperty('parent_process_request_id');
-                    $mediaItem->saveOrFail();
-
-                    // Delete previous files
-                    foreach ($delete as $existingMediaItem) {
-                        $existingMediaItem->delete();
-                    }
+                    $existingFilesToDelete = self::filesToDelete($task, $mediaItem);
+                    self::reAssociateMediaItem($mediaItem, $processRequest);
+                    self::deleteFiles($existingFilesToDelete);
                 }
             }
+        }
+    }
+
+    private static function handleDeletedFiles($draft)
+    {
+        // Handle deleted files
+        foreach (Arr::get($draft->data, '__deleted_files', []) as $fileId) {
+            $file = Media::find($fileId);
+            if ($file) {
+                $file->delete();
+            }
+        }
+    }
+
+    private static function filesToDelete($task, $mediaItem)
+    {
+        // Keep track to previous files to delete
+        $delete = [];
+        foreach ($task->processRequest->getMedia() as $existingMediaItem) {
+            $existingMediaDataName = $existingMediaItem->getCustomProperty('data_name');
+            $mediaItemDataName = $mediaItem->getCustomProperty('data_name');
+            if (
+                $existingMediaDataName === $mediaItemDataName &&
+                !$mediaItem->getCustomProperty('is_multiple')
+            ) {
+                $delete[] = $existingMediaItem;
+            }
+        }
+
+        return $delete;
+    }
+
+    private static function reAssociateMediaItem($mediaItem, $processRequest)
+    {
+        $mediaItem->model_type = ProcessRequest::class;
+        $mediaItem->model_id = $processRequest->id;
+        $mediaItem->forgetCustomProperty('parent_process_request_id');
+        $mediaItem->saveOrFail();
+    }
+
+    private static function deleteFiles($delete)
+    {
+        // Delete previous files
+        foreach ($delete as $existingMediaItem) {
+            $existingMediaItem->delete();
         }
     }
 }
