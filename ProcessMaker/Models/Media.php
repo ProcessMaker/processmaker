@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -202,9 +203,9 @@ class Media extends MediaLibraryModel
      * getFilesRequest
      *
      * @param  ProcessRequest $request
-     * @return Media files
+     * @return Collection | Media
      */
-    public static function getFilesRequest(ProcessRequest $request)
+    public static function getFilesRequest(ProcessRequest $request, $id = null)
     {
         $requestTokenIds = [$request->id];
         if ($request->collaboration && $request->collaboration->requests()) {
@@ -212,8 +213,39 @@ class Media extends MediaLibraryModel
             $requestTokenIds = $request->collaboration->requests->pluck('id');
         }
 
+        // Return a single file when $id is set
+        if ($id) {
+            $mediaById = self::findOrFail($id);
+
+            if (!in_array($mediaById->process_request_id, $requestTokenIds)) {
+                abort(404, __('File is not part of this request'));
+            }
+
+            return $mediaById;
+        }
+
         // Get all files for process and all subprocesses ..
-        return self::whereIn('model_id', $requestTokenIds)->get();
+        return self::where('model_type', ProcessRequest::class)
+            ->whereIn('model_id', $requestTokenIds)->get();
+    }
+
+    public function getProcessRequestIdAttribute()
+    {
+        if ($this->model_type == TaskDraft::class) {
+            return $this->model->processRequestToken->processRequest->id;
+        } elseif ($this->model_type == ProcessRequest::class) {
+            return $this->model->id;
+        }
+        throw new \Exception('No process request id for ' . $this->model_type);
+    }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        $array['process_request_id'] = $this->process_request_id;
+
+        return $array;
     }
 
     /**

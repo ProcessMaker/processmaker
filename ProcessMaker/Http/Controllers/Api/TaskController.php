@@ -246,6 +246,7 @@ class TaskController extends Controller
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
+            TaskDraft::moveDraftFiles($task);
             WorkflowManager::completeTask($process, $instance, $task, $data);
 
             return new Resource($task->refresh());

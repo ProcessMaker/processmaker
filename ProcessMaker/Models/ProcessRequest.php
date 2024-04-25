@@ -47,10 +47,10 @@ use Throwable;
  * @property string $status
  * @property array $data
  * @property string $collaboration_uuid
- * @property \Carbon\Carbon $initiated_at
- * @property \Carbon\Carbon $completed_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $initiated_at
+ * @property Carbon $completed_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
@@ -562,7 +562,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
+        Log::error($exception);
         if (!$this->isNonPersistent()) {
             $this->save();
         }
@@ -740,7 +740,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                     ->whereIn('user_id', function ($subquery) use ($value, $expression) {
                         $subquery->select('id')
                             ->from('users')
-                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . " ?", [$value]);
+                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . ' ?', [$value]);
                     })
                     ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
             });
@@ -914,7 +914,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     public function requestFiles(bool $includeToken = false)
     {
-        $media = \ProcessMaker\Models\Media::getFilesRequest($this);
+        $media = Media::getFilesRequest($this);
 
         return (object) $media->mapToGroups(function ($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
@@ -934,11 +934,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function downloadFile($fileId)
     {
         // Get all files for process and all subprocesses ..
-        $media = Media::getFilesRequest($this);
-
-        $filtered = $media->filter(function ($value) use ($fileId) {
-            return $value->id == $fileId;
-        })->first();
+        $filtered = Media::getFilesRequest($this, $fileId);
 
         if (!$filtered) {
             return null;
@@ -951,7 +947,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getMedia(string $collectionName = 'default', $filters = []): Collection
     {
-        return \ProcessMaker\Models\Media::getFilesRequest($this);
+        return Media::getFilesRequest($this);
     }
 
     public function getErrors()
