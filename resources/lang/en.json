@@ -2226,5 +2226,6 @@
   "Update Rule": "Update Rule",
   "This is an AI feature and can provide inaccurate or biased responses.": "This is an AI feature and can provide inaccurate or biased responses.",
   "ProcessMaker AI is currently offline. Please try again later.": "ProcessMaker AI is currently offline. Please try again later.",
-  "Clear All Fields In This Form": "Clear All Fields In This Form"
+  "Clear All Fields In This Form": "Clear All Fields In This Form",
+  "Select at least one column.": "Select at least one column."
 }
