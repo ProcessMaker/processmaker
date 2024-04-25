@@ -1750,18 +1750,40 @@ class ProcessController extends Controller
 
     public function deleteMediaImages(Request $request, Process $process)
     {
-        $process = Process::find($process->id);
-
         // Get UUID image in media table
         $uuid = $request->input('uuid');
+        // Define collection names
+        $oldCollectionName = 'images_carousel';
+        $collectionName = $process->uuid . '_images_carousel';
+        // Attempt to delete image from both old and new collections
+        $res1 = $this->deleteImage($process, $uuid, $oldCollectionName);
+        $res2 = $this->deleteImage($process, $uuid, $collectionName);
+        // If any deletion is successful, return 204 No Content
+        if ($res1 || $res2) {
+            return response()->json([], 204);
+        }
+    }
 
-        $mediaImagen = $process->getMedia('images_carousel')
+    /**
+     * Delete a image by UUID and collection name
+     * @param Process $process
+     * @param string $uuid
+     * @param string $collectionName
+     * @return bool
+    */
+    private function deleteImage(Process $process, $uuid, $collectionName)
+    {
+        // Retrieve the media image by UUID and collection name
+        $mediaImagen = $process->getMedia($collectionName)
             ->where('uuid', $uuid)
             ->first();
-
-        // Check if image exists before delete
+        // If the media image exists, delete it and return true
         if ($mediaImagen) {
             $mediaImagen->delete();
+            return true;
+        } else {
+            // Otherwise, return false
+            return false;
         }
     }
 

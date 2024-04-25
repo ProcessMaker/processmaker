@@ -172,6 +172,8 @@
               :actions="actions"
               :data="tooltipRowData"
               :divider="false"
+              @show="handleShowEllipsis"
+              @hide="handleHideEllipsis"
             />
           </slot>
           </div>
@@ -329,6 +331,7 @@ export default {
       tooltipRowData: {},
       isTooltipVisible: false,
       hideTimer: null,
+      ellipsisShow: false,
     };
   },
   computed: {
@@ -636,17 +639,28 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if(this.fromButton === 'previewTask') {
+      if (this.fromButton === 'previewTask') {
         return this.previewTasks(this.tooltipRowData, 93);
       }
-      if(this.fromButton === 'fullTask') {
+      if (this.fromButton === 'fullTask') {
         return this.previewTasks(this.tooltipRowData, 50);
       }
-      if(this.fromButton === 'inboxRules') {
+      if (this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
-      }  
+      }
+    },
+    handleShowEllipsis() {
+      this.ellipsisShow = true;
+    },
+    handleHideEllipsis() {
+      this.ellipsisShow = false;
     },
     handleRowMouseover(row) {
+      if (this.ellipsisShow) {
+        this.isTooltipVisible = !this.disableRuleTooltip;
+        this.clearHideTimer();
+        return;
+      }
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
@@ -702,6 +716,9 @@ export default {
       clearTimeout(this.hideTimer);
     },
     hideTooltip() {
+      if (this.ellipsisShow) {
+        return;
+      }
       this.isTooltipVisible = false;
     },
     sanitizeTooltip(html) {

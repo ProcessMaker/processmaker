@@ -117,16 +117,15 @@ export default {
   },
   mounted() {
     const url = new URL(window.location.href);
-    if (this.hasGuidedTemplateParamsOnly(url) || this.hasTemplateParams(url)) {
-      // Loaded from URL with guided template parameters to show guided templates
-      // Dynamically load the component
-      this.wizardTemplatesSelected(true);
-    } else {
-      this.getCategories();
-      setTimeout(() => {
-        this.checkSelectedProcess();
-      }, 500);
-    }
+    this.getCategories();
+    setTimeout(() => {
+      this.checkSelectedProcess();
+      if (this.hasGuidedTemplateParamsOnly(url) || this.hasTemplateParams(url)) {
+        // Loaded from URL with guided template parameters to show guided templates
+        // Dynamically load the component
+        this.$refs.categoryList.selectTemplateItem();
+      }
+    }, 500);
   },
   methods: {
     /**
@@ -220,7 +219,7 @@ export default {
       const url = new URL(window.location.href);
 
       // If url has Guided Template Params or Template Params, don't replace state.
-      if (!this.hasTemplateParams(url) && !this.hasGuidedTemplateParamsOnly(url)) {
+      if (!this.hasTemplateParams(url)) {
         window.history.replaceState(null, null, "/process-browser");
         this.key += 1;
         this.category = value;
