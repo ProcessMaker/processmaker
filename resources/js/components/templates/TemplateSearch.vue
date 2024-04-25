@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="pb-3">
-      <b-input-group v-if="component === 'template-select-card'">
+      <b-input-group class="class-align-top" v-if="component === 'template-select-card'">
         <b-input-group-prepend>
           <b-btn class="btn-search-run px-2" :title="$t('Search Templates')" @click="fetch()">
             <i class="fas fa-search search-icon" />
@@ -318,5 +318,8 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
+}
+.class-align-top {
+  margin-top: 15px;
 }
 </style>
