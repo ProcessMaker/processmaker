@@ -141,6 +141,8 @@ return [
 
     'upgrades' => 'upgrade_migrations',
 
+    'enable_index_json_columns' => filter_var(env('ENABLE_INDEXED_JSON_COLUMNS', true), FILTER_VALIDATE_BOOLEAN),
+
     /*
     |--------------------------------------------------------------------------
     | Redis Databases
