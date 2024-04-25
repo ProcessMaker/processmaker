@@ -24,10 +24,11 @@ export default {
       this.pmBlockName = name;
       this.$refs["create-pm-block-modal"].show();
     },
-    showAddToProjectModal(name, id) {
+    showAddToProjectModal(name, id, projects = []) {
       this.processId = id;
       this.assetName = name;
       this.assetType = "process";
+      this.assignedProjects = projects;
       this.$refs["add-to-project-modal"].show();
     },
     fetch() {
