@@ -121,16 +121,16 @@ export default {
     },
   },
   mounted() {
-    if (this.hasGuidedTemplateParams) {
-      // Loaded from URL with guided template parameters to show guided templates
-      // Dynamically load the component
-      this.wizardTemplatesSelected(true);
-    } else {
-      this.getCategories();
-      setTimeout(() => {
-        this.checkSelectedProcess();
-      }, 500);
-    }
+    const hasGuidedTemplateParams = this.hasGuidedTemplateParams;
+    this.getCategories();
+    setTimeout(() => {
+      this.checkSelectedProcess();
+      if (hasGuidedTemplateParams) {
+        // Loaded from URL with guided template parameters to show guided templates
+        // Dynamically load the component
+        this.$refs.categoryList.selectTemplateItem();
+      }
+    }, 500)
   },
   methods: {
     /**
