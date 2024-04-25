@@ -218,7 +218,7 @@ export default {
     selectCategorie(value) {
       const url = new URL(window.location.href);
 
-      // If url has Guided Template Params or Template Params, don't replace state.
+      // If url has Template Params, don't replace state.
       if (!this.hasTemplateParams(url)) {
         window.history.replaceState(null, null, "/process-browser");
         this.key += 1;
