@@ -115,7 +115,7 @@ class ProcessRequestFileController extends Controller
 
     private function filter($media, $filter, $name, $id)
     {
-        return $media->reject(function ($item, $key) use ($filter, $name, $id) {
+        return $media->reject(function ($item) use ($filter, $name, $id) {
             if ($filter === $name) {
                 if ($item->custom_properties['data_name'] != $name) {
                     return true;
