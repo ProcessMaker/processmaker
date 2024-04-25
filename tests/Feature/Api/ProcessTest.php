@@ -1289,7 +1289,7 @@ class ProcessTest extends TestCase
             'uuid' => $uuid,
         ];
         $response = $this->apiCall('DELETE', $url, $params);
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $this->assertDatabaseMissing('media', ['id' => $mediaImagen->id]);
     }
