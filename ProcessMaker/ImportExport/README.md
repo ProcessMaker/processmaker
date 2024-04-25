@@ -5,6 +5,7 @@
 - Asset: Any model instance that has a UUID and can be exported. The model class has the trait `Exportable`
 - Dependent: A child asset required by a parent asset to work correctly. For example, a Process asset will have a dependent User asset for the process manager if the process manager is set.
   
+  
 ## Exporters
 Exporter classes handle both the importing and exporting of an asset.
 
