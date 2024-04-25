@@ -338,6 +338,9 @@ export default {
         .catch((error) => {
           this.disabled = false;
           this.addError = error.response?.data.errors;
+          if (error?.response?.status && error?.response?.status === 422) {
+            this.errors = error.response.data.errors;
+          }
         });
     },
     handleSuccessMessageAndRedirect(data) {
