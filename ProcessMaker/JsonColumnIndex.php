@@ -12,7 +12,7 @@ class JsonColumnIndex
         $indexName = $column . '_' . $path;
 
         if ($this->indexExists($table, $indexName)) {
-            return;
+            return false;
         }
 
         $sql = <<<SQL
@@ -23,7 +23,7 @@ class JsonColumnIndex
 
         if (!config('database.enable_index_json_columns')) {
             Log::warning('Indexing JSON columns is disabled. The following index was not created: ' . $sql);
-            return;
+            return false;
         }
 
         return DB::statement($sql);
