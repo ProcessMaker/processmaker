@@ -115,8 +115,6 @@ export default {
       categoryCount: 0,
     };
   },
-  computed: {
-  },
   mounted() {
     const url = new URL(window.location.href);
     if (this.hasGuidedTemplateParamsOnly(url) || this.hasTemplateParams(url)) {
