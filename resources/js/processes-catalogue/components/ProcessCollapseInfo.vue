@@ -91,7 +91,7 @@
             <div class="wizard-container col-sm-3">
               <div class="wizard">
                 <b-button
-                  id="createdFromWizardTemplate"
+                  v-if="createdFromWizardTemplate"
                   class="mt-2 wizard-link"
                   variant="link"
                   @click="getHelperProcess"
