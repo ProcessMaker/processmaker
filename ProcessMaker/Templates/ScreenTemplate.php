@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,6 @@ use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
-use SebastianBergmann\CodeUnit\Exception;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -317,28 +317,24 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     *  Update process template configurations
-     * @param Request
-     * @return JsonResponse
+     * Update process template configurations
+     *
+     * @param Request $request
      */
-    public function updateTemplateConfigs($request) : JsonResponse
+    public function updateTemplateConfigs($request): JsonResponse
     {
         try {
-            $id = (int) $request->id;
-            $template = ScreenTemplates::where('id', $id)->firstOrFail();
-            $this->syncTemplateMedia($template, $request->template_media);
+            $template = ScreenTemplates::findOrFail((int) $request->id);
+            $this->syncTemplateMedia($template, $request->input('template_media', []));
 
             if ($request->is_public !== $template->is_public) {
                 $template->is_default_template = false;
             }
 
-            $template->fill($request->except('id'));
-            $template->user_id = Auth::user()->id;
-
-            $template->saveOrFail();
+            $template->fill($request->except(['id', 'user_id']))->saveOrFail();
 
             return response()->json();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ], 422);
@@ -436,7 +432,7 @@ class ScreenTemplate implements TemplateInterface
             TemplateCreated::dispatch($payload);
 
             return response()->json([], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
