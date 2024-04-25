@@ -126,7 +126,7 @@ export default {
             );
             break;
             case 'add-to-project':
-              this.showAddToProjectModal(data.name, data.id);
+              this.showAddToProjectModal(data.name, data.id, data.projects);
             break;
             case 'edit-launchpad':
               this.showAddToModalSaveVersion(data.name, data.id);
