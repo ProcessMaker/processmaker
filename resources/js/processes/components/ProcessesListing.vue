@@ -143,6 +143,7 @@
         asset-type="process"
         :asset-id="processId"
         :asset-name="assetName"
+        :assigned-projects="assignedProjects"
       />
       <pagination-table
         :meta="data.meta"
@@ -192,6 +193,7 @@ export default {
   props: ["filter", "id", "status", "permission", "isDocumenterInstalled", "pmql", "processName", "currentUserId"],
   data() {
     return {
+      assignedProjects: [],
       orderBy: "name",
       processId: null,
       processTemplateName: "",
