@@ -51,6 +51,12 @@ class TemplateController extends Controller
         [$type, $template, $addons, $categories, $route, $screenTypes] =
             (new $this->types[$type][1])->configure($request);
 
+        $templateBreadcrumb = '';
+
+        if ($type === 'screen') {
+            $templateBreadcrumb = $template->is_public ? '?#nav-publicTemplates' : '?#nav-myTemplates';
+        }
+
         return view('templates.configure', compact(
             [
                 'type',
@@ -59,6 +65,7 @@ class TemplateController extends Controller
                 'categories',
                 'route',
                 'screenTypes',
+                'templateBreadcrumb',
             ]
         ));
     }

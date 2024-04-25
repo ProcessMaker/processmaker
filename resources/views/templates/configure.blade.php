@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route( $route['action'] . '.index'),
         $route['label'] => route($route['action'] . '.index'),
-        __('Templates') => route($route['action'] . '.index'),
+        __('Templates') => route($route['action'] . '.index') . $templateBreadcrumb,
         $template->name => null,
     ]])
 @endsection
