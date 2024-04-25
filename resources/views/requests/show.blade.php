@@ -446,7 +446,7 @@
                 <div class="ml-md-3 mt-md-0 mt-3 collapse-content">
                   <template v-if="panCommentInVueOptionsComponents">
                     <comment-container
-                      commentable_id="{{ $request->getKey() }}"
+                      :commentable_id="request.id"
                       commentable_type="{{ get_class($request) }}"
                       name="{{ $request->name }}"
                       :readonly="request.status === 'COMPLETED'"
