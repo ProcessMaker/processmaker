@@ -4,7 +4,7 @@
       no-body
       bg-variant="transparent"
       class="screen-template-card p-0"
-      data-cy="screen-template-card"
+      :data-cy="`${template.name}-card`"
     >
       <b-card-body>
         <div @click="selectTemplate" class="template-container">
