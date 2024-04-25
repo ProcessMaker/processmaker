@@ -213,7 +213,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.branch.name=${{ CI_PACKAGE_BRANCH }}
+            -Dsonar.branch.name=${{ env.CI_PACKAGE_BRANCH }}
             -Dsonar.sources=.
             -Dsonar.tests=.
             -Dsonar.test.inclusions=**/*Test.php
