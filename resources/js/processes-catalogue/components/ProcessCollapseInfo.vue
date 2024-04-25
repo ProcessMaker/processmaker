@@ -252,7 +252,7 @@ export default {
     width: 170px;
   }
 }
-@media (1460px < width < 1600px) {
+@media (1460px <= width < 1600px) {
   .col-pm-9 {
     flex: 0 0 70%;
     max-width: 70%;
@@ -262,7 +262,20 @@ export default {
     max-width: 30%;
   }
 }
-@media (1200px <= width < 1460px) {
+@media (1367px <= width < 1460px) {
+  .col-pm-9 {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+  .col-pm-3 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+}
+@media (1200 <= width <= 1366) {
+  .process-options {
+    margin-top: 32px;
+  }
   .col-pm-9 {
     flex: 0 0 100%;
     max-width: 100%;
@@ -270,9 +283,6 @@ export default {
   .col-pm-3 {
     flex: 0 0 100%;
     max-width: 100%;
-  }
-  .process-options {
-    margin-top: 32px;
   }
 }
 </style>

@@ -124,6 +124,11 @@ export default {
     max-width: 700px;
   }
 }
+@media (width <= 1366px) {
+  .img-carousel {
+    max-width: 590px;
+  }
+}
 @media (width <= 1200px) {
   .img-carousel {
     max-width: 513px;
