@@ -236,7 +236,8 @@ class Media extends MediaLibraryModel
         } elseif ($this->model_type == ProcessRequest::class) {
             return $this->model->id;
         }
-        abort(404, 'No process request id for ' . $this->model_type);
+
+        return null;
     }
 
     public function toArray()
