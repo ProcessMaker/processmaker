@@ -155,6 +155,12 @@ class User extends Authenticatable implements HasMedia
         });
     }
 
+    public function someNewMethod()
+    {
+        $res = 1 + 1;
+        return "testing if this is covered " . $res;
+    }
+
     /**
      * Validation rules
      *
