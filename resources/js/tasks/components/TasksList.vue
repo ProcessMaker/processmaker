@@ -172,6 +172,8 @@
               :actions="actions"
               :data="tooltipRowData"
               :divider="false"
+              @show="handleShowEllipsis"
+              @hide="handleHideEllipsis"
             />
           </slot>
           </div>
@@ -199,6 +201,7 @@
       ref="preview"
       @mark-selected-row="markSelectedRow"
       :tooltip-button="tooltipFromButton"
+      @onWatchShowPreview="onWatchShowPreview"
     >
       <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
         <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
@@ -328,6 +331,7 @@ export default {
       tooltipRowData: {},
       isTooltipVisible: false,
       hideTimer: null,
+      ellipsisShow: false,
     };
   },
   computed: {
@@ -635,30 +639,44 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if(this.fromButton === 'previewTask') {
+      if (this.fromButton === 'previewTask') {
         return this.previewTasks(this.tooltipRowData, 93);
       }
-      if(this.fromButton === 'fullTask') {
+      if (this.fromButton === 'fullTask') {
         return this.previewTasks(this.tooltipRowData, 50);
       }
-      if(this.fromButton === 'inboxRules') {
+      if (this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
-      }  
+      }
+    },
+    handleShowEllipsis() {
+      this.ellipsisShow = true;
+    },
+    handleHideEllipsis() {
+      this.ellipsisShow = false;
     },
     handleRowMouseover(row) {
+      if (this.ellipsisShow) {
+        this.isTooltipVisible = !this.disableRuleTooltip;
+        this.clearHideTimer();
+        return;
+      }
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      let elementHeight = 36;
+      let elementHeight = 28;
 
       this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
+      let yPosition = 0;
+
       const rect = rowElement.getBoundingClientRect();
+      yPosition = rect.top + window.scrollY;
 
       const selectedFiltersBar = document.querySelector(
         ".selected-filters-bar"
@@ -670,15 +688,16 @@ export default {
       elementHeight -= selectedFiltersBarHeight;
 
       let rightBorderX = rect.right;
-      let bottomBorderY = 0
+
+      let bottomBorderY = 0;
       if(this.fromButton === "" || this.fromButton === "previewTask"){
-        bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+        bottomBorderY = yPosition - topAdjust + 100 - elementHeight;
       }
       if(this.fromButton === "fullTask"){
-        bottomBorderY = rect.bottom - topAdjust + 200 - elementHeight;
+        bottomBorderY = yPosition;
       }
       if(this.fromButton === "inboxRules"){
-        bottomBorderY = rect.bottom - topAdjust + 100 - elementHeight;
+        bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
       this.rowPosition = {
         x: rightBorderX,
@@ -697,6 +716,9 @@ export default {
       clearTimeout(this.hideTimer);
     },
     hideTooltip() {
+      if (this.ellipsisShow) {
+        return;
+      }
       this.isTooltipVisible = false;
     },
     sanitizeTooltip(html) {
@@ -757,6 +779,9 @@ export default {
           name: null
         };
       }
+    },
+    onWatchShowPreview(value) {
+      this.$emit('onWatchShowPreview', value);
     }
   },
 };

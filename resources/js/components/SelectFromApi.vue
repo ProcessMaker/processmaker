@@ -84,8 +84,9 @@ export default {
         filter: typeof filter === "string" ? filter : '',
         exclude_ids: this.exclude_ids.join(','),
       };
+      const separator = this.api.includes('?') ? '&' : '?';
       window.ProcessMaker.apiClient
-        .get(this.api + '?' +
+        .get(this.api + separator +
           Object.keys(query).
           filter(par => query[par], '').
           map(par => `${par}=${encodeURIComponent(query[par])}`).

@@ -54,11 +54,12 @@ new Vue({
             })
             .catch(error => {
                 //define how display errors
-                this.errors.name = ['The template name must be unique.'];
-                if (error.response.status && error.response.status === 422) {
-                // Validation error
-                that.errors = error.response.data.errors;
-                
+                if (error?.response?.status === 422) {
+                    // Validation error
+                    that.errors = error.response.data.errors;
+                } else if (error?.response?.status === 409) {
+                    // Duplicate error
+                    that.errors = error.response.data;
                 }
             });
         },

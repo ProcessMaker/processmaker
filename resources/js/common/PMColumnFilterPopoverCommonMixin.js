@@ -43,11 +43,15 @@ const PMColumnFilterCommonMixin = {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
+        if (Processmaker.status) {
+          url += "|" + Processmaker.status;
+        }
       }
       let config = {
         filters: this.formattedFilter(),
         order
       };
+
       ProcessMaker.apiClient.put(url, config);
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");

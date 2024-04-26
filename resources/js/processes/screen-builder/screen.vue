@@ -879,6 +879,7 @@ export default {
         this.$refs.menuScreen.sectionRight = true;
       }
       if (mode === "preview") {
+        this.changeDeviceScreen('desktop');
         this.$refs.menuScreen.changeItem("button_design", {
           variant: "outline-secondary",
         });

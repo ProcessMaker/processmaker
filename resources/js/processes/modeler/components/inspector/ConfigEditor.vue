@@ -4,6 +4,7 @@
       <label>{{ $t(label) }}</label>
       <button
         v-b-toggle.tree-view-sidebar
+        @click="openSidebar()"
         type="button"
         :aria-label="$t('Expand Editor')"
         class="btn-sm float-right"
@@ -140,6 +141,9 @@ export default {
     },
     closeSidebar() {
       this.$refs.sidebar.hide();
+    },
+    openSidebar() {
+      this.treeView = false;
     },
   },
 };

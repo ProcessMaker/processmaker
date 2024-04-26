@@ -120,6 +120,17 @@ class ProcessController extends Controller
             $processes = Process::active()->with($include);
         }
 
+        // The simplified parameter indicates to return just the main information of processes
+        if ($request->input('simplified_data', false)) {
+            $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
+            $modifiedCollection = $processes->map(function ($item) {
+                return [
+                    'id' => $item['id'],
+                    'events'=> $item['start_events']];
+            });
+            return new ApiCollection($modifiedCollection);
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
@@ -153,12 +164,6 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get()
             ->collect();
-
-        // the simplified parameter indicates to return just the main information of processes
-        if ($request->input('simplified_data', false)) {
-            return new ProcessCollection($processes);
-        }
-
 
         foreach ($processes as $key => $process) {
             // filter the start events that can be used manually (no timer start events);
@@ -1745,18 +1750,40 @@ class ProcessController extends Controller
 
     public function deleteMediaImages(Request $request, Process $process)
     {
-        $process = Process::find($process->id);
-
         // Get UUID image in media table
         $uuid = $request->input('uuid');
+        // Define collection names
+        $oldCollectionName = 'images_carousel';
+        $collectionName = $process->uuid . '_images_carousel';
+        // Attempt to delete image from both old and new collections
+        $res1 = $this->deleteImage($process, $uuid, $oldCollectionName);
+        $res2 = $this->deleteImage($process, $uuid, $collectionName);
+        // If any deletion is successful, return 204 No Content
+        if ($res1 || $res2) {
+            return response()->json([], 204);
+        }
+    }
 
-        $mediaImagen = $process->getMedia('images_carousel')
+    /**
+     * Delete a image by UUID and collection name
+     * @param Process $process
+     * @param string $uuid
+     * @param string $collectionName
+     * @return bool
+    */
+    private function deleteImage(Process $process, $uuid, $collectionName)
+    {
+        // Retrieve the media image by UUID and collection name
+        $mediaImagen = $process->getMedia($collectionName)
             ->where('uuid', $uuid)
             ->first();
-
-        // Check if image exists before delete
+        // If the media image exists, delete it and return true
         if ($mediaImagen) {
             $mediaImagen->delete();
+            return true;
+        } else {
+            // Otherwise, return false
+            return false;
         }
     }
 

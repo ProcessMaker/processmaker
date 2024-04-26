@@ -160,7 +160,7 @@ export default {
         }
     },
     mounted() {
-        this.templateData.screenType = this.screenType;
+        this.templateData.screen_type = this.screenType;
     }
 }
 </script>

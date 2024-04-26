@@ -308,7 +308,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users"
+                      api="users?status=ACTIVE"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"
@@ -611,6 +611,7 @@
             }];
           },
           resizeMonaco () {
+            this.showTree = false;
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
@@ -868,6 +869,9 @@
   .button-priority {
     background-color: #FEF2F3;
     color: #C56363;
+  }
+  .card-header:first-child.text-status {
+    border-radius: 6px;
   }
 </style>
 @endsection

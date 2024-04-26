@@ -56,6 +56,7 @@ export default {
       showWarning: false,
       existingAssetId: null,
       existingAssetName: "",
+      existingAssetOwnerId: null,
       templateData: {},
       customModalButtons: [
         {"content": "Cancel", "action": "close", "variant": "outline-secondary", "disabled": false, "hidden": false},
@@ -77,7 +78,7 @@ export default {
       },
       descriptionText() {
         return this.$t('This will create a re-usable template based on the {{assetName}} {{assetType}}', {assetName: this.assetName, assetType: this.assetType});
-      }
+      },
     }, 
     methods: {
       show() {
@@ -115,9 +116,10 @@ export default {
             this.errors = this.errors.errors;
           } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
-            this.toggleButtons();
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.templateName;
+            this.existingAssetOwnerId = error.response.data.owner_id;
+            this.toggleButtons();
           } else {
             const message = error.response.data.error;
             ProcessMaker.alert(this.$t(message), "danger");
@@ -126,6 +128,8 @@ export default {
       },  
       updateTemplate() {   
         this.templateData.existingAssetId = this.existingAssetId;
+        this.templateData.asset_id = this.assetId;
+
         ProcessMaker.apiClient.put("template/" + this.assetType + "/" + this.existingAssetId + "/update", this.templateData)
         .then(response => {
           ProcessMaker.alert( this.$t("Template successfully updated"),"success");
@@ -136,19 +140,23 @@ export default {
             this.errors = this.errors.errors;
           } else if (_.includes(this.errors.name, 'The template name must be unique.')) {
             this.showWarning = true;
-            this.toggleButtons();
             this.existingAssetId = error.response.data.id;
             this.existingAssetName = error.response.data.assetName;
+            this.existingAssetOwner = error.response.data?.owner_id;
+            this.toggleButtons();
           }
         });
       },
       toggleButtons() {
+        if (this.assetType === 'process' || this.assetType === 'screen' && this.existingAssetOwnerId === this.currentUserId) {
+          this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
+        }
+
         this.customModalButtons[1].hidden = !this.customModalButtons[1].hidden;
-        this.customModalButtons[2].hidden = !this.customModalButtons[2].hidden;
         this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
       },
       validateFormData(errors) {
-        if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description)) {
+        if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description) && !_.isEmpty(this.templateData.version)) {
           this.customModalButtons[1].disabled = false;
           if (this.showWarning) {
             if (this.templateData.name !== this.existingAssetName) {

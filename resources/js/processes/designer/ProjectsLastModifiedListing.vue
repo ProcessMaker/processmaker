@@ -24,13 +24,17 @@
     v-else
     class="data-table"
   >
-    <data-loading
-      v-show="shouldShowLoader"
-      :for="/projects\?page/"
-      :empty="$t('No Data Available')"
-      :empty-desc="$t('')"
-      empty-icon="noData"
-    />
+    <div
+      class="loading-my-projects-box"
+    >
+      <data-loading
+        v-show="shouldShowLoader"
+        :for="/projects\?page/"
+        :empty="$t('No Data Available')"
+        :empty-desc="$t('')"
+        empty-icon="noData"
+      />
+    </div>
     <div
       v-show="!shouldShowLoader"
       class="card card-body processes-table-card"
@@ -268,5 +272,14 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+.data-table {
+  overflow: hidden;
+  height: 450px;
+  justify-items: center;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  display: flex;
 }
 </style>

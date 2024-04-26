@@ -50,7 +50,7 @@
         <!-- Slot Table Body -->
         <template
           v-for="(row, rowIndex) in data.data"
-          v-slot:[`row-${rowIndex}`]
+          #[`row-${rowIndex}`]
         >
           <td
             v-for="(header, colIndex) in fields"
@@ -233,7 +233,9 @@ export default {
       fields: [],
       isTooltipVisible: false,
       rowPosition: {},
-      tooltipRowData: {},
+      tooltipRowData: {
+        is_owner: true,
+      },
       hideTimer: null,
       selectedRow: 0,
       showTemplatePreview: false,
