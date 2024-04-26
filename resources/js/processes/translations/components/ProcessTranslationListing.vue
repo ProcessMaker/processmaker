@@ -39,7 +39,7 @@
                   :showProgress="true"
                   @navigate="onNavigate"
               />
-              <p class="right-aligned-percent" v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
+              <p class="right-aligned-percent m-0" v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
             </div>
           </td>
         </tr>
@@ -191,16 +191,11 @@ export default {
       window.Echo.private(channel).listen(
         translationEvent,
         (response) => {
-          const language = response.data.language;
-          this.translatingLanguages.forEach(lang => {
-            if (lang.language === language) {
-              lang.stream = {
-                data: response.data.progress.progress + '%'
-              };
-              lang.humanLanguage += 'a';
-            }
+          this.translatingLanguages.forEach((translatingLanguage, key) => {
+            this.$set(this.translatingLanguages[key], "progress", response.data.progress);
+            this.$set(this.translatingLanguages[key].stream, "data", `${response.data.progress.progress}%`);
           });
-          if (response.data.progress.status === 'completed') {
+          if (response.data.progress.status === 'completed' || response.data.progress.status === 'error') {
             this.fetchPending();
             this.fetch();
           }
@@ -373,7 +368,7 @@ export default {
 
           this.translatingLanguages.forEach(lang => {
             lang.stream = {
-              data: "5%",
+              data: "1%",
             };
           });
 
