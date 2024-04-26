@@ -422,7 +422,9 @@ class ProcessTranslation
 
             // Cancel pending batch jobs
             $batch = Bus::findBatch($token);
-            $batch->cancel();
+            if ($batch) {
+                $batch->cancel();
+            }
         }
 
         return true;
