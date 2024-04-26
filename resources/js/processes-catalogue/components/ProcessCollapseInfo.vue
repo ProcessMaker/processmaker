@@ -63,35 +63,55 @@
         class="collapse show"
       >
         <div class="info-collapse">
-          <p class="title-process">
-            {{ process.name }}
-          </p>
-          <p
-            v-if="readActivated || !largeDescription"
-            class="description"
-          >
-            {{ process.description }}
-          </p>
-          <p
-            v-if="!readActivated && largeDescription"
-            class="description"
-          >
-            {{ process.description.slice(0,300) }}
-            <a
-              v-if="!readActivated"
-              class="read-more"
-              @click="activateReadMore"
-            >
-              ...
-            </a>
-          </p>
+          <div class="row">
+            <div class="col-sm-9">
+              <p class="title-process">
+                {{ process.name }}
+              </p>
+              <p
+                v-if="readActivated || !largeDescription"
+                class="description"
+              >
+                {{ process.description }}
+              </p>
+              <p
+                v-if="!readActivated && largeDescription"
+                class="description"
+              >
+                {{ process.description.slice(0,300) }}
+                <a
+                  v-if="!readActivated"
+                  class="read-more"
+                  @click="activateReadMore"
+                >
+                  ...
+                </a>
+              </p>
+            </div>
+            <div class="wizard-container col-sm-3">
+              <div class="wizard">
+                <b-button
+                  v-if="createdFromWizardTemplate"
+                  class="mt-2 wizard-link"
+                  variant="link"
+                  @click="getHelperProcess"
+                >
+                  <img
+                    src="../../../img/wizard-icon.svg"
+                    :alt="$t('Guided Template Icon')"
+                  >
+                  {{ $t('Re-run Wizard') }}
+                </b-button>
+              </div>
+            </div>
+          </div>
           <b-row>
-            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-9">
+            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-pm-9 col-9">
               <processes-carousel
                 :process="process"
               />
             </b-col>
-            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-2">
+            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-pm-3 col-2">
               <process-options :process="process" />
             </b-col>
           </b-row>
@@ -129,6 +149,13 @@
       :description-settings="process.description"
       :process="process"
     />
+    <wizard-helper-process-modal
+      v-if="createdFromWizardTemplate"
+      id="wizardHelperProcessModal"
+      ref="wizardHelperProcessModal"
+      :process-launchpad-id="process.id"
+      :wizard-template-uuid="wizardTemplateUuid"
+    />
   </div>
 </template>
 
@@ -139,6 +166,7 @@ import CreateTemplateModal from "../../components/templates/CreateTemplateModal.
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsModal.vue";
+import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
@@ -155,9 +183,18 @@ export default {
     LaunchpadSettingsModal,
     ProcessOptions,
     ProcessesCarousel,
+    WizardHelperProcessModal,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  computed: {
+    createdFromWizardTemplate() {
+      return !!this.process?.properties?.wizardTemplateUuid;
+    },
+    wizardTemplateUuid() {
+      return this.process?.properties?.wizardTemplateUuid;
+    },
+  },
   mounted() {
     this.verifyDescription();
     ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
@@ -185,15 +222,67 @@ export default {
     activateReadMore() {
       this.readActivated = true;
     },
+    getHelperProcess() {
+      this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
+.wizard-link {
+  text-transform: none;
+}
+.wizard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.wizard {
+  display: flex;
+  justify-items: end;
+  width: 294px;
+}
 @media (width < 1200px) {
   .process-options {
     margin-top: 32px;
+  }
+  .wizard {
+    width: 170px;
+  }
+}
+@media (1460px <= width < 1600px) {
+  .col-pm-9 {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+  .col-pm-3 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+}
+@media (1367px <= width < 1460px) {
+  .col-pm-9 {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+  .col-pm-3 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+}
+@media (1200 <= width <= 1366) {
+  .process-options {
+    margin-top: 32px;
+  }
+  .col-pm-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .col-pm-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 }
 </style>
