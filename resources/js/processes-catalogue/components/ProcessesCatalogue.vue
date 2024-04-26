@@ -300,6 +300,7 @@ export default {
   min-width: 304px;
   height: calc(100vh - 145px);
   overflow-y: auto;
+  margin-top: 15px;
 }
 .menu-title {
   color: #556271;
