@@ -3,6 +3,7 @@
 namespace ProcessMaker;
 
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class JsonColumnIndex
 {
@@ -11,7 +12,7 @@ class JsonColumnIndex
         $indexName = $column . '_' . $path;
 
         if ($this->indexExists($table, $indexName)) {
-            return;
+            return false;
         }
 
         $sql = <<<SQL
@@ -19,6 +20,11 @@ class JsonColumnIndex
                 LEFT({$column}->>"{$path}", 255) COLLATE utf8mb4_bin
             )) USING BTREE;
         SQL;
+
+        if (!config('database.enable_index_json_columns')) {
+            Log::warning('Indexing JSON columns is disabled. The following index was not created: ' . $sql);
+            return false;
+        }
 
         return DB::statement($sql);
     }

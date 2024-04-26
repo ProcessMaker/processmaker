@@ -797,8 +797,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $field = $expression->field->toEloquent();
                 $operator = $expression->operator;
 
-                $requests = ProcessRequest::where($field, $operator, $value)->get();
-                $query->whereIn('process_request_id', $requests->pluck('id'));
+                $requestIds = ProcessRequest::where($field, $operator, $value)->pluck('id');
+                $query->whereIn('process_request_id', $requestIds);
             };
         } else {
             if (stripos($expression->field->field(), 'data.') === 0) {
@@ -813,8 +813,8 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
                 $pmql = "{$field} {$operator} {$value}";
 
                 return function ($query) use ($pmql) {
-                    $requests = ProcessRequest::pmql($pmql)->get();
-                    $query->whereIn('process_request_id', $requests->pluck('id'));
+                    $requestIds = ProcessRequest::pmql($pmql)->pluck('id');
+                    $query->whereIn('process_request_id', $requestIds);
                 };
             }
         }

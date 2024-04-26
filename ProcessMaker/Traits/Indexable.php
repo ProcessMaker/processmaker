@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use DomainException;
 use Facades\ProcessMaker\JsonColumnIndex;
 
 trait Indexable
@@ -66,18 +67,16 @@ trait Indexable
         // If table is saved search, return the corresponding table
         switch ($type) {
             case 'request':
-                return 'process_requests';
-                break;
             case 'task':
-                return 'process_request_tokens';
-                break;
+                return 'process_requests';
             case 'collection':
                 if ($meta && isset($meta->collection_id)) {
                     $collectionId = $meta->collection_id;
 
                     return 'collection_' . $collectionId;
                 }
-                break;
+            default:
+                throw new DomainException('Unknown saved search type: ' . $type);
         }
     }
 }
