@@ -7,10 +7,6 @@ const ListMixin = {
       return "";
     },
   },
-  created() {
-    // debounce fetch
-    this.fetch = _.debounce(this.fetch, 2000);
-  },
   methods: {
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
