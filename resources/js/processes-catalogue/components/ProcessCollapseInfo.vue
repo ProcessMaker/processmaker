@@ -252,7 +252,7 @@ export default {
     width: 170px;
   }
 }
-@media (1460px <= width < 1600px) {
+@media (1460px <= width < 1600px) { 
   .col-pm-9 {
     flex: 0 0 70%;
     max-width: 70%;
