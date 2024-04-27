@@ -263,9 +263,17 @@ class TaskController extends Controller
     {
         $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
         preg_match($regex, $e->getMessage(), $m);
-
+        
+        $message = __('PMQL Is Invalid.');
+        
+        if (count($m) > 1) {
+            $message .= ' ' . __('Column not found: ') . '"' . $m[1] . '"';
+        }
+        
+        \Log::error($e->getMessage());
+        
         return response([
-            'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
+            'message' => $message,
         ], 422);
     }
 
