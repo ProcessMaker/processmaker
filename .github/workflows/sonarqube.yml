@@ -1,29 +1,127 @@
-name: SonarQube
+name: Unit Test and SonarQube
 
 on:
   push:
     branches:
-      - develop
+      - sonarqube-coverage-report
   pull_request:
     types: [opened, synchronize, reopened]
 
-jobs:
-  build:
-    name: Scan
+env:
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: ${{ secrets.AWS_REGION }}
+  AWS_URL: ${{ secrets.AWS_URL }}
+  pull_req_id: ${{github.event.pull_request.number}}
+  DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
+  CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  DEPLOY: ${{ secrets.DEPLOY }}
+  GH_USER: ${{ secrets.GH_USER }}
+  GH_EMAIL: ${{ secrets.GH_EMAIL }}
+  GITHUB_COMMENT: ${{ secrets.GH_COMMENT }}
+  DOM_EKS: ${{ secrets.DOM_EKS }}
+  GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+  BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
+  BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
+  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}  
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:               
+  imageEKS:
+    name: build-docker-image-EKS
     runs-on: ${{ vars.RUNNER }}
     steps:
+      - name: Set image name
+        run: |
+            RESOLVED_IMAGE_TAG=${{ env.IMAGE_TAG }}
+            echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:$RESOLVED_IMAGE_TAG" >> $GITHUB_ENV
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+      - name: Generate image EKS
+        run: |
+          cd pm4-k8s-distribution/images
+          branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
+          echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
+      - name: List Images
+        run: |
+          docker images
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: processmaker/enterprise:${{ env.VERSION }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          scanners: 'vuln,secret'
+          severity: 'MEDIUM,HIGH,CRITICAL'
+        env:
+          TRIVY_TIMEOUT: 30m
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Push Enterprise Image to Harbor
+        run: |          
+          docker tag processmaker/enterprise:${{env.IMAGE_TAG}} ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+          docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
+  runPhpUnit:
+    name: run-phpunit
+    needs: imageEKS
+    runs-on: ${{ vars.RUNNER }}
+    steps:
+      - name: Export Params
+        run: |
+          echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: sonarsource/sonarqube-scan-action@master
+      - name: Clone repo K8S
+        run: |
+          echo "IMAGE: ${{ env.IMAGE }}"
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution
+      - name: Login to Harbor
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_HOST  }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: PHPUnits
+        run: |          
+          cd pm4-k8s-distribution/images/pm4-tools
+          docker pull $IMAGE
+          docker-compose down -v
+          docker-compose build phpunit
+          docker-compose run phpunit
+          CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
+          docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
+      - name: Archive code coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
+      - name: SonarQube Coverage Report
+        if: always()
+        uses: sonarsource/sonarqube-scan-action@master
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # We do not recommend to use this in a pull request. Prefer using pull request
-      # decoration instead.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.branch.name=${{ env.CI_PACKAGE_BRANCH }}
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*Test.php
+            -Dsonar.php.coverage.reportPaths=./pm4-k8s-distribution/images/pm4-tools/coverage.xml
