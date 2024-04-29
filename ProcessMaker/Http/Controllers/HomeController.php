@@ -31,4 +31,14 @@ class HomeController extends Controller
             return redirect('/requests');
         }
     }
+
+    public function redirectToIntended()
+    {
+        $url = request()->cookie('processmaker_intended');
+        if ($url) {
+            return redirect($url)->withCookie(\Cookie::forget('processmaker_intended'));
+        }
+
+        return redirect()->route('requests.index');
+    }
 }
