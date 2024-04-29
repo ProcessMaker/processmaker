@@ -1850,6 +1850,7 @@
   "This environment already contains the same version of the {{ item }} named '{{ name }}.'": "This environment already contains the same version of the {{ item }} named '{{ name }}.'",
   "This field accepts mustache syntax": "This field accepts mustache syntax",
   "This file is password protected. Enter the password below to continue with the import.": "This file is password protected. Enter the password below to continue with the import.",
+  "This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form.": "This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form.",
   "This is your security code: :code": "This is your security code: :code",
   "This must be valid JSON": "This must be valid JSON",
   "This password reset link will expire in :count minutes.": "This password reset link will expire in :count minutes.",
