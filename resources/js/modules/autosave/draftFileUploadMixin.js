@@ -20,7 +20,6 @@ export default {
      */
     resetRequestFiles(response) {
       const requestFiles = response?.data?.requestFiles ?? {};
-      console.log("Got Request Files", requestFiles);
       _.set(window, 'PM4ConfigOverrides.requestFiles', requestFiles);
     },
   },
