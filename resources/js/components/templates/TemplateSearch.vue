@@ -139,7 +139,7 @@ export default {
         iconStyle: "font-size: 2em;",
       },
       aiProcessButton: {
-        title: this.$t("Generate from Text"),
+        title: this.$t("Generate from AI"),
         helperEnabled: true,
         helperTitle: this.$t("Try our new Generative AI"),
         helperDescription: this.$t("Describe your process. Our AI will build the model for you. Use it immediately or tweak it as needed."),
