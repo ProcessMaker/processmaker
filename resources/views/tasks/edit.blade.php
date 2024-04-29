@@ -702,7 +702,8 @@
             this.formDataWatcherActive = false;
             ProcessMaker.apiClient
               .delete("drafts/" + this.task.id)
-              .then(() => {
+              .then(response => {
+                this.resetRequestFiles(response);
                 this.task.draft = null;
                 const taskComponent = this.$refs.task;
                 taskComponent.loadTask();

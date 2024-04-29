@@ -33,6 +33,8 @@ class TaskDraftController extends Controller
         // Use get()->each to fire the delete event for each draft
         TaskDraft::where('task_id', $task->id)->get()->each->delete();
 
-        return response([], 204);
+        $requestFiles = $task->processRequest->requestFiles();
+
+        return response(['request_files' => $requestFiles], 200);
     }
 }
