@@ -15,7 +15,7 @@ env:
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
+  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'develop' }}
   CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
   IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
