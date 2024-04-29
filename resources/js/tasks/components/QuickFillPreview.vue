@@ -85,7 +85,7 @@
                 </b-button>
               </div>
               <div class="header-container-warning">
-                <p>{{ $t('This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form.') }}</p>
+                <p>{{ disclaimer }}</p>
               </div>
             </div>
             <div v-else style="width: 92%">
@@ -130,7 +130,7 @@
                 </b-button>
               </div>
               <div class="header-container-warning">
-                <p>{{ $t('This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form.') }}</p>
+                <p>{{ disclaimer }}</p>
               </div>
             </div>
           </template>
@@ -228,6 +228,7 @@ export default {
         },
       ],
       dataTasks: {},
+      disclaimer: this.$t("This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form."),
     };
   },
   mounted() {
