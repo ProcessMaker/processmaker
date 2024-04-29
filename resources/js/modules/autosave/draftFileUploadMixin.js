@@ -19,7 +19,7 @@ export default {
      * The response from DELETE /drafts returns the list of request files.
      */
     resetRequestFiles(response) {
-      const requestFiles = response?.data?.requestFiles;
+      const requestFiles = response?.data?.requestFiles ?? {};
       console.log("Got Request Files", requestFiles);
       _.set(window, 'PM4ConfigOverrides.requestFiles', requestFiles);
     },
