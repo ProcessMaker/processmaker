@@ -126,18 +126,28 @@ trait TaskControllerIndexMethods
 
     private function applyColumnOrdering($query, $request)
     {
+        $direction = $request->input('order_direction', 'asc');
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
         foreach ($orderColumns as $column) {
             $parts = explode('.', $column);
             $table = count($parts) > 1 ? array_shift($parts) : 'process_request_tokens';
             $columnName = array_pop($parts);
-            if (!Str::contains($column, '.')) {
-                $query->orderBy($column, $request->input('order_direction', 'asc'));
+
+            // Handle ordering by JSON fields
+            if ($table === 'data') {
+                $jsonField = str_replace('.', '->', $column);
+                $query->orderBy(
+                    ProcessRequest::select($jsonField)
+                        ->whereColumn('process_requests.id', 'process_request_tokens.process_request_id'),
+                    $direction
+                );
+            } elseif (!Str::contains($column, '.')) {
+                $query->orderBy($column, $direction);
             } elseif ($table === 'process_requests' || $table === 'processRequests') {
                 if ($columnName === 'id') {
                     $query->orderBy(
                         'process_request_id',
-                        $request->input('order_direction', 'asc')
+                        $direction
                     );
                 } else {
                     // Raw sort by (select column from process_requests ...)
@@ -149,7 +159,7 @@ trait TaskControllerIndexMethods
                             where
                                 process_requests.id = process_request_tokens.process_request_id
                         )"),
-                        $request->input('order_direction', 'asc')
+                        $direction
                     );
                 }
             }
