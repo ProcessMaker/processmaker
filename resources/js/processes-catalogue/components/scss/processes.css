@@ -2,7 +2,7 @@
   font-size: 18px;
   cursor: pointer;
 }
-.title-process-button {
+.header-process {
   color: #6a7888;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
@@ -10,7 +10,9 @@
   line-height: 21px;
   letter-spacing: -0.02em;
   text-align: left;
+  text-transform: uppercase;
   background-color: white;
+  padding: 6px 12px;
 }
 .title-process-button:hover {
   color: #1572c2;

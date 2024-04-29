@@ -84,6 +84,9 @@
                   <i class="fas fa-times" />
                 </b-button>
               </div>
+              <div class="header-container-warning">
+                <p>{{ disclaimer }}</p>
+              </div>
             </div>
             <div v-else style="width: 92%">
               <div class="header-container-quick">
@@ -125,6 +128,9 @@
                 >
                   <i class="fas fa-times" />
                 </b-button>
+              </div>
+              <div class="header-container-warning">
+                <p>{{ disclaimer }}</p>
               </div>
             </div>
           </template>
@@ -222,6 +228,7 @@ export default {
         },
       ],
       dataTasks: {},
+      disclaimer: this.$t("This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form."),
     };
   },
   mounted() {
@@ -329,6 +336,16 @@ export default {
   border: 1px solid #cdddee;
   padding: 10px 12px;
   background-color: #e8f0f9;
+}
+
+.header-container-warning {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #F1E4BA;
+  padding: 10px 12px;
+  background-color: #FEF7E2;
+  color: #556271;
+  font-size: 16px;
 }
 
 .close-go-back-button {

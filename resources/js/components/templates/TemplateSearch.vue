@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="pb-3">
-      <b-input-group v-if="component === 'template-select-card'">
+      <b-input-group class="class-align-top" v-if="component === 'template-select-card'">
         <b-input-group-prepend>
           <b-btn class="btn-search-run px-2" :title="$t('Search Templates')" @click="fetch()">
             <i class="fas fa-search search-icon" />
@@ -139,7 +139,7 @@ export default {
         iconStyle: "font-size: 2em;",
       },
       aiProcessButton: {
-        title: this.$t("Generate from Text"),
+        title: this.$t("Generate from AI"),
         helperEnabled: true,
         helperTitle: this.$t("Try our new Generative AI"),
         helperDescription: this.$t("Describe your process. Our AI will build the model for you. Use it immediately or tweak it as needed."),
@@ -318,5 +318,8 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
+}
+.class-align-top {
+  margin-top: 15px;
 }
 </style>

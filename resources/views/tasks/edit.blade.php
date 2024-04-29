@@ -308,7 +308,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users"
+                      api="users?status=ACTIVE"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"
@@ -504,6 +504,7 @@
               "OVERDUE": "overdue-style",
               "OPEN": "open-style",
               "COMPLETED": "open-style",
+              "TRIGGERED": "open-style",
             };
             const status = this.task.advanceStatus.toUpperCase();
             return "card-header text-status " + header[status];
@@ -611,6 +612,7 @@
             }];
           },
           resizeMonaco () {
+            this.showTree = false;
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },

@@ -43,11 +43,15 @@ const PMColumnFilterCommonMixin = {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
+        if (Processmaker.status) {
+          url += "|" + Processmaker.status;
+        }
       }
       let config = {
         filters: this.formattedFilter(),
         order
       };
+
       ProcessMaker.apiClient.put(url, config);
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
@@ -303,10 +307,9 @@ const PMColumnFilterCommonMixin = {
         window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
       }
     },
-    refreshData(advancedFilter) {
-      if (advancedFilter instanceof Object && !Array.isArray(advancedFilter)) {
-        this.advancedFilter = cloneDeep(advancedFilter);
-      }
+    //to do: this should be used in the future if refreshing the table elements is required.
+    refreshData() {
+      this.getFilterConfiguration();
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);

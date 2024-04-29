@@ -49,6 +49,7 @@ export default {
 .search-group {
   display: flex;
   align-items: center;
+  margin-top: 15px;
 }
 .btn-input,
 #search-box {

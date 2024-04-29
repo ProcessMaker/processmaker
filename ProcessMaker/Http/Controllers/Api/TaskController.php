@@ -131,7 +131,7 @@ class TaskController extends Controller
         $query->overdue($request->input('overdue'));
 
         try {
-            $response = $this->handleOrderByRequestName($request, $query->get());
+            $response = $query->get();
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
         }
@@ -263,47 +263,18 @@ class TaskController extends Controller
     {
         $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
         preg_match($regex, $e->getMessage(), $m);
-
+        
+        $message = __('PMQL Is Invalid.');
+        
+        if (count($m) > 1) {
+            $message .= ' ' . __('Column not found: ') . '"' . $m[1] . '"';
+        }
+        
+        \Log::error($e->getMessage());
+        
         return response([
-            'message' => __('PMQL Is Invalid.') . ' ' . __('Column not found: ') . '"' . $m[1] . '"',
+            'message' => $message,
         ], 422);
-    }
-
-    private function handleOrderByRequestName($request, $tasksList)
-    {
-        // Get the list of columns to order by - trimmed if spaces were added
-        $orderColumns = collect(explode(',', $request->input('order_by', 'updated_at')))
-            ->map(function ($value, $key) {
-                return trim($value);
-            });
-        $requestColumns = $orderColumns->filter(function ($value, $key) {
-            return Str::contains($value, 'process_requests.');
-        })->sort();
-
-        // if there ins't an order by request name, tasks are already ordered
-        if ($requestColumns->count() == 0) {
-            return $tasksList;
-        }
-
-        $requestQuery = ProcessRequest::query();
-
-        foreach ($requestColumns as $column) {
-            $columnName = trim(explode('.', $column)[1]);
-            $requestQuery->orderBy($columnName, $request->input('order_direction', 'asc'));
-        }
-
-        $orderedRequests = $requestQuery->get();
-        $orderedTasks = collect([]);
-
-        foreach ($orderedRequests as $item) {
-            $elements = $tasksList->filter(function ($value, $key) use ($item) {
-                return $value->process_request_id == $item->id;
-            });
-
-            $orderedTasks = $orderedTasks->merge($elements);
-        }
-
-        return $orderedTasks;
     }
 
     public function getScreen(Request $request, ProcessRequestToken $task, Screen $screen)

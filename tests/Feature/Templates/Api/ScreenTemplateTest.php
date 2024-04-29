@@ -42,7 +42,7 @@ class ScreenTemplateTest extends TestCase
             'is_public' => false,
             'version'   => '1.0.0',
             'asset_id' => $screenId,
-            'screenType' => $screen->type,
+            'screen_type' => $screen->type,
             'saveAssetsMode' => 'saveAllAssets',
         ];
         $response = $this->apiCall('POST', $route, $data);
@@ -56,7 +56,10 @@ class ScreenTemplateTest extends TestCase
 
     public function testUpdateScreenTemplate()
     {
-        $screenTemplateId = ScreenTemplates::factory()->create()->id;
+        $nonAdminUser = User::factory()->create(['is_administrator' => false]);
+        $screenTemplateId = ScreenTemplates::factory()->create([
+            'user_id' => $nonAdminUser->id,
+        ])->id;
 
         $route = route('api.template.settings.update', ['screen', $screenTemplateId]);
         $data = [
@@ -65,12 +68,29 @@ class ScreenTemplateTest extends TestCase
             'version' => '1.0.1',
             'template_media' => [],
         ];
-        $response = $this->apiCall('PUT', $route, $data);
-        // Assert response status
+        $response = $this->actingAs($nonAdminUser, 'api')->call('PUT', $route, $data);
+
+        // Assert that our database has the screen template we updated.
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'Test Screen Template Update',
+            'user_id' => $nonAdminUser->id,
+        ]);
+
+        // Update the same template with the Admin user.
+        $adminUser = User::factory()->create(['is_administrator' => true]);
+        $data = [
+            'name' => 'Test Screen Template Update by Admin',
+            'description' => 'Test Screen Template Updated Description by Admin',
+            'version' => '1.0.2',
+        ];
+        $response = $this->actingAs($adminUser, 'api')->call('PUT', $route, $data);
         $response->assertStatus(200);
 
-        // Assert that our database has the screen template we updated
-        $this->assertDatabaseHas('screen_templates', ['name' => 'Test Screen Template Update']);
+        $this->assertDatabaseHas('screen_templates', [
+            'name' => 'Test Screen Template Update by Admin',
+            'user_id' => $nonAdminUser->id,
+        ]);
     }
 
     public function testDeleteScreenTemplate()

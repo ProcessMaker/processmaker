@@ -4,7 +4,6 @@
             <b-form-group
                 :label="$t('Name')"
                 label-for="name-text"
-                :description="$t('The template name must be unique.')"
                 class="mb-3"
                 :state="errorState('name', errors)"
                 :invalid-feedback="errorMessage('name', errors)"

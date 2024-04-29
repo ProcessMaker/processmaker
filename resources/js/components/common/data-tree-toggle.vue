@@ -6,9 +6,9 @@
     <div class="mb-2 custom-control custom-switch switch-padding">
       <input
         id="show_tree"
-        v-model="showTree"
+        v-model="value"
         type="checkbox"
-        :data-cy="showTree ? 'treeViewToggle-checked' : 'treeViewToggle'"
+        :data-cy="value ? 'treeViewToggle-checked' : 'treeViewToggle'"
         class="custom-control-input"
         :checked="value"
         @input="emitSwitchValue"
@@ -28,7 +28,6 @@ export default {
   },
   data() {
     return {
-      showTree: this.value,
       treeViewIcon: require("../../../img/tree_view.svg"),
       codeViewIcon: require("../../../img/code.svg"),
     };

@@ -31,7 +31,7 @@
     <div id="screen-container" style="display: contents !important">
         <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
                    ref="screenBuilder"
-                   :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
+                   :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'screen-templates') }}"
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
                    :is-draft="@json($isDraft)"

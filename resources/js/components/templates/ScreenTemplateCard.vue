@@ -4,7 +4,7 @@
       no-body
       bg-variant="transparent"
       class="screen-template-card p-0"
-      data-cy="screen-template-card"
+      :data-cy="`${template.name}-card`"
     >
       <b-card-body>
         <div @click="selectTemplate" class="template-container">
@@ -118,7 +118,8 @@ export default {
     },
     emitDefaultTemplateSelected() {
       const defaultTemplateId = this.template?.id || null;
-      this.$emit('template-default-selected', defaultTemplateId);
+      this.$emit("template-default-selected", defaultTemplateId);
+      this.$emit("template-selected", defaultTemplateId);
     },
   },
 };

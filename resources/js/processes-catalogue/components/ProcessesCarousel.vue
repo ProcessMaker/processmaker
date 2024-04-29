@@ -100,29 +100,13 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-#processes-carousel {
-  .carousel-indicators {
-    li {
-      background-color: #EDEDED;
-      width: 27px;
-      height: 8px;
-      border-radius: 5px;
-      border-top: 0;
-      border-bottom: 0;
-      opacity: 0.5;
-    }
-    .active {
-      background-color: #9C9C9C;
-      opacity: 1;
-    }
-  }
-}
 .carousel-inner {
   overflow: hidden;
 }
 .img-carousel {
   max-width: 800px;
   height: 410px;
+  aspect-ratio: 16/9;
 }
 .iframe-carousel {
   border: 0px;
@@ -132,7 +116,18 @@ export default {
 .carousel-container {
   display: flex;
   justify-content: center;
+  border-radius: 16px;
   background-color: #edf1f6;
+}
+@media (width <= 1500px) {
+  .img-carousel {
+    max-width: 700px;
+  }
+}
+@media (width <= 1366px) {
+  .img-carousel {
+    max-width: 590px;
+  }
 }
 @media (width <= 1200px) {
   .img-carousel {

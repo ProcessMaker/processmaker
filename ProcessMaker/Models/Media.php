@@ -188,7 +188,19 @@ class Media extends MediaLibraryModel
      */
     public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
     {
-        $collectionName = 'images_carousel';
+        // Validate if the image smaller than 2MB
+        $maxFileSize = 2 * 1024 * 1024;
+        $imageData = base64_decode($properties['url']);
+        if (strlen($imageData) > $maxFileSize) {
+            return;
+        }
+        // Validate four images
+        $mediaCount = $process->getMedia()->count();
+        if ($mediaCount > 4) {
+            return;
+        }
+        // Get information to save
+        $collectionName = $process->uuid . '_images_carousel';
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
             // Store the images related move to MEDIA
