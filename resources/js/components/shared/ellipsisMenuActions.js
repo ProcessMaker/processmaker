@@ -41,7 +41,7 @@ export default {
         },
         {
           value: "edit-launchpad",
-          content: "Edit in Launchpad",
+          content: "Edit Launchpad",
           permission: ["edit-processes", "view-additional-asset-actions"],
           icon: "fas fa-edit",
           conditional: "if(status == 'ACTIVE', true, false)",

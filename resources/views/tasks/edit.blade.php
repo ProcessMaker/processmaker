@@ -504,6 +504,7 @@
               "OVERDUE": "overdue-style",
               "OPEN": "open-style",
               "COMPLETED": "open-style",
+              "TRIGGERED": "open-style",
             };
             const status = this.task.advanceStatus.toUpperCase();
             return "card-header text-status " + header[status];

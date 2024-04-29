@@ -280,7 +280,7 @@ export default {
         description: this.process.description,
         task_notifications: this.getTaskNotifications(),
         projects: this.process.projects,
-        bpmn: this.dataXmlSvg.xml || this.$refs.modeler.currentXML,
+        bpmn: this.$refs.modeler.currentXML || this.dataXmlSvg.xml,
         svg: this.dataXmlSvg.svg,
         alternative: publishedVersion || window.ProcessMaker.modeler.draftAlternative || "A",
       };

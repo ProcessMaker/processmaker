@@ -445,7 +445,7 @@ class ProcessTemplate implements TemplateInterface
             ->pluck('name', 'id')
             ->toArray();
         $addons = $this->getPluginAddons('edit', compact(['template']));
-        $route = ['label' => 'Screens', 'action' => 'screens'];
+        $route = ['label' => 'Processes', 'action' => 'processes'];
 
         return ['process', $template, $addons, $categories, $route, null];
     }

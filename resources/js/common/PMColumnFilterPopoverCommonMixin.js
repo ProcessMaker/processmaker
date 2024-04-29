@@ -307,10 +307,9 @@ const PMColumnFilterCommonMixin = {
         window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
       }
     },
-    refreshData(advancedFilter) {
-      if (advancedFilter instanceof Object && !Array.isArray(advancedFilter)) {
-        this.advancedFilter = cloneDeep(advancedFilter);
-      }
+    //to do: this should be used in the future if refreshing the table elements is required.
+    refreshData() {
+      this.getFilterConfiguration();
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);

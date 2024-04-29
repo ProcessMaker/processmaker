@@ -115,22 +115,17 @@ export default {
       categoryCount: 0,
     };
   },
-  computed: {
-    hasGuidedTemplateParams() {
-      return window.location.search.includes("?guided_templates=true");
-    },
-  },
   mounted() {
-    const hasGuidedTemplateParams = this.hasGuidedTemplateParams;
+    const url = new URL(window.location.href);
     this.getCategories();
     setTimeout(() => {
       this.checkSelectedProcess();
-      if (hasGuidedTemplateParams) {
+      if (this.hasGuidedTemplateParamsOnly(url) || this.hasTemplateParams(url)) {
         // Loaded from URL with guided template parameters to show guided templates
         // Dynamically load the component
         this.$refs.categoryList.selectTemplateItem();
       }
-    }, 500)
+    }, 500);
   },
   methods: {
     /**
@@ -221,20 +216,17 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      window.history.replaceState(null, null, "/process-browser");
-      this.key += 1;
-      this.category = value;
-      this.selectedProcess = null;
-      this.showCardProcesses = true;
-      this.guidedTemplates = false;
-      this.showWizardTemplates = false;
+      const url = new URL(window.location.href);
 
-      // Remove guided_templates and template parameters from the URL
-      if (value !== undefined) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete("guided_templates");
-        url.searchParams.delete("template");
-        history.pushState(null, "", url); // Update the URL without triggering a page reload
+      // If url has Template Params, don't replace state.
+      if (!this.hasTemplateParams(url)) {
+        window.history.replaceState(null, null, "/process-browser");
+        this.key += 1;
+        this.category = value;
+        this.selectedProcess = null;
+        this.showCardProcesses = true;
+        this.guidedTemplates = false;
+        this.showWizardTemplates = false;
       }
 
       this.showProcess = false;
@@ -293,6 +285,12 @@ export default {
 
       return screenId !== 0;
     },
+    hasGuidedTemplateParamsOnly(url) {
+      return url.search.includes("?guided_templates=true") && !url.search.includes("?guided_templates=true&template=");
+    },
+    hasTemplateParams(url) {
+      return url.search.includes("&template=");
+    },
   },
 };
 </script>
@@ -302,6 +300,7 @@ export default {
   min-width: 304px;
   height: calc(100vh - 145px);
   overflow-y: auto;
+  margin-top: 15px;
 }
 .menu-title {
   color: #556271;
