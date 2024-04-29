@@ -156,7 +156,7 @@ export default {
         this.customModalButtons[3].hidden = !this.customModalButtons[3].hidden;
       },
       validateFormData(errors) {
-        if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description)) {
+        if (!_.isEmpty(this.templateData.name) && !_.isEmpty(this.templateData.description) && !_.isEmpty(this.templateData.version)) {
           this.customModalButtons[1].disabled = false;
           if (this.showWarning) {
             if (this.templateData.name !== this.existingAssetName) {

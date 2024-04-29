@@ -133,7 +133,7 @@ trait TaskControllerIndexMethods
             $columnName = array_pop($parts);
             if (!Str::contains($column, '.')) {
                 $query->orderBy($column, $request->input('order_direction', 'asc'));
-            } elseif ($table === 'process_request' || $table === 'processRequest') {
+            } elseif ($table === 'process_requests' || $table === 'processRequests') {
                 if ($columnName === 'id') {
                     $query->orderBy(
                         'process_request_id',

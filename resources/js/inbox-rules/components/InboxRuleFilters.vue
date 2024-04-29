@@ -57,8 +57,7 @@
         id="columns"
         :title="$t('Columns')"
         size="lg"
-        @ok="applyColumns"
-        >
+        v-model="modalColumnChooserAdapter">
         <column-chooser-adapter
           ref="columnChooserAdapter"
           :pmql="pmql"
@@ -66,6 +65,9 @@
           :columns="columns"
           :default-columns="defaultColumns"
           />
+        <template v-slot:modal-footer>
+          <b-button @click="applyColumns" variant="primary">{{$t('Ok')}}</b-button>
+        </template>
       </b-modal>
     </div>
   </div>
@@ -100,7 +102,7 @@
         originalSavedSearchAdvancedFilter: null,
         ready: false,
         task: null,
-        loadInitialAdvancedFilter: null
+        modalColumnChooserAdapter: false
       };
     },
     components: {
@@ -118,15 +120,17 @@
         });
       },
       applyColumns() {
+        if (this.$refs.columnChooserAdapter.modifiedCurrentColumns.length <= 0) {
+          ProcessMaker.alert(this.$t("Select at least one column."), "danger");
+          return;
+        }
         this.columns = this.$refs.columnChooserAdapter.modifiedCurrentColumns;
         this.emitSavedSearchData();
         this.resetFilters();
+        this.modalColumnChooserAdapter = false;
       },
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
-        if (this.$refs.taskList) {
-          this.$refs.taskList.refreshData(this.loadInitialAdvancedFilter);
-        }
       },
       defaultTaskFilters() {
         return {
@@ -140,7 +144,11 @@
               },
               operator: "=",
               value: this.task.process_id,
-              _column_label: "Process ID"
+              //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+              //based on the table's columns. Since the table doesn't have these columns, it will 
+              //always take this value.
+              _column_field: "process_id",
+              _column_label: "process_id"
             },
             {
               subject: {
@@ -149,17 +157,20 @@
               },
               operator: "=",
               value: this.task.element_id,
-              _column_label: "Node ID"
+              //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+              //based on the table's columns. Since the table doesn't have these columns, it will 
+              //always take this value.
+              _column_field: "element_id",
+              _column_label: "element_id"
             },
-            {
-              subject: {
-                type: "Status"
-              },
-              operator: "=",
-              value: 'In Progress',
-              _column_label: "Status"
-            }
+            this.statusFilter()
           ]
+        };
+      },
+      defaultSavedSearchFilters() {
+        return {
+          order: {by: 'id', direction: 'desc'},
+          filters: []
         };
       },
       addRequiredSavedSearchFilters(filter) {
@@ -193,7 +204,11 @@
           },
           operator: "=",
           value: window.ProcessMaker.user.id,
-          _column_label: "User ID"
+          //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+          //based on the table's columns. Since the table doesn't have these columns, it will 
+          //always take this value.
+          _column_field: "user_id",
+          _column_label: "user_id"
         };
       },
       statusFilter() {
@@ -203,6 +218,7 @@
           },
           operator: "=",
           value: 'In Progress',
+          _column_field: "status",
           _column_label: "Status"
         };
       },
@@ -212,7 +228,7 @@
                 .then(response => {
                   this.savedSearch = response.data;
                   this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
-                  this.savedSearchAdvancedFilter = response.data.advanced_filter;
+                  this.savedSearchAdvancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
                   this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
                   this.ready = true;
                 });
@@ -241,12 +257,6 @@
         if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
           let defaultColumns = this.$refs.taskList.tableHeaders;
           this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
-        }
-        this.saveInitialAdvancedFilterConfiguration();
-      },
-      saveInitialAdvancedFilterConfiguration() {
-        if (this.loadInitialAdvancedFilter === null) {
-          this.loadInitialAdvancedFilter = _.cloneDeep(this.$refs.taskList.advancedFilter);
         }
       }
     },

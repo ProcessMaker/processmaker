@@ -8,7 +8,6 @@
         :headers="tableHeadersTasks"
         :data="dataTasks"
         table-name="task-tab"
-        @table-row-click="handleRowClick"
       />
       <pagination-table
         :meta="dataTasks.meta"
@@ -199,9 +198,7 @@ export default {
           ${label}
         </span>`;
     },
-    handleRowClick(row) {
-      window.location.href = this.openTask(row, 1);
-    },
+
     formatCaseNumber(value) {
       return `
       <a href="${this.openRequest(value, 1)}"
