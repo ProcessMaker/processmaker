@@ -135,15 +135,15 @@ trait TaskControllerIndexMethods
 
             // Handle ordering by JSON fields
             if ($table === 'data') {
-                $jsonField = str_replace('.', '->', $column);
-                $query->orderBy(
-                    ProcessRequest::select($jsonField)
-                        ->whereColumn('process_requests.id', 'process_request_tokens.process_request_id'),
-                    $direction
-                );
+                $this->orderByJsonData($query, $column, $direction);
+            } elseif ($column === 'user.name') {
+                $this->orderByUserFullName($query, $direction);
+            } elseif ($column === 'status') {
+                $this->orderByStatusAlias($query, $direction);
             } elseif (!Str::contains($column, '.')) {
+                // Order on a column in the process_request_tokens table
                 $query->orderBy($column, $direction);
-            } elseif ($table === 'process_requests' || $table === 'processRequests') {
+            } elseif ($table === 'process_requests' || $table === 'process_request' || $table === 'processRequests') {
                 if ($columnName === 'id') {
                     $query->orderBy(
                         'process_request_id',
@@ -164,6 +164,62 @@ trait TaskControllerIndexMethods
                 }
             }
         }
+    }
+
+    private function orderByJsonData(&$query, $column, $direction)
+    {
+        $pathParts = explode('.', $column);
+        array_shift($pathParts);
+        $path = '$.' . implode('.', $pathParts);
+
+        // Move null values to the bottom
+        $query->orderBy(
+            DB::raw("(
+                select
+                if (
+                    json_unquote(json_extract(process_requests.data, '$path')) = 'null',
+                    NULL,
+                    json_unquote(json_extract(process_requests.data, '$path')) -- could also be null
+                )
+                from process_requests where
+                process_requests.id = process_request_tokens.process_request_id
+            )"),
+            ($direction === 'asc' ? 'desc' : 'asc')
+        );
+
+        $query->orderBy(
+            DB::raw("(
+                select
+                json_unquote(json_extract(process_requests.data, '$path'))
+                from process_requests where
+                process_requests.id = process_request_tokens.process_request_id
+            )"),
+            $direction
+        );
+    }
+
+    private function orderByStatusAlias(&$query, $direction)
+    {
+        $query->orderBy(
+            DB::raw("CASE status when 'ACTIVE' then 'In Progress' else status end"),
+            $direction
+        );
+    }
+
+    private function orderByUserFullName(&$query, $direction)
+    {
+        $query->orderBy(
+            DB::raw('process_request_tokens.user_id is null'),
+            $direction
+        );
+        $query->orderBy(
+            DB::raw('(select users.firstname from users where users.id = process_request_tokens.user_id)'),
+            $direction
+        );
+        $query->orderBy(
+            DB::raw('(select users.lastname from users where users.id = process_request_tokens.user_id)'),
+            $direction
+        );
     }
 
     private function applyStatusFilter($query, $request)
