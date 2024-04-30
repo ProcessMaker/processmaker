@@ -363,7 +363,6 @@ export default {
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
-          console.log('record', record);
           this.setDefaultProperties(record);
           //format Status
           record["case_number"] = this.formatCaseNumber(
