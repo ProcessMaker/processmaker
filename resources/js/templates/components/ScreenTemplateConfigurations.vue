@@ -65,7 +65,7 @@
                 <b-form-input v-model="template.version" id="version-text"></b-form-input>
             </b-form-group>
 
-            <b-form-group v-if="canMakePublicTemplates">
+            <b-form-group v-if="canMakePublicTemplates && !isSharedTemplate">
                 <b-form-checkbox
                     id="make-screen-template-public"
                     v-model="isSharedTemplate"
