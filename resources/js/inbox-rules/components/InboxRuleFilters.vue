@@ -91,12 +91,15 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
+      },
+      propColumns: {
+        type: Array,
+        default: () => []
       }
     },
     data() {
       return {
         savedSearch: null,
-        columns: [],
         defaultColumns: [],
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
@@ -238,10 +241,6 @@
       loadTask() {
         this.ready = false;
 
-        let defaultColumns = _.get(window, 'Processmaker?.defaultColumns', []);
-        this.defaultColumns = defaultColumns.filter(c => c.field !== 'is_priority');
-        this.columns = this.defaultColumns;
-
         return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {
                   this.task = response.data;
@@ -308,7 +307,16 @@
           return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name});
         }
         return '';
+      },
+      columns: {
+        get() {
+          return this.propColumns;
+        },
+        set(value) {
+          this.$emit('columns-updated', value);
+        }
       }
+
     },
     mounted() {
       if (this.savedSearchId) {

@@ -176,7 +176,10 @@ const PMColumnFilterCommonMixin = {
       return Object.values(filterCopy).flat(1);
     },
     getAdvancedFilter() {
-      let formattedFilter = this.formattedFilter();
+      let formattedFilter = this.formattedFilter().map(obj =>
+        // Remove keys that start with _
+        Object.fromEntries(Object.entries(obj).filter(([key, _]) => !key.startsWith('_')))
+      );
       return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
     getUrlUsers(filter) {

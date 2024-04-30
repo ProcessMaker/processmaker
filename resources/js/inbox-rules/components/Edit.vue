@@ -22,8 +22,11 @@
           :taskId="taskId"
           :propTask="task"
           :show-column-selector-button="false"
+          :prop-columns="columns"
           @count="count = $event"
-          @saved-search-data="savedSearchData = $event">
+          @saved-search-data="savedSearchData = $event"
+          @columns-updated="columns = $event"
+          >
         </InboxRuleFilters>
       </PMPanelWithCustomHeader>
 
@@ -89,7 +92,7 @@
         class="quick-fill-preview"
         :task="task"
         :prop-from-button ="'inboxRules'"
-        :prop-columns="columns"
+        :prop-columns="quickFillColumns"
         :prop-filters="filter"
         @close="showQuickFillPreview = false"
         @quick-fill-data-inbox="fillWithQuickFillData"
@@ -143,6 +146,7 @@
     },
     data() {
       return {
+        columns: [],
         propInboxData: {},
         task: {},
         showQuickFillPreview: false,
@@ -169,7 +173,7 @@
             }
           ]
         },
-        columns: [
+        quickFillColumns: [
           {
             label: "Case #",
             field: "case_number",
