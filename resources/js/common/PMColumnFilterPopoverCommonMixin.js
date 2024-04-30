@@ -215,7 +215,7 @@ const PMColumnFilterCommonMixin = {
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants" || column.field === "assignee") {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "element_name" || column.field === "participants" || column.field === "assignee") {
         operators = ["=", "in", "contains", "regex"];
       }
       if (column.field === "status") {
