@@ -160,7 +160,7 @@ class CallActivity implements CallActivityInterface
      *
      * @return \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface
      */
-    public function getCalledElement(array $data = [])
+    public function getCalledElement(array $data = [], bool $evaluatePublisher = true)
     {
         $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
         $refs = explode('-', $calledElementRef);
@@ -173,7 +173,10 @@ class CallActivity implements CallActivityInterface
             if ($this->subProcessRequestVersion) {
                 $definitions = $engine->getDefinition($this->subProcessRequestVersion);
             } else {
-                $definitions = $engine->getDefinition($process->getPublishedVersion($data));
+                $this->subProcessRequestVersion = $evaluatePublisher
+                    ? $process->getPublishedVersion($data)
+                    : $process->getLatestVersion();
+                $definitions = $engine->getDefinition($this->subProcessRequestVersion);
             }
             $response = $definitions->getElementInstanceById($refs[0]);
 
