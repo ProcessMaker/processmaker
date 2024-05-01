@@ -130,6 +130,12 @@ class TaskController extends Controller
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
+        // If we should manually add pagination to the
+        // query in advance (also used by saved search)
+        if ($this->isPaginationEnabled()) {
+            $query->paginate($request->input('per_page', 10));
+        }
+
         try {
             $response = $query->get();
         } catch (QueryException $e) {
@@ -264,15 +270,15 @@ class TaskController extends Controller
     {
         $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
         preg_match($regex, $e->getMessage(), $m);
-        
+
         $message = __('PMQL Is Invalid.');
-        
+
         if (count($m) > 1) {
             $message .= ' ' . __('Column not found: ') . '"' . $m[1] . '"';
         }
-        
+
         \Log::error($e->getMessage());
-        
+
         return response([
             'message' => $message,
         ], 422);
