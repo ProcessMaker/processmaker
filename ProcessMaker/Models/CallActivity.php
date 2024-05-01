@@ -54,8 +54,6 @@ class CallActivity implements CallActivityInterface
      */
     protected function callSubprocess(TokenInterface $token, $startId)
     {
-        $callable = $this->getCalledElement();
-        $dataStore = $callable->getRepository()->createDataStore();
         // The entire data model is sent to the target
         $dataManager = new DataManager();
         $data = $dataManager->getData($token);
@@ -74,6 +72,8 @@ class CallActivity implements CallActivityInterface
             $config = json_decode($configString, true);
             $data['_parent']['config'] = $config;
         }
+        $callable = $this->getCalledElement($data);
+        $dataStore = $callable->getRepository()->createDataStore();
 
         $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
 
@@ -160,7 +160,7 @@ class CallActivity implements CallActivityInterface
      *
      * @return \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface
      */
-    public function getCalledElement()
+    public function getCalledElement(array $data = [], bool $evaluatePublisher = true)
     {
         $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
         $refs = explode('-', $calledElementRef);
@@ -173,7 +173,10 @@ class CallActivity implements CallActivityInterface
             if ($this->subProcessRequestVersion) {
                 $definitions = $engine->getDefinition($this->subProcessRequestVersion);
             } else {
-                $definitions = $engine->getDefinition($process->getLatestVersion());
+                $this->subProcessRequestVersion = $evaluatePublisher
+                    ? $process->getPublishedVersion($data)
+                    : $process->getLatestVersion();
+                $definitions = $engine->getDefinition($this->subProcessRequestVersion);
             }
             $response = $definitions->getElementInstanceById($refs[0]);
 

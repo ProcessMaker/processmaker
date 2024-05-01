@@ -1561,7 +1561,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function validateCallActivity(CallActivity $callActivity)
     {
-        $targetProcess = $callActivity->getCalledElement();
+        // Get process version without evaluating alternative
+        $targetProcess = $callActivity->getCalledElement([], false);
         $config = json_decode($callActivity->getProperty('config'), true);
         $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
         if ($startId) {
