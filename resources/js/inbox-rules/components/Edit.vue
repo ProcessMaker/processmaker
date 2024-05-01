@@ -25,6 +25,7 @@
           :prop-columns="columns"
           @count="count = $event"
           @saved-search-data="savedSearchData = $event"
+          :prop-saved-search-data="savedSearchData"
           @columns-updated="columns = $event"
           >
         </InboxRuleFilters>

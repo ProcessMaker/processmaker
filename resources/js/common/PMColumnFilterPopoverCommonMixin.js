@@ -18,7 +18,10 @@ const PMColumnFilterCommonMixin = {
   watch: {
     advancedFilterProp: {
       deep: true,
-      handler() {
+      handler(current, old) {
+        if (_.isEqual(current, old)) {
+          return;
+        }
         this.getFilterConfiguration();
         this.fetch();
       }
