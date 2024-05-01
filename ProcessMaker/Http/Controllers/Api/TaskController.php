@@ -98,7 +98,7 @@ class TaskController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request, $getTotal = false, User $user = null, $paginate = null)
+    public function index(Request $request, $getTotal = false, User $user = null)
     {
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches
@@ -132,7 +132,7 @@ class TaskController extends Controller
 
         // If we should manually add pagination to the
         // query in advance (also used by saved search)
-        if ($paginate) {
+        if ($this->isPaginationEnabled()) {
             $query->paginate($request->input('per_page', 10));
         }
 
