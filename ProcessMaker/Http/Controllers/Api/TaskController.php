@@ -98,7 +98,7 @@ class TaskController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request, $getTotal = false, User $user = null)
+    public function index(Request $request, $getTotal = false, User $user = null, $paginate = null)
     {
         // If a specific user is specified, use it; otherwise use the authorized user
         // This is necessary to produce accurate counts for Saved Searches
@@ -130,8 +130,11 @@ class TaskController extends Controller
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
-        // Apply pagination
-        $query->paginate($request->input('per_page', 10));
+        // If we should manually add pagination to the
+        // query in advance (also used by saved search)
+        if ($paginate) {
+            $query->paginate($request->input('per_page', 10));
+        }
 
         try {
             $response = $query->get();
