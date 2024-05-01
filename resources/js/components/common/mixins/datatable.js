@@ -9,13 +9,20 @@ import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
 
 export default {
   mixins:[FilterTableBodyMixin],
+  props: {
+    fetchOnCreated: {
+      default: true,
+    },
+  },
   components: {
     Vuetable,
     Pagination,
   },
   created() {
     // Use our api to fetch our role listing
-    this.fetch();
+    if (this.fetchOnCreated) {
+      this.fetch();
+    }
   },
   watch: {
     filter: _.debounce(function () {
