@@ -22,6 +22,7 @@ const ListMixin = {
 
     fetch() {
       Vue.nextTick(() => {
+        this.$emit("on-fetch-task");
         let pmql = "";
 
         if (this.pmql !== undefined) {

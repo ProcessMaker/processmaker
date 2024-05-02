@@ -152,6 +152,7 @@
                 @in-overdue="setInOverdueMessage"
                 @data-loading="dataLoading"
                 @tab-count="handleTabCount"
+                @on-fetch-task="onFetchTask"
               ></tasks-list>
             </div>
 
