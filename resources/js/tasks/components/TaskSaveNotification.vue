@@ -18,7 +18,7 @@
           :style="{
             maxWidth: `${size}px`
           }"
-          v-html="sanitize(task.element_name)"
+          v-html="sanitizeHtml(task.element_name)"
         >
         </span>
       </div>
@@ -117,13 +117,13 @@ export default {
     },
   },
   mounted() {
-    console.log(this.task);
+
   },
   methods: {
-    sanitize(html) {
-      return this.removeScripts(html);
+    sanitizeHtml(html) {
+      return this.removeScriptsHtml(html);
     },
-    removeScripts(input) {
+    removeScriptsHtml(input) {
       const doc = new DOMParser().parseFromString(input, 'text/html');
 
       const scripts = doc.querySelectorAll('script');
