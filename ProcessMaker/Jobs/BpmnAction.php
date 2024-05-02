@@ -60,10 +60,10 @@ abstract class BpmnAction implements ShouldQueue
             $this->engine = $engine;
             $this->instance = $instance;
 
-            //Do the action
+            // Do the action
             $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
 
-            //Run engine to the next state
+            // Run engine to the next state
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
@@ -72,6 +72,7 @@ abstract class BpmnAction implements ShouldQueue
             if ($request) {
                 $request->logError($exception, $element);
             }
+            throw $exception;
         } finally {
             $this->unlock();
         }
@@ -86,7 +87,7 @@ abstract class BpmnAction implements ShouldQueue
      */
     private function loadContext()
     {
-        //Load the process definition
+        // Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
             $processModel = $instance->process;
@@ -100,7 +101,7 @@ abstract class BpmnAction implements ShouldQueue
             $instance = null;
         }
 
-        //Load the instances of the process and its collaborators
+        // Load the instances of the process and its collaborators
         if ($instance && $instance->collaboration) {
             $activeRequests = $instance->collaboration->requests()->where('status', 'ACTIVE')->get();
             foreach ($activeRequests as $request) {
@@ -110,13 +111,13 @@ abstract class BpmnAction implements ShouldQueue
             }
         }
 
-        //Get the BPMN process instance
+        // Get the BPMN process instance
         $process = null;
         if (isset($this->processId)) {
             $process = $definitions->getProcess($this->processId);
         }
 
-        //Load token and element
+        // Load token and element
         $token = null;
         $element = null;
         if ($instance && isset($this->tokenId)) {
@@ -132,7 +133,7 @@ abstract class BpmnAction implements ShouldQueue
             $element = $definitions->getElementInstanceById($this->elementId);
         }
 
-        //Load data
+        // Load data
         $data = isset($this->data) ? $this->data : null;
 
         return compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel', 'engine');

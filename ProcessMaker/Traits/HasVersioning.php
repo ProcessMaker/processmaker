@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\Process;
 
 trait HasVersioning
 {
@@ -89,7 +89,7 @@ trait HasVersioning
                     $this->hasAlternative()
                     ? ['alternative' => $alternative]
                     : []
-                )
+                ),
             ],
             $attributes
         );
@@ -154,6 +154,10 @@ trait HasVersioning
         $existsCustomPublisher = $implementation
             && WorkflowManager::existsServiceImplementation($implementation);
         if ($existsCustomPublisher) {
+            if ($data === []) {
+                abort(422, __('Oops! It looks like there was an error setting up the variables for your A/B test. Please contact the Administrator for assistance'));
+            }
+
             $response = WorkflowManager::runServiceImplementation(
                 $implementation,
                 $data,
@@ -161,6 +165,7 @@ trait HasVersioning
                     'process' => $this,
                 ],
             );
+
             return $response['publishedVersion'];
         }
 
@@ -197,6 +202,7 @@ trait HasVersioning
     public function getDraftVersion(string $alternative = null)
     {
         $alternative = $alternative ?: ($this->alternative ?? null);
+
         return $this->versions()
             ->when(
                 $this->hasAlternative(),
