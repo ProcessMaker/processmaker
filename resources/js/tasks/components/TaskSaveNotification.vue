@@ -18,8 +18,8 @@
           :style="{
             maxWidth: `${size}px`
           }"
+          v-html="task.element_name"
         >
-          {{ task.element_name }}
         </span>
       </div>
     </div>
@@ -117,7 +117,7 @@ export default {
     },
   },
   mounted() {
-
+    console.log(this.task);
   },
 };
 </script>
@@ -165,6 +165,9 @@ export default {
   font-weight: bold;
   color: #566877;
   margin-left: 5px;
+}
+.element-name a {
+  color: inherit;
 }
 .truncate-text {
   overflow: hidden;
