@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Process;
 
 trait HasVersioning
 {
@@ -89,7 +89,7 @@ trait HasVersioning
                     $this->hasAlternative()
                     ? ['alternative' => $alternative]
                     : []
-                ),
+                )
             ],
             $attributes
         );
@@ -153,7 +153,7 @@ trait HasVersioning
         $implementation = WorkflowManager::NAYRA_PUBLISHER . get_class($this);
         $existsCustomPublisher = $implementation
             && WorkflowManager::existsServiceImplementation($implementation);
-        if ($existsCustomPublisher && $data !== []) {
+        if ($existsCustomPublisher) {
             $response = WorkflowManager::runServiceImplementation(
                 $implementation,
                 $data,
@@ -161,7 +161,6 @@ trait HasVersioning
                     'process' => $this,
                 ],
             );
-
             return $response['publishedVersion'];
         }
 
@@ -198,7 +197,6 @@ trait HasVersioning
     public function getDraftVersion(string $alternative = null)
     {
         $alternative = $alternative ?: ($this->alternative ?? null);
-
         return $this->versions()
             ->when(
                 $this->hasAlternative(),
