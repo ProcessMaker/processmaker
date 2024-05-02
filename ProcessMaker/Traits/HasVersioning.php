@@ -155,7 +155,13 @@ trait HasVersioning
             && WorkflowManager::existsServiceImplementation($implementation);
         if ($existsCustomPublisher) {
             if ($data === []) {
-                abort(422, __('Oops! It looks like there was an error setting up the variables for your A/B test. Please contact the Administrator for assistance'));
+                abort(
+                    422,
+                    __(
+                        'Oops! It looks like there was an error setting up the variables for your A/B test. ' .
+                        'Please contact the Administrator for assistance'
+                    )
+                );
             }
 
             $response = WorkflowManager::runServiceImplementation(
