@@ -18,7 +18,7 @@
           :style="{
             maxWidth: `${size}px`
           }"
-          v-html="task.element_name"
+          v-html="sanitize(task.element_name)"
         >
         </span>
       </div>
@@ -118,6 +118,26 @@ export default {
   },
   mounted() {
     console.log(this.task);
+  },
+  methods: {
+    sanitize(html) {
+      return this.removeScripts(html);
+    },
+    removeScripts(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach((script) => {
+        script.remove();
+      });
+
+      const styles = doc.querySelectorAll('style');
+      styles.forEach((style) => {
+        style.remove();
+      });
+
+      return doc.body.innerHTML;
+    },
   },
 };
 </script>
