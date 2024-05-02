@@ -49,6 +49,7 @@
           ref="taskList"
           class="custom-table-class"
           :columns="columns"
+          :fetch-on-created="false"
           :selected-row-quick="selectedRowQuick"
           @selected="selected"
           :pmql="pmql"
