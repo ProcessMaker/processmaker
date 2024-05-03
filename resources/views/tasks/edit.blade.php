@@ -211,6 +211,7 @@
                                 type="button"
                                 class="btn btn-block button-actions"
                                 @click="eraseDraft()"
+                                v-if="taskDraftsEnabled"
                               >
                                 <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                                 {{ __('Clear Draft') }}
@@ -227,7 +228,7 @@
                               <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
                               @{{ moment(completedAt).format() }}
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item" v-if="taskDraftsEnabled">
                               <task-save-panel
                                 :options="options"
                                 :task="task"
@@ -375,6 +376,7 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     var screenFields = @json($screenFields);
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -665,6 +667,9 @@
             });
           },
           autosaveApiCall() {
+            if (!this.taskDraftsEnabled) {
+              return;
+            }
             this.options.is_loading = true;
             const draftData = {};
 

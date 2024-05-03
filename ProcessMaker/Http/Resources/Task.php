@@ -13,6 +13,7 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\Languages;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
@@ -48,7 +49,14 @@ class Task extends ApiResource
             $array['process_request'] = new Users($this->processRequest);
         }
         if (in_array('draft', $include)) {
-            $array['draft'] = $this->draft;
+            $draft = $this->draft;
+            $array['draft'] = $draft;
+            if ($draft && !TaskDraft::draftsEnabled()) {
+                // Drafts are used to get data from quick-fill to the screen,
+                // but drafts are disabled so we need to delete it now that
+                // it's been accessed.
+                $draft->delete();
+            }
         }
 
         $parentProcessRequest = $this->processRequest->parentRequest;

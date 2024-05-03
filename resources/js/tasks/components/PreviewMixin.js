@@ -1,3 +1,5 @@
+import { computed } from "vue";
+
 const PreviewMixin = {
   data() {
     return {
@@ -44,7 +46,7 @@ const PreviewMixin = {
       showReassignment: false,
       taskDefinition: {},
       user: {},
-      disableNavigation: false,
+      disableNavigationValue: false,
       actions: [
         {
           value: "clear-draft",
@@ -270,6 +272,19 @@ const PreviewMixin = {
       }
       this.ellipsisButton = false;
       return this.convertPercentageToPx(this.size) - 550;
+    },
+  },
+  computed: {
+    disableNavigation: {
+      get() {
+        if (this.taskDraftsEnabled === false) {
+          return false;
+        }
+        return this.disableNavigationValue;
+      },
+      set(value) {
+        this.disableNavigationValue = value;
+      },
     },
   },
 };

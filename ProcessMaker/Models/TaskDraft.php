@@ -107,4 +107,9 @@ class TaskDraft extends ProcessMakerModel implements HasMedia
             $existingMediaItem->delete();
         }
     }
+
+    public static function draftsEnabled()
+    {
+        return config('app.task_drafts_enabled');
+    }
 }

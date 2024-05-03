@@ -428,16 +428,6 @@
               this.sendEvent('taskReady', this.task?.id);
             });
           },
-          autosaveApiCall() {
-            return ProcessMaker.apiClient
-            .put("drafts/" + this.task.id, this.formData)
-            .then(() => {
-              this.is_loading = true;
-            })
-            .finally(() => {
-              this.is_loading = false;
-            });
-          },
         },
         mounted() {
           this.prepareData();
