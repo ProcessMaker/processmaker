@@ -15,6 +15,7 @@ use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -65,6 +66,9 @@ abstract class BpmnAction implements ShouldQueue
 
             // Run engine to the next state
             $this->engine->runToNextState();
+        } catch (HttpException $exception) {
+            Log::error($exception->getMessage());
+            throw $exception;
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
             // Change the Request to error status
@@ -72,7 +76,6 @@ abstract class BpmnAction implements ShouldQueue
             if ($request) {
                 $request->logError($exception, $element);
             }
-            throw $exception;
         } finally {
             $this->unlock();
         }
