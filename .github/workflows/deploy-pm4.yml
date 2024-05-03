@@ -31,15 +31,7 @@ env:
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-jobs:            
-  checkContexts:
-    runs-on: ubuntu-latest
-    name: Check available contexts
-    steps:
-      - name: Get Contexts
-        run: |
-          echo "github.event: ${{ toJson(github.event) }}"
-          echo "github.event.workflow_run: ${{ toJson(github.event.workflow_run) }}"
+jobs:
   imageEKS:
     name: build-docker-image-EKS
     if: github.event.action != 'closed'
