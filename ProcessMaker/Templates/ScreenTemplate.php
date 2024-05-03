@@ -735,18 +735,33 @@ class ScreenTemplate implements TemplateInterface
     private function getMediaUuids($media)
     {
         return array_map(function ($obj) {
-            return $obj['uuid'];
+            if (isset($obj['uuid'])) {
+                return $obj['uuid'];
+            } else {
+                return null;
+            }
         }, $media);
     }
 
     private function deleteMissingMedia($template, $updatedTemplateMediaUuids)
     {
-        $result = array_filter($template->template_media, function ($obj) use ($updatedTemplateMediaUuids) {
-            return !in_array($obj['uuid'], $updatedTemplateMediaUuids);
-        });
+        //Check if template->template_media contains previewThumbs array. If so, filter that array.
+        if (isset($template->template_media['previewThumbs'])) {
+            $previewThumbs = $template->template_media['previewThumbs'];
+            $result = array_filter($previewThumbs, function ($media) use ($updatedTemplateMediaUuids) {
+                $uuid = $media->getAttribute('uuid');
+
+                return !in_array($uuid, $updatedTemplateMediaUuids);
+            });
+        } else {
+            $result = array_filter($template->template_media, function ($obj) use ($updatedTemplateMediaUuids) {
+                return !in_array($obj['uuid'], $updatedTemplateMediaUuids);
+            });
+        }
 
         foreach ($result as $media) {
-            Media::where('uuid', $media['uuid'])->delete();
+            $uuid = $media->getAttribute('uuid');
+            Media::where('uuid', $uuid)->delete();
         }
     }
 
