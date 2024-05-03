@@ -122,9 +122,12 @@ class TaskController extends Controller
 
         $this->applyForCurrentUser($query, $user);
 
+        // Count up the total results
+        $totalCount = $query->count();
+
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
-            return $query->count();
+            return $totalCount;
         }
 
         // Apply filter overdue
@@ -133,7 +136,7 @@ class TaskController extends Controller
         // If we should manually add pagination to the
         // query in advance (also used by saved search)
         if ($this->isPaginationEnabled()) {
-            $query->paginate($request->input('per_page', 10));
+            $query->limit($request->input('per_page', 10));
         }
 
         try {
@@ -153,7 +156,7 @@ class TaskController extends Controller
 
         $response->inOverdue = $inOverdueQuery->count();
 
-        return new TaskCollection($response);
+        return new TaskCollection($response, $totalCount);
     }
 
     /**
