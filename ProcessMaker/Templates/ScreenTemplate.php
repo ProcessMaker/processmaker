@@ -382,6 +382,7 @@ class ScreenTemplate implements TemplateInterface
             'media_collection',
             'name',
             'description',
+            'user_id',
             'screen_category_id',
             'version',
             'screen_type',
