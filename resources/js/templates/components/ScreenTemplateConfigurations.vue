@@ -109,12 +109,15 @@ export default {
               this.template.is_public = value;
           },
         },
+        isDefaultProcessmakerTemplate() {
+            return this.template.user_id === null;
+        },
     },
     watch: {
         template: {
             deep: true,
             handler() {
-                this.$emit('updated', this.template);
+                this.$emit('updated', this.template, this.isDefaultProcessmakerTemplate);
             }
         },
         responseErrors: {

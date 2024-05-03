@@ -73,7 +73,13 @@
                                 '@click' => 'onClose'
                             ])
                         !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button(__('Save'),
+                            [
+                                ':disabled' => 'isDefaultProcessmakerTemplate',
+                                'class'=>'btn btn-secondary ml-2',
+                                '@click' => 'onUpdate'
+                            ])
+                        !!}
                     </div>
                 </div>
             </div>
