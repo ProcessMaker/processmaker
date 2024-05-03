@@ -301,7 +301,7 @@ export default {
           content: "Edit Template",
           permission: ["edit-screens"],
           icon: "fas fa-pen-square",
-          conditional: "if(is_owner, true, false)",
+          conditional: "if(is_owner and user_id, true, false)",
         },
         {
           value: "configure-template",
@@ -310,7 +310,7 @@ export default {
           href: "/template/screen/{{id}}/configure",
           permission: ["edit-screens"],
           icon: "fas fa-cog",
-          conditional: "if(is_owner, true, false)",
+          conditional: "if(is_owner and user_id, true, false)",
         },
         {
           value: "export-item",
@@ -325,7 +325,7 @@ export default {
           content: "Delete Template",
           permission: ["publish-screen-templates"],
           icon: "fas fa-trash-alt",
-          conditional: "if(is_owner, true, false)",
+          conditional: "if(is_owner and user_id, true, false)",
         },
       ],
     };
