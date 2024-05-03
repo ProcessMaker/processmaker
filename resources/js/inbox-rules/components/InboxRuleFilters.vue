@@ -33,7 +33,7 @@
         :disable-row-click="true"
         :disable-rule-tooltip="true"
         :advanced-filter-prop="savedSearchAdvancedFilter"
-        @advanced-filter-updated="savedSearchAdvancedFilter = $event"
+        @advanced-filter-updated="advancedFilterUpdatedFromTasksList"
         :saved-search="savedSearch?.id"
         :columns="columns"
         @submit=""
@@ -91,13 +91,19 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
+      },
+      propSavedSearchData: {
+        type: Object,
+        default: () => {
+          return {};
+        }
       }
     },
     data() {
       return {
         savedSearch: null,
-        columns: [],
         defaultColumns: [],
+        columns: [],
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
         ready: false,
@@ -112,12 +118,8 @@
       PMBadgesFilters
     },
     methods: {
-      emitSavedSearchData() {
-        this.$emit('saved-search-data', {
-          pmql: this.pmql,
-          advanced_filter: this.savedSearchAdvancedFilter,
-          columns: this.columns
-        });
+      advancedFilterUpdatedFromTasksList(filters) {
+        this.savedSearchAdvancedFilter = filters;
       },
       applyColumns() {
         if (this.$refs.columnChooserAdapter.modifiedCurrentColumns.length <= 0) {
@@ -125,9 +127,12 @@
           return;
         }
         this.columns = this.$refs.columnChooserAdapter.modifiedCurrentColumns;
-        this.emitSavedSearchData();
-        this.resetFilters();
         this.modalColumnChooserAdapter = false;
+
+        // We need to re-fetch because the the task list only includes
+        // data specified in the request. If we added a column, we need
+        // to request that field.
+        this.$refs.taskList.fetch();
       },
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
@@ -218,9 +223,19 @@
         return ProcessMaker.apiClient.get("saved-searches/" + this.savedSearchId)
                 .then(response => {
                   this.savedSearch = response.data;
-                  this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
-                  this.savedSearchAdvancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
-                  this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+
+                  if (this.columns.length === 0) {
+                    const cols = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
+                    this.columns = _.cloneDeep(cols);
+                    this.defaultColumns = _.cloneDeep(cols);
+                  }
+
+                  if (this.savedSearchAdvancedFilter === null) {
+                    const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
+                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
+                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+                  }
+
                   this.ready = true;
                 });
       },
@@ -229,15 +244,15 @@
       loadTask() {
         this.ready = false;
 
-        let defaultColumns = _.get(window, 'Processmaker?.defaultColumns', []);
-        this.defaultColumns = defaultColumns.filter(c => c.field !== 'is_priority');
-        this.columns = this.defaultColumns;
-
         return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {
                   this.task = response.data;
-                  this.savedSearchAdvancedFilter = this.defaultTaskFilters();
-                  this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+
+                  if (this.savedSearchAdvancedFilter === null) {
+                    this.savedSearchAdvancedFilter = this.defaultTaskFilters();
+                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+                  }
+
                   this.ready = true;
                 });
       },
@@ -247,38 +262,32 @@
       onTaskListRendered() {
         if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
           let defaultColumns = this.$refs.taskList.tableHeaders;
-          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
+          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority' && c.hidden !== true);
         }
       }
     },
     watch: {
+      savedSearchData() {
+        this.$emit('saved-search-data', this.savedSearchData);
+      },
       task: {
         deep: true,
         handler() {
         }
       },
-      savedSearchAdvancedFilter: {
+      propSavedSearchData: {
+        handler() {
+          this.columns = this.propSavedSearchData?.columns ?? [];
+          this.savedSearchAdvancedFilter = this.propSavedSearchData?.advanced_filter ?? null;
+        },
         deep: true,
-        handler() {
-          //to do: reviewing this assignment may result in a loop.
-          this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(this.savedSearchAdvancedFilter);
-          this.emitSavedSearchData();
-        }
-      },
-      pmql: {
-        handler() {
-          this.emitSavedSearchData();
-        }
-      },
-      ready: {
-        handler() {
-          this.resetFilters();
-          this.emitSavedSearchData();
-        }
+        immediate: true
       },
       taskId: {
         handler() {
-          this.loadTask();
+          if (!this.savedSearchId) {
+            this.loadTask();
+          }
         }
       },
       savedSearchId: {
@@ -299,6 +308,13 @@
           return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name});
         }
         return '';
+      },
+      savedSearchData() {
+        return {
+          pmql: this.pmql,
+          advanced_filter: this.savedSearchAdvancedFilter,
+          columns: this.columns
+        };
       }
     },
     mounted() {
