@@ -1,5 +1,3 @@
-import { computed } from "vue";
-
 const PreviewMixin = {
   data() {
     return {
