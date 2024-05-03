@@ -589,16 +589,6 @@ export default {
           ${label}
         </span>`;
     },
-    formatAsignee(participants) {
-      return {
-        component: "AvatarImage",
-        props: {
-          size: "25",
-          "input-data": participants,
-          "hide-name": false,
-        },
-      };
-    },
     formatDueDate(date) {
       return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
