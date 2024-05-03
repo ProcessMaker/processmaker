@@ -46,38 +46,35 @@
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
-    @if(Auth::user())
-      window.Processmaker = {
-        csrfToken: "{{csrf_token()}}",
-        userId: "{{\Auth::user()->id}}",
-        messages: [],
-        apiTimeout: {{config('app.api_timeout')}}
+    window.Processmaker = {
+      csrfToken: "{{csrf_token()}}",
+      messages: [],
+      apiTimeout: {{config('app.api_timeout')}}
+    };
+    @if(config('broadcasting.default') == 'redis')
+      window.Processmaker.broadcasting = {
+        broadcaster: "socket.io",
+        host: "{{config('broadcasting.connections.redis.host')}}",
+        key: "{{config('broadcasting.connections.redis.key')}}"
       };
-      @if(config('broadcasting.default') == 'redis')
-        window.Processmaker.broadcasting = {
-          broadcaster: "socket.io",
-          host: "{{config('broadcasting.connections.redis.host')}}",
-          key: "{{config('broadcasting.connections.redis.key')}}"
-        };
+    @endif
+    @if(config('broadcasting.default') == 'pusher')
+      window.Processmaker.broadcasting = {
+        broadcaster: "pusher",
+        key: "{{config('broadcasting.connections.pusher.key')}}",
+        cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
+        forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
+        debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}},
+        enabledTransports: ['ws', 'wss'],
+        disableStats: true,
+      };
+      
+      @if(config('broadcasting.connections.pusher.options.host'))
+        window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
+        window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
+        window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
       @endif
-      @if(config('broadcasting.default') == 'pusher')
-        window.Processmaker.broadcasting = {
-          broadcaster: "pusher",
-          key: "{{config('broadcasting.connections.pusher.key')}}",
-          cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
-          forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
-          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}},
-          enabledTransports: ['ws', 'wss'],
-          disableStats: true,
-        };
-        
-        @if(config('broadcasting.connections.pusher.options.host'))
-          window.Processmaker.broadcasting.wsHost = "{{config('broadcasting.connections.pusher.options.host')}}";
-          window.Processmaker.broadcasting.wsPort = "{{config('broadcasting.connections.pusher.options.port')}}";
-          window.Processmaker.broadcasting.wssPort = "{{config('broadcasting.connections.pusher.options.port')}}";
-        @endif
 
-      @endif
     @endif
   </script>
     @isset($addons)

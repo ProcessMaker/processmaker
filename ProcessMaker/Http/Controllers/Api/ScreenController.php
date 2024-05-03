@@ -11,7 +11,6 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\ImportExport\Exporter;
-use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
@@ -231,9 +230,9 @@ class ScreenController extends Controller
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 
-        //Creating temporary Key to store multiple id categories
+        // Creating temporary Key to store multiple id categories
         $newScreen['tmp_screen_category_id'] = $request->input('screen_category_id');
-        //Call event to store New Screen data in LOG
+        // Call event to store New Screen data in LOG
         ScreenCreated::dispatch($newScreen->getAttributes());
 
         return new ApiResource($screen);
@@ -279,10 +278,10 @@ class ScreenController extends Controller
         $screen->saveOrFail();
         $screen->syncProjectAsset($request, Screen::class);
 
-        //Call event to store Screen Changes into Log
+        // Call event to store Screen Changes into Log
         $request->validate(Screen::rules($screen));
         $changes = $screen->getChanges();
-        //Creating temporary Key to store multiple id categories
+        // Creating temporary Key to store multiple id categories
         $changes['tmp_screen_category_id'] = $request->input('screen_category_id');
         ScreenUpdated::dispatch($screen, $changes, $original);
         $this->updateScreenTemplate($screen);
@@ -429,7 +428,7 @@ class ScreenController extends Controller
     public function destroy(Screen $screen)
     {
         $screen->delete();
-        //Call new event to store changes in LOG
+        // Call new event to store changes in LOG
         ScreenDeleted::dispatch($screen);
 
         return response([], 204);
@@ -593,14 +592,17 @@ class ScreenController extends Controller
             ->update(['is_default_template' => 0]);
     }
 
-    private function updateScreenTemplate($screen)
+    private function updateScreenTemplate(Screen $screen): void
     {
         if ($screen->is_template && $screen->asset_type === 'SCREEN_TEMPLATE') {
             $screen->update(['is_template' => 0, 'asset_type' => null]);
             $exporter = new Exporter();
             $exporter->exportScreen($screen);
             ScreenTemplates::where('editing_screen_uuid', $screen->uuid)
-                ->update(['manifest' => json_encode($exporter->payload())]);
+                ->update([
+                    'manifest' => json_encode($exporter->payload()),
+                    'screen_custom_css' => $screen->custom_css,
+                ]);
             $screen->update(['is_template' => 1, 'asset_type' => 'SCREEN_TEMPLATE']);
         }
     }
