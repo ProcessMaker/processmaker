@@ -187,15 +187,6 @@
           if (!hasUserIdFilter) {
             filter.filters.push(this.userIdFilter());
           }
-
-          const hasStatusFilter = filter.filters.some(f => {
-            return f.subject.type === 'Status' && f.value === 'In Progress';
-          });
-
-          if (!hasStatusFilter) {
-            filter.filters.push(this.statusFilter());
-          }
-
         } else {
           filter.filters = [this.userIdFilter()];
         }

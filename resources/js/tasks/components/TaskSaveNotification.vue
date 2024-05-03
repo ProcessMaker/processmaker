@@ -18,8 +18,8 @@
           :style="{
             maxWidth: `${size}px`
           }"
+          v-html="sanitizeHtml(task.element_name)"
         >
-          {{ task.element_name }}
         </span>
       </div>
     </div>
@@ -119,6 +119,26 @@ export default {
   mounted() {
 
   },
+  methods: {
+    sanitizeHtml(html) {
+      return this.removeScriptsHtml(html);
+    },
+    removeScriptsHtml(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach((script) => {
+        script.remove();
+      });
+
+      const styles = doc.querySelectorAll('style');
+      styles.forEach((style) => {
+        style.remove();
+      });
+
+      return doc.body.innerHTML;
+    },
+  },
 };
 </script>
 <style>
@@ -165,6 +185,9 @@ export default {
   font-weight: bold;
   color: #566877;
   margin-left: 5px;
+}
+.element-name a {
+  color: inherit;
 }
 .truncate-text {
   overflow: hidden;

@@ -235,7 +235,8 @@ const PreviewMixin = {
         case "clear-draft":
           ProcessMaker.apiClient
             .delete("drafts/" + this.task.id)
-            .then(() => {
+            .then(response => {
+              this.resetRequestFiles(response);
               this.isLoading = setTimeout(() => {
                 this.stopFrame = true;
                 this.taskTitle = this.$t("Task Lorem");

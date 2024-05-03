@@ -379,7 +379,7 @@ export default {
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process_obj"] = record["process"];
           record["process"] = this.formatProcess(record);
-          record["task_name"] = this.formatActiveTask(record);
+          record["element_name"] = this.formatActiveTask(record);
         }
       }
       this.$emit('count', newData.meta?.count);
@@ -508,7 +508,7 @@ export default {
         },
         {
           label: "Task",
-          field: "task_name",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
