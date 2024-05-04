@@ -389,6 +389,7 @@ export default {
           "input-data": participants,
           "hide-name": false,
           vertical: true,
+          "name-clickable": true,
         },
       };
     },
@@ -506,7 +507,6 @@ export default {
 
     },
     handleRowClick(row) {
-      window.location.href = this.openRequest(row, 1);
     },
     /**
      * This method is used in PMColumnFilterPopoverCommonMixin.js

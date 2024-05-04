@@ -45,6 +45,7 @@ export default {
           size: "25",
           "input-data": user,
           "hide-name": false,
+          "name-clickable": true,
         },
       };
     },
