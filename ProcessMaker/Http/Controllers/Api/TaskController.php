@@ -122,9 +122,18 @@ class TaskController extends Controller
 
         $this->applyForCurrentUser($query, $user);
 
+        try {
+            // Count up the total number of results, but
+            // watch for PMQL query exceptions and handle
+            // them if they occur
+            $totalResultCount = $query->count();
+        } catch (QueryException $e) {
+            return $this->handleQueryException($e);
+        }
+
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
-            return $query->count();
+            return $totalResultCount;
         }
 
         // Apply filter overdue
@@ -133,7 +142,7 @@ class TaskController extends Controller
         // If we should manually add pagination to the
         // query in advance (also used by saved search)
         if ($this->isPaginationEnabled()) {
-            $query->paginate($request->input('per_page', 10));
+            $query->limit($request->input('per_page', 10));
         }
 
         try {
@@ -153,7 +162,7 @@ class TaskController extends Controller
 
         $response->inOverdue = $inOverdueQuery->count();
 
-        return new TaskCollection($response);
+        return new TaskCollection($response, $totalResultCount);
     }
 
     /**
@@ -269,6 +278,7 @@ class TaskController extends Controller
     private function handleQueryException($e)
     {
         $regex = '~Column not found: 1054 Unknown column \'(.*?)\' in \'where clause\'~';
+
         preg_match($regex, $e->getMessage(), $m);
 
         $message = __('PMQL Is Invalid.');
