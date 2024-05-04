@@ -281,8 +281,6 @@ class TaskController extends Controller
 
         preg_match($regex, $e->getMessage(), $m);
 
-        dump($m);
-
         $message = __('PMQL Is Invalid.');
 
         if (count($m) > 1) {
