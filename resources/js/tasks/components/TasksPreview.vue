@@ -100,6 +100,7 @@
                     variant="light"
                     v-b-tooltip.hover title="Clear Draft"
                     @click="eraseDraft()"
+                    v-if="taskDraftsEnabled"
                   >
                     <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                   </b-button>
@@ -382,6 +383,9 @@ export default {
       });
     },
     autosaveApiCall() {
+      if (!this.taskDraftsEnabled) {
+        return;
+      }
       this.options.is_loading = true;
       const draftData = _.omitBy(this.formData, (value, key) => key.startsWith("_"));
       return ProcessMaker.apiClient
@@ -406,7 +410,9 @@ export default {
       ProcessMaker.apiClient
         .delete("drafts/" + this.task.id)
         .then(response => {
-          this.resetRequestFiles(response);
+          // No need to run resetRequestFiles here
+          // because the iframe gets reloaded after
+          // the draft is cleared
           this.isLoading = setTimeout(() => {
             this.stopFrame = true;
             this.taskTitle = this.$t("Task Lorem");

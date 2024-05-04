@@ -53,6 +53,7 @@ new Vue({
         "_hide_badge": true
       }
     ],
+    taskDraftsEnabled: window.ProcessMaker.taskDraftsEnabled,
   },
   mounted() {
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
