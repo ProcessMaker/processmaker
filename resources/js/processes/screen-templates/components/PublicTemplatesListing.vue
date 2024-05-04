@@ -235,6 +235,7 @@ export default {
       rowPosition: {},
       tooltipRowData: {
         is_owner: true,
+        user_id: null,
       },
       hideTimer: null,
       selectedRow: 0,
