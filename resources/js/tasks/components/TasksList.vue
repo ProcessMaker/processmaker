@@ -10,6 +10,7 @@
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
         :selected-row="selectedRow"
+        :table-name="tableName"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -289,6 +290,10 @@ export default {
     openQuickFillFromRow: {
       type: Boolean,
       default: false,
+    },
+    tableName: {
+      type: String,
+      default: "",
     },
   },
   data() {

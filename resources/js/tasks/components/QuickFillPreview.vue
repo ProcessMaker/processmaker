@@ -51,6 +51,7 @@
           :columns="columns"
           :fetch-on-created="false"
           :selected-row-quick="selectedRowQuick"
+          :table-name="tasksListName"
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
@@ -207,6 +208,7 @@ export default {
             value: "processRequest.case_number",
           },
           order_column: "process_requests.case_number",
+          width: 100,
         },
         {
           label: "Case title",
@@ -217,6 +219,7 @@ export default {
             value: "processRequest.case_title",
           },
           order_column: "process_requests.case_title",
+          width: 180,
         },
         {
           label: "Completed",
@@ -226,10 +229,12 @@ export default {
             type: "Field",
             value: "completed_at",
           },
+          width: 140,
         },
       ],
       dataTasks: {},
       disclaimer: this.$t("This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form."),
+      tasksListName: "preview-table",
     };
   },
   mounted() {
