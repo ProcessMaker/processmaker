@@ -246,8 +246,10 @@ abstract class ExporterBase implements ExporterInterface
             $name = $model->name;
         } elseif (isset($model->title)) {
             $name = $model->title;
+        } elseif ($this->getClassName() === 'LaunchpadSetting') {
+            $name = 'Setting';
         }
-
+       
         return $name;
     }
 
@@ -269,6 +271,7 @@ abstract class ExporterBase implements ExporterInterface
         ];
 
         if (array_key_exists($baseName, $aliases)) {
+            
             $baseName = $aliases[$baseName];
         }
 
@@ -281,7 +284,7 @@ abstract class ExporterBase implements ExporterInterface
     }
 
     public function toArray()
-    {
+    {//dd("array ", $this->model);
         $attributes = [
             'exporter' => get_class($this),
             'type' => $this->getClassName(),
@@ -314,7 +317,7 @@ abstract class ExporterBase implements ExporterInterface
     }
 
     public function addImportAttributes(&$attributes)
-    {
+    {dd("attributes: ", $attributes);
         $existingId = null;
         $existingAttributes = null;
         $existingName = null;
