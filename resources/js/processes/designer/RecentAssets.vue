@@ -118,7 +118,7 @@ export default {
     },
     showDropdown() {
       this.hideDropdown = !this.hideDropdown ;
-      performSearch();
+      this.performSearch();
     },
     /**
      * This boolean method shows or hide elements
