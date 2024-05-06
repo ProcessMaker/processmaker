@@ -117,7 +117,7 @@ export default {
       }
     },
     showDropdown() {
-      this.hideDropdown = !this.hideDropdown ;
+      this.hideDropdown = true;
       this.performSearch();
     },
     /**
