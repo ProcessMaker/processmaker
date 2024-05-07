@@ -52,13 +52,31 @@
         <template v-slot:label>
           <b>{{ $t('Deactivation date') }}</b>
         </template>
-        <PMDatetimePicker v-model="deactivationDate"
-                          :format="'YYYY-MM-DD'"
-                          :withTime="false">
-          <template v-slot:button-content-datepicker>
-            <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')"/>
-          </template>
-        </PMDatetimePicker>
+        
+        <b-input-group class="pm-datetime-picker">
+          <b-form-input v-model="visibleFormattedDeactivationDate"
+            type="text"
+            autocomplete="off"
+            readonly
+            @click="showCalendar"
+            class="pm-datetime-picker-input">
+          </b-form-input>
+          <b-input-group-append>
+            <b-form-datepicker
+              v-model="formattedDeactivationDate"
+              ref="datepicker"
+              right
+              button-only
+              button-variant="light"
+              class="pm-datetime-picker-button-datetime"
+              >
+              <template v-slot:button-content>
+                <img src="/img/calendar2-fill.svg" :alt="$t('Deactivation date')"/>
+              </template>
+            </b-form-datepicker>
+          </b-input-group-append>
+        </b-input-group>
+
         <div class="pm-inbox-rule-edit-custom-placeholder">
           {{ $t('For a rule with no end date, leave the field empty') }}
         </div>
@@ -240,15 +258,42 @@
         persons: [],
         applyToCurrentInboxMatchingTasks: false,
         applyToFutureTasks: false,
-        deactivationDate: "",
+        deactivationDate: null,
         ruleName: "",
         ruleNameState: null,
         ruleNameMessageError: "",
         makeDraft: false,
-        submitAfterFilling: false
+        submitAfterFilling: false,
+        usersTimeZone: window.ProcessMaker.user.timezone,
       };
     },
     computed: {
+      formattedDeactivationDate: {
+        get() {
+          if (!moment(this.deactivationDate).isValid()) {
+            return null;
+          }
+          // Convert the UTC date to users time zone
+          // Do not include time
+          return moment.utc(this.deactivationDate)
+            .tz(this.usersTimeZone)
+            .format("YYYY-MM-DD");
+          },
+        set(value) {
+          // Convert to UTC from the users time zone
+          // Assume local time is midnight and then convert to UTC
+          this.deactivationDate = moment.tz(value + " 00:00:00", this.usersTimeZone)
+            .utc()
+            .format("YYYY-MM-DD HH:mm:ss")
+          }
+      },
+      visibleFormattedDeactivationDate() {
+        if (!this.formattedDeactivationDate) {
+          return '';
+        }
+        const format = ProcessMaker.user.datetime_format.split(" ")[0];
+        return moment(this.formattedDeactivationDate).format(format);
+      },
       submitButton() {
         if (!this.selectSubmitButton || !this.submitAfterFilling) {
           return null;
@@ -297,6 +342,9 @@
       this.setInboxRuleData();
     },
     methods: {
+      showCalendar() {
+        this.$refs.datepicker.$refs.control.show();
+      },
       onCancel() {
         window.history.back();
       },
@@ -425,7 +473,20 @@
   .pm-inbox-rule-edit-modal-footer{
     border-color: white;
   }
+  
+  .pm-datetime-picker-button-datetime > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #b6bfc6;
+    border-bottom: 1px solid #b6bfc6;
+    border-left: 0px;
+    border-right: 1px solid #b6bfc6;
+    border-top-right-radius: 2px !important;
+    border-bottom-right-radius: 2px !important;
+  }
 </style>
+
 <style scoped>
   .pm-inbox-rule-edit>.form-group{
     padding-top: 8px;
@@ -437,5 +498,9 @@
   }
   .pm-inbox-rule-edit-custom-separator{
     border-top: 1px solid #CDDDEE;
+  }
+
+  .pm-datetime-picker-input {
+    background-color: white;
   }
 </style>
