@@ -142,7 +142,6 @@ export default {
      * This method sends users's input criteria to filter specific tasks or requests
      */
     performSearch() {
-      console.log("jiji");
       this.pmql = `(fulltext LIKE "%${this.searchCriteria}%")`;
       this.$refs.recentAssetsList.fetch(this.pmql);
     },
