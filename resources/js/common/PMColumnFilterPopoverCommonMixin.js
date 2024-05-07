@@ -18,7 +18,10 @@ const PMColumnFilterCommonMixin = {
   watch: {
     advancedFilterProp: {
       deep: true,
-      handler() {
+      handler(current, old) {
+        if (_.isEqual(current, old)) {
+          return;
+        }
         this.getFilterConfiguration();
         this.fetch();
       }
@@ -43,11 +46,15 @@ const PMColumnFilterCommonMixin = {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
+        if (Processmaker.status) {
+          url += "|" + Processmaker.status;
+        }
       }
       let config = {
         filters: this.formattedFilter(),
         order
       };
+
       ProcessMaker.apiClient.put(url, config);
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
@@ -172,7 +179,10 @@ const PMColumnFilterCommonMixin = {
       return Object.values(filterCopy).flat(1);
     },
     getAdvancedFilter() {
-      let formattedFilter = this.formattedFilter();
+      let formattedFilter = this.formattedFilter().map(obj =>
+        // Remove keys that start with _
+        Object.fromEntries(Object.entries(obj).filter(([key, _]) => !key.startsWith('_')))
+      );
       return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
     getUrlUsers(filter) {
@@ -211,7 +221,7 @@ const PMColumnFilterCommonMixin = {
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants" || column.field === "assignee") {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "element_name" || column.field === "participants" || column.field === "assignee") {
         operators = ["=", "in", "contains", "regex"];
       }
       if (column.field === "status") {
@@ -303,10 +313,9 @@ const PMColumnFilterCommonMixin = {
         window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
       }
     },
-    refreshData(advancedFilter) {
-      if (advancedFilter instanceof Object && !Array.isArray(advancedFilter)) {
-        this.advancedFilter = cloneDeep(advancedFilter);
-      }
+    //to do: this should be used in the future if refreshing the table elements is required.
+    refreshData() {
+      this.getFilterConfiguration();
       this.markStyleWhenColumnSetAFilter();
       this.storeFilterConfiguration();
       this.fetch(true);

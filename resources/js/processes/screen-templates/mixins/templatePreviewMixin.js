@@ -41,6 +41,7 @@ const templatePreviewMixin = {
       this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     handleRowMouseover(row) {
+      this.tooltipRowData = row;
       this.clearHideTimer();
 
       const tableContainer = document.getElementById(this.tableId);
@@ -50,7 +51,6 @@ const templatePreviewMixin = {
       let elementHeight = 36;
 
       this.isTooltipVisible = true;
-      this.tooltipRowData = row;
 
       const rowElement = tableContainer.querySelector(`#row-${row.id}`);
       const rect = rowElement.getBoundingClientRect();

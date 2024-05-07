@@ -9,6 +9,7 @@ export default (status, ignoreSavedFilter = false, requester = null) => {
     // Already has a status filter set by the user
     return;
   }
+  
   advancedFilter.push({
     subject: {
       type: "Status"

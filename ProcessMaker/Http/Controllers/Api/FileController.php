@@ -10,6 +10,8 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\TaskDraft;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FileController extends Controller
@@ -86,7 +88,7 @@ class FileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      *
      * @OA\Post(
@@ -292,7 +294,7 @@ class FileController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @param Media $file
      *
      * @return \Illuminate\Http\Response
@@ -341,6 +343,22 @@ class FileController extends Controller
         $modelType = $file->model_type;
         $modelId = $file->model_id;
         $model = $modelType::find($modelId);
+
+        $taskId = (int) request()->input('task_id', 0);
+        if ($taskId && $modelType === ProcessRequest::class) {
+            // We are deleting a file from the request, however, we
+            // need need to preserve it because this is a draft.
+            $draft = TaskDraft::firstOrCreate(['task_id' => $taskId], ['data' => []]);
+            $data = $draft->data;
+            if (!isset($data['__deleted_files'])) {
+                $data['__deleted_files'] = [];
+            }
+            $data['__deleted_files'][] = $file->id;
+            $draft->data = $data;
+            $draft->saveOrFail();
+
+            return response([], 204);
+        }
 
         $model->deleteMedia($file->id);
 

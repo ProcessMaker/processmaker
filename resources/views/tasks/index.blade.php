@@ -67,6 +67,7 @@
               @click.prevent="!isDataLoading ? switchTab('draft') : null"
               aria-selected="true"
               :class="{ 'active': draft }"
+              v-if="taskDraftsEnabled"
             >
               {{ __('Drafts') }}
             </a>
@@ -152,6 +153,7 @@
                 @in-overdue="setInOverdueMessage"
                 @data-loading="dataLoading"
                 @tab-count="handleTabCount"
+                @on-fetch-task="onFetchTask"
               ></tasks-list>
             </div>
 
@@ -165,6 +167,7 @@
 
 @section('js')
     <script>
+      window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>

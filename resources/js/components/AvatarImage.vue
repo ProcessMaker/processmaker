@@ -35,7 +35,14 @@
         </span>
       </b-button>
       <span v-if="!hideName" class="text-center text-capitalize new-wrap m-1" :key="'name-' + key">
-          <span v-if="value.name">{{ limitCharacters(value.name)}}</span>
+          <span v-if="value.name">
+            <template v-if="nameClickable">
+              <a :href="href(value)">{{ limitCharacters(value.name)}}</a>
+            </template>
+            <template v-else>
+              {{ limitCharacters(value.name) }}
+            </template>
+          </span>
           <span v-else>ProcessMaker</span>
       </span>
       </div>
@@ -74,6 +81,10 @@ export default {
       default: null,
     },
     vertical: {
+      type: Boolean,
+      default: false,
+    },
+    nameClickable: {
       type: Boolean,
       default: false,
     },

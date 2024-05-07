@@ -47,6 +47,11 @@ export default {
   computed: {
     modifiedCurrentColumns() {
       return this.currentColumns.map(column => {
+        const existingColumnDefinition = this.columns.find(c => c.field === column.field);
+        if (existingColumnDefinition) {
+          return existingColumnDefinition;
+        }
+
         return {
           ...column,
           filter_subject: {type: "Field", value: column.field},

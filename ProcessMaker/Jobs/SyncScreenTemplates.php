@@ -194,16 +194,49 @@ class SyncScreenTemplates implements ShouldQueue
 
         foreach ($template['assets']['preview-thumbs'] as $thumbnail) {
             $templateThumbnailUrl = $this->buildTemplateUrl($config, $thumbnail);
-            $this->importMedia($templateThumbnailUrl, 'preview-thumbs', $mediaCollectionName, $screenTemplate);
+            $mediaId =
+                $this->importMedia($templateThumbnailUrl, 'preview-thumbs', $mediaCollectionName, $screenTemplate);
+            $this->setPreviewThumbOrder($mediaId, $mediaCollectionName);
         }
     }
 
     private function importMedia($assetUrl, $customProperty, $mediaCollectionName, $screenTemplate)
     {
         // Import a media asset and associate it with the media collection
-        $screenTemplate
-            ->addMediaFromUrl($assetUrl)
-            ->withCustomProperties(['media_type' => $customProperty])
-            ->toMediaCollection($mediaCollectionName);
+        $media = $screenTemplate
+             ->addMediaFromUrl($assetUrl)
+             ->withCustomProperties(['media_type' => $customProperty])
+             ->toMediaCollection($mediaCollectionName);
+
+        return $media->id;
+    }
+
+    private function setPreviewThumbOrder($id, $mediaCollectionName)
+    {
+        $media = Media::where('id', $id)->where('collection_name', $mediaCollectionName)->first();
+        // Extract order index from file name
+        $orderIndex = $this->extractOrderIndexFromFileName($media->name);
+
+        // Set order column if available
+        if (!is_null($orderIndex)) {
+            $media->order_column = $orderIndex;
+            $media->save();
+        }
+    }
+
+    /**
+     * Extracts order index from the file name.
+     *
+     * @param string $fileName
+     * @return int|null
+     */
+    protected function extractOrderIndexFromFileName($fileName)
+    {
+        preg_match('/\d+/', basename($fileName), $matches);
+        if (!empty($matches)) {
+            return intval($matches[0]) - 1;
+        }
+
+        return null;
     }
 }

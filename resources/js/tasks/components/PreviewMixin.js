@@ -44,7 +44,7 @@ const PreviewMixin = {
       showReassignment: false,
       taskDefinition: {},
       user: {},
-      disableNavigation: false,
+      disableNavigationValue: false,
       actions: [
         {
           value: "clear-draft",
@@ -235,7 +235,8 @@ const PreviewMixin = {
         case "clear-draft":
           ProcessMaker.apiClient
             .delete("drafts/" + this.task.id)
-            .then(() => {
+            .then(response => {
+              this.resetRequestFiles(response);
               this.isLoading = setTimeout(() => {
                 this.stopFrame = true;
                 this.taskTitle = this.$t("Task Lorem");
@@ -269,6 +270,19 @@ const PreviewMixin = {
       }
       this.ellipsisButton = false;
       return this.convertPercentageToPx(this.size) - 550;
+    },
+  },
+  computed: {
+    disableNavigation: {
+      get() {
+        if (this.taskDraftsEnabled === false) {
+          return false;
+        }
+        return this.disableNavigationValue;
+      },
+      set(value) {
+        this.disableNavigationValue = value;
+      },
     },
   },
 };

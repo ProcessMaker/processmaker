@@ -22,6 +22,7 @@ new Vue({
                 status: null,
                 screen: null
             },
+            isDefaultProcessmakerTemplate: false,
         }
     },
     computed: {
@@ -63,8 +64,9 @@ new Vue({
                 }
             });
         },
-        handleUpdatedTemplate(data) {
+        handleUpdatedTemplate(data, templateData) {
             this.formData = data;
+            this.isDefaultProcessmakerTemplate = templateData;
         }
     }
 });

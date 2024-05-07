@@ -12,7 +12,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route( $route['action'] . '.index'),
         $route['label'] => route($route['action'] . '.index'),
-        __('Templates') => route($route['action'] . '.index'),
+        __('Templates') => route($route['action'] . '.index') . $templateBreadcrumb,
         $template->name => null,
     ]])
 @endsection
@@ -73,7 +73,13 @@
                                 '@click' => 'onClose'
                             ])
                         !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button(__('Save'),
+                            [
+                                ':disabled' => 'isDefaultProcessmakerTemplate',
+                                'class'=>'btn btn-secondary ml-2',
+                                '@click' => 'onUpdate'
+                            ])
+                        !!}
                     </div>
                 </div>
             </div>

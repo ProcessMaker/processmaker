@@ -12,6 +12,7 @@ import QuickFillPreview from "./components/QuickFillPreview.vue";
 import TasksList from "./components/TasksList.vue";
 import TaskSavePanel from "./components/TaskSavePanel.vue";
 import autosaveMixins from "../modules/autosave/autosaveMixin";
+import draftFileUploadMixin from "../modules/autosave/draftFileUploadMixin";
 
 Vue.use(Vuex);
 Vue.use("task", Task);
@@ -26,6 +27,7 @@ Vue.component("TasksList", TasksList);
 Vue.component("TaskSavePanel", TaskSavePanel);
 
 Vue.mixin(autosaveMixins);
+Vue.mixin(draftFileUploadMixin);
 
 window.debounce = debounce;
 window.Vuex = Vuex;
