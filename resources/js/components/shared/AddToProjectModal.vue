@@ -87,28 +87,38 @@ export default {
       //TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
     },
     addToProject() {
-      // if (this.copyAsset) {
-      //   //TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
-      // }
+      // TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
       let formData = new FormData();
       formData.append("asset_type", this.assetType);
       formData.append("asset_id", this.assetId);
       formData.append("projects", this.projects);
       this.customModalButtons[1].disabled = true;
-      ProcessMaker.apiClient.post("/projects/assets/assign", formData)
-        .then(response => {
-          ProcessMaker.alert(response.data.message, "success");
-          this.close();
-        }).catch(error => {
-          this.errors = error.response.data;
-          this.customModalButtons[1].disabled = false;
-          if (this.errors.hasOwnProperty('errors')) {
-            this.errors = this.errors.errors;
-          } else {
-            const message = error.response.data.error;
-            ProcessMaker.alert(this.$t(message), "danger");
-          }
-        });
+      // Verify if the asset was assigned
+      ProcessMaker.apiClient.post("projects/assets/verify-assign", formData)
+        .then((verifyResponse) => {
+          // Review the response
+          const isAssigned = verifyResponse?.data?.verify;
+          const action = isAssigned ? 'update' : 'create';
+          // Add the action in the formData
+          formData.append("action", action);
+          // Assign the asset
+          return ProcessMaker.apiClient.post("/projects/assets/assign", formData);
+      })
+      .then((assignResponse) => {
+        // Show success message and close
+        ProcessMaker.alert(assignResponse.data.message, "success");
+        this.close();
+      })
+      .catch((error) => {
+        this.errors = error.response.data;
+        this.customModalButtons[1].disabled = false;
+        if (this.errors.hasOwnProperty('errors')) {
+          this.errors = this.errors.errors;
+        } else {
+          const errorMessage = error.response.data.error;
+          ProcessMaker.alert(this.$t(errorMessage), "danger");
+        }
+      });
     },
     formatAssetType(assetType) {
       return assetType.replace(/-/g, " ");
