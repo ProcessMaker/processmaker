@@ -87,7 +87,6 @@ export default {
       //TODO: ADD FUNCTIONALITY TO CHECK IF ASSET EXISTS ON A PROJECT
     },
     addToProject() {
-      // TODO: ADD FUNCTIONALITY FOR COPYING AN ASSET
       let formData = new FormData();
       formData.append("asset_type", this.assetType);
       formData.append("asset_id", this.assetId);
