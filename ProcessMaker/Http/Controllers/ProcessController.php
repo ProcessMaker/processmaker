@@ -4,7 +4,6 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +12,6 @@ use ProcessMaker\Jobs\ImportV2;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessTemplates;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -64,13 +62,11 @@ class ProcessController extends Controller
         ];
 
         $listConfig = (object) [
-            'processes' => Process::all(),
             'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
             'status' => $request->input('status'),
         ];
 
         $listTemplates = (object) [
-            'process-templates' => ProcessTemplates::all(),
             'permissions' => [
                 'view'   => $request->user()->can('view-process-templates'),
                 'create' => $request->user()->can('create-process-templates'),
