@@ -78,7 +78,7 @@ export default {
 }
 .input-box {
   padding-left: 1rem;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 .btn-input {
   display: flex;
