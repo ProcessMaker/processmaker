@@ -12,10 +12,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Exception\HttpABTestingException;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestLock;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -66,7 +66,7 @@ abstract class BpmnAction implements ShouldQueue
 
             // Run engine to the next state
             $this->engine->runToNextState();
-        } catch (HttpException $exception) {
+        } catch (HttpABTestingException $exception) {
             Log::error($exception->getMessage());
             throw $exception;
         } catch (Throwable $exception) {
