@@ -172,7 +172,7 @@ export default {
   line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  word-break: break-all;
+  word-break: break-word;
 }
 .b-popover-custom.popover {
   background-color: #F6F9FB;
