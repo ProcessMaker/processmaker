@@ -194,7 +194,7 @@
           initialFormDataSet: false,
           alwaysAllowEditing: window.location.search.includes('alwaysAllowEditing=1'),
           disableInterstitial: window.location.search.includes('disableInterstitial=1'),
-          validateForm: false
+          validateForm: true
         },
         watch: {
           task: {
