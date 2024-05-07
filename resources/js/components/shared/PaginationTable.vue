@@ -93,7 +93,7 @@ export default {
         },
       ],
       pageInput: "",
-      defaulPage: 1,
+      defaultPage: 1,
     };
   },
   computed: {
@@ -141,7 +141,7 @@ export default {
       this.$emit("page-change", page);
     },
     changePerPage(value) {
-      this.goToPage(this.defaulPage);
+      this.goToPage(this.defaultPage);
       this.$emit("per-page-change", value);
     },
     redirectPage(value) {
