@@ -150,6 +150,7 @@
                 :columns="columns"
                 :disable-tooltip="false"
                 :disable-quick-fill-tooltip="false"
+                :fetch-on-created="false"
                 @in-overdue="setInOverdueMessage"
                 @data-loading="dataLoading"
                 @tab-count="handleTabCount"
