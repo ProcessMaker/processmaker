@@ -174,8 +174,8 @@
           return "N/A";
         }
         let timezone = ProcessMaker.user.timezone;
-        let config = ProcessMaker.user.datetime_format;
-        return moment(value).tz(timezone).format(config);
+        let config = ProcessMaker.user.datetime_format.split(" ")[0];
+        return moment.utc(value).tz(timezone).format(config);
       },
       onChangeStatus(value, row) {
         let params = {

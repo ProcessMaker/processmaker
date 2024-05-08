@@ -346,14 +346,11 @@ export default {
         name: false,
         projects: false,
       },
-      doNotFetchOnPmqlChange: false,
     };
   },
   watch: {
     pmql(query) {
-      if (!this.doNotFetchOnPmqlChange) {
-        this.$emit("filterspmqlchange", [query, this.getSelectedFilters()]);
-      }
+      this.$emit("filterspmqlchange", [query, this.getSelectedFilters()]);
     },
   },
   created() {
@@ -490,18 +487,13 @@ export default {
       return this.selectedFilters;
     },
 
-    buildPmql(doNotFetchOnPmqlChange = false) {
-      this.doNotFetchOnPmqlChange = doNotFetchOnPmqlChange;
+    buildPmql() {
       switch (this.type) {
         case 'requests':
           this.buildRequestPmql();
           break;
         case 'tasks':
-          this.$nextTick(() => {
-            let advancedFilter = this.advancedFilter;
-            this.buildTaskPmql(advancedFilter);
-          });
-          
+          this.buildTaskPmql(this.advancedFilter);
           break;
         case 'projects':
           this.buildProjectPmql();

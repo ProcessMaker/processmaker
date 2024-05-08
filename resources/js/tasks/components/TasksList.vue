@@ -10,6 +10,7 @@
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
         :selected-row="selectedRow"
+        :table-name="tableName"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
@@ -172,6 +173,8 @@
               :actions="actions"
               :data="tooltipRowData"
               :divider="false"
+              @show="handleShowEllipsis"
+              @hide="handleHideEllipsis"
             />
           </slot>
           </div>
@@ -288,6 +291,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    tableName: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -329,6 +336,7 @@ export default {
       tooltipRowData: {},
       isTooltipVisible: false,
       hideTimer: null,
+      ellipsisShow: false,
     };
   },
   computed: {
@@ -376,7 +384,7 @@ export default {
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
           record["process_obj"] = record["process"];
           record["process"] = this.formatProcess(record);
-          record["task_name"] = this.formatActiveTask(record);
+          record["element_name"] = this.formatActiveTask(record);
         }
       }
       this.$emit('count', newData.meta?.count);
@@ -505,7 +513,7 @@ export default {
         },
         {
           label: "Task",
-          field: "task_name",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
@@ -586,16 +594,6 @@ export default {
           ${label}
         </span>`;
     },
-    formatAsignee(participants) {
-      return {
-        component: "AvatarImage",
-        props: {
-          size: "25",
-          "input-data": participants,
-          "hide-name": false,
-        },
-      };
-    },
     formatDueDate(date) {
       return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
     },
@@ -636,17 +634,28 @@ export default {
         targetElement.tagName.toLowerCase() === "img" &&
         (targetElement.alt === "priority" ||
           targetElement.alt === "no-priority");
-      if(this.fromButton === 'previewTask') {
+      if (this.fromButton === 'previewTask') {
         return this.previewTasks(this.tooltipRowData, 93);
       }
-      if(this.fromButton === 'fullTask') {
+      if (this.fromButton === 'fullTask') {
         return this.previewTasks(this.tooltipRowData, 50);
       }
-      if(this.fromButton === 'inboxRules') {
+      if (this.fromButton === 'inboxRules') {
         return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
-      }  
+      }
+    },
+    handleShowEllipsis() {
+      this.ellipsisShow = true;
+    },
+    handleHideEllipsis() {
+      this.ellipsisShow = false;
     },
     handleRowMouseover(row) {
+      if (this.ellipsisShow) {
+        this.isTooltipVisible = !this.disableRuleTooltip;
+        this.clearHideTimer();
+        return;
+      }
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
@@ -702,6 +711,9 @@ export default {
       clearTimeout(this.hideTimer);
     },
     hideTooltip() {
+      if (this.ellipsisShow) {
+        return;
+      }
       this.isTooltipVisible = false;
     },
     sanitizeTooltip(html) {

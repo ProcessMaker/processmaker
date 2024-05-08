@@ -49,7 +49,9 @@
           ref="taskList"
           class="custom-table-class"
           :columns="columns"
+          :fetch-on-created="false"
           :selected-row-quick="selectedRowQuick"
+          :table-name="tasksListName"
           @selected="selected"
           :pmql="pmql"
           :advanced-filter-prop="quickFilter"
@@ -83,6 +85,9 @@
                 >
                   <i class="fas fa-times" />
                 </b-button>
+              </div>
+              <div class="header-container-warning">
+                <p>{{ disclaimer }}</p>
               </div>
             </div>
             <div v-else style="width: 92%">
@@ -125,6 +130,9 @@
                 >
                   <i class="fas fa-times" />
                 </b-button>
+              </div>
+              <div class="header-container-warning">
+                <p>{{ disclaimer }}</p>
               </div>
             </div>
           </template>
@@ -200,6 +208,7 @@ export default {
             value: "processRequest.case_number",
           },
           order_column: "process_requests.case_number",
+          width: 100,
         },
         {
           label: "Case title",
@@ -210,6 +219,7 @@ export default {
             value: "processRequest.case_title",
           },
           order_column: "process_requests.case_title",
+          width: 180,
         },
         {
           label: "Completed",
@@ -219,9 +229,12 @@ export default {
             type: "Field",
             value: "completed_at",
           },
+          width: 140,
         },
       ],
       dataTasks: {},
+      disclaimer: this.$t("This is a Beta version and when using Quickfill, it may replace the pre-filled information in the form."),
+      tasksListName: "preview-table",
     };
   },
   mounted() {
@@ -329,6 +342,16 @@ export default {
   border: 1px solid #cdddee;
   padding: 10px 12px;
   background-color: #e8f0f9;
+}
+
+.header-container-warning {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #F1E4BA;
+  padding: 10px 12px;
+  background-color: #FEF7E2;
+  color: #556271;
+  font-size: 16px;
 }
 
 .close-go-back-button {

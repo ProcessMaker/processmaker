@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Templates;
 
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,6 @@ use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\HideSystemResources;
-use SebastianBergmann\CodeUnit\Exception;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -123,11 +123,14 @@ class ScreenTemplate implements TemplateInterface
 
         $screen = Screen::where('uuid', $template->editing_screen_uuid)->where('is_template', 1)->first();
 
+        // If a screen exists with the editing screen uuid delete that screen and create a new screen.
+        // This ensures any updates to the template manifest will be reflected
+        // in the editing screen being shown in screen builder.
         if ($screen) {
-            return ['id' => $screen->id];
+            $screen->forceDelete();
         }
 
-        // Otherwise we need to import the template and create a new screen
+        // Import the template to create a new screen
         $payload = json_decode($template->manifest, true);
         $postOptions = [];
 
@@ -151,6 +154,7 @@ class ScreenTemplate implements TemplateInterface
             'asset_type' => 'SCREEN_TEMPLATE',
         ]);
 
+        // Update the screen template editing screen uuid to match the new screen uuid
         ScreenTemplates::where('id', $template->id)->update(['editing_screen_uuid' => $newScreen->uuid]);
 
         return ['id' => $newScreen->id];
@@ -294,15 +298,13 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplate(Request $request): JsonResponse
     {
-        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
-
         try {
-            $request->validate([
-                'is_public' => 'sometimes|boolean',
-            ]);
-
-            $template = ScreenTemplates::findOrFail($templateId);
-            $template->update($request->except('media_collection'));
+            if ($request->has('asset_id')) {
+                $this->updateTemplateManifest($request->asset_id, $request);
+            } else {
+                $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
+                $this->updateScreenTemplateData($request->all(), $templateId);
+            }
 
             $response = response()->json();
         } catch (ModelNotFoundException $e) {
@@ -315,28 +317,24 @@ class ScreenTemplate implements TemplateInterface
     }
 
     /**
-     *  Update process template configurations
-     * @param Request
-     * @return JsonResponse
+     * Update process template configurations
+     *
+     * @param Request $request
      */
-    public function updateTemplateConfigs($request) : JsonResponse
+    public function updateTemplateConfigs($request): JsonResponse
     {
         try {
-            $id = (int) $request->id;
-            $template = ScreenTemplates::where('id', $id)->firstOrFail();
-            $this->syncTemplateMedia($template, $request->template_media);
+            $template = ScreenTemplates::findOrFail((int) $request->id);
+            $this->syncTemplateMedia($template, $request->input('template_media', []));
 
             if ($request->is_public !== $template->is_public) {
                 $template->is_default_template = false;
             }
 
-            $template->fill($request->except('id'));
-            $template->user_id = Auth::user()->id;
-
-            $template->saveOrFail();
+            $template->fill($request->except(['id', 'user_id']))->saveOrFail();
 
             return response()->json();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ], 422);
@@ -352,8 +350,6 @@ class ScreenTemplate implements TemplateInterface
      */
     public function updateTemplateManifest(int $screenId, $request)  : JsonResponse
     {
-        $data = $request->all();
-
         // Get the screen manifest
         $manifest = $this->getManifest('screen', $screenId);
         if (array_key_exists('error', $manifest)) {
@@ -361,7 +357,9 @@ class ScreenTemplate implements TemplateInterface
         }
 
         // Update the screen template manifest
-        $this->updateScreenTemplateData($data, $manifest);
+        $data = $request->all();
+        $templateId = $request->has('existingAssetId') ? $request->existingAssetId : $request->id;
+        $this->updateScreenTemplateData($data, $templateId, $manifest);
 
         // Save screen template thumbnails
         $this->saveThumbnails($data['name'], $data['thumbnails']);
@@ -384,6 +382,7 @@ class ScreenTemplate implements TemplateInterface
             'media_collection',
             'name',
             'description',
+            'user_id',
             'screen_category_id',
             'version',
             'screen_type',
@@ -434,7 +433,7 @@ class ScreenTemplate implements TemplateInterface
             TemplateCreated::dispatch($payload);
 
             return response()->json([], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
@@ -458,14 +457,27 @@ class ScreenTemplate implements TemplateInterface
      */
     public function existingTemplate($request) : ?array
     {
-        $templateId = $request->id;
         $name = $request->name;
+        $isPublic = filter_var($request->is_public, FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
+        if ($request->has('existingAssetId')) {
+            return null;
+        }
+        $user = Auth::user();
 
-        $template = ScreenTemplates::where(['name' => $name])->where('id', '!=', $templateId)->first();
+        $query = ScreenTemplates::where(['name' => $name]);
+
+        if (!$isPublic) {
+            $query->where('is_public', $isPublic)->where('user_id', $user->id);
+        } else {
+            $query->where('is_public', $isPublic);
+        }
+
+        $template = $query->first();
+
         if ($template !== null) {
             // If same asset has been Saved as Template previously,
             // offer to choose between “Update Template” and “Save as New Template”
-            return ['id' => $template->id, 'name' => $name];
+            return ['id' => $template->id, 'name' => $name, 'owner_id' => $template->user_id];
         }
 
         return null;
@@ -524,7 +536,7 @@ class ScreenTemplate implements TemplateInterface
         $screenTemplate = ScreenTemplates::make($data)->fill([
             'manifest' => json_encode($payload),
             'user_id' => auth()->id(),
-            'screen_type' => $data['screenType'],
+            'screen_type' => $data['screen_type'],
             'screen_custom_css' => $customCss,
             'media_collection' => '',
             'is_public' => filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0,
@@ -536,15 +548,20 @@ class ScreenTemplate implements TemplateInterface
         return $screenTemplate;
     }
 
-    private function updateScreenTemplateData(array $data, array $payload)
+    private function updateScreenTemplateData(array $data, int $templateId, array $payload = null)
     {
-        ScreenTemplates::where('name', $data['name'])->update([
-            'description' => $data['description'],
-            'is_public' => $data['make_public'] ? 1 : 0,
-            'screen_category_id' => $data['screen_category_id'],
-            'manifest' => json_encode($payload),
-            'user_id' => auth()->id(),
-        ]);
+        $template = ScreenTemplates::where('id', $templateId)->firstOrFail();
+
+        $data['is_public'] = filter_var($data['is_public'], FILTER_VALIDATE_BOOLEAN) === true ? 1 : 0;
+        $data['media_collection'] = $template->media_collection;
+
+        if (!is_null($payload)) {
+            $template->manifest = json_encode($payload);
+        }
+
+        $template->user_id = auth()->id();
+
+        $template->update($data);
     }
 
     protected function saveThumbnails($screenTemplate, string $thumbnails)

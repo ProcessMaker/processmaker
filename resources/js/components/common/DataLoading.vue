@@ -61,10 +61,10 @@
         props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon', 'for', 'dataLoadingId'],
         watch: {
             dataLoading() {
-                ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading);
+                ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading, this.dataLoadingId);
             },
             noResults() {
-                ProcessMaker.EventBus.$emit('api-data-no-results', this.noResults);
+                ProcessMaker.EventBus.$emit('api-data-no-results', this.noResults, this.dataLoadingId);
             }
         },
 
@@ -109,6 +109,7 @@
                 if (this.dataLoadingId === request.dataLoadingId) {
                     return true;
                 }
+                return false;
             },
             responseIdCheck(response) {
                 if (!this.dataLoadingId) {

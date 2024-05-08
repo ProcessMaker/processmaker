@@ -74,6 +74,7 @@
                   autofocus
                   name="title"
                   required
+                  data-cy="create_screen_name"
                 />
               </b-form-group>
               <b-form-group
@@ -89,6 +90,7 @@
                   name="description"
                   required
                   rows="3"
+                  data-cy="create_screen_description"
                 />
               </b-form-group>
               <category-select
@@ -98,6 +100,7 @@
                 api-get="screen_categories"
                 api-list="screen_categories"
                 name="category"
+                data-cy="create_screen_category_select"
               />
               <project-select
                 v-if="isProjectsInstalled"
@@ -108,18 +111,21 @@
                 :required="isProjectSelectionRequired"
                 api-get="projects"
                 api-list="projects"
+                data-cy="create_screen_project_select"
               />
             </div>
             <div class="w-100 m-0 d-flex mt-auto">
               <button
                 type="button"
                 class="btn btn-outline-secondary ml-auto"
+                data-cy="create_screen_cancel_btn"
                 @click="close"
               >
                 {{ $t('Cancel') }}
               </button>
               <a
                 class="btn btn-secondary ml-3"
+                data-cy="create_screen_save_btn"
                 @click="onSubmit"
               >
                 {{ $t('Save') }}
@@ -215,17 +221,14 @@ export default {
       return this.$t("Styles for the Screen Type").toUpperCase();
     },
     hasTemplateId() {
-      return this.formData.templateId !== null && this.formData.templateId !== undefined; 
+      return this.formData.templateId != null;
     },
     hasDefaultTemplateId() {
-      return this.formData.defaultTemplateId !== null;
-    },
-    otherTemplateSelected() {
-      return this.formData.selectedTemplate;
+      return this.formData.defaultTemplateId != null;
     },
     getTemplateId() {
       return this.hasTemplateId ? this.formData.templateId : this.formData.defaultTemplateId;
-    }
+    },
   },
   mounted() {
     this.resetFormData();
@@ -241,8 +244,6 @@ export default {
     if (this.callFromAiModeler === true) {
       this.screenTypes = this.types;
     }
-    this.formData.selectedTemplate = true;
-    this.formData.templateId = undefined;
   },
   methods: {
     show() {
@@ -255,7 +256,7 @@ export default {
         description: null,
         projects: [],
         templateId: null,
-        templateOptions: JSON.stringify(['CSS', 'Layout', 'Fields']),
+        templateOptions: JSON.stringify(["CSS", "Layout", "Fields"]),
       };
     },
     resetErrors() {
@@ -287,15 +288,11 @@ export default {
         this.formData.asset_type = null;
       }
       this.disabled = true;
-      if (  
-          this.otherTemplateSelected && this.hasTemplateId || 
-          this.hasDefaultTemplateId && !this.otherTemplateSelected || 
-          this.hasTemplateId || 
-          this.hasDefaultTemplateId
-        ) {
-          this.handleCreateFromTemplate();
-        } else {
-          this.handleCreateFromBlank();
+
+      if (this.hasTemplateId) {
+        this.handleCreateFromTemplate();
+      } else {
+        this.handleCreateFromBlank();
       }
     },
     handleCreateFromBlank() {
@@ -341,6 +338,9 @@ export default {
         .catch((error) => {
           this.disabled = false;
           this.addError = error.response?.data.errors;
+          if (error?.response?.status && error?.response?.status === 422) {
+            this.errors = error.response.data.errors;
+          }
         });
     },
     handleSuccessMessageAndRedirect(data) {
@@ -377,9 +377,8 @@ export default {
       this.formData.templateId = null;
     },
     handleSelectedTemplate(templateId) {
-      this.formData.templateId =  templateId;
-      this.formData.selectedTemplate = true;
-      this.formData.templateOptions = JSON.stringify(['CSS', 'Layout', 'Fields']);
+      this.formData.templateId = templateId;
+      this.formData.templateOptions = JSON.stringify(["CSS", "Layout", "Fields"]);
     },
     handleSelectedTemplateOptions(options) {
       this.formData.templateOptions = JSON.stringify(options);

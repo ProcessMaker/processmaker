@@ -230,4 +230,6 @@ return [
     'queue_imports' => env('QUEUE_IMPORTS', true),
 
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
+
+    'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
 ];

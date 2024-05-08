@@ -211,6 +211,7 @@
                                 type="button"
                                 class="btn btn-block button-actions"
                                 @click="eraseDraft()"
+                                v-if="taskDraftsEnabled"
                               >
                                 <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
                                 {{ __('Clear Draft') }}
@@ -227,7 +228,7 @@
                               <p class="section-title">@{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}</p>
                               @{{ moment(completedAt).format() }}
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item" v-if="taskDraftsEnabled">
                               <task-save-panel
                                 :options="options"
                                 :task="task"
@@ -308,7 +309,7 @@
                       id='user'
                       v-model="selectedUser"
                       placeholder="{{__('Select the user to reassign to the task')}}"
-                      api="users"
+                      api="users?status=ACTIVE"
                       :multiple="false"
                       :show-labels="false"
                       :searchable="true"
@@ -375,6 +376,7 @@
     const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
     const userIsProcessManager = {{ Auth::user()->id === $task->process?->manager_id ? "true": "false" }};
     var screenFields = @json($screenFields);
+    window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -504,6 +506,7 @@
               "OVERDUE": "overdue-style",
               "OPEN": "open-style",
               "COMPLETED": "open-style",
+              "TRIGGERED": "open-style",
             };
             const status = this.task.advanceStatus.toUpperCase();
             return "card-header text-status " + header[status];
@@ -611,6 +614,7 @@
             }];
           },
           resizeMonaco () {
+            this.showTree = false;
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
@@ -663,6 +667,9 @@
             });
           },
           autosaveApiCall() {
+            if (!this.taskDraftsEnabled) {
+              return;
+            }
             this.options.is_loading = true;
             const draftData = {};
 
@@ -701,7 +708,8 @@
             this.formDataWatcherActive = false;
             ProcessMaker.apiClient
               .delete("drafts/" + this.task.id)
-              .then(() => {
+              .then(response => {
+                this.resetRequestFiles(response);
                 this.task.draft = null;
                 const taskComponent = this.$refs.task;
                 taskComponent.loadTask();

@@ -1,6 +1,13 @@
 <!-- data edit -->
-<monaco-editor v-if="!showTree" ref="monaco" data-cy="editorViewFrame" :options="monacoLargeOptions" v-model="jsonData"
-               language="json" style="border:1px solid gray; min-height:700px;"></monaco-editor>
+<monaco-editor
+    v-show="!showTree"
+    ref="monaco"
+    data-cy="editorViewFrame"
+    :options="monacoLargeOptions"
+    v-model="jsonData"
+    language="json"
+    style="border:1px solid gray; min-height:700px;"
+></monaco-editor>
 
 <tree-view v-if="showTree" v-model="jsonData" style="border:1px; solid gray; min-height:700px;"></tree-view>
 

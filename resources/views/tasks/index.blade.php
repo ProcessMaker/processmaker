@@ -39,11 +39,6 @@
               aria-selected="true"
               :class="{ 'active': inbox }"
             >
-              <tasks-list-counter
-                v-if="inboxCount"
-                :loading="isDataLoading"
-                :count="inboxCount"
-              ></tasks-list-counter>
               {{ __('Inbox') }}
             </a>
           </li>
@@ -58,11 +53,6 @@
               aria-selected="true"
               :class="{ 'active': priority }"
             >
-              <tasks-list-counter
-                v-if="priorityCount"
-                :loading="isDataLoading"
-                :count="priorityCount"
-              ></tasks-list-counter>
               {{ __('Priority') }}
             </a>
           </li>
@@ -77,12 +67,8 @@
               @click.prevent="!isDataLoading ? switchTab('draft') : null"
               aria-selected="true"
               :class="{ 'active': draft }"
+              v-if="taskDraftsEnabled"
             >
-              <tasks-list-counter
-                v-if="draftCount"
-                :loading="isDataLoading"
-                :count="draftCount"
-              ></tasks-list-counter>
               {{ __('Drafts') }}
             </a>
           </li>
@@ -164,9 +150,11 @@
                 :columns="columns"
                 :disable-tooltip="false"
                 :disable-quick-fill-tooltip="false"
+                :fetch-on-created="false"
                 @in-overdue="setInOverdueMessage"
                 @data-loading="dataLoading"
                 @tab-count="handleTabCount"
+                @on-fetch-task="onFetchTask"
               ></tasks-list>
             </div>
 
@@ -180,6 +168,7 @@
 
 @section('js')
     <script>
+      window.ProcessMaker.taskDraftsEnabled = @json($taskDraftsEnabled);
       window.ProcessMaker.advanced_filter = @json($userFilter);
       window.Processmaker.defaultColumns = @json($defaultColumns);
     </script>

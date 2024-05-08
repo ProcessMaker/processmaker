@@ -4,7 +4,6 @@
             <b-form-group
                 :label="$t('Name')"
                 label-for="name-text"
-                :description="$t('The template name must be unique.')"
                 class="mb-3"
                 :state="errorState('name', errors)"
                 :invalid-feedback="errorMessage('name', errors)"
@@ -66,7 +65,7 @@
                 <b-form-input v-model="template.version" id="version-text"></b-form-input>
             </b-form-group>
 
-            <b-form-group v-if="canMakePublicTemplates">
+            <b-form-group v-if="canMakePublicTemplates && !isSharedTemplate">
                 <b-form-checkbox
                     id="make-screen-template-public"
                     v-model="isSharedTemplate"
@@ -110,12 +109,15 @@ export default {
               this.template.is_public = value;
           },
         },
+        isDefaultProcessmakerTemplate() {
+            return this.template.user_id === null;
+        },
     },
     watch: {
         template: {
             deep: true,
             handler() {
-                this.$emit('updated', this.template);
+                this.$emit('updated', this.template, this.isDefaultProcessmakerTemplate);
             }
         },
         responseErrors: {

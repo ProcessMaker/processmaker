@@ -27,4 +27,9 @@ export default {
       }
     },
   },
+  computed: {
+    taskDraftsEnabled() {
+      return window.ProcessMaker?.taskDraftsEnabled ?? false;
+    },
+  },
 };

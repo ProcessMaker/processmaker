@@ -33,7 +33,7 @@
         :disable-row-click="true"
         :disable-rule-tooltip="true"
         :advanced-filter-prop="savedSearchAdvancedFilter"
-        @advanced-filter-updated="savedSearchAdvancedFilter = $event"
+        @advanced-filter-updated="advancedFilterUpdatedFromTasksList"
         :saved-search="savedSearch?.id"
         :columns="columns"
         @submit=""
@@ -57,8 +57,7 @@
         id="columns"
         :title="$t('Columns')"
         size="lg"
-        @ok="applyColumns"
-        >
+        v-model="modalColumnChooserAdapter">
         <column-chooser-adapter
           ref="columnChooserAdapter"
           :pmql="pmql"
@@ -66,6 +65,9 @@
           :columns="columns"
           :default-columns="defaultColumns"
           />
+        <template v-slot:modal-footer>
+          <b-button @click="applyColumns" variant="primary">{{$t('Ok')}}</b-button>
+        </template>
       </b-modal>
     </div>
   </div>
@@ -89,18 +91,24 @@
       showColumnSelectorButton: {
         type: Boolean,
         default: true
+      },
+      propSavedSearchData: {
+        type: Object,
+        default: () => {
+          return {};
+        }
       }
     },
     data() {
       return {
         savedSearch: null,
-        columns: [],
         defaultColumns: [],
+        columns: [],
         savedSearchAdvancedFilter: null,
         originalSavedSearchAdvancedFilter: null,
         ready: false,
         task: null,
-        loadInitialAdvancedFilter: null
+        modalColumnChooserAdapter: false
       };
     },
     components: {
@@ -110,23 +118,24 @@
       PMBadgesFilters
     },
     methods: {
-      emitSavedSearchData() {
-        this.$emit('saved-search-data', {
-          pmql: this.pmql,
-          advanced_filter: this.savedSearchAdvancedFilter,
-          columns: this.columns
-        });
+      advancedFilterUpdatedFromTasksList(filters) {
+        this.savedSearchAdvancedFilter = filters;
       },
       applyColumns() {
+        if (this.$refs.columnChooserAdapter.modifiedCurrentColumns.length <= 0) {
+          ProcessMaker.alert(this.$t("Select at least one column."), "danger");
+          return;
+        }
         this.columns = this.$refs.columnChooserAdapter.modifiedCurrentColumns;
-        this.emitSavedSearchData();
-        this.resetFilters();
+        this.modalColumnChooserAdapter = false;
+
+        // We need to re-fetch because the the task list only includes
+        // data specified in the request. If we added a column, we need
+        // to request that field.
+        this.$refs.taskList.fetch();
       },
       resetFilters() {
         this.savedSearchAdvancedFilter = _.cloneDeep(this.originalSavedSearchAdvancedFilter);
-        if (this.$refs.taskList) {
-          this.$refs.taskList.refreshData(this.loadInitialAdvancedFilter);
-        }
       },
       defaultTaskFilters() {
         return {
@@ -140,7 +149,11 @@
               },
               operator: "=",
               value: this.task.process_id,
-              _column_label: "Process ID"
+              //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+              //based on the table's columns. Since the table doesn't have these columns, it will 
+              //always take this value.
+              _column_field: "process_id",
+              _column_label: "process_id"
             },
             {
               subject: {
@@ -149,17 +162,20 @@
               },
               operator: "=",
               value: this.task.element_id,
-              _column_label: "Node ID"
+              //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+              //based on the table's columns. Since the table doesn't have these columns, it will 
+              //always take this value.
+              _column_field: "element_id",
+              _column_label: "element_id"
             },
-            {
-              subject: {
-                type: "Status"
-              },
-              operator: "=",
-              value: 'In Progress',
-              _column_label: "Status"
-            }
+            this.statusFilter()
           ]
+        };
+      },
+      defaultSavedSearchFilters() {
+        return {
+          order: {by: 'id', direction: 'desc'},
+          filters: []
         };
       },
       addRequiredSavedSearchFilters(filter) {
@@ -171,15 +187,6 @@
           if (!hasUserIdFilter) {
             filter.filters.push(this.userIdFilter());
           }
-
-          const hasStatusFilter = filter.filters.some(f => {
-            return f.subject.type === 'Status' && f.value === 'In Progress';
-          });
-
-          if (!hasStatusFilter) {
-            filter.filters.push(this.statusFilter());
-          }
-
         } else {
           filter.filters = [this.userIdFilter()];
         }
@@ -193,7 +200,11 @@
           },
           operator: "=",
           value: window.ProcessMaker.user.id,
-          _column_label: "User ID"
+          //to do: PMColumnFilterPopoverCommonMixin.js will rebuild _column_field and _column_label 
+          //based on the table's columns. Since the table doesn't have these columns, it will 
+          //always take this value.
+          _column_field: "user_id",
+          _column_label: "user_id"
         };
       },
       statusFilter() {
@@ -203,6 +214,7 @@
           },
           operator: "=",
           value: 'In Progress',
+          _column_field: "status",
           _column_label: "Status"
         };
       },
@@ -211,9 +223,19 @@
         return ProcessMaker.apiClient.get("saved-searches/" + this.savedSearchId)
                 .then(response => {
                   this.savedSearch = response.data;
-                  this.columns = this.defaultColumns = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
-                  this.savedSearchAdvancedFilter = response.data.advanced_filter;
-                  this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+
+                  if (this.columns.length === 0) {
+                    const cols = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
+                    this.columns = _.cloneDeep(cols);
+                    this.defaultColumns = _.cloneDeep(cols);
+                  }
+
+                  if (this.savedSearchAdvancedFilter === null) {
+                    const advancedFilter = response.data.advanced_filter ?? this.defaultSavedSearchFilters();
+                    this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(advancedFilter);
+                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+                  }
+
                   this.ready = true;
                 });
       },
@@ -222,15 +244,15 @@
       loadTask() {
         this.ready = false;
 
-        let defaultColumns = _.get(window, 'Processmaker?.defaultColumns', []);
-        this.defaultColumns = defaultColumns.filter(c => c.field !== 'is_priority');
-        this.columns = this.defaultColumns;
-
         return ProcessMaker.apiClient.get("tasks/" + this.taskId)
                 .then(response => {
                   this.task = response.data;
-                  this.savedSearchAdvancedFilter = this.defaultTaskFilters();
-                  this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+
+                  if (this.savedSearchAdvancedFilter === null) {
+                    this.savedSearchAdvancedFilter = this.defaultTaskFilters();
+                    this.originalSavedSearchAdvancedFilter = _.cloneDeep(this.savedSearchAdvancedFilter);
+                  }
+
                   this.ready = true;
                 });
       },
@@ -240,44 +262,32 @@
       onTaskListRendered() {
         if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
           let defaultColumns = this.$refs.taskList.tableHeaders;
-          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority');
-        }
-        this.saveInitialAdvancedFilterConfiguration();
-      },
-      saveInitialAdvancedFilterConfiguration() {
-        if (this.loadInitialAdvancedFilter === null) {
-          this.loadInitialAdvancedFilter = _.cloneDeep(this.$refs.taskList.advancedFilter);
+          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority' && c.hidden !== true);
         }
       }
     },
     watch: {
+      savedSearchData() {
+        this.$emit('saved-search-data', this.savedSearchData);
+      },
       task: {
         deep: true,
         handler() {
         }
       },
-      savedSearchAdvancedFilter: {
+      propSavedSearchData: {
+        handler() {
+          this.columns = this.propSavedSearchData?.columns ?? [];
+          this.savedSearchAdvancedFilter = this.propSavedSearchData?.advanced_filter ?? null;
+        },
         deep: true,
-        handler() {
-          //to do: reviewing this assignment may result in a loop.
-          this.savedSearchAdvancedFilter = this.addRequiredSavedSearchFilters(this.savedSearchAdvancedFilter);
-          this.emitSavedSearchData();
-        }
-      },
-      pmql: {
-        handler() {
-          this.emitSavedSearchData();
-        }
-      },
-      ready: {
-        handler() {
-          this.resetFilters();
-          this.emitSavedSearchData();
-        }
+        immediate: true
       },
       taskId: {
         handler() {
-          this.loadTask();
+          if (!this.savedSearchId) {
+            this.loadTask();
+          }
         }
       },
       savedSearchId: {
@@ -298,6 +308,13 @@
           return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name});
         }
         return '';
+      },
+      savedSearchData() {
+        return {
+          pmql: this.pmql,
+          advanced_filter: this.savedSearchAdvancedFilter,
+          columns: this.columns
+        };
       }
     },
     mounted() {

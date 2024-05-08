@@ -13,6 +13,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
@@ -63,7 +64,9 @@ class TaskController extends Controller
             $defaultColumns = null;
         }
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns'));
+        $taskDraftsEnabled = TaskDraft::draftsEnabled();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
@@ -155,6 +158,7 @@ class TaskController extends Controller
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
                 'screenFields' => $screenFields,
+                'taskDraftsEnabled' => TaskDraft::draftsEnabled(),
             ]);
         }
     }
