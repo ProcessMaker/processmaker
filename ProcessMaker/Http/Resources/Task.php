@@ -37,6 +37,7 @@ class Task extends ApiResource
         'bpmnTagName',
         'interstitial',
         'userRequestPermission',
+        'process',
     ];
 
     private $process = null;

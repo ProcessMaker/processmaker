@@ -5,19 +5,21 @@
         <template v-slot:content>
           <img src="/img/funnel-fill-elements-blue.svg" 
                :alt="$t('Select a saved search above.')"/>
-          <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
-          <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
+          <b class="no-rule-class-title">{{ $t('Select a saved search above.') }}</b>
+          <span class="no-rule-class-text" v-html="$t('Choose a saved search to see the tasks that you can use with an Inbox Rule.')">
           </span>
         </template>
       </PMMessageScreen>
     </div>
     <div v-else>
-      <div v-if="task">
-        {{ taskTitle }}
+      <div v-if="filterTitle">
+        {{ filterTitle }}
       </div>
       <div class="mb-3">
         <PMBadgesFilters :value="pmql"
-                         :advancedFilterProp="savedSearchAdvancedFilter">
+                         :advancedFilterProp="savedSearchAdvancedFilter"
+                         :task="task"
+                         >
           <template v-slot:right-of-badges v-if="showColumnSelectorButton">
             <b-button class="ml-md-2" v-b-modal.columns>
               <i class="fas fw fa-cog"></i>
@@ -45,8 +47,10 @@
             <template v-slot:content>
               <img src="/img/funnel-fill-elements-blue.svg" 
                    :alt="$t('Select a saved search above.')"/>
-              <b class="no-rule-class-title">{{ $t('Filter the tasks for this rule') }}</b>
-              <span class="no-rule-class-text" v-html="$t('Please choose the tasks in your inbox that this <br> new rule should apply to. <b>Use the column filters</b> <br> to achieve this.')">
+              <b class="no-rule-class-title">{{ $t('No tasks to show.') }}</b>
+              <span class="no-rule-class-text">
+                {{ $t("But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.") }}
+              </span>
               </span>
             </template>
           </PMMessageScreen>
@@ -118,6 +122,11 @@
       PMBadgesFilters
     },
     methods: {
+      columnFilter(column) {
+        return column.field !== 'is_priority' &&
+          column.field !== 'status' &&
+          column.hidden !== true;
+      },
       advancedFilterUpdatedFromTasksList(filters) {
         this.savedSearchAdvancedFilter = filters;
       },
@@ -175,7 +184,9 @@
       defaultSavedSearchFilters() {
         return {
           order: {by: 'id', direction: 'desc'},
-          filters: []
+          filters: [
+            this.statusFilter()
+          ]
         };
       },
       addRequiredSavedSearchFilters(filter) {
@@ -225,7 +236,7 @@
                   this.savedSearch = response.data;
 
                   if (this.columns.length === 0) {
-                    const cols = response.data._adjusted_columns?.filter(c => c.field !== 'is_priority');
+                    const cols = response.data._adjusted_columns?.filter(this.columnFilter);
                     this.columns = _.cloneDeep(cols);
                     this.defaultColumns = _.cloneDeep(cols);
                   }
@@ -244,7 +255,7 @@
       loadTask() {
         this.ready = false;
 
-        return ProcessMaker.apiClient.get("tasks/" + this.taskId)
+        return ProcessMaker.apiClient.get("tasks/" + this.taskId, { params: {include: 'process'} })
                 .then(response => {
                   this.task = response.data;
 
@@ -262,7 +273,7 @@
       onTaskListRendered() {
         if (this.columns.length <= 0 && this.defaultColumns.length <= 0) {
           let defaultColumns = this.$refs.taskList.tableHeaders;
-          this.columns = this.defaultColumns = defaultColumns?.filter(c => c.field !== 'is_priority' && c.hidden !== true);
+          this.columns = this.defaultColumns = defaultColumns?.filter(this.columnFilter);
         }
       }
     },
@@ -303,11 +314,13 @@
         }
         return '';
       },
-      taskTitle() {
+      filterTitle() {
         if (this.task) {
-          return this.$t('Your In-Progress {{title}} tasks', {title: this.task.element_name});
+          return this.$t('Your In-Progress "{{title}}" tasks', {title: this.task.element_name});
+        } else if (this.savedSearch?.title) {
+          return this.$t('Your In-Progress tasks in the saved search "{{title}}"', {title: this.savedSearch.title});
         }
-        return '';
+        return null;
       },
       savedSearchData() {
         return {

@@ -43,7 +43,8 @@
     props: [
       "value",
       "advancedFilterProp",
-      "showPmqlBadge"
+      "showPmqlBadge",
+      "task"
     ],
     data() {
       return {
@@ -87,7 +88,7 @@
       formatAdvancedFilterForBadges() {
         let result = [];
         if (Array.isArray(this.advancedFilter)) {
-          this.formatForBadge(this.advancedFilter, result);
+          result = this.formatForBadge(this.advancedFilter, result);
         }
         return result;
       }
@@ -132,9 +133,31 @@
             this.formatForBadge(filter.or, result);
           }
         }
+        return this.makeUserFriendly(result);
       },
       formatBadgeSubject(filter) {
         return get(filter, '_column_label', get(filter, 'subject.value', ''));
+      },
+      makeUserFriendly(result) {
+        return result.map(badge => {
+          const modified = _.cloneDeep(badge);
+          switch(badge[0]) {
+            case 'user_id':
+              modified[0] = 'User';
+              modified[1][0].name = window.ProcessMaker.user.fullName;
+              return modified;
+            case 'process_id':
+              modified[0] = 'Process';
+              modified[1][0].name = this.task.process.name.substring(0, 30);
+              return modified;
+            case 'element_id':
+              modified[0] = 'Task';
+              modified[1][0].name = this.task.element_name.substring(0, 30);
+              return modified;
+            default:
+              return badge;
+          }
+        });
       }
     }
   }
