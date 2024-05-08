@@ -108,7 +108,7 @@ trait TaskResourceIncludes
 
     private function includeBpmnTagName()
     {
-        return ['bpmn_tag_name' => $this->getbpmndefinition()->localname];
+        return ['bpmn_tag_name' => $this->getBpmnDefinition()->localName];
     }
 
     private function includeProcess()
