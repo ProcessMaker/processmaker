@@ -27,8 +27,7 @@ export default {
   methods: {
     setAdvancedFilter() {
       this.advancedFilter = get(this.advancedFilterProp, 'filters') || get(window, 'ProcessMaker.advanced_filter.filters', []);
-      const doNotFetchOnPmqlChange = true; 
-      this.$refs.pmqlInputFilters?.buildPmql(doNotFetchOnPmqlChange);
+      this.$refs.pmqlInputFilters?.buildPmql();
     },
     formatForBadge(filters, result) {
       for(const filter of filters) {

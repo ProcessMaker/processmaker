@@ -59,6 +59,9 @@ new Vue({
     ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
       this.additions.push(component);
     });
+    this.$nextTick(() => {
+      this.$refs.taskList.fetch();
+    });
   },
   created() {
     const params = new URL(document.location).searchParams;
@@ -137,7 +140,6 @@ new Vue({
     onFiltersPmqlChange(value) {
       this.filtersPmql = value[0];
       this.fullPmql = this.getFullPmql();
-      this.onSearch();
     },
     onNLQConversion(query) {
       this.onChange(query);
