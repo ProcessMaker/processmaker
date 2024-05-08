@@ -6,7 +6,8 @@
           <img src="/img/funnel-fill-elements-blue.svg" 
                :alt="$t('Select a saved search above.')"/>
           <b class="no-rule-class-title">{{ $t('Select a saved search above.') }}</b>
-          <span class="no-rule-class-text" v-html="$t('Choose a saved search to see the tasks that you can use with an Inbox Rule.')">
+          <span class="no-rule-class-text">
+            {{ $t('Choose a saved search to see the tasks that you can use with an Inbox Rule.') }}
           </span>
         </template>
       </PMMessageScreen>
