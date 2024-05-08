@@ -60,6 +60,7 @@ class ModelerController extends Controller
         // Otherwise, render the default modeler interface view with prepared data
         return view($defaultView, $this->prepareModelerData($manager, $process, $request, 'A'));
     }
+
     /**
      * Prepare data for displaying a process in the modeler.
      *
@@ -89,7 +90,7 @@ class ModelerController extends Controller
         $countProcessCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Retrieve screen types and count screen categories for creating screen modal
-        $screenTypes = ScreenType::pluck('name')->map(fn($type) => __(ucwords(strtolower($type))))->sort()->toArray();
+        $screenTypes = ScreenType::pluck('name')->map(fn ($type) => __(ucwords(strtolower($type))))->sort()->toArray();
         $countScreenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         // Check if Projects and AI packages are installed
@@ -122,8 +123,7 @@ class ModelerController extends Controller
             'manager' => $manager,
             'signalPermissions' => SignalManager::permissions($request->user()),
             'autoSaveDelay' => config('versions.delay.process', 5000),
-            'isVersionsInstalled' =>
-                PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
+            'isVersionsInstalled' => PackageHelper::isPackageInstalled('ProcessMaker\Package\Versions\PluginServiceProvider'),
             'isDraft' => $draft !== null,
             'draftAlternative' => $draft !== null ? $draft->alternative : null,
             'pmBlockList' => $pmBlockList,
@@ -138,8 +138,7 @@ class ModelerController extends Controller
             'isAiGenerated' => request()->query('ai'),
             'runAsUserDefault' => $runAsUserDefault,
             'alternative' => $alternative,
-            'abPublish' =>
-                PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
+            'abPublish' => PackageHelper::isPackageInstalled('ProcessMaker\Package\PackageABTesting\PackageServiceProvider'),
         ];
     }
 
@@ -219,7 +218,7 @@ class ModelerController extends Controller
         $pmBlockList = null;
         if (hasPackage('package-pm-blocks')) {
             $controller = new PmBlockController();
-            $newRequest = new Request(['per_page' => 10000]);
+            $newRequest = new Request(['status' => 'active', 'per_page' => 10000]);
             $response = $controller->index($newRequest);
             if ($response->response($newRequest)->status() === 200) {
                 $pmBlockList = json_decode($response->response()->content())->data;
@@ -276,7 +275,8 @@ class ModelerController extends Controller
         ]);
     }
 
-    private function getVersion($promptVersionId, $type) {
+    private function getVersion($promptVersionId, $type)
+    {
         $aiMicroserviceHost = config('app.ai_microservice_host');
         $url = $aiMicroserviceHost . '/pm/getPromptVersion';
 
@@ -293,7 +293,7 @@ class ModelerController extends Controller
                 'processVersionId' => $promptVersionId,
             ];
         }
-        
+
         return Http::withHeaders($headers)->post($url, $params);
     }
 }
