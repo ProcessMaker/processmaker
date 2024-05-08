@@ -2,10 +2,8 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessTrait;
@@ -51,5 +49,28 @@ class ProcessTemplates extends Template
     public function getProcessCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Apply filters to the query based on the given filter string.
+     */
+    public function scopeWithFilters(Builder $query, $filter): void
+    {
+        $query->where(function ($query) use ($filter) {
+            $query->where('process_templates.name', 'like', '%' . $filter . '%')
+                ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
+                ->orWhere('user.firstname', 'like', '%' . $filter . '%')
+                ->orWhere('user.lastname', 'like', '%' . $filter . '%')
+                ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
+                    $qry->select('assignable_id')
+                        ->from('category_assignments')
+                        ->leftJoin('process_categories', function ($join) {
+                            $join->on('process_categories.id', '=', 'category_assignments.category_id');
+                            $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                            $join->where('category_assignments.assignable_type', '=', ProcessTemplates::class);
+                        })
+                        ->where('process_categories.name', 'like', '%' . $filter . '%');
+                });
+        });
     }
 }

@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Helpers\ScreenTemplateHelper;
-use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Screen;
@@ -27,6 +26,7 @@ class ScreenTemplate implements TemplateInterface
 {
     use HasControllerAddons;
     use HideSystemResources;
+    use TemplateRequestHelperTrait;
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
@@ -481,47 +481,6 @@ class ScreenTemplate implements TemplateInterface
         }
 
         return null;
-    }
-
-    /**
-     * Get process template manifest.
-     *
-     * @param string $type
-     * @param Request $request
-     * @return array
-     */
-    public function getManifest(string $type, int $id) : array
-    {
-        $response = (new ExportController)->manifest($type, $id);
-
-        return json_decode($response->getContent(), true);
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     * @return array
-     */
-    protected function getRequestSortBy(Request $request, $default) : array
-    {
-        $column = $request->input('order_by', $default);
-        $direction = $request->input('order_direction', 'asc');
-
-        return [$column, $direction];
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     * @return array
-     */
-    protected function getRequestInclude(Request $request) : array
-    {
-        $include = $request->input('include');
-
-        return $include ? explode(',', $include) : [];
     }
 
     /**
