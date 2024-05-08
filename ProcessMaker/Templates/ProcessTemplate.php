@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
@@ -47,7 +46,23 @@ class ProcessTemplate implements TemplateInterface
 
         $filter = $request->input('filter');
 
-        $templates = $templates->select('process_templates.*')
+        $templates = $templates
+            ->select(
+                'process_templates.id',
+                'process_templates.uuid',
+                'process_templates.key',
+                'process_templates.name',
+                'process_templates.description',
+                'process_templates.version',
+                'process_templates.process_id',
+                'process_templates.editing_process_uuid',
+                'process_templates.user_id',
+                'process_templates.process_category_id',
+                'process_templates.is_system',
+                'process_templates.asset_type',
+                'process_templates.created_at',
+                'process_templates.updated_at',
+            )
             ->leftJoin('process_categories as category', 'process_templates.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
@@ -457,9 +472,7 @@ class ProcessTemplate implements TemplateInterface
      */
     public function destroy(int $id) : bool
     {
-        $response = ProcessTemplates::where('id', $id)->delete();
-
-        return $response;
+        return ProcessTemplates::where('id', $id)->delete();
     }
 
     /**
@@ -501,9 +514,8 @@ class ProcessTemplate implements TemplateInterface
     public function getManifest(string $type, int $id) : array
     {
         $response = (new ExportController)->manifest($type, $id);
-        $content = json_decode($response->getContent(), true);
 
-        return $content;
+        return json_decode($response->getContent(), true);
     }
 
     /**
