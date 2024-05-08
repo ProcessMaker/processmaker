@@ -145,6 +145,7 @@ export default {
      * Build the PMQL
      */
     onFilter(value, showEmpty = false) {
+      this.currentPage = 1;
       this.pmql = `(fulltext LIKE "%${value}%")`;
       this.showEmpty = showEmpty;
       this.loadCard();
