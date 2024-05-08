@@ -533,6 +533,10 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        if ($request->input('alternative')) {
+            $process->alternative = $request->input('alternative');
+        }
+
         $process->bpmn = $request->input('bpmn');
         $process->name = $request->input('name');
         $process->description = $request->input('description');
