@@ -143,20 +143,27 @@ class TwoFactorAuthController extends Controller
     public function testSettings(Request $request)
     {
         $enabled = $request->json('enabled');
+        $message = [
+            'status' => 'success',
+            'message' => ('Configuration tested successfully.'),
+        ];
+        $status = 200;
 
         //The Two Step Method should be seleceted
         if (count($enabled) === 0) {
-            return response()->json([
+            $message = [
                 'status' => 'error',
-                'message' => __('The two-step method must be selected.'),
-            ], 500);
+                'message' => __('The two-step method must be selected.')
+            ];
+            $status = 500;
         }
 
         // Test Email Server, send email to current user
         if (in_array('By email', $enabled)) {
             $testEmailServer = $this->testEmailServer();
             if ($testEmailServer !== true) {
-                return $testEmailServer;
+                $message = json_decode($testEmailServer->getContent(), true);
+                $status = $testEmailServer->getStatusCode() ?? 500;
             }
         }
 
@@ -164,16 +171,12 @@ class TwoFactorAuthController extends Controller
         if (in_array('By message to phone number', $enabled)) {
             $testSmsServer = $this->testSmsServer();
             if ($testSmsServer !== true) {
-                return $testSmsServer;
+                $message = json_decode($testSmsServer->getContent(), true);
+                $status = $testSmsServer->getStatusCode() ?? 500;
             }
         }
 
-
-
-        return response()->json([
-            'status' => 'success',
-            'message' => ('Configuration tested successfully.'),
-        ]);
+        return response()->json($message, $status);
     }
 
     private function testEmailServer()
