@@ -52,7 +52,6 @@
               <span class="no-rule-class-text">
                 {{ $t("But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.") }}
               </span>
-              </span>
             </template>
           </PMMessageScreen>
         </template>
