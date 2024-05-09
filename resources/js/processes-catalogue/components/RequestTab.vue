@@ -11,6 +11,7 @@
         @table-row-click="handleRowClick"
       />
       <pagination-table
+        class="custom-pagination"
         :meta="dataRequests.meta"
         @page-change="changePageRequests"
         @per-page-change="changePerPage"
@@ -252,9 +253,19 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .text-style {
   margin-bottom: 10px;
   color: #556271;
+}
+.custom-pagination{
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-top: 10px;
+  font-weight: 400;
+  font-size: 15px;
+  color: #5C5C63;
+  padding-bottom: 10px;
 }
 </style>
