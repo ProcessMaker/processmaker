@@ -213,7 +213,7 @@ jobs:
           name: code-coverage
           path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
       - name: SonarQube Coverage Report
-        uses: sonarsource/sonarqube-scan-action@master${{ env.SONAR_SOURCES }}
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
