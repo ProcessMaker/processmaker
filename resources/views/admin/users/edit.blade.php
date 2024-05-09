@@ -430,6 +430,15 @@
           },
           profileUpdate($event) {
             this.resetErrors();
+            if (@json($enabled2FA) &&  this.global2FAEnabled.length === 0) {
+              // User has not enabled two-factor authentication correctly
+              ProcessMaker.alert(
+                this.$t('The Two Step Authentication Method has not been set. Please contact your administrator.'),
+                'warning'
+              );
+              return false;
+            }
+            console.log('saving....');
             if (!this.validatePassword()) return false;
             if (@json($enabled2FA) && typeof this.formData.preferences_2fa != "undefined" &&
               this.formData.preferences_2fa != null && this.formData.preferences_2fa.length < 1) return false;
