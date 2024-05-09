@@ -145,7 +145,7 @@ class TwoFactorAuthController extends Controller
         $enabled = $request->json('enabled');
         $message = [
             'status' => 'success',
-            'message' => ('Configuration tested successfully.'),
+            'message' => __('Configuration tested successfully.'),
         ];
         $status = 200;
 
