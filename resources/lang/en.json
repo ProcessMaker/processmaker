@@ -2256,5 +2256,6 @@
   "Must have at least {min}" : "Must have at least {min}",
   "Invalid type" : "Invalid type",
   "The Two Step Authentication Method has not been set. Please contact your administrator.": "The Two Step Authentication Method has not been set. Please contact your administrator.",
-  "The two-step method must be selected.": "The two-step method must be selected."
+  "The two-step method must be selected.": "The two-step method must be selected.",
+  "Configuration tested successfully.": "Configuration tested successfully."
 }
