@@ -90,9 +90,6 @@ trait HideSystemResources
         } elseif (static::class === DataSource::class) {
             return $query
                 ->where('is_template', false)
-                ->when(Schema::hasColumn('data_sources', 'asset_type'), function ($query) {
-                    return $query->whereNull('asset_type');
-                })
                 ->whereDoesntHave('categories', function ($query) {
                     $query->where('is_system', true);
                 });
