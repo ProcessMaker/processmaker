@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Upgrades\UpgradeMigration as Upgrade;
 use ProcessMaker\Models\User;
 
-return new class extends Migration {
+return new class extends Upgrade {
     /**
      * Run the migrations.
      */

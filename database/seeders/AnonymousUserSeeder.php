@@ -24,6 +24,7 @@ class AnonymousUserSeeder extends Seeder
                 'email' => 'anonymous-pm4-user@processmaker.com',
                 'status' => 'ACTIVE',
                 'password' => Hash::make(bin2hex(random_bytes(16))),
+                'timezone' => 'UTC',
             ]
         );
 
