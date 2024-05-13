@@ -470,7 +470,7 @@ export default {
                     const successMessage = this.$t('Process Template was successfully imported');
 
                     ProcessMaker.alert(successMessage, 'success');
-                    window.location.href = processId ? `/modeler/${processId}` : '/processes/';
+                    window.location.href = processId ? `/modeler/${processId}` : '/processes#nav-templates';
                     this.submitted = false; // the form was successfully submitted
                 } else {
                     // the request was successful but did not return expected data
