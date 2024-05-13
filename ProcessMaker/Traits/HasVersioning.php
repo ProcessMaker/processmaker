@@ -45,11 +45,7 @@ trait HasVersioning
      */
     public static function saveNewVersion(Model $model)
     {
-        if ($model->asset_type !== 'GUIDED_HELPER_PROCESS') {
-            // Prevent the saving of versions for Guided Template Helper processes.
-            // This is necessary due to the bloating of the versions table when syncing
-            $model->saveVersion();
-        }
+        $model->saveVersion();
     }
 
     /**
