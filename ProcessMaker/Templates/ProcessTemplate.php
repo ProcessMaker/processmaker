@@ -4,10 +4,8 @@ namespace ProcessMaker\Templates;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 use ProcessMaker\Events\TemplateCreated;
 use ProcessMaker\Http\Controllers\Api\ExportController;
 use ProcessMaker\ImportExport\Exporter;
@@ -17,7 +15,6 @@ use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
-use ProcessMaker\Models\Template;
 use ProcessMaker\Models\WizardTemplate;
 use ProcessMaker\Traits\HasControllerAddons;
 use SebastianBergmann\CodeUnit\Exception;
@@ -29,6 +26,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class ProcessTemplate implements TemplateInterface
 {
     use HasControllerAddons;
+    use TemplateRequestHelperTrait;
 
     const PROJECT_ASSET_MODEL_CLASS = 'ProcessMaker\Package\Projects\Models\ProjectAsset';
 
@@ -41,34 +39,29 @@ class ProcessTemplate implements TemplateInterface
      */
     public function index(Request $request)
     {
-        $orderBy = $this->getRequestSortBy($request, 'name');
-        $include = $this->getRequestInclude($request);
-        $templates = ProcessTemplates::nonSystem()->with($include);
-
-        $filter = $request->input('filter');
-
-        $templates = $templates->select('process_templates.*')
+        return ProcessTemplates::nonSystem()
+            ->with($this->getRequestInclude($request))
+            ->withFilters($request->input('filter'))
+            ->orderBy(...$this->getRequestSortBy($request, 'name'))
             ->leftJoin('process_categories as category', 'process_templates.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'process_templates.user_id', '=', 'user.id')
-            ->orderBy(...$orderBy)
-            ->where(function ($query) use ($filter) {
-                $query->where('process_templates.name', 'like', '%' . $filter . '%')
-                    ->orWhere('process_templates.description', 'like', '%' . $filter . '%')
-                    ->orWhere('user.firstname', 'like', '%' . $filter . '%')
-                    ->orWhere('user.lastname', 'like', '%' . $filter . '%')
-                    ->orWhereIn('process_templates.id', function ($qry) use ($filter) {
-                        $qry->select('assignable_id')
-                            ->from('category_assignments')
-                            ->leftJoin('process_categories', function ($join) {
-                                $join->on('process_categories.id', '=', 'category_assignments.category_id');
-                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
-                                $join->where('category_assignments.assignable_type', '=', ProcessTemplates::class);
-                            })
-                            ->where('process_categories.name', 'like', '%' . $filter . '%');
-                    });
-            })->get();
-
-        return $templates;
+            ->select([
+                'process_templates.id',
+                'process_templates.uuid',
+                'process_templates.key',
+                'process_templates.name',
+                'process_templates.description',
+                'process_templates.version',
+                'process_templates.process_id',
+                'process_templates.editing_process_uuid',
+                'process_templates.user_id',
+                'process_templates.process_category_id',
+                'process_templates.is_system',
+                'process_templates.asset_type',
+                'process_templates.created_at',
+                'process_templates.updated_at',
+            ])
+            ->get();
     }
 
     /**
@@ -457,9 +450,7 @@ class ProcessTemplate implements TemplateInterface
      */
     public function destroy(int $id) : bool
     {
-        $response = ProcessTemplates::where('id', $id)->delete();
-
-        return $response;
+        return ProcessTemplates::where('id', $id)->delete();
     }
 
     /**
@@ -487,52 +478,6 @@ class ProcessTemplate implements TemplateInterface
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
-    }
-
-    /**
-     * Get process template manifest.
-     *
-     * @param string $type
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    public function getManifest(string $type, int $id) : array
-    {
-        $response = (new ExportController)->manifest($type, $id);
-        $content = json_decode($response->getContent(), true);
-
-        return $content;
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestSortBy(Request $request, $default) : array
-    {
-        $column = $request->input('order_by', $default);
-        $direction = $request->input('order_direction', 'asc');
-
-        return [$column, $direction];
-    }
-
-    /**
-     * Get included relationships.
-     *
-     * @param Request $request
-     *
-     * @return array
-     */
-    protected function getRequestInclude(Request $request) : array
-    {
-        $include = $request->input('include');
-
-        return $include ? explode(',', $include) : [];
     }
 
     /**

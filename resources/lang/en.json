@@ -2257,5 +2257,9 @@
   "Invalid type" : "Invalid type",
   "The Two Step Authentication Method has not been set. Please contact your administrator.": "The Two Step Authentication Method has not been set. Please contact your administrator.",
   "The two-step method must be selected.": "The two-step method must be selected.",
-  "Configuration tested successfully.": "Configuration tested successfully."
+  "Configuration tested successfully.": "Configuration tested successfully.",
+  "Your In-Progress tasks in the saved search {{title}}": "Your In-Progress tasks in the saved search {{title}}",
+  "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Choose a saved search to see the tasks that you can use with an Inbox Rule.",
+  "No tasks to show.": "No tasks to show.",
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters."
 }

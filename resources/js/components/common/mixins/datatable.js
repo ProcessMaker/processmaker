@@ -27,6 +27,7 @@ export default {
   watch: {
     filter: _.debounce(function () {
       if (!this.loading) {
+        this.page = 1;
         this.fetch();
       }
     }, 250),

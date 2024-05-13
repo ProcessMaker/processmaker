@@ -111,6 +111,11 @@ trait TaskResourceIncludes
         return ['bpmn_tag_name' => $this->getBpmnDefinition()->localName];
     }
 
+    private function includeProcess()
+    {
+        return ['process' => $this->process];
+    }
+
     private function includeInterstitial()
     {
         $interstitial = $this->getInterstitial();
