@@ -387,7 +387,7 @@ export default {
           record["element_name"] = this.formatActiveTask(record);
         }
       }
-      this.$emit('count', newData.meta?.count);
+      this.$emit('count', newData.meta?.total);
       this.$emit("tab-count", newData.meta?.total);
     },
     shouldShowLoader(value) {
