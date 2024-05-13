@@ -40,7 +40,7 @@ new Vue({
     }
 
     if (status) {
-      setDefaultAdvancedFilterStatus(status, true, this.requester[0]);
+      setDefaultAdvancedFilterStatus(status, true);
     }
 
     const urlParams = new URLSearchParams(window.location.search);
