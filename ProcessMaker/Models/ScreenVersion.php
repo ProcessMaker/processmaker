@@ -5,10 +5,12 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Builder;
 use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasScreenFields;
 
 class ScreenVersion extends ProcessMakerModel implements ScreenInterface
 {
     use HasCategories;
+    use HasScreenFields;
 
     const categoryClass = ScreenCategory::class;
 

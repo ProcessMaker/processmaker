@@ -32,6 +32,7 @@ div.main {
   max-height: 100%;
 }
 </style>
+@yield('extra_css')
 @endsection
 
 @section('js')
@@ -91,6 +92,9 @@ div.main {
     isPackageAiInstalled: @json($isPackageAiInstalled),
     isAiGenerated: @json($isAiGenerated),
     runAsUserDefault: @json($runAsUserDefault),
+    abPublish: @json($abPublish),
+    alternative: @json($alternative),
+    draftAlternative: @json($draftAlternative),
   }
   const warnings = @json($process->warnings);
 
@@ -100,8 +104,17 @@ div.main {
     addBreadcrumbs(breadcrumbData || []);
   });
   </script>
-    @foreach($manager->getScripts() as $script)
-      <script src="{{$script}}"></script>
+    @foreach($manager->getScriptWithParams() as $params)
+      <script
+      @foreach ($params as $key => $value)
+        @if (is_bool($value))
+          {{ $key }}
+        @else
+          {{ $key }}="{{ $value }}"
+        @endif
+      @endforeach
+      ></script>
     @endforeach
   <script src="{{ mix('js/processes/modeler/index.js') }}"></script>
+  @yield('extra_js')
 @endsection

@@ -27,7 +27,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
   BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
-  K8S_BRANCH: develop
+  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -87,6 +87,7 @@ jobs:
       - name: Install pm4-tools
         run: |
           git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
           cd pm4-k8s-distribution/images/pm4-tools
           composer install --no-interaction
           cd ..
@@ -115,10 +116,16 @@ jobs:
             sed -i "s/{{instance}}/ci-$deploy/" template-db.yaml
             kubectl apply -f template-db.yaml
             echo "Creating Deploy :: $deploy"
+            #Sed PMAI
+            if [[ $K8S_BRANCH == "develop" ]] ; then
+              sed -i "s/{{pmai-system}}/pmai-system/" template-instance.yaml
+            else
+              sed -i "s/{{pmai-system}}/pmai-system-next/" template-instance.yaml
+            fi
             sed -i "s/{{instance}}/ci-$deploy/" template-instance.yaml
             sed -i "s/{{image}}/${{env.IMAGE_TAG}}/" template-instance.yaml
             cat template-instance.yaml         
-            helm install --timeout 40m -f template-instance.yaml ci-$deploy processmaker/enterprise
+            helm install --timeout 60m -f template-instance.yaml ci-$deploy processmaker/enterprise
             #Add cert
             sed -i "s/{{instance}}/ci-$deploy/" template-cert.yaml
             sed -i "s/{{tls-crt}}/${{ secrets.TLS_CRT }}/" template-cert.yaml
@@ -128,7 +135,7 @@ jobs:
             echo "Bouncing Instance  ";
             sed -i "s/{{instance}}/ci-$deploy/g" template-bounce.yaml
             sed -i "s/{{current_datetime}}/$current_datetime/g" template-bounce.yaml
-            helm upgrade --timeout 20m ci-$deploy processmaker/enterprise --version 2.1.0          
+            helm upgrade --timeout 60m ci-$deploy processmaker/enterprise --version ${{ env.versionHelm }}          
             kubectl apply -f template-bounce.yaml
           fi
           export INSTANCE_URL=https://ci-$deploy$DOM_EKS
@@ -170,6 +177,9 @@ jobs:
       - name: Export Params
         run: |
           echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Clone repo K8S
         run: |
           echo "IMAGE: ${{ env.IMAGE }}"
@@ -187,3 +197,23 @@ jobs:
           docker-compose down -v
           docker-compose build phpunit
           docker-compose run phpunit
+          CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
+          docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
+      - name: Archive code coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage
+          path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
+      - name: SonarQube Coverage Report
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=.
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*Test.php
+            -Dsonar.php.coverage.reportPaths=./pm4-k8s-distribution/images/pm4-tools/coverage.xml

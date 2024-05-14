@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\ImportExport\Importer;
 use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Jobs\ImportV2;
+use ProcessMaker\Models\ScreenTemplates;
 
 class ImportController extends Controller
 {
@@ -86,21 +87,6 @@ class ImportController extends Controller
         $newProcessId = $manifest[$payload['root']]->log['newId'];
 
         return response()->json(['processId' => $newProcessId, 'message' => Importer::getMessages()], 200);
-    }
-
-    public function importTemplate(String $type, Request $request): JsonResponse
-    {
-        $jsonData = $request->file('file')->get();
-        $payload = json_decode($jsonData, true);
-
-        $options = new Options(json_decode(file_get_contents(utf8_decode($request->file('options'))), true));
-        $importer = new Importer($payload, $options);
-        $manifest = $importer->doImport();
-
-        // Call Event to store Template Changes in Log
-        TemplateCreated::dispatch($payload);
-
-        return response()->json([], 200);
     }
 
     private function handlePasswordDecrypt(Request $request, array $payload)

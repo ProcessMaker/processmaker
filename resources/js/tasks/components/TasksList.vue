@@ -9,46 +9,62 @@
         :data="data"
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
+        :selected-row="selectedRow"
+        :table-name="tableName"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
-        <template v-for="(column, index) in visibleHeaders" v-slot:[column.field]>
+        <template
+          v-for="(column, index) in visibleHeaders"
+          v-slot:[column.field]
+        >
           <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
           <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
-          <div :key="index" style="display: inline-block;">
+          <div
+            :key="index"
+            style="display: inline-block"
+          >
             <img
               v-if="column.field === 'is_priority'"
               src="/img/priority-header.svg"
               alt="priority-header"
               width="20"
               height="20"
-            >
+            />
             <span v-else>{{ $t(column.label) }}</span>
           </div>
         </template>
         <!-- Slot Table Header filter Button -->
-        <template v-for="(column, index) in visibleHeaders" v-slot:[`filter-${column.field}`]>
-            <PMColumnFilterPopover v-if="column.sortable" 
-                                   :key="index" 
-                                   :id="'pm-table-column-'+index" 
-                                   type="Field"
-                                   :value="column.field"
-                                   :format="getFormat(column)"
-                                   :formatRange="getFormatRange(column)"
-                                   :operators="getOperators(column)"
-                                   :viewConfig="getViewConfigFilter()"
-                                   :container="''"
-                                   :boundary="'viewport'"
-                                   @onChangeSort="onChangeSort($event, column.field)"
-                                   @onApply="onApply($event, column.field)"
-                                   @onClear="onClear(column.field)"
-                                   @onUpdate="onUpdate($event, column.field)">
-            </PMColumnFilterPopover>
+        <template
+          v-for="(column, index) in visibleHeaders"
+          v-slot:[`filter-${column.field}`]
+        >
+          <PMColumnFilterPopover
+            v-if="column.sortable"
+            :key="index"
+            :id="'pm-table-column-' + index"
+            type="Field"
+            :value="column.field"
+            :format="getFormat(column)"
+            :formatRange="getFormatRange(column)"
+            :operators="getOperators(column)"
+            :viewConfig="getViewConfigFilter()"
+            :container="''"
+            :boundary="'viewport'"
+            @onChangeSort="onChangeSort($event, column.field)"
+            @onApply="onApply($event, column.field)"
+            @onClear="onClear(column.field)"
+            @onUpdate="onUpdate($event, column.field)"
+          >
+          </PMColumnFilterPopover>
         </template>
         <!-- Slot Table Body -->
-        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+        <template
+          v-for="(row, rowIndex) in data.data"
+          v-slot:[`row-${rowIndex}`]
+        >
           <td
             v-for="(header, colIndex) in visibleHeaders"
             :key="colIndex"
@@ -58,8 +74,10 @@
                 :id="`element-${rowIndex}-${colIndex}`"
                 :class="{ 'pm-table-truncate': header.truncate }"
                 :style="{ maxWidth: header.width + 'px' }"
-                  >
-                <span v-html="sanitize(getNestedPropertyValue(row, header))"></span>
+              >
+                <span
+                  v-html="sanitize(getNestedPropertyValue(row, header))"
+                ></span>
               </div>
               <b-tooltip
                 v-if="header.truncate"
@@ -80,7 +98,13 @@
               </template>
               <template v-else>
                 <template v-if="header.field === 'due_at'">
-                  <span :class="['badge', 'badge-'+row['color_badge'], 'due-'+row['color_badge']]">
+                  <span
+                    :class="[
+                      'badge',
+                      'badge-' + row['color_badge'],
+                      'due-' + row['color_badge'],
+                    ]"
+                  >
                     {{ formatRemainingTime(row.due_at) }}
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
@@ -88,12 +112,18 @@
                 <template v-else-if="header.field === 'is_priority'">
                   <span>
                     <img
-                      :src="row[header.field] ? '/img/priority.svg' : '/img/no-priority.svg'"
+                      :src="
+                        row[header.field]
+                          ? '/img/priority.svg'
+                          : '/img/no-priority.svg'
+                      "
                       :alt="row[header.field] ? 'priority' : 'no-priority'"
                       width="20"
                       height="20"
-                      @click.prevent="togglePriority(row.id, !row[header.field])"
-                    >
+                      @click.prevent="
+                        togglePriority(row.id, !row[header.field])
+                      "
+                    />
                   </span>
                 </template>
                 <template v-else>
@@ -127,37 +157,57 @@
             @mouseover="clearHideTimer"
             @mouseleave="hideTooltip"
           >
-          <span>
-            <i
-              v-if="!verifyURL('saved-searches')"
-              class="fa fa-eye py-2"
-              @click="previewTasks(tooltipRowData)"
+          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
+            <span>
+              <b-button
+                v-if="!verifyURL('saved-searches')"
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
+                @click="previewTasks(tooltipRowData)"
+              >
+                <i class="fas fa-eye"/>
+              </b-button>
+            </span>
+            <ellipsis-menu
+              :actions="actions"
+              :data="tooltipRowData"
+              :divider="false"
+              @show="handleShowEllipsis"
+              @hide="handleHideEllipsis"
             />
-          </span>
-          <ellipsis-menu
-            :actions="actions"
-            :data="tooltipRowData"
-            :divider="false"
-          />
+          </slot>
           </div>
         </template>
       </task-tooltip>
       <data-loading
         v-show="shouldShowLoader"
-        :for="/tasks\?page|results\?page/"
         :empty="$t('All clear')"
         :empty-desc="$t('No new tasks at this moment.')"
         empty-icon="noTasks"
-      />
+        :data-loading-id="dataLoadingId"
+        >
+        <template v-slot:no-results>
+          <slot name="no-results"></slot>
+        </template>
+      </data-loading>
       <pagination-table
         :meta="data.meta"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
     </div>
     <tasks-preview
       v-if="!verifyURL('saved-searches')"
       ref="preview"
-    />
+      @mark-selected-row="markSelectedRow"
+      :tooltip-button="tooltipFromButton"
+      @onWatchShowPreview="onWatchShowPreview"
+    >
+      <template v-slot:header="{ close, screenFilteredTaskData, taskReady }">
+        <slot name="preview-header" v-bind:close="close" v-bind:screenFilteredTaskData="screenFilteredTaskData" v-bind:taskReady="taskReady"></slot>
+      </template>
+    </tasks-preview>
   </div>
 </template>
 
@@ -196,22 +246,60 @@ export default {
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
   },
-  mixins: [datatableMixin,
+  mixins: [
+    datatableMixin,
     dataLoadingMixin,
     uniqIdsMixin,
     ListMixin,
     PMColumnFilterPopoverCommonMixin,
-    FilterTableBodyMixin],
+    FilterTableBodyMixin,
+  ],
   props: {
+    selectedRowQuick: 0,
     filter: {},
-    columns: {},
+    columns: [],
     pmql: {},
+    disableTooltip: {
+      default: false,
+    },
+    disableQuickFillTooltip: {
+      default: false,
+    },
     savedSearch: {
       default: false,
+    },
+    clone: {
+      default: false,
+    },
+    additionalIncludes: {
+      type: Array,
+      default: () => [],
+    },
+    fromButton: {
+      type: String,
+      default: "",
+    },
+    disableRowClick: {
+      type: Boolean,
+      default: false,
+    },
+    disableRuleTooltip: {
+      type: Boolean,
+      default: false,
+    },
+    openQuickFillFromRow: {
+      type: Boolean,
+      default: false,
+    },
+    tableName: {
+      type: String,
+      default: "",
     },
   },
   data() {
     return {
+      tooltipFromButton: "",
+      selectedRow: 0,
       actions: [
         {
           value: "edit",
@@ -248,11 +336,12 @@ export default {
       tooltipRowData: {},
       isTooltipVisible: false,
       hideTimer: null,
+      ellipsisShow: false,
     };
   },
   computed: {
     now() {
-      const tz = get(window, 'ProcessMaker.user.timezone');
+      const tz = get(window, "ProcessMaker.user.timezone");
       if (tz) {
         return moment().tz(tz);
       }
@@ -270,41 +359,70 @@ export default {
     },
   },
   watch: {
+    columns: {
+      deep: true,
+      handler() {
+        this.setupColumns();
+      }
+    },
     data(newData) {
       if (Array.isArray(newData.data) && newData.data.length > 0) {
         for (let record of newData.data) {
+          this.setDefaultProperties(record);
           //format Status
-          record["case_number"] = this.formatCaseNumber(record.process_request, record);
-          record["case_title"] = this.formatCaseTitle(record.process_request, record);
+          record["case_number"] = this.formatCaseNumber(
+            record.process_request,
+            record
+          );
+          record["case_title"] = this.formatCaseTitle(
+            record.process_request,
+            record
+          );
           record["status"] = this.formatStatus(record);
           record["assignee"] = this.formatAvatar(record["user"]);
           record["request"] = this.formatRequest(record);
           record["color_badge"] = this.formatColorBadge(record["due_at"]);
+          record["process_obj"] = record["process"];
           record["process"] = this.formatProcess(record);
-          record["task_name"] = this.formatActiveTask(record);
+          record["element_name"] = this.formatActiveTask(record);
         }
+      }
+      this.$emit('count', newData.meta?.total);
+      this.$emit("tab-count", newData.meta?.total);
+    },
+    shouldShowLoader(value) {
+      if (this.apiNoResults) {
+        this.$emit("data-loading", false);
+      } else {
+        this.$emit("data-loading", value);
       }
     },
   },
   mounted: function mounted() {
     this.getAssignee("");
-    this.getProcess();
     this.setupColumns();
     this.getFilterConfiguration();
+
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
       ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
+    this.$emit('onRendered', this);
   },
   methods: {
+    markSelectedRow(value) {
+      this.selectedRow = value;
+    },
+    getTask(taskId) {
+      return this.data.data.find(task => task.id === taskId);
+    },
     togglePriority(taskId, isPriority) {
-      ProcessMaker.apiClient.put(
-        `tasks/${taskId}/setPriority`,
-        { is_priority: isPriority }
-      ).then((response) => {
-        this.fetch();
-      });
+      ProcessMaker.apiClient
+        .put(`tasks/${taskId}/setPriority`, { is_priority: isPriority })
+        .then((response) => {
+          this.fetch();
+        });
     },
     openRequest(data) {
       return `/requests/${data.id}`;
@@ -320,12 +438,18 @@ export default {
       return `
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
-         ${processRequest.case_title_formatted || processRequest.case_title || record.case_title || ""}
+         ${
+           processRequest.case_title_formatted ||
+           processRequest.case_title ||
+           record.case_title ||
+           ""
+         }
       </a>`;
     },
     formatActiveTask(row) {
       return `
       <a href="${this.openTask(row)}"
+        data-cy="active-task-data"
         class="text-nowrap">
         ${row.element_name}
       </a>`;
@@ -334,11 +458,12 @@ export default {
       this.tableHeaders = this.getColumns();
     },
     getColumns() {
-      if (this.$props.columns) {
-        return this.$props.columns;
+      if (this.columns && this.columns.length > 0) {
+        return this.columns;
       }
       // from query string status=CLOSED
-      const isStatusCompletedList = window.location.search.includes("status=CLOSED");
+      const isStatusCompletedList =
+        window.location.search.includes("status=CLOSED");
       const columns = [
         {
           label: "Case #",
@@ -346,8 +471,11 @@ export default {
           sortable: true,
           default: true,
           width: 80,
-          filter_subject: { type: 'Relationship', value: 'processRequest.case_number' },
-          order_column: 'process_requests.case_number',
+          filter_subject: {
+            type: "Relationship",
+            value: "processRequest.case_number",
+          },
+          order_column: "process_requests.case_number",
         },
         {
           label: "Case title",
@@ -357,8 +485,11 @@ export default {
           default: true,
           width: 220,
           truncate: true,
-          filter_subject: { type: 'Relationship', value: 'processRequest.case_title' },
-          order_column: 'process_requests.case_title',
+          filter_subject: {
+            type: "Relationship",
+            value: "processRequest.case_title",
+          },
+          order_column: "process_requests.case_title",
         },
         {
           label: "Priority",
@@ -374,18 +505,21 @@ export default {
           default: true,
           width: 140,
           truncate: true,
-          filter_subject: { type: 'Relationship', value: 'processRequest.name' },
-          order_column: 'process_requests.name',
+          filter_subject: {
+            type: "Relationship",
+            value: "processRequest.name",
+          },
+          order_column: "process_requests.name",
         },
         {
           label: "Task",
-          field: "task_name",
+          field: "element_name",
           sortable: true,
           default: true,
           width: 140,
           truncate: true,
-          filter_subject: { value: 'element_name' },
-          order_column: 'element_name',
+          filter_subject: { value: "element_name" },
+          order_column: "element_name",
         },
         {
           label: "Status",
@@ -393,7 +527,7 @@ export default {
           sortable: true,
           default: true,
           width: 100,
-          filter_subject: { type: 'Status' },
+          filter_subject: { type: "Status" },
         },
         {
           label: "Due date",
@@ -435,8 +569,10 @@ export default {
       }
       return link;
     },
-    previewTasks(info) {
-      this.$refs.preview.showSideBar(info, this.data.data, true);
+    previewTasks(info, size = null, fromButton = null) {
+      this.tooltipFromButton = fromButton;
+      this.selectedRow = info.id;
+      this.$refs.preview.showSideBar(info, this.data.data, true, size);
     },
     formatStatus(props) {
       let color;
@@ -457,16 +593,6 @@ export default {
         <span class="badge badge-${color} status-${color}">
           ${label}
         </span>`;
-    },
-    formatAsignee(participants) {
-      return {
-        component: "AvatarImage",
-        props: {
-          size: "25",
-          "input-data": participants,
-          "hide-name": false,
-        },
-      };
     },
     formatDueDate(date) {
       return date === null ? "-" : moment(date).format("MM/DD/YY HH:mm");
@@ -504,35 +630,70 @@ export default {
     },
     handleRowClick(row, event) {
       const targetElement = event.target;
-      const isPriorityIcon = targetElement.tagName.toLowerCase() === "img"
-      && (targetElement.alt === "priority" || targetElement.alt === "no-priority");
-      if (!isPriorityIcon) {
-        window.location.href = this.openTask(row);
+      const isPriorityIcon =
+        targetElement.tagName.toLowerCase() === "img" &&
+        (targetElement.alt === "priority" ||
+          targetElement.alt === "no-priority");
+      if (this.fromButton === 'previewTask') {
+        return this.previewTasks(this.tooltipRowData, 93);
+      }
+      if (this.fromButton === 'fullTask') {
+        return this.previewTasks(this.tooltipRowData, 50);
+      }
+      if (this.fromButton === 'inboxRules') {
+        return this.previewTasks(this.tooltipRowData, 50, 'inboxRules');
       }
     },
+    handleShowEllipsis() {
+      this.ellipsisShow = true;
+    },
+    handleHideEllipsis() {
+      this.ellipsisShow = false;
+    },
     handleRowMouseover(row) {
+      if (this.ellipsisShow) {
+        this.isTooltipVisible = !this.disableRuleTooltip;
+        this.clearHideTimer();
+        return;
+      }
       this.clearHideTimer();
 
       const tableContainer = document.getElementById("table-container");
       const rectTableContainer = tableContainer.getBoundingClientRect();
       const topAdjust = rectTableContainer.top;
 
-      let elementHeight = 36;
+      let elementHeight = 28;
 
-      this.isTooltipVisible = true;
+      this.isTooltipVisible = !this.disableRuleTooltip;
       this.tooltipRowData = row;
 
       const rowElement = document.getElementById(`row-${row.id}`);
-      const rect = rowElement.getBoundingClientRect();
+      let yPosition = 0;
 
-      const selectedFiltersBar = document.querySelector('.selected-filters-bar');
-      const selectedFiltersBarHeight = selectedFiltersBar ? selectedFiltersBar.offsetHeight : 0;
+      const rect = rowElement.getBoundingClientRect();
+      yPosition = rect.top + window.scrollY;
+
+      const selectedFiltersBar = document.querySelector(
+        ".selected-filters-bar"
+      );
+      const selectedFiltersBarHeight = selectedFiltersBar
+        ? selectedFiltersBar.offsetHeight
+        : 0;
 
       elementHeight -= selectedFiltersBarHeight;
 
-      const rightBorderX = rect.right;
-      const bottomBorderY = rect.bottom - topAdjust + 48 - elementHeight;
+      let rightBorderX = rect.right;
 
+      let bottomBorderY = 0;
+      if(this.fromButton === "" || this.fromButton === "previewTask"){
+        bottomBorderY = yPosition - topAdjust + 100 - elementHeight;
+      }
+      if(this.fromButton === "fullTask"){
+        bottomBorderY = yPosition;
+      }
+      if(this.fromButton === "inboxRules"){
+        bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
+      }
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -550,21 +711,27 @@ export default {
       clearTimeout(this.hideTimer);
     },
     hideTooltip() {
+      if (this.ellipsisShow) {
+        return;
+      }
       this.isTooltipVisible = false;
     },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
-      cleanHtml = cleanHtml.replace(/<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi, "");
+      cleanHtml = cleanHtml.replace(
+        /<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi,
+        ""
+      );
       cleanHtml = cleanHtml.replace(/\s+/g, " ");
 
       return cleanHtml;
     },
     getStatus() {
       return [
-        {value: "Self Service", text: this.$t("Self Service")},
-        {value: "In Progress", text: this.$t("In Progress")},
-        {value: "Completed", text: this.$t("Completed")}
+        { value: "Self Service", text: this.$t("Self Service") },
+        { value: "In Progress", text: this.$t("In Progress") },
+        { value: "Completed", text: this.$t("Completed") },
       ];
     },
     /**
@@ -591,12 +758,27 @@ export default {
       return {
         order: {
           by: this.orderBy,
-          direction: this.order_direction
+          direction: this.order_direction,
         },
-        type: 'taskFilter',
+        type: "taskFilter",
+      };
+    },
+    setDefaultProperties(record) {
+      if (!("process_request" in record)) {
+        record.process_request = {
+          id: null
+        };
+      }
+      if (!("process" in record)) {
+          record.process = {
+          name: null
+        };
       }
     },
-  }
+    onWatchShowPreview(value) {
+      this.$emit('onWatchShowPreview', value);
+    }
+  },
 };
 </script>
 
@@ -605,7 +787,7 @@ export default {
   padding: 0;
 }
 .due-danger {
-  background-color:rgba(237, 72, 88, 0.2);
+  background-color: rgba(237, 72, 88, 0.2);
   color: rgba(237, 72, 88, 1);
   font-weight: 600;
   border-radius: 5px;
@@ -616,7 +798,18 @@ export default {
   font-weight: 600;
   border-radius: 5px;
 }
+.btn-this-data {
+  background-color: #1572c2;
+  width: 197px;
+  height: 40px;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
+}
 </style>
 <style lang="scss" scoped>
-  @import url("../../../sass/_scrollbar.scss");
+@import url("../../../sass/_scrollbar.scss");
 </style>

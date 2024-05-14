@@ -13,7 +13,7 @@ class ProcessMakerLicenseRemove extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:license-remove';
+    protected $signature = 'processmaker:license-remove {--force}';
 
     /**
      * The console command description.
@@ -35,7 +35,7 @@ class ProcessMakerLicenseRemove extends Command
     public function handle()
     {
         if (Storage::disk('local')->exists('license.json')) {
-            if ($this->confirm('Are you sure you want to remove the license.json file?')) {
+            if ($this->option('force') || $this->confirm('Are you sure you want to remove the license.json file?')) {
                 Storage::disk('local')->delete('license.json');
                 $this->info('license.json removed successfully!');
 

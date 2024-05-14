@@ -9,6 +9,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Models\Bookmark;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 
 class BookmarkController extends Controller
 {
@@ -16,6 +17,7 @@ class BookmarkController extends Controller
     {
         // Get the user
         $user = Auth::user();
+        $perPage = $this->getPerPage($request);
         // Get the processes  active
         $processes = Process::nonSystem()->active();
         // Filter pmql
@@ -27,27 +29,44 @@ class BookmarkController extends Controller
                 return response(['error' => 'PMQL error'], 400);
             }
         }
+
+        $launchpad = $request->input('launchpad', false);
         // Get the processes
         $processes = $processes
             ->select('processes.*', 'bookmark.id as bookmark_id')
             ->leftJoin('user_process_bookmarks as bookmark', 'bookmark.process_id', '=', 'processes.id')
-            ->leftJoin('users as user', 'processes.user_id', '=', 'user.id') // Required for the pmql
             ->where('bookmark.user_id', $user->id)
             ->orderBy('processes.name', 'asc')
-            ->get()
-            ->collect();
+            ->paginate($perPage);
+        
+        foreach ($processes as $process) {
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+        }
 
         return new ProcessCollection($processes);
+    }
+
+    /**
+     * Get the size of the page.
+     *
+     * @param Request $request
+     * @return type
+     */
+    protected function getPerPage(Request $request)
+    {
+        return $request->input('per_page', 12);
     }
 
     public function store(Request $request, Process $process)
     {
         $bookmark = new Bookmark();
         try {
-            $bookmark->updateOrCreate([
+            $newBookmark = $bookmark->updateOrCreate([
                 'process_id' => $process->id,
                 'user_id' => Auth::user()->id,
             ]);
+            $bookmark->newId = $newBookmark->id;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

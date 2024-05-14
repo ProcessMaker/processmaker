@@ -11,6 +11,8 @@
     :ok-disabled="okDisabled"
     :hide-footer="hideFooter"
     :hide-header="hideHeader"
+    :header-class="headerClass"
+    :footer-class="footerClass"
     :size="size"
     :ok-only="okOnly"
     no-close-on-backdrop
@@ -28,7 +30,7 @@
       <div class="w-100 d-block">
         <div>
           <div class="w-100 p-0" :class="hasHeaderButtons ? 'd-flex justify-content-between align-middle align-items-center' : ''">
-            <b-button v-show="hasHeaderButtons" v-for="button in headerButtons" :key="button.content" 
+            <b-button v-show="hasHeaderButtons" v-for="button in headerButtons" :key="button.content"
               :aria-label="button.ariaLabel"
               :variant="button.variant"
               :disabled="button.disabled"
@@ -48,15 +50,15 @@
               {{ title }}
               <small v-if="subtitle" class="text-muted subtitle d-block mt-1">{{subtitle}}</small>
             </h5>
-            <b-button v-for="(button, index) in titleButtons" 
-              :key="button.content" 
-              :aria-label="button.ariaLabel" 
+            <b-button v-for="(button, index) in titleButtons"
+              :key="button.content"
+              :aria-label="button.ariaLabel"
               :hidden="button.hidden"
               :disabled="button.disabled"
-              :variant="button.variant" 
+              :variant="button.variant"
               :class="button.position"
               size="sm"
-              @click="executeFunction(button.action)" 
+              @click="executeFunction(button.action)"
             >
               <i v-if="button.icon" :class="button.icon" /> {{ button.content }}
             </b-button>
@@ -89,10 +91,10 @@
           </div>
         </div>
         <div>
-          <b-button v-for="button in customButtons" 
-            :key="button.content" 
-            @click="executeFunction(button.action)" 
-            :variant="button.variant" 
+          <b-button v-for="button in customButtons"
+            :key="button.content"
+            @click="executeFunction(button.action)"
+            :variant="button.variant"
             :disabled="button.disabled"
             :hidden="button.hidden"
             :size="button.size"
@@ -111,24 +113,26 @@
   export default {
     props: [
       "id",
-      "title", 
-      "okDisabled", 
-      "okOnly", 
+      "title",
+      "okDisabled",
+      "okOnly",
       "okTitle",
-      "okVariant", 
+      "okVariant",
       "setCustomButtons",
-      "customButtons", 
-      "subtitle", 
-      "size", 
+      "customButtons",
+      "subtitle",
+      "size",
       "hideFooter",
       "hideHeader",
-      "hasHeaderButtons", 
-      "headerButtons", 
-      "hasTitleButtons", 
+      "hasHeaderButtons",
+      "headerButtons",
+      "hasTitleButtons",
       "titleButtons",
       "showAiSlogan",
       "requiredInFooter",
-      "titleIcon"
+      "titleIcon",
+      "headerClass",
+      "footerClass"
     ],
     methods: {
       onEvent(name, event) {

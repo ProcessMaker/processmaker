@@ -9,17 +9,25 @@ import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
 
 export default {
   mixins:[FilterTableBodyMixin],
+  props: {
+    fetchOnCreated: {
+      default: true,
+    },
+  },
   components: {
     Vuetable,
     Pagination,
   },
   created() {
     // Use our api to fetch our role listing
-    this.fetch();
+    if (this.fetchOnCreated) {
+      this.fetch();
+    }
   },
   watch: {
     filter: _.debounce(function () {
       if (!this.loading) {
+        this.page = 1;
         this.fetch();
       }
     }, 250),
@@ -135,7 +143,7 @@ export default {
       // What page of results we are on
       page: 1,
       // How many items per page
-      perPage: 10,
+      perPage: 15,
       // Our loading flag
       loading: false,
       // What column to order by (default of name)

@@ -4,21 +4,25 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Exception\PmqlMethodException;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
-use ProcessMaker\Models\Template;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class ScreenTemplates extends Template
+class ScreenTemplates extends Template implements HasMedia
 {
     use HasFactory;
     use HasCategories;
     use HideSystemResources;
     use ExtendedPMQL;
+    use InteractsWithMedia;
 
     protected $table = 'screen_templates';
+
+    protected $appends = [
+        'template_media',
+    ];
 
     const categoryClass = ScreenCategory::class;
 
@@ -183,5 +187,87 @@ class ScreenTemplates extends Template
         });
 
         return $query;
+    }
+
+    /**
+     * Get the associated thumbnails for the given screen template
+     */
+    public function getTemplateMediaAttribute()
+    {
+        $mediaCollectionName = 'st-' . $this->uuid . '-media';
+
+        // Get preview thumbs
+        $previewThumbs = $this->getMedia($mediaCollectionName, ['media_type' => 'preview-thumbs']);
+
+        // Get thumbnail media
+        $thumbnailMedia = $this->getMedia($mediaCollectionName, ['media_type' => 'thumbnail'])->first();
+
+        // If thumbnail media is not found and no preview thumbs are available,
+        // get any media associated with the template
+        if (is_null($thumbnailMedia) && $previewThumbs->isEmpty()) {
+            $allMedia = $this->getMedia($mediaCollectionName);
+
+            return $allMedia->map(function ($media) {
+                $media->url = $media->getFullUrl();
+
+                return $media;
+            })->all();
+        } else {
+            // Prepare URLs for thumbnail and preview thumbs
+            if ($thumbnailMedia) {
+                $thumbnailMedia->url = $thumbnailMedia->getFullUrl();
+            }
+            $previewThumbs = $previewThumbs->map(function ($thumb) {
+                $thumb->url = $thumb->getFullUrl();
+
+                return $thumb;
+            })->all();
+
+            return [
+                'thumbnail' => $thumbnailMedia ? $thumbnailMedia : '',
+                'previewThumbs' => $previewThumbs,
+            ];
+        }
+    }
+
+    /**
+     * Add files to media collection
+     */
+    public function addFilesToMediaCollection(string $directoryPath)
+    {
+        $files = File::allFiles($directoryPath);
+        $collectionName = basename($directoryPath);
+
+        foreach ($files as $file) {
+            $this->addMedia($file->getPathname())->toMediaCollection($collectionName);
+        }
+    }
+
+    /**
+     * Get the value of the "isOwner" attribute.
+     */
+    public function getIsOwnerAttribute(): bool
+    {
+        return $this->isOwner(auth()->user());
+    }
+
+    /**
+     * Checks if the given user is the owner of the screen template.
+     */
+    public function isOwner(User $user): bool
+    {
+        return $user->is_administrator || $this->user_id === $user->id;
+    }
+
+    /**
+     * Listen for the deleting event on a ScreenTemplate
+     * instance and delete any associated Screen if exists
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($screenTemplate) {
+            Screen::where('uuid', $screenTemplate->editing_screen_uuid)->delete();
+        });
     }
 }

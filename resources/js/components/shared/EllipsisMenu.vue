@@ -88,12 +88,15 @@
             :href="action.link ? itemLink(action, data) : null"
             class="ellipsis-dropdown-item mx-auto"
             @click="!action.link ? onClick(action, data) : null"
+            :data-test="action.dataTest"
           >
             <div class="ellipsis-dropdown-content">
               <i
+                v-if="!action.image"
                 class="pr-1 fa-fw"
                 :class="action.icon"
               />
+              <img v-if="action.image" :src="action.image" :alt="$t('Priority')">
               <span>{{ $t(action.content) }}</span>
             </div>
           </b-dropdown-item>
@@ -123,7 +126,7 @@ export default {
     filterActions() {
       let btns = this.filterActionsByPermissions();
       btns = this.filterActionsByConditionals(btns);
-      
+
       return btns;
     },
     filterAboveDivider() {

@@ -14,6 +14,7 @@
               :variant="button.variant || 'secondary'"
               class="text-capitalize"
               :title="button.title"
+              :data-cy="`toolbar-${button.id}`"
               tabindex="1"
               @click="executeFunction(button.action)"
             >
@@ -60,6 +61,7 @@
               :variant="button.variant || 'secondary'"
               class="text-capitalize screen-toolbar-button"
               :title="button.title"
+              :data-cy="`toolbar-${button.id}`"
               @click="executeFunction(button.action)"
             >
               <i :class="button.icon" />
@@ -89,7 +91,7 @@
             }"
             :key="index"
             :options="item.options"
-            @navigate="(action, data) => handleNavigate(action, data)"
+            @navigate="handleNavigate"
           />
         </template>
       </b-col>
@@ -160,9 +162,12 @@ export default {
   },
   methods: {
     handleNavigate(action) {
-      switch (action.value) {
+      switch (action?.value) {
         case "discard-draft":
           window.ProcessMaker.EventBus.$emit("open-versions-discard-modal");
+          break;
+        case "create-template":
+          window.ProcessMaker.EventBus.$emit("show-create-template-modal");
           break;
         default:
           if (action.action) {

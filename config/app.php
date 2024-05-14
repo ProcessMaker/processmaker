@@ -124,6 +124,9 @@ return [
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
 
+    // PM Analytics Chart
+    'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
+
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
 
@@ -227,4 +230,6 @@ return [
     'queue_imports' => env('QUEUE_IMPORTS', true),
 
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
+
+    'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
 ];

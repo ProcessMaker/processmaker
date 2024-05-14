@@ -1,98 +1,334 @@
 <template>
-  <div class="pm-inbox-rule d-flex">
+  <div class="pm-inbox-rule pr-3 pl-3">
+    <h4>{{$t('New Inbox Rule')}}</h4>
+    <div class="d-flex">
+      <PMPanelWithCustomHeader 
+        v-if="viewIs('main')"
+        class="filters"
+        :title="$t('Step 1:') + ' ' + $t('Define the filtering criteria')">
+        <template v-slot:header-right-content>
+          <InboxRuleButtons
+            ref="editInboxRuleButtons"
+            :show-saved-search-selector="showSavedSearchSelector"
+            :saved-search-id="savedSearchIdSelected"
+            @saved-search-id-changed="savedSearchIdSelected = $event"
+            @showColumns="$refs.inboxRuleFilters.showColumns()"
+            @reset-filters="$refs.inboxRuleFilters.resetFilters()">
+          </InboxRuleButtons>
+        </template>
+        <InboxRuleFilters
+          ref="inboxRuleFilters"
+          :savedSearchId="getSavedSearchId"
+          :taskId="taskId"
+          :propTask="task"
+          :show-column-selector-button="false"
+          :prop-columns="columns"
+          @count="count = $event"
+          @saved-search-data="savedSearchData = $event"
+          :prop-saved-search-data="savedSearchData"
+          @columns-updated="columns = $event"
+          >
+        </InboxRuleFilters>
+      </PMPanelWithCustomHeader>
 
-    <div>
-      <h4>{{$t('New Inbox Rule')}}</h4> Edit id {{ $route.params.id }}
-      <b-form-group>
-        <b-form-select v-model="savedSearchSelected" :options="savedSearch">
-        </b-form-select>  
-      </b-form-group>
+      <PMPanelWithCustomHeader 
+        v-if="viewIs('nextConfiguration')"
+        class="filters"
+        :title="$t('Step 3:') + ' ' + $t('Enter form data')">
+        <template v-slot:header-right-content>
+          <div class="custom-button-container">
+            <button
+              type="button"
+              class="button-actions"
+              v-b-tooltip.hover
+              :title="$t('Clear All Fields In This Form')"
+              @click="eraseQuickFill()"
+              >
+              <img src="/img/smartinbox-images/eraser.svg" :alt="$t('No Image')">
+                {{ $t('Clear Task') }}
+            </button>
+            <button
+              type="button"
+              v-b-tooltip.hover title="Use content from previous task to fill this one quickly."
+              class="button-actions"
+              @click="showQuickFillPreview = true"
+              >
+              <img
+                src="/img/smartinbox-images/fill.svg"
+                :alt="$t('No Image')"
+                /> {{ $t('Quick Fill') }}
+            </button>
+          </div>
+        </template>
 
+        <InboxRuleFillData
+          ref="inboxRuleFillData"
+          :task-id="taskId"
+          :inbox-rule-data="data"
+          :prop-inbox-quick-fill="propInboxData"
+          @data="data = $event"
+          @submit="submitButton = $event">
+        </InboxRuleFillData>
+      </PMPanelWithCustomHeader>
 
-      <b-form-group label="What do we do with tasks that fit this filter?">
-        <b-form-radio v-model="markAsPriority" name="actionsTask" value="false">
-          {{ $t('Mark as Priority') }}
-        </b-form-radio>
-        <b-form-radio v-model="reassing" name="actionsTask" value="false">
-          {{ $t('Reassing') }}
-        </b-form-radio>
-      </b-form-group>
-
-      <b-form-group label="Rule Behavior">
-        <b-form-checkbox-group v-model="checkboxValues"
-                               name="ruleBehavior"
-                               stacked >
-          <b-form-checkbox value="true">
-            {{ $t('Apply to current inbox matching tasks (8)') }}
-          </b-form-checkbox>
-          <b-form-checkbox value="true">
-            {{ $t('Apply to Future tasks') }}
-          </b-form-checkbox>
-        </b-form-checkbox-group>
-      </b-form-group>
-
-      <b-form-group label="Deactivation date">
-        <b-form-datepicker v-model="deactivationDate">
-        </b-form-datepicker>
-      </b-form-group>
-
-      <b-form-group label="Give this rule a name*">
-        <b-form-input v-model="ruleName" placeholder="Enter your name"></b-form-input>
-      </b-form-group>
-
-      <b-form-group>
-        <span>*=Required</span>
-        <b-button variant="secondary"
-                  @click="onCancel">
-          {{ $t('Cancel') }}
-        </b-button>
-        <b-button variant="primary"
-                  @click="onCreateRule">
-          {{ $t('Create Rule') }}
-        </b-button>
-      </b-form-group>
+      <PMPanelWithCustomHeader
+        class="ml-3 actions"
+        :title="rightPanelTitle">
+        <InboxRuleEdit 
+          :count="count" 
+          :inbox-rule="inboxRule"
+          :saved-search-data="savedSearchData"
+          :task-id="taskId"
+          :data="data"
+          :select-submit-button="submitButton"
+          @onSavedSearchNotSelected="$refs.editInboxRuleButtons.showPopoverMessage()"
+          @onChangeViews="viewsTo($event)">
+        </InboxRuleEdit>
+      </PMPanelWithCustomHeader>
 
     </div>
-
-    <div>
-
-    </div>
-
+    <splitpane-container v-if="showQuickFillPreview" :size="100" class-inbox="true">
+      <quick-fill-preview
+        ref="refQuickFillPreview"
+        class="quick-fill-preview"
+        :task="task"
+        :prop-from-button ="'inboxRules'"
+        :prop-columns="quickFillColumns"
+        :prop-filters="filter"
+        @close="showQuickFillPreview = false"
+        @quick-fill-data-inbox="fillWithQuickFillData"
+        ></quick-fill-preview>
+    </splitpane-container>
   </div>
 </template>
 
 <script>
+  import PMPanelWithCustomHeader from "../../components/PMPanelWithCustomHeader.vue";
+  import InboxRuleEdit from "./InboxRuleEdit.vue";
+  import InboxRuleFilters from "./InboxRuleFilters.vue";
+  import InboxRuleButtons from "./InboxRuleButtons.vue";
+  import InboxRuleFillData from "./InboxRuleFillData.vue";
+  import IsViewMixin from "./IsViewMixin.js";
+  import QuickFillPreview from "../../tasks/components/QuickFillPreview.vue";
+  import SplitpaneContainer from "../../tasks/components/SplitpaneContainer.vue";
+
   export default {
     components: {
+      PMPanelWithCustomHeader,
+      InboxRuleEdit,
+      InboxRuleFilters,
+      InboxRuleButtons,
+      InboxRuleFillData,
+      QuickFillPreview,
+      SplitpaneContainer
     },
+    mixins: [IsViewMixin],
     props: {
+      newSavedSearchId: {
+        type: Number,
+        default: null
+      },
+      newTaskId: {
+        type: Number,
+        default: null
+      },
+      ruleId: {
+        type: Number,
+        default: null
+      },
+      elementId: {
+        type: String,
+        default: null
+      },
+      processId: {
+        type: Number,
+        default: null
+      }
     },
     data() {
       return {
-        markAsPriority: false,
-        reassing: false,
-        checkboxValues: [],
-
-        deactivationDate: null,
-        ruleName: null,
-        savedSearchSelected: null,
-        savedSearch: [
-          {value: 1, text: "saved search 1"},
-          {value: 2, text: "saved search 2"},
-          {value: 3, text: "saved search 3"},
-          {value: 4, text: "saved search 4"}
+        columns: [],
+        propInboxData: {},
+        task: {},
+        showQuickFillPreview: false,
+        count: 0,
+        inboxRule: null,
+        savedSearchIdSelected: null,
+        savedSearchData: {},
+        taskId: null,
+        data: {},
+        submitButton: null,
+        pmql: `(user_id = ${ProcessMaker.user.id} and status="Completed" and process_id=${this.processId})`,
+        filter: {
+          order: {by: 'created_at', direction: 'desc'},
+          filters: [
+            {
+              subject: {type: "Field", value: "process_id"},
+              operator: "=",
+              value: this.processId
+            },
+            {
+              subject: {type: "Field", value: "element_id"},
+              operator: "=",
+              value: this.elementId
+            }
+          ]
+        },
+        quickFillColumns: [
+          {
+            label: "Case #",
+            field: "case_number",
+            filter_subject: {
+              type: "Relationship",
+              value: "processRequest.case_number"
+            },
+            order_column: "process_requests.case_number"
+          },
+          {
+            label: "Case title",
+            field: "case_title",
+            name: "__slot:case_number",
+            filter_subject: {
+              type: "Relationship",
+              value: "processRequest.case_title"
+            },
+            order_column: "process_requests.case_title"
+          },
+          {
+            label: "Completed",
+            field: "completed_at",
+            format: "datetime",
+            filter_subject: {
+              type: "Field",
+              value: "completed_at"
+            }
+          }
         ]
       };
     },
+    watch: {
+      showQuickFillPreview(value) {
+        if (value) {
+          this.$nextTick(() => {
+            this.$refs.refQuickFillPreview.onWatchShowPreview(value);
+          });
+        } else {
+          this.$refs.refQuickFillPreview.onWatchShowPreview(value);
+        }
+      }
+    },
+    computed: {
+      rightPanelTitle() {
+        if (this.viewIs('main')) {
+          return this.$t('Step 2:') + ' ' + this.$t('Rule Configuration');
+        }
+        if (this.viewIs('nextConfiguration')) {
+          return this.$t('Step 4:') + ' ' + this.$t('Submit Configuration');
+        }
+      },
+      getSavedSearchId() {
+        // All existing inbox rules have a saved search id.
+        // If this is a new inbox rule, we could have a saved search id or a process id and element id
+        if (this.inboxRule) {
+          return this.inboxRule.saved_search_id;
+        }
+        if (this.newSavedSearchId) {
+          return this.newSavedSearchId;
+        }
+        if (this.savedSearchIdSelected) {
+          return this.savedSearchIdSelected;
+        }
+        return null;
+      },
+      isNew() {
+        return !this.ruleId;
+      },
+      showSavedSearchSelector() {
+        return this.isNew && !this.newSavedSearchId && !this.taskId;
+      }
+    },
     mounted() {
+      this.task = {
+        process_id: this.processId,
+        element_id: this.elementId,
+        id: this.newTaskId
+      };
+      if (this.newTaskId) {
+        this.taskId = this.newTaskId;
+      }
+      if (this.ruleId) {
+        ProcessMaker.apiClient.get('/tasks/rules/' + this.ruleId)
+                .then(response => {
+                  this.inboxRule = response.data;
+                  this.submitButton = this.inboxRule.submit_button;
+                  this.data = this.inboxRule.data;
+                  this.taskId = this.inboxRule.process_request_token_id;
+                  if (this.taskId) {
+                    this.getTask(this.taskId);
+                  }
+                });
+      }
     },
     methods: {
-      onCancel() {
-        this.$router.push({name: 'index'});
+      getTask(taskId) {
+        if (this.task.process_id === null) {
+          ProcessMaker.apiClient.get("tasks/" + taskId)
+                  .then(response => {
+                    this.task = response.data;
+                  });
+        }
       },
-      onCreateRule() {
-        this.$router.push({name: 'index'});
+      eraseQuickFill() {
+        this.$refs.inboxRuleFillData.eraseData();
+      },
+      fillWithQuickFillData(data) {
+        const message = this.$t('Task Filled succesfully');
+        this.propInboxData = data;
+        ProcessMaker.alert(message, 'success');
+      },
+      verifyURL(string) {
+        const currentUrl = window.location.href;
+        const isInUrl = currentUrl.includes(string);
+        return isInUrl;
+      },
+      resetData() {
+        this.data = null;
+        this.$refs.inboxRuleFillData.reload();
       }
     }
   };
 </script>
+
+<style scoped>
+  .filters {
+    flex-grow: 1;
+    width: 50%;
+  }
+  .actions {
+    width: 400px;
+  }
+  .button-actions {
+    color: #556271;
+    text-transform: capitalize;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: -0.02em;
+    text-align: left;
+    border: 1px solid #CDDDEE;
+    border-radius: 4px;
+    box-shadow: 0px 0px 3px 0px #0000001a;
+    background-color: white;
+  }
+  .button-actions:hover {
+    color: #556271;
+    background-color: #f3f5f8;
+  }
+  .custom-button-container {
+    display: inline-block;
+    padding: 0px;
+    justify-content: center;
+    align-items: center;
+    vertical-align: unset;
+  }
+</style>

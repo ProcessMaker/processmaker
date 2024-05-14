@@ -648,6 +648,9 @@ h1.page-title {
 #api-error {
   display: none;
 }
+.popover {
+  z-index: 500;
+}
 .popover-body {
   padding: 0 !important;
 }
@@ -1008,4 +1011,86 @@ nav {
   line-height: normal;
   letter-spacing: -0.28px;
   text-transform: uppercase;
+}
+
+//New Screen modal styling
+#createScreen___BV_modal_body_.modal-body {
+  background-color: #F6F9FB;
+  padding: 0 15px !important;
+}
+
+#createScreen___BV_modal_body_ .row {
+  height: 100%;
+}
+
+#createScreen___BV_modal_body_ .row .col-8 {
+  padding: 15px;
+}
+
+#createScreen___BV_modal_body_ .row .col-4 {
+  background-color: #ffffff;
+  padding: 15px;
+}
+
+.default-template-container .custom-control-label {
+  margin-top: 6px;
+}
+
+//New Screen modal, Screen Type Dropdown styling
+.type-style-col .multiselect:focus {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.type-style-col .multiselect .multiselect__tags {
+  border-radius: 0.5em;
+}
+
+.type-style-col .multiselect .multiselect__select:before {
+  border-color: #000000 transparent transparent transparent;
+}
+
+.type-style-col .multiselect .multiselect__tags .type-title-placeholder {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.type-style-col .multiselect .multiselect__content-wrapper {
+  margin-top: 5px;
+  box-shadow: 0 10px 20px 4px rgba(0, 0, 0, 0.1);
+}
+
+.type-style-col .multiselect .multiselect__content-wrapper .multiselect__option {
+  padding: 8px;
+}
+
+.type-style-col .multiselect--disabled .multiselect__select {
+  background-color: transparent;
+}
+
+// Create Screen Template modal styling
+#createTemplateScreenType .multiselect__select {
+  height: 48px;
+}
+
+// Configure Screen Template, Screen Type Dropdown styling
+#screenConfigsScreenType .multiselect__single .type-icon-placeholder {
+  padding-right: 10px !important;
+  font-size: 26px;
+}
+
+#screenConfigsScreenType .multiselect__tags {
+  padding: 6px 40px 0 6px;
+}
+
+.carousel-indicators li {
+  background-color: #ededed;
+  width: 32px;
+  height: 8px;
+  border-radius: 4px;
+  border-top: 0;
+  border-bottom: 0;
+}
+.carousel-indicators .active {
+  background-color: #9c9c9c;
 }

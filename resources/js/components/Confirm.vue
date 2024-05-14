@@ -2,8 +2,8 @@
     <b-modal dialog-class="top-20" v-model="showModal" @hide="onClose" :title="title" :size="size ? size : 'md'">
         <div class="my-3" :class="classMessage" v-html="message"></div>
         <template #modal-footer>
-            <b-button class="m-0" variant="outline-secondary" @click="onDeny">Cancel</b-button>
-            <b-button class="m-0" @click="onConfirm">Confirm</b-button>
+            <b-button class="m-0" variant="outline-secondary" :data-test="dataTestClose" @click="onDeny">Cancel</b-button>
+            <b-button class="m-0" @click="onConfirm" :data-test="dataTestOk">Confirm</b-button>
         </template>
     </b-modal>
 </template>
@@ -11,7 +11,7 @@
 
 <script>
     export default {
-        props: ["title", "message", "variant", "callback", "show", "size"],
+        props: ["title", "message", "variant", "callback", "show", "size", "dataTestClose", "dataTestOk"],
         data() {
             return {
                 'classMessage': '',

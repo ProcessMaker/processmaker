@@ -1,18 +1,28 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <div class="data-table">
     <data-loading
       v-show="shouldShowLoader"
-      :for="/screens/"
+      :for="/\/screens\?/"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body public-templates-table-card" data-cy="public-templates-table">
+    <div
+      v-show="!shouldShowLoader"
+      class="public-templates-table-card"
+      data-cy="public-templates-table"
+    >
       <filter-table
+        filter-table-id="public-templates-table"
         :headers="fields"
         :data="data"
+        :selected-row="selectedRow"
+        :loading="shouldShowLoader"
         table-name="public-screen-templates"
-        style="height: calc(100vh - 355px);"
+        style="height: calc(100vh - 355px)"
+        @table-row-mouseover="handleRowMouseover"
+        @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header filter Button -->
         <template
@@ -22,14 +32,18 @@
           <div
             v-if="column.sortable"
             :key="index"
+            style="display: inline-block"
             @click="handleEllipsisClick(column)"
           >
             <i
-              :class="['fas', {
-                'fa-sort': column.direction === 'none',
-                'fa-sort-up': column.direction === 'asc',
-                'fa-sort-down': column.direction === 'desc',
-              }]"
+              :class="[
+                'fas',
+                {
+                  'fa-sort': column.direction === 'none',
+                  'fa-sort-up': column.direction === 'asc',
+                  'fa-sort-down': column.direction === 'desc',
+                },
+              ]"
             />
           </div>
         </template>
@@ -80,20 +94,10 @@
                     {{ row[header.field] }}
                   </b-tooltip>
                 </template>
-                <template v-if="header.field === 'actions'">
-                  <ellipsis-menu
-                    class="public-template-table"
-                    :actions="publicTemplateActions"
-                    :permission="permission"
-                    :data="row"
-                    :divider="true"
-                    :screen-template="true"
-                    @navigate="onPublicTemplateNavigate"
-                  />
-                </template>
                 <template v-if="header.field !== 'name'">
                   <div
                     :style="{ maxWidth: header.width + 'px' }"
+                    :class="{ 'pm-table-truncate': header.truncate }"
                   >
                     {{ getNestedPropertyValue(row, header) }}
                   </div>
@@ -103,45 +107,119 @@
           </td>
         </template>
       </filter-table>
+      <screen-templates-tooltip
+        v-show="isTooltipVisible"
+        :position="rowPosition"
+      >
+        <template #screen-templates-tooltip-body>
+          <div
+            @mouseover="clearHideTimer"
+            @mouseleave="hideTooltip"
+          >
+            <slot
+              name="tooltip"
+              :tooltipRowData="tooltipRowData"
+              :previewTemplate="previewTemplate"
+            >
+              <span>
+                <b-button
+                  class="icon-button"
+                  variant="light"
+                  :aria-label="$t('Public Screen Template Preview')"
+                  @click="previewTemplate(tooltipRowData)"
+                >
+                  <i class="fas fa-eye py-2" />
+                </b-button>
+              </span>
+              <ellipsis-menu
+                class="public-template-table"
+                :actions="publicTemplateActions"
+                :data="tooltipRowData"
+                :divider="false"
+                :permission="permission"
+                :screen-template="true"
+                @navigate="onTemplateNavigate"
+              />
+            </slot>
+          </div>
+        </template>
+      </screen-templates-tooltip>
       <pagination-table
         :meta="data.meta"
         data-cy="public-templates-pagination"
         @page-change="changePage"
+        @per-page-change="changePerPage"
       />
       <pagination
         ref="pagination"
-        :single="$t('Public Template')"
-        :plural="$t('Public Templates')"
+        :single="$t('Shared Template')"
+        :plural="$t('Shared Templates')"
         :per-page-select-enabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
       />
     </div>
+    <template-preview-container
+      ref="preview"
+      :selected-template="selectedTemplate"
+      @mark-selected-row="markSelectedRow"
+    />
   </div>
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
-import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
+import TemplatePreviewContainer from "./TemplatePreviewContainer.vue";
+import ScreenTemplatesTooltip from "./ScreenTemplatesTooltip.vue";
 import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
 import paginationTable from "../../../components/shared/PaginationTable.vue";
+import fieldsMixin from "../mixins/fieldsMixin";
+import navigationMixin from "../mixins/navigationMixin";
+import templateMixin from "../mixins/templateMixin.js";
+import templatePreviewMixin from "../mixins/templatePreviewMixin";
 
-import { createUniqIdsMixin } from "vue-uniq-ids";
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  components: { EllipsisMenu, paginationTable },
-  mixins: [datatableMixin,
+  components: {
+    EllipsisMenu,
+    paginationTable,
+    TemplatePreviewContainer,
+    ScreenTemplatesTooltip,
+  },
+  mixins: [
+    datatableMixin,
     dataLoadingMixin,
     ellipsisMenuMixin,
-    screenNavigationMixin,
     FilterTableBodyMixin,
     uniqIdsMixin,
+    fieldsMixin,
+    navigationMixin,
+    templateMixin,
+    templatePreviewMixin,
   ],
-  props: ["permission", "filter", "pmql", "id"],
+  props: {
+    permission: {
+      type: [String, Object, Array],
+      default: "",
+    },
+    filter: {
+      type: String,
+      default: "",
+    },
+    pmql: {
+      type: String,
+      default: "",
+    },
+    id: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       orderBy: "name",
@@ -150,60 +228,33 @@ export default {
           field: "name",
           sortField: "name",
           direction: "asc",
-        }
+        },
       ],
-
-      fields: [
-        {
-          label: this.$t("Name"),
-          field: "name",
-          width: 200,
-          sortable: true,
-          truncate: true,
-          direction: "none",
-        },
-        {
-          label: this.$t("Description"),
-          field: "description",
-          width: 200,
-          sortable: true,
-          direction: "none",
-          sortField: "description",
-        },
-        {
-          label: this.$t("Type of Screen"),
-          field: "screen_type",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "screen_type",
-        },
-        {
-          label: this.$t("Owner"),
-          field: "owner",
-          width: 160,
-          sortable: true,
-          direction: "none",
-          sortField: "user.username",
-        },
-        {
-          label: this.$t("Modified"),
-          field: "updated_at",
-          format: "datetime",
-          width: 160,
-          sortable: true,
-          direction: "none",
-        },
-        {
-          name: "__slot:actions",
-          field: "actions",
-          width: 60,
-        }
-      ]
+      fields: [],
+      isTooltipVisible: false,
+      rowPosition: {},
+      tooltipRowData: {
+        is_owner: true,
+        user_id: null,
+      },
+      hideTimer: null,
+      selectedRow: 0,
+      showTemplatePreview: false,
+      selectedTemplate: null,
+      tableId: "public-templates-table",
     };
   },
-  created () {
-    ProcessMaker.EventBus.$on("api-data-public-screen-templates", (val) => {
+  created() {
+    this.insertFieldAfter("screen_type", {
+      label: this.$t("Owner"),
+      field: "owner",
+      width: 160,
+      sortable: true,
+      direction: "none",
+      sortField: "user.username",
+    });
+    this.fields = this.commonFields;
+    ProcessMaker.EventBus.$on("api-data-public-screen-templates", () => {
       this.fetch();
       this.apiDataLoading = false;
       this.apiNoResults = false;
@@ -212,33 +263,27 @@ export default {
   methods: {
     fetch() {
       this.loading = true;
-      //change method sort by slot name
+      this.apiDataLoading = true;
+      // change method sort by slot name
       this.orderBy = this.orderBy === "__slot:name" ? "name" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "templates/screen" +
-          "?page=" +
-          this.page +
-          "&per_page=" +
-          this.perPage +
-          "&filter=" +
-          this.filter +
-          "&pmql=" + 
-          encodeURIComponent(this.pmql) +
-          "&order_by=" +
-          this.orderBy +
-          "&order_direction=" +
-          this.orderDirection +
-          "&include=categories,category,user"
+          "templates/screen"
+            + `?page=${this.page}&per_page=${this.perPage}&is_public=1`
+            + `&filter=${this.filter}&pmql=${encodeURIComponent(this.pmql)}&order_by=${
+              this.orderBy
+            }&order_direction=${this.orderDirection}&include=categories,category,user`,
         )
-        .then(response => {
+        .then((response) => {
           this.data = this.transform(response.data);
+          this.apiDataLoading = false;
+          this.apiNoResults = false;
           this.loading = false;
+        })
+        .catch((error) => {
+          console.error(error);
         });
-    },
-    onPublicTemplateNavigate() {
-      console.log('Hit public template Ellipsis Menu');
     },
   },
 };
@@ -251,5 +296,13 @@ export default {
 
 .public-templates-table-card {
   padding: 0;
+  border: none;
+}
+
+.icon-button {
+  color: #888;
+  width: 32px;
+  height: 32px;
+  margin-top: 4px;
 }
 </style>

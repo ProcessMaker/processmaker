@@ -63,6 +63,7 @@ mix
   .copy("resources/img/*", "public/img")
   .copy("resources/img/launchpad-images/*", "public/img/launchpad-images")
   .copy("resources/img/launchpad-images/icons/*", "public/img/launchpad-images/icons")
+  .copy("resources/img/smartinbox-images/*", "public/img/smartinbox-images")
   .copy("resources/img/script_lang/*", "public/img/script_lang")
   .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
   .copy("resources/js/components/CustomActions.vue", "public/js")
@@ -137,6 +138,7 @@ mix
 
   .js("resources/js/notifications/index.js", "public/js/notifications/index.js")
   .js('resources/js/inbox-rules/index.js', 'public/js/inbox-rules')
+  .js('resources/js/inbox-rules/show.js', 'public/js/inbox-rules')
 
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118

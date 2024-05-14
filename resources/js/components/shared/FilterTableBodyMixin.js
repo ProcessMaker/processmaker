@@ -34,6 +34,10 @@ export default {
       this.page = page;
       this.fetch();
     },
+    changePerPage(value) {
+      this.perPage = value;
+      this.fetch();
+    },
     formatAvatar(user) {
       return {
         component: "AvatarImage",
@@ -41,6 +45,7 @@ export default {
           size: "25",
           "input-data": user,
           "hide-name": false,
+          "name-clickable": true,
         },
       };
     },

@@ -29,16 +29,18 @@
           <td class="action">{{ formatDate(item.created_at) }}</td>
           <td class="action">{{ formatDate(item.updated_at) }}</td>
           <td class="action">
-            <ellipsis-menu
-              :actions="actionsInProgress"
-              :permission="permission"
-              :data="item"
-              :divider="true"
-              :customButton="inProgressButton"
-              :showProgress="true"
-              @navigate="onNavigate"
-            />
-            <p v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
+            <div class="translation-in-progress">
+              <ellipsis-menu
+                  :actions="actionsInProgress"
+                  :permission="permission"
+                  :data="item"
+                  :divider="true"
+                  :customButton="inProgressButton"
+                  :showProgress="true"
+                  @navigate="onNavigate"
+              />
+              <p class="right-aligned-percent m-0" v-if="item.stream && item.stream.data">{{ item.stream.data }}</p>
+            </div>
           </td>
         </tr>
         <tr v-for="(item, index) in translatedLanguages" :key="index">
@@ -189,8 +191,14 @@ export default {
       window.Echo.private(channel).listen(
         translationEvent,
         (response) => {
-          this.fetchPending();
-          this.fetch();
+          this.translatingLanguages.forEach((translatingLanguage, key) => {
+            this.$set(this.translatingLanguages[key], "progress", response.data.progress);
+            this.$set(this.translatingLanguages[key].stream, "data", `${response.data.progress.progress}%`);
+          });
+          if (response.data.progress.status === 'completed' || response.data.progress.status === 'error') {
+            this.fetchPending();
+            this.fetch();
+          }
         },
       );
     },
@@ -279,7 +287,7 @@ export default {
             this.promptSessionId = '';
             this.fetchHistory();
           } else {
-            window.ProcessMaker.alert(errorMsg, 'danger');
+            console.error(errorMsg);
           }
         });
     },
@@ -357,6 +365,13 @@ export default {
         )
         .then((response) => {
           this.translatingLanguages = response.data.translatingLanguages;
+
+          this.translatingLanguages.forEach(lang => {
+            lang.stream = {
+              data: "1%",
+            };
+          });
+
           this.removeSocketListeners();
           this.subscribeToEvent();
         });
@@ -517,5 +532,19 @@ export default {
     left: 0;
     right: 0;
     top: 0;
+  }
+
+  .translation-in-progress {
+    display: flex;
+    flex-grow:1;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .right-aligned-percent {
+    float: right;
+    margin-left: 5px;
+    margin-top: 10px;
+    font-weight: bold;
   }
 </style>

@@ -4,19 +4,15 @@ namespace ProcessMaker\ImportExport\Exporters;
 
 use DOMXPath;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
-use ProcessMaker\ImportExport\SignalHelper;
 use ProcessMaker\ImportExport\Utils;
-use ProcessMaker\Managers\ExportManager;
-use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\SignalData;
 use ProcessMaker\Models\User;
 
 class ProcessExporter extends ExporterBase
@@ -25,13 +21,9 @@ class ProcessExporter extends ExporterBase
 
     public static $fallbackMatchColumn = 'name';
 
-    public ExportManager $manager;
-
     public function export() : void
     {
         $process = $this->model;
-
-        $this->manager = resolve(ExportManager::class);
 
         if ($process->user) {
             $this->addDependent('user', $process->user, UserExporter::class);
@@ -60,7 +52,7 @@ class ProcessExporter extends ExporterBase
             if ($screen) {
                 $this->addDependent('cancel-screen', $screen, ScreenExporter::class);
             } else {
-                \Log::debug("Cancel ScreenId: $process->cancel_screen_id not exists");
+                Log::debug("Cancel ScreenId: {$process->cancel_screen_id} not exists");
             }
         }
         if ($process->request_detail_screen_id) {
@@ -68,11 +60,15 @@ class ProcessExporter extends ExporterBase
             if ($screen) {
                 $this->addDependent('request-detail-screen', $screen, ScreenExporter::class);
             } else {
-                \Log::debug("Request Detail ScreenId: $process->request_detail_screen_id not exists");
+                Log::debug("Request Detail ScreenId: {$process->request_detail_screen_id} not exists");
             }
         }
 
         $this->exportSubprocesses();
+        $this->exportProcessLaunchpad();
+        $this->exportMedia();
+
+        $this->exportEmbed();
     }
 
     public function import($existingAssetInDatabase = null, $importingFromTemplate = false) : bool
@@ -95,7 +91,6 @@ class ProcessExporter extends ExporterBase
         if (!$importingFromTemplate) {
             $this->associateCategories(ProcessCategory::class, 'process_category_id');
         }
-
         $this->importSignals();
 
         foreach ($this->getDependents('cancel-screen') as $dependent) {
@@ -118,6 +113,10 @@ class ProcessExporter extends ExporterBase
                 $process->notification_settings()->create($setting);
             }
         }
+
+        $this->importMedia();
+
+        $this->importEmbed();
 
         return true;
     }
@@ -315,7 +314,7 @@ class ProcessExporter extends ExporterBase
                 if ($screen) {
                     $this->addDependent(DependentType::SCREENS, $screen, ScreenExporter::class, $meta);
                 } else {
-                    \Log::debug("ScreenId: $screenId not exists");
+                    Log::debug("ScreenId: {$screenId} not exists");
                 }
             }
 
@@ -325,7 +324,7 @@ class ProcessExporter extends ExporterBase
                 if ($interstitialScreen) {
                     $this->addDependent(DependentType::INTERSTITIAL_SCREEN, $interstitialScreen, ScreenExporter::class, $meta);
                 } else {
-                    \Log::debug("Interstitial screenId: $interstitialScreenId not exists");
+                    Log::debug("Interstitial screenId: {$interstitialScreenId} not exists");
                 }
             }
         }
@@ -365,7 +364,7 @@ class ProcessExporter extends ExporterBase
                 if ($script) {
                     $this->addDependent(DependentType::SCRIPTS, $script, ScriptExporter::class, $meta);
                 } else {
-                    \Log::debug("ScriptId: $scriptId not exists");
+                    Log::debug("ScriptId: {$scriptId} not exists");
                 }
             }
         }
@@ -409,6 +408,72 @@ class ProcessExporter extends ExporterBase
             $this->importScripts();
             $this->importSubprocesses();
             $this->importAssignments();
+            $this->importProcessLaunchpad();
+        }
+    }
+
+    /**
+     * Export the embed associated with the process.
+     */
+    public function exportEmbed(): void
+    {
+        $this->model->embed->each(function ($embed) {
+            $this->addDependent(DependentType::EMBED, $embed, EmbedExporter::class);
+        });
+    }
+
+    /**
+     * Imports embed for the process.
+     */
+    public function importEmbed(): void
+    {
+        foreach ($this->getDependents(DependentType::EMBED) as $embed) {
+            $embed->model->setAttribute('model_id', $this->model->id);
+        }
+    }
+
+    /**
+     * Export the media associated with the process.
+     */
+    public function exportMedia(): void
+    {
+        $this->model->media->each(function ($media) {
+            $this->addDependent(DependentType::MEDIA, $media, MediaExporter::class);
+        });
+    }
+
+    /**
+     * Imports media for the process.
+     */
+    public function importMedia(): void
+    {
+        foreach ($this->getDependents(DependentType::MEDIA) as $media) {
+            $media->model->setAttribute('model_id', $this->model->id);
+        }
+    }
+
+    /**
+     * Export the process launchpad associated with the process.
+     */
+    public function exportProcessLaunchpad(): void
+    {
+        $launchpad = $this->model->launchpad;
+        if ($launchpad) {
+            $this->addDependent(
+                'process_launchpad',
+                $launchpad,
+                ProcessLaunchpadExporter::class
+            );
+        }
+    }
+
+    /**
+     * Import the process launchpad for the process.
+     */
+    public function importProcessLaunchpad(): void
+    {
+        foreach ($this->getDependents('process_launchpad') as $launchpad) {
+            $launchpad->model->setAttribute('process_id', $this->model->id);
         }
     }
 }

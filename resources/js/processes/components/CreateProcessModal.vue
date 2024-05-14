@@ -109,13 +109,14 @@ export default {
   components: { Modal, Required, ProjectSelect },
   mixins: [ FormErrorsMixin, AssetRedirectMixin ],
   props: [
-    "countCategories", 
-    "blankTemplate", 
-    "selectedTemplate", 
-    "templateData", 
-    "generativeProcessData", 
-    "isProjectsInstalled", 
-    "categoryType", 
+    "countCategories",
+    "blankTemplate",
+    "selectedTemplate",
+    "templateData",
+    "generativeProcessData",
+    "isProjectsInstalled",
+    "isAbTestingInstalled",
+    "categoryType",
     "callFromAiModeler",
     "isProjectSelectionRequired",
     "projectId",
@@ -171,9 +172,14 @@ export default {
   },
   methods: {
     onShown() {
-      if (this.generativeProcessData) {
+      if (this.generativeProcessData && !this.generativeProcessData.choices?.length) {
         this.name = this.generativeProcessData.process_title;
         this.description = this.generativeProcessData.process_description;
+      }
+      if (this.generativeProcessData && this.generativeProcessData.choices?.length > 0) {
+        const currentChoice = this.generativeProcessData.choices[this.generativeProcessData.currentChoice];
+        this.name = currentChoice.process_title;
+        this.description = currentChoice.process_description;
       }
     },
     show() {
@@ -235,8 +241,11 @@ export default {
         formData.append("version", this.template_version);
         this.handleCreateFromTemplate(this.templateData.id, formData);
       } else {
-        if (this.generativeProcessData) {
+        if (this.generativeProcessData && !this.generativeProcessData.choices?.length) {
           formData.append("bpmn", this.generativeProcessData.bpmn);
+        }
+        if (this.generativeProcessData && this.generativeProcessData.choices?.length > 0) {
+          formData.append("bpmn", this.generativeProcessData.choices[this.generativeProcessData.currentChoice].bpmn);
         }
         this.handleCreateBlank(formData);
       }
@@ -275,6 +284,9 @@ export default {
         });
     },
     handleCreateBlank(formData) {
+      // Add default alternative
+      formData.append("alternative", "A");
+
       ProcessMaker.apiClient.post(
         "/processes",
         formData,
@@ -299,16 +311,23 @@ export default {
             this.appendProjectIdToURL(url, this.projectId);
             this.handleRedirection(url, response.data);
           } else {
-            window.location =
-              this.isAiGenerated
-                ? "/modeler/" + response.data.id + "?ai=true"
-                : "/modeler/" + response.data.id;
+            const url = this.getRedirectUrlForAi(response.data.id);
+            window.location = url;
           }
         })
         .catch((error) => {
           this.disabled = false;
           this.addError = error.response.data.errors;
         });
+    },
+    getRedirectUrlForAi(processId) {
+      let redirectUrl = `/modeler/${processId}`;
+
+      if (this.isAiGenerated) {
+        redirectUrl += "?ai=true";
+      }
+
+      return redirectUrl;
     },
     handleRedirection(url, data) {
       if (this.callFromAiModeler) {

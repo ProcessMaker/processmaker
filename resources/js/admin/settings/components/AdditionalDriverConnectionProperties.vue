@@ -13,6 +13,8 @@ import ExcelConnectionProperties from "./cdata/ExcelConnectionProperties.vue";
 import GithubConnectionProperties from "./cdata/GithubConnectionProperties.vue";
 import DocusignConnectionProperties from "./cdata/DocusignConnectionProperties.vue";
 import GmailConnectionProperties from "./cdata/GmailConnectionProperties.vue";
+import BamboohrConnectionProperties from "./cdata/BamboohrConnectionProperties.vue";
+import SapHanaConnectionProperties from "./cdata/SapHanaConnectionProperties.vue";
 
 export default {
   components: {
@@ -20,6 +22,8 @@ export default {
     GithubConnectionProperties,
     DocusignConnectionProperties,
     GmailConnectionProperties,
+    BamboohrConnectionProperties,
+    SapHanaConnectionProperties,
   },
   props: {
     formData: {
@@ -38,6 +42,8 @@ export default {
         "cdata.github": "github-connection-properties",
         "cdata.docusign": "docusign-connection-properties",
         "cdata.gmail": "gmail-connection-properties",
+        "cdata.BambooHR": "bamboohr-connection-properties",
+        "cdata.saphana": "sap-hana-connection-properties",
       },
     };
   },

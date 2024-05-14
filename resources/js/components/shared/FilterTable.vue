@@ -1,6 +1,6 @@
 <template>
   <div
-    id="table-container"
+    :id="filterTableId"
     class="pm-table-container"
   >
     <table
@@ -63,7 +63,10 @@
           v-for="(row, rowIndex) in data.data"
           :key="rowIndex"
           :id="`row-${row.id}`"
-          :class="{ 'pm-table-unread-row': isUnread(row, unread) }"
+          :class="{ 
+              'pm-table-unread-row': isUnread(row, unread),
+              'pm-table-selected-row': selectedRow !== 0 && selectedRow === row.id
+          }"
           @click="handleRowClick(row, $event)"
           @mouseover="$emit('table-row-mouseover', row, rowIndex)"
           @mouseleave="$emit('table-tr-mouseleave', row, rowIndex)"
@@ -145,22 +148,30 @@ export default {
     data: [],
     unread: {
       type: String,
-      default: function () {
+      default() {
         return "";
       }
     },
     loading: {
       type: Boolean,
-      default: function () {
+      default() {
         return false;
       }
     },
     tableName: {
       type: String,
-      default: function () {
+      default() {
         return "";
       }
     },
+    selectedRow: {
+      type: Number,
+      default: 0,
+    },
+    filterTableId: {
+      type: String,
+      default: "table-container",
+    }
   },
   data() {
     return {
@@ -192,12 +203,17 @@ export default {
   },
   methods: {
     handleWindowResize() {
-      this.calculateColumnWidth();
+      const zoomFactor = window.devicePixelRatio;
+      let widthAdjust = 1;
+      if (zoomFactor < 1) {
+        widthAdjust = Math.min(zoomFactor, this.minZoom);
+      }
+      this.calculateColumnWidth(widthAdjust);
     },
-    calculateColumnWidth() {
+    calculateColumnWidth(widthAdjust = 1) {
       this.visibleHeaders.forEach((headerColumn, index) => {
         if (this.calculateContent(index) !== 0) {
-          headerColumn.width = this.calculateContent(index) - 32;
+          headerColumn.width = (this.calculateContent(index) * widthAdjust) - 32;
         }
       });
     },
@@ -424,5 +440,9 @@ export default {
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
   overflow-y: auto;
+}
+.pm-table-selected-row {
+  background-color: #E8F0F9;
+  color: #1572C2;
 }
 </style>

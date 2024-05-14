@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="bg-white"
+      class="bg-white class-container"
       v-if="!showTabRequests"
     >
       <filter-table
@@ -11,8 +11,10 @@
         @table-row-click="handleRowClick"
       />
       <pagination-table
+        class="custom-pagination"
         :meta="dataRequests.meta"
         @page-change="changePageRequests"
+        @per-page-change="changePerPage"
       />
     </div>
     <div v-else>
@@ -31,6 +33,7 @@ import AvatarImage from "../../components/AvatarImage";
 import PMColumnFilterPopover from "../../components/PMColumnFilterPopover/PMColumnFilterPopover.vue";
 import paginationTable from "../../components/shared/PaginationTable.vue";
 import DefaultTab from "./DefaultTab.vue";
+import SearchTab from "./utils/SearchTab.vue";
 import ListMixin from "../../requests/components/ListMixin";
 import { FilterTable } from "../../components/shared";
 import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -45,6 +48,7 @@ export default {
     paginationTable,
     DefaultTab,
     FilterTable,
+    SearchTab,
   },
   mixins: [uniqIdsMixin, ListMixin, methodsTabMixin],
   props: {
@@ -117,7 +121,7 @@ export default {
       dataRequests: {},
       savedSearch: false,
       queryRequest: "",
-      perPage: 10,
+      perPage: 15,
     };
   },
   mounted() {
@@ -126,6 +130,10 @@ export default {
   methods: {
     changePageRequests(page) {
       this.page = page;
+      this.queryBuilder();
+    },
+    changePerPage(value) {
+      this.perPage = value;
       this.queryBuilder();
     },
     openRequest(data, index) {
@@ -175,12 +183,19 @@ export default {
          ${value.case_title_formatted || value.case_title || ""}
       </a>`;
     },
+    /**
+     * Build the search PMQL
+     */
+    onFilter(value, showEmpty = false) {
+      this.filter = `fulltext LIKE "%${value}%"`;
+      this.queryBuilder();
+    },
     queryBuilder() {
-      let pmql = " process_id=" + `${this.process.id}`;
+      let pmql = `process_id = "${this.process.id}"`;
       let filter = this.filter;
       if (filter?.length) {
         if (filter.isPMQL()) {
-          pmql = `(${pmql}) and (${filter})`;
+          pmql = `(${pmql}) AND (${filter})`;
           filter = "";
         }
       }
@@ -202,7 +217,7 @@ export default {
         this.perPage +
         "&include=process,participants,activeTasks,data" +
         "&pmql=" +
-        `${pmql}` +
+        `${encodeURIComponent(pmql)}` +
         "&filter&order_by=id&order_direction=DESC";
       this.getData(this.queryRequest);
     },
@@ -213,6 +228,7 @@ export default {
         .then((response) => {
           const dataResponse = response.data;
           this.dataRequests = this.transform(response.data);
+          this.showTabRequests = false;
           if (
             dataResponse &&
             Array.isArray(dataResponse.data) &&
@@ -237,9 +253,22 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .text-style {
   margin-bottom: 10px;
   color: #556271;
+}
+.custom-pagination{
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-top: 10px;
+  font-weight: 400;
+  font-size: 15px;
+  color: #5C5C63;
+  padding-bottom: 10px;
+}
+.class-container{
+  padding-left: 8px;
 }
 </style>

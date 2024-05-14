@@ -66,6 +66,8 @@ use Throwable;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
+ * @method static Process find(string $id)
+ *
  * @OA\Schema(
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
@@ -285,6 +287,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Returns a single record from the `Alternative` model
+     */
+    public function alternativeInfo()
+    {
+        return $this->hasOne('ProcessMaker\Package\PackageABTesting\Models\Alternative', 'process_id', 'id');
+    }
+
+    /**
      * Notification settings of the process.
      *
      * @return HasMany
@@ -292,6 +302,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function notification_settings()
     {
         return $this->hasMany(ProcessNotificationSetting::class);
+    }
+
+    /**
+     * Get the associated embed
+     */
+    public function embed()
+    {
+        return $this->hasMany(Embed::class, 'model_id', 'id');
     }
 
     /**
@@ -385,6 +403,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
             'case_title' => 'nullable|max:200',
+            'alternative' => 'nullable|in:A,B',
         ];
     }
 
@@ -477,6 +496,13 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         }
     }
 
+    /**
+     * Load the collaborations if exists
+     *
+     * @deprecated Not used, does not have a process_version reference
+     *
+     * @return BpmnDocumentInterface
+     */
     public function getCollaborations()
     {
         $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
@@ -1251,6 +1277,14 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     }
 
     /**
+     * Get the associated launchpad
+     */
+    public function launchpad()
+    {
+        return $this->hasOne(ProcessLaunchpad::class, 'process_id', 'id');
+    }
+
+    /**
      * Assignments of the process.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -1527,7 +1561,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
      */
     private function validateCallActivity(CallActivity $callActivity)
     {
-        $targetProcess = $callActivity->getCalledElement();
+        // Get process version without evaluating alternative
+        $targetProcess = $callActivity->getCalledElement([], false);
         $config = json_decode($callActivity->getProperty('config'), true);
         $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
         if ($startId) {
@@ -1751,5 +1786,15 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
               ->width(1024)
               ->height(480)
               ->sharpen(10);
+    }
+
+    /**
+     * Returns true if the model has alternatives.
+     *
+     * @return false
+     */
+    public function hasAlternative()
+    {
+        return true;
     }
 }

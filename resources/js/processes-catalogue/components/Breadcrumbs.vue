@@ -1,6 +1,6 @@
 <template>
-  <nav aria-label="breadcrumb">
-    <ol class="breadcrumb bg-transparent p-0 mb-4">
+  <nav class="breadcrum-main" aria-label="breadcrumb">
+    <ol class="breadcrumb bg-transparent">
       <li class="breadcrumb-item">
         <a
           href="/"
@@ -58,3 +58,11 @@ export default {
   methods: {},
 };
 </script>
+
+<style lang="css" scoped>
+.breadcrum-main {
+  margin: -16px -16px 0px -16px;
+  background: white;
+  border-bottom: 1px solid #DADDDF
+}
+</style>

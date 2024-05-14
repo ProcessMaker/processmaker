@@ -26,6 +26,30 @@ class ProcessTemplateTest extends TestCase
     use HelperTrait;
     use WithFaker;
 
+    public function testIndex()
+    {
+        $this->addGlobalSignalProcess();
+        ProcessTemplates::factory()->count(10)->create();
+
+        $params = [
+            'per_page' => 10,
+            'filter' => '',
+            'order_by' => 'name',
+            'order_direction' => 'asc',
+            'include' => 'user,category,categories  ',
+        ];
+        $response = $this->apiCall('GET', route('api.template.index', ['type' => 'process']), $params);
+        $response->assertStatus(200);
+
+        $content = json_decode($response->getContent(), true);
+        $data = $content['data'];
+        $this->assertCount(10, $data);
+
+        // Assert that the data does not contain these fields to optimize the load.
+        $this->assertArrayNotHasKey('svg', $data[0]);
+        $this->assertArrayNotHasKey('manifest', $data[0]);
+    }
+
     public function testNotAllowingToSaveDuplicateTemplateWithTheSameName()
     {
         $this->addGlobalSignalProcess();
@@ -355,7 +379,7 @@ class ProcessTemplateTest extends TestCase
      */
     private function createProcessesFromTemplate($template, $user, $processCategoryId)
     {
-        $response = $this->apiCall(
+        return $this->apiCall(
             'POST',
             route('api.template.create', [
                 'type' => 'process',
@@ -371,8 +395,6 @@ class ProcessTemplateTest extends TestCase
                 'saveAssetMode' => 'saveAllAssets',
             ]
         );
-
-        return $response;
     }
 
     /**

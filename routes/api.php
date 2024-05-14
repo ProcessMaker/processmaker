@@ -18,6 +18,7 @@ use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
+use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
 use ProcessMaker\Http\Controllers\Api\ProcessTranslationController;
@@ -31,6 +32,7 @@ use ProcessMaker\Http\Controllers\Api\SettingController;
 use ProcessMaker\Http\Controllers\Api\SignalController;
 use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
+use ProcessMaker\Http\Controllers\Api\TaskDraftController;
 use ProcessMaker\Http\Controllers\Api\TemplateController;
 use ProcessMaker\Http\Controllers\Api\UserController;
 use ProcessMaker\Http\Controllers\Api\UserTokenController;
@@ -147,18 +149,27 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
         'process_bookmarks/processes/{process}/start_events',
         [ProcessController::class, 'startEvents']
     )->name('processes.start.events')->middleware($middlewareCatalog);
-    Route::get('process_bookmarks/processes', [ProcessController::class, 'index'])
-    ->name('bookmarks.processes.index')->middleware($middlewareCatalog);
+    Route::get('process_bookmarks/processes', [ProcessLaunchpadController::class, 'getProcesses'])
+        ->name('processes.launchpad.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/categories', [ProcessCategoryController::class, 'index'])
-    ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
+        ->name('bookmarks.categories.index')->middleware($middlewareCatalog);
     Route::get('process_bookmarks/{process_category}', [ProcessCategoryController::class, 'show'])
-    ->name('bookmarks.categories.show')->middleware($middlewareCatalog);
+        ->name('bookmarks.categories.show')->middleware($middlewareCatalog);
     Route::get('process_bookmarks', [BookmarkController::class, 'index'])
-    ->name('bookmarks.index')->middleware($middlewareCatalog);
+        ->name('bookmarks.index')->middleware($middlewareCatalog);
     Route::post('process_bookmarks/{process}', [BookmarkController::class, 'store'])
-    ->name('bookmarks.store')->middleware($middlewareCatalog);
+        ->name('bookmarks.store')->middleware($middlewareCatalog);
     Route::delete('process_bookmarks/{bookmark}', [BookmarkController::class, 'destroy'])
-    ->name('bookmarks.destroy')->middleware($middlewareCatalog);
+        ->name('bookmarks.destroy')->middleware($middlewareCatalog);
+    // Process Launchpad
+    Route::get('process_launchpad/{process}', [ProcessLaunchpadController::class, 'index'])
+        ->name('launchpad.index')->middleware($middlewareCatalog);
+    Route::put('process_launchpad/{process}', [ProcessLaunchpadController::class, 'store'])
+        ->name('launchpad.store')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{process}', [ProcessLaunchpadController::class, 'destroy'])
+        ->name('launchpad.destroy')->middleware($middlewareCatalog);
+    Route::delete('process_launchpad/{process}/embed', [ProcessLaunchpadController::class, 'deleteEmbed'])
+        ->name('launchpad.destroy-embed')->middleware($middlewareCatalog);
 
     // Process Categories
     Route::get('process_categories', [ProcessCategoryController::class, 'index'])->name('process_categories.index')->middleware('can:view-process-categories');
@@ -178,24 +189,31 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     // Tasks
     Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index'); // Already filtered in controller
     Route::get('tasks/{task}', [TaskController::class, 'show'])->name('tasks.show')->middleware('can:view,task');
+    Route::get('tasks/{task}/screen_fields', [TaskController::class, 'getScreenFields'])->name('getScreenFields.show')->middleware('can:view,task');
     Route::get('tasks/{task}/screens/{screen}', [TaskController::class, 'getScreen'])->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
     Route::get('tasks/{task}/eligibleRollbackTask', [TaskController::class, 'eligibleRollbackTask'])->name('tasks.eligible_rollback_task')->middleware('can:rollback,task');
     Route::post('tasks/{task}/rollback', [TaskController::class, 'rollbackTask'])->name('tasks.rollback_task')->middleware('can:rollback,task');
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
 
+    // TaskDrafts
+    Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
+    Route::delete('drafts/{task}', [TaskDraftController::class, 'delete'])->name('taskdraft.delete');
+
     // Inbox Rules
     Route::prefix('tasks/rules')->group(function () {
         Route::get('/', [InboxRulesController::class, 'index'])->name('inboxrules.index');
-        Route::get('/{inbox_rule_id}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
+        Route::get('/{inbox_rule}', [InboxRulesController::class, 'show'])->name('inboxrules.show');
         Route::post('/', [InboxRulesController::class, 'store'])->name('inboxrules.store');
-        Route::put('/{inbox_rule_id}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
-        Route::delete('/{inbox_rule_id}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule}', [InboxRulesController::class, 'update'])->name('inboxrules.update');
+        Route::delete('/{inbox_rule}', [InboxRulesController::class, 'destroy'])->name('inboxrules.destroy');
+        Route::put('/{inbox_rule}/update-active', [InboxRulesController::class, 'updateActive'])->name('inboxrules.update-active');
     });
     Route::get('/tasks/rule-execution-log', [InboxRulesController::class, 'executionLog'])->name('inboxrules.execution-log');
 
     // Requests
     Route::get('requests', [ProcessRequestController::class, 'index'])->name('requests.index'); // Already filtered in controller
     Route::get('requests/{process}/count', [ProcessRequestController::class, 'getCount'])->name('requests.count');
+    Route::get('requests/{process}/default-chart', [ProcessRequestController::class, 'getDefaultChart'])->name('requests.default.chart');
     Route::get('requests/{request}', [ProcessRequestController::class, 'show'])->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', [ProcessRequestController::class, 'update'])->name('requests.update')->middleware('can:update,request');
     Route::put('requests/{request}/retry', [ProcessRequestController::class, 'retry'])->name('requests.retry')->middleware('can:update,request');
@@ -268,13 +286,24 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::get('security-logs/{securityLog}', [SecurityLogController::class, 'show'])->name('security-logs.show')->middleware('can:view-security-logs');
 
     // Settings
-    Route::get('settings', [SettingController::class, 'index'])->name('settings.index')->middleware('can:view-settings');
-    Route::get('settings/groups', [SettingController::class, 'groups'])->name('settings.groups')->middleware('can:view-settings');
-    Route::post('settings/import', [SettingController::class, 'import'])->name('settings.import')->middleware('can:update-settings');
-    Route::delete('settings/{setting}', [SettingController::class, 'destroy'])->name('settings.destroy')->middleware('can:update-settings');
-    Route::put('settings/{setting}', [SettingController::class, 'update'])->name('settings.update')->middleware('can:update-settings');
-    Route::get('settings/group/{group}/buttons', [SettingController::class, 'buttons'])->name('settings.buttons')->middleware('can:view-settings')->where('group', '[A-Za-z0-9 -_]+');
-    Route::post('settings/upload-file', [SettingController::class, 'upload'])->name('settings.upload-file')->middleware('can:update-settings');
+    $viewSettings = 'can:view-settings';
+    $updateSettings = 'can:update-settings';
+    Route::get('settings', [SettingController::class, 'index'])
+        ->name('settings.index')->middleware($viewSettings);
+    Route::get('settings/groups', [SettingController::class, 'groups'])
+        ->name('settings.groups')->middleware($viewSettings);
+    Route::get('settings/menu-groups', [SettingController::class, 'menuGroup'])
+        ->name('settings.menu_groups')->middleware($viewSettings);
+    Route::post('settings/import', [SettingController::class, 'import'])
+        ->name('settings.import')->middleware($updateSettings);
+    Route::delete('settings/{setting}', [SettingController::class, 'destroy'])
+        ->name('settings.destroy')->middleware($updateSettings);
+    Route::put('settings/{setting}', [SettingController::class, 'update'])
+        ->name('settings.update')->middleware($updateSettings);
+    Route::get('settings/group/{group}/buttons', [SettingController::class, 'buttons'])
+        ->name('settings.buttons')->middleware($viewSettings)->where('group', '[A-Za-z0-9 -_]+');
+    Route::post('settings/upload-file', [SettingController::class, 'upload'])
+        ->name('settings.upload-file')->middleware($updateSettings);
 
     // Import & Export
     Route::get('export/manifest/{type}/{id}/', [ExportController::class, 'manifest'])->name('export.manifest')->middleware('can:export-processes,type');
@@ -285,16 +314,17 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
 
     // Templates
     Route::get('templates/{type}', [TemplateController::class, 'index'])->name('template.index')->middleware('template-authorization');
-    Route::post('template/{type}/do-import', [ImportController::class, 'importTemplate'])->name('import.do_importTemplate')->middleware('template-authorization');
+    Route::post('template/{type}/do-import', [TemplateController::class, 'import'])->name('import.do_importTemplate')->middleware('template-authorization');
     Route::post('template/{type}/{id}', [TemplateController::class, 'store'])->name('template.store')->middleware('template-authorization');
     Route::post('template/create/{type}/{id}', [TemplateController::class, 'create'])->name('template.create')->middleware('template-authorization');
     Route::put('template/{type}/{processId}', [TemplateController::class, 'updateTemplateManifest'])->name('template.update')->middleware('template-authorization');
-    Route::put('template/{type}/{id}', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
+    Route::put('template/{type}/{id}/update', [TemplateController::class, 'updateTemplate'])->name('template.update.template')->middleware('template-authorization');
     Route::put('template/settings/{type}/{id}', [TemplateController::class, 'updateTemplateConfigs'])->name('template.settings.update')->middleware('template-authorization');
     Route::delete('template/{type}/{id}', [TemplateController::class, 'delete'])->name('template.delete')->middleware('template-authorization');
     Route::get('modeler/templates/{type}/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization');
     Route::post('templates/{type}/import/validation', [TemplateController::class, 'preImportValidation'])->name('template.preImportValidation')->middleware('template-authorization');
     Route::post('template/{type}/{id}/publish', [TemplateController::class, 'publishTemplate'])->name('template.publishTemplate')->middleware('can:publish-screen-templates');
+    Route::get('screen-builder/{type}/{id}', [TemplateController::class, 'show'])->name('screenBuilder.template.show')->middleware('template-authorization');
 
     // Wizard Templates
     Route::get('wizard-templates', [WizardTemplateController::class, 'index'])->name('wizard-templates.index');

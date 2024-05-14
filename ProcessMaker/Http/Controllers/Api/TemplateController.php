@@ -10,7 +10,6 @@ use ProcessMaker\Events\TemplatePublished;
 use ProcessMaker\Events\TemplateUpdated;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\TemplateCollection;
-use ProcessMaker\ImportExport\Options;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessTemplates;
@@ -25,8 +24,22 @@ class TemplateController extends Controller
     use ProjectAssetTrait;
 
     protected array $types = [
-        'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
-        'screen' => [Screen::class, ScreenTemplate::class, ScreenCategory::class, 'screen_category_id', 'screen_templates'],
+        'process' => [
+            Process::class,
+            ProcessTemplates::class,
+            ProcessCategory::class,
+            'process_category_id',
+            'process_templates',
+            'process_templates_package',
+        ],
+        'screen' => [
+            Screen::class,
+            ScreenTemplates::class,
+            ScreenCategory::class,
+            'screen_category_id',
+            'screen_templates',
+            'screen_templates_package',
+        ],
     ];
 
     private $template;
@@ -40,7 +53,7 @@ class TemplateController extends Controller
      * Get list Process Templates
      *
      * @param string $type
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @return TemplateCollection
      */
     public function index(string $type, Request $request)
@@ -63,19 +76,14 @@ class TemplateController extends Controller
      * Store a newly created template
      *
      * @param string $type
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(string $type, Request $request)
     {
-        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
-
-        if (!is_null($existingTemplate)) {
-            return response()->json([
-                'name' => ['The template name must be unique.'],
-                'id' => $existingTemplate['id'],
-                'templateName' => $existingTemplate['name'],
-            ], 409);
+        $existingTemplate = $this->checkForExistingTemplates($type, $request);
+        if (!empty($existingTemplate)) {
+            return $existingTemplate;
         }
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
         $storeTemplate = $this->template->store($type, $request);
@@ -105,6 +113,11 @@ class TemplateController extends Controller
      */
     public function updateTemplate(string $type, Request $request)
     {
+        $existingTemplate = $this->checkForExistingTemplates($type, $request);
+        if (!empty($existingTemplate)) {
+            return $existingTemplate;
+        }
+
         $request->validate(Template::rules($request->id, $this->types[$type][4]));
 
         return $this->template->updateTemplate($type, $request);
@@ -124,15 +137,19 @@ class TemplateController extends Controller
             $template = ProcessTemplates::select()->find($request->id);
             $changes = $request->all();
             $original = array_intersect_key($template->getOriginal(), $changes);
-            //Call event to log Template Config changes
+            // Call event to log Template Config changes
             TemplateUpdated::dispatch($changes, $original, false, $template);
         } elseif ($type === 'screen') {
-            $template = ScreenTemplates::select()->find($request->id);
+            if (!$request->media_collection) {
+                $existingTemplate = $this->checkForExistingTemplates($type, $request);
+            }
+
+            if (!empty($existingTemplate)) {
+                return $existingTemplate;
+            }
         }
 
-        $response = $this->template->updateTemplateConfigs($type, $request);
-
-        return $response;
+        return $this->template->updateTemplateConfigs($type, $request);
     }
 
     /**
@@ -156,7 +173,7 @@ class TemplateController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \ProcessMaker\Models\Template  $template
+     * @param  Template  $template
      * @return \Illuminate\Http\Response
      */
     public function delete(string $type, Request $request)
@@ -170,14 +187,32 @@ class TemplateController extends Controller
         return $this->template->deleteTemplate($type, $request);
     }
 
+    /**
+     * Import template
+     *
+     * @param  Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function import(string $type, Request $request)
+    {
+        $response = $this->preimportValidation($type, $request);
+
+        if ($response->getStatusCode() === 422) {
+            return $response;
+        }
+
+        return $this->template->importTemplate($type, $request);
+    }
+
     public function preimportValidation(string $type, Request $request)
     {
         $content = $request->file('file')->get();
-        $payload = json_decode($content);
 
-        if (!$result = $this->validateImportedFile($content, $request)) {
+        if (!$result = $this->validateImportedFile($content, $request, $type)) {
             return response(
-                ['message' => __('The selected file is invalid or not supported for the Templates importer. Please verify that this file is a Template.')],
+                ['message' => __('The selected file is invalid or not supported for the ' . ucfirst($type) .
+                     ' Templates importer. Please verify that this file is a ' . ucfirst($type) . ' Template.'),
+                ],
                 422
             );
         }
@@ -188,7 +223,7 @@ class TemplateController extends Controller
     /**
      * Set a template as a Public Template
      *
-     * @param  \ProcessMaker\Models\Template  $template
+     * @param  Template  $template
      * @return \Illuminate\Http\Response
      */
     public function publishTemplate(string $type, Request $request)
@@ -196,16 +231,41 @@ class TemplateController extends Controller
         return $this->template->publishTemplate($type, $request);
     }
 
-    private function validateImportedFile($content, $request)
+    /**
+     * Delete media from the template
+     *
+     * @param  Template  $template
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteMediaImages(string $type, Request $request)
     {
-        $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
-        $isDecoded = $decoded && is_object($decoded);
-        $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
-        $validType = $hasType && $decoded->type === 'process_templates_package';
+        return $this->template->deleteMediaImages($type, $request);
+    }
 
-        if ($validType) {
-            return (new ImportController())->preview($request, $decoded->version);
+    private function validateImportedFile($content, $request, $type)
+    {
+        $decoded = null;
+        if (substr($content, 0, 1) === '{') {
+            $decoded = json_decode($content);
+        } else {
+            $decodedContent = base64_decode($content);
+            if ($decodedContent && substr($decodedContent, 0, 1) === '{') {
+                $decoded = json_decode($decodedContent);
+            }
         }
+
+        if (!$decoded || !is_object($decoded) || !isset($decoded->type) || !is_string($decoded->type)) {
+            return null; // Invalid JSON format or Missing or invalid type property
+        }
+
+        // Validate the type
+        $validTypes = ['process_templates_package', 'screen_templates_package'];
+        if (!in_array($decoded->type, $validTypes) || $decoded->type !== $this->types[$type][5]) {
+            return null; // Invalid package type
+        }
+
+        // If the type is valid, proceed with the preview
+        return (new ImportController())->preview($request, $decoded->version);
     }
 
     private function checkIfAssetsExist($request)
@@ -270,7 +330,8 @@ class TemplateController extends Controller
 
     protected function createScreen(Request $request)
     {
-        $request->validate(Template::rules($request->id, $this->types['screen'][4]));
+        $request['templateId'] = $request->templateId ?? $request->defaultTemplateId;
+        $request->validate(Screen::rules($request->id));
         $response = $this->template->create('screen', $request);
 
         if ($request->has('projects')) {
@@ -299,6 +360,20 @@ class TemplateController extends Controller
         if (empty($postOptions) && isset($response->getData()->processId)) {
             $process = Process::find($response->getData()->processId);
             ProcessCreated::dispatch($process, ProcessCreated::TEMPLATE_CREATION);
+        }
+    }
+
+    protected function checkForExistingTemplates(string $type, Request $request)
+    {
+        $existingTemplate = $this->template->checkForExistingTemplates($type, $request);
+
+        if (!is_null($existingTemplate)) {
+            return response()->json([
+                'name' => ['The template name must be unique.'],
+                'id' => $existingTemplate['id'],
+                'templateName' => $existingTemplate['name'],
+                'owner_id' => $existingTemplate['owner_id'],
+            ], 409);
         }
     }
 }

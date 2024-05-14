@@ -4,7 +4,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="script-src * 'unsafe-inline' 'unsafe-eval'; object-src 'self'; img-src 'self';">
+    <meta http-equiv="Content-Security-Policy"
+          content="script-src * 'unsafe-inline' 'unsafe-eval';
+                   object-src 'self';
+                   worker-src 'self' blob:; img-src 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ config('app.url') }}">
@@ -143,6 +146,9 @@
 @foreach ($addons as $addon)
   @if (!empty($addon['script_mix']))
     <script type="text/javascript" src="{{ mix($addon['script_mix'][0], $addon['script_mix'][1]) }}"></script>
+  @endif
+  @if (!empty($addon['script_mix_module']))
+    <script type="module" src="{{ mix($addon['script_mix_module'][0], $addon['script_mix_module'][1]) }}"></script>
   @endif
 @endforeach
 @endisset
