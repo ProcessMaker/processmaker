@@ -230,7 +230,7 @@
               </request-screens>
             </div>
             <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
-              aria-labelledby="overview-tab" style="height: 720px">
+              aria-labelledby="overview-tab">
               <div class="card" style="border-top: none !important;">
                 <div class="card-body">
                   <h4>

@@ -99,7 +99,7 @@
           },
           {
             label: "Task",
-            field: "task_name",
+            field: "element_name",
             sortable: true,
             default: true,
             width: 140,
