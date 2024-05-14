@@ -744,6 +744,7 @@
   "Show Menus": "Afficher les menus",
   "Show Mini-Map": "Afficher la carte miniature",
   "Something has gone wrong.": "Une erreur est survenue.",
+  "Something went wrong and the file cannot be previewed or downloaded.": "Une erreur s'est produite et le fichier ne peut pas être prévisualisé ou téléchargé.",
   "Something went wrong. Try refreshing the application": "Une erreur s'est produite. Essayez d'actualiser l'application",
   "Sorry, this request doesn't contain any information.": "Désolé, cette demande ne contient aucune information.",
   "Sorry! API failed to load": "Désolé ! Échec du chargement de l'API",
