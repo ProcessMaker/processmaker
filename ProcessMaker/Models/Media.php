@@ -227,7 +227,11 @@ class Media extends MediaLibraryModel
 
         // Return a single file when $id is set
         if ($id) {
-            $mediaById = self::findOrFail($id);
+            try {
+                $mediaById = self::findOrFail($id);
+            } catch (\Exception) {
+                abort(400, __('Something went wrong and the file cannot be previewed or downloaded.'));
+            }
 
             if (!in_array($mediaById->process_request_id, $requestTokenIds)) {
                 abort(404, __('File is not part of this request'));
