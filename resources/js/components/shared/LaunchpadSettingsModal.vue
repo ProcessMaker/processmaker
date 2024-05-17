@@ -216,11 +216,11 @@ export default {
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = {
-              id: launchpadProperties.saved_chart_id ?? this.defaultChart.id,
-              title: launchpadProperties.saved_chart_title ?? this.defaultChart.title,
+              id: (launchpadProperties.saved_chart_id || launchpadProperties.saved_chart_id !== "") ? launchpadProperties.saved_chart_id : this.defaultChart.id,
+              title: (launchpadProperties.saved_chart_title || launchpadProperties.saved_chart_title !== "") ? launchpadProperties.saved_chart_title : this.defaultChart.title,
             };
-            this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
-            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
+            this.selectedLaunchpadIcon = (launchpadProperties.icon || launchpadProperties.icon !== "") ? launchpadProperties.icon : this.defaultIcon;
+            this.selectedLaunchpadIconLabel = (launchpadProperties.icon_label || launchpadProperties.icon_label !== "") ? launchpadProperties.icon_label : this.defaultIcon;
             this.selectedScreen = {
               id: launchpadProperties.screen_id ?? this.defaultScreen.id,
               uuid: launchpadProperties.screen_uuid ?? this.defaultScreen.uuid,
