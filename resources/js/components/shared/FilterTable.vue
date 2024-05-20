@@ -325,8 +325,13 @@ export default {
   color: #1572C2;
 }
 .pm-table-filter tbody tr:hover {
-  background-color: #FAFBFC;
-  color: #1572C2;
+  background-color: #EFF5FB;
+}
+.pm-table-filter tbody tr a {
+  color: #566877;
+}
+.pm-table-filter tbody tr a:hover {
+  color: #1990FF;
 }
 .pm-table-filter thead {
   position: sticky;
@@ -402,25 +407,34 @@ export default {
   background-color: #F2F8FE !important;
 }
 .pm-table-unread-row {
-  font-weight: bold;
+  background-color: #FFFDEA;
 }
 .status-success {
-  background-color: rgba(78, 160, 117, 0.2);
-  color: rgba(78, 160, 117, 1);
+  background-color: rgba(200, 240, 207, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
 }
 .status-danger {
-  background-color:rgba(237, 72, 88, 0.2);
-  color: rgba(237, 72, 88, 1);
+  background-color:rgba(255, 199, 199, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
 }
 .status-primary {
-  background: rgba(21, 114, 194, 0.2);
-  color: rgba(21, 114, 194, 1);
+  background: rgba(184, 220, 247, 1);
+  color: rgba(0, 0, 0, 0.75);
   width: 100px;
   border-radius: 5px;
+  padding: 7px;
+}
+.status-warning {
+  background: rgba(249, 232, 195, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
 }
 @-moz-document url-prefix() {
   .pm-table-truncate {

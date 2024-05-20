@@ -435,7 +435,14 @@ export default {
       </a>`;
     },
     formatCaseTitle(processRequest, record) {
+      let draftBadge = "";
+      if (record.draft) {
+        draftBadge = `<span class="badge badge-warning status-warning">
+          ${this.$t("Draft")}
+        </span>`;
+      }
       return `
+      ${draftBadge}
       <a href="${this.openRequest(processRequest, 1)}"
          class="text-nowrap">
          ${
@@ -788,15 +795,17 @@ export default {
 }
 .due-danger {
   background-color: rgba(237, 72, 88, 0.2);
-  color: rgba(237, 72, 88, 1);
-  font-weight: 600;
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 700;
   border-radius: 5px;
+  padding: 7px;
 }
 .due-primary {
-  background: rgba(205, 221, 238, 1);
-  color: rgba(86, 104, 119, 1);
-  font-weight: 600;
+  background: rgba(224, 229, 233, 1);
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 700;
   border-radius: 5px;
+  padding: 7px;
 }
 .btn-this-data {
   background-color: #1572c2;
