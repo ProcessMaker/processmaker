@@ -1,0 +1,1 @@
+<script src="https://cdn.userway.org/widget.js" data-account="{{ config('services.userway.account_id') }}"></script>

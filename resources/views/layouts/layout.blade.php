@@ -152,6 +152,11 @@
   @endif
 @endforeach
 @endisset
+
+@if(hasPackage('package-accessibility'))
+  @include('shared.userway')
+@endif
+
     <!--javascript!-->
     @yield('js')
 </body>
