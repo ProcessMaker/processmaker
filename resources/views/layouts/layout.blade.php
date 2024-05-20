@@ -153,8 +153,8 @@
 @endforeach
 @endisset
 
-@if(hasPackage('package-accessibility'))
-  @include('shared.userway')
+@if (hasPackage('package-accessibility'))
+  @include('package-accessibility::userway')
 @endif
 
     <!--javascript!-->
