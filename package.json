@@ -1,7 +1,7 @@
 {
     "name": "@processmaker/processmaker",
     "version": "4.10.1-RC1",
-    "description": "ProcessMaker 4",
+    "description": "ProcessMaker 4 RC",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
     "homepage": "https://github.com/ProcessMaker/processmaker",
