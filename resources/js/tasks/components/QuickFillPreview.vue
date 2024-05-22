@@ -175,7 +175,7 @@
 </template>
 <script>
 export default {
-  props: ["task", "propColumns", "propFilters", "propFromButton"],
+  props: ["task", "propColumns", "propFilters", "propFromButton", "screenFields"],
   data() {
     return {
       processName: "",
@@ -269,49 +269,35 @@ export default {
       }
       this.$emit("close");
     },
-    buttonThisDataFromFullTask(data) {
-      return new Promise((resolve, reject) => {
-          ProcessMaker.apiClient.get("drafts/" + this.task.id)
-            .then(responseGet => {
-              const dataFromGet = responseGet.data;
-              if (Array.isArray(dataFromGet) && dataFromGet.length === 0) {
-                // If dataFromGet is an empty array keeps original form data
-                resolve(data);
-              } else {
-                // If dataFromGet is an object asigns its value to form data
-                const newData = _.mergeWith(
-                  _.cloneDeep(dataFromGet),
-                  data,
-                  (objValue, srcValue) => {
-                    // If object value is falsy returns value from source(data)
-                    if (!objValue) {
-                      return srcValue;
-                    }
-                    // Otherwise, keeps object value(dataFromGet)
-                    return objValue;
-                  }
-                );
-                resolve(newData);
-              }
-            })
-            .catch(errorGet => {
-              reject(errorGet);
-            });
+    buttonThisDataFromFullTask(quickFillData) {
+      // If the task does not have a draft yet, use the task data
+      const dataToUse = this.task.draft?.data ?? this.task.data;
+
+      const draftData = {};
+      this.screenFields.forEach((field) => {
+        const existingValue = _.get(dataToUse, field, null);
+        let quickFillValue;
+        if (existingValue) {
+          // If the value exists in the task data (or task draft data), don't overwrite it
+          quickFillValue = existingValue;
+        } else {
+          // use the value from the quick fill
+          quickFillValue = _.get(quickFillData, field, null);
+        }
+        // Set the value. This handles nested values using dot notation in 'field' string
+        _.set(draftData, field, quickFillValue);
+      });
+
+      return ProcessMaker.apiClient
+        .put("drafts/" + this.task.id, draftData)
+        .then((response) => {
+          this.task.draft = _.merge({}, this.task.draft, response.data);
+          window.location.href = `/tasks/${this.task.id}/edit`;
+          ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
         })
-          .then(dataToUse => {
-            return ProcessMaker.apiClient.put("drafts/" + this.task.id, dataToUse)
-              .then(responsePut => {
-                this.task.draft = _.merge({}, this.task.draft, responsePut.data);
-                window.location.href = `/tasks/${this.task.id}/edit`;
-                ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
-              })
-              .catch(errorPut => {
-                console.error("Error", errorPut);
-              });
-          })
-          .catch(error => {
-            console.error("Error", error);
-          });
+        .catch((error) => {
+          console.error("Error", error);
+        });
     },
     /*
      * To do: There's a global-search-bar class with a large z-index. We added a class 
