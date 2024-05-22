@@ -429,7 +429,7 @@ export default {
     },
     formatCaseNumber(processRequest, record) {
       return `
-      <a href="${this.openRequest(processRequest, 1)}"
+      <a href="${this.openTask(record, 1)}"
          class="text-nowrap">
          # ${processRequest.case_number || record.case_number}
       </a>`;
@@ -443,7 +443,7 @@ export default {
       }
       return `
       ${draftBadge}
-      <a href="${this.openRequest(processRequest, 1)}"
+      <a href="${this.openTask(record, 1)}"
          class="text-nowrap">
          ${
            processRequest.case_title_formatted ||
@@ -503,7 +503,8 @@ export default {
           field: "is_priority",
           sortable: false,
           default: true,
-          width: 40,
+          fixed_width: 20,
+          resizable: false,
         },
         {
           label: "Process",
@@ -723,9 +724,15 @@ export default {
       }
       this.isTooltipVisible = false;
     },
+    removeBadgeSpan(html) {
+      const badgeSpanRegex = /<span class="badge badge-warning status-warning">([^<]+)<\/span>/g;
+      console.log(html.replace(badgeSpanRegex, ""));
+      return html.replace(badgeSpanRegex, "");
+    },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = this.removeBadgeSpan(cleanHtml);
       cleanHtml = cleanHtml.replace(
         /<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi,
         ""

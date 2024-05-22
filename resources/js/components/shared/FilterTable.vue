@@ -22,6 +22,7 @@
             :key="index"
             class="pm-table-ellipsis-column"
             :class="{ 'pm-table-filter-applied': column.filterApplied }"
+            :style="{ width: column.fixed_width + 'px' }"
           >
             <div
               class="pm-table-column-header"
@@ -37,7 +38,8 @@
             <div
               v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
-              @mousedown="startResize($event, index)"
+              :class="{ 'resizable': column.resizable === undefined || column.resizable }"
+              @mousedown="column.resizable === undefined || column.resizable ? startResize($event, index) : null"
             />
             <b-tooltip
               v-if="column.tooltip"
@@ -301,8 +303,11 @@ export default {
   transform: translateY(-50%);
   height: 85%;
   width: 10px;
-  cursor: col-resize;
+  cursor: default;
   border-right: 1px solid rgba(0, 0, 0, 0.125);
+}
+.pm-table-column-resizer.resizable {
+  cursor: col-resize;
 }
 .pm-table-filter {
   width: 100%;
