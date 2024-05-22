@@ -196,6 +196,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('tasks/{task}/setPriority', [TaskController::class, 'setPriority'])->name('tasks.priority');
 
     // TaskDrafts
+    Route::get('drafts/{task}', [TaskDraftController::class, 'index'])->name('taskdraft.index');
     Route::put('drafts/{task}', [TaskDraftController::class, 'update'])->name('taskdraft.update');
     Route::delete('drafts/{task}', [TaskDraftController::class, 'delete'])->name('taskdraft.delete');
 

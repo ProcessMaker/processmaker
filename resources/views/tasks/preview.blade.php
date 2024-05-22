@@ -437,7 +437,18 @@
           });
 
           window.addEventListener('fillData', event => {
-            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
+            this.formData = _.mergeWith(
+              _.cloneDeep(this.formData),
+              event.detail,
+              (objValue, srcValue) => {
+                // If object value is falsy returns value from source(event.detail)
+                if (!objValue) {
+                  return srcValue;
+                }
+                // Otherwise, keeps object value(this.formData)
+                return objValue;
+              }
+            );
           });
 
           window.addEventListener('eraseData', event => {

@@ -270,16 +270,78 @@ export default {
       this.$emit("close");
     },
     buttonThisDataFromFullTask(data) {
-      return ProcessMaker.apiClient
-        .put("drafts/" + this.task.id, data)
-        .then((response) => {
-          this.task.draft = _.merge({}, this.task.draft, response.data);
-          window.location.href = `/tasks/${this.task.id}/edit`;
-          ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
-        })
-        .catch((error) => {
-          console.error("Error", error);
-        });
+      // return ProcessMaker.apiClient
+      //   .put("drafts/" + this.task.id, data)
+      //   .then((response) => {
+      //     this.task.draft = _.merge({}, this.task.draft, response.data);
+      //     window.location.href = `/tasks/${this.task.id}/edit`;
+      //     ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error", error);
+      //   });
+
+      if (this.propFromButton === "fullTask") {
+          return new Promise((resolve, reject) => {
+              ProcessMaker.apiClient.get("drafts/" + this.task.id)
+                .then(responseGet => {
+                  const dataFromGet = responseGet.data;
+                  if (Array.isArray(dataFromGet) && dataFromGet.length === 0) {
+                    console.log("devuelve array vacio: ", dataFromGet);
+                    // Si dataFromGet es un array vacío, mantén la variable data original
+                    resolve(data);
+                  } else {
+                    console.log("devuelve objeto");
+                    // Si dataFromGet no es un array vacío, asigna su valor a data
+                    //const newData = dataFromGet;
+                    const newData = _.mergeWith(
+                      _.cloneDeep(dataFromGet),
+                      data,
+                      (objValue, srcValue) => {
+                        // If object value is falsy returns value from source(event.detail)
+                        if (!objValue) {
+                          return srcValue;
+                        }
+                        // Otherwise, keeps object value(this.formData)
+                        return objValue;
+                      }
+                    );
+                    resolve(newData);
+                  }
+                })
+                .catch(errorGet => {
+                  reject(errorGet);
+                });
+            })
+              .then(dataToUse => {
+                return ProcessMaker.apiClient.put("drafts/" + this.task.id, dataToUse)
+                  .then(responsePut => {
+                    this.task.draft = _.merge({}, this.task.draft, responsePut.data);
+                    window.location.href = `/tasks/${this.task.id}/edit`;
+                    ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
+                  })
+                  .catch(errorPut => {
+                    console.error("Error", errorPut);
+                  });
+              })
+              .catch(error => {
+                console.error("Error", error);
+              });
+      } else {
+        return ProcessMaker.apiClient
+          .put("drafts/" + this.task.id, data)
+          .then((response) => {
+            this.task.draft = _.merge({}, this.task.draft, response.data);
+            window.location.href = `/tasks/${this.task.id}/edit`;
+            ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
+          })
+          .catch((error) => {
+            console.error("Error", error);
+          });
+            
+      }
+
+      
     },
     /*
      * To do: There's a global-search-bar class with a large z-index. We added a class 
