@@ -270,64 +270,48 @@ export default {
       this.$emit("close");
     },
     buttonThisDataFromFullTask(data) {
-      if (this.propFromButton === "fullTask") {
-          return new Promise((resolve, reject) => {
-              ProcessMaker.apiClient.get("drafts/" + this.task.id)
-                .then(responseGet => {
-                  const dataFromGet = responseGet.data;
-                  if (Array.isArray(dataFromGet) && dataFromGet.length === 0) {
-                    // If dataFromGet is an empty array keeps original form data
-                    resolve(data);
-                  } else {
-                    // If dataFromGet is an object asigns its value to form data
-                    const newData = _.mergeWith(
-                      _.cloneDeep(dataFromGet),
-                      data,
-                      (objValue, srcValue) => {
-                        // If object value is falsy returns value from source(event.detail)
-                        if (!objValue) {
-                          return srcValue;
-                        }
-                        // Otherwise, keeps object value(this.formData)
-                        return objValue;
-                      }
-                    );
-                    resolve(newData);
+      return new Promise((resolve, reject) => {
+          ProcessMaker.apiClient.get("drafts/" + this.task.id)
+            .then(responseGet => {
+              const dataFromGet = responseGet.data;
+              if (Array.isArray(dataFromGet) && dataFromGet.length === 0) {
+                // If dataFromGet is an empty array keeps original form data
+                resolve(data);
+              } else {
+                // If dataFromGet is an object asigns its value to form data
+                const newData = _.mergeWith(
+                  _.cloneDeep(dataFromGet),
+                  data,
+                  (objValue, srcValue) => {
+                    // If object value is falsy returns value from source(data)
+                    if (!objValue) {
+                      return srcValue;
+                    }
+                    // Otherwise, keeps object value(dataFromGet)
+                    return objValue;
                   }
-                })
-                .catch(errorGet => {
-                  reject(errorGet);
-                });
+                );
+                resolve(newData);
+              }
             })
-              .then(dataToUse => {
-                return ProcessMaker.apiClient.put("drafts/" + this.task.id, dataToUse)
-                  .then(responsePut => {
-                    this.task.draft = _.merge({}, this.task.draft, responsePut.data);
-                    window.location.href = `/tasks/${this.task.id}/edit`;
-                    ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
-                  })
-                  .catch(errorPut => {
-                    console.error("Error", errorPut);
-                  });
+            .catch(errorGet => {
+              reject(errorGet);
+            });
+        })
+          .then(dataToUse => {
+            return ProcessMaker.apiClient.put("drafts/" + this.task.id, dataToUse)
+              .then(responsePut => {
+                this.task.draft = _.merge({}, this.task.draft, responsePut.data);
+                window.location.href = `/tasks/${this.task.id}/edit`;
+                ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
               })
-              .catch(error => {
-                console.error("Error", error);
+              .catch(errorPut => {
+                console.error("Error", errorPut);
               });
-      } else {
-        return ProcessMaker.apiClient
-          .put("drafts/" + this.task.id, data)
-          .then((response) => {
-            this.task.draft = _.merge({}, this.task.draft, response.data);
-            window.location.href = `/tasks/${this.task.id}/edit`;
-            ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
           })
-          .catch((error) => {
+          .catch(error => {
             console.error("Error", error);
           });
-            
-      }
-
-      
     },
     /*
      * To do: There's a global-search-bar class with a large z-index. We added a class 
