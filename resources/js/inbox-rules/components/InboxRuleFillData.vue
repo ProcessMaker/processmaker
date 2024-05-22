@@ -44,7 +44,18 @@
         this.$emit("data", this.formData);
       },
       propInboxQuickFill() {
-        this.formData = _.merge({}, this.formData, this.propInboxQuickFill);
+        console.log("InboxRuleFillData this.formData: ",this.formData);
+        console.log("InboxRuleFillData this.propInboxQuickFill: ",this.propInboxQuickFill);
+        //this.formData = _.merge({}, this.formData, this.propInboxQuickFill);
+        this.formData = _.mergeWith(this.formData, this.propInboxQuickFill,
+          (objValue, srcValue) => {
+          // If object value is falsy returns value from source(event.detail)
+          if (!objValue) {
+            return srcValue;
+          }
+          // Otherwise, keeps object value(this.formData)
+          return objValue;
+        });
         this.iframeContentWindow.location.reload();
       }
     },

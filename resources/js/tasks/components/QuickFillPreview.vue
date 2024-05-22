@@ -270,30 +270,16 @@ export default {
       this.$emit("close");
     },
     buttonThisDataFromFullTask(data) {
-      // return ProcessMaker.apiClient
-      //   .put("drafts/" + this.task.id, data)
-      //   .then((response) => {
-      //     this.task.draft = _.merge({}, this.task.draft, response.data);
-      //     window.location.href = `/tasks/${this.task.id}/edit`;
-      //     ProcessMaker.alert(this.$t("Task Filled successfully."), "success");
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error", error);
-      //   });
-
       if (this.propFromButton === "fullTask") {
           return new Promise((resolve, reject) => {
               ProcessMaker.apiClient.get("drafts/" + this.task.id)
                 .then(responseGet => {
                   const dataFromGet = responseGet.data;
                   if (Array.isArray(dataFromGet) && dataFromGet.length === 0) {
-                    console.log("devuelve array vacio: ", dataFromGet);
-                    // Si dataFromGet es un array vacío, mantén la variable data original
+                    // If dataFromGet is an empty array keeps original form data
                     resolve(data);
                   } else {
-                    console.log("devuelve objeto");
-                    // Si dataFromGet no es un array vacío, asigna su valor a data
-                    //const newData = dataFromGet;
+                    // If dataFromGet is an object asigns its value to form data
                     const newData = _.mergeWith(
                       _.cloneDeep(dataFromGet),
                       data,
