@@ -25,6 +25,10 @@
         type: Object,
         default: null
       },
+      propScreenFields: {
+        type: Array,
+        default: null
+      },
     },
     data() {
       return {
@@ -44,14 +48,21 @@
         this.$emit("data", this.formData);
       },
       propInboxQuickFill() {
-        this.formData = _.mergeWith(this.formData, this.propInboxQuickFill,
-          (objValue, srcValue) => {
-          // If object value is falsy returns value from source(event.detail)
-          if (!objValue) {
-            return srcValue;
+        const dataToUse = this.formData;
+        this.propScreenFields.forEach((field) => {
+
+          const existingValue = _.get(dataToUse, field, null);
+          let quickFillValue;
+
+          if (existingValue) {
+            // If the value exists in the task data, don't overwrite it
+            quickFillValue = existingValue;
+          } else {
+            // use the value from the quick fill(
+            quickFillValue = _.get(this.propInboxQuickFill, field, null);
           }
-          // Otherwise, keeps object value(this.formData)
-          return objValue;
+          // Set the value. This handles nested values using dot notation in 'field' string
+          _.set(this.formData, field, quickFillValue);
         });
         this.iframeContentWindow.location.reload();
       }
@@ -66,6 +77,7 @@
       this.receiveEvent('taskReady', () => {
         this.sendEvent("fillData", this.inboxRuleData);
       });
+      
     },
     methods: {
       eraseData() {
