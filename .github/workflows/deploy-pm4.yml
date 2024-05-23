@@ -204,6 +204,14 @@ jobs:
         with:
           name: code-coverage
           path: ./pm4-k8s-distribution/images/pm4-tools/coverage.xml
+      - name: Set SonarQube sources
+        run: |
+          if [ "${{ env.CI_PROJECT }}" = "processmaker" ]; then
+            echo "SONAR_SOURCES=ProcessMaker" >> $GITHUB_ENV
+          else
+            echo "SONAR_SOURCES=src" >> $GITHUB_ENV
+          fi
+        shell: bash
       - name: SonarQube Coverage Report
         uses: sonarsource/sonarqube-scan-action@master
         env:
@@ -213,7 +221,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.sources=.
+            -Dsonar.sources=${{ env.SONAR_SOURCES }}
             -Dsonar.tests=.
             -Dsonar.test.inclusions=**/*Test.php
             -Dsonar.php.coverage.reportPaths=./pm4-k8s-distribution/images/pm4-tools/coverage.xml
