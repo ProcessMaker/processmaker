@@ -38,7 +38,7 @@ class GenerateMenus
             });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
-                    __('Requests'),
+                    __('Cases'),
                     ['route' => 'requests.index', 'id' => 'requests']
                 )->active('requests/*');
             });
@@ -141,7 +141,7 @@ class GenerateMenus
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));
-            $submenu->add(__('My Requests'), [
+            $submenu->add(__('My Cases'), [
                 'route' => ['requests_by_type', ''],
                 'icon' => 'fa-id-badge',
             ]);
@@ -154,7 +154,7 @@ class GenerateMenus
                 'icon' => 'fa-clipboard-check',
             ]);
             if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-                $submenu->add(__('All Requests'), [
+                $submenu->add(__('All Cases'), [
                     'route' => ['requests_by_type', 'all'],
                     'icon' => 'fa-clipboard',
                 ]);
