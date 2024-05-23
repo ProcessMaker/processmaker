@@ -436,19 +436,23 @@
             this.validateForm = event.detail;
           });
 
-          window.addEventListener('fillData', event => {
-            this.formData = _.mergeWith(
-              _.cloneDeep(this.formData),
-              event.detail,
-              (objValue, srcValue) => {
-                // If object value is falsy returns value from source(event.detail)
-                if (!objValue) {
-                  return srcValue;
-                }
-                // Otherwise, keeps object value(this.formData)
-                return objValue;
+          window.addEventListener('fillData', event => {       
+            const dataToUse = this.formData;
+            screenFields.forEach((field) => {
+
+              const existingValue = _.get(dataToUse, field, null);
+              let quickFillValue;
+
+              if (existingValue) {
+                // If the value exists in the task data, don't overwrite it
+                quickFillValue = existingValue;
+              } else {
+                // use the value from the quick fill(event.detail)
+                quickFillValue = _.get(event.detail, field, null);
               }
-            );
+              // Set the value. This handles nested values using dot notation in 'field' string
+              _.set(this.formData, field, quickFillValue);
+            });
           });
 
           window.addEventListener('eraseData', event => {
