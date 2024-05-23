@@ -310,7 +310,7 @@ export default {
         },
         {
           value: "showRequestSummary",
-          content: "Open Request",
+          content: "Open Case",
           icon: "fas fa-clipboard",
           link: true,
           href: "/requests/{{process_request.id}}",
