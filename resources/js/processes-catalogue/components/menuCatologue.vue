@@ -3,6 +3,7 @@
     <SearchCategories
       ref="searchCategory"
       :filter-pmql="onFilter"
+      class="hide-on-mobile"
     />
     <div
       v-b-toggle.category-menu
@@ -48,6 +49,7 @@
         </p>
       </b-list-group>
     </b-collapse>
+    <div class="hide-on-mobile">
     <hr class="my-12">
     <div
       v-b-toggle.collapse-3
@@ -74,6 +76,7 @@
     <b-collapse
       id="collapse-3"
       visible
+      class="hide-on-mobile"
     >
       <b-list-group>
         <b-list-group-item
@@ -88,6 +91,7 @@
         </b-list-group-item>
       </b-list-group>
     </b-collapse>
+    </div>
 
     <select-template-modal
       ref="addProcessModal"
@@ -166,6 +170,14 @@ export default {
   updated() {
     if (!this.selectedProcessItem && !this.selectedTemplateItem) {
       this.selectDefault();
+    }
+  },
+  watch: {
+    selectedProcessItem: {
+      deep: true,
+      handler: function () {
+        this.$emit('selectedCategoryName', this.selectedProcessItem?.name);
+      },
     }
   },
   methods: {
@@ -256,6 +268,7 @@ export default {
 
 <style lang="scss" scoped>
 @import url("../../../sass/_scrollbar.scss");
+@import "~styles/variables";
 i {
   font-size: 20px;
   color: #6a7888;
@@ -312,5 +325,11 @@ i {
   height: 44px;
   padding: 12px 18px;
   gap: 16px;
+}
+
+.hide-on-mobile {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
 }
 </style>
