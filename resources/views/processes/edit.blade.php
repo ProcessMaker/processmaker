@@ -55,148 +55,188 @@
                         {{-- Configuration --}}
                         <div class="tab-pane fade show" :class="{'active': activeTab === ''}" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
-                            <required></required>
-                            <div class="form-group">
-                                {!!Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
-                                {!!Form::text('name', null,
-                                    [ 'id'=> 'name',
-                                        'class'=> 'form-control',
-                                        'v-model'=> 'formData.name',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
-                                    ])
-                                !!}
-                                <small class="form-text text-muted"
-                                       v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
-                                <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
-                                {!! Form::textarea('description', null,
-                                    ['id' => 'description',
-                                        'rows' => 4,
-                                        'class'=> 'form-control',
-                                        'v-model' => 'formData.description',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
-                                    ])
-                                !!}
-                                <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
-                            </div>
-                            <category-select :label="$t('Category')" api-get="process_categories"
-                                api-list="process_categories" v-model="formData.process_category_id"
-                                :errors="errors.category"
-                                >
-                            </category-select>
-                            <project-select
-                                :label="$t('Project')"
-                                api-get="projects"
-                                api-list="projects"
-                                v-model="selectedProjects"
-                                :errors="errors.projects">
-                            </project-select>
-                            <div class="form-group">
-                                <label class="typo__label">{{__('Process Manager')}}</label>
-                                <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
-                                </select-user>
-                                <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('case_title', __('Case Title')) !!}
-                                {!!Form::text('case_title', null,
-                                    [ 'id'=> 'case_title',
-                                        'class'=> 'form-control',
-                                        'v-model'=> 'formData.case_title',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
-                                    ])
-                                !!}
-                                <div class="invalid-feedback" role="alert" v-if="errors.case_title">
-                                    @{{errors.case_title[0]}}
+                            <div class="card card-custom-info">
+                                <div class="card-header" id="headingInfo">
+                                    <button class="btn btn-custom-info" type="button" data-toggle="collapse" data-target="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo" @click="toogleInfoCollapsed()">
+                                        <span>
+                                            {{__('Process Information')}}
+                                        </span>
+                                        <b-icon class="custom-size-icon" :icon="getArrowIcon(infoCollapsed)"  aria-hidden="true"/>
+                                    </button>
                                 </div>
-                                <small class="form-text text-muted" v-if="! errors.name">
-                                    {{ __('This field has a limit of 200 characters when calculated') }}
-                                </small>
+                                <div id="collapseInfo" class="collapse show" aria-labelledby="headingInfo">
+                                    <div class="card-body">
+                                        <b-row>
+                                            <b-col>
+                                                <div class="form-group">
+                                                    {!!Form::label('name', __('Name') . '<small class="ml-1 required-text-color">*</small>', [], false)!!}
+                                                    {!!Form::text('name', null,
+                                                        [ 'id'=> 'name',
+                                                            'class'=> 'form-control',
+                                                            'v-model'=> 'formData.name',
+                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'
+                                                        ])
+                                                    !!}
+                                                    <small class="form-text text-muted"
+                                                        v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
+                                                </div>
+                                                <category-select :label="$t('Category')" api-get="process_categories"
+                                                    api-list="process_categories" v-model="formData.process_category_id"
+                                                    :errors="errors.category"
+                                                    >
+                                                </category-select>
+                                                <div class="form-group">
+                                                    <label class="typo__label">{{__('Process Manager')}}</label>
+                                                    <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
+                                                    </select-user>
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
+                                                </div>
+                                            </b-col>
+                                            <b-col>
+                                                <div class="form-group">
+                                                    {!! Form::label('description', __('Description')  . '<small class="ml-1 required-text-color">*</small>', [], false) !!}
+                                                    {!! Form::textarea('description', null,
+                                                        ['id' => 'description',
+                                                            'rows' => 4,
+                                                            'class'=> 'form-control',
+                                                            'v-model' => 'formData.description',
+                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
+                                                        ])
+                                                    !!}
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
+                                                </div>
+                                                <project-select
+                                                    :label="$t('Project')"
+                                                    api-get="projects"
+                                                    api-list="projects"
+                                                    v-model="selectedProjects"
+                                                    :errors="errors.projects">
+                                                </project-select>
+                                            </b-col>
+                                        </b-row>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group p-0">
-                                {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                                <multiselect id="cancelRequest"
-                                             v-model="canCancel"
-                                             :options="activeUsersAndGroupsWithManager"
-                                             :multiple="true"
-                                             :show-labels="false"
-                                             placeholder="{{__('Type to search')}}"
-                                             track-by="id"
-                                             label="fullname"
-                                             group-values="items"
-                                             group-label="label">
-                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
+                            <div class="card card-custom-info">
+                                <div class="card-header" id="headingMore">
+                                    <button class="btn btn-custom-info" type="button" data-toggle="collapse" data-target="#collapseMore" aria-expanded="true" aria-controls="collapseMore" @click="toogleMoreInfoCollapsed()">
+                                        <span>
+                                            {{__('More Information')}}
+                                        </span>
+                                        
+                                        <b-icon class="custom-size-icon" :icon="getArrowIcon(moreInfoCollapsed)" aria-hidden="true"/>
+                                    </button>
+                                </div>
+                                <div id="collapseMore" class="collapse" aria-labelledby="headingMore">
+                                    <div class="card-body">
+                                        <b-row>
+                                            <b-col>
+                                                <div class="form-group">
+                                                    {!! Form::label('case_title', __('Case Title')) !!}
+                                                    {!!Form::text('case_title', null,
+                                                        [ 'id'=> 'case_title',
+                                                            'class'=> 'form-control',
+                                                            'v-model'=> 'formData.case_title',
+                                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
+                                                        ])
+                                                    !!}
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.case_title">
+                                                        @{{errors.case_title[0]}}
+                                                    </div>
+                                                    <small class="form-text text-muted" v-if="! errors.name">
+                                                        {{ __('This field has a limit of 200 characters when calculated') }}
+                                                    </small>
+                                                </div>
+                                                <div class="form-group">
+                                                    {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
+                                                    <multiselect aria-label="{{ __('Cancel Screen') }}"
+                                                                v-model="screenCancel"
+                                                                :options="screens"
+                                                                :multiple="false"
+                                                                :show-labels="false"
+                                                                placeholder="{{ __('Type to search') }}"
+                                                                @search-change="loadScreens($event)"
+                                                                @open="loadScreens()"
+                                                                track-by="id"
+                                                                label="title">
+                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                                        <template slot="noOptions">
+                                                            {{ __('No Data Available') }}
+                                                        </template>
+                                                    </multiselect>
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
+                                                    <multiselect aria-label="{{ __('Request Detail Screen') }}"
+                                                                v-model="screenRequestDetail"
+                                                                :options="screens"
+                                                                :multiple="false"
+                                                                :show-labels="false"
+                                                                placeholder="{{ __('Type to search') }}"
+                                                                @search-change="loadScreens($event)"
+                                                                @open="loadScreens()"
+                                                                track-by="id"
+                                                                label="title">
+                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                                        <template slot="noOptions">
+                                                            {{ __('No Data Available') }}
+                                                        </template>
+                                                    </multiselect>
+                                                    <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
+                                                </div>
+                                            </b-col>
+                                            <b-col>
+                                                <div class="form-group p-0">
+                                                    {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                                                    <multiselect id="cancelRequest"
+                                                                v-model="canCancel"
+                                                                :options="activeUsersAndGroupsWithManager"
+                                                                :multiple="true"
+                                                                :show-labels="false"
+                                                                placeholder="{{__('Type to search')}}"
+                                                                track-by="id"
+                                                                label="fullname"
+                                                                group-values="items"
+                                                                group-label="label">
+                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                                        <template slot="noOptions">
+                                                            {{ __('No Data Available') }}
+                                                        </template>
+                                                    </multiselect>
+                                                </div>
+                                                <div class="form-group p-0">
+                                                    {!! Form::label('editData', __('Edit Data')) !!}
+                                                    <multiselect id="editData"
+                                                                v-model="canEditData"
+                                                                :options="activeUsersAndGroups"
+                                                                :multiple="true"
+                                                                :show-labels="false"
+                                                                placeholder="{{__('Type to search')}}"
+                                                                track-by="id"
+                                                                label="fullname"
+                                                                group-values="items"
+                                                                group-label="label">
+                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                                        <template slot="noOptions">
+                                                            {{ __('No Data Available') }}
+                                                        </template>
+                                                    </multiselect>
+                                                </div>
+                                                <div class="form-group">
+                                                    {!! Form::label('status', __('Status')) !!}
+                                                    <select-status v-model="formData.status" :multiple="false"></select-status>
+                                                </div>
+                                            </b-col>
+                                        </b-row>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                <multiselect aria-label="{{ __('Cancel Screen') }}"
-                                             v-model="screenCancel"
-                                             :options="screens"
-                                             :multiple="false"
-                                             :show-labels="false"
-                                             placeholder="{{ __('Type to search') }}"
-                                             @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
-                                             track-by="id"
-                                             label="title">
-                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                                <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
-                            </div>
-                            <div class="form-group p-0">
-                                {!! Form::label('editData', __('Edit Data')) !!}
-                                <multiselect id="editData"
-                                             v-model="canEditData"
-                                             :options="activeUsersAndGroups"
-                                             :multiple="true"
-                                             :show-labels="false"
-                                             placeholder="{{__('Type to search')}}"
-                                             track-by="id"
-                                             label="fullname"
-                                             group-values="items"
-                                             group-label="label">
-                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
-                                <multiselect aria-label="{{ __('Request Detail Screen') }}"
-                                             v-model="screenRequestDetail"
-                                             :options="screens"
-                                             :multiple="false"
-                                             :show-labels="false"
-                                             placeholder="{{ __('Type to search') }}"
-                                             @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
-                                             track-by="id"
-                                             label="title">
-                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                                <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('status', __('Status')) !!}
-                                <select-status v-model="formData.status" :multiple="false"></select-status>
-                            </div>
-                            <div class="d-flex justify-content-end mt-2">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary button-custom', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3 button-custom', '@click' => 'onUpdate']) !!}
                         </div>
 
                         {{-- Translations --}}
@@ -422,7 +462,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
 
@@ -477,6 +517,8 @@
                     translatedLanguages: [],
                     editTranslation: null,
                     activeTab: "",
+                    moreInfoCollapsed: false,
+                    infoCollapsed: true,
                 }
                 },
                 mounted() {
@@ -519,6 +561,24 @@
                     .then(response => {
                         this.screens = response.data.data;
                     });
+                },
+                /**
+                 * Change info arrow
+                 */
+                toogleInfoCollapsed() {
+                    this.infoCollapsed = !this.infoCollapsed;
+                },
+                /**
+                 * Change more info arrow
+                 */
+                toogleMoreInfoCollapsed() {
+                    this.moreInfoCollapsed = !this.moreInfoCollapsed;
+                },
+                getArrowIcon(collapseInfo) {
+                    if (collapseInfo) {
+                        return 'caret-up-fill'
+                    }
+                    return 'caret-down-fill'
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
@@ -679,9 +739,9 @@
         }
 
         .multiselect__tags {
-            border: 1px solid #b6bfc6 !important;
-            border-radius: 0.125em !important;
-            height: calc(1.875rem + 2px) !important;
+            border: 1px solid var(--borders, #cdddee) !important;
+            border-radius: 4px !important;
+            height: 40px !important;
         }
 
         .multiselect__tag {
@@ -690,6 +750,82 @@
 
         .multiselect__tag-icon:after {
             color: white !important;
+        }
+
+        .card-custom-info {
+            border: 0px;
+            margin-bottom: 5px;
+        }
+
+        .card-custom-info .card-header {
+            border: 0px;
+            height: 40px;
+            padding: 8px 19.59px;
+            border-radius: 4px;
+            opacity: 0px;
+            background: #f2f8fe;
+        }
+
+        .card-custom-info .card-body {
+            padding: 24px 13px;
+        }
+       
+        .btn-custom-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            height: 24px;
+            padding: 0px;
+            left: 42.59px;
+            color: #556271;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 21px;
+            letter-spacing: -0.02em;
+            text-align: left;
+            text-transform: capitalize;
+        }
+
+        .btn-custom-info:focus {
+            box-shadow: none;
+        }
+
+        .custom-size-icon {
+            width: 10px;
+        }
+        
+        .required-text-color,
+        .form-group[required=required] label::after {
+            color: #1572c2;
+            opacity: 1;
+        }
+        
+        .form-group label{
+            color: #556271;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: -0.02em;
+        }
+
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid var(--borders, #cdddee)
+        }
+
+        .button-custom {
+            width: 118px;
+            height: 40px;
+            padding: 0px 15px;
+            border-radius: 4px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+            letter-spacing: -0.02em;
+            text-align: center;
         }
     </style>
 @endsection
