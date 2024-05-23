@@ -2,28 +2,28 @@
 
 namespace ProcessMaker\Filters;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Query\BaseField;
-use ProcessMaker\Query\Expression;
 
 class Filter
 {
-    const TYPE_PARTICIPANTS = 'Participants';
+    public const TYPE_PARTICIPANTS = 'Participants';
 
-    const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
+    public const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
 
-    const TYPE_ASSIGNEES_FULLNAME = 'AssigneesFullName';
+    public const TYPE_ASSIGNEES_FULLNAME = 'AssigneesFullName';
 
-    const TYPE_STATUS = 'Status';
+    public const TYPE_STATUS = 'Status';
 
-    const TYPE_FIELD = 'Field';
+    public const TYPE_FIELD = 'Field';
 
-    const TYPE_PROCESS = 'Process';
+    public const TYPE_PROCESS = 'Process';
 
-    const TYPE_RELATIONSHIP = 'Relationship';
+    public const TYPE_RELATIONSHIP = 'Relationship';
 
     public string|null $subjectValue;
 
@@ -32,6 +32,8 @@ class Filter
     public string $operator;
 
     public $value;
+
+    protected bool $usesRawValue = false;
 
     public array $or;
 
@@ -49,7 +51,17 @@ class Filter
         'starts_with',
     ];
 
-    public static function filter(Builder $query, string|array $filterDefinitions)
+    public function __construct($definition)
+    {
+        $this->subjectType = $definition['subject']['type'];
+        $this->subjectValue = Arr::get($definition, 'subject.value');
+        $this->operator = $definition['operator'];
+        $this->value = $definition['value'];
+        $this->usesRawValue = $this->containsRawValue($this->value ?? '');
+        $this->or = Arr::get($definition, 'or', []);
+    }
+
+    public static function filter(Builder $query, string|array $filterDefinitions): void
     {
         if (is_string($filterDefinitions)) {
             $filterDefinitions = json_decode($filterDefinitions, true);
@@ -66,24 +78,37 @@ class Filter
         });
     }
 
-    public function __construct($definition)
-    {
-        $this->subjectType = $definition['subject']['type'];
-        $this->subjectValue = Arr::get($definition, 'subject.value');
-        $this->operator = $definition['operator'];
-        $this->value = $definition['value'];
-        $this->or = Arr::get($definition, 'or', []);
-    }
-
-    public function addToQuery(Builder $query)
+    public function addToQuery(Builder $query): void
     {
         if (!empty($this->or)) {
-            $query->where(function ($query) {
-                $this->apply($query);
-            });
+            $query->where(fn ($query) => $this->apply($query));
         } else {
             $this->apply($query);
         }
+    }
+
+    /**
+     * Use regex to find the raw() pattern and extract its content
+     *
+     * @param  string|null  $value
+     *
+     * @return string
+     */
+    public function getRawValue(string $value = null): string
+    {
+        return Str::match('/(?<=raw\().*(?=\))/', $value ?? $this->value);
+    }
+
+    /**
+     * Determine if the value is using the raw() function
+     *
+     * @param  string  $value
+     *
+     * @return bool
+     */
+    public function containsRawValue(string $value): bool
+    {
+        return Str::contains($value, 'raw(');
     }
 
     private function apply($query)
@@ -212,7 +237,7 @@ class Filter
         return $this->subjectValue;
     }
 
-    private function relationshipSubjectTypeParts()
+    private function relationshipSubjectTypeParts(): array
     {
         return explode('.', $this->subjectValue);
     }
@@ -225,6 +250,10 @@ class Filter
 
         if ($this->operator === 'starts_with') {
             return $this->value . '%';
+        }
+
+        if ($this->usesRawValue) {
+            return DB::raw($this->getRawValue());
         }
 
         return $this->value;
@@ -261,13 +290,13 @@ class Filter
     private function valueAliasAdapter(string $method, Builder $query)
     {
         $operator = $this->operator();
+
         if ($operator === 'in') {
             $operator = '=';
         }
+
         $values = (array) $this->value();
-
         $expression = (object) ['operator' => $operator];
-
         $model = $query->getModel();
 
         if ($method === 'valueAliasParticipant') {
