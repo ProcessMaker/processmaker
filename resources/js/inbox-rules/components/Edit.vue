@@ -294,7 +294,6 @@
       fillWithQuickFillData(data) {
         const message = this.$t('Task Filled succesfully');
         this.propInboxData = data;
-        //this.propScreenFields = screenFields;
         ProcessMaker.alert(message, 'success');
       },
       verifyURL(string) {
