@@ -53,18 +53,42 @@
                     <div class="tab-content" id="nav-tabContent">
 
                         {{-- Configuration --}}
-                        <div class="tab-pane fade show" :class="{'active': activeTab === ''}" id="nav-config" role="tabpanel"
-                             aria-labelledby="nav-config-tab">
+                        <div
+                            class="tab-pane fade show"
+                            :class="{'active': activeTab === ''}"
+                            id="nav-config"
+                            role="tabpanel"
+                            aria-labelledby="nav-config-tab"
+                            >
                             <div class="card card-custom-info">
-                                <div class="card-header" id="headingInfo">
-                                    <button class="btn btn-custom-info" type="button" data-toggle="collapse" data-target="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo" @click="toogleInfoCollapsed()">
+                                <div
+                                    class="card-header"
+                                    id="headingInfo"
+                                    >
+                                    <button
+                                        class="btn btn-custom-info"
+                                        type="button"
+                                        data-toggle="collapse"
+                                        data-target="#collapseInfo"
+                                        aria-expanded="true"
+                                        aria-controls="collapseInfo"
+                                        @click="toogleInfoCollapsed()"
+                                        >
                                         <span>
                                             {{__('Process Information')}}
                                         </span>
-                                        <b-icon class="custom-size-icon" :icon="getArrowIcon(infoCollapsed)"  aria-hidden="true"/>
+                                        <b-icon
+                                            class="custom-size-icon"
+                                            :icon="getArrowIcon(infoCollapsed)"
+                                            aria-hidden="true"
+                                            />
                                     </button>
                                 </div>
-                                <div id="collapseInfo" class="collapse show" aria-labelledby="headingInfo">
+                                <div
+                                    id="collapseInfo"
+                                    class="collapse show"
+                                    aria-labelledby="headingInfo"
+                                    >
                                     <div class="card-body">
                                         <b-row>
                                             <b-col>
@@ -79,10 +103,18 @@
                                                     !!}
                                                     <small class="form-text text-muted"
                                                         v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
-                                                    <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
+                                                    <div
+                                                        class="invalid-feedback"
+                                                        role="alert" v-if="errors.name"
+                                                        >
+                                                        @{{errors.name[0]}}
+                                                    </div>
                                                 </div>
-                                                <category-select :label="$t('Category')" api-get="process_categories"
-                                                    api-list="process_categories" v-model="formData.process_category_id"
+                                                <category-select
+                                                    :label="$t('Category')"
+                                                    api-get="process_categories"
+                                                    api-list="process_categories"
+                                                    v-model="formData.process_category_id"
                                                     :errors="errors.category"
                                                     >
                                                 </category-select>
@@ -90,7 +122,13 @@
                                                     <label class="typo__label">{{__('Process Manager')}}</label>
                                                     <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
                                                     </select-user>
-                                                    <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
+                                                    <div
+                                                        v-if="errors.manager_id"
+                                                        class="invalid-feedback"
+                                                        role="alert"
+                                                        >
+                                                        @{{errors.manager_id[0]}}
+                                                    </div>
                                                 </div>
                                             </b-col>
                                             <b-col>
@@ -104,7 +142,13 @@
                                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
                                                         ])
                                                     !!}
-                                                    <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
+                                                    <div
+                                                        class="invalid-feedback"
+                                                        role="alert"
+                                                        v-if="errors.description"
+                                                        >
+                                                        @{{errors.description[0]}}
+                                                    </div>
                                                 </div>
                                                 <project-select
                                                     :label="$t('Project')"
@@ -119,16 +163,35 @@
                                 </div>
                             </div>
                             <div class="card card-custom-info">
-                                <div class="card-header" id="headingMore">
-                                    <button class="btn btn-custom-info" type="button" data-toggle="collapse" data-target="#collapseMore" aria-expanded="true" aria-controls="collapseMore" @click="toogleMoreInfoCollapsed()">
+                                <div
+                                    class="card-header"
+                                    id="headingMore"
+                                    >
+                                    <button
+                                        class="btn btn-custom-info"
+                                        type="button"
+                                        data-toggle="collapse"
+                                        data-target="#collapseMore"
+                                        aria-expanded="true"
+                                        aria-controls="collapseMore"
+                                        @click="toogleMoreInfoCollapsed()"
+                                        >
                                         <span>
                                             {{__('More Information')}}
                                         </span>
                                         
-                                        <b-icon class="custom-size-icon" :icon="getArrowIcon(moreInfoCollapsed)" aria-hidden="true"/>
+                                        <b-icon
+                                            class="custom-size-icon"
+                                            :icon="getArrowIcon(moreInfoCollapsed)"
+                                            aria-hidden="true"
+                                            />
                                     </button>
                                 </div>
-                                <div id="collapseMore" class="collapse" aria-labelledby="headingMore">
+                                <div
+                                    id="collapseMore"
+                                    class="collapse"
+                                    aria-labelledby="headingMore"
+                                    >
                                     <div class="card-body">
                                         <b-row>
                                             <b-col>
@@ -165,7 +228,13 @@
                                                             {{ __('No Data Available') }}
                                                         </template>
                                                     </multiselect>
-                                                    <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                                                    <div
+                                                        v-if="errors.screens"
+                                                        class="invalid-feedback"
+                                                        role="alert"
+                                                        >
+                                                        @{{errors.screens[0]}}
+                                                    </div>
                                                 </div>
                                                 <div class="form-group">
                                                     {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
@@ -179,12 +248,17 @@
                                                                 @open="loadScreens()"
                                                                 track-by="id"
                                                                 label="title">
-                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }} />
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
                                                     </multiselect>
-                                                    <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
+                                                    <div
+                                                        v-if="errors.request_detail_screen_id"
+                                                        class="invalid-feedback"
+                                                        >
+                                                        @{{errors.request_detail_screen_id[0]}}
+                                                    </div>
                                                 </div>
                                             </b-col>
                                             <b-col>
@@ -200,7 +274,7 @@
                                                                 label="fullname"
                                                                 group-values="items"
                                                                 group-label="label">
-                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}} />
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
@@ -462,7 +536,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
 
@@ -574,6 +648,9 @@
                 toogleMoreInfoCollapsed() {
                     this.moreInfoCollapsed = !this.moreInfoCollapsed;
                 },
+                /**
+                 * Get arrow for collapse
+                 */
                 getArrowIcon(collapseInfo) {
                     if (collapseInfo) {
                         return 'caret-up-fill'
