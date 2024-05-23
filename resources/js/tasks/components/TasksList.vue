@@ -169,13 +169,32 @@
                 <i class="fas fa-eye"/>
               </b-button>
             </span>
-            <ellipsis-menu
-              :actions="actions"
-              :data="tooltipRowData"
-              :divider="false"
-              @show="handleShowEllipsis"
-              @hide="handleHideEllipsis"
-            />
+            <span class="vertical-separator"></span>
+            <span>
+              <b-button
+                v-if="!verifyURL('saved-searches')"
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
+                @click="redirectToRequest(tooltipRowData.process_request)"
+              >
+                <img
+                  src="/img/smartinbox-images/open-case.svg"
+                  :alt="$t('No Image')"
+                >
+              </b-button>
+            </span>
+            <span v-if="!verifyURL('saved-searches')" class="vertical-separator"></span>
+            <span>
+              <b-button
+                class="icon-button"
+                :aria-label="$t('Quick fill Preview')"
+                variant="light"
+                @click="redirectToTask(tooltipRowData)"
+              >
+                <i class="fas fa-external-link-alt"/>
+              </b-button>
+            </span>
           </slot>
           </div>
         </template>
@@ -564,6 +583,12 @@ export default {
           width: 140,
         });
       }
+      columns.push({
+        label: "",
+        field: "",
+        sortable: false,
+        width: 140,
+      });
       return columns;
     },
     onAction(action, rowData, index) {
@@ -726,7 +751,6 @@ export default {
     },
     removeBadgeSpan(html) {
       const badgeSpanRegex = /<span class="badge badge-warning status-warning">([^<]+)<\/span>/g;
-      console.log(html.replace(badgeSpanRegex, ""));
       return html.replace(badgeSpanRegex, "");
     },
     sanitizeTooltip(html) {
@@ -791,7 +815,13 @@ export default {
     },
     onWatchShowPreview(value) {
       this.$emit('onWatchShowPreview', value);
-    }
+    },
+    redirectToTask(task) {
+      window.location.href = this.openTask(task);
+    },
+    redirectToRequest(processRequest) {
+      window.location.href = this.openRequest(processRequest);
+    },
   },
 };
 </script>
@@ -824,6 +854,14 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+}
+.vertical-separator {
+  display: inline-block;
+  width: 1px;
+  height: 24px;
+  background-color: #ccc; /* Color del separador */
+  margin: 0 8px; /* Espaciado alrededor del separador */
+  vertical-align: middle; /* Alinear verticalmente con los botones */
 }
 </style>
 <style lang="scss" scoped>
