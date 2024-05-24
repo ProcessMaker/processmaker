@@ -326,7 +326,7 @@ export default {
   height: 56px;
 }
 .pm-table-filter th:hover {
-  background-color: #FAFBFC;
+  background-color: #F2F8FE;
   color: #1572C2;
 }
 .pm-table-filter tbody tr:hover {

@@ -157,45 +157,37 @@
             @mouseover="clearHideTimer"
             @mouseleave="hideTooltip"
           >
-          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
-            <span>
-              <b-button
-                v-if="!verifyURL('saved-searches')"
-                class="icon-button"
-                :aria-label="$t('Quick fill Preview')"
-                variant="light"
-                @click="previewTasks(tooltipRowData)"
-              >
-                <i class="fas fa-eye"/>
-              </b-button>
-            </span>
-            <span class="vertical-separator"></span>
-            <span>
-              <b-button
-                v-if="!verifyURL('saved-searches')"
-                class="icon-button"
-                :aria-label="$t('Quick fill Preview')"
-                variant="light"
-                @click="redirectToRequest(tooltipRowData.process_request)"
-              >
-                <img
-                  src="/img/smartinbox-images/open-case.svg"
-                  :alt="$t('No Image')"
-                >
-              </b-button>
-            </span>
-            <span v-if="!verifyURL('saved-searches')" class="vertical-separator"></span>
-            <span>
-              <b-button
-                class="icon-button"
-                :aria-label="$t('Quick fill Preview')"
-                variant="light"
-                @click="redirectToTask(tooltipRowData)"
-              >
-                <i class="fas fa-external-link-alt"/>
-              </b-button>
-            </span>
-          </slot>
+            <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
+              <span v-for="(item, index) in taskTooltipButtons" :key="index">
+                <span>
+                  <b-button
+                    v-if="!verifyURL('saved-searches')"
+                    :id="item.id"
+                    class="icon-button"
+                    :aria-label="item.title"
+                    variant="light"
+                    @click="item.click(tooltipRowData)"
+                  >
+                    <i v-if="item.icon" :class="item.icon" />
+                    <img
+                      v-else-if="item.imgSrc"
+                      :src="item.imgSrc"
+                      :alt="$t('No Image')"
+                    >
+                  </b-button>
+                </span>
+                <span
+                  v-if="!verifyURL('saved-searches') && item.separator"
+                  class="vertical-separator"
+                />
+                <b-tooltip
+                  :target="item.id"
+                  :title="item.title"
+                  custom-class="task-hover-tooltip"
+                  placement="bottom"
+                />
+              </span>
+            </slot>
           </div>
         </template>
       </task-tooltip>
@@ -319,6 +311,30 @@ export default {
     return {
       tooltipFromButton: "",
       selectedRow: 0,
+      taskTooltipButtons: [
+        {
+          id: "openPreviewButton",
+          ariaLabel: this.$t("Quick fill Preview"),
+          click: this.previewTasks,
+          icon: "fas fa-eye",
+          title: "Preview",
+          separator: true,
+        },
+        {
+          id: "openCaseButton",
+          title: this.$t("Open Case"),
+          click: this.redirectToRequest,
+          imgSrc: "/img/smartinbox-images/open-case.svg",
+          separator: true,
+        },
+        {
+          id: "openTaskButton",
+          title: this.$t("Open Task"),
+          click: this.redirectToTask,
+          icon: "fas fa-external-link-alt",
+          separator: false,
+        },
+      ],
       actions: [
         {
           value: "edit",
@@ -496,7 +512,8 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 80,
+          width: 84,
+          fixed_width: 84,
           filter_subject: {
             type: "Relationship",
             value: "processRequest.case_number",
@@ -509,7 +526,8 @@ export default {
           name: "__slot:case_number",
           sortable: true,
           default: true,
-          width: 220,
+          width: 419,
+          fixed_width: 419,
           truncate: true,
           filter_subject: {
             type: "Relationship",
@@ -526,24 +544,12 @@ export default {
           resizable: false,
         },
         {
-          label: "Process",
-          field: "process",
-          sortable: true,
-          default: true,
-          width: 140,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processRequest.name",
-          },
-          order_column: "process_requests.name",
-        },
-        {
           label: "Task",
           field: "element_name",
           sortable: true,
           default: true,
-          width: 140,
+          width: 135,
+          fixed_width: 135,
           truncate: true,
           filter_subject: { value: "element_name" },
           order_column: "element_name",
@@ -553,7 +559,8 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 100,
+          width: 183,
+          fixed_width: 183,
           filter_subject: { type: "Status" },
         },
         {
@@ -562,7 +569,8 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 140,
+          width: 200,
+          fixed_width: 200,
         },
         {
           label: "Draft",
@@ -580,14 +588,15 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 140,
+          width: 200,
+          fixed_width: 200,
         });
       }
       columns.push({
         label: "",
         field: "",
         sortable: false,
-        width: 140,
+        width: 180,
       });
       return columns;
     },
@@ -819,8 +828,8 @@ export default {
     redirectToTask(task) {
       window.location.href = this.openTask(task);
     },
-    redirectToRequest(processRequest) {
-      window.location.href = this.openRequest(processRequest);
+    redirectToRequest(task) {
+      window.location.href = this.openRequest(task.process_request);
     },
   },
 };
@@ -854,14 +863,43 @@ export default {
   color: #888;
   width: 32px;
   height: 32px;
+  border: 0;
 }
 .vertical-separator {
   display: inline-block;
   width: 1px;
   height: 24px;
   background-color: #ccc; /* Color del separador */
-  margin: 0 8px; /* Espaciado alrededor del separador */
+  margin: 0 1px; /* Espaciado alrededor del separador */
   vertical-align: middle; /* Alinear verticalmente con los botones */
+}
+.btn-light:hover {
+  background-color: #EDF1F6;
+  color: #888;
+}
+.task-hover-tooltip {
+  opacity: 1 !important;
+}
+.task-hover-tooltip .tooltip-inner {
+  background-color: #F2F6F7;
+  color: #556271;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 7px;
+  padding: 9px 12px 9px 12px;
+  border: 1px solid #CDDDEE
+}
+.task-hover-tooltip .arrow::before {
+  border-bottom-color: #CDDDEE !important;
+}
+.task-hover-tooltip .arrow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  border-width: 0 .4rem .4rem;
+  transform: translateY(3px);
+  border-color: transparent;
+  border-style: solid;
+  border-bottom-color: #F2F6F7;
 }
 </style>
 <style lang="scss" scoped>
