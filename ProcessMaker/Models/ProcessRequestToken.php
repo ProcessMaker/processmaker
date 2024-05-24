@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use DB;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
@@ -287,18 +288,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return new TokenAssignableUsers($query, $this);
     }
 
-    /**
-     * Get the BPMN definition of the element where the token is.
-     *
-     * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
-     */
-    public function getDefinition($asObject = false, $par = null)
+    private function getDefinitionFromOwner($asObject)
     {
-        if ($this->getOwner() && $this->getOwnerElement()) {
-            $element = $this->getOwnerElement();
+        $element = $this->getOwnerElement();
 
-            return $asObject ? $element : $element->getProperties();
-        }
+        return $asObject ? $element : $element->getProperties();
+    }
+
+    private function getDefinitionFromRequest($asObject)
+    {
         $request = $this->processRequest ?: $this->getInstance();
 
         if (!$request) {
@@ -308,11 +306,26 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $process = $request->processVersion ?: $request->process;
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
+
         if (!$element) {
             return [];
         }
 
         return $asObject ? $element->getBpmnElementInstance() : $element->getBpmnElementInstance()->getProperties();
+    }
+
+    /**
+     * Get the BPMN definition of the element where the token is.
+     *
+     * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
+     */
+    public function getDefinition($asObject = false, $par = null)
+    {
+        if ($this->getOwner() && $this->getOwnerElement()) {
+            return $this->getDefinitionFromOwner($asObject);
+        }
+
+        return $this->getDefinitionFromRequest($asObject);
     }
 
     /**
@@ -1167,13 +1180,29 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
     public function getElementDestinationAttribute(): ?string
     {
         $definition = $this->getDefinition();
-        $elementDestinationType = $definition['elementDestinationType'] ?? null;
+        $elementDestinationProp = $definition['elementDestination'] ?? null;
         $elementDestination = null;
+        $elementDestinationType = null;
+
+        try {
+            $elementDestinationProp = json_decode($elementDestinationProp, true);
+            if (is_array($elementDestinationProp) && array_key_exists('type', $elementDestinationProp)) {
+                $elementDestinationType = $elementDestinationProp['type'];
+            }
+        } catch (Exception $e) {
+            return null;
+        }
 
         switch ($elementDestinationType) {
             case 'customDashboard':
             case 'externalURL':
-                $elementDestination = $definition['elementDestinationURL'] ?? null;
+                if (array_key_exists('value', $elementDestinationProp)) {
+                    if (is_string($elementDestinationProp['value'])) {
+                        $elementDestination = $elementDestinationProp['value'];
+                    } else {
+                        $elementDestination = $elementDestinationProp['value']['url'] ?? null;
+                    }
+                }
                 break;
             case 'taskList':
                 $elementDestination = route('tasks.index');
