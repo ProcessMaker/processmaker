@@ -1170,30 +1170,34 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $elementDestinationType = $definition['elementDestinationType'] ?? null;
         $elementDestination = null;
 
-        if ($elementDestinationType) {
-            switch ($elementDestinationType) {
-                case 'customDashboard':
-                case 'externalURL':
-                    $elementDestination = $definition['elementDestinationURL'] ?? null;
-                    break;
-                case 'taskList':
-                    $elementDestination = route('tasks.index');
-                    break;
-                case 'homepageDashboard':
-                    if (hasPackage('package-dynamic-ui')) {
-                        $user = auth()->user();
-                        $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
-                    } else {
-                        $elementDestination = route('home');
-                    }
-                    break;
-                case 'processLaunchpad':
-                    $elementDestination = route('process.browser.index', ['process' => $this->process_id, 'categorySelected' => -1]);
-                    break;
-                case 'taskSource':
-                    $elementDestination = $elementDestinationType;
-                    break;
-            }
+        switch ($elementDestinationType) {
+            case 'customDashboard':
+            case 'externalURL':
+                $elementDestination = $definition['elementDestinationURL'] ?? null;
+                break;
+            case 'taskList':
+                $elementDestination = route('tasks.index');
+                break;
+            case 'homepageDashboard':
+                if (hasPackage('package-dynamic-ui')) {
+                    $user = auth()->user();
+                    $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+                } else {
+                    $elementDestination = route('home');
+                }
+                break;
+            case 'processLaunchpad':
+                $elementDestination = route('process.browser.index', [
+                    'process' => $this->process_id,
+                    'categorySelected' => -1
+                ]);
+                break;
+            case 'taskSource':
+                $elementDestination = $elementDestinationType;
+                break;
+            default:
+                $elementDestination = null;
+                break;
         }
 
         return $elementDestination;
