@@ -174,7 +174,7 @@
                                     id="headingMore"
                                 >
                                     <button
-                                        class="btn btn-custom-info show"
+                                        class="btn btn-custom-info"
                                         type="button"
                                         data-toggle="collapse"
                                         data-target="#collapseMore"
@@ -188,7 +188,7 @@
                                 </div>
                                 <div
                                     id="collapseMore"
-                                    class="collapse"
+                                    class="collapse show"
                                     aria-labelledby="headingMore"
                                 >
                                     <div class="card-body">
