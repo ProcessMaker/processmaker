@@ -174,7 +174,7 @@
                                     id="headingMore"
                                 >
                                     <button
-                                        class="btn btn-custom-info collapsed"
+                                        class="btn btn-custom-info show"
                                         type="button"
                                         data-toggle="collapse"
                                         data-target="#collapseMore"
