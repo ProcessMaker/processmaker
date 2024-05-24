@@ -138,7 +138,7 @@
                                                         __('Description')  .
                                                         '<small class="ml-1 required-text-color">*</small>',
                                                         [],
-                                                        false) 
+                                                        false)
                                                     !!}
                                                     {!! Form::textarea('description', null,
                                                         ['id' => 'description',
@@ -877,8 +877,8 @@
             text-transform: capitalize;
         }
         .btn-custom-info:after {
-            font-family: "Font Awesome 5 Free"; 
-            font-weight: 600; 
+            font-family: "Font Awesome 5 Free";
+            font-weight: 600;
             content: "\f0d7";";
         }
 
