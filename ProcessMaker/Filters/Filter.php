@@ -2,15 +2,17 @@
 
 namespace ProcessMaker\Filters;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Traits\InteractsWithRawFilter;
 
 class Filter
 {
+    use InteractsWithRawFilter;
+
     public const TYPE_PARTICIPANTS = 'Participants';
 
     public const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
@@ -32,8 +34,6 @@ class Filter
     public string $operator;
 
     public $value;
-
-    protected bool $usesRawValue = false;
 
     public array $or;
 
@@ -57,8 +57,9 @@ class Filter
         $this->subjectValue = Arr::get($definition, 'subject.value');
         $this->operator = $definition['operator'];
         $this->value = $definition['value'];
-        $this->usesRawValue = $this->containsRawValue($this->value ?? '');
         $this->or = Arr::get($definition, 'or', []);
+
+        $this->detectRawValue();
     }
 
     public static function filter(Builder $query, string|array $filterDefinitions): void
@@ -87,31 +88,7 @@ class Filter
         }
     }
 
-    /**
-     * Use regex to find the raw() pattern and extract its content
-     *
-     * @param  string|null  $value
-     *
-     * @return string
-     */
-    public function getRawValue(string $value = null): string
-    {
-        return Str::match('/(?<=raw\().*(?=\))/', $value ?? $this->value);
-    }
-
-    /**
-     * Determine if the value is using the raw() function
-     *
-     * @param  string  $value
-     *
-     * @return bool
-     */
-    public function containsRawValue(string $value): bool
-    {
-        return Str::contains($value, 'raw(');
-    }
-
-    private function apply($query)
+    private function apply($query): void
     {
         if ($valueAliasMethod = $this->valueAliasMethod()) {
             $this->valueAliasAdapter($valueAliasMethod, $query);
@@ -162,16 +139,20 @@ class Filter
      * @param [type] $query
      * @return void
      */
-    private function manuallyAddJsonWhere($query)
+    private function manuallyAddJsonWhere($query): void
     {
         $parts = explode('.', $this->subjectValue);
+
         array_shift($parts);
+
         $selector = implode('"."', $parts);
         $operator = $this->operator();
         $value = $this->value();
+
         if (!is_numeric($value)) {
-            $value = \DB::connection()->getPdo()->quote($value);
+            $value = DB::connection()->getPdo()->quote($value);
         }
+
         $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
     }
 
@@ -242,7 +223,7 @@ class Filter
         return explode('.', $this->subjectValue);
     }
 
-    private function value()
+    public function value()
     {
         if ($this->operator === 'contains') {
             return '%' . $this->value . '%';
@@ -252,8 +233,8 @@ class Filter
             return $this->value . '%';
         }
 
-        if ($this->usesRawValue) {
-            return DB::raw($this->getRawValue());
+        if ($this->filteringWithRawValue()) {
+            return $this->getParsedRawQueryValue();
         }
 
         return $this->value;
@@ -287,7 +268,7 @@ class Filter
         return $method;
     }
 
-    private function valueAliasAdapter(string $method, Builder $query)
+    private function valueAliasAdapter(string $method, Builder $query): void
     {
         $operator = $this->operator();
 
@@ -321,19 +302,20 @@ class Filter
         }, $values);
     }
 
-    private function filterByProcessId(Builder $query)
+    private function filterByProcessId(Builder $query): void
     {
         if ($query->getModel() instanceof ProcessRequestToken) {
             $query->whereIn('process_request_id', function ($query) {
-                $query->select('id')->from('process_requests')
-                    ->whereIn('process_id', (array) $this->value());
+                $query->select('id')
+                      ->from('process_requests')
+                      ->whereIn('process_id', (array) $this->value());
             });
         } else {
             $this->applyQueryBuilderMethod($query);
         }
     }
 
-    private function filterByRelationship(Builder $query)
+    private function filterByRelationship(Builder $query): void
     {
         $relationshipName = $this->relationshipSubjectTypeParts()[0];
         $query->whereHas($relationshipName, function ($rel) {
@@ -341,7 +323,7 @@ class Filter
         });
     }
 
-    private function filterByRequestData(Builder $query)
+    private function filterByRequestData(Builder $query): void
     {
         $query->whereHas('processRequest', function ($rel) {
             $this->applyQueryBuilderMethod($rel);
