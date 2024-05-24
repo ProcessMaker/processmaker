@@ -76,6 +76,7 @@
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in visibleHeaders"
+              :class="{ 'pm-table-filter-applied-tbody': column.filterApplied }"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -410,6 +411,9 @@ export default {
 .pm-table-filter-applied {
   color: #1572C2;
   background-color: #F2F8FE !important;
+}
+.pm-table-filter-applied-tbody {
+  background-color: rgba(247, 249, 251, 1) !important;
 }
 .pm-table-unread-row {
   background-color: #FFFDEA;

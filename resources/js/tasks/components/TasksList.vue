@@ -20,8 +20,6 @@
           v-for="(column, index) in visibleHeaders"
           v-slot:[column.field]
         >
-          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
-          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
           <div
             :key="index"
             style="display: inline-block"
@@ -53,6 +51,9 @@
             :viewConfig="getViewConfigFilter()"
             :container="''"
             :boundary="'viewport'"
+            :columnSortAsc="column.sortAsc"
+            :columnSortDesc="column.sortDesc"
+            :filterApplied="column.filterApplied"
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
@@ -67,6 +68,7 @@
         >
           <td
             v-for="(header, colIndex) in visibleHeaders"
+            :class="{ 'pm-table-filter-applied-tbody': header.filterApplied }"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -185,6 +187,7 @@
                   :title="item.title"
                   custom-class="task-hover-tooltip"
                   placement="bottom"
+                  :delay="0"
                 />
               </span>
             </slot>
