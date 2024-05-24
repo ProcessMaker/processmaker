@@ -72,16 +72,10 @@
                                         data-target="#collapseInfo"
                                         aria-expanded="true"
                                         aria-controls="collapseInfo"
-                                        @click="toogleInfoCollapsed()"
                                     >
                                         <span>
                                             {{__('Process Information')}}
                                         </span>
-                                        <b-icon
-                                            class="custom-size-icon"
-                                            :icon="getArrowIcon(infoCollapsed)"
-                                            aria-hidden="true"
-                                        />
                                     </button>
                                 </div>
                                 <div
@@ -180,23 +174,16 @@
                                     id="headingMore"
                                 >
                                     <button
-                                        class="btn btn-custom-info"
+                                        class="btn btn-custom-info collapsed"
                                         type="button"
                                         data-toggle="collapse"
                                         data-target="#collapseMore"
                                         aria-expanded="true"
                                         aria-controls="collapseMore"
-                                        @click="toogleMoreInfoCollapsed()"
                                     >
                                         <span>
                                             {{__('More Information')}}
                                         </span>
-                                        
-                                        <b-icon
-                                            class="custom-size-icon"
-                                            :icon="getArrowIcon(moreInfoCollapsed)"
-                                            aria-hidden="true"
-                                        />
                                     </button>
                                 </div>
                                 <div
@@ -640,8 +627,6 @@
                     translatedLanguages: [],
                     editTranslation: null,
                     activeTab: "",
-                    moreInfoCollapsed: false,
-                    infoCollapsed: true,
                 }
                 },
                 mounted() {
@@ -684,27 +669,6 @@
                     .then(response => {
                         this.screens = response.data.data;
                     });
-                },
-                /**
-                 * Change info arrow
-                 */
-                toogleInfoCollapsed() {
-                    this.infoCollapsed = !this.infoCollapsed;
-                },
-                /**
-                 * Change more info arrow
-                 */
-                toogleMoreInfoCollapsed() {
-                    this.moreInfoCollapsed = !this.moreInfoCollapsed;
-                },
-                /**
-                 * Get arrow for collapse
-                 */
-                getArrowIcon(collapseInfo) {
-                    if (collapseInfo) {
-                        return 'caret-up-fill'
-                    }
-                    return 'caret-down-fill'
                 },
                 resetErrors() {
                     this.errors = Object.assign({}, {
@@ -911,6 +875,15 @@
             letter-spacing: -0.02em;
             text-align: left;
             text-transform: capitalize;
+        }
+        .btn-custom-info:after {
+            font-family: "Font Awesome 5 Free"; 
+            font-weight: 600; 
+            content: "\f0d7";";
+        }
+
+        .btn-custom-info:not(.collapsed):after {
+            content: "\f0d8";
         }
 
         .btn-custom-info:focus {
