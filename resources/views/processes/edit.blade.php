@@ -273,7 +273,9 @@
                                                         label="title"
                                                     >
                                                         <span slot="noResult">
-                                                            {{ __('Oops! No elements found. Consider changing the search query.') }} 
+                                                            {{
+                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -303,7 +305,9 @@
                                                         group-label="label"
                                                     >
                                                         <span slot="noResult">
-                                                            {{__('Oops! No elements found. Consider changing the search query.')}}
+                                                            {{
+                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            }}
                                                         </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -324,7 +328,11 @@
                                                         group-values="items"
                                                         group-label="label"
                                                     >
-                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                                        <span slot="noResult">
+                                                            {{
+                                                                __('Oops! No elements found. Consider changing the search query.')
+                                                            }}
+                                                        </span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
@@ -332,7 +340,10 @@
                                                 </div>
                                                 <div class="form-group">
                                                     {!! Form::label('status', __('Status')) !!}
-                                                    <select-status v-model="formData.status" :multiple="false"></select-status>
+                                                    <select-status
+                                                        v-model="formData.status"
+                                                        :multiple="false"
+                                                    />
                                                 </div>
                                             </b-col>
                                         </b-row>
