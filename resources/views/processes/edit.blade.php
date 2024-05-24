@@ -116,7 +116,7 @@
                                 </small>
                             </div>
                             <div class="form-group p-0">
-                                {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                                {!! Form::label('cancelRequest', __('Cancel Case')) !!}
                                 <multiselect id="cancelRequest"
                                              v-model="canCancel"
                                              :options="activeUsersAndGroupsWithManager"

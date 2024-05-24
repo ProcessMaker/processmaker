@@ -134,7 +134,13 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
-
+    // Cases
+    Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    Route::get('cases/{request}', [RequestController::class, 'show'])->name('cases.show');
+    Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
+        ->where('type', 'all|in_progress|completed')
+        ->middleware('no-cache');
+    // Requests
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/{type?}', [RequestController::class, 'index'])
         ->where('type', 'all|in_progress|completed')

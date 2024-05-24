@@ -38,8 +38,8 @@ class GenerateMenus
             });
             $menu->group(['prefix' => 'requests'], function ($request_items) {
                 $request_items->add(
-                    __('Requests'),
-                    ['route' => 'requests.index', 'id' => 'requests']
+                    __('Cases'),
+                    ['route' => 'cases.index', 'id' => 'requests']
                 )->active('requests/*');
             });
             //@TODO change the index to the correct blade
@@ -141,21 +141,21 @@ class GenerateMenus
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));
-            $submenu->add(__('My Requests'), [
-                'route' => ['requests_by_type', ''],
+            $submenu->add(__('My Cases'), [
+                'route' => ['cases_by_type', ''],
                 'icon' => 'fa-id-badge',
             ]);
             $submenu->add(__('In Progress'), [
-                'route' => ['requests_by_type', 'in_progress'],
+                'route' => ['cases_by_type', 'in_progress'],
                 'icon' => 'fa-clipboard-list',
             ]);
             $submenu->add(__('Completed'), [
-                'route' => ['requests_by_type', 'completed'],
+                'route' => ['cases_by_type', 'completed'],
                 'icon' => 'fa-clipboard-check',
             ]);
             if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-                $submenu->add(__('All Requests'), [
-                    'route' => ['requests_by_type', 'all'],
+                $submenu->add(__('All Cases'), [
+                    'route' => ['cases_by_type', 'all'],
                     'icon' => 'fa-clipboard',
                 ]);
             }
