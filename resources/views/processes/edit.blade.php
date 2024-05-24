@@ -167,90 +167,6 @@
                                         </b-row>
                                     </div>
                                 </div>
-<<<<<<< HEAD
-=======
-                                <small class="form-text text-muted" v-if="! errors.name">
-                                    {{ __('This field has a limit of 200 characters when calculated') }}
-                                </small>
-                            </div>
-                            <div class="form-group p-0">
-                                {!! Form::label('cancelRequest', __('Cancel Case')) !!}
-                                <multiselect id="cancelRequest"
-                                             v-model="canCancel"
-                                             :options="activeUsersAndGroupsWithManager"
-                                             :multiple="true"
-                                             :show-labels="false"
-                                             placeholder="{{__('Type to search')}}"
-                                             track-by="id"
-                                             label="fullname"
-                                             group-values="items"
-                                             group-label="label">
-                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                <multiselect aria-label="{{ __('Cancel Screen') }}"
-                                             v-model="screenCancel"
-                                             :options="screens"
-                                             :multiple="false"
-                                             :show-labels="false"
-                                             placeholder="{{ __('Type to search') }}"
-                                             @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
-                                             track-by="id"
-                                             label="title">
-                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                                <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
-                            </div>
-                            <div class="form-group p-0">
-                                {!! Form::label('editData', __('Edit Data')) !!}
-                                <multiselect id="editData"
-                                             v-model="canEditData"
-                                             :options="activeUsersAndGroups"
-                                             :multiple="true"
-                                             :show-labels="false"
-                                             placeholder="{{__('Type to search')}}"
-                                             track-by="id"
-                                             label="fullname"
-                                             group-values="items"
-                                             group-label="label">
-                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
-                                <multiselect aria-label="{{ __('Request Detail Screen') }}"
-                                             v-model="screenRequestDetail"
-                                             :options="screens"
-                                             :multiple="false"
-                                             :show-labels="false"
-                                             placeholder="{{ __('Type to search') }}"
-                                             @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
-                                             track-by="id"
-                                             label="title">
-                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
-                                    <template slot="noOptions">
-                                        {{ __('No Data Available') }}
-                                    </template>
-                                </multiselect>
-                                <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('status', __('Status')) !!}
-                                <select-status v-model="formData.status" :multiple="false"></select-status>
->>>>>>> b07d1b7fd9794971029b065c0f9c77403caeeaff
                             </div>
                             <div class="card card-custom-info">
                                 <div
@@ -362,7 +278,7 @@
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group p-0">
-                                                    {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                                                    {!! Form::label('cancelRequest', __('Cancel Case')) !!}
                                                     <multiselect
                                                         id="cancelRequest"
                                                         v-model="canCancel"
