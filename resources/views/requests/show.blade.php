@@ -342,7 +342,7 @@
                           <li class="list-group-item">
                             <button type="button" class="btn btn-outline-custom btn-block" @click="onCancel"
                               aria-haspopup="dialog">
-                              {{ __('Cancel Case') }}
+                              {{ __('Cancel Request') }}
                             </button>
                           </li>
                         @endif
