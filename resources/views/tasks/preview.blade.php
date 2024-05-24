@@ -437,10 +437,10 @@
           });
 
           window.addEventListener('fillData', event => {       
-            const dataToUse = this.formData;
+            const newData = {};
             screenFields.forEach((field) => {
 
-              const existingValue = _.get(dataToUse, field, null);
+              const existingValue = _.get(this.formData, field, null);
               let quickFillValue;
 
               if (existingValue) {
@@ -451,8 +451,10 @@
                 quickFillValue = _.get(event.detail, field, null);
               }
               // Set the value. This handles nested values using dot notation in 'field' string
-              _.set(this.formData, field, quickFillValue);
+              _.set(newData, field, quickFillValue);
             });
+
+            this.formData = newData;
           });
 
           window.addEventListener('eraseData', event => {

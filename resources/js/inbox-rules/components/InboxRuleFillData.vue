@@ -48,23 +48,7 @@
         this.$emit("data", this.formData);
       },
       propInboxQuickFill() {
-        const dataToUse = this.formData;
-        this.propScreenFields.forEach((field) => {
-
-          const existingValue = _.get(dataToUse, field, null);
-          let quickFillValue;
-
-          if (existingValue) {
-            // If the value exists in the task data, don't overwrite it
-            quickFillValue = existingValue;
-          } else {
-            // use the value from the quick fill(
-            quickFillValue = _.get(this.propInboxQuickFill, field, null);
-          }
-          // Set the value. This handles nested values using dot notation in 'field' string
-          _.set(this.formData, field, quickFillValue);
-        });
-        this.iframeContentWindow.location.reload();
+        this.sendEvent("fillData", this.propInboxQuickFill);
       }
     },
     mounted() {
