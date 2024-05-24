@@ -59,12 +59,20 @@
                             id="nav-config"
                             role="tabpanel"
                             aria-labelledby="nav-config-tab"
+<<<<<<< HEAD
                         >
+=======
+                            >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                             <div class="card card-custom-info">
                                 <div
                                     class="card-header"
                                     id="headingInfo"
+<<<<<<< HEAD
                                 >
+=======
+                                    >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     <button
                                         class="btn btn-custom-info"
                                         type="button"
@@ -73,7 +81,11 @@
                                         aria-expanded="true"
                                         aria-controls="collapseInfo"
                                         @click="toogleInfoCollapsed()"
+<<<<<<< HEAD
                                     >
+=======
+                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                         <span>
                                             {{__('Process Information')}}
                                         </span>
@@ -81,24 +93,36 @@
                                             class="custom-size-icon"
                                             :icon="getArrowIcon(infoCollapsed)"
                                             aria-hidden="true"
+<<<<<<< HEAD
                                         />
+=======
+                                            />
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     </button>
                                 </div>
                                 <div
                                     id="collapseInfo"
                                     class="collapse show"
                                     aria-labelledby="headingInfo"
+<<<<<<< HEAD
                                 >
+=======
+                                    >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     <div class="card-body">
                                         <b-row>
                                             <b-col>
                                                 <div class="form-group">
+<<<<<<< HEAD
                                                     {!!Form::label('name',
                                                         __('Name') . '
                                                         <small class="ml-1 required-text-color">*</small>',
                                                         [],
                                                         false)
                                                     !!}
+=======
+                                                    {!!Form::label('name', __('Name') . '<small class="ml-1 required-text-color">*</small>', [], false)!!}
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                     {!!Form::text('name', null,
                                                         [ 'id'=> 'name',
                                                             'class'=> 'form-control',
@@ -111,7 +135,11 @@
                                                     <div
                                                         class="invalid-feedback"
                                                         role="alert" v-if="errors.name"
+<<<<<<< HEAD
                                                     >
+=======
+                                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.name[0]}}
                                                     </div>
                                                 </div>
@@ -121,6 +149,7 @@
                                                     api-list="process_categories"
                                                     v-model="formData.process_category_id"
                                                     :errors="errors.category"
+<<<<<<< HEAD
                                                 />
                                                 <div class="form-group">
                                                     <label class="typo__label">{{__('Process Manager')}}</label>
@@ -129,24 +158,39 @@
                                                         :multiple="false"
                                                         :class="{'is-invalid': errors.manager_id}"
                                                     >
+=======
+                                                    >
+                                                </category-select>
+                                                <div class="form-group">
+                                                    <label class="typo__label">{{__('Process Manager')}}</label>
+                                                    <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                     </select-user>
                                                     <div
                                                         v-if="errors.manager_id"
                                                         class="invalid-feedback"
                                                         role="alert"
+<<<<<<< HEAD
                                                     >
+=======
+                                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.manager_id[0]}}
                                                     </div>
                                                 </div>
                                             </b-col>
                                             <b-col>
                                                 <div class="form-group">
+<<<<<<< HEAD
                                                     {!! Form::label('description',
                                                         __('Description')  .
                                                         '<small class="ml-1 required-text-color">*</small>',
                                                         [],
                                                         false) 
                                                     !!}
+=======
+                                                    {!! Form::label('description', __('Description')  . '<small class="ml-1 required-text-color">*</small>', [], false) !!}
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                     {!! Form::textarea('description', null,
                                                         ['id' => 'description',
                                                             'rows' => 4,
@@ -159,7 +203,11 @@
                                                         class="invalid-feedback"
                                                         role="alert"
                                                         v-if="errors.description"
+<<<<<<< HEAD
                                                     >
+=======
+                                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.description[0]}}
                                                     </div>
                                                 </div>
@@ -168,8 +216,13 @@
                                                     api-get="projects"
                                                     api-list="projects"
                                                     v-model="selectedProjects"
+<<<<<<< HEAD
                                                     :errors="errors.projects"
                                                 />
+=======
+                                                    :errors="errors.projects">
+                                                </project-select>
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                             </b-col>
                                         </b-row>
                                     </div>
@@ -179,7 +232,11 @@
                                 <div
                                     class="card-header"
                                     id="headingMore"
+<<<<<<< HEAD
                                 >
+=======
+                                    >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     <button
                                         class="btn btn-custom-info"
                                         type="button"
@@ -188,7 +245,11 @@
                                         aria-expanded="true"
                                         aria-controls="collapseMore"
                                         @click="toogleMoreInfoCollapsed()"
+<<<<<<< HEAD
                                     >
+=======
+                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                         <span>
                                             {{__('More Information')}}
                                         </span>
@@ -197,14 +258,22 @@
                                             class="custom-size-icon"
                                             :icon="getArrowIcon(moreInfoCollapsed)"
                                             aria-hidden="true"
+<<<<<<< HEAD
                                         />
+=======
+                                            />
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     </button>
                                 </div>
                                 <div
                                     id="collapseMore"
                                     class="collapse"
                                     aria-labelledby="headingMore"
+<<<<<<< HEAD
                                 >
+=======
+                                    >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                     <div class="card-body">
                                         <b-row>
                                             <b-col>
@@ -217,11 +286,15 @@
                                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.case_title}'
                                                         ])
                                                     !!}
+<<<<<<< HEAD
                                                     <div
                                                         v-if="errors.case_title"
                                                         class="invalid-feedback"
                                                         role="alert"
                                                     >
+=======
+                                                    <div class="invalid-feedback" role="alert" v-if="errors.case_title">
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.case_title[0]}}
                                                     </div>
                                                     <small class="form-text text-muted" v-if="! errors.name">
@@ -230,6 +303,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
+<<<<<<< HEAD
                                                     <multiselect
                                                         aria-label="{{ __('Cancel Screen') }}"
                                                         v-model="screenCancel"
@@ -245,6 +319,19 @@
                                                         <span slot="noResult">
                                                             {{ __('Oops! No elements found. Consider changing the search query.') }}
                                                         </span>
+=======
+                                                    <multiselect aria-label="{{ __('Cancel Screen') }}"
+                                                                v-model="screenCancel"
+                                                                :options="screens"
+                                                                :multiple="false"
+                                                                :show-labels="false"
+                                                                placeholder="{{ __('Type to search') }}"
+                                                                @search-change="loadScreens($event)"
+                                                                @open="loadScreens()"
+                                                                track-by="id"
+                                                                label="title">
+                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
@@ -253,11 +340,16 @@
                                                         v-if="errors.screens"
                                                         class="invalid-feedback"
                                                         role="alert"
+<<<<<<< HEAD
                                                     >
+=======
+                                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.screens[0]}}
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
+<<<<<<< HEAD
                                                     {!! Form::label('requestDetailScreen',
                                                         __('Request Detail Screen'))
                                                     !!}
@@ -276,6 +368,20 @@
                                                         <span slot="noResult">
                                                             {{ __('Oops! No elements found. Consider changing the search query.') }} 
                                                         </span>
+=======
+                                                    {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
+                                                    <multiselect aria-label="{{ __('Request Detail Screen') }}"
+                                                                v-model="screenRequestDetail"
+                                                                :options="screens"
+                                                                :multiple="false"
+                                                                :show-labels="false"
+                                                                placeholder="{{ __('Type to search') }}"
+                                                                @search-change="loadScreens($event)"
+                                                                @open="loadScreens()"
+                                                                track-by="id"
+                                                                label="title">
+                                                        <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }} />
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
@@ -283,7 +389,11 @@
                                                     <div
                                                         v-if="errors.request_detail_screen_id"
                                                         class="invalid-feedback"
+<<<<<<< HEAD
                                                     >
+=======
+                                                        >
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         @{{errors.request_detail_screen_id[0]}}
                                                     </div>
                                                 </div>
@@ -291,6 +401,7 @@
                                             <b-col>
                                                 <div class="form-group p-0">
                                                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+<<<<<<< HEAD
                                                     <multiselect
                                                         id="cancelRequest"
                                                         v-model="canCancel"
@@ -306,6 +417,19 @@
                                                         <span slot="noResult">
                                                             {{__('Oops! No elements found. Consider changing the search query.')}}
                                                         </span>
+=======
+                                                    <multiselect id="cancelRequest"
+                                                                v-model="canCancel"
+                                                                :options="activeUsersAndGroupsWithManager"
+                                                                :multiple="true"
+                                                                :show-labels="false"
+                                                                placeholder="{{__('Type to search')}}"
+                                                                track-by="id"
+                                                                label="fullname"
+                                                                group-values="items"
+                                                                group-label="label">
+                                                        <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}} />
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
                                                         </template>
@@ -313,6 +437,7 @@
                                                 </div>
                                                 <div class="form-group p-0">
                                                     {!! Form::label('editData', __('Edit Data')) !!}
+<<<<<<< HEAD
                                                     <multiselect
                                                         id="editData"
                                                         v-model="canEditData"
@@ -325,6 +450,18 @@
                                                         group-values="items"
                                                         group-label="label"
                                                     >
+=======
+                                                    <multiselect id="editData"
+                                                                v-model="canEditData"
+                                                                :options="activeUsersAndGroups"
+                                                                :multiple="true"
+                                                                :show-labels="false"
+                                                                placeholder="{{__('Type to search')}}"
+                                                                track-by="id"
+                                                                label="fullname"
+                                                                group-values="items"
+                                                                group-label="label">
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                                                         <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                                                         <template slot="noOptions">
                                                             {{ __('No Data Available') }}
@@ -342,6 +479,7 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mt-2">
+<<<<<<< HEAD
                             {!! Form::button(__('Cancel'),
                                 ['class'=>'btn btn-outline-secondary button-custom',
                                 '@click' => 'onClose'])
@@ -350,6 +488,10 @@
                                 ['class'=>'btn btn-secondary ml-3 button-custom',
                                 '@click' => 'onUpdate'])
                             !!}
+=======
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary button-custom', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3 button-custom', '@click' => 'onUpdate']) !!}
+>>>>>>> 7aae519a13edbeb44bbf6f6a817e048639732fd2
                         </div>
 
                         {{-- Translations --}}
