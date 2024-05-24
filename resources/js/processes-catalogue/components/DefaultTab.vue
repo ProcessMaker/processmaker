@@ -53,7 +53,7 @@ export default {
 .title {
   color: var(--text-only, #556271);
   text-align: center;
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
@@ -63,7 +63,7 @@ export default {
 .title-section {
   color: var(--text-only, #556271);
   text-align: center;
-  font-family: "Open Sans";
+  font-family: "Open Sans", sans-serif;
   font-size: 15px;
   font-style: normal;
   font-weight: 400;
