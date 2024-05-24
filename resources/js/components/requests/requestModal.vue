@@ -123,7 +123,7 @@
           </svg>
         </div>
       </div>
-      <h4>{{ $t('Finding Requests available to you...') }}</h4>
+      <h4>{{ $t('Finding Cases available to you...') }}</h4>
     </div>
 
     <pagination

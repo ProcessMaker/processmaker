@@ -10,7 +10,7 @@
 
 @section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
-    __('Requests') => route('requests.index'),
+    __('Cases') => route('requests.index'),
     function() use ($title) { return [__($title), null]; }
 ]])
 @endsection
@@ -22,31 +22,31 @@
                 <counter-card
                     color="info"
                     icon="id-badge"
-                    link="{{ route('requests_by_type', ['type' => '']) }}"
-                    title="My Requests"
+                    link="{{ route('cases_by_type', ['type' => '']) }}"
                     url='requests?total=true&pmql=(status = "In Progress") AND (requester = "{{ Auth::user()->username }}")'
+                    :title="__('My Cases')"
                 ></counter-card>
                 <counter-card
                     color="success"
                     icon="clipboard-list"
-                    link="{{ route('requests_by_type', ['type' => 'in_progress']) }}"
-                    title="In Progress"
+                    link="{{ route('cases_by_type', ['type' => 'in_progress']) }}"
                     url='requests?total=true&pmql=(status = "In Progress")'
+                    :title="__('In Progress')"
                 ></counter-card>
                 <counter-card
                     color="primary"
                     icon="clipboard-check"
-                    link="{{ route('requests_by_type', ['type' => 'completed']) }}"
-                    title="Completed"
+                    link="{{ route('cases_by_type', ['type' => 'completed']) }}"
                     url='requests?total=true&pmql=(status = "Completed")'
+                    :title="__('Completed')"
                 ></counter-card>
                 @can('view-all_requests')
                     <counter-card
                         color="secondary"
                         icon="clipboard"
-                        link="{{ route('requests_by_type', ['type' => 'all']) }}"
-                        title="All Requests"
+                        link="{{ route('cases_by_type', ['type' => 'all']) }}"
                         url='requests?total=true'
+                        :title="__('All Cases')"
                     ></counter-card>
                 @endcan
             </counter-card-group>
