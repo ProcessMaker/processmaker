@@ -535,11 +535,17 @@
           redirectToTask(task, force = false) {
             this.redirect(`/tasks/${task}/edit`, force);
           },
-          closed(taskId) {
+          closed(taskId, elementDestination = null) {
             // avoid redirection if using a customized renderer
             if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (elementDestination) {
+              this.redirect(elementDestination);
+              return;
+            }
+
             this.redirect("/tasks");
           },
           claimTask() {
@@ -677,7 +683,7 @@
               screenFields.forEach((field) => {
                 _.set(draftData, field, _.get(this.formData, field));
               });
-                
+
               return ProcessMaker.apiClient
               .put("drafts/" + this.task.id, draftData)
               .then((response) => {

@@ -135,6 +135,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      */
     protected $appends = [
         'advanceStatus',
+        'elementDestination'
     ];
 
     /**
@@ -299,6 +300,11 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             return $asObject ? $element : $element->getProperties();
         }
         $request = $this->processRequest ?: $this->getInstance();
+
+        if (!$request) {
+            return [];
+        }
+
         $process = $request->processVersion ?: $request->process;
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
@@ -1151,5 +1157,45 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         $notification = new TaskReassignmentNotification($this);
         $this->user->notify($notification);
         event(new ActivityAssigned($this));
+    }
+
+    /**
+     * Determines the destination URL based on the element destination type specified in the definition.
+     *
+     * @return string|null
+     */
+    public function getElementDestinationAttribute(): ?string
+    {
+        $definition = $this->getDefinition();
+        $elementDestinationType = $definition['elementDestinationType'] ?? null;
+        $elementDestination = null;
+
+        if ($elementDestinationType) {
+            switch ($elementDestinationType) {
+                case 'customDashboard':
+                case 'externalURL':
+                    $elementDestination = $definition['elementDestinationURL'] ?? null;
+                    break;
+                case 'taskList':
+                    $elementDestination = route('tasks.index');
+                    break;
+                case 'homepageDashboard':
+                    if (hasPackage('package-dynamic-ui')) {
+                        $user = auth()->user();
+                        $elementDestination = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+                    } else {
+                        $elementDestination = route('home');
+                    }
+                    break;
+                case 'processLaunchpad':
+                    $elementDestination = route('process.browser.index', ['process' => $this->process_id, 'categorySelected' => -1]);
+                    break;
+                case 'taskSource':
+                    $elementDestination = $elementDestinationType;
+                    break;
+            }
+        }
+
+        return $elementDestination;
     }
 }
