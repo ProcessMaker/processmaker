@@ -213,6 +213,9 @@ jobs:
                   echo "...$dir_name [UPDATED]"
                 fi
               done
+              cd /opt/processmaker
+              sudo -u nginx php artisan optimize
+              supervisorctl restart all
             else
               echo "Not ProcessMaker."
             fi'
