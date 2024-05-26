@@ -188,8 +188,8 @@ jobs:
             has_php=$(ls /usr/bin | grep php)
             if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
               cd /opt/processmaker
-              cat composer.json
-              git status
+              cd /opt/packages/
+              ls -l
             else
               echo "Not ProcessMaker."
             fi'
