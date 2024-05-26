@@ -182,22 +182,21 @@ jobs:
           kubectl get pods --namespace=$namespace
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
-            echo "CHECKING POD: $pod"
+            echo ">> CHECKING POD: $pod"
             code='
             has_processmaker=$(ls /opt | grep processmaker)
             has_sudo=$(ls /usr/bin | grep sudo)
             has_php=$(ls /usr/bin | grep php)
             if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
-              pr_body=$(echo $pr_body | base64 -d)
-              echo "PR_BODY: $pr_body"
+              echo $pr_body | base64 -d > /tmp/pr_body
               cd /opt/processmaker
               cd /opt/packages/
               for dir in */ ; do
                 dir_name=${dir%/}
-                if [[ "$pr_body" == *"$dir_name"* ]]; then
-                  echo "Found $dir_name in PR body"
+                if grep -q "$dir_name" /tmp/pr_body; then
+                  echo "-- Found $dir_name in PR body"
                 else
-                  echo "$dir_name [!]"
+                  echo "-- $dir_name [!]"
                 fi
               done
             else
