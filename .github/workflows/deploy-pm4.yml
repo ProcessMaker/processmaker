@@ -185,6 +185,7 @@ jobs:
             kubectl exec -n $namespace $pod -- /bin/sh -c '
             if [ -d "/opt/processmaker" ]; then
               cd /opt/processmaker
+              pwd
               sudo -u nginx php artisan ci:update-package $CI_PROJECT $CI_PACKAGE_BRANCH ${{ github.event.pull_request.head.ref }} $namespace $pod
             else
               echo "Not ProcessMaker."
