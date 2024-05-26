@@ -182,6 +182,8 @@ jobs:
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
+            pr_body=$(jq -r .pull_request.body <<< "$GITHUB_EVENT")
+            echo "PR_BODY: $pr_body"
             kubectl exec -n $namespace $pod -- /bin/sh -c '
             has_processmaker=$(ls /opt | grep processmaker)
             has_sudo=$(ls /usr/bin | grep sudo)
@@ -189,7 +191,14 @@ jobs:
             if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
               cd /opt/processmaker
               cd /opt/packages/
-              ls -l
+              for dir in */ ; do
+                dir_name=${dir%/}
+                if [[ "$pr_body" == *"$dir_name"* ]]; then
+                  echo "Found $dir_name in PR body"
+                else
+                  echo "$dir_name not found in PR body"
+                fi
+              done
             else
               echo "Not ProcessMaker."
             fi'
