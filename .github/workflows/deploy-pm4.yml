@@ -183,7 +183,10 @@ jobs:
           echo "Pods: $pod_names"
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
-            kubectl exec -n $namespace $pod -- /bin/bash -c "cd /opt/processmaker && pwd"
+            kubectl exec -n $namespace $pod -- /bin/sh -c "
+              cd /opt/processmaker/vendor/processmaker
+              ls -l
+            "
           done
   deleteEKS:
     name: Delete Instance
