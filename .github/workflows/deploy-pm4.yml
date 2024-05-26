@@ -195,7 +195,8 @@ jobs:
                 dir_name=${dir%/}
                 if grep -q "ci:$dir_name:" /tmp/pr_body; then
                   cd $dir_name
-                  git pull
+                  git config --global --add safe.directory "/opt/packages/$dir_name"
+                  sudo -u nginx git pull
                   echo "...$dir_name [UPDATED]"
                 fi
               done
