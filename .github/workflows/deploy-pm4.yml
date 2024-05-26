@@ -183,8 +183,9 @@ jobs:
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
-            echo "PR_BODY: $pr_body"
             kubectl exec -n $namespace $pod -- /bin/sh -c '
+            echo "PR_BODY: $pr_body"
+            pr_body=$(echo $pr_body | tr -d "\n")
             has_processmaker=$(ls /opt | grep processmaker)
             has_sudo=$(ls /usr/bin | grep sudo)
             has_php=$(ls /usr/bin | grep php)
