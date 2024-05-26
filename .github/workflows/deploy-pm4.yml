@@ -167,6 +167,8 @@ jobs:
         run: |
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
+          echo "namespace: $namespace"
+          echo "jsonpath: {.items[*].metadata.name}"
           pod_names=$(kubectl get pods --namespace=$namespace -o jsonpath="{.items[*].metadata.name}")
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
