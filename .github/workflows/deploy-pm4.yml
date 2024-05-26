@@ -34,7 +34,7 @@ concurrency:
 jobs:
   imageEKS:
     name: build-docker-image-EKS
-    if: github.event.action != 'closed' && github.event.action != 'synchronize'
+    if: github.event.action != 'closed' && github.event.action != 'synchronize' && github.event.action != 'edited'
     runs-on: ${{ vars.RUNNER }}
     steps:
       - name: Set image name
@@ -77,7 +77,7 @@ jobs:
           docker push ${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}
   deployEKS:
     name: build-deploy-EKS
-    if: contains(github.event.pull_request.body, 'ci:deploy') && github.event.action != 'synchronize'
+    if: contains(github.event.pull_request.body, 'ci:deploy') && github.event.action != 'synchronize' && github.event.action != 'edited'
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
