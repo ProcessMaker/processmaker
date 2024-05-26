@@ -148,7 +148,7 @@ jobs:
   updateCode:
     name: Update Code Inside Deployed Instance
     if: github.event.action == 'synchronize'
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: self-hosted
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -168,7 +168,8 @@ jobs:
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
           echo "namespace: $namespace"
-          helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }}
+          # helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }} && helm repo update
+          kubectl get namespace/ci-$deploy-ns-pm4
           pod_names=$(kubectl get pods --namespace=$namespace -o jsonpath="{.items[*].metadata.name}")
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
