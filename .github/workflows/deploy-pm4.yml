@@ -184,7 +184,7 @@ jobs:
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
             kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='$pr_body'" && '
-            pr_body_decoded=$(echo $pr_body | base64 --decode)
+            pr_body=$(echo $pr_body | base64 --decode)
             echo "PR_BODY: $pr_body"
             has_processmaker=$(ls /opt | grep processmaker)
             has_sudo=$(ls /usr/bin | grep sudo)
