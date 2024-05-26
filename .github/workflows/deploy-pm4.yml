@@ -194,7 +194,9 @@ jobs:
               for dir in */ ; do
                 dir_name=${dir%/}
                 if grep -q "ci:$dir_name:" /tmp/pr_body; then
-                  echo "-- $dir_name [x]"
+                  cd $dir_name
+                  git pull
+                  echo "...$dir_name [UPDATED]"
                 fi
               done
             else
