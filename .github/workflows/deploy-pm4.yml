@@ -188,8 +188,8 @@ jobs:
             has_php=$(ls /usr/bin | grep php)
             if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
               cd /opt/processmaker
-              pwd
-              sudo -u nginx php artisan ci:update-package $CI_PROJECT $CI_PACKAGE_BRANCH ${{ github.event.pull_request.head.ref }} $namespace $pod
+              cat composer.json
+              git status
             else
               echo "Not ProcessMaker."
             fi'
