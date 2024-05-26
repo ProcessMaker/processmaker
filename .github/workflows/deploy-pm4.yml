@@ -183,7 +183,10 @@ jobs:
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
             kubectl exec -n $namespace $pod -- /bin/sh -c '
-            if [ -d "/opt/processmaker" ]; then
+            has_processmaker=$(ls /opt | grep processmaker)
+            has_sudo=$(ls /usr/bin | grep sudo)
+            has_php=$(ls /usr/bin | grep php)
+            if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
               cd /opt/processmaker
               pwd
               sudo -u nginx php artisan ci:update-package $CI_PROJECT $CI_PACKAGE_BRANCH ${{ github.event.pull_request.head.ref }} $namespace $pod
