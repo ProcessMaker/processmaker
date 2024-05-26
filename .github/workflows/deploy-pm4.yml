@@ -178,10 +178,8 @@ jobs:
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
-          echo "namespace: $namespace"
-          # helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }} && helm repo update
-          kubectl get pods --namespace=$namespace
-          pod_names=$(kubectl get pods --namespace=$namespace -o jsonpath="{.items[*].metadata.name}")
+          kubectl get pods --namespace=$namespace | tr ' ' '\n' | grep -vE '(-redis-|-soketi-)'
+          pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -vE '(-redis-|-soketi-)')
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
             kubectl exec -n $namespace $pod -- /bin/bash -c "cd /opt/processmaker && sudo -u nginx php artisan ci:update-package $CI_PROJECT $CI_PACKAGE_BRANCH ${{ github.event.pull_request.head.ref }} $namespace $pod"
