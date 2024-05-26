@@ -190,6 +190,8 @@ jobs:
             if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
               echo $pr_body | base64 -d > /tmp/pr_body
               cd /opt/processmaker
+              git config --global --add safe.directory "/opt/processmaker"
+              sudo -u nginx git status
               cd /opt/packages/
               for dir in */ ; do
                 dir_name=${dir%/}
