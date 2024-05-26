@@ -162,15 +162,13 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
       - name: Authenticate with Amazon EKS
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name pm4-eng
-          kubectl get svc  # List services to verify kubectl is working
+        run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
       - name: Update code with custom bash command inside all pods
         run: |
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
           echo "namespace: $namespace"
-          echo "jsonpath: {.items[*].metadata.name}"
+          helm repo add processmaker ${{ secrets.HELM_REPO }} --username ${{ secrets.HELM_USERNAME }} --password ${{ secrets.HELM_PASSWORD }}
           pod_names=$(kubectl get pods --namespace=$namespace -o jsonpath="{.items[*].metadata.name}")
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
