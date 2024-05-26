@@ -178,14 +178,14 @@ jobs:
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
-          pr_body=$(jq -r .pull_request.body < "$GITHUB_EVENT_PATH")
+          pr_body=$(jq -r .pull_request.body < "$GITHUB_EVENT_PATH" | base64)
           kubectl get pods --namespace=$namespace
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
-            kubectl exec -n $namespace $pod -- /bin/sh -c '
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='$pr_body'" && '
+            pr_body_decoded=\$(echo \$pr_body | base64 --decode)
             echo "PR_BODY: $pr_body"
-            pr_body=$(echo $pr_body | tr -d "\n")
             has_processmaker=$(ls /opt | grep processmaker)
             has_sudo=$(ls /usr/bin | grep sudo)
             has_php=$(ls /usr/bin | grep php)
