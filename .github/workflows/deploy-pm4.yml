@@ -178,8 +178,9 @@ jobs:
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
-          kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -vE '(-redis-|-soketi-)
+          kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}"
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -vE '(-redis-|-soketi-)')
+          echo "Pods: $pod_names"
           for pod in $pod_names; do
             echo "Running custom update script in pod $pod"
             kubectl exec -n $namespace $pod -- /bin/bash -c "cd /opt/processmaker && pwd"
