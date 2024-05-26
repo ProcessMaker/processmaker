@@ -171,6 +171,7 @@
                 "package-versions": "dev-next",
                 "package-vocabularies": "dev-next",
                 "package-webentry": "dev-next",
+                "pm4-api-testing": "*",
                 "packages": "^0"
             },
             "docker-executors": {
