@@ -178,15 +178,17 @@ jobs:
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
-          kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}"
-          pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -vE '(-redis-|-soketi-)')
-          echo "Pods: $pod_names"
+          kubectl get pods --namespace=$namespace
+          pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
-            echo "Running custom update script in pod $pod"
-            kubectl exec -n $namespace $pod -- /bin/sh -c "
-              cd /opt/processmaker/vendor/processmaker
-              ls -l
-            "
+            echo "CHECKING POD: $pod"
+            kubectl exec -n $namespace $pod -- /bin/sh -c '
+            if [ -d "/opt/processmaker" ]; then
+              cd /opt/processmaker
+              sudo -u nginx php artisan ci:update-package $CI_PROJECT $CI_PACKAGE_BRANCH ${{ github.event.pull_request.head.ref }} $namespace $pod
+            else
+              echo "Not ProcessMaker."
+            fi'
           done
   deleteEKS:
     name: Delete Instance
