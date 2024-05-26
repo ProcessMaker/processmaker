@@ -193,10 +193,8 @@ jobs:
               cd /opt/packages/
               for dir in */ ; do
                 dir_name=${dir%/}
-                if grep -q "$dir_name" /tmp/pr_body; then
-                  echo "-- Found $dir_name in PR body"
-                else
-                  echo "-- $dir_name [!]"
+                if grep -q "ci:$dir_name:" /tmp/pr_body; then
+                  echo "-- $dir_name [x]"
                 fi
               done
             else
