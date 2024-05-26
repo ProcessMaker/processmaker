@@ -162,7 +162,9 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
       - name: Authenticate with Amazon EKS
-        run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name pm4-eng
+          kubectl get svc  # List services to verify kubectl is working
       - name: Update code with custom bash command inside all pods
         run: |
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
