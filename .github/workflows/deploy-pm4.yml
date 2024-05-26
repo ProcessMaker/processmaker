@@ -149,7 +149,6 @@ jobs:
     name: Update Code Inside Deployed Instance
     if: github.event.action == 'synchronize'
     runs-on: ${{ vars.RUNNER }}
-    needs: deployEKS
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
