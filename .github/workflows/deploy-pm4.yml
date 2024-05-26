@@ -183,7 +183,7 @@ jobs:
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
             echo "CHECKING POD: $pod"
-            code = '
+            code='
             pr_body=$(echo $pr_body | base64 --decode)
             echo "PR_BODY: $pr_body"
             has_processmaker=$(ls /opt | grep processmaker)
@@ -203,7 +203,7 @@ jobs:
             else
               echo "Not ProcessMaker."
             fi'
-            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='$pr_body';$code"
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}"
           done
   deleteEKS:
     name: Delete Instance
