@@ -1,48 +1,59 @@
 <template>
-    <div
-        ref="containercarousel"
-        @resize="updateSlideWidth"
-        class="carousel"
-        :style="{
-            '--var-sizes-sm': `${100 / sizes.sm}%`,
-            '--var-sizes-md': `${100 / sizes.md}%`,
-            '--var-sizes-lg': `${100 / sizes.lg}%`,
-            '--var-sizes-xl': `${100 / sizes.xl}%`,
-            '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
-        }">
-        <div
-            class="slides"
-            :style="{ transform: 'translateX(' + translateX + 'px)' }">
-            <div
-                class="slide"
-                v-for="(image, index) in images.length > 0 ? images : defaultImage"
-               :key="index">
-                <!-- <div
-                    ref="slides"
-                    class="content">
-                    {{ image.url }}
-                </div> -->
-                <img
-                  ref="slides"
-                  :src="image.url"
-                  :alt="process.name"
-                  class="content"
-                >
-            </div>
-        </div>
-        <button
-            class="prev"
-            @click="prevSlide">
-            Prev
-        </button>
-        <button
-            class="next"
-            @click="nextSlide">
-            Next
-        </button>
-    </div>
-</template>
+  <div class="h-100 w-100">
+    <button
+      class="prev"
+      @click="prevSlide"
+    >
+      <i class="fas fa-caret-left"></i>
+    </button>
+    <button
+      class="next"
+      @click="nextSlide"
+    >
+      <i class="fas fa-caret-right"></i>
+    </button>
 
+    <div
+      ref="containercarousel"
+      @resize="updateSlideWidth"
+      class="carousel"
+      :style="{
+        '--var-sizes-sm': `${100 / sizes.sm}%`,
+        '--var-sizes-md': `${100 / sizes.md}%`,
+        '--var-sizes-lg': `${100 / sizes.lg}%`,
+        '--var-sizes-xl': `${100 / sizes.xl}%`,
+        '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
+        '--var-sizes-3xl': `${100 / sizes['3xl']}%`,
+      }"
+    >
+      <div
+        class="slides"
+        :style="{ transform: 'translateX(' + translateX + 'px)' }"
+      >
+        <div
+          class="slide"
+          v-for="(image, index) in images.length > 0 ? images : defaultImage"
+          :key="index"
+        >
+          <iframe
+            v-if="image.type === 'embed'"
+            ref="slides"
+            class="content d-block iframe-carousel"
+            :src="image.url"
+            title="embed media"
+          />
+          <img
+            v-else
+            ref="slides"
+            class="content img-carousel"
+            :src="image.url"
+            :alt="process.name"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 <script>
 export default {
   props: {
@@ -56,51 +67,42 @@ export default {
       slide: 0,
       sliding: null,
       images: [],
-      defaultImage: Array(4).fill({ url: "/img/launchpad-images/defaultImage.svg" }),
+      defaultImage: Array(4).fill({
+        url: "/img/launchpad-images/defaultImage.svg",
+      }),
       interval: 0,
       resizeObserver: null,
-      items: [
-        { id: 1, text: "Slide 1" },
-        { id: 2, text: "Slide 2" },
-        { id: 3, text: "Slide 3" },
-        { id: 1, text: "Slide 4" },
-        { id: 2, text: "Slide 5" },
-        { id: 3, text: "Slide 6" },
-        { id: 1, text: "Slide 7" },
-        { id: 2, text: "Slide 8" },
-        { id: 3, text: "Slide 9" },
-        { id: 1, text: "Slide 10" },
-        { id: 2, text: "Slide 11" },
-        { id: 3, text: "Slide 12" },
-        // Add more items as needed
-      ],
       currentIndex: 0,
       slideWidth: 0,
       translateX: 0,
       sizes: {
         sm: 1,
-        md: 2,
-        lg: 3,
-        xl: 3,
-        "2xl": 3,
+        md: 1,
+        lg: 2,
+        xl: 2,
+        "2xl": 2,
+        "3xl": 3,
       },
     };
   },
   computed: {
     slideCount() {
-      return this.items.length;
+      return this.images.length;
     },
   },
   mounted() {
     this.getLaunchpadImages();
-    ProcessMaker.EventBus.$on("getLaunchpadImagesEvent", ({ indexImage, type }) => {
-      if (type === "delete") {
-        this.images.splice(indexImage, 1);
-      } else {
-        this.images = [];
-        this.getLaunchpadImages();
+    ProcessMaker.EventBus.$on(
+      "getLaunchpadImagesEvent",
+      ({ indexImage, type }) => {
+        if (type === "delete") {
+          this.images.splice(indexImage, 1);
+        } else {
+          this.images = [];
+          this.getLaunchpadImages();
+        }
       }
-    });
+    );
     this.slideWidth = this.$refs.slides[0].offsetWidth;
     this.resizeObserver = new ResizeObserver(this.updateSlideWidth);
     this.resizeObserver.observe(this.$refs.containercarousel);
@@ -109,12 +111,6 @@ export default {
     this.resizeObserver.unobserve(this.$refs.containercarousel);
   },
   methods: {
-    onSlideStart(slide) {
-      this.sliding = true;
-    },
-    onSlideEnd(slide) {
-      this.sliding = false;
-    },
     /**
      * Get images from Media library related to process.
      */
@@ -145,8 +141,8 @@ export default {
         });
     },
     updateSlideWidth() {
-      this.slideWidth = this.$refs.slides[0].offsetWidth;
-      this.translateX = this.slideWidth*(-this.currentIndex);
+      this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
+      this.translateX = this.slideWidth * -this.currentIndex - 10;
     },
     prevSlide() {
       if (this.currentIndex > 0) {
@@ -167,117 +163,137 @@ export default {
 .carousel-inner {
   overflow: hidden;
 }
+
 .img-carousel {
-  max-width: 800px;
-  height: 410px;
+  width: 100%;
+  height: auto;
   aspect-ratio: 16/9;
+  object-fit: fill;
+  border-radius: 16px;
 }
 .iframe-carousel {
-  border: 0px;
-  width: 800px;
-  height: 400px;
-}
-.carousel-container {
-  display: flex;
-  justify-content: center;
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: fill;
   border-radius: 16px;
-  background-color: #edf1f6;
 }
-@media (width <= 1500px) {
+
+@media (width <= 2560px) {
   .img-carousel {
-    max-width: 700px;
+ 
+    border: 2px solid red;
   }
 }
-@media (width <= 1366px) {
+@media (width <= 1920px) {
   .img-carousel {
-    max-width: 590px;
+  
+    border: 2px solid teal;
   }
 }
-@media (width <= 1200px) {
+@media (width <= 1440px) {
   .img-carousel {
-    max-width: 513px;
+   
+    border: 2px solid chartreuse;
+  }
+}
+@media (width <= 1280px) {
+  .img-carousel {
+   
     height: auto;
+    border: 2px solid blueviolet;
   }
 }
-@media (width <= 992px) {
+@media (width <= 1024px) {
   .img-carousel {
-    max-width: 486px;
+  
     height: auto;
+    border: 2px solid turquoise;
+  }
+}
+@media (width <= 768px) {
+  .img-carousel {
+  
+    height: auto;
+    border: 2px solid gold;
+  }
+}
+@media (width <= 640px) {
+  .img-carousel {
+  
+    height: auto;
+    border: 2px solid green;
   }
 }
 </style>
 <style>
 .carousel {
-    position: relative;
-    overflow: hidden;
-    container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
 }
-
 .slides {
-    display: flex;
-    transition: transform 0.3s ease;
+  display: flex;
+  transition: transform 0.3s ease;
 }
-
 .slide {
-    flex: 0 0 auto;
-    width: 100%;
+  flex: 0 0 auto;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
 }
-
 .content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 200px; /* Adjust height as needed */
-    background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
 }
 
 .prev,
 .next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  color: #556271;
 }
-
 .prev {
-    left: 0;
+  left: -10px;
+  background-color: #fff;
 }
-
 .next {
-    right: 0;
+  right: 10px;
+  background-color: #fff;
 }
-
-@container (min-width: 640px) {
-    .slide {
-        width: var(--var-sizes-sm);
-    }
+@media (min-width: 640px) {
+  .slide {
+    width: var(--var-sizes-sm);
+  }
 }
-
-@container (min-width: 768px) {
-    .slide {
-        width: var(--var-sizes-md);
-    }
+@media (min-width: 768px) {
+  .slide {
+    width: var(--var-sizes-md);
+  }
 }
-
-@container (min-width: 1024px) {
-    .slide {
-        width: var(--var-sizes-lg);
-    }
+@media (min-width: 1024px) {
+  .slide {
+    width: var(--var-sizes-lg);
+  }
 }
-
-@container (min-width: 1280px) {
-    .slide {
-        width: var(--var-sizes-xl);
-    }
+@media (min-width: 1280px) {
+  .slide {
+    width: var(--var-sizes-xl);
+  }
 }
-
-@container (min-width: 1536px) {
-    .slide {
-        width: var(--var-sizes-2xl);
-    }
+@media (min-width: 1536px) {
+  .slide {
+    width: var(--var-sizes-2xl);
+  }
+}
+@media (min-width: 1920px) {
+  .slide {
+    width: var(--var-sizes-3xl);
+  }
 }
 </style>
