@@ -201,7 +201,7 @@ jobs:
                 echo $pr_body | base64 -d > /tmp/pr_body
                 cd /opt/processmaker
                 git config --global --add safe.directory "/opt/processmaker"
-                sudo -u nginx git pull
+                sudo -u nginx git pull --rebase
                 cd /opt/packages/
                 for dir in */ ; do
                   dir_name=${dir%/}
