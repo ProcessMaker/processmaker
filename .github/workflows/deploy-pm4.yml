@@ -208,7 +208,7 @@ jobs:
                   if grep -q "ci:$dir_name:" /tmp/pr_body; then
                     cd "/opt/packages/$dir_name"
                     git config --global --add safe.directory "/opt/packages/$dir_name"
-                    sudo -u nginx git pull
+                    sudo -u nginx git pull --rebase
                     cd "/opt/processmaker"
                     sudo -u nginx php artisan "$dir_name:install"
                     cd "/opt/packages/"
