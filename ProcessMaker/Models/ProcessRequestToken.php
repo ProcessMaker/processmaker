@@ -288,6 +288,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return new TokenAssignableUsers($query, $this);
     }
 
+    /**
+     * Returns either the owner element or its properties
+     *
+     * @param asObject Boolean flag that determines whether the function should return the element directly or its
+     * properties as an object.
+     *
+     * @return If the parameter is true, the function will return the object. If is false, the
+     * function will return the properties of the object.
+     */
     private function getDefinitionFromOwner($asObject)
     {
         $element = $this->getOwnerElement();
@@ -295,6 +304,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         return $asObject ? $element : $element->getProperties();
     }
 
+    /**
+     * Retrieves a specific element's BPMN definition from a request object and returns either the element
+     * itself or its properties.
+     *
+     * @param asObject Boolean flag that determines whether the function should return the BPMN element instance
+     * as an object or just its properties.
+     *
+     * @return If `asObject` is false, the properties of the BPMN element instance are returned.
+     */
     private function getDefinitionFromRequest($asObject)
     {
         $request = $this->processRequest ?: $this->getInstance();
@@ -1172,26 +1190,9 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         event(new ActivityAssigned($this));
     }
 
-    /**
-     * Determines the destination URL based on the element destination type specified in the definition.
-     *
-     * @return string|null
-     */
-    public function getElementDestinationAttribute(): ?string
+    private function getElementDestination($elementDestinationType, $elementDestinationProp)
     {
-        $definition = $this->getDefinition();
-        $elementDestinationProp = $definition['elementDestination'] ?? null;
         $elementDestination = null;
-        $elementDestinationType = null;
-
-        try {
-            $elementDestinationProp = json_decode($elementDestinationProp, true);
-            if (is_array($elementDestinationProp) && array_key_exists('type', $elementDestinationProp)) {
-                $elementDestinationType = $elementDestinationProp['type'];
-            }
-        } catch (Exception $e) {
-            return null;
-        }
 
         switch ($elementDestinationType) {
             case 'customDashboard':
@@ -1227,8 +1228,32 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             default:
                 $elementDestination = null;
                 break;
+
         }
 
         return $elementDestination;
+    }
+
+    /**
+     * Determines the destination URL based on the element destination type specified in the definition.
+     *
+     * @return string|null
+     */
+    public function getElementDestinationAttribute(): ?string
+    {
+        $definition = $this->getDefinition();
+        $elementDestinationProp = $definition['elementDestination'] ?? null;
+        $elementDestinationType = null;
+
+        try {
+            $elementDestinationProp = json_decode($elementDestinationProp, true);
+            if (is_array($elementDestinationProp) && array_key_exists('type', $elementDestinationProp)) {
+                $elementDestinationType = $elementDestinationProp['type'];
+            }
+        } catch (Exception $e) {
+            return null;
+        }
+
+        return $this->getElementDestination($elementDestinationType, $elementDestinationProp);
     }
 }
