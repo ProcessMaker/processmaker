@@ -190,36 +190,87 @@ jobs:
           kubectl get pods --namespace=$namespace
           pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-)')
           for pod in $pod_names; do
-            echo ">> CHECKING POD: $pod"
+            echo "====================================="
+            echo "POD: $pod"
+            echo "====================================="
             code='
-            has_processmaker=$(ls /opt | grep processmaker)
-            has_sudo=$(ls /usr/bin | grep sudo)
-            has_php=$(ls /usr/bin | grep php)
-            if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
-              echo $pr_body | base64 -d > /tmp/pr_body
-              cd /opt/processmaker
-              git config --global --add safe.directory "/opt/processmaker"
-              sudo -u nginx git pull || true
-              cd /opt/packages/
-              for dir in */ ; do
-                dir_name=${dir%/}
-                if grep -q "ci:$dir_name:" /tmp/pr_body; then
-                  cd "/opt/packages/$dir_name"
-                  git config --global --add safe.directory "/opt/packages/$dir_name"
-                  sudo -u nginx git pull
-                  cd "/opt/processmaker"
-                  sudo -u nginx php artisan "$dir_name:install"
-                  cd "/opt/packages/"
-                  echo "...$dir_name [UPDATED]"
-                fi
-              done
-              cd /opt/processmaker
-              sudo -u nginx php artisan optimize
-              supervisorctl restart all
-            else
-              echo "Not ProcessMaker."
-            fi'
+              has_processmaker=$(ls /opt | grep processmaker)
+              has_sudo=$(ls /usr/bin | grep sudo)
+              has_php=$(ls /usr/bin | grep php)
+              if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
+                echo $pr_body | base64 -d > /tmp/pr_body
+                cd /opt/processmaker
+                git config --global --add safe.directory "/opt/processmaker"
+                sudo -u nginx git pull || true
+                cd /opt/packages/
+                for dir in */ ; do
+                  dir_name=${dir%/}
+                  if grep -q "ci:$dir_name:" /tmp/pr_body; then
+                    cd "/opt/packages/$dir_name"
+                    git config --global --add safe.directory "/opt/packages/$dir_name"
+                    sudo -u nginx git pull
+                    cd "/opt/processmaker"
+                    sudo -u nginx php artisan "$dir_name:install"
+                    cd "/opt/packages/"
+                  fi
+                done
+                cd /opt/processmaker
+                sudo -u nginx php artisan optimize
+                supervisorctl restart all
+              else
+                echo "Not ProcessMaker."
+              fi'
             kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}"
+          done
+  runAPITest:
+    name: Run API Tests
+    needs: [deployEKS, updateCode]
+    if: contains(github.event.pull_request.body, 'ci:api-test') && (needs.deployEKS.result == 'success' || needs.updateCode.result == 'success')
+    runs-on: self-hosted
+    steps:
+      - name: Clone private repository
+        run: |
+          git clone --depth 1 -b eng "https://$GITHUB_TOKEN@github.com/ProcessMaker/argocd.git" argocd
+      - name: Install pm4-tools
+        run: |
+          git clone --depth 1 -b "$K8S_BRANCH" "https://$GITHUB_TOKEN@github.com/ProcessMaker/pm4-k8s-distribution.git" pm4-k8s-distribution     
+          echo "versionHelm=$(grep "version:" "pm4-k8s-distribution/charts/enterprise/Chart.yaml" | awk '{print $2}' | sed 's/\"//g')" >> $GITHUB_ENV
+          cd pm4-k8s-distribution/images/pm4-tools
+          composer install --no-interaction
+          cd ..
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID1 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY1 }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Set up kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+      - name: Authenticate with Amazon EKS
+        run: aws eks update-kubeconfig --region us-east-1 --name pm4-eng
+      - name: Update code with custom bash command inside all pods
+        run: |
+          cd argocd 
+          deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
+          namespace="ci-$deploy-ns-pm4"
+          pr_body=$(jq -r .pull_request.body < "$GITHUB_EVENT_PATH" | base64)
+          kubectl get pods --namespace=$namespace
+          pod_names=$(kubectl get pods --namespace=$namespace --field-selector=status.phase=Running -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep -E '(-processmaker-scheduler-)')
+          for pod in $pod_names; do
+            code='
+              has_processmaker=$(ls /opt | grep processmaker)
+              has_sudo=$(ls /usr/bin | grep sudo)
+              has_php=$(ls /usr/bin | grep php)
+              if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
+                cd /opt/processmaker
+                sudo -u nginx php artisan pm4-api-testing:run
+              else
+                exit 1
+              fi'
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" && break || true
           done
   deleteEKS:
     name: Delete Instance
