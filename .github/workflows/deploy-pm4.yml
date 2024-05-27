@@ -225,7 +225,7 @@ jobs:
   runAPITest:
     name: Run API Tests
     needs: [deployEKS, updateCode]
-    if: contains(github.event.pull_request.body, 'ci:api-test')
+    if: always() && contains(github.event.pull_request.body, 'ci:api-test')
     runs-on: self-hosted
     steps:
       - name: Clone private repository
