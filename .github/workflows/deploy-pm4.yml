@@ -201,14 +201,21 @@ jobs:
                 echo $pr_body | base64 -d > /tmp/pr_body
                 cd /opt/processmaker
                 git config --global --add safe.directory "/opt/processmaker"
-                sudo -u nginx git pull --rebase
+                if ! git pull --rebase; then
+                  git stash
+                  git pull --rebase
+                  git stash pop
+                  if [[ $(git ls-files -u | wc -l) -gt 0 ]]; then
+                    git reset --hard HEAD
+                  fi
+                fi
                 cd /opt/packages/
                 for dir in */ ; do
                   dir_name=${dir%/}
                   if grep -q "ci:$dir_name:" /tmp/pr_body; then
                     cd "/opt/packages/$dir_name"
                     git config --global --add safe.directory "/opt/packages/$dir_name"
-                    sudo -u nginx git pull --rebase
+                    sudo -u nginx git pull
                     cd "/opt/processmaker"
                     sudo -u nginx php artisan "$dir_name:install"
                     cd "/opt/packages/"
