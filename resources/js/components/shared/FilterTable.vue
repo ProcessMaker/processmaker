@@ -369,6 +369,10 @@ export default {
   opacity: 0;
   visibility: hidden;
 }
+.pm-table-filter-applied .pm-table-filter-button {
+  opacity: 1;
+  visibility: visible;
+}
 .pm-table-ellipsis-column:hover .pm-table-filter-button {
   opacity: 1;
   visibility: visible;
