@@ -1,55 +1,44 @@
 <template>
-  <div class="process-description">
     <div class="col-sm-9">
-              <span class="title">
-                {{ $t('Details') }}
-              </span>
-              <p class="title-process">
-                {{ process.name }}
-              </p>
-              <p
-                v-if="readActivated || !largeDescription"
-                class="description"
-              >
-                {{ process.description }}
-              </p>
-              <p
-                v-if="!readActivated && largeDescription"
-                class="description"
-              >
-                {{ process.description.slice(0,300) }}
-                <a
-                  v-if="!readActivated"
-                  class="read-more"
-                  @click="activateReadMore"
-                >
-                  ...
-                </a>
-              </p>
-            </div>
-  </div>
+      <span class="title">
+        {{ $t('Details') }}
+      </span>
+      <p class="title-process">
+        {{ process.name }}
+      </p>
+      <p
+        v-if="readActivated || !largeDescription"
+        class="description"
+      >
+        {{ process.description }}
+      </p>
+      <p
+        v-if="!readActivated && largeDescription"
+        class="description"
+      >
+        {{ process.description.slice(0,300) }}
+        <a
+          v-if="!readActivated"
+          class="read-more"
+          @click="activateReadMore"
+        >
+          ...
+        </a>
+      </p>
+    </div>
 </template>
 <script>
 export default {
   props: ["process"],
   data() {
     return {
-      count: 0,
+      readActivated: false,
+      largeDescription: false,
     };
   },
-  mounted() {
-    //this.fetch();
-  },
   methods: {
-    fetch() {
-      ProcessMaker.apiClient
-        .get(`requests/${this.process.id}/count`)
-        .then((response) => {
-          this.count = response.data.meta.total;
-        })
-        .catch(() => {
-          this.count = 0;
-        });
+    activateReadMore() {
+      this.readActivated = true;
     },
   },
 };

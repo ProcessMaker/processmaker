@@ -1,5 +1,8 @@
 <template>
-  <div class="h-100 w-100">
+  <div
+    v-show="imagesLoaded"
+    class="h-100 w-100"
+  >
     <button
       class="prev"
       @click="prevSlide"
@@ -67,6 +70,7 @@ export default {
       slide: 0,
       sliding: null,
       images: [],
+      imagesLoaded: true,
       defaultImage: Array(4).fill({
         url: "/img/launchpad-images/defaultImage.svg",
       }),
@@ -87,7 +91,7 @@ export default {
   },
   computed: {
     slideCount() {
-      return this.images.length;
+      return this.images.length - 1;
     },
   },
   mounted() {
@@ -103,12 +107,21 @@ export default {
         }
       }
     );
-    this.slideWidth = this.$refs.slides[0].offsetWidth;
-    this.resizeObserver = new ResizeObserver(this.updateSlideWidth);
-    this.resizeObserver.observe(this.$refs.containercarousel);
+    this.$nextTick(() => {
+      this.updateSlideWidth();
+      this.resizeObserver = new ResizeObserver(this.updateSlideWidth);
+      if (this.$refs.containercarousel) {
+        this.resizeObserver.observe(this.$refs.containercarousel);
+      }
+    });
   },
-  destroyed() {
-    this.resizeObserver.unobserve(this.$refs.containercarousel);
+  beforeDestroy() {
+    if (this.resizeObserver && this.$refs.containercarousel) {
+      this.resizeObserver.unobserve(this.$refs.containercarousel);
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   },
   methods: {
     /**
@@ -135,14 +148,29 @@ export default {
               type: customProperties.type,
             });
           });
+          // If no images were loaded Carousel container is not shown
+          if (this.images.length === 0) {
+            this.imagesLoaded = false;
+          }
+          // If only one image is loaded, rest of carousel must be completed with default image
+          if (this.images.length === 1) {
+            for (let i = 1; i <= 3; i++) {
+              this.images[i] = {
+                url: "/img/launchpad-images/defaultImage.svg",
+                type: "image",
+              };
+            }
+          }
         })
         .catch((error) => {
           console.error(error);
         });
     },
     updateSlideWidth() {
-      this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
-      this.translateX = this.slideWidth * -this.currentIndex - 10;
+      if (this.$refs.slides && this.$refs.slides[0]) {
+        this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
+        this.translateX = this.slideWidth * -this.currentIndex - 10;
+      }
     },
     prevSlide() {
       if (this.currentIndex > 0) {
@@ -180,48 +208,34 @@ export default {
 
 @media (width <= 2560px) {
   .img-carousel {
- 
-    border: 2px solid red;
   }
 }
 @media (width <= 1920px) {
   .img-carousel {
-  
-    border: 2px solid teal;
   }
 }
 @media (width <= 1440px) {
   .img-carousel {
-   
-    border: 2px solid chartreuse;
   }
 }
 @media (width <= 1280px) {
   .img-carousel {
-   
     height: auto;
-    border: 2px solid blueviolet;
   }
 }
 @media (width <= 1024px) {
   .img-carousel {
-  
     height: auto;
-    border: 2px solid turquoise;
   }
 }
 @media (width <= 768px) {
   .img-carousel {
-  
     height: auto;
-    border: 2px solid gold;
   }
 }
 @media (width <= 640px) {
   .img-carousel {
-  
     height: auto;
-    border: 2px solid green;
   }
 }
 </style>
@@ -263,7 +277,7 @@ export default {
   background-color: #fff;
 }
 .next {
-  right: 10px;
+  right: 4px;
   background-color: #fff;
 }
 @media (min-width: 640px) {

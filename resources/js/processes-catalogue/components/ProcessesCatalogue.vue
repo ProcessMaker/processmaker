@@ -316,4 +316,10 @@ export default {
   height: calc(100vh - 145px);
   padding-left: 32px;
 }
+@media (width <= 1024px) {
+  .menu {
+    min-width: 0;
+    width: 0;
+  }
+}
 </style>
