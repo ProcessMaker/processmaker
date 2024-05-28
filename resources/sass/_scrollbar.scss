@@ -1,16 +1,19 @@
 /* Works on Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #6A7888 #f7f9fb;
+  scrollbar-color: rgba(73, 94, 109, 0.5) transparent;
 }
 /* Works on Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 *::-webkit-scrollbar-track {
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%), var(--icons-buttons-inter, #f7f9fb);
+  background-color: transparent;
+  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: #6A7888;
+  background-color: rgba(73, 94, 109, 0.5);
   border-radius: 4px;
 }
