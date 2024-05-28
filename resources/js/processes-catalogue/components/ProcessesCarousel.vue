@@ -267,7 +267,6 @@ export default {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  color: #fff;
   border: none;
   cursor: pointer;
   color: #556271;
