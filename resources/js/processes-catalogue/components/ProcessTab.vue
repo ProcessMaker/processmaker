@@ -29,6 +29,7 @@
 <script>
 import RequestTab from "./RequestTab.vue";
 import TaskTab from "./TaskTab.vue";
+
 export default {
   components: {
     RequestTab,
@@ -41,6 +42,9 @@ export default {
     process: {
       type: Object,
     },
+  },
+  mounted() {
+    sessionStorage.setItem("elementDestinationURL", window.location.href);
   },
 };
 </script>
