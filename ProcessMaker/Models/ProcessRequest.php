@@ -531,7 +531,6 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                 ];
             }
         }
-file_put_contents("/Users/user/Documents/work/.work/error.json", json_encode($result,JSON_PRETTY_PRINT)."\n",FILE_APPEND);
         return $result;
     }
 

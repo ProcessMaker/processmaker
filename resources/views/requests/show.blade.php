@@ -582,7 +582,6 @@
               options[option.key] = option.value;
             }
           });
-          console.log('datasumary',options);
           return options;
         },
         /**
