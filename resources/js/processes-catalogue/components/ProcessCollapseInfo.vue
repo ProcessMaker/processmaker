@@ -64,30 +64,6 @@
       >
         <div class="info-collapse">
           <div class="row">
-            <div class="col-sm-9">
-              <p class="title-process">
-                {{ process.name }}
-              </p>
-              <p
-                v-if="readActivated || !largeDescription"
-                class="description"
-              >
-                {{ process.description }}
-              </p>
-              <p
-                v-if="!readActivated && largeDescription"
-                class="description"
-              >
-                {{ process.description.slice(0,300) }}
-                <a
-                  v-if="!readActivated"
-                  class="read-more"
-                  @click="activateReadMore"
-                >
-                  ...
-                </a>
-              </p>
-            </div>
             <div class="wizard-container col-sm-3">
               <div class="wizard">
                 <b-button
@@ -106,12 +82,12 @@
             </div>
           </div>
           <b-row>
-            <b-col class="process-carousel col-sm-12 col-md-12 col-lg-12 col-xl-9 col-pm-9 col-9">
+            <b-col class="process-carousel col-12">
               <processes-carousel
                 :process="process"
               />
             </b-col>
-            <b-col class="process-options col-sm-12 col-md-12 col-lg-12 col-xl-3 col-pm-3 col-2">
+            <b-col class="process-options col-12">
               <process-options :process="process" />
             </b-col>
           </b-row>
@@ -284,5 +260,22 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
   }
+}
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+.prev {
+  left: 0;
+}
+.next {
+  right: 0;
 }
 </style>
