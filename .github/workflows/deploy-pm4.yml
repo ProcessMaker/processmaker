@@ -274,7 +274,7 @@ jobs:
               if [ ! -z "$has_processmaker" ] && [ ! -z "$has_sudo" ] && [ ! -z "$has_php" ]; then
                 echo $pr_body | base64 -d > /tmp/pr_body
                 cd /opt/processmaker
-                sudo -u nginx php artisan pm4-api-testing:run
+                sudo -u nginx php artisan pm4-api-testing:run --body="$pr_body"
               else
                 exit 1
               fi'
