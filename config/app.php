@@ -233,5 +233,5 @@ return [
 
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
 
-    'force_https' => env('FORCE_HTTPS', false),
+    'force_https' => env('FORCE_HTTPS', true),
 ];
