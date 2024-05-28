@@ -133,7 +133,6 @@ export default {
      * prepare data screen
      */
     dataSummary() {
-      console.log('okok090');
       let options = {};
       this.request.summary.forEach((option) => {
         if (option.type === 'datetime') {
