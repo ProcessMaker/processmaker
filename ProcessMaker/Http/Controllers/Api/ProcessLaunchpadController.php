@@ -24,7 +24,9 @@ class ProcessLaunchpadController extends Controller
         $processes = Process::nonSystem()->active();
         // Filter by category
         $category = $request->input('category', null);
-        if (!empty($category)) {
+        if ($category === 'recent') {
+            $processes->orderByRecentRequests();
+        } elseif (!empty($category)) {
             $processes->processCategory($category);
         }
         // Filter pmql
@@ -44,6 +46,7 @@ class ProcessLaunchpadController extends Controller
         // Get the processes
         $processes = $processes
             ->select('processes.*')
+            ->withRequestCount()
             ->orderBy('processes.name', 'asc')
             ->paginate($perPage);
 
@@ -120,9 +123,9 @@ class ProcessLaunchpadController extends Controller
         return response([], 204);
     }
 
-   /**
-    * Store the elements related to the carousel [IMAGE, EMBED URL]
-    */
+    /**
+     * Store the elements related to the carousel [IMAGE, EMBED URL]
+     */
     public function saveContentCarousel(Request $request, Process $process)
     {
         $contentCarousel = $request->input('imagesCarousel');
@@ -144,7 +147,6 @@ class ProcessLaunchpadController extends Controller
                         // Nothing
                         break;
                 }
-
             }
         }
     }

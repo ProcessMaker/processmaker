@@ -28,6 +28,9 @@
           variant="custom"
         />
       </div>
+      <div class="requests-count" v-if="process.requests_count">
+        {{ process.requests_count }}
+      </div>
       <div class="card-bookmark">
         <i
           :ref="`bookmark-${process.id}`"
@@ -120,7 +123,7 @@ export default {
     max-width: none;
     min-width: none;
     border-radius: 8px;
-    height: 150px;
+    height: 100px;
   }
 }
 .card-process:hover {
@@ -137,6 +140,24 @@ export default {
 }
 .card-img {
   border-radius: 16px;
+}
+.requests-count {
+  display: none;
+  float: right;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #F9E7C3;
+  margin-right: 8px;
+  
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+  }
 }
 .card-bookmark {
   float: right;

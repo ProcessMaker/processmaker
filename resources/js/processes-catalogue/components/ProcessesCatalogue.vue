@@ -35,8 +35,10 @@
           </div>
         </div>
       </div>
-      <div class="slide-control">
-        <a href="#" @click="showMenu = !showMenu">M</a>
+      <div class="slide-control" :class="{ 'slide-control-open' : showMenu }">
+        <a href="#" @click="showMenu = !showMenu">
+          <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
+        </a>
       </div>
       <div class="processes-info">
         <div
@@ -109,14 +111,16 @@ export default {
       listCategories: [],
       defaultOptions: [
         {
+          id: 'recent',
+          name: this.$t("Recent Cases"),
+        },
+        {
           id: -1,
           name: this.$t("All Processes"),
-          status: "ACTIVE",
         },
         {
           id: 0,
           name: this.$t("My Bookmarks"),
-          status: "ACTIVE",
         },
       ],
       fields: [],
@@ -369,7 +373,6 @@ export default {
     display: flex;
     .container-2 {
       background-color: #F7F9FB;
-      border-right: 2px solid rgba(0, 0, 0, 0.1);
       flex: 0 0 315px;
     }
 
@@ -386,12 +389,38 @@ export default {
 }
 .slide-control {
   flex: 0 0 10px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: pink;
+  border-left: 0;
+  border-right: 1px solid #DEE0E1;
   
   @media (max-width: $lp-breakpoint) {
     display: none;
   }
+
+  a {
+    position: relative;
+    left: 6px;
+    top: 40px;
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 40px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #DEE0E1;
+  }
+}
+
+.slide-control-open {
+  border-right: 0;
+  border-left: 1px solid #DEE0E1;
+
+  a {
+    left: -6px;
+  }
+  
 }
 
 .mobile-menu-control {

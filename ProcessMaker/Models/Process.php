@@ -1175,7 +1175,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                                         'params' => $webentryRouteConfig->parameters,
                                     ]
                                 );
-                            } catch (\Exception $e) {
+                            } catch (Exception $e) {
                                 \Log::info('*** Error: ' . $e->getMessage());
                             }
                         }
@@ -1250,7 +1250,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Process events relationship.
      *
-     * @return \ProcessMaker\Models\ProcessEvents
+     * @return ProcessEvents
      */
     public function events()
     {
@@ -1287,7 +1287,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Assignments of the process.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function assignments()
     {
@@ -1616,7 +1616,7 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     private function deleteUnusedCustomRoutes($url, $processId, $nodeId)
     {
         // Delete unused custom routes
-        $customRoute = webentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
+        $customRoute = WebentryRoute::where('process_id', $processId)->where('node_id', $nodeId)->first();
         if ($customRoute) {
             $customRoute->delete();
         }
@@ -1751,9 +1751,9 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                  ->orWhere('processes.description', 'like', $filter)
                  ->orWhere('processes.status', '=', $filterStr)
                  ->orWhereHas('user', function ($query) use ($filter) {
-                    $query->where('firstname', 'like', $filter)
-                        ->orWhere('lastname', 'like', $filter);
-                })
+                     $query->where('firstname', 'like', $filter)
+                         ->orWhere('lastname', 'like', $filter);
+                 })
                  ->orWhereIn('processes.id', function ($qry) use ($filter) {
                      $qry->select('assignable_id')
                          ->from('category_assignments')
@@ -1796,5 +1796,30 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     public function hasAlternative()
     {
         return true;
+    }
+
+    public function scopeOrderByRecentRequests($query)
+    {
+        return $query->orderByDesc(
+            ProcessRequest::select('id')
+                // User has participated
+                ->whereHas('tokens', function ($q) {
+                    $q->where('user_id', Auth::user()->id);
+                })
+                ->whereColumn('process_id', 'processes.id')
+                ->orderByDesc('id') // using ID because created_at is not indexed
+                ->limit(1)
+        );
+    }
+
+    public function scopeWithRequestCount($query)
+    {
+        return $query->withCount(['requests' => function ($query) {
+            return $query->where('status', 'ACTIVE')
+                // User has participated
+                ->whereHas('tokens', function ($q) {
+                    $q->where('user_id', Auth::user()->id);
+                });
+        }]);
     }
 }
