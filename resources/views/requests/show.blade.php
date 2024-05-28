@@ -578,6 +578,10 @@
               options[option.key] = moment(option.value).
                       tz(window.ProcessMaker.user.timezone).
                       format("MM/DD/YYYY HH:mm");
+            } else if (option.type === 'date') {
+              options[option.key] = moment(option.value).
+                  tz(window.ProcessMaker.user.timezone).
+                  format("MM/DD/YYYY");
             } else {
               options[option.key] = option.value;
             }
