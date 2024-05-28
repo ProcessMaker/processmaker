@@ -522,11 +522,17 @@
             `element_id=${this.task.element_id}&` +
             `process_id=${this.task.process_id}`;
           },
-          completed(processRequestId) {
+          completed(processRequestId, endEventDestination = null) {
             // avoid redirection if using a customized renderer
-            if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+
+            if (endEventDestination) {
+              this.redirect(endEventDestination);
+              return;
+            }
+
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {

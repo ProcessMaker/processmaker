@@ -1190,7 +1190,15 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
         event(new ActivityAssigned($this));
     }
 
-    private function getElementDestination($elementDestinationType, $elementDestinationProp)
+    /**
+     * Determines the destination based on the type of element destination property
+     *
+     * @param elementDestinationType Used to determine the type of destination for an element.
+     * @param elementDestinationProp Used to determine the properties of the destination for an element.
+     *
+     * @return string|null Returns the destination URL.
+     */
+    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?string
     {
         $elementDestination = null;
 
