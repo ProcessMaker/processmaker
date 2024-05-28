@@ -25,10 +25,6 @@
         type: Object,
         default: null
       },
-      propScreenFields: {
-        type: Array,
-        default: null
-      },
     },
     data() {
       return {
@@ -48,7 +44,8 @@
         this.$emit("data", this.formData);
       },
       propInboxQuickFill() {
-        this.sendEvent("fillData", this.propInboxQuickFill);
+        this.formData = _.merge({}, this.formData, this.propInboxQuickFill);
+        this.iframeContentWindow.location.reload();
       }
     },
     mounted() {
@@ -59,9 +56,8 @@
         this.$emit("submit", data);
       });
       this.receiveEvent('taskReady', () => {
-        this.sendEvent("fillData", this.inboxRuleData);
+        this.sendEvent("fillDataOverwriteExistingFields", this.inboxRuleData);
       });
-      
     },
     methods: {
       eraseData() {

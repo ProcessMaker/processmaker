@@ -66,7 +66,6 @@
           :task-id="taskId"
           :inbox-rule-data="data"
           :prop-inbox-quick-fill="propInboxData"
-          :prop-screen-fields="propScreenFields"
           @data="data = $event"
           @submit="submitButton = $event">
         </InboxRuleFillData>
@@ -96,7 +95,6 @@
         :prop-from-button ="'inboxRules'"
         :prop-columns="quickFillColumns"
         :prop-filters="filter"
-        :screen-fields="propScreenFields"
         @close="showQuickFillPreview = false"
         @quick-fill-data-inbox="fillWithQuickFillData"
         ></quick-fill-preview>
@@ -151,7 +149,6 @@
       return {
         columns: [],
         propInboxData: {},
-        propScreenFields: [],
         task: {},
         showQuickFillPreview: false,
         count: 0,
@@ -271,15 +268,8 @@
                   }
                 });
       }
-      this.getScreenFields(this.taskId);
     },
     methods: {
-      getScreenFields(taskId) {
-        ProcessMaker.apiClient.get('tasks/' + taskId + '/screen_fields/')
-          .then(response => {
-            this.propScreenFields = response.data;
-          });
-      },
       getTask(taskId) {
         if (this.task.process_id === null) {
           ProcessMaker.apiClient.get("tasks/" + taskId)

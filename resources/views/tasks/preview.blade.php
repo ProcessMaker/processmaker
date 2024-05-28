@@ -436,7 +436,7 @@
             this.validateForm = event.detail;
           });
 
-          window.addEventListener('fillData', event => {       
+          window.addEventListener('fillData', event => {
             const newData = {};
             screenFields.forEach((field) => {
 
@@ -455,6 +455,13 @@
             });
 
             this.formData = newData;
+          });
+          
+          // Used by inbox rules new/edit interface. With inbox rules, we always
+          // want to use all data saved in the inbox rule db record, regardless
+          // if the field exists or not.
+          window.addEventListener('fillDataOverwriteExistingFields', event => {
+            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
           });
 
           window.addEventListener('eraseData', event => {
