@@ -482,7 +482,7 @@ export default {
     },
     formatCaseTitle(processRequest, record) {
       let draftBadge = "";
-      if (record.draft) {
+      if (record.draft && record.status !== "CLOSED") {
         draftBadge = `<span class="badge badge-warning status-warning">
           ${this.$t("Draft")}
         </span>`;
