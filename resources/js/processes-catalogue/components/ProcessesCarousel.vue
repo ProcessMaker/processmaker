@@ -167,7 +167,7 @@ export default {
         });
     },
     updateSlideWidth() {
-      if (this.$refs.slides && this.$refs.slides[0]) {
+      if (this.$refs.slides?.[0]) {
         this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
         this.translateX = this.slideWidth * -this.currentIndex - 10;
       }
