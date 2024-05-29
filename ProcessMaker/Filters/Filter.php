@@ -234,7 +234,7 @@ class Filter
         }
 
         if ($this->filteringWithRawValue()) {
-            return $this->getParsedRawQueryValue();
+            return $this->getRawValue();
         }
 
         return $this->value;

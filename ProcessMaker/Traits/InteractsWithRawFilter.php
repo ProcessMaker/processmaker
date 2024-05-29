@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Database\Query\Expression;
 
 trait InteractsWithRawFilter
 {
@@ -14,74 +15,23 @@ trait InteractsWithRawFilter
      *
      * @var array
      */
-    private array $validRawFilterOperators = [
-        '=',
-        '!=',
-        '>',
-        '<',
-        '>=',
-        '<=',
-        'between',
-    ];
+    private array $validRawFilterOperators = ['=', '!=', '>', '<', '>=', '<='];
 
     /**
-     * Use regex to find the raw() pattern and extract its content
-     *
-     * @param  string|array|null  $value
-     *
-     * @return string
-     */
-    public function getRawValue(string|array $value = null): mixed
-    {
-        $value = $value ?? $this->value ?? '';
-
-        if (!$this->containsRawValue($value)) {
-            return '';
-        }
-
-        $match = static function (string $string) {
-            return Str::match('/(?<=raw\().*(?=\))/', $string);
-        };
-
-        // If we receive a string, parse it and extract the
-        // value set for the raw() query
-        if (is_string($value)) {
-            return $match($value);
-        }
-
-        // Otherwise, we have an array which we need to iterate
-        // through and replace the values with the
-        // raw() query string
-        foreach ($value as $key => $string) {
-            $value[$key] = $match($string);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Returns the parsed DB::raw() instance to apply to the query
+     * Unwrap the raw() and retrieve the string value passed
      *
      * @return \Illuminate\Contracts\Database\Query\Expression
      */
-    public function getParsedRawQueryValue(): mixed
+    public function getRawValue(): Expression
     {
-        $value = $this->getRawValue();
+        // Get the string equivalent of the raw() filter value
+        $value = $this->containsRawValue($this->getValue()) ? $this->getValue() : '';
 
-        // If wer have an array, we need to iterate and replace
-        // the raw() query string with the filled
-        // out DB::raw() instances
-        if (is_array($value)) {
-            foreach ($value as $key => $string) {
-                $value[$key] = DB::raw($string);
-            }
-        } else {
-            // Otherwise, we have a string for the raw()
-            // value we can set and return
-            $value = DB::raw($value);
-        }
+        // Remove the actual row( and ) from the string
+        $unwrappedRawValue = $this->unwrapRawValue($value);
 
-        return $value;
+        // Wrap it in a DB expression and return it
+        return DB::raw($unwrappedRawValue);
     }
 
     /**
@@ -91,28 +41,10 @@ trait InteractsWithRawFilter
      *
      * @return bool
      */
-    public function containsRawValue(string|array $value): bool
+    public function containsRawValue(string $value): bool
     {
-        $containsRawValue = static function (string $string) {
-            return Str::contains($string, 'raw(')
-                && Str::endsWith($string, ')');
-        };
-
-        // If we receive a string, check it for the
-        // special raw() filtering
-        if (is_string($value)) {
-            return $containsRawValue($value);
-        }
-
-        // Otherwise, if we receive an array, check for the raw() \
-        // string to occur in ~any~ of its values
-        foreach ($value as $string) {
-            if ($containsRawValue($string)) {
-                return true;
-            }
-        }
-
-        return false;
+        return Str::contains($value, 'raw(')
+            && Str::endsWith($value, ')');
     }
 
     /**
@@ -122,9 +54,43 @@ trait InteractsWithRawFilter
      */
     protected function detectRawValue(): void
     {
-        if ($this->usesRawValue = $this->containsRawValue($this->value ?? '')) {
+        $value = $this->getValue();
+
+        // Sometimes, the value is an array, which likely means
+        // this filter is set to the use the "between" operator
+        $value = is_string($value) ? $value : '';
+
+        // Detect if this particular filter includes a raw() value
+        $this->usesRawValue = $this->containsRawValue($value);
+
+        // If so, validate it is being used with a compatible operator
+        if ($this->usesRawValue) {
             $this->validateOperator();
         }
+    }
+
+    /**
+     * Remove the initial "row(" and the final ")" to unwrap the filter value
+     *
+     * @param  string  $value
+     *
+     * @return string
+     */
+    protected function unwrapRawValue(string $value): string
+    {
+        $stripped = Str::after($value, 'raw(');
+
+        return Str::beforeLast($stripped, ')');
+    }
+
+    /**
+     * Get the string value of the filter
+     *
+     * @return array|string
+     */
+    protected function getValue(): mixed
+    {
+        return $this->value ?? '';
     }
 
     /**
