@@ -441,8 +441,6 @@ export default {
     this.setupColumns();
     this.getFilterConfiguration();
 
-    window.addEventListener('popstate', this.handlePageShow);
-
     const params = new URL(document.location).searchParams;
     const successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
@@ -450,13 +448,7 @@ export default {
     }
     this.$emit('onRendered', this);
   },
-  beforeDestroy() {
-    window.removeEventListener('popstate', this.handlePageShow);
-  },
   methods: {
-    handlePageShow() {
-      window.location.reload();
-    },
     markSelectedRow(value) {
       this.selectedRow = value;
     },
