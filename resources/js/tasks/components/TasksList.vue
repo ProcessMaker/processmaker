@@ -68,7 +68,7 @@
         >
           <td
             v-for="(header, colIndex) in visibleHeaders"
-            :class="{ 'pm-table-filter-applied-tbody': header.filterApplied }"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">

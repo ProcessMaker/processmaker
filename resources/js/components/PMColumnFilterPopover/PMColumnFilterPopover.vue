@@ -44,7 +44,7 @@
   export default {
     components: {
       PMColumnFilterForm,
-      PMColumnFilterIconThreeDots
+      PMColumnFilterIconThreeDots,
     },
     props: [
       "container",
@@ -60,7 +60,7 @@
       "hideSortingButtons",
       "columnSortAsc",
       "columnSortDesc",
-      "filterApplied"
+      "filterApplied",
     ],
     data() {
       return {
