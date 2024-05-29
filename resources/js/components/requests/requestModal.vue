@@ -14,7 +14,7 @@
         md="8"
       >
         <p>
-          {{ $t("We've made it easy for you to start a Case for the following Processes. Select a Process to start your Case.") }}
+          {{ $t("Select a Process below to get started.") }}
         </p>
       </b-col>
       <b-col
