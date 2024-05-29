@@ -141,12 +141,15 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->where('type', 'all|in_progress|completed')
         ->middleware('no-cache');
     // Requests
-    Route::get('requests', [RequestController::class, 'index'])->name('requests.index')->middleware('no-cache');
-    Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
-    Route::get('requests/{type?}', [RequestController::class, 'index'])
-        ->where('type', 'all|in_progress|completed')
-        ->name('requests_by_type')
-        ->middleware('no-cache');
+    Route::get('requests', function () {
+        return redirect()->route('cases.index');
+    })->name('requests.index')->middleware('no-cache');
+    Route::get('requests/{request}', function () {
+        return redirect()->route('cases.show');
+    })->name('requests.show');
+    Route::get('requests/{type?}', function ($type = null) {
+        return redirect()->route('cases_by_type', ['type' => $type]);
+    })->where('type', 'all|in_progress|completed')->name('requests_by_type')->middleware('no-cache');
     Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
     Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
