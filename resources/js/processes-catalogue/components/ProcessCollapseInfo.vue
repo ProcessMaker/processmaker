@@ -64,30 +64,6 @@
       >
         <div class="info-collapse">
           <div class="row">
-            <!-- <div class="col-sm-9">
-              <p class="title-process">
-                {{ process.name }}
-              </p>
-              <p
-                v-if="readActivated || !largeDescription"
-                class="description"
-              >
-                {{ process.description }}
-              </p>
-              <p
-                v-if="!readActivated && largeDescription"
-                class="description"
-              >
-                {{ process.description.slice(0,300) }}
-                <a
-                  v-if="!readActivated"
-                  class="read-more"
-                  @click="activateReadMore"
-                >
-                  ...
-                </a>
-              </p>
-            </div> -->
             <div class="wizard-container col-sm-3">
               <div class="wizard">
                 <b-button
@@ -109,6 +85,7 @@
             <b-col class="process-carousel col-12">
               <processes-carousel
                 :process="process"
+                :full-carousel="{ url: null, hideLaunchpad: false }"
               />
             </b-col>
             <b-col class="process-options col-12">
@@ -118,6 +95,22 @@
         </div>
       </div>
     </div>
+    
+    <!-- <div w-90 h-90 v-show="false">
+      <div class="card card-body">
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-angle-left"
+          @click="goBack"/>
+          <span style="margin-left: 10px;">Process Name 1 of 4</span>
+        </div>
+      </div>
+      </div>
+      <processes-carousel
+        :process="process"
+        :full-carousel="true"
+      />
+    </div> -->
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"

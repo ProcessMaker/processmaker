@@ -41,9 +41,10 @@
           <iframe
             v-if="image.type === 'embed'"
             ref="slides"
-            class="content d-block iframe-carousel"
+            class="content iframe-carousel"
             :src="image.url"
             title="embed media"
+            @click="handleClick(image.url, index)"
           />
           <img
             v-else
@@ -51,6 +52,7 @@
             class="content img-carousel"
             :src="image.url"
             :alt="process.name"
+            @click="handleClick(image.url, index)"
           />
         </div>
       </div>
@@ -64,9 +66,18 @@ export default {
       type: Object,
       required: true,
     },
+    fullCarousel: {
+      type: Object,
+      default: null,
+    },
+    indexSelectedImage: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
+      discountSlide: 1,
       slide: 0,
       sliding: null,
       images: [],
@@ -89,9 +100,39 @@ export default {
       },
     };
   },
+  watch: {
+    'fullCarousel.hideLaunchpad': {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.sizes = {
+            sm: 1,
+            md: 1,
+            lg: 1,
+            xl: 1,
+            "2xl": 1,
+            "3xl": 1,
+          };
+          this.discountSlide = 0;
+        } 
+      }
+    },
+    indexSelectedImage() {
+      console.log("Indice de la imagen selecionada: ", this.indexSelectedImage);
+      console.log("Indice actual en pantalla: ", this.currentIndex);
+      if (this.indexSelectedImage > this.currentIndex) {
+        this.currentIndex = this.indexSelectedImage - 1;
+        this.nextSlide();
+      }
+      if (this.indexSelectedImage < this.currentIndex) {
+        this.currentIndex--;
+        this.prevSlide();
+      }
+    },
+  },
   computed: {
     slideCount() {
-      return this.images.length - 1;
+      return this.images.length - this.discountSlide;
     },
   },
   mounted() {
@@ -124,6 +165,15 @@ export default {
     }
   },
   methods: {
+    handleClick(url, index) {
+      const data = {
+        "url" : url,
+        "hideLaunchpad" : true,
+        "objectImages" : this.images,
+        "imagePosition" : index,
+      };
+      this.$root.$emit("clickCarouselImage", data);
+    },
     /**
      * Get images from Media library related to process.
      */
