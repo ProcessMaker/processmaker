@@ -6,36 +6,33 @@
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
-    <div class="main">
-      <div class="menu" :class="{ 'menu-open' : showMenu }">
-        <div class="container-1">
-          <div class="container-2">
-            <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
-            <MenuCatologue
-              ref="categoryList"
-              title="Available Processes"
-              preicon="fas fa-play-circle"
-              class="mt-3"
-              show-bookmark="true"
-              :category-count="categoryCount"
-              :data="listCategories"
-              :from-process-list="fromProcessList"
-              :select="selectCategorie"
-              :filter-categories="filterCategories"
-              :permission="permission"
-              @wizardLinkSelect="wizardTemplatesSelected"
-              @addCategories="addCategories"
-              @selectedCategoryName="selectedCategoryName = $event"
-            />
-          </div>
-          <div class="mobile-slide-close" v-if="showMenu">
-            <b-button variant="secondary" @click="showMenu = false">
-              <i class="fa fa-times"></i>
-            </b-button>
-          </div>
+    <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
+    <div class="main" :class="{ 'menu-open' : showMenu }">
+      <div class="menu">
+        <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
+        <MenuCatologue
+          ref="categoryList"
+          title="Available Processes"
+          preicon="fas fa-play-circle"
+          class="pt-3 menu-catalog"
+          show-bookmark="true"
+          :category-count="categoryCount"
+          :data="listCategories"
+          :from-process-list="fromProcessList"
+          :select="selectCategorie"
+          :filter-categories="filterCategories"
+          :permission="permission"
+          @wizardLinkSelect="wizardTemplatesSelected"
+          @addCategories="addCategories"
+          @selectedCategoryName="selectedCategoryName = $event"
+        />
+        <div class="mobile-slide-close">
+          <b-button variant="light" @click="showMenu = false" size="lg">
+            <i class="fa fa-times"></i>
+          </b-button>
         </div>
       </div>
-      <div class="slide-control" :class="{ 'slide-control-open' : showMenu }">
+      <div class="slide-control">
         <a href="#" @click="showMenu = !showMenu">
           <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
         </a>
@@ -354,43 +351,72 @@ export default {
 }
 
 .menu {
-  width: 0px;
-  flex: 0 0 0px;
+  left: -100%;
   height: calc(100vh - 145px);
   overflow: hidden;
   margin-top: 15px;
-  transition: width 0.2s, flex 0.2s;
+  transition: flex 0.3s;
+  flex: 0 0 315px;
+
+  .menu-catalog {
+    background-color: #F7F9FB;
+    flex: 1;
+    width: 315px;
+  }
 
   @media (max-width: $lp-breakpoint) {
     position: absolute;
     z-index: 4; // above pagination
     display: flex;
     margin-top: 0;
-  }
-  
-  .container-1 {
-    // width: 315px;
-    display: flex;
-    .container-2 {
-      background-color: #F7F9FB;
-      flex: 0 0 315px;
-    }
-
-    .mobile-slide-close {
-      display: none;
-      padding-left: 10px;
-      padding-top: 10px;
-      @media (max-width: $lp-breakpoint) {
-        display: block;
-      }
-    }
-      
+    width: 85%;
+    transition: left 0.3s;
   }
 }
+
+.menu-mask {
+  display: none;
+  position: absolute;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 3;
+  transition: background-color 0.3s;
+  
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
+}
+
+.menu-mask.menu-open {
+  @media (max-width: $lp-breakpoint) {
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block;
+  }
+}
+
+.menu-open .menu {
+  flex: 0 0 0px;
+  @media (max-width: $lp-breakpoint) {
+    left: 0%;
+  }
+}
+
+.mobile-slide-close {
+  display: none;
+  padding-left: 10px;
+  padding-top: 10px;
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
+}
+
 .slide-control {
-  flex: 0 0 10px;
   border-left: 0;
   border-right: 1px solid #DEE0E1;
+  margin-left: 10px;
   
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -398,27 +424,27 @@ export default {
 
   a {
     position: relative;
-    left: 6px;
+    left: 10px;
     top: 40px;
     z-index: 5;
 
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 12px;
-    height: 40px;
+    width: 20px;
+    height: 60px;
     background-color: #ffffff;
-    border-radius: 6px;
+    border-radius: 10px;
     border: 1px solid #DEE0E1;
   }
 }
 
-.slide-control-open {
+.menu-open .slide-control {
   border-right: 0;
   border-left: 1px solid #DEE0E1;
 
   a {
-    left: -6px;
+    left: -10px;
   }
   
 }
@@ -436,15 +462,6 @@ export default {
   }
 }
 
-.menu-open {
-  width: 315px;
-  flex: 0 0 315px;
-
-  @media (max-width: $lp-breakpoint) {
-    width: 365px;
-    flex: 0 0 365px;
-  }
-}
 .menu-title {
   color: #556271;
   font-size: 22px;
@@ -452,6 +469,8 @@ export default {
   font-weight: 600;
   line-height: 46.08px;
   letter-spacing: -0.44px;
+  display: block;
+  width: 315px;
 
   @media (max-width: $lp-breakpoint) {
     display: none;

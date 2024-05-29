@@ -274,8 +274,6 @@ i {
   color: #6a7888;
 }
 #category-menu > .list-group {
-  max-height: 37vh;
-  min-height: 37vh;
   overflow-y: auto;
 }
 .list-group-item {
