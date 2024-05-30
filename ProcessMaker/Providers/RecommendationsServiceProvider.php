@@ -4,7 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Jobs\GenerateUserRecommendations;
 
 class RecommendationsServiceProvider extends ServiceProvider
@@ -14,7 +14,9 @@ class RecommendationsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        Event::listen(ActivityAssigned::class, function (ActivityAssigned $event) {
+        // The ActivityAssigned event is not listened for since we dispatch the
+        // GenerateUserRecommendations job at the end of the SmartInbox job.
+        Event::listen(ActivityCompleted::class, function ($event) {
             // Without relations to prevent huge sets of unnecessary
             // data from being serialized and passed to the job
             $processRequestToken = $event->getProcessRequestToken()->withoutRelations();

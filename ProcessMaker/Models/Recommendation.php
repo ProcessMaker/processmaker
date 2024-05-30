@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use ProcessMaker\Traits\HasUuids;
+use Illuminate\Database\Eloquent\Builder;
 
 class Recommendation extends ProcessMakerModel
 {
@@ -39,8 +40,13 @@ class Recommendation extends ProcessMakerModel
         parent::boot();
     }
 
-    public function users()
+    public function recommendationUsers()
     {
         return $this->hasMany(RecommendationUser::class, 'recommendation_id');
+    }
+
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('status', '=', 'ACTIVE');
     }
 }
