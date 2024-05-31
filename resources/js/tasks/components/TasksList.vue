@@ -163,7 +163,7 @@
               <span v-for="(item, index) in taskTooltipButtons" :key="index">
                 <span>
                   <b-button
-                    v-if="!verifyURL('saved-searches')"
+                    v-if="!verifyURL('saved-searches') || item.savedSearch"
                     :id="item.id"
                     class="icon-button"
                     :aria-label="item.title"
@@ -179,7 +179,7 @@
                   </b-button>
                 </span>
                 <span
-                  v-if="!verifyURL('saved-searches') && item.separator"
+                  v-if="(!verifyURL('saved-searches') || item.savedSearch) && item.separator"
                   class="vertical-separator"
                 />
                 <b-tooltip
@@ -322,6 +322,7 @@ export default {
           icon: "fas fa-eye",
           title: "Preview",
           separator: true,
+          savedSearch: false,
         },
         {
           id: "openCaseButton",
@@ -329,6 +330,7 @@ export default {
           click: this.redirectToRequest,
           imgSrc: "/img/smartinbox-images/open-case.svg",
           separator: true,
+          savedSearch: true,
         },
         {
           id: "openTaskButton",
@@ -336,6 +338,7 @@ export default {
           click: this.redirectToTask,
           icon: "fas fa-external-link-alt",
           separator: false,
+          savedSearch: true,
         },
       ],
       actions: [
