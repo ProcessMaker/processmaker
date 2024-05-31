@@ -57,8 +57,6 @@ class RecommendationEngine
             // the recommendations advanced filter
             Filter::filter($query, $recommendation->advanced_filter);
 
-            dump($query->count());
-
             // Set up the RecommendationUser query
             $recommendationUsersQuery = $recommendation->recommendationUsers()->where('user_id', '=', $this->user->id);
 
@@ -67,7 +65,8 @@ class RecommendationEngine
 
             // Check if there are enough results to satisfy the
             // minimum matches required by the recommendation
-            $minimumMatchesMet = ($count = $query->count()) < $recommendation->min_matches;
+            $count = $query->count();
+            $minimumMatchesMet = $count >= $recommendation->min_matches;
 
             // If we find the RecommendationUser records, we need
             // to make sure they're up-to-date
@@ -86,15 +85,11 @@ class RecommendationEngine
 
                         // Persist the updates
                         $recommendationUser->save();
-
-                        dump(['RecommendationUserUpdated' => $recommendationUser]);
                     } else {
                         // Otherwise, if the minimum matches are not met, we
                         // need to delete the existing RecommendationUser
                         // rows since they are now invalid
                         $recommendationUsersQuery->delete();
-
-                        dump(['RecommendationUserDeleted' => $recommendationUser]);
                     }
                 }
             } else if ($minimumMatchesMet) {
@@ -107,10 +102,6 @@ class RecommendationEngine
                 ]);
 
                 $recommendationUser->save();
-
-                dump(['RecommendationUserCreated' => $recommendationUser]);
-            } else {
-                dump(['NoRecommendationsForUser' => false]);
             }
         }
     }

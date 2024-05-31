@@ -8,6 +8,8 @@ class RecommendationUser extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 
+    protected $guarded = [];
+
     protected $casts = [
         'dismissed_until' => 'datetime',
         'count' => 'integer',

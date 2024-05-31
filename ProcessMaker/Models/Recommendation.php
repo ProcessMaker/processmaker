@@ -2,13 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use ProcessMaker\Traits\HasUuids;
 use Illuminate\Database\Eloquent\Builder;
 
 class Recommendation extends ProcessMakerModel
 {
-    use HasUuids;
-
     protected $connection = 'processmaker';
 
     protected $fillable = [
@@ -20,7 +17,7 @@ class Recommendation extends ProcessMakerModel
         'min_matches' => 'integer',
         'dismiss_for_secs' => 'integer',
         'actions' => 'array',
-        'advanced_filter' => 'json',
+        'advanced_filter' => 'array',
     ];
 
     protected $attributes = [
