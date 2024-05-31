@@ -42,6 +42,10 @@ class RecommendationEngine
      */
     public function generate(): void
     {
+        if (!self::enabled()) {
+            return;
+        }
+
         $recommendations = Recommendation::active()->get();
 
         foreach ($recommendations as $recommendation) {
@@ -119,5 +123,15 @@ class RecommendationEngine
                 $query->delete();
             }
         }
+    }
+
+    /**
+     * Recommendations engine globally enabled/disabled as a boolean
+     *
+     * @return bool
+     */
+    public static function enabled(): bool
+    {
+        return config('app.recommendations_enabled') === true;
     }
 }
