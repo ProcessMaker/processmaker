@@ -245,7 +245,7 @@ export default {
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
-  object-fit: fill;
+  object-fit: cover;
   border-radius: 16px;
 }
 .iframe-carousel {
@@ -302,7 +302,6 @@ export default {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  color: #fff;
   border: none;
   cursor: pointer;
   color: #556271;
@@ -321,7 +320,6 @@ export default {
   position: absolute;
   top: 60%;
   transform: translateY(-50%);
-  color: #fff;
   border: none;
   cursor: pointer;
   color: #556271;
