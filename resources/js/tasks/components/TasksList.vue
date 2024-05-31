@@ -600,7 +600,7 @@ export default {
       }
       columns.push({
         label: "",
-        field: "",
+        field: "options",
         sortable: false,
         width: 180,
       });
