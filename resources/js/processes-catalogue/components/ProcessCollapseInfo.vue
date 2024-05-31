@@ -96,21 +96,6 @@
       </div>
     </div>
     
-    <!-- <div w-90 h-90 v-show="false">
-      <div class="card card-body">
-      <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-angle-left"
-          @click="goBack"/>
-          <span style="margin-left: 10px;">Process Name 1 of 4</span>
-        </div>
-      </div>
-      </div>
-      <processes-carousel
-        :process="process"
-        :full-carousel="true"
-      />
-    </div> -->
     <create-template-modal
       id="create-template-modal"
       ref="create-template-modal"
@@ -277,22 +262,5 @@ export default {
     flex: 0 0 100%;
     max-width: 100%;
   }
-}
-.prev,
-.next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #333;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-}
-.prev {
-  left: 0;
-}
-.next {
-  right: 0;
 }
 </style>

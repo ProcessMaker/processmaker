@@ -214,7 +214,7 @@ export default {
         });
     },
     updateSlideWidth() {
-      if (this.$refs.slides && this.$refs.slides[0]) {
+      if (this.$refs.slides?.[0]) {
         this.slideWidth = this.$refs.slides[0].offsetWidth + 11;
         this.translateX = this.slideWidth * -this.currentIndex - 10;
       }
@@ -245,7 +245,7 @@ export default {
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
-  object-fit: cover;
+  object-fit: fill;
   border-radius: 16px;
 }
 .iframe-carousel {
@@ -334,6 +334,47 @@ export default {
 .next-full {
   right: 16px;
   background-color: #f7f9fb;
+}
+</style>
+<style>
+.carousel {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+.slides {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+.slide {
+  flex: 0 0 auto;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  cursor: pointer;
+  color: #556271;
+}
+.prev {
+  left: -10px;
+  background-color: #fff;
+}
+.next {
+  right: 4px;
+  background-color: #fff;
 }
 @media (min-width: 640px) {
   .slide {
