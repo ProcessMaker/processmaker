@@ -68,7 +68,7 @@
         >
           <td
             v-for="(header, colIndex) in visibleHeaders"
-            :class="{ 'pm-table-filter-applied-tbody': header.filterApplied }"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -477,7 +477,7 @@ export default {
     },
     formatCaseTitle(processRequest, record) {
       let draftBadge = "";
-      if (record.draft) {
+      if (record.draft && record.status !== "CLOSED") {
         draftBadge = `<span class="badge badge-warning status-warning">
           ${this.$t("Draft")}
         </span>`;

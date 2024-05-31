@@ -21,7 +21,7 @@
             :id="`${tableName}-column-${index}`"
             :key="index"
             class="pm-table-ellipsis-column"
-            :class="{ 'pm-table-filter-applied': column.filterApplied }"
+            :class="{ 'pm-table-filter-applied': column.filterApplied || column.sortAsc || column.sortDesc }"
             :style="{ width: column.fixed_width + 'px' }"
           >
             <div
@@ -76,7 +76,7 @@
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in visibleHeaders"
-              :class="{ 'pm-table-filter-applied-tbody': column.filterApplied }"
+              :class="{ 'pm-table-filter-applied-tbody': column.sortAsc || column.sortDesc }"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">

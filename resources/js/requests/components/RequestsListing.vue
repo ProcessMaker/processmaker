@@ -453,6 +453,9 @@ export default {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
               }),
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
             },
           )
           .then((response) => {

@@ -266,11 +266,10 @@ const PMColumnFilterCommonMixin = {
         this.tableHeaders[i].sortDesc = false;
       }
       for (let i in this.tableHeaders) {
-        if (this.tableHeaders[i].field === this.orderBy) {
+        if (this.orderBy.endsWith(this.tableHeaders[i].field)) {
           let sort = this.sortOrder[0].direction;
           this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
-          this.tableHeaders[i].filterApplied = true;
         }
       }
       for (let i in this.tableHeaders) {
