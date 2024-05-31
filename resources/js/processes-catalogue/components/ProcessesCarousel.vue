@@ -4,13 +4,13 @@
     class="h-100 w-100"
   >
     <button
-      class="prev"
+      :class="[fullPage ? 'prev-full' : 'prev']"
       @click="prevSlide"
     >
       <i class="fas fa-caret-left"></i>
     </button>
     <button
-      class="next"
+      :class="[fullPage ? 'next-full' : 'next']"
       @click="nextSlide"
     >
       <i class="fas fa-caret-right"></i>
@@ -41,7 +41,7 @@
           <iframe
             v-if="image.type === 'embed'"
             ref="slides"
-            class="content iframe-carousel"
+            :class="['content', fullPage ? 'iframe-carousel-full' : 'iframe-carousel']"
             :src="image.url"
             title="embed media"
             @click="handleClick(image.url, index)"
@@ -49,7 +49,7 @@
           <img
             v-else
             ref="slides"
-            class="content img-carousel"
+            :class="['content', fullPage ? 'img-carousel-full' : 'img-carousel']"
             :src="image.url"
             :alt="process.name"
             @click="handleClick(image.url, index)"
@@ -90,6 +90,7 @@ export default {
       currentIndex: 0,
       slideWidth: 0,
       translateX: 0,
+      fullPage: false,
       sizes: {
         sm: 1,
         md: 1,
@@ -114,20 +115,14 @@ export default {
             "3xl": 1,
           };
           this.discountSlide = 0;
+          this.fullPage = true;
         } 
       }
     },
     indexSelectedImage() {
-      console.log("Indice de la imagen selecionada: ", this.indexSelectedImage);
-      console.log("Indice actual en pantalla: ", this.currentIndex);
-      if (this.indexSelectedImage > this.currentIndex) {
+        this.currentIndex = 0;
         this.currentIndex = this.indexSelectedImage - 1;
         this.nextSlide();
-      }
-      if (this.indexSelectedImage < this.currentIndex) {
-        this.currentIndex--;
-        this.prevSlide();
-      }
     },
   },
   computed: {
@@ -166,13 +161,15 @@ export default {
   },
   methods: {
     handleClick(url, index) {
-      const data = {
-        "url" : url,
-        "hideLaunchpad" : true,
-        "objectImages" : this.images,
-        "imagePosition" : index,
-      };
-      this.$root.$emit("clickCarouselImage", data);
+      if(!this.fullPage) {
+        const data = {
+          "url" : url,
+          "hideLaunchpad" : true,
+          "countImages" : this.images.length,
+          "imagePosition" : index,
+          };
+        this.$root.$emit("clickCarouselImage", data);
+      }
     },
     /**
      * Get images from Media library related to process.
@@ -226,12 +223,14 @@ export default {
       if (this.currentIndex > 0) {
         this.currentIndex--;
         this.translateX += this.slideWidth;
+        this.$root.$emit("carouselImageSelected", this.currentIndex);
       }
     },
     nextSlide() {
       if (this.currentIndex < this.slideCount - 1) {
         this.currentIndex++;
         this.translateX -= this.slideWidth;
+        this.$root.$emit("carouselImageSelected", this.currentIndex);
       }
     },
   },
@@ -246,48 +245,34 @@ export default {
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
-  object-fit: fill;
+  object-fit: cover;
   border-radius: 16px;
 }
 .iframe-carousel {
   width: 100%;
   aspect-ratio: 16/9;
-  object-fit: fill;
+  object-fit: cover;
   border-radius: 16px;
 }
 
-@media (width <= 2560px) {
-  .img-carousel {
-  }
+.img-carousel-full {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-top: 2%;
+  margin-bottom: 2%;
 }
-@media (width <= 1920px) {
-  .img-carousel {
-  }
+.iframe-carousel-full {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-top: 2%;
+  margin-bottom: 2%;
 }
-@media (width <= 1440px) {
-  .img-carousel {
-  }
-}
-@media (width <= 1280px) {
-  .img-carousel {
-    height: auto;
-  }
-}
-@media (width <= 1024px) {
-  .img-carousel {
-    height: auto;
-  }
-}
-@media (width <= 768px) {
-  .img-carousel {
-    height: auto;
-  }
-}
-@media (width <= 640px) {
-  .img-carousel {
-    height: auto;
-  }
-}
+
 </style>
 <style>
 .carousel {
@@ -329,6 +314,26 @@ export default {
 .next {
   right: 4px;
   background-color: #fff;
+}
+
+.prev-full,
+.next-full {
+  position: absolute;
+  top: 60%;
+  transform: translateY(-50%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  color: #556271;
+}
+
+.prev-full {
+  left: 80px;
+  background-color: #f7f9fb;
+}
+.next-full {
+  right: 16px;
+  background-color: #f7f9fb;
 }
 @media (min-width: 640px) {
   .slide {

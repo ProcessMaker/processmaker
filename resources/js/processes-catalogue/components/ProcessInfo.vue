@@ -52,7 +52,7 @@ export default {
       selectCategory: 0,
       dataOptions: {},
       hideLaunchpad: true,
-      firstImage: 1,
+      firstImage: 0,
       lastImage: null,
       indexSelectedImage: 0,
     };
@@ -64,8 +64,12 @@ export default {
     };
     this.$root.$on("clickCarouselImage", (val) => {
       this.hideLaunchpad = !val.hideLaunchpad;
-      this.lastImage = val.objectImages.length;
+      this.lastImage = val.countImages;
       this.indexSelectedImage = val.imagePosition;
+      this.firstImage = this.indexSelectedImage + 1;
+    });
+    this.$root.$on("carouselImageSelected", (pos) => {
+      this.firstImage = pos + 1;
     });
   },
   methods: {
@@ -76,10 +80,6 @@ export default {
       this.$emit("goBackCategory");
     },
     closeFullCarousel() {
-      const data = {
-        "url" : null,
-        "hideLaunchpad" : false,
-      };
       this.$root.$emit("clickCarouselImage", false);
     }
   },
