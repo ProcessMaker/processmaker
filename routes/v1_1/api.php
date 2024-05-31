@@ -12,5 +12,9 @@ Route::prefix('api/1.1')
             // Route to list tasks
             Route::get('tasks', [TaskController::class, 'index'])
                 ->name('index');
+
+            // Route to show a task
+            Route::get('tasks/{task}', [TaskController::class, 'show'])
+                ->name('show');
         });
     });
