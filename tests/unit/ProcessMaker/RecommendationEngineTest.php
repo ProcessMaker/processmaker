@@ -4,6 +4,7 @@ namespace Tests\unit\ProcessMaker;
 
 use Tests\TestCase;
 use ProcessMaker\Models\User;
+use Illuminate\Support\Carbon;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Events\ActivityAssigned;
@@ -41,7 +42,7 @@ class RecommendationEngineTest extends TestCase
             'user_id' => $user->id,
             'process_request_id' => $processRequest->id,
             'process_id' => $processRequest->process_id,
-            'status' => 'ACTIVE'
+            'status' => 'active'
         ]);
 
         event(new ActivityAssigned($processRequestTokens->first()));
@@ -50,8 +51,21 @@ class RecommendationEngineTest extends TestCase
 
         $recommendationUser = RecommendationUser::first();
 
-        $this->assertEquals($recommendation->id, $recommendationUser->recommendation_id);
+        $this->assertTrue($recommendation->is($recommendationUser->recommendation));
 
-        $this->assertEquals($user->id, $recommendationUser->user_id);
+        $this->assertTrue($user->is($recommendationUser->user));
+
+        $this->assertEquals(1, $recommendation->recommendationUsers()->count());
+
+        $recommendationUser->dismissed_until = Carbon::parse($recommendationUser->dismissed_until)
+                                                     ->subtract('year', 1);
+
+        $recommendationUser->save();
+
+        $this->assertTrue($recommendationUser->isExpired());
+
+        $recommendationUser->dismiss();
+
+        $this->assertFalse($recommendationUser->isExpired());
     }
 }

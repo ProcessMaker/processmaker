@@ -17,7 +17,7 @@ class RecommendationUser extends ProcessMakerModel
 
     public function recommendation()
     {
-        return $this->hasOne(Recommendation::class);
+        return $this->belongsTo(Recommendation::class);
     }
 
     public function user()
@@ -32,6 +32,10 @@ class RecommendationUser extends ProcessMakerModel
      */
     public function isExpired(): bool
     {
+        if (null === $this->dismissed_until) {
+            return false;
+        }
+
         return Carbon::parse($this->dismissed_until)->isPast();
     }
 
@@ -46,7 +50,7 @@ class RecommendationUser extends ProcessMakerModel
 
         $dismissUntil = Carbon::now()->addSeconds($dismissFor);
 
-        $this->setAttribute('dismissed_until', $dismissUntil);
+        $this->dismissed_until = $dismissUntil;
 
         $this->save();
     }
