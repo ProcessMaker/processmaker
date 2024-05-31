@@ -4,6 +4,7 @@ namespace ProcessMaker;
 
 use ProcessMaker\Models\User;
 use ProcessMaker\Filters\Filter;
+use Illuminate\Database\Query\Builder;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -71,28 +72,8 @@ class RecommendationEngine
             // If we find the RecommendationUser records, we need
             // to make sure they're up-to-date
             if ($recommendationUsersExists) {
-                foreach ($recommendationUsersQuery->get() as $recommendationUser) {
-                    // If the minimum matches are met, then we can
-                    // update the existing RecommendationUser records
-                    if ($minimumMatchesMet) {
-                        // Update the matching count
-                        $recommendationUser->count = $count;
-
-                        // Check if the dismissed_until has passed
-                        if ($recommendationUser->isExpired()) {
-                            $recommendationUser->setAttribute('dismissed_until', null);
-                        }
-
-                        // Persist the updates
-                        $recommendationUser->save();
-                    } else {
-                        // Otherwise, if the minimum matches are not met, we
-                        // need to delete the existing RecommendationUser
-                        // rows since they are now invalid
-                        $recommendationUsersQuery->delete();
-                    }
-                }
-            } else if ($minimumMatchesMet) {
+                static::modifyExisting($recommendationUsersQuery, $minimumMatchesMet, $count);
+            } elseif ($minimumMatchesMet) {
                 // If the minimum number of matches is satisfied and the RecommendationUser
                 // records don't exist, we need to create them
                 $recommendationUser = (new RecommendationUser())->fill([
@@ -102,6 +83,40 @@ class RecommendationEngine
                 ]);
 
                 $recommendationUser->save();
+            }
+        }
+    }
+
+    /**
+     * Update or delete existing RecommendationUser records
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  bool  $minimumMatchesMet
+     * @param  int  $resultCount
+     *
+     * @return void
+     */
+    protected static function modifyExisting(Builder $query, bool $minimumMatchesMet, int $resultCount): void
+    {
+        foreach ($query->get() as $recommendationUser) {
+            // If the minimum matches are met, then we can
+            // update the existing RecommendationUser records
+            if ($minimumMatchesMet) {
+                // Update the matching count
+                $recommendationUser->count = $resultCount;
+
+                // Check if the dismissed_until has passed
+                if ($recommendationUser->isExpired()) {
+                    $recommendationUser->setAttribute('dismissed_until', null);
+                }
+
+                // Persist the updates
+                $recommendationUser->save();
+            } else {
+                // Otherwise, if the minimum matches are not met, we
+                // need to delete the existing RecommendationUser
+                // rows since they are now invalid
+                $query->delete();
             }
         }
     }
