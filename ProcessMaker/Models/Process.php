@@ -1162,25 +1162,30 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                         break;
 
                     default:
-                        if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
-                            $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
-                            try {
-                                WebentryRoute::updateOrCreate(
-                                    [
-                                        'process_id' => $this->id,
-                                        'node_id' => $webentryRouteConfig->nodeId,
-                                    ],
-                                    [
-                                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
-                                        'params' => $webentryRouteConfig->parameters,
-                                    ]
-                                );
-                            } catch (Exception $e) {
-                                \Log::info('*** Error: ' . $e->getMessage());
-                            }
-                        }
+                        $this->manageWebentryRoute($webEntryProperties);
                         break;
                 }
+            }
+        }
+    }
+
+    private function manageWebentryRoute($webEntryProperties)
+    {
+        if ($webEntryProperties->webentryRouteConfig->firstUrlSegment !== '') {
+            $webentryRouteConfig = $webEntryProperties->webentryRouteConfig;
+            try {
+                WebentryRoute::updateOrCreate(
+                    [
+                        'process_id' => $this->id,
+                        'node_id' => $webentryRouteConfig->nodeId,
+                    ],
+                    [
+                        'first_segment' => $webentryRouteConfig->firstUrlSegment,
+                        'params' => $webentryRouteConfig->parameters,
+                    ]
+                );
+            } catch (Exception $e) {
+                \Log::info('*** Error: ' . $e->getMessage());
             }
         }
     }
