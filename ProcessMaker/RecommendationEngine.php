@@ -2,12 +2,13 @@
 
 namespace ProcessMaker;
 
-use ProcessMaker\Models\User;
-use ProcessMaker\Filters\Filter;
 use Illuminate\Database\Query\Builder;
+use ProcessMaker\Filters\Filter;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RecommendationEngine
 {
@@ -42,13 +43,11 @@ class RecommendationEngine
      */
     public function generate(): void
     {
-        if (!self::enabled()) {
+        if (static::disabled()) {
             return;
         }
 
-        $recommendations = Recommendation::active()->get();
-
-        foreach ($recommendations as $recommendation) {
+        foreach (Recommendation::active()->get() as $recommendation) {
 
             // Build the base query
             $query = ProcessRequestToken::query();
@@ -63,44 +62,58 @@ class RecommendationEngine
             Filter::filter($query, $recommendation->advanced_filter);
 
             // Set up the RecommendationUser query
-            $recommendationUsersQuery = $recommendation->recommendationUsers()->where('user_id', '=', $this->user->id);
+            $recommendationUsersQuery = $recommendation->recommendationUsers(function (Builder $query) {
+                $query->where('user_id', '=', $this->user->id);
+            });
 
             // Check if this RecommendationUser exists
             $recommendationUsersExists = $recommendationUsersQuery->exists();
 
             // Check if there are enough results to satisfy the
             // minimum matches required by the recommendation
-            $count = $query->count();
-            $minimumMatchesMet = $count >= $recommendation->min_matches;
+            $minimumMatchesMet = $this->minimumMatchesMet($recommendation, ($count = $query->count()));
 
-            // If we find the RecommendationUser records, we need
-            // to make sure they're up-to-date
             if ($recommendationUsersExists) {
-                static::modifyExisting($recommendationUsersQuery, $minimumMatchesMet, $count);
+                // If we find the RecommendationUser records, we need
+                // to make sure they're up-to-date
+                $this->modifyExisting($recommendationUsersQuery, $minimumMatchesMet, $count);
             } elseif ($minimumMatchesMet) {
                 // If the minimum number of matches is satisfied and the RecommendationUser
                 // records don't exist, we need to create them
-                $recommendationUser = (new RecommendationUser())->fill([
-                    'count' => $count,
-                    'user_id' => $this->user->id,
-                    'recommendation_id' => $recommendation->id,
-                ]);
-
-                $recommendationUser->save();
+                $this->create($recommendation, $count);
             }
         }
     }
 
     /**
+     * Create a new RecommendationUser
+     *
+     * @param  \ProcessMaker\Models\Recommendation  $recommendation
+     * @param  int  $count
+     *
+     * @return void
+     */
+    protected function create(Recommendation $recommendation, int $count): void
+    {
+        $recommendationUser = (new RecommendationUser())->fill([
+            'count' => $count,
+            'user_id' => $this->user->id,
+            'recommendation_id' => $recommendation->id,
+        ]);
+
+        $recommendationUser->save();
+    }
+
+    /**
      * Update or delete existing RecommendationUser records
      *
-     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Relations\HasMany|\Illuminate\Database\Query\Builder  $query
      * @param  bool  $minimumMatchesMet
      * @param  int  $resultCount
      *
      * @return void
      */
-    protected static function modifyExisting(Builder $query, bool $minimumMatchesMet, int $resultCount): void
+    protected function modifyExisting(HasMany|Builder $query, bool $minimumMatchesMet, int $resultCount): void
     {
         foreach ($query->get() as $recommendationUser) {
             // If the minimum matches are met, then we can
@@ -126,12 +139,25 @@ class RecommendationEngine
     }
 
     /**
-     * Recommendations engine globally enabled/disabled as a boolean
+     * Check if the matches/result count satisfies the threshold set for the Recommendation
+     *
+     * @param  \ProcessMaker\Models\Recommendation  $recommendation
+     * @param  int  $count
      *
      * @return bool
      */
-    public static function enabled(): bool
+    protected function minimumMatchesMet(Recommendation $recommendation, int $count): bool
     {
-        return config('app.recommendations_enabled') === true;
+        return $count >= $recommendation->min_matches;
+    }
+
+    /**
+     * Indicates if the RecommendationEngine is turned on or off globally
+     *
+     * @return bool
+     */
+    public static function disabled(): bool
+    {
+        return config('app.recommendations_enabled') === false;
     }
 }

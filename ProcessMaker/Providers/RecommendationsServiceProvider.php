@@ -3,6 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\RecommendationEngine;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Jobs\GenerateUserRecommendations;
@@ -22,7 +23,7 @@ class RecommendationsServiceProvider extends ServiceProvider
             $processRequestToken = $event->getProcessRequestToken()->withoutRelations();
 
             // Dispatch the job to the low-priority queue
-            GenerateUserRecommendations::dispatch($processRequestToken)->onQueue('low');
+            GenerateUserRecommendations::dispatch($processRequestToken->user_id)->onQueue('low');
         });
     }
 }

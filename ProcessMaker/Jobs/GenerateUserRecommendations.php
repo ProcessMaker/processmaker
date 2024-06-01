@@ -3,33 +3,25 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Bus\Queueable;
-use ProcessMaker\Models\User;
-use ProcessMaker\Filters\Filter;
-use ProcessMaker\RecommendationEngine;
-use ProcessMaker\Models\Recommendation;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
+use ProcessMaker\RecommendationEngine;
 
 class GenerateUserRecommendations implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public ProcessRequestToken $token;
+    public User $user;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(ProcessRequestToken|int $token)
+    public function __construct(User|int $user)
     {
-        if (is_int($token)) {
-            $token = ProcessRequestToken::findOrFail($token)->withoutRelations();
-        }
-
-        $this->token = $token;
+        $this->user = $user instanceof User ? $user : User::findOrFail($user);
     }
 
     /**
@@ -37,6 +29,6 @@ class GenerateUserRecommendations implements ShouldQueue
      */
     public function handle(): void
     {
-        RecommendationEngine::for($this->token->user)->generate();
+        RecommendationEngine::for($this->user)->generate();
     }
 }

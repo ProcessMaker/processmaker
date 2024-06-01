@@ -2,8 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
-use Facades\ProcessMaker\InboxRules\ApplyAction;
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
+use ProcessMaker\InboxRules\MatchingTasks;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,12 +31,12 @@ class SmartInbox implements ShouldQueue
     {
         $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
 
-        $matchingInboxRules = MatchingTasks::matchingInboxRules($incomingTask);
+        $matchingInboxRules = app(MatchingTasks::class)->matchingInboxRules($incomingTask);
 
         foreach ($matchingInboxRules as $inboxRule) {
             SmartInboxApplyAction::dispatchSync($this->incomingTaskId, $inboxRule->id);
         }
 
-        GenerateUserRecommendations::dispatch($incomingTask)->onQueue('low');
+        GenerateUserRecommendations::dispatch($incomingTask->user_id)->onQueue('low');
     }
 }
