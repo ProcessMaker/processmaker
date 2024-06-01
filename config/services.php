@@ -59,4 +59,10 @@ return [
         'template_branch' => env('SCREEN_TEMPLATE_BRANCH', 'spring-2024'),
         'template_categories' => env('SCREEN_TEMPLATE_CATEGORIES', 'all'),
     ],
+
+    'recommendations_github' => [
+        'base_url' => 'https://raw.githubusercontent.com/processmaker/',
+        'repo' => env('RECOMMENDATIONS_REPO', 'pm4-recommendations'),
+        'branch' => env('RECOMMENDATIONS_BRANCH', 'develop'),
+    ],
 ];
