@@ -7,7 +7,7 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="d-flex">
-      <div class="menu">
+      <div class="menu" v-show="hideLaunchpad">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="categoryList"
@@ -113,6 +113,7 @@ export default {
       markCategory: false,
       fromProcessList: false,
       categoryCount: 0,
+      hideLaunchpad: true,
     };
   },
   mounted() {
@@ -126,6 +127,9 @@ export default {
         this.$refs.categoryList.selectTemplateItem();
       }
     }, 500);
+    this.$root.$on("clickCarouselImage", (val) => {
+        this.hideLaunchpad = !val.hideLaunchpad;
+    });
   },
   methods: {
     /**
@@ -315,5 +319,11 @@ export default {
   margin-right: 16px;
   height: calc(100vh - 145px);
   padding-left: 32px;
+}
+@media (width <= 1024px) {
+  .menu {
+    min-width: 0;
+    width: 0;
+  }
 }
 </style>
