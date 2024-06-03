@@ -38,20 +38,25 @@
         </a>
       </div>
       <div class="processes-info">
+
+        <!-- TODO: reimplement
         <div
           v-if="!showWizardTemplates && !showCardProcesses && !showProcess && !showProcessScreen"
           class="d-flex justify-content-center py-5"
         >
           <CatalogueEmpty />
         </div>
-        <div v-else>
+        <div> -->
           <div class="mobile-menu-control">
             <span @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
               {{ selectedCategoryName }}
             </span>
           </div>
+        
+          <router-view></router-view>
 
+          <!-- TODO: add to routes
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates && !showProcess"
             :key="key"
@@ -80,24 +85,21 @@
             v-if="showWizardTemplates"
             :template="guidedTemplates"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ProcessInfo from "./ProcessInfo.vue";
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
 import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
-import WizardTemplates from "./WizardTemplates.vue";
-import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess,
   },
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
@@ -257,20 +259,27 @@ export default {
      * Select a category and show display
      */
     selectCategorie(value) {
-      const url = new URL(window.location.href);
+      // const url = new URL(window.location.href);
 
-      // If url has Template Params, don't replace state.
-      if (!this.hasTemplateParams(url)) {
-        window.history.replaceState(null, null, "/process-browser");
-        this.key += 1;
-        this.category = value;
-        this.selectedProcess = null;
-        this.showCardProcesses = true;
-        this.guidedTemplates = false;
-        this.showWizardTemplates = false;
+      // // If url has Template Params, don't replace state.
+      // if (!this.hasTemplateParams(url)) {
+      //   window.history.replaceState(null, null, "/process-browser");
+      //   this.key += 1;
+      //   this.category = value;
+      //   this.selectedProcess = null;
+      //   this.showCardProcesses = true;
+      //   this.guidedTemplates = false;
+      //   this.showWizardTemplates = false;
+      // }
+
+      // this.showProcess = false;
+
+      console.log("selectCategorie", value);
+      if (!value) {
+        return;
       }
-
-      this.showProcess = false;
+      this.$router.push({ name: 'index', query: { categoryId: value.id } });
+      this.showMenu = false;
     },
     /**
      * Select a wizard templates and show display
@@ -281,7 +290,7 @@ export default {
         const url = new URL(window.location.href);
         if (!url.search.includes("?guided_templates=true")) {
           url.searchParams.append("guided_templates", true);
-          history.pushState(null, "", url); // Update the URL without triggering a page reload
+          // history.pushState(null, "", url); // Update the URL without triggering a page reload
         }
       }
 
@@ -490,10 +499,10 @@ export default {
     padding-left: 0;
   }
 }
-@media (width <= 1024px) {
-  .menu {
-    min-width: 0;
-    width: 0;
-  }
-}
+// @media (width <= 1024px) {
+//   .menu {
+//     min-width: 0;
+//     width: 0;
+//   }
+// }
 </style>

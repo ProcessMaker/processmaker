@@ -4,14 +4,7 @@
 @endsection
 @section('content_mobile')
   <div class="px-3 page-content mb-0" id="processes-catalogue">
-    <processes-catalogue
-      :process="{{$process ?? 0}}"
-      :current-user-id="{{ \Auth::user()->id }}"
-      :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
-      :current-user="{{ \Auth::user() }}"
-      is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
-    >
-    </processes-catalogue>
+    <processes-catalogue></processes-catalogue>
   </div>
 @endsection
 
@@ -22,6 +15,9 @@
   <script src="{{mix('js/processes-catalogue/index.js')}}"></script>
   <script>
     window.Processmaker.user = @json($currentUser);
+    window.Processmaker.is_documenter_installed = {{ \ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled() ? 'true' : 'false' }};
+    window.Processmaker.permission = {{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') ? 'true' : 'false' }};
+    window.Processmaker.can_create_processes = {{ \Auth::user()->can('create-processes') ? 'true' : 'false' }};
   </script>
 @endsection
 
