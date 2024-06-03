@@ -4,15 +4,6 @@
     class="card-process"
   >
     <b-card-text>
-      <div class="card-bookmark">
-        <i
-          :ref="`bookmark-${process.id}`"
-          v-b-tooltip.hover.bottom
-          :title="$t(labelTooltip)"
-          :class="bookmarkIcon()"
-          @click="checkBookmark(process)"
-        />
-      </div>
       <div
         class="card-info"
         @click="openInfo(process)"
@@ -35,6 +26,18 @@
           triggers="hover focus"
           :content="process.name"
           variant="custom"
+        />
+      </div>
+      <div class="requests-count" v-if="process.requests_count">
+        {{ process.requests_count }}
+      </div>
+      <div class="card-bookmark">
+        <i
+          :ref="`bookmark-${process.id}`"
+          v-b-tooltip.hover.bottom
+          :title="$t(labelTooltip)"
+          :class="bookmarkIcon()"
+          @click="checkBookmark(process)"
         />
       </div>
     </b-card-text>
@@ -101,7 +104,10 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+@import '~styles/variables';
+
 .card-process {
   max-width: 343px;
   min-width: 296px;
@@ -111,6 +117,14 @@ export default {
   margin-right: 1rem;
   border-radius: 16px;
   background-image: url("/img/launchpad-images/process_background.svg");
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 100px;
+  }
 }
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;
@@ -119,9 +133,31 @@ export default {
   padding: 32px;
   height: 100%;
   width: 100%;
+
+  @media (max-width: $lp-breakpoint) {
+    padding: 16px;
+  }
 }
 .card-img {
   border-radius: 16px;
+}
+.requests-count {
+  display: none;
+  float: right;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #F9E7C3;
+  margin-right: 8px;
+  
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+  }
 }
 .card-bookmark {
   float: right;
@@ -132,19 +168,37 @@ export default {
 }
 .card-text {
   height: 100%;
+  display: flex;
+  width: 100%;
+  
+  @media (max-width: $lp-breakpoint) {
+    align-items: center;
+  }
 }
 .card-info {
   cursor: pointer;
   height: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: baseline;
   justify-content: flex-end;
+
+  @media (max-width: $lp-breakpoint) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: normal;
+  }
 }
 .icon-process {
   width: 48px;
   height: 48px;
   margin-bottom: 16px;
+
+  @media (max-width: $lp-breakpoint) {
+    margin-bottom: 0;
+    margin-right: 10px;
+  }
 }
 .marked {
   color: #f5bC00;
