@@ -115,7 +115,8 @@
                                                     api-list="process_categories"
                                                     v-model="formData.process_category_id"
                                                     :errors="errors.category"
-                                                />
+                                                >
+                                                </category-select>
                                                 <div class="form-group">
                                                     <label class="typo__label">{{__('Process Manager')}}</label>
                                                     <select-user
