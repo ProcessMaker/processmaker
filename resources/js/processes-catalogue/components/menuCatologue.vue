@@ -249,7 +249,7 @@ export default {
       this.filterCategories(value);
     },
     hasPermission() {
-      return window.Processmaker.can_create_processes;
+      return this.permission.includes("create-processes");
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;

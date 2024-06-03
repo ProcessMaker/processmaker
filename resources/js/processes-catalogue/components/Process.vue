@@ -2,9 +2,12 @@
   <div v-if="selectedProcess">
     <ProcessInfo
       :process="selectedProcess"
+      :permission="permission"
     />
     <ProcessScreen
+      v-if="verifyScreen"
       :process="selectedProcess"
+      :permission="permission"
     />
     <wizard-templates
       :template="guidedTemplates"
@@ -18,7 +21,7 @@ import WizardTemplates from "./WizardTemplates.vue";
 import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
-  props: ["process", "processId", "guidedTemplates"],
+  props: ["process", "processId", "guidedTemplates", "permission", "isDocumenterInstalled"],
   components: {
     ProcessInfo, WizardTemplates, ProcessScreen
   },
@@ -41,14 +44,26 @@ export default {
       }
 
       return null;
-    }
+    },
+    /**
+     * Verify if the process open the info or Screen
+     */
+     verifyScreen() {
+      let screenId = 0;
+      const unparseProperties = this.process?.launchpad?.properties || null;
+      if (unparseProperties !== null) {
+        screenId = JSON.parse(unparseProperties)?.screen_id || 0;
+      }
+
+      return screenId !== 0;
+    },
   },
   mounted() {
     if (!this.process && this.processId) {
       ProcessMaker.apiClient
-        .get(`processes/${this.processId}`)
+        .get(`process_launchpad/${this.processId}`)
         .then((response) => {
-          this.loadedProcess = response.data;
+          this.loadedProcess = response.data[0];
         });
     }
   }

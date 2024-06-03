@@ -54,7 +54,7 @@
             </span>
           </div>
         
-          <router-view></router-view>
+          <router-view :permission="permission"></router-view>
 
           <!-- TODO: add to routes
           <CardProcess
@@ -274,7 +274,6 @@ export default {
 
       // this.showProcess = false;
 
-      console.log("selectCategorie", value);
       if (!value) {
         return;
       }
@@ -308,13 +307,13 @@ export default {
     openProcess(process) {
       this.showCardProcesses = false;
       this.guidedTemplates = false;
-      if (this.verifyScreen(process)) {
-        this.showProcess = false;
-        this.showProcessScreen = true;
-      } else {
-        this.showProcess = true;
-        this.showProcessScreen = false;
-      }
+      // if (this.verifyScreen(process)) {
+      //   this.showProcess = false;
+      //   this.showProcessScreen = true;
+      // } else {
+      //   this.showProcess = true;
+      //   this.showProcessScreen = false;
+      // }
       this.selectedProcess = process;
     },
     /**
@@ -322,18 +321,6 @@ export default {
      */
     returnedFromInfo() {
       this.selectCategorie(this.category);
-    },
-    /**
-     * Verify if the process open the info or Screen
-     */
-    verifyScreen(process) {
-      let screenId = 0;
-      const unparseProperties = process.launchpad?.properties || null;
-      if (unparseProperties !== null) {
-        screenId = JSON.parse(unparseProperties)?.screen_id || 0;
-      }
-
-      return screenId !== 0;
     },
     hasGuidedTemplateParamsOnly(url) {
       return url.search.includes("?guided_templates=true") && !url.search.includes("?guided_templates=true&template=");
