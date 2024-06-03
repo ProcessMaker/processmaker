@@ -48,7 +48,7 @@ class RequestTest extends TestCase
         $response = $this->webCall('GET', '/cases');
         $response->assertStatus(200);
         // check the correct view is called
-        $response->assertViewIs('cases.index');
+        $response->assertViewIs('requests.index');
     }
 
     /**
