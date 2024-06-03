@@ -81,6 +81,7 @@ window.VueMonaco = require("vue-monaco");
 
 window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
+window.Modeler = require("@processmaker/modeler");
 
 window.VueRouter = Router;
 
