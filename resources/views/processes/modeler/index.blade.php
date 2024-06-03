@@ -110,11 +110,7 @@ div.main {
         @if (is_bool($value))
           {{ $key }}
         @else
-          @if (str_contains($value, 'package-slideshow'))
-            type="module" {{ $key }}="{{ $value }}"
-          @else
           {{ $key }}="{{ $value }}"
-          @endif
         @endif
       @endforeach
       ></script>
