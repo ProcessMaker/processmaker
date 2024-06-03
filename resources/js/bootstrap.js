@@ -16,6 +16,7 @@ import VueI18Next from "@panter/vue-i18next";
 import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
+import * as vue from "vue";
 import VueCookies from "vue-cookies";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
@@ -68,7 +69,7 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = Vue;
-
+window.vue = vue;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
