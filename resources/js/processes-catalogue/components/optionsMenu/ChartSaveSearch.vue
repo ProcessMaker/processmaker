@@ -1,5 +1,8 @@
 <template>
   <div>
+    <span class="title">
+      {{ $t('Process Chart') }}
+    </span>
     <base-chart ref="baseChart" :process="process"></base-chart>
   </div>
 </template>
@@ -22,6 +25,13 @@ export default {
 </script>
 
 <style scoped>
+.title {
+  color: #1572C2;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
 .image-container {
   width: 100%;
   padding-top: 100%;

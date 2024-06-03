@@ -7,7 +7,7 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
-    <div class="main" :class="{ 'menu-open' : showMenu }">
+    <div class="main" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
       <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
@@ -137,6 +137,7 @@ export default {
       markCategory: false,
       fromProcessList: false,
       categoryCount: 0,
+      hideLaunchpad: true,
     };
   },
   mounted() {
@@ -150,6 +151,9 @@ export default {
         this.$refs.categoryList.selectTemplateItem();
       }
     }, 500);
+    this.$root.$on("clickCarouselImage", (val) => {
+        this.hideLaunchpad = !val.hideLaunchpad;
+    });
 
     // Show the menu by default when not on mobile
     if (!this.isMobile) {
@@ -484,6 +488,12 @@ export default {
   
   @media (max-width: $lp-breakpoint) {
     padding-left: 0;
+  }
+}
+@media (width <= 1024px) {
+  .menu {
+    min-width: 0;
+    width: 0;
   }
 }
 </style>
