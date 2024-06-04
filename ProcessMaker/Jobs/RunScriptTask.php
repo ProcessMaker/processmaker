@@ -99,9 +99,11 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
             $this->updateData($response);
         } catch (ConfigurationException $exception) {
+            $this->addDebugLog(get_class($this) . ": FAILED token={$token?->id} request={$instance->id} " . $exception->getMessage());
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
+            $this->addDebugLog(get_class($this) . ": FAILED token={$token?->id} request={$instance->id} " . $exception->getMessage());
             $message = $exception->getMessage();
             $finalAttempt = true;
             if ($errorHandling) {
@@ -153,6 +155,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
+        $this->addDebugLog(get_class($this) . ": FAILED request={$this->instanceId}" . $exception->getMessage());
         if (!$this->tokenId) {
             Log::error('Script failed: ' . $exception->getMessage());
 

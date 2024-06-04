@@ -108,9 +108,11 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             }
             $this->updateData($response);
         } catch (ConfigurationException $exception) {
+            $this->addDebugLog(get_class($this) . ": FAILED token={$token?->id} request={$instance->id} " . $exception->getMessage());
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
+            $this->addDebugLog(get_class($this) . ": FAILED token={$token?->id} request={$instance->id} " . $exception->getMessage());
             $finalAttempt = true;
             if ($errorHandling) {
                 [$message, $finalAttempt] = $errorHandling->handleRetries($this, $exception);
