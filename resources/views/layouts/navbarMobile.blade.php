@@ -1,12 +1,12 @@
 @php
   $showPrincipalNavbar = 1;
 
-  if (Request::path() !== 'tasks' && Request::path() !== 'requests' && Request::path() !== 'process-browser') {
+  if (Request::path() !== 'tasks' && Request::path() !== 'requests' && !str_starts_with(Request::path(), 'process-browser')) {
     $showPrincipalNavbar = 0;
   }
 @endphp
-<div class="flex-grow-1">
-  <div id="navbarMobile">
+<div>
+  <div id="navbarMobile" v-if="display">
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
         @php

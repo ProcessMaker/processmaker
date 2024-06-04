@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div class="mobile-process-nav bg-primary" v-if="showCustomMobileNav">
+      <div class="left">One</div>
+      <div>Two</div>
+      <div class="right">Three</div>
+    </div>
     <breadcrumbs
       ref="breadcrumb"
       :category="category ? category.name : ''"
@@ -7,7 +12,7 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
-    <div class="main" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
+    <div class="process-catalog-main px-3" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
       <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
@@ -105,6 +110,7 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
+      showCustomMobileNav: false,
     };
   },
   mounted() {
@@ -120,6 +126,19 @@ export default {
     }
   },
   watch: {
+    $route: {
+      immediate: true,
+      handler() {
+        // if we are viewing a process, use our custom mobile nav
+        if (this.$route?.name === "show") {
+          this.showCustomMobileNav = true;
+          window.ProcessMaker.navbarMobile.display = false;
+        } else {
+          this.showCustomMobileNav = false;
+          window.ProcessMaker.navbarMobile.display = true;
+        }
+      }
+    },
     category: {
       deep: true,
       handler() {
@@ -253,7 +272,7 @@ export default {
   }
 }
 
-.main {
+.process-catalog-main {
   display: flex;
 
   @media (max-width: $lp-breakpoint) {
@@ -403,4 +422,27 @@ export default {
 //     width: 0;
 //   }
 // }
+
+
+.mobile-process-nav {
+  display: none;
+
+  div {
+    flex: 1;
+    text-align: center;
+  }
+
+  .left {
+    text-align: left;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+    flex-direction: row;
+  }
+}
 </style>
