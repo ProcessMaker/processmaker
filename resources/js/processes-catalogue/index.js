@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Process from "./components/Process";
-import CardProcess from "./components/CardProcess";
 import ProcessesCatalogue from "./components/ProcessesCatalogue";
+import ProcessListing from "./components/ProcessListing";
 
 Vue.use(VueRouter);
 const router = new VueRouter({
@@ -12,7 +12,7 @@ const router = new VueRouter({
     {
       name: "index",
       path: "",
-      component: CardProcess,
+      component: ProcessListing,
       props(route) {
         return {
           categoryId: route.query.categoryId || null,

@@ -235,7 +235,7 @@ export default {
       }
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
-      this.$emit("wizardLinkSelect", item);
+      this.$emit('categorySelected', this.selectedTemplateItem);
     },
     /**
      * This method opens New Process modal window

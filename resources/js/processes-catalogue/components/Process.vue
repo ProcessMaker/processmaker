@@ -11,21 +11,17 @@
       :permission="permission"
       @goBackCategory="goBackCategory"
     />
-    <wizard-templates
-      :template="guidedTemplates"
-    />
   </div>
 </template>
 
 <script>
 import ProcessInfo from "./ProcessInfo.vue";
-import WizardTemplates from "./WizardTemplates.vue";
 import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
-  props: ["process", "processId", "guidedTemplates", "permission", "isDocumenterInstalled"],
+  props: ["process", "processId", "permission", "isDocumenterInstalled"],
   components: {
-    ProcessInfo, WizardTemplates, ProcessScreen
+    ProcessInfo, ProcessScreen
   },
   data() {
     return {

@@ -62,12 +62,11 @@
 <script>
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
-import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs,
   },
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
