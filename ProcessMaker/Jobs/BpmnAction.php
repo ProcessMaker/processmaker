@@ -64,6 +64,7 @@ abstract class BpmnAction implements ShouldQueue
             //Run engine to the next state
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
+            $this->addDebugLog(get_class($this) . ": ERROR request={$this?->instanceId} " . $exception->getMessage());
             Log::error($exception->getMessage());
             // Change the Request to error status
             $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
@@ -295,5 +296,12 @@ abstract class BpmnAction implements ShouldQueue
         $this->engine = null;
         $this->lock = null;
         gc_collect_cycles();
+    }
+
+    public function addDebugLog(string $message)
+    {
+        $file = storage_path('logs/bpmn_actions.log');
+        error_log($message, 3, $file);
+        Log::error($message);
     }
 }
