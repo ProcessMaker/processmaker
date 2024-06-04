@@ -153,10 +153,12 @@ class RecommendationEngineTest extends TestCase
      */
     protected function generateIndexJsonFileContents(): array
     {
+        $generateFileName = static fn () => Str::random().'.json';
+
         return [
             // The default recommendations for all instances
             'default' => [
-                Str::random().'.json',
+                $generateFileName()
             ],
 
             // Every other directory name is checked against the
@@ -164,8 +166,8 @@ class RecommendationEngineTest extends TestCase
             // downloads/saves them. local.test is created
             // specifically for this unit test.
             'local.test' => [
-                Str::random().'.json',
-                Str::random().'.json',
+                $generateFileName(),
+                $generateFileName(),
             ],
         ];
     }
