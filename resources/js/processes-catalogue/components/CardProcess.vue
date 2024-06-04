@@ -100,7 +100,7 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      if (!this.categoryId || this.categoryId === -1) {
+      if (!this.categoryId || this.categoryId === 'all_processes') {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -110,7 +110,7 @@ export default {
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
-      if (this.categoryId === 0) {
+      if (this.categoryId === 'bookmarks') {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`

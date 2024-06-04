@@ -3,11 +3,13 @@
     <ProcessInfo
       :process="selectedProcess"
       :permission="permission"
+      @goBackCategory="goBackCategory"
     />
     <ProcessScreen
       v-if="verifyScreen"
       :process="selectedProcess"
       :permission="permission"
+      @goBackCategory="goBackCategory"
     />
     <wizard-templates
       :template="guidedTemplates"
@@ -56,6 +58,11 @@ export default {
       }
 
       return screenId !== 0;
+    },
+  },
+  methods: {
+    goBackCategory() {
+      this.$emit("goBackCategory");
     },
   },
   mounted() {
