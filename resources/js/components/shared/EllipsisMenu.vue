@@ -1,11 +1,13 @@
 <template>
   <b-dropdown
     v-if="filterActions.length > 0"
+    v-b-tooltip.hover="{ placement: 'bottom', title: 'Options', variant: 'secondary', customClass: 'ellipsis-tooltip' }"
     :variant="variant ? variant : 'outlined-secondary'"
     toggle-class="static-header"
     no-flip
     lazy
     right
+    no-caret
     offset="0"
     class="ellipsis-dropdown-main static-header"
     :popper-opts="{ placement: 'bottom-end' }"
@@ -26,8 +28,7 @@
     </template>
     <template v-else #button-content>
       <span class="text-capitalize screen-toolbar-button">
-        <i class="fas fa-cog" />
-        {{ $t("Options") }}
+        <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
       </span>
     </template>
     <div v-if="divider === true">
@@ -292,5 +293,19 @@ export default {
 <style>
 .static-header {
   position: static !important;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  background-color: #FFFFFF;
+}
+.static-header:hover {
+  background-color: #EBEEF2;
+}
+.ellipsis-tooltip {
+  border-radius: 4px;
+}
+.ellipsis-tooltip .arrow {
+  display: none;
 }
 </style>
