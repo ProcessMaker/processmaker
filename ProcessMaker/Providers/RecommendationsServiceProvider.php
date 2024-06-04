@@ -16,7 +16,7 @@ class RecommendationsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(SyncRecommendations::class, function ($app) {
+        $this->app->singleton(SyncRecommendations::class, function () {
             return new SyncRecommendations();
         });
 
