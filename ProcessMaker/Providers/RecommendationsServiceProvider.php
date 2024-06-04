@@ -3,6 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\SyncRecommendations;
 use ProcessMaker\RecommendationEngine;
 use Illuminate\Support\ServiceProvider;
 use ProcessMaker\Events\ActivityCompleted;
@@ -15,6 +16,10 @@ class RecommendationsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(SyncRecommendations::class, function ($app) {
+            return new SyncRecommendations();
+        });
+
         // The ActivityAssigned event is not listened for since we dispatch the
         // GenerateUserRecommendations job at the end of the SmartInbox job.
         Event::listen(ActivityCompleted::class, function ($event) {

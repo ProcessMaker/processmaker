@@ -26,12 +26,12 @@ class Kernel extends ConsoleKernel
                  ->everyMinute()
                  ->onOneServer();
 
-        $schedule->command('package-data-sources:delete-logs')
-                 ->weekly();
-
         $schedule->command('processmaker:sync-recommendations')
                  ->dailyAt('12:00')
                  ->onOneServer();
+
+        $schedule->command('package-data-sources:delete-logs')
+                 ->weekly();
 
         $schedule->command('processmaker:sync-default-templates --queue')
                  ->daily();

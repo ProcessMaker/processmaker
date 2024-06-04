@@ -37,6 +37,6 @@ class SmartInbox implements ShouldQueue
             SmartInboxApplyAction::dispatchSync($this->incomingTaskId, $inboxRule->id);
         }
 
-        GenerateUserRecommendations::dispatch($incomingTask->user_id)->onQueue('low');
+        GenerateUserRecommendations::dispatch($incomingTask->user)->onQueue('low');
     }
 }
