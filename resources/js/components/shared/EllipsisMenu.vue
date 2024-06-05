@@ -3,7 +3,7 @@
     v-if="filterActions.length > 0"
     v-b-tooltip.hover="{ placement: 'bottom', title: 'Options', variant: 'secondary', customClass: 'ellipsis-tooltip' }"
     :variant="variant ? variant : 'outlined-secondary'"
-    toggle-class="static-header"
+    :toggle-class="['static-header', { 'contracted-menu': !lauchpad }, { 'expanded-menu': lauchpad }]"
     no-flip
     lazy
     right
@@ -24,7 +24,10 @@
       </span>
     </template>
     <template v-else-if="lauchpad" #button-content>
-      <i class="fas fa-ellipsis-h ellipsis-menu-icon p-0" />
+      <i class="fas fa-ellipsis-v ellipsis-menu-icon p-0 ellipsis-icon-v" />
+      <span>
+        {{ $t('Options') }}
+      </span>
     </template>
     <template v-else #button-content>
       <span class="text-capitalize screen-toolbar-button">
@@ -293,6 +296,8 @@ export default {
 <style>
 .static-header {
   position: static !important;
+}
+.contracted-menu {
   width: 40px;
   height: 40px;
   box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.15);
@@ -301,6 +306,17 @@ export default {
 }
 .static-header:hover {
   background-color: #EBEEF2;
+  border-radius: 4px;
+}
+.expanded-menu {
+  color: #556271;
+  text-transform: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+.ellipsis-icon-v {
+  height: 16px;
+  width: 16px;
 }
 .ellipsis-tooltip {
   border-radius: 4px;
