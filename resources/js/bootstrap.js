@@ -1,5 +1,6 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import * as bootstrap from "bootstrap";
 import Echo from "laravel-echo";
 import Router from "vue-router";
 import ScreenBuilder, { initializeScreenCache } from "@processmaker/screen-builder";
@@ -16,6 +17,7 @@ import VueI18Next from "@panter/vue-i18next";
 import { install as VuetableInstall } from "vuetable-2";
 import MonacoEditor from "vue-monaco";
 import Vue from "vue";
+import * as vue from "vue";
 import VueCookies from "vue-cookies";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
@@ -68,7 +70,8 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = Vue;
-
+window.vue = vue;
+window.bootstrap = bootstrap;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
@@ -81,6 +84,7 @@ window.VueMonaco = require("vue-monaco");
 
 window.ScreenBuilder = require("@processmaker/screen-builder");
 window.VueFormElements = require("@processmaker/vue-form-elements");
+window.Modeler = require("@processmaker/modeler");
 
 window.VueRouter = Router;
 
