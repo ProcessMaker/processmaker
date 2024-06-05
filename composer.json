@@ -165,6 +165,7 @@
                 "package-savedsearch": "1.33.16",
                 "package-sentry": "1.8.0",
                 "package-signature": "1.12.0",
+                "package-slideshow": "dev-feature/FOUR-15522",
                 "package-testing": "1.2.22",
                 "package-translations": "2.9.0",
                 "package-versions": "1.10.1",
