@@ -1,6 +1,7 @@
 <template>
   <div v-if="selectedProcess">
     <ProcessInfo
+      v-if="!verifyScreen"
       :process="selectedProcess"
       :permission="permission"
       @goBackCategory="goBackCategory"
@@ -48,7 +49,7 @@ export default {
      */
      verifyScreen() {
       let screenId = 0;
-      const unparseProperties = this.process?.launchpad?.properties || null;
+      const unparseProperties = this.selectedProcess?.launchpad?.properties || null;
       if (unparseProperties !== null) {
         screenId = JSON.parse(unparseProperties)?.screen_id || 0;
       }
