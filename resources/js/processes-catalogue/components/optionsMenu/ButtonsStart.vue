@@ -1,7 +1,7 @@
 <template>
   <div id="start-events btn-group mx-2">
     <button
-      v-if="havelessOneStartEvent"
+      v-if="startEvent"
       class="btn btn-success start-button"
       type="button"
       :disabled="processEvents.length === 0"
@@ -11,7 +11,7 @@
         class="fa fa-play-circle"
         style="font-size: 16px;"
       />
-      <span class="pl-2"> {{ $t('Start this process') }} </span>
+      <span class="pl-2"> {{ displayTitle }} </span>
     </button>
     <button
       v-else
@@ -20,19 +20,11 @@
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
-      @click="getStartEvents()"
     >
       <span>
-        <i
-          class="fa fa-play-circle"
-          style="font-size: 16px;"
-        />
-        <span class="pl-2"> {{ $t('Start this process') }} </span>
+        <i class="fa fa-play-circle" />
+        <span class="pl-2"> {{ displayTitle }} </span>
       </span>
-      <i
-        class="fas fa-caret-down"
-        style="font-size: 16px;"
-      />
     </button>
     <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
@@ -72,49 +64,40 @@
 
 <script>
 export default {
-  props: ["process"],
+  props: {
+    process: {
+      type: Object,
+      required: true,
+    },
+    title: {
+      type: String,
+      default: null,
+    },
+    startEvent: {
+      type: String,
+      default: null,
+    },
+    processEvents: {
+      type: Array,
+      default: () => [],
+    }
+  },
   data() {
     return {
-      processEvents: [],
-      havelessOneStartEvent: false,
-      startEvent: "",
       anonUserId: "2",
     };
   },
   mounted() {
-    this.getStartEvents();
+  },
+  computed: {
+    displayTitle() {
+      if (this.title) {
+        return this.title;
+      }
+      return this.$t("Start this process");
+    },
   },
   methods: {
-    /**
-     * get start events for dropdown Menu
-     */
-    getStartEvents() {
-      this.processEvents = [];
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
-        .then((response) => {
-          this.processEvents = response.data.data;
-          if (this.processEvents.length <= 1) {
-            const event = this.processEvents[0] ?? {};
-            if (!("webEntry" in event)) {
-              this.havelessOneStartEvent = true;
-              this.startEvent = event.id ?? 0;
-            }
-          }
-        })
-        .catch((err) => {
-          this.disableButton();
-          ProcessMaker.alert(err, "danger");
-        });
-    },
-    /**
-     * Disable Start Button
-     */
-    disableButton() {
-      this.havelessOneStartEvent = true;
-      this.processEvents = [];
-      this.startEvent = 0;
-    },
     /**
      * Start new request
      */
@@ -150,7 +133,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import '~styles/variables';
 .start-button {
   display: flex;
   align-items: center;
@@ -161,17 +145,25 @@ export default {
   width: 249px;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
-  font-weight: 600;
   line-height: 21px;
   letter-spacing: -0.02em;
   text-align: left;
   text-transform: capitalize;
-  padding: 5px 16px;
+  padding: 16px;
+
+  i {
+    font-size: 1.3em;
+    vertical-align: top;
+  }
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    font-size: 18px;
+    height: auto;
+  }
 }
 .scrollable-menu {
-    height: auto;
-    max-height: 280px;
-    overflow-x: hidden;
+  overflow-x: auto;
 }
 .dropdown-menu.show {
   width: 316px;
@@ -192,7 +184,6 @@ export default {
   text-transform: uppercase;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
-  font-weight: 700;
   line-height: 21px;
   letter-spacing: -0.02em;
   text-align: left;
@@ -208,7 +199,6 @@ export default {
   border: 0px;
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
-  font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.02em;
   text-align: left;

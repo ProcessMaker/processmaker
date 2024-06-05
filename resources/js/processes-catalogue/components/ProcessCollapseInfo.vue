@@ -1,9 +1,21 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
+      <div class="header-mobile">
+        <div class="title">
+          {{ process.name }}
+        </div>
+        <div class="start-button">
+          <buttons-start
+            :process="process"
+            :title="$t('Start')"
+            :startEvent="singleStartEvent"
+            :processEvents="processEvents"
+          />
+        </div>
+      </div>
       <div
-        id="header"
-        class="card card-body"
+        class="header card card-body"
       >
         <div class="d-flex justify-content-between">
           <div class="d-flex align-items-center">
@@ -54,7 +66,11 @@
                 @navigate="onProcessNavigate"
               />
             </span>
-            <buttons-start :process="process" />
+            <buttons-start
+              :process="process"
+              :startEvent="singleStartEvent"
+              :processEvents="processEvents"
+            />
           </div>
         </div>
       </div>
@@ -178,8 +194,34 @@ export default {
     ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
       window.location.reload();
     });
+    this.getStartEvents();
+  },
+  data() {
+    return {
+      processEvents: [],
+      singleStartEvent: null,
+    };
   },
   methods: {
+    /**
+     * get start events for dropdown Menu
+     */
+    getStartEvents() {
+      console.log("GET START EVENTS");
+      this.processEvents = [];
+      ProcessMaker.apiClient
+        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
+        .then((response) => {
+          this.processEvents = response.data.data;
+          const nonWebEntryStartEvents = this.processEvents.filter(e => !("webEntry" in e) || !e.webEntry);
+          if (nonWebEntryStartEvents.length === 1) {
+            this.singleStartEvent = nonWebEntryStartEvents[0].id;
+          }
+        })
+        .catch((err) => {
+          ProcessMaker.alert(err, "danger");
+        });
+    },
     /**
      * Change button title
      */
@@ -209,6 +251,8 @@ export default {
 
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
+@import '~styles/variables';
+
 .wizard-link {
   text-transform: none;
 }
@@ -261,6 +305,33 @@ export default {
   .col-pm-3 {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+}
+
+.header {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
+}
+
+.header-mobile {
+  display: none;
+  padding: 1em;
+
+  .title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1.5em;
+  }
+
+  .start-button {
+  }
+  @media (max-width: $lp-breakpoint) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 }
 </style>

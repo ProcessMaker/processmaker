@@ -6,7 +6,7 @@
   }
 @endphp
 <div>
-  <div id="navbarMobile" v-if="display">
+  <div id="navbarMobile" v-if="display" v-cloak>
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
         @php

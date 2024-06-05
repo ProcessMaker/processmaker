@@ -1,9 +1,21 @@
 <template>
   <div>
     <div class="mobile-process-nav bg-primary" v-if="showCustomMobileNav">
-      <div class="left">One</div>
-      <div>Two</div>
-      <div class="right">Three</div>
+      <div class="left">
+        <a href="#" @click.prevent="goBackCategory">
+          <i class="fas fa-arrow-left" />
+        </a>
+      </div>
+      <div>
+        <a href="#" @click.prevent="showDetails = !showDetails">
+          <i class="fas fa-info-circle" />
+        </a>
+      </div>
+      <div class="right">
+        <a href="#">
+          <i class="fas fa-bookmark" />
+        </a>
+      </div>
     </div>
     <breadcrumbs
       ref="breadcrumb"
@@ -12,7 +24,7 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
-    <div class="process-catalog-main px-3" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
+    <div class="process-catalog-main" :class="{ 'menu-open' : showMenu }">
       <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
@@ -50,7 +62,7 @@
           <CatalogueEmpty />
         </div>
         <div> -->
-          <div class="mobile-menu-control">
+          <div class="mobile-menu-control" v-show="showMobileMenuControl">
             <span @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
               {{ category?.name || 'N/A' }}
@@ -111,14 +123,12 @@ export default {
       categoryCount: 0,
       hideLaunchpad: true,
       showCustomMobileNav: false,
+      showDetails: false,
     };
   },
   mounted() {
     const url = new URL(window.location.href);
     this.getCategories();
-    this.$root.$on("clickCarouselImage", (val) => {
-        this.hideLaunchpad = !val.hideLaunchpad;
-    });
 
     // Show the menu by default when not on mobile
     if (!this.isMobile) {
@@ -147,6 +157,11 @@ export default {
           this.showMenu = false;
         }
       }
+    }
+  },
+  computed: {
+    showMobileMenuControl() {
+      return this.$route.name === "index";
     }
   },
   methods: {
@@ -438,6 +453,13 @@ export default {
 
   .right {
     text-align: right;
+  }
+ 
+  i {
+    display: block;
+    color: #FFFFFF;
+    padding: 1em;
+    font-size: 1.5em;
   }
 
   @media (max-width: $lp-breakpoint) {
