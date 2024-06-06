@@ -29,7 +29,7 @@ trait TaskResourceIncludes
 
     private function includeProcessRequest()
     {
-        return ['process_request' => new Users($this->processRequest)];
+        return ['process_request' => $this->processRequest->attributesToArray()];
     }
 
     private function includeDraft()
@@ -72,11 +72,13 @@ trait TaskResourceIncludes
             // Apply translations to screen
             $processTranslation = new ProcessTranslation($this->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+            $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
             // Apply translations to nested screens
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
                     $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                    $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                 }
             }
         }
@@ -125,6 +127,11 @@ trait TaskResourceIncludes
         $translatedConf = $processTranslation->applyTranslations($interstitial['interstitial_screen']);
         $interstitial['interstitial_screen']['config'] = $translatedConf;
 
+        // Remove inspector metadata
+        $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
+            $interstitial['interstitial_screen']['config']
+        );
+
         return [
             'allow_interstitial' => $interstitial['allow_interstitial'],
             'interstitial_screen' => $interstitial['interstitial_screen'],
@@ -136,5 +143,43 @@ trait TaskResourceIncludes
         $userRequestPermission = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
 
         return ['user_request_permission' => $userRequestPermission];
+    }
+
+    /**
+     * Removes the inspector metadata from the screen configuration
+     *
+     * @param array $config
+     * @return array
+     */
+    private function removeInspectorMetadata(array $config)
+    {
+        foreach($config as $i => $page) {
+            $config[$i]['items'] = $this->removeInspectorMetadataItems($page['items']);
+        }
+        return $config;
+    }
+
+    /**
+     * Removes the inspector metadata from the screen configuration items
+     *
+     * @param array $items
+     * @return array
+     */
+    private function removeInspectorMetadataItems(array $items)
+    {
+        foreach($items as $i => $item) {
+            if (isset($item['inspector'])) {
+                unset($item['inspector']);
+            }
+            if (isset($item['component']) && $item['component'] === 'FormMultiColumn') {
+                foreach($item['items'] as $c => $col) {
+                    $item['items'][$c] = $this->removeInspectorMetadataItems($col);
+                }
+            } elseif (isset($item['items']) && is_array($item['items'])) {
+                $item['items'] = $this->removeInspectorMetadataItems($item['items']);
+            }
+            $items[$i] = $item;
+        }
+        return $items;
     }
 }
