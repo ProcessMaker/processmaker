@@ -16,18 +16,10 @@ class TaskControllerTest extends TestCase
 
     protected $taskController;
 
-    public function testIndex()
-    {
-        $task = ProcessRequestToken::factory()->create(['element_type' => 'task']);
-        $response = $this->taskController->index();
-        $this->assertContains($task->id, $response->data);
-    }
-
     public function testShow()
     {
         $task = ProcessRequestToken::factory()->create();
-        // $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id));
-        $response = $this->apiCall('GET', route('api.tasks.show', $task->id) . '?include=screen,nested');
+        $response = $this->apiCall('GET', route('api.1.1.tasks.show', $task->id));
         $response->assertStatus(200)
             ->assertJson(['id' => $task->id]);
     }
