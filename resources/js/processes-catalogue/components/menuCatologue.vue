@@ -155,7 +155,7 @@ export default {
     };
   },
   created() {
-    EventBus.$on('process-selected', (obj)=>{
+    EventBus.$on('templates-selected', (obj) => {
       this.openTemplate(obj);
     });
   },

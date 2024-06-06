@@ -143,11 +143,11 @@ export default {
      */
     openProcessInfo(process) {
       if (this.categoryId === 'all_templates') {
-        EventBus.$emit('process-selected', { template: process, type: "Process" });
+        EventBus.$emit('templates-selected', { template: process, type: "Process" });
         return;
       }
       this.$router.push({ name: "show", params: { process: process, processId: process.id } });
-      //this.$emit("openProcess", process);
+      this.$emit("openProcess", process);
     },
     /**
      * Load Cards in the new pagination
