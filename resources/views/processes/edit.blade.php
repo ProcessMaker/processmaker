@@ -455,6 +455,7 @@
                 return {
                     formData: @json($process),
                     assignedProjects: @json($assignedProjects),
+                    isDraft: @json($isDraft),
                     selectedProjects: '',
                     dataGroups: [],
                     value: [],
@@ -578,6 +579,21 @@
                     return (item && item.id) ? item.id : null
                 },
                 onUpdate() {
+                    let shouldDelete = false;
+                    if (this.isDraft) {
+                        ProcessMaker.confirmModal(
+                            this.$t("Caution!"),
+                            this.$t("You are about to publish a draft version. Are you sure you want to proceed?"),
+                            "",
+                            () => {
+                                this.handleUpdate();
+                            }
+                        );
+                    } else {
+                        this.handleUpdate();
+                    }
+                },
+                handleUpdate() {
                     this.resetErrors();
                     let that = this;
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
@@ -585,6 +601,7 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
+                    console.log(this.formData);
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
                         ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
