@@ -12,6 +12,8 @@ use StdClass;
 
 trait TaskResourceIncludes
 {
+    use TaskScreenResourceTrait;
+
     private function includeData()
     {
         return ['data' => $this->getData()];
@@ -29,7 +31,7 @@ trait TaskResourceIncludes
 
     private function includeProcessRequest()
     {
-        return ['process_request' => new Users($this->processRequest)];
+        return ['process_request' => $this->processRequest->attributesToArray()];
     }
 
     private function includeDraft()
@@ -72,11 +74,13 @@ trait TaskResourceIncludes
             // Apply translations to screen
             $processTranslation = new ProcessTranslation($this->process);
             $array['screen']['config'] = $processTranslation->applyTranslations($array['screen']);
+            $array['screen']['config'] = $this->removeInspectorMetadata($array['screen']['config']);
 
             // Apply translations to nested screens
             if (array_key_exists('nested', $array['screen'])) {
                 foreach ($array['screen']['nested'] as &$nestedScreen) {
                     $nestedScreen['config'] = $processTranslation->applyTranslations($nestedScreen);
+                    $nestedScreen['config'] = $this->removeInspectorMetadata($nestedScreen['config']);
                 }
             }
         }
@@ -124,6 +128,11 @@ trait TaskResourceIncludes
         $processTranslation = new ProcessTranslation($this->process);
         $translatedConf = $processTranslation->applyTranslations($interstitial['interstitial_screen']);
         $interstitial['interstitial_screen']['config'] = $translatedConf;
+
+        // Remove inspector metadata
+        $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
+            $interstitial['interstitial_screen']['config']
+        );
 
         return [
             'allow_interstitial' => $interstitial['allow_interstitial'],
