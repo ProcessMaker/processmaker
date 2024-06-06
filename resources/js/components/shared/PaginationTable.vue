@@ -1,29 +1,51 @@
 <template>
   <div class="pagination">
-    <button
+    <b-button
       :disabled="currentPage === 1"
       class="pagination-button"
+      variant="light"
+      @click="firstPage"
+    >
+      <img src="/img/pagination-images/first.svg" :alt="$t('No Image')">
+    </b-button>
+    <b-button
+      :disabled="currentPage === 1"
+      class="pagination-button"
+      variant="light"
       @click="previousPage"
     >
-      <strong>&lt;</strong>
-    </button>
+      <img src="/img/pagination-images/previous.svg" :alt="$t('No Image')">
+    </b-button>
 
     <input
       ref="pageInput"
       v-model="pageInput"
       type="text"
       :placeholder="pageInputPlaceholder"
-      class="pagination-button pagination-input"
+      class="pagination-input"
       @keyup.enter="redirectPage(pageInput)"
     >
 
-    <button
+    <span class="pagination-total">
+      of {{ totalPageCount }}
+    </span>
+
+    <b-button
       :disabled="currentPage >= totalPageCount"
       class="pagination-button"
+      variant="light"
       @click="nextPage"
     >
-      <strong>&gt;</strong>
-    </button>
+      <img src="/img/pagination-images/next.svg" :alt="$t('No Image')">
+    </b-button>
+    <b-button
+      :disabled="currentPage >= totalPageCount"
+      class="pagination-button"
+      variant="light"
+      @click="lastPage"
+    >
+      <img src="/img/pagination-images/last.svg" :alt="$t('No Image')">
+    </b-button>
     <span class="pagination-total">
       {{ totalItems }}
     </span>
@@ -113,7 +135,7 @@ export default {
       return `${this.meta.per_page} per Page`;
     },
     pageInputPlaceholder() {
-      return `${this.currentPage}-${this.totalPageCount}`;
+      return `${this.currentPage}`;
     },
   },
   watch: {
@@ -132,10 +154,16 @@ export default {
         this.goToPage(this.currentPage - 1);
       }
     },
-    nextPage() {
-      if (this.currentPage < this.totalPageCount) {
-        this.goToPage(this.currentPage + 1);
+    firstPage() {
+      if (this.currentPage > 1) {
+        this.goToPage(1);
       }
+    },
+    nextPage() {
+      this.goToPage(this.currentPage + 1);
+    },
+    lastPage() {
+      this.goToPage(this.totalPageCount);
     },
     goToPage(page) {
       this.$emit("page-change", page);
@@ -176,21 +204,30 @@ export default {
   align-items: center;
   margin-top: 20px;
   font-weight: 400;
-  font-size: 15px;
-  color: #5C5C63;
+  font-size: 16px;
+  color: #556271;
+  gap: 8px;
 }
 .pagination-button {
-  background-color: #FFFFFF;
-  border: 1px solid #CDDDEE;
-  border-radius: 8px;
-  padding: 5px 10px;
-  color: #5C5C63;
-  margin-right: 8px;
-  font-weight: 400;
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  border-radius: 4px;
+  padding: 8px;
+  width: 32px;
+  height:32px;
+}
+.pagination-button:focus {
+  box-shadow: 0px 0px 0px 3px rgba(72, 145, 255, 0.4);
+}
+.btn.disabled, .btn:disabled {
+  opacity: 0.5;
 }
 .pagination-button:hover {
-  background-color: #FAFBFC;
+  background-color: #EBEEF2;
+}
+.btn.disabled:hover {
+  background-color: transparent;
 }
 .pagination-current-page {
     color: #1572C2;
@@ -198,6 +235,7 @@ export default {
 }
 .pagination-total {
   margin-left: 10px;
+  padding: 0px 8px 0px 8px;
 }
 .pagination-dropup {
   font-weight: 400;
@@ -212,6 +250,13 @@ export default {
   font-weight: 400;
   font-size: 14.5px;
   color: #5C5C63;
+}
+.pagination-input {
+  border: solid 1px;
+  border-radius: 4px;
+  width: 44px;
+  height: 32;
+  border-color: #CDDDEE;
 }
 .pagination-input::placeholder {
   text-align: center;

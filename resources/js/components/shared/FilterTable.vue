@@ -38,6 +38,7 @@
             <div
               v-if="index !== visibleHeaders.length - 1"
               class="pm-table-column-resizer"
+              @dblclick="resetSize(index)"
               :class="{ 'resizable': column.resizable === undefined || column.resizable }"
               @mousedown="column.resizable === undefined || column.resizable ? startResize($event, index) : null"
             />
@@ -183,6 +184,7 @@ export default {
       startX: 0,
       startWidth: 0,
       resizingColumnIndex: -1,
+      originalWidths: [],
     };
   },
   computed: {
@@ -215,6 +217,9 @@ export default {
     },
     calculateColumnWidth(widthAdjust = 1) {
       this.visibleHeaders.forEach((headerColumn, index) => {
+        if (!this.originalWidths[index]) {
+          this.originalWidths[index] = headerColumn.width || this.calculateContent(index);
+        }
         if (this.calculateContent(index) !== 0) {
           headerColumn.width = (this.calculateContent(index) * widthAdjust) - 32;
         }
@@ -253,6 +258,11 @@ export default {
         this.resizingColumnIndex = -1;
       }
     },
+    resetSize(index) {
+      if (this.originalWidths[index]) {
+        this.visibleHeaders[index].width = this.originalWidths[index];
+      }
+    },
     handleRowClick(row, event) {
       this.$emit("table-row-click", row, event);
     },
@@ -282,8 +292,6 @@ export default {
   border-right: 1px solid rgba(0, 0, 0, 0.125);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 5px;
-  scrollbar-width: 8px;
-  scrollbar-color: #6C757D;
   max-height: calc(100vh - 150px);
 }
 
@@ -455,14 +463,6 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
-.pm-table-container::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-.pm-table-container::-webkit-scrollbar-thumb {
-  background-color: #6C757D;
-  border-radius: 20px;
 }
 .ellipsis-dropdown-main ul.dropdown-menu.dropdown-menu-right.show {
   max-height: 250px;
