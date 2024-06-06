@@ -99,6 +99,8 @@ return [
             env('APP_URL', 'http://localhost')
         )
     ),
+    'nayra_rest_api_host' => env('NAYRA_REST_API_HOST', ''),
+    'screen_task_cache_time' => env('SCREEN_TASK_CACHE_TIME', 86400),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', 'true'),
