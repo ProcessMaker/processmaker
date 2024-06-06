@@ -44,12 +44,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: white;
-  border: 1px solid #CDDDEE;
-  border-radius: 19px;
-  width: 32px;
-  height: 32px;
-  margin: 0px 8px;
+  margin-right: 5px;
 }
 .ellipsis-border .dropdown-toggle::after {
     display:none;
