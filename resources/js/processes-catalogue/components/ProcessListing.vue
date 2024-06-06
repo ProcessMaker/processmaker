@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="process-listing">
 
     <CardProcess
       v-if="!isTemplateCategory"
@@ -30,3 +30,14 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+@import '~styles/variables';
+
+.process-listing {
+  @media (max-width: $lp-breakpoint) {
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+}
+</style>

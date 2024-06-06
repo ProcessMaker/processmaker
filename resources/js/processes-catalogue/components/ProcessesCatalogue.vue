@@ -1,22 +1,5 @@
 <template>
   <div>
-    <div class="mobile-process-nav bg-primary" v-if="showCustomMobileNav">
-      <div class="left">
-        <a href="#" @click.prevent="goBackCategory">
-          <i class="fas fa-arrow-left" />
-        </a>
-      </div>
-      <div>
-        <a href="#" @click.prevent="showDetails = !showDetails">
-          <i class="fas fa-info-circle" />
-        </a>
-      </div>
-      <div class="right">
-        <a href="#">
-          <i class="fas fa-bookmark" />
-        </a>
-      </div>
-    </div>
     <breadcrumbs
       ref="breadcrumb"
       :category="category ? category.name : ''"
@@ -122,8 +105,6 @@ export default {
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
-      showCustomMobileNav: false,
-      showDetails: false,
     };
   },
   mounted() {
@@ -136,19 +117,19 @@ export default {
     }
   },
   watch: {
-    $route: {
-      immediate: true,
-      handler() {
-        // if we are viewing a process, use our custom mobile nav
-        if (this.$route?.name === "show") {
-          this.showCustomMobileNav = true;
-          window.ProcessMaker.navbarMobile.display = false;
-        } else {
-          this.showCustomMobileNav = false;
-          window.ProcessMaker.navbarMobile.display = true;
-        }
-      }
-    },
+    // $route: {
+    //   immediate: true,
+    //   handler() {
+    //     // if we are viewing a process, use our custom mobile nav
+    //     if (this.$route?.name === "show") {
+    //       this.showCustomMobileNav = true;
+    //       window.ProcessMaker.navbarMobile.display = false;
+    //     } else {
+    //       this.showCustomMobileNav = false;
+    //       window.ProcessMaker.navbarMobile.display = true;
+    //     }
+    //   }
+    // },
     category: {
       deep: true,
       handler() {
@@ -399,6 +380,7 @@ export default {
   color: #6A7887;
   font-size: 1.3em;
   margin-top: 10px;
+  margin-left: 1em;
   i {
     margin-right: 3px;
   }
@@ -438,33 +420,4 @@ export default {
 //   }
 // }
 
-
-.mobile-process-nav {
-  display: none;
-
-  div {
-    flex: 1;
-    text-align: center;
-  }
-
-  .left {
-    text-align: left;
-  }
-
-  .right {
-    text-align: right;
-  }
- 
-  i {
-    display: block;
-    color: #FFFFFF;
-    padding: 1em;
-    font-size: 1.5em;
-  }
-
-  @media (max-width: $lp-breakpoint) {
-    display: flex;
-    flex-direction: row;
-  }
-}
 </style>
