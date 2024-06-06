@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api\V1_1;
 
-use ProcessMaker\Http\Controllers\Api\V1_1\TaskController;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;

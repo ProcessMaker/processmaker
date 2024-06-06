@@ -19,9 +19,7 @@ class TaskScreen extends ApiResource
      */
     public function toArray($request)
     {
-        $array = $this->includeScreen($request);
-
-        return $array;
+        return $this->includeScreen($request);
     }
 
     private function includeScreen($request)
