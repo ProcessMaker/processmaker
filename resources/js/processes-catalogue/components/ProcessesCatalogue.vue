@@ -6,14 +6,15 @@
       :process="selectedProcess ? selectedProcess.name : ''"
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
-    <div class="d-flex">
+    <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
+    <div class="main" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
       <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
           ref="categoryList"
           title="Available Processes"
           preicon="fas fa-play-circle"
-          class="mt-3"
+          class="pt-3 menu-catalog"
           show-bookmark="true"
           :category-count="categoryCount"
           :data="listCategories"
@@ -23,7 +24,18 @@
           :permission="permission"
           @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
+          @selectedCategoryName="selectedCategoryName = $event"
         />
+        <div class="mobile-slide-close">
+          <b-button variant="light" @click="showMenu = false" size="lg">
+            <i class="fa fa-times"></i>
+          </b-button>
+        </div>
+      </div>
+      <div class="slide-control">
+        <a href="#" @click="showMenu = !showMenu">
+          <i class="fa" :class="{ 'fa-caret-right' : !showMenu, 'fa-caret-left' : showMenu }"></i>
+        </a>
       </div>
       <div class="processes-info">
         <div
@@ -33,6 +45,13 @@
           <CatalogueEmpty />
         </div>
         <div v-else>
+          <div class="mobile-menu-control">
+            <span @click="showMenu = !showMenu">
+              <i class="fa fa-bars"></i>
+              {{ selectedCategoryName }}
+            </span>
+          </div>
+
           <CardProcess
             v-if="showCardProcesses && !showWizardTemplates && !showProcess"
             :key="key"
@@ -83,17 +102,22 @@ export default {
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
+      showMenu: false,
+      selectedCategoryName: '',
+      isMobile: window.screen.width < 650,
       listCategories: [],
       defaultOptions: [
         {
+          id: 'recent',
+          name: this.$t("Recent Cases"),
+        },
+        {
           id: -1,
           name: this.$t("All Processes"),
-          status: "ACTIVE",
         },
         {
           id: 0,
           name: this.$t("My Bookmarks"),
-          status: "ACTIVE",
         },
       ],
       fields: [],
@@ -113,6 +137,7 @@ export default {
       markCategory: false,
       fromProcessList: false,
       categoryCount: 0,
+      hideLaunchpad: true,
     };
   },
   mounted() {
@@ -126,6 +151,22 @@ export default {
         this.$refs.categoryList.selectTemplateItem();
       }
     }, 500);
+    this.$root.$on("clickCarouselImage", (val) => {
+        this.hideLaunchpad = !val.hideLaunchpad;
+    });
+
+    // Show the menu by default when not on mobile
+    if (!this.isMobile) {
+      this.showMenu = true;
+    }
+  },
+  watch: {
+    selectedCategoryName() {
+      // Only hide the menu automatically if we are on mobile
+      if (this.isMobile) {
+        this.showMenu = false;
+      }
+    }
   },
   methods: {
     /**
@@ -295,13 +336,136 @@ export default {
 };
 </script>
 
-<style scoped>
-.menu {
-  min-width: 304px;
-  height: calc(100vh - 145px);
-  overflow-y: auto;
-  margin-top: 15px;
+<style scoped lang="scss">
+@import '~styles/variables';
+
+
+@media (max-width: $lp-breakpoint) {
+  .breadcrum-main {
+    display: none;
+  }
 }
+
+.main {
+  display: flex;
+
+  @media (max-width: $lp-breakpoint) {
+      display: block;
+  }
+}
+
+.menu {
+  left: -100%;
+  height: calc(100vh - 145px);
+  overflow: hidden;
+  margin-top: 15px;
+  transition: flex 0.3s;
+  flex: 0 0 315px;
+
+  .menu-catalog {
+    background-color: #F7F9FB;
+    flex: 1;
+    width: 315px;
+  }
+
+  @media (max-width: $lp-breakpoint) {
+    position: absolute;
+    z-index: 4; // above pagination
+    display: flex;
+    margin-top: 0;
+    width: 85%;
+    transition: left 0.3s;
+  }
+}
+
+.menu-mask {
+  display: none;
+  position: absolute;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 3;
+  transition: background-color 0.3s;
+  
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
+}
+
+.menu-mask.menu-open {
+  @media (max-width: $lp-breakpoint) {
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block;
+  }
+}
+
+.menu-open .menu {
+  flex: 0 0 0px;
+  @media (max-width: $lp-breakpoint) {
+    left: 0%;
+  }
+}
+
+.mobile-slide-close {
+  display: none;
+  padding-left: 10px;
+  padding-top: 10px;
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
+}
+
+.slide-control {
+  border-left: 0;
+  border-right: 1px solid #DEE0E1;
+  margin-left: 10px;
+  
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
+
+  a {
+    position: relative;
+    left: 10px;
+    top: 40px;
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 60px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #DEE0E1;
+  }
+}
+
+.menu-open .slide-control {
+  border-right: 0;
+  border-left: 1px solid #DEE0E1;
+
+  a {
+    left: -10px;
+  }
+  
+}
+
+.mobile-menu-control {
+  display: none;
+  color: #6A7887;
+  font-size: 1.3em;
+  margin-top: 10px;
+  i {
+    margin-right: 3px;
+  }
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
+}
+
 .menu-title {
   color: #556271;
   font-size: 22px;
@@ -309,11 +473,27 @@ export default {
   font-weight: 600;
   line-height: 46.08px;
   letter-spacing: -0.44px;
+  display: block;
+  width: 315px;
+
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
 }
 .processes-info {
   width: 100%;
   margin-right: 16px;
   height: calc(100vh - 145px);
   padding-left: 32px;
+  
+  @media (max-width: $lp-breakpoint) {
+    padding-left: 0;
+  }
+}
+@media (width <= 1024px) {
+  .menu {
+    min-width: 0;
+    width: 0;
+  }
 }
 </style>

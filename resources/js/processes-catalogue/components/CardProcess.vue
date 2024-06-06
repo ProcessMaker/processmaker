@@ -154,10 +154,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+
+@import '~styles/variables';
 .processList {
   display: flex;
   flex-wrap: wrap;
+  
+  @media (max-width: $lp-breakpoint) {
+    display: block;
+  }
 }
 .text-custom {
   color: #1572C2;

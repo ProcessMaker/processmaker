@@ -22,6 +22,7 @@ mix.webpackConfig({
     symlinks: false,
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
+      "styles": path.resolve(__dirname, "resources/sass"),
     },
   },
 });

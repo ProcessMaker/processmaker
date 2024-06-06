@@ -30,6 +30,9 @@
                                    :container="''"
                                    :boundary="'viewport'"
                                    :hideSortingButtons="column.hideSortingButtons"
+                                   :columnSortAsc="column.sortAsc"
+                                   :columnSortDesc="column.sortDesc"
+                                   :filterApplied="column.filterApplied"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -450,6 +453,9 @@ export default {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
               }),
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
             },
           )
           .then((response) => {

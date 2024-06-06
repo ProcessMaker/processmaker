@@ -12,6 +12,19 @@ use ProcessMaker\Models\TaskDraft;
 
 class TaskDraftController extends Controller
 {
+    public function index(Request $request, ProcessRequestToken $task)
+    {
+        $search = ['task_id' => $task->id];
+        $draft = TaskDraft::where($search)->first();
+
+        if ($draft) {
+            $draftData = $draft->data;
+            return new ApiResource($draftData);
+        }
+
+        return new ApiResource(null);
+    }
+
     public function update(Request $request, ProcessRequestToken $task)
     {
         $search = ['task_id' => $task->id];
@@ -24,7 +37,6 @@ class TaskDraftController extends Controller
         }
         $draft->data = $data;
         $draft->saveOrFail();
-
         return new ApiResource($draft);
     }
 
