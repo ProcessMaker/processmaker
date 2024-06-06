@@ -113,7 +113,19 @@ class ProcessController extends Controller
             $isDraft = $lastDraftOrPublishedVersion->draft;
         }
 
-        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons', 'assignedProjects', 'isDraft']));
+        return view('processes.edit', compact([
+            'process',
+            'categories',
+            'screenRequestDetail',
+            'screenCancel',
+            'list',
+            'canCancel',
+            'canStart',
+            'canEditData',
+            'addons',
+            'assignedProjects',
+            'isDraft'
+        ]));
     }
 
     /**
