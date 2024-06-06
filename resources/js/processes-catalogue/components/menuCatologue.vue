@@ -238,10 +238,6 @@ export default {
           return obj.id === "guided_templates";
         });
       }
-      /*if (item.id === "all_templates") {
-        this.addNewProcess();
-        return;
-      }*/
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
       this.$emit('categorySelected', item);
