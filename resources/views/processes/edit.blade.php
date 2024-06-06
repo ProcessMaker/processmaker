@@ -195,7 +195,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save and publish'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
 
@@ -422,7 +422,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save and publish'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
 
