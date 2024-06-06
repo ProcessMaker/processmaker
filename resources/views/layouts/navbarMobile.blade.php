@@ -1,7 +1,7 @@
 @php
   $showPrincipalNavbar = 1;
 
-  if (Request::path() !== 'tasks' && Request::path() !== 'requests') {
+  if (Request::path() !== 'tasks' && Request::path() !== 'requests' && Request::path() !== 'process-browser') {
     $showPrincipalNavbar = 0;
   }
 @endphp
@@ -66,6 +66,11 @@
             'name' => __('Requests'),
             'url' => route('requests.index'),
             'isActive' => Request::path() === 'requests',
+          ],
+          [
+            'name' => __('Processes'),
+            'url' => route('process.browser.index'),
+            'isActive' => Request::path() === 'process-browser',
           ],
         ];
       @endphp
