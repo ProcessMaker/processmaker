@@ -113,7 +113,7 @@
                 "package-pinnacle": "dev-fall",
                 "package-esign": "dev-fall",
                 "package-thermofisher": "dev-fall",
-                "customer-adoa": "dev-fall",
+                "package-zj-adoa": "1.0.3",
                 "pps-file-storage": "dev-fall",
                 "package-csi": "dev-fall",
                 "package-jxchange": "dev-fall",
