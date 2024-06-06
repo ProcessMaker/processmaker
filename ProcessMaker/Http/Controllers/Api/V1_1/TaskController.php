@@ -6,9 +6,7 @@ namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\V1_1\TaskScreen;
-use ProcessMaker\Models\ProcessVersion;
 
 class TaskController extends Controller
 {
@@ -36,7 +34,8 @@ class TaskController extends Controller
 
     public function showScreen($taskId)
     {
-        $task = ProcessRequestToken::select('id', 'process_request_id', 'element_id', 'process_id')->findOrFail($taskId);
+        $task = ProcessRequestToken::select('id', 'process_request_id', 'element_id', 'process_id')
+            ->findOrFail($taskId);
         $response = new TaskScreen($task);
         $response = response($response->toArray(request())['screen'], 200);
         $now = time();
