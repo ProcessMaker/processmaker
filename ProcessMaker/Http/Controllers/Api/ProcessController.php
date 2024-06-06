@@ -431,7 +431,7 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
-        $lastVersion = $process->getDraftOrPublishedLatestVersion($request->input('alternative'));
+        $lastVersion = $process->getDraftOrPublishedLatestVersion();
         $process->bpmn = $lastVersion->bpmn;
         $process->alternative = $lastVersion->alternative;
 
