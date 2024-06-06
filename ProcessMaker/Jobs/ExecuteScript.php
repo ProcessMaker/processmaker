@@ -11,6 +11,7 @@ use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Managers\WorkflowManagerRabbitMq;
 use Throwable;
 
 class ExecuteScript implements ShouldQueue
@@ -62,7 +63,12 @@ class ExecuteScript implements ShouldQueue
      */
     public function handle()
     {
-        //throw new \Exception('This method must be overridden.');
+        $useNayraDocker = !empty(config('app.nayra_rest_api_host'));
+        $isPhp = strtolower($this->script->language) === 'php';
+        if ($isPhp && $useNayraDocker && $this->sync) {
+            return $this->handleNayraDocker();
+        }
+
         try {
             // Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
@@ -80,6 +86,36 @@ class ExecuteScript implements ShouldQueue
                 'message' => $exception->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Execute the script task using Nayra Docker.
+     *
+     * @return string|bool
+     */
+    public function handleNayraDocker()
+    {
+        $engine = new WorkflowManagerRabbitMq();
+        $params = [
+            'name' => uniqid('script_', true),
+            'script' => $this->code,
+            'data' => $this->data,
+            'config' => $this->configuration,
+            'envVariables' => $engine->getEnvironmentVariables(),
+        ];
+        $body = json_encode($params);
+        $url = config('app.nayra_rest_api_host') . '/run_script';
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($body),
+        ]);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
     /**
