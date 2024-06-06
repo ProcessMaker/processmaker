@@ -170,6 +170,8 @@
                 "package-versions": "1.10.1",
                 "package-vocabularies": "2.15.2",
                 "package-webentry": "2.21.2",
+                "package-rpa": "1.0.0",
+                "package-accessibility": "1.0.0",
                 "packages": "^0"
             },
             "docker-executors": {
