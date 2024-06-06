@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Process from "./components/Process";
 import ProcessesCatalogue from "./components/ProcessesCatalogue";
-import ProcessListing from "./components/ProcessListing.vue";
+import ProcessListing from "./components/ProcessListing";
 
 export const EventBus = new Vue();
 Vue.use(VueRouter);
