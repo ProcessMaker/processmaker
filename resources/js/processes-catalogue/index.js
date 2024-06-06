@@ -1,8 +1,9 @@
 import Vue from "vue";
 import Process from "./components/Process";
 import ProcessesCatalogue from "./components/ProcessesCatalogue";
-import ProcessListing from "./components/ProcessListing";
+import ProcessListing from "./components/ProcessListing.vue";
 
+export const EventBus = new Vue();
 Vue.use(VueRouter);
 const router = new VueRouter({
   mode: "history",

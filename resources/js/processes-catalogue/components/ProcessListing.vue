@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     isTemplateCategory() {
-      return ['all_templates', 'guided_templates'].includes(this.categoryId)
+      return ['guided_templates'].includes(this.categoryId)
     },
   }
 };

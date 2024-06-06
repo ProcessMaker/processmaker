@@ -93,6 +93,11 @@
     </b-collapse>
     </div>
 
+    <!-- 
+    This line :type="$t('Process'), needs to be reviewed. 
+    The parameter 'type' assigns a translation string. If the language changes, 
+    it may have side effects." 
+    -->
     <select-template-modal
       ref="addProcessModal"
       :type="$t('Process')"
@@ -106,6 +111,7 @@
 <script>
 import SearchCategories from "./utils/SearchCategories.vue";
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
+import { EventBus } from '../index.js';
 
 export default {
   components: {
@@ -148,6 +154,11 @@ export default {
       comeFromProcess: false,
     };
   },
+  created() {
+    EventBus.$on('process-selected', (obj)=>{
+      this.openTemplate(obj);
+    });
+  },
   computed: {
     /**
      * Filters options regarding user permissions
@@ -172,12 +183,6 @@ export default {
     }
   },
   watch: {
-    selectedProcessItem: {
-      deep: true,
-      handler: function () {
-        this.$emit('categorySelected', this.selectedProcessItem);
-      },
-    },
     $route(r) {
       this.handleRouteQuery();
     },
@@ -204,6 +209,9 @@ export default {
         this.selectedProcessItem = this.data.find((category) => {
           return String(category.id) === String(query.categoryId);
         });
+        this.selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
+          return String(category.id) === String(query.categoryId);
+        });
       }
     },
     /**
@@ -216,6 +224,7 @@ export default {
       this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
+      this.$emit('categorySelected', item);
     },
     /**
      * Enables All Templates option only if user has create-processes permission
@@ -229,13 +238,13 @@ export default {
           return obj.id === "guided_templates";
         });
       }
-      if (item.id === "all_templates") {
+      /*if (item.id === "all_templates") {
         this.addNewProcess();
         return;
-      }
+      }*/
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
-      this.$emit('categorySelected', this.selectedTemplateItem);
+      this.$emit('categorySelected', item);
     },
     /**
      * This method opens New Process modal window
@@ -245,11 +254,20 @@ export default {
         this.$refs.addProcessModal.show();
       });
     },
+    openTemplate(obj) {
+      this.$nextTick(() => {
+        this.$refs.addProcessModal.show();
+        this.$refs.addProcessModal.$nextTick(() => {
+          this.$refs.addProcessModal.$refs["template-search"].showDetails(obj);
+          this.$refs.addProcessModal.hideBackButton();
+        });
+      });
+    },
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
     },
-    isSelectedTemplate(index) {
-      return this.selectedTemplateItem === index;
+    isSelectedTemplate(item) {    
+      return this.selectedTemplateItem === item;
     },
     onToggleCatalogue() {
       this.showCatalogue = !this.showCatalogue;

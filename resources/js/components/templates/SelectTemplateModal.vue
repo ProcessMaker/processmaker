@@ -19,7 +19,10 @@
       @ok.prevent="onSubmit"
       @close="close"
     >
-      <template-search :type="type" :component="currentComponent" @show-details="updateModal($event)" 
+      <template-search ref="template-search"
+        :type="type" 
+        :component="currentComponent" 
+        @show-details="updateModal($event)" 
         @blank-process-button-clicked="createBlankProcess()"
         @ai-process-button-clicked="createAiProcess()"
         :showTemplateOptionsActionBar="true"
@@ -121,6 +124,11 @@
       },
       show() {
         this.$bvModal.show('selectTemplate');
+      },
+      hideBackButton() {
+        this.headerButtons[0].hidden = true;
+        this.titleButtons[0].hidden = true;
+        this.hasHeaderButtons = false;
       }
     },
     mounted() {

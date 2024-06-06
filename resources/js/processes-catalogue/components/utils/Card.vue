@@ -33,6 +33,7 @@
       </div>
       <div class="card-bookmark">
         <i
+          v-if="!hideBookmark"
           :ref="`bookmark-${process.id}`"
           v-b-tooltip.hover.bottom
           :title="$t(labelTooltip)"
@@ -46,7 +47,13 @@
 
 <script>
 export default {
-  props: ["process"],
+  props: {
+    process: null,
+    hideBookmark: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       labelIcon: "Default Icon",
