@@ -266,7 +266,7 @@ export default {
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
     },
-    isSelectedTemplate(item) {    
+    isSelectedTemplate(item) {
       return this.selectedTemplateItem === item;
     },
     onToggleCatalogue() {
