@@ -6,6 +6,7 @@ namespace ProcessMaker\Http\Controllers\Api\V1_1;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Http\Resources\V1_1\TaskScreen;
 
 class TaskController extends Controller
 {
@@ -29,5 +30,19 @@ class TaskController extends Controller
     public function show(ProcessRequestToken $task)
     {
         return $task;
+    }
+
+    public function showScreen($taskId)
+    {
+        $task = ProcessRequestToken::select('id', 'process_request_id', 'element_id', 'process_id')
+            ->findOrFail($taskId);
+        $response = new TaskScreen($task);
+        $response = response($response->toArray(request())['screen'], 200);
+        $now = time();
+        // screen cache time
+        $cacheTime = config('screen_task_cache_time', 86400);
+        $response->headers->set('Cache-Control', 'max-age=' . $cacheTime . ', must-revalidate, public');
+        $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $now + $cacheTime) . ' GMT');
+        return $response;
     }
 }

@@ -8,13 +8,18 @@ Route::prefix('api/1.1')
     ->name('api.1.1.')
     ->group(function () {
         // Tasks Endpoints
-        Route::name('tasks.')->group(function () {
+        Route::name('tasks.')->prefix('tasks')->group(function () {
             // Route to list tasks
-            Route::get('tasks', [TaskController::class, 'index'])
+            Route::get('/', [TaskController::class, 'index'])
                 ->name('index');
 
             // Route to show a task
-            Route::get('tasks/{task}', [TaskController::class, 'show'])
-                ->name('show');
+            Route::get('/{task}', [TaskController::class, 'show'])
+                ->name('show')
+                ->middleware(['bindings','can:view,task']);
+
+            // Route to show the screen of a task
+            Route::get('/{taskId}/screen', [TaskController::class, 'showScreen'])
+                ->name('show.screen');
         });
     });
