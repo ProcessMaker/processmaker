@@ -888,11 +888,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      *
      * @param string $eventName
      */
-    public function notifyProcessUpdated($eventName)
+    public function notifyProcessUpdated($eventName, TokenInterface $token = null)
     {
-        $event = new ProcessUpdated($this, $eventName);
+        $event = new ProcessUpdated($this, $eventName, $token);
         if ($this->parentRequest) {
-            $this->parentRequest->notifyProcessUpdated($eventName);
+            $this->parentRequest->notifyProcessUpdated($eventName, $token);
         }
         event($event);
     }

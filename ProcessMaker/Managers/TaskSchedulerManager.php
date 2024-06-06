@@ -144,7 +144,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $this->removeExpiredLocks();
 
-            $tasks = ScheduledTask::all();
+            $tasks = ScheduledTask::cursor();
 
             foreach ($tasks as $task) {
                 try {
