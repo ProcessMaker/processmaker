@@ -293,7 +293,7 @@ export default {
           // use the value from the quick fill
           quickFillValue = _.get(quickFillData, field, null);
         }
-
+        // Set the value. This handles nested values using dot notation in 'field' string
         _.set(draftData, field, quickFillValue);
       });
 
