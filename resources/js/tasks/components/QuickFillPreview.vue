@@ -270,8 +270,8 @@ export default {
       this.$emit("close");
     },
     validateBase64(field) {
-      var regex = /^data:image\/\w+;base64,/;
-      return regex.test(field) ? true : false;
+      const regex = /^data:image\/\w+;base64,/;
+      return regex.test(field);
     },
     buttonThisDataFromFullTask(quickFillData) {
       // If the task does not have a draft yet, use the task data
