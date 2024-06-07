@@ -136,7 +136,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      */
     protected $appends = [
         'advanceStatus',
-        'elementDestination',
     ];
 
     /**
