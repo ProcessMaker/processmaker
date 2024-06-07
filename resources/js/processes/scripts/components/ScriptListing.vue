@@ -42,14 +42,11 @@
 
       <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
 
-      <pagination
-        :single="$t('Script')"
-        :plural="$t('Scripts')"
-        :perPageSelectEnabled="true"
-        @changePerPage="changePerPage"
-        @vuetable-pagination:change-page="onPageChange"
-        ref="pagination"
-      ></pagination>
+      <pagination-table
+        :meta="data.meta"
+        @page-change="changePage"
+        @per-page-change="changePerPage"
+      />
     </div>
     <b-modal ref="myModalRef" :title="$t('Copy Script')" centered  header-close-content="&times;" >
       <form>
