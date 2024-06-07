@@ -278,7 +278,8 @@ jobs:
               else
                 exit 1
               fi'
-            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" && break || true
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" > /tmp/comment.md && break || true
+            bash .github/scripts/post_comment_to_pr.sh "$(cat /tmp/comment.md)"
           done
   deleteEKS:
     name: Delete Instance
