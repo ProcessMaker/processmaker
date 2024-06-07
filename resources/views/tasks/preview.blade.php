@@ -474,7 +474,6 @@
               if (event.detail.hasOwnProperty(key)) {
                 let value = event.detail[key];
                 if (this.validateBase64(value)) {
-                  delete this.formData[key];
                   delete event.detail[key];
                 }
               }
