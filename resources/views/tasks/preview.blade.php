@@ -442,11 +442,14 @@
 
           window.addEventListener('fillData', event => {
             const newData = {};
-            console.log("Event Detail: ", event.detail);
-            console.log("screenFields: ", screenFields);
             screenFields.forEach((field) => {
 
               const existingValue = _.get(this.formData, field, null);
+
+              if(this.validateBase64(existingValue)) {
+                _.set(newData, field, existingValue);
+                return;
+              }
               let quickFillValue;
 
               if (existingValue) {
@@ -455,9 +458,6 @@
               } else {
                 // use the value from the quick fill(event.detail)
                 quickFillValue = _.get(event.detail, field, null);
-              }
-              if(this.validateBase64(quickFillValue)) {
-                return;
               }
               // Set the value. This handles nested values using dot notation in 'field' string
               _.set(newData, field, quickFillValue);

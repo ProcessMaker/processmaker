@@ -280,6 +280,11 @@ export default {
       const draftData = {};
       this.screenFields.forEach((field) => {
         const existingValue = _.get(dataToUse, field, null);
+
+        if(this.validateBase64(existingValue)) {
+          _.set(draftData, field, existingValue);
+          return;
+        }
         let quickFillValue;
         if (existingValue) {
           // If the value exists in the task data (or task draft data), don't overwrite it
@@ -288,10 +293,7 @@ export default {
           // use the value from the quick fill
           quickFillValue = _.get(quickFillData, field, null);
         }
-        if(this.validateBase64(quickFillValue)) {
-          return;
-        }
-        // Set the value. This handles nested values using dot notation in 'field' string
+
         _.set(draftData, field, quickFillValue);
       });
 
