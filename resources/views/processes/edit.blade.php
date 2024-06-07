@@ -607,7 +607,6 @@
                     this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
                     this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
                     this.formData.manager_id = this.formatValueScreen(this.manager);
-                    console.log(this.formData);
                     ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
                     .then(response => {
                         ProcessMaker.alert(this.$t('The process was saved.'), 'success', 5, true);
