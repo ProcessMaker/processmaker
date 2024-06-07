@@ -269,6 +269,10 @@ export default {
       }
       this.$emit("close");
     },
+    validateBase64(field) {
+      var regex = /^data:image\/\w+;base64,/;
+      return regex.test(field) ? true : false;
+    },
     buttonThisDataFromFullTask(quickFillData) {
       // If the task does not have a draft yet, use the task data
       const dataToUse = this.task.draft?.data ?? this.task.data;
@@ -283,6 +287,9 @@ export default {
         } else {
           // use the value from the quick fill
           quickFillValue = _.get(quickFillData, field, null);
+        }
+        if(this.validateBase64(quickFillValue)) {
+          return;
         }
         // Set the value. This handles nested values using dot notation in 'field' string
         _.set(draftData, field, quickFillValue);
