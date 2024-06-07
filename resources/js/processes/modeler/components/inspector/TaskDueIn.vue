@@ -49,7 +49,6 @@ export default {
         return _.get(this.node, "isDueInVariable");
       },
       set(val) {
-        this.clearDueIn(val);
         this.$set(this.node, "isDueInVariable", val);
       },
     },
