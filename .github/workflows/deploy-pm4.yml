@@ -275,9 +275,14 @@ jobs:
                 echo $pr_body | base64 -d > /tmp/pr_body
                 cd /opt/processmaker
 <<<<<<< HEAD
+<<<<<<< HEAD
                 sudo -u nginx php artisan pm4-api-testing:run --body="$pr_body"
 =======
                 sudo -u nginx php artisan pm4-api-testing:run > /tmp.comment.md
+=======
+                ls -l .github/
+                sudo -u nginx php artisan pm4-api-testing:run > /tmp/comment.md
+>>>>>>> Fix
                 .github/workflows/scripts/post_comment_to_pr.sh "$(cat /tmp/comment.md)"
 >>>>>>> Post comment from docker
               else
