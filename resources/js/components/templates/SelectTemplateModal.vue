@@ -126,8 +126,8 @@
         this.$bvModal.show('selectTemplate');
       },
       hideBackButton() {
-        this.headerButtons[0].hidden = true;
-        this.titleButtons[0].hidden = true;
+        this.headerButtons[0].hidden = false;
+        this.titleButtons[0].hidden = false;
         this.hasHeaderButtons = false;
       }
     },
