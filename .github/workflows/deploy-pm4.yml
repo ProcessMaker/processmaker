@@ -262,6 +262,7 @@ jobs:
         run: |
           cwd=$(pwd)
           ls -l pm4-k8s-distribution/
+          find / -name "post_comment_to_pr.sh"
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
