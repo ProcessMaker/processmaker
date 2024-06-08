@@ -278,7 +278,7 @@ jobs:
               else
                 exit 1
               fi'
-            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" > /tmp/comment.md && break || true
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" | tee /tmp/comment.md && break || true
           done
           # Send the content of /tmp/comment.md as a PR comment
           MESSAGE=$(cat /tmp/comment.md)
