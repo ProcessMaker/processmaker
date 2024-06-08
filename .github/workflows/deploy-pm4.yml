@@ -261,7 +261,7 @@ jobs:
       - name: Run the API tests
         run: |
           cwd=$(pwd)
-          ls -l
+          ls -l pm4-k8s-distribution/
           cd argocd 
           deploy=$(echo -n ${{env.IMAGE_TAG}} | md5sum | head -c 10)
           namespace="ci-$deploy-ns-pm4"
