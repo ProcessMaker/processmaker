@@ -326,8 +326,6 @@ export default {
     font-size: 1.5em;
   }
 
-  .start-button {
-  }
   @media (max-width: $lp-breakpoint) {
     display: flex;
     flex-direction: row;

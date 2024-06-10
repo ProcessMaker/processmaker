@@ -36,15 +36,6 @@
         </a>
       </div>
       <div class="processes-info">
-
-        <!-- TODO: reimplement
-        <div
-          v-if="!showWizardTemplates && !showCardProcesses && !showProcess && !showProcessScreen"
-          class="d-flex justify-content-center py-5"
-        >
-          <CatalogueEmpty />
-        </div>
-        <div> -->
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
             <span @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
@@ -413,11 +404,5 @@ export default {
     padding-left: 0;
   }
 }
-// @media (width <= 1024px) {
-//   .menu {
-//     min-width: 0;
-//     width: 0;
-//   }
-// }
 
 </style>
