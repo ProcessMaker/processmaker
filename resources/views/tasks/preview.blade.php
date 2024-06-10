@@ -428,6 +428,10 @@
               this.sendEvent('taskReady', this.task?.id);
             });
           },
+          validateBase64(field) {
+            var regex = /^data:image\/\w+;base64,/;
+            return regex.test(field);
+          },
         },
         mounted() {
           this.prepareData();
@@ -437,7 +441,29 @@
           });
 
           window.addEventListener('fillData', event => {
-            this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
+            const newData = {};
+            screenFields.forEach((field) => {
+
+              const existingValue = _.get(this.formData, field, null);
+
+              if(this.validateBase64(existingValue)) {
+                _.set(newData, field, existingValue);
+                return;
+              }
+              let quickFillValue;
+
+              if (existingValue) {
+                // If the value exists in the task data, don't overwrite it
+                quickFillValue = existingValue;
+              } else {
+                // use the value from the quick fill(event.detail)
+                quickFillValue = _.get(event.detail, field, null);
+              }
+              // Set the value. This handles nested values using dot notation in 'field' string
+              _.set(newData, field, quickFillValue);
+            });
+
+            this.formData = newData;
           });
 
           window.addEventListener('eraseData', event => {
