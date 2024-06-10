@@ -191,6 +191,7 @@ Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])-
 Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
 Route::get('2fa/send_again', [TwoFactorAuthController::class, 'sendCode'])->name('2fa.send_again');
 Route::get('2fa/auth_app_qr', [TwoFactorAuthController::class, 'displayAuthAppQr'])->name('2fa.auth_app_qr');
+Route::get('login-failed', [LoginController::class, 'showLoginFailed'])->name('login-failed');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

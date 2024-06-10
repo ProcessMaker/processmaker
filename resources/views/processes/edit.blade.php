@@ -169,6 +169,7 @@
                                     </div>
                                 </div>
                             </div>
+<<<<<<< HEAD
                             <div class="card card-custom-info">
                                 <div
                                     class="card-header"
@@ -337,6 +338,92 @@
                                         </b-row>
                                     </div>
                                 </div>
+=======
+                            <div class="form-group p-0">
+                                {!! Form::label('cancelRequest', __('Cancel Request')) !!}
+                                <multiselect id="cancelRequest"
+                                             v-model="canCancel"
+                                             :options="activeUsersAndGroupsWithManager"
+                                             :multiple="true"
+                                             :show-labels="false"
+                                             placeholder="{{__('Type to search')}}"
+                                             track-by="id"
+                                             label="fullname"
+                                             group-values="items"
+                                             group-label="label">
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
+                                <multiselect aria-label="{{ __('Cancel Screen') }}"
+                                             v-model="screenCancel"
+                                             :options="screens"
+                                             :multiple="false"
+                                             :show-labels="false"
+                                             placeholder="{{ __('Type to search') }}"
+                                             @search-change="loadScreens($event)"
+                                             @open="loadScreens()"
+                                             track-by="id"
+                                             label="title">
+                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                                <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                            </div>
+                            <div class="form-group p-0">
+                                {!! Form::label('editData', __('Edit Data')) !!}
+                                <multiselect id="editData"
+                                             v-model="canEditData"
+                                             :options="activeUsersAndGroups"
+                                             :multiple="true"
+                                             :show-labels="false"
+                                             placeholder="{{__('Type to search')}}"
+                                             track-by="id"
+                                             label="fullname"
+                                             group-values="items"
+                                             group-label="label">
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
+                                <multiselect aria-label="{{ __('Request Detail Screen') }}"
+                                             v-model="screenRequestDetail"
+                                             :options="screens"
+                                             :multiple="false"
+                                             :show-labels="false"
+                                             placeholder="{{ __('Type to search') }}"
+                                             @search-change="loadScreens($event)"
+                                             @open="loadScreens()"
+                                             track-by="id"
+                                             label="title">
+                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                                <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('status', __('Status')) !!}
+                                <select-status v-model="formData.status" :multiple="false"></select-status>
+                            </div>
+                            <div class="d-flex justify-content-end mt-2">
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                {!! Form::button(__('Save and publish'), [
+                                    'class' => 'btn btn-secondary ml-2',
+                                    '@click' => 'onUpdate'
+                                ]) !!}
+>>>>>>> origin/next
                             </div>
                         </div>
                         <div class="d-flex justify-content-end mt-2">
@@ -573,7 +660,10 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save and publish'), [
+                                    'class' => 'btn btn-secondary ml-2',
+                                    '@click' => 'onUpdate'
+                                ]) !!}
                             </div>
                         </div>
 
@@ -606,6 +696,7 @@
                 return {
                     formData: @json($process),
                     assignedProjects: @json($assignedProjects),
+                    isDraft: @json($isDraft),
                     selectedProjects: '',
                     dataGroups: [],
                     value: [],
@@ -729,6 +820,21 @@
                     return (item && item.id) ? item.id : null
                 },
                 onUpdate() {
+                    let shouldDelete = false;
+                    if (this.isDraft) {
+                        ProcessMaker.confirmModal(
+                            this.$t("Caution!"),
+                            this.$t("You are about to publish a draft version. Are you sure you want to proceed?"),
+                            "",
+                            () => {
+                                this.handleUpdate();
+                            }
+                        );
+                    } else {
+                        this.handleUpdate();
+                    }
+                },
+                handleUpdate() {
                     this.resetErrors();
                     let that = this;
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
