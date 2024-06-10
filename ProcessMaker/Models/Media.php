@@ -65,7 +65,7 @@ class Media extends MediaLibraryModel
 
     protected $table = 'media';
 
-    const COLLECTION_SLIDESHOW = 'slideshow';
+    const COLLECTION_SLIDESHOW = 'images_slideshow';
 
     /**
      * The attributes that are mass assignable.
@@ -123,10 +123,11 @@ class Media extends MediaLibraryModel
 
     public function determineCollectionName(Process $process, $name)
     {
+        // In order to differentiate them from other process-related images ['launchpad', 'slideshow']
         if ($name === 'launchpad') {
             return $process->uuid . '_' . 'images_carousel';
-        } elseif ($name === self::COLLECTION_SLIDESHOW) {
-            return 'images_slideshow';
+        } elseif ($name === 'slideshow') {
+            return self::COLLECTION_SLIDESHOW;
         }
         return null;
     }
@@ -215,6 +216,7 @@ class Media extends MediaLibraryModel
         }
         // Get collection name to save
         $collectionName = self::determineCollectionName($process, $subtype);
+        // Check if exist
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
             // Store the images related move to MEDIA
