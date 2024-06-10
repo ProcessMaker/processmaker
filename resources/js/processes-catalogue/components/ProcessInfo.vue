@@ -23,12 +23,20 @@
       <p>{{ process.description }}</p>
       <h3>{{ $t('Version') }} {{ processVersion }}</h3>
       <h1 class="started-cases-title">{{ $t('Started Cases') }}</h1>
-      <p class="started-cases">1,234</p>
-      <div class="mini-charts">
-        <div class="pie" :style="inProgressPie"></div>
-        <div>{{ inProgressPercent }}% {{ $t('In Progress') }}</div>
-        <div class="pie" :style="completedPie"></div>
-        <div>{{ completedPercent }}% {{ $t('Completed') }}</div>
+      <p class="started-cases">{{ startedCases.toLocaleString() }}</p>
+      <div class="charts">
+        <mini-pie-chart
+          :count="process.counts?.in_progress"
+          :total="startedCases"
+          :name="$t('In Progress')"
+          color="#4EA075"
+        />
+        <mini-pie-chart
+          :count="process.counts?.completed"
+          :total="startedCases"
+          :name="$t('Completed')"
+          color="#478FCC"
+        />
       </div>
     </div>
     <process-collapse-info
@@ -69,12 +77,14 @@
 import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
 import ProcessTab from "./ProcessTab.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
+import MiniPieChart from "./MiniPieChart.vue";
 
 export default {
   components: {
     ProcessCollapseInfo,
     ProcessTab,
     ProcessesCarousel,
+    MiniPieChart,
   },
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],
   data() {
@@ -104,8 +114,6 @@ export default {
       this.firstImage = pos + 1;
     });
 
-    // this.$refs.pie.$el.style.backgroundImage = "conic-gradient(white 75%, green 25%)";
-
     window.ProcessMaker.navbarMobile.display = false;
   },
   beforeDestroy() {
@@ -115,27 +123,8 @@ export default {
     processVersion() {
       return moment(this.process.updated_at).format();
     },
-    inProgressPercent() {
-      return 25;
-    },
-    completedPercent() {
-      return 75;
-    },
-    inProgressPie() {
-      const color = "#4EA075";
-      const percent = this.inProgressPercent;
-      return {
-        backgroundImage: `conic-gradient(${color} 0%, ${color} ${percent}%, white ${percent}%, white 100%)`,
-        borderColor: color,
-      };
-    },
-    completedPie() {
-      const color = "#478FCC";
-      const percent = this.completedPercent;
-      return {
-        backgroundImage: `conic-gradient(${color} 0%, ${color} ${percent}%, white ${percent}%, white 100%)`,
-        borderColor: color,
-      };
+    startedCases() {
+      return this.process.counts?.total || 0;
     },
   },
   methods: {
@@ -156,6 +145,7 @@ export default {
 @import '~styles/variables';
 .process-info-main {
   overflow-y: auto;
+  position: relative;
 }
 
 .mobile-process-nav {
@@ -230,20 +220,8 @@ export default {
   }
 }
 
-.mini-charts {
+.charts {
   display: flex;
   align-items: center;
-  font-style: italic;
-  color: $secondary;
-
-  div {
-    margin-right: 8px;
-  }
-}
-.pie {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid;
 }
 </style>
