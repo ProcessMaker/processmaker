@@ -145,6 +145,7 @@ export default {
 @import '~styles/variables';
 .process-info-main {
   overflow-y: auto;
+  position: relative;
 }
 
 .mobile-process-nav {
