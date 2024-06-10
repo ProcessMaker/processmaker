@@ -65,6 +65,8 @@ class Media extends MediaLibraryModel
 
     protected $table = 'media';
 
+    const COLLECTION_SLIDESHOW = 'slideshow';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -118,6 +120,16 @@ class Media extends MediaLibraryModel
     protected $ids = [
         'model_id',
     ];
+
+    public function determineCollectionName(Process $process, $name)
+    {
+        if ($name === 'launchpad') {
+            return $process->uuid . '_' . 'images_carousel';
+        } elseif ($name === self::COLLECTION_SLIDESHOW) {
+            return 'images_slideshow';
+        }
+        return null;
+    }
 
     /**
      * Override the default boot method to allow access to lifecycle hooks
@@ -184,10 +196,11 @@ class Media extends MediaLibraryModel
      * @param  Process $process
      * @param array $properties
      * @param string $key
+     * @param string $subtype
      *
      * @return void
      */
-    public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid', $subtype = 'launchpad')
     {
         // Validate if the image smaller than 2MB
         $maxFileSize = 2 * 1024 * 1024;
@@ -200,8 +213,8 @@ class Media extends MediaLibraryModel
         if ($mediaCount > 4) {
             return;
         }
-        // Get information to save
-        $collectionName = $process->uuid . '_images_carousel';
+        // Get collection name to save
+        $collectionName = self::determineCollectionName($process, $subtype);
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
             // Store the images related move to MEDIA

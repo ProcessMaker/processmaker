@@ -30,6 +30,7 @@ use ProcessMaker\Http\Controllers\Api\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Api\SecurityLogController;
 use ProcessMaker\Http\Controllers\Api\SettingController;
 use ProcessMaker\Http\Controllers\Api\SignalController;
+use ProcessMaker\Http\Controllers\Api\SlideshowController;
 use ProcessMaker\Http\Controllers\Api\TaskAssignmentController;
 use ProcessMaker\Http\Controllers\Api\TaskController;
 use ProcessMaker\Http\Controllers\Api\TaskDraftController;
@@ -181,6 +182,11 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     //Process Launchpad
     Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
     Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
+
+    // Process Slideshow
+    Route::get('slideshow/{process}', [SlideshowController::class, 'index'])->name('slideshow.index')->middleware('can:edit-processes,process');
+    Route::put('slideshow/{process}', [SlideshowController::class, 'store'])->name('slideshow.store')->middleware('can:edit-processes,process');
+    Route::delete('slideshow/{process}', [SlideshowController::class, 'delete'])->name('slideshow.delete')->middleware('can:edit-processes,process');
 
     // Permissions
     Route::get('permissions', [PermissionController::class, 'index'])->name('permissions.index');
