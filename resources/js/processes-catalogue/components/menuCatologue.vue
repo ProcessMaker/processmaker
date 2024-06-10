@@ -93,11 +93,6 @@
     </b-collapse>
     </div>
 
-    <!-- 
-    This line :type="$t('Process'), needs to be reviewed. 
-    The parameter 'type' assigns a translation string. If the language changes, 
-    it may have side effects." 
-    -->
     <select-template-modal
       ref="addProcessModal"
       :type="$t('Process')"
