@@ -108,19 +108,6 @@ export default {
     }
   },
   watch: {
-    // $route: {
-    //   immediate: true,
-    //   handler() {
-    //     // if we are viewing a process, use our custom mobile nav
-    //     if (this.$route?.name === "show") {
-    //       this.showCustomMobileNav = true;
-    //       window.ProcessMaker.navbarMobile.display = false;
-    //     } else {
-    //       this.showCustomMobileNav = false;
-    //       window.ProcessMaker.navbarMobile.display = true;
-    //     }
-    //   }
-    // },
     category: {
       deep: true,
       handler() {

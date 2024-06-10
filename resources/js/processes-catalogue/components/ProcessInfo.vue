@@ -114,10 +114,14 @@ export default {
       this.firstImage = pos + 1;
     });
 
-    window.ProcessMaker.navbarMobile.display = false;
+    if (window.ProcessMaker?.navbarMobile) {
+      window.ProcessMaker.navbarMobile.display = false;
+    }
   },
   beforeDestroy() {
-    window.ProcessMaker.navbarMobile.display = true;
+    if (window.ProcessMaker?.navbarMobile) {
+      window.ProcessMaker.navbarMobile.display = true;
+    }
   },
   computed: {
     processVersion() {

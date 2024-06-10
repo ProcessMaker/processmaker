@@ -207,7 +207,6 @@ export default {
      * get start events for dropdown Menu
      */
     getStartEvents() {
-      console.log("GET START EVENTS");
       this.processEvents = [];
       ProcessMaker.apiClient
         .get(`process_bookmarks/processes/${this.process.id}/start_events`)
