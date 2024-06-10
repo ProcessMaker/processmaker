@@ -7,38 +7,85 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body scripts-table-card" data-cy="scripts-table">
-      <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
-        :css="css"
-        :api-mode="false"
-        @vuetable:pagination-data="onPaginationData"
-        :fields="fields"
+    <div v-show="!shouldShowLoader" class="scripts-table-card" data-cy="scripts-table">
+      <filter-table
+        :headers="fields"
         :data="data"
-        data-path="data"
-        :noDataTemplate="$t('No Data Available')"
-        pagination-path="meta"
+        table-name="scripts"
+        style="height: calc(100vh - 355px);"
       >
-        <template slot="title" slot-scope="props">
-          <b-link
-            v-if="permission.includes('edit-scripts')"
-            :href="`/designer/scripts/${props.rowData.id}/builder`"
-            v-uni-id="props.rowData.id.toString()"
-          >{{ props.rowData.title }}</b-link>
-          <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+          <div
+            v-if="column.sortable"
+            :key="index"
+            @click="handleEllipsisClick(column)"
+          >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
         </template>
-
-        <template slot="actions" slot-scope="props">
-          <ellipsis-menu
-            :actions="scriptActions"
-            :permission="permission"
-            :data="props.rowData"
-            :divider="true"
-            @navigate="onScriptNavigate"
-          />
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in fields"
+            :key="colIndex"
+            :data-cy="`scripts-table-td-${rowIndex}-${colIndex}`"
+          >
+            <div
+              :data-cy="`datasource-table-html-${rowIndex}-${colIndex}`"
+              v-if="containsHTML(row[header.field])"
+              v-html="sanitize(row[header.field])"
+            >
+            </div>
+            <template v-else>
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`scripts-table-component-${rowIndex}-${colIndex}`"
+              >
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template
+                v-else
+                :data-cy="`scripts-table-field-${rowIndex}-${colIndex}`"
+              >
+                <template v-if="header.field === 'title'">
+                  <b-link
+                    v-if="permission.includes('edit-scripts')"
+                    :href="`/designer/scripts/${row.id}/builder`"
+                    v-uni-id="row.id.toString()"
+                  >{{ row.title }}</b-link>
+                  <span v-uni-id="row.id.toString()" v-else="permission.includes('edit-scripts')">{{ row.title }}</span>
+                </template>
+                <template v-if="header.field === 'actions'">
+                  <ellipsis-menu
+                    :actions="scriptActions"
+                    :permission="permission"
+                    :data="row"
+                    :divider="true"
+                    @navigate="onScriptNavigate"
+                  />
+                </template>
+                <template v-if="header.field !== 'title' && header.field !== 'actions'">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ getNestedPropertyValue(row, header) }}
+                  </div>
+                </template>
+              </template>
+            </template>
+          </td>
         </template>
-      </vuetable>
+      </filter-table>
 
       <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
 
@@ -83,18 +130,20 @@
 </template>
 
 <script>
+import { createUniqIdsMixin } from "vue-uniq-ids";
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import scriptNavigationMixin from "../../../components/shared/scriptNavigation";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
-import { createUniqIdsMixin } from "vue-uniq-ids";
+import { FilterTableBodyMixin } from "../../../components/shared";
+
 const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: { EllipsisMenu, AddToProjectModal },
-  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, scriptNavigationMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin, ellipsisMenuMixin, scriptNavigationMixin, FilterTableBodyMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
@@ -114,43 +163,76 @@ export default {
         {
           title: () => this.$t("Name"),
           name: "__slot:title",
+          label: this.$t("Name"),
           field: "title",
-          sortField: "title"
+          sortable: true,
+          direction: "none",
+          width: 180,
+          sortField: "title",
         },
         {
           title: () => this.$t("Description"),
           name: "description",
-          sortField: "description"
+          label: this.$t("Description"),
+          field: "description",
+          sortable: true,
+          direction: "none",
+          width: 180,
+          sortField: "description",
         },
         {
           title: () => this.$t("Category"),
           name: "categories",
           sortField: "category.name",
+          label: this.$t("Category"),
+          field: "category.name",
+          sortable: true,
+          direction: "none",
+          width: 150,
           callback(categories) {
             return categories.map(item => item.name).join(', ');
-          }
+          },
         },
         {
           title: () => this.$t("Language"),
           name: "language",
           sortField: "language",
-          callback: this.formatLanguage
+          label: this.$t("Language"),
+          field: "language",
+          sortable: true,
+          direction: "none",
+          width: 130,
+          callback: this.formatLanguage,
         },
         {
           title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
-          callback: "formatDate"
+          label: this.$t("Modified"),
+          field: "updated_at",
+          sortable: true,
+          direction: "none",
+          format: "datetime",
+          width: 140,
+          callback: "formatDate",
         },
         {
           title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
-          callback: "formatDate"
+          label: this.$t("Created"),
+          field: "created_at",
+          sortable: true,
+          direction: "none",
+          format: "datetime",
+          width: 140,
+          callback: "formatDate",
         },
         {
           name: "__slot:actions",
-          title: ""
+          title: "",
+          label: "",
+          field: "actions",
         }
       ]
     };
@@ -207,6 +289,36 @@ export default {
       this.assetId = id;
       this.assetName = title;
       this.$refs["add-to-project-modal"].show();
+    },
+    handleEllipsisClick(categoryColumn) {
+      this.fields.forEach(column => {
+        if (column.field !== categoryColumn.field) {
+          column.direction = "none";
+          column.filterApplied = false;
+        }
+      });
+
+      if (categoryColumn.direction === "asc") {
+        categoryColumn.direction = "desc";
+      } else if (categoryColumn.direction === "desc") {
+        categoryColumn.direction = "none";
+        categoryColumn.filterApplied = false;
+      } else {
+        categoryColumn.direction = "asc";
+        categoryColumn.filterApplied = true;
+      }
+
+      if (categoryColumn.direction !== "none") {
+        const sortOrder = [
+          {
+            sortField: categoryColumn.sortField || categoryColumn.field,
+            direction: categoryColumn.direction,
+          },
+        ];
+        this.dataManager(sortOrder);
+      } else {
+        this.fetch();
+      }
     },
   },
 
