@@ -11,6 +11,7 @@ use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
+use ProcessMaker\Helpers\DataTypeHelper;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -522,13 +523,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $result = [];
         if (is_array($this->data)) {
             foreach ($this->getRequestData() as $key => $value) {
+                $type = DataTypeHelper::determineType('', $value);
                 $result[] = [
                     'key' => $key,
                     'value' => $value,
+                    'type' => $type
                 ];
             }
         }
-
         return $result;
     }
 
