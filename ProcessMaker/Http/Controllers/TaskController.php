@@ -13,6 +13,7 @@ use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\TaskDraft;
 use ProcessMaker\Models\UserResourceView;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Package\SavedSearch\Http\Controllers\SavedSearchController;
@@ -63,7 +64,9 @@ class TaskController extends Controller
             $defaultColumns = null;
         }
 
-        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns'));
+        $taskDraftsEnabled = TaskDraft::draftsEnabled();
+
+        return view('tasks.index', compact('title', 'userFilter', 'defaultColumns', 'taskDraftsEnabled'));
     }
 
     public function edit(ProcessRequestToken $task, string $preview = '')
@@ -98,7 +101,9 @@ class TaskController extends Controller
         $task->allow_interstitial = $interstitial['allow_interstitial'];
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
+        $task->draft = $task->draft();
         $element = $task->getDefinition(true);
+        $screenFields = $screenVersion ? $screenVersion->screenFilteredFields() : [];
 
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
@@ -113,6 +118,7 @@ class TaskController extends Controller
                     'addons' => $this->getPluginAddons('edit', []),
                     'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                     'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
+                    'screenFields' => $screenFields,
                 ]);
             }
 
@@ -151,7 +157,16 @@ class TaskController extends Controller
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
                 'dataActionsAddons' => $this->getPluginAddons('edit.dataActions', []),
                 'currentUser' => $currentUser,
+                'screenFields' => $screenFields,
+                'taskDraftsEnabled' => TaskDraft::draftsEnabled(),
             ]);
         }
+    }
+
+    public function quickFillEdit(ProcessRequestToken $task)
+    {
+        return view('tasks.editQuickFill', [
+            'task' => $task,
+        ]);
     }
 }

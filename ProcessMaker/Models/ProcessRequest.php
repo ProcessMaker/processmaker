@@ -11,6 +11,7 @@ use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
+use ProcessMaker\Helpers\DataTypeHelper;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -19,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Query\Expression;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\ForUserScope;
@@ -46,13 +48,14 @@ use Throwable;
  * @property string $status
  * @property array $data
  * @property string $collaboration_uuid
- * @property \Carbon\Carbon $initiated_at
- * @property \Carbon\Carbon $completed_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $initiated_at
+ * @property Carbon $completed_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
+ * @property ProcessVersion $processVersion
  * @method static ProcessRequest find($id)
  * @method static ProcessRequest findOrFail($id)
  *
@@ -520,13 +523,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $result = [];
         if (is_array($this->data)) {
             foreach ($this->getRequestData() as $key => $value) {
+                $type = DataTypeHelper::determineType('', $value);
                 $result[] = [
                     'key' => $key,
                     'value' => $value,
+                    'type' => $type
                 ];
             }
         }
-
         return $result;
     }
 
@@ -560,7 +564,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
-        \Log::error($exception);
+        Log::error($exception);
         if (!$this->isNonPersistent()) {
             $this->save();
         }
@@ -738,9 +742,26 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                     ->whereIn('user_id', function ($subquery) use ($value, $expression) {
                         $subquery->select('id')
                             ->from('users')
-                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . " ?", [$value]);
+                            ->whereRaw("CONCAT(firstname, ' ', lastname) " . $expression->operator . ' ?', [$value]);
                     })
                     ->whereIn('element_type', ['task', 'userTask', 'startEvent']);
+            });
+        };
+    }
+
+    /**
+     * PMQL value alias for the alternative field in the process version
+     *
+     * @param string value
+     * @param ProcessMaker\Query\Expression expression
+     *
+     * @return callable
+     */
+    public function valueAliasAlternative(string $value, Expression $expression): callable
+    {
+        return function ($query) use ($expression, $value) {
+            $query->whereHas('processVersion', function ($query) use ($expression, $value) {
+                $query->where('alternative', $expression->operator, $value);
             });
         };
     }
@@ -895,7 +916,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
      */
     public function requestFiles(bool $includeToken = false)
     {
-        $media = \ProcessMaker\Models\Media::getFilesRequest($this);
+        $media = Media::getFilesRequest($this);
 
         return (object) $media->mapToGroups(function ($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
@@ -915,11 +936,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     public function downloadFile($fileId)
     {
         // Get all files for process and all subprocesses ..
-        $media = Media::getFilesRequest($this);
-
-        $filtered = $media->filter(function ($value) use ($fileId) {
-            return $value->id == $fileId;
-        })->first();
+        $filtered = Media::getFilesRequest($this, $fileId);
 
         if (!$filtered) {
             return null;
@@ -932,7 +949,7 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
 
     public function getMedia(string $collectionName = 'default', $filters = []): Collection
     {
-        return \ProcessMaker\Models\Media::getFilesRequest($this);
+        return Media::getFilesRequest($this);
     }
 
     public function getErrors()
@@ -1028,5 +1045,14 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->where('category_type', ProcessCategory::class)
             ->whereIn('category_id', $systemCategories)
             ->exists();
+    }
+
+    public function getProcessVersionAlternativeAttribute(): string | null
+    {
+        if (class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative')) {
+            return $this->processVersion?->alternative;
+        }
+
+        return null;
     }
 }

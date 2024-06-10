@@ -78,6 +78,7 @@ class PermissionSeeder extends Seeder
             'view-users',
             'view-other-users-profiles',
             'edit-personal-profile',
+            'publish-screen-templates',
         ],
         'Username and Password' => [
             'edit-user-and-password',

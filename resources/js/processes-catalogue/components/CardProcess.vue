@@ -16,7 +16,7 @@
       />
       <pagination
         :total-row="totalRow"
-        :total-pages="totalPages"
+        :per-page="perPage"
         @onPageChanged="onPageChanged"
       />
     </div>
@@ -57,7 +57,7 @@ export default {
       currentPage: 1,
       limit: 7,
       totalRow: null,
-      perPage: 9,
+      perPage: 12,
       order_by: "name",
       dir: "asc",
       data: null,
@@ -106,6 +106,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
@@ -114,6 +115,7 @@ export default {
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
       }
       return `process_bookmarks/processes?page=${this.currentPage}`
@@ -121,12 +123,15 @@ export default {
           + `&category=${this.category.id}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
+          + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
     },
     /**
      * Go to process info
      */
     openProcessInfo(process) {
+      const categoryId = this.category ? this.category.id : -1;
+      window.history.replaceState(null, null, `/process-browser/${process.id}?categorySelected=${categoryId}`);
       this.$emit("openProcess", process);
     },
     /**
@@ -140,6 +145,7 @@ export default {
      * Build the PMQL
      */
     onFilter(value, showEmpty = false) {
+      this.currentPage = 1;
       this.pmql = `(fulltext LIKE "%${value}%")`;
       this.showEmpty = showEmpty;
       this.loadCard();

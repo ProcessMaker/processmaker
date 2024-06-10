@@ -5,19 +5,29 @@
  */
 import Vuetable from "vuetable-2/src/components/Vuetable";
 import Pagination from "../../../components/common/Pagination";
+import FilterTableBodyMixin from "../../shared/FilterTableBodyMixin";
 
 export default {
+  mixins:[FilterTableBodyMixin],
+  props: {
+    fetchOnCreated: {
+      default: true,
+    },
+  },
   components: {
     Vuetable,
     Pagination,
   },
   created() {
     // Use our api to fetch our role listing
-    this.fetch();
+    if (this.fetchOnCreated) {
+      this.fetch();
+    }
   },
   watch: {
     filter: _.debounce(function () {
       if (!this.loading) {
+        this.page = 1;
         this.fetch();
       }
     }, 250),
@@ -81,6 +91,19 @@ export default {
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
       data.data = this.jsonRows(data.data);
+
+      data.data.forEach((record) => {
+        // format owner avatar if exists
+        if (Object.hasOwn(record, "user")) {
+          // eslint-disable-next-line no-param-reassign
+          record.owner = this.formatAvatar(record.user);
+        }
+        // format category if exists
+        if (Object.hasOwn(record, "category")) {
+          // eslint-disable-next-line no-param-reassign
+          record.category_list = this.formatCategory(record.categories);
+        }
+      });
       return data;
     },
     // Some controllers return each row as a json object to preserve integer keys (ie saved search)
@@ -120,7 +143,7 @@ export default {
       // What page of results we are on
       page: 1,
       // How many items per page
-      perPage: 10,
+      perPage: 15,
       // Our loading flag
       loading: false,
       // What column to order by (default of name)

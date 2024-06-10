@@ -1,4 +1,12 @@
 const ListMixin = {
+  computed: {
+    columnsQuery() {
+      if (this.columns && this.columns.length > 0) {
+        return `&columns=${this.columns.map(c => c.field).join(",")}`;
+      }
+      return "";
+    },
+  },
   methods: {
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
@@ -14,6 +22,7 @@ const ListMixin = {
 
     fetch() {
       Vue.nextTick(() => {
+        this.$emit("on-fetch-task");
         let pmql = "";
 
         if (this.pmql !== undefined) {
@@ -54,12 +63,17 @@ const ListMixin = {
         }
         this.previousAdvancedFilter = advancedFilter;
 
+        const include = "process,processRequest,processRequest.user,user,data".split(",");
+        if (this.additionalIncludes) {
+          include.push(...this.additionalIncludes);
+        }
+
         // Load from our api client
         ProcessMaker.apiClient
           .get(
             `${this.endpoint}?page=${
               this.page
-            }&include=process,processRequest,processRequest.user,user,data`
+            }&include=` + include.join(",")
               + `&pmql=${
                 encodeURIComponent(pmql)
               }&per_page=${
@@ -67,10 +81,14 @@ const ListMixin = {
               }${filterParams
               }${this.getSortParam()
               }&non_system=true` +
-              advancedFilter,
+              advancedFilter +
+              this.columnsQuery,
+
+              { dataLoadingId: this.dataLoadingId }
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];
               this.data.data.forEach((element) => {

@@ -405,6 +405,11 @@ class WorkflowManagerDefault implements WorkflowManagerInterface
 
         // check class instance of ServiceTaskImplementationInterface
         if (!is_subclass_of($class, ServiceTaskImplementationInterface::class)) {
+            Log::error(
+                'Service task implementation ' . $class
+                . ' must be an instance of '
+                . ServiceTaskImplementationInterface::class
+            );
             return false;
         }
 

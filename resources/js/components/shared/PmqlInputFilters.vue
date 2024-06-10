@@ -279,6 +279,8 @@
 </template>
 
 <script>
+import advancedFilterStatusMixin from "../../common/advancedFilterStatusMixin";
+
 let myEvent;
 export default {
   directives: {
@@ -296,6 +298,9 @@ export default {
       },
     },
   },
+  mixins: [
+    advancedFilterStatusMixin,
+  ],
   props: [
     "type",
     "paramProcess",
@@ -488,7 +493,7 @@ export default {
           this.buildRequestPmql();
           break;
         case 'tasks':
-          this.buildTaskPmql();
+          this.buildTaskPmql(this.advancedFilter);
           break;
         case 'projects':
           this.buildProjectPmql();
@@ -584,14 +589,15 @@ export default {
         if (key < clauses.length - 1) this.pmql += ' AND ';
       });
     },
-    buildTaskPmql() {
+    buildTaskPmql(advancedFilter = null) {
         let clauses = [];
         const isSelfService = this.status.find(status => status.value === 'Self Service');
 
-        // Add default filter by user id
-        if (!isSelfService) {
+        let selfServiceFilterFound = advancedFilter.some(filter => filter.subject?.type === 'Status' && filter.value === 'Self Service');
+
+        if (!selfServiceFilterFound && !isSelfService) {
           const userId = parseInt(window.ProcessMaker.user.id);
-          clauses.push('user_id = ' + userId);
+          clauses.push('user_id = ' + userId); 
         }
 
         //Parse request

@@ -1,43 +1,26 @@
 <template>
-  <div>
-    <div class="d-flex">
-      <b-col cols="9">
-        <process-map
-          :process="process"
-          :permission="permission"
-          :current-user-id="currentUserId"
-          :is-documenter-installed="isDocumenterInstalled"
-          @goBackCategory="goBackCategory"
-        />
-        <processes-carousel
-          :process="process"
-        />
-      </b-col>
-      <b-col cols="3">
-        <process-options :process="process" />
-      </b-col>
-    </div>
-    <b-col cols="12">
-      <hr class="my-12">
-      <process-tab
-        :current-user="currentUser"
-        :process="process"
-      />
-    </b-col>
+  <div class="process-info-main">
+    <process-collapse-info
+      :process="process"
+      :permission="permission"
+      :current-user-id="currentUserId"
+      :is-documenter-installed="isDocumenterInstalled"
+      @goBackCategory="goBackCategory"
+    />
+    <process-tab
+      :current-user="currentUser"
+      :process="process"
+    />
   </div>
 </template>
 
 <script>
-import ProcessesCarousel from "./ProcessesCarousel.vue";
-import ProcessMap from "./ProcessMap.vue";
-import ProcessOptions from "./ProcessOptions.vue";
+import ProcessCollapseInfo from "./ProcessCollapseInfo.vue";
 import ProcessTab from "./ProcessTab.vue";
 
 export default {
   components: {
-    ProcessOptions,
-    ProcessMap,
-    ProcessesCarousel,
+    ProcessCollapseInfo,
     ProcessTab,
   },
   props: ["process", "permission", "isDocumenterInstalled", "currentUserId", "currentUser"],
@@ -64,3 +47,9 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+.process-info-main {
+  overflow-y: auto;
+}
+</style>

@@ -14,13 +14,24 @@
         __('Screens') => route('screens.index'),
         $screen->title => null,
     ]])
+    <div class="flex-grow-1">
+      <top-menu
+        v-if="screenBuilder"
+        class="border-0 bg-white p-0"
+        :options="screenBuilder.optionsMenu"
+        :environment="screenBuilder"
+        :initial-new-items="screenBuilder.$refs.menuScreen.newItems"
+        render-top
+      />
+    </div>
 @endsection
 
 @section('content')
     <div class="sr-only">{{ __('A mouse and keyboard are required to use screen builder.') }}</div>
     <div id="screen-container" style="display: contents !important">
         <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
-                   :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
+                   ref="screenBuilder"
+                   :permission="{{ \Auth::user()->hasPermissionsFor('screens', 'screen-templates') }}"
                    :auto-save-delay="{{ $autoSaveDelay }}"
                    :is-versions-installed="@json($isVersionsInstalled)"
                    :is-draft="@json($isDraft)"

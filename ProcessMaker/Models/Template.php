@@ -4,11 +4,16 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessMakerModel;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\TemplateCategory;
 use ProcessMaker\Templates\ProcessTemplate;
+use ProcessMaker\Templates\ScreenTemplate;
 use ProcessMaker\Traits\Exportable;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasUuids;
@@ -36,6 +41,7 @@ class Template extends ProcessMakerModel
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
         'update-assets' => [Process::class, ProcessTemplate::class, ProcessCategory::class, 'process_category_id', 'process_templates'],
+        'screen' => [Screen::class, ScreenTemplate::class, ScreenCategory::class, 'screen_category_id', 'screen_templates'],
     ];
 
     public function index(String $type, Request $request)
@@ -80,6 +86,21 @@ class Template extends ProcessMakerModel
         return (new $this->types[$type][1])->destroy($id);
     }
 
+    public function importTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->importTemplate($request);
+    }
+
+    public function publishTemplate(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->publishTemplate($request);
+    }
+
+    public function deleteMediaImages(string $type, Request $request)
+    {
+        return (new $this->types[$type][1])->deleteMediaImages($request);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -95,7 +116,13 @@ class Template extends ProcessMakerModel
 
     public static function rules($existing = null, $table = null)
     {
-        $unique = Rule::unique($table ?? 'templates')->ignore($existing);
+        $user = Auth::user();
+
+        $unique = Rule::unique($table ?? 'templates')->where(function ($query) use ($user, $table) {
+            if ($table === 'screen_templates') {
+                return $query->where('user_id', $user->id)->where('is_public', 0);
+            }
+        })->ignore($existing);
 
         return [
             'name' => ['required', $unique, 'alpha_spaces', 'max:255'],
@@ -107,8 +134,9 @@ class Template extends ProcessMakerModel
     public function checkForExistingTemplates($type, $request)
     {
         $result = (new $this->types[$type][1])->existingTemplate($request);
+
         if (!is_null($result)) {
-            return ['id' => $result['id'], 'name' => $result['name']];
+            return ['id' => $result['id'], 'name' => $result['name'], 'owner_id' => $result['owner_id']];
         }
 
         return null;

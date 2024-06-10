@@ -1,28 +1,60 @@
 import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
+  props: {
+    advancedFilterProp: {
+      type: Object,
+      default: null
+    }
+  },
   data() {
     return {
       advancedFilter: {},
       userId: window.Processmaker.userId,
       viewAssignee: [],
       viewParticipants: [],
-      viewProcesses: []
     };
+  },
+  watch: {
+    advancedFilterProp: {
+      deep: true,
+      handler(current, old) {
+        if (_.isEqual(current, old)) {
+          return;
+        }
+        this.getFilterConfiguration();
+        this.fetch();
+      }
+    }
   },
   methods: {
     storeFilterConfiguration() {
-      const { order, type } = this.filterConfiguration();
+      const {order, type} = this.filterConfiguration();
+
+      // If advanced filter was provided as a prop, do not save the filter
+      // or overwrite the global advanced_filter, instead emit the filter.
+      if (this.advancedFilterProp !== null) {
+        this.$emit("advanced-filter-updated", {
+          filters: this.formattedFilter(),
+          order
+        });
+        return;
+      }
+
       let url = "users/store_filter_configuration/";
       if (this.$props.columns && this.savedSearch) {
         url += "savedSearch|" + this.savedSearch;
       } else {
         url += type;
+        if (Processmaker.status) {
+          url += "|" + Processmaker.status;
+        }
       }
       let config = {
         filters: this.formattedFilter(),
         order
       };
+
       ProcessMaker.apiClient.put(url, config);
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
@@ -147,7 +179,10 @@ const PMColumnFilterCommonMixin = {
       return Object.values(filterCopy).flat(1);
     },
     getAdvancedFilter() {
-      let formattedFilter = this.formattedFilter();
+      let formattedFilter = this.formattedFilter().map(obj =>
+        // Remove keys that start with _
+        Object.fromEntries(Object.entries(obj).filter(([key, _]) => !key.startsWith('_')))
+      );
       return formattedFilter.length > 0 ? "&advanced_filter=" + encodeURIComponent(JSON.stringify(formattedFilter)) : "";
     },
     getUrlUsers(filter) {
@@ -186,7 +221,7 @@ const PMColumnFilterCommonMixin = {
     },
     getOperators(column) {
       let operators = [];
-      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "participants" || column.field === "assignee") {
+      if (column.field === "case_title" || column.field === "name" || column.field === "process" || column.field === "task_name" || column.field === "element_name" || column.field === "participants" || column.field === "assignee") {
         operators = ["=", "in", "contains", "regex"];
       }
       if (column.field === "status") {
@@ -194,7 +229,7 @@ const PMColumnFilterCommonMixin = {
       }
       if (column.field === "initiated_at" || column.field === "completed_at" || column.field === "due_at") {
         operators = ["<", "<=", ">", ">=", "between"];
-      }  
+      }
       return operators;
     },
     getAssignee(filter) {
@@ -212,16 +247,6 @@ const PMColumnFilterCommonMixin = {
         for (let i in response.data.data) {
           this.viewParticipants.push({
             text: response.data.data[i].username,
-            value: response.data.data[i].id
-          });
-        }
-      });
-    },
-    getProcess() {
-      ProcessMaker.apiClient.get('/processes?per_page=100').then(response => {
-        for (let i in response.data.data) {
-          this.viewProcesses.push({
-            text: response.data.data[i].name,
             value: response.data.data[i].id
           });
         }
@@ -256,23 +281,45 @@ const PMColumnFilterCommonMixin = {
     },
     getFilterConfiguration() {
       const filters = {};
-      get(window, 'ProcessMaker.advanced_filter.filters', []).forEach((filter) => {
-        const key = filter._column_field;
+      let inputAdvancedFilter;
+      let order = null;
+
+      if (this.advancedFilterProp !== null) {
+        inputAdvancedFilter = this.advancedFilterProp.filters;
+        order = this.advancedFilterProp.order;
+      } else {
+        inputAdvancedFilter = get(window, 'ProcessMaker.advanced_filter.filters', []);
+        order = get(window, 'ProcessMaker.advanced_filter.order');
+      }
+
+      inputAdvancedFilter.forEach((filter) => {
+        const key = filter._column_field || 'N/A';
         if (!(key in filters)) {
           filters[key] = [];
         }
         filters[key].push(filter);
       });
       this.advancedFilter = filters;
-      
-      const order = get(window, 'ProcessMaker.advanced_filter.order');
+
       if (order?.by && order?.direction) {
         this.setOrderByProps(order.by, order.direction);
       }
-      
-      this.markStyleWhenColumnSetAFilter();
-      window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+
+      this.$nextTick(() => {
+        this.markStyleWhenColumnSetAFilter();
+      });
+
+      if (this.advancedFilterProp === null) {
+        window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
+      }
     },
+    //to do: this should be used in the future if refreshing the table elements is required.
+    refreshData() {
+      this.getFilterConfiguration();
+      this.markStyleWhenColumnSetAFilter();
+      this.storeFilterConfiguration();
+      this.fetch(true);
+    }
   }
 };
 export default PMColumnFilterCommonMixin;

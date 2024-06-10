@@ -26,8 +26,10 @@ use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Models\Bookmark;
+use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessLaunchpad;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -41,6 +43,11 @@ use Throwable;
 
 class ProcessController extends Controller
 {
+    const CAROUSEL_TYPES = [
+        'IMAGE' => 'image',
+        'EMBED' => 'embed'
+    ];
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -113,6 +120,17 @@ class ProcessController extends Controller
             $processes = Process::active()->with($include);
         }
 
+        // The simplified parameter indicates to return just the main information of processes
+        if ($request->input('simplified_data', false)) {
+            $processes = Process::where('status', 'ACTIVE')->select('id', 'start_events')->get();
+            $modifiedCollection = $processes->map(function ($item) {
+                return [
+                    'id' => $item['id'],
+                    'events'=> $item['start_events']];
+            });
+            return new ApiCollection($modifiedCollection);
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $processes->filter($filter);
@@ -136,6 +154,8 @@ class ProcessController extends Controller
 
         // Get with bookmark
         $bookmark = $request->input('bookmark', false);
+        // Get with launchpad
+        $launchpad = $request->input('launchpad', false);
 
         $processes = $processes->with('events')
             ->select('processes.*')
@@ -169,6 +189,8 @@ class ProcessController extends Controller
 
             // Get the id bookmark related
             $process->bookmark_id = Bookmark::getBookmarked($bookmark, $process->id, $user->id);
+            // Get the launchpad configuration
+            $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
 
             // Filter all processes that have event definitions (start events like message event, conditional event, signal event, timer event)
             if ($request->has('without_event_definitions') && $request->input('without_event_definitions') == 'true') {
@@ -409,6 +431,10 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
+        $lastVersion = $process->getDraftOrPublishedLatestVersion();
+        $process->bpmn = $lastVersion->bpmn;
+        $process->alternative = $lastVersion->alternative;
+
         $rules = Process::rules($process);
         if (!$request->has('name')) {
             unset($rules['name']);
@@ -471,7 +497,6 @@ class ProcessController extends Controller
             }
         }
 
-        $this->saveImagesIntoMedia($request, $process);
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
@@ -495,7 +520,7 @@ class ProcessController extends Controller
     public function updateBpmn(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
-
+        
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
@@ -512,6 +537,10 @@ class ProcessController extends Controller
             $process->warnings = null;
         }
 
+        if ($request->input('alternative')) {
+            $process->alternative = $request->input('alternative');
+        }
+
         $process->bpmn = $request->input('bpmn');
         $process->name = $request->input('name');
         $process->description = $request->input('description');
@@ -520,20 +549,32 @@ class ProcessController extends Controller
         // If is a subprocess, we need to update the name in the BPMN too
         if ($request->input('parentProcessId') && $request->input('nodeId')) {
             $parentProcess = Process::findOrFail($request->input('parentProcessId'));
-            $definitions = $parentProcess->getDefinitions();
-            $elements = $definitions->getElementsByTagName('callActivity');
-            foreach ($elements as $element) {
-                if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
-                    $element->setAttribute('name', $request->input('name'));
-                }
-            }
-            $parentProcess->bpmn = $definitions->saveXML();
-            $parentProcess->saveOrFail();
+            $this->updateSubprocessElement($parentProcess, $request, $process);
         }
 
         return response()->json([
             'success' => true,
         ], 200);
+    }
+
+    private function updateSubprocessElement($parentProcess, $request, $process) {
+        $definitions = $parentProcess->getDefinitions();
+        $elements = $definitions->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            if ($element->getAttributeNode('id')->value === $request->input('nodeId')) {
+                $element->setAttribute('name', $request->input('name'));
+            }
+        }
+        try {
+            $parentProcess->bpmn = $definitions->saveXML();
+            $process->saveDraft();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()], ],
+                422
+            );
+        }
     }
 
     /**
@@ -1704,21 +1745,6 @@ class ProcessController extends Controller
         return new ApiResource($newProcess);
     }
 
-    public function saveImagesIntoMedia(Request $request, Process $process)
-    {
-        // Saving Carousel Images into Media table related to process_id
-        if (is_array($request->imagesCarousel) && !empty($request->imagesCarousel)) {
-            foreach ($request->imagesCarousel as $image) {
-                if (is_string($image['url']) && !empty($image['url'])) {
-                    if (!$process->media()->where('collection_name', 'images_carousel')
-                        ->where('uuid', $image['uuid'])->exists()) {
-                        $process->addMediaFromBase64($image['url'])->toMediaCollection('images_carousel');
-                    }
-                }
-            }
-        }
-    }
-
     public function getMediaImages(Request $request, Process $process)
     {
         $media = Process::with(['media' => function ($query) {
@@ -1732,18 +1758,54 @@ class ProcessController extends Controller
 
     public function deleteMediaImages(Request $request, Process $process)
     {
-        $process = Process::find($process->id);
-
         // Get UUID image in media table
         $uuid = $request->input('uuid');
+        // Define collection names
+        $oldCollectionName = 'images_carousel';
+        $collectionName = $process->uuid . '_images_carousel';
+        // Attempt to delete image from both old and new collections
+        $res1 = $this->deleteImage($process, $uuid, $oldCollectionName);
+        $res2 = $this->deleteImage($process, $uuid, $collectionName);
+        // If any deletion is successful, return 204 No Content
+        if ($res1 || $res2) {
+            return response()->json([], 204);
+        }
+    }
 
-        $mediaImagen = $process->getMedia('images_carousel')
+    /**
+     * Delete a image by UUID and collection name
+     * @param Process $process
+     * @param string $uuid
+     * @param string $collectionName
+     * @return bool
+    */
+    private function deleteImage(Process $process, $uuid, $collectionName)
+    {
+        // Retrieve the media image by UUID and collection name
+        $mediaImagen = $process->getMedia($collectionName)
             ->where('uuid', $uuid)
             ->first();
-
-        // Check if image exists before delete
+        // If the media image exists, delete it and return true
         if ($mediaImagen) {
             $mediaImagen->delete();
+            return true;
+        } else {
+            // Otherwise, return false
+            return false;
+        }
+    }
+
+    public function deleteEmbed(Request $request, Process $process)
+    {
+        // Get UUID in the table
+        $uuid = $request->input('uuid');
+
+        $embedUrl = Embed::where('uuid', $uuid)
+            ->first();
+
+        // Check if embed before delete
+        if ($embedUrl) {
+            $embedUrl->delete();
         }
     }
 }

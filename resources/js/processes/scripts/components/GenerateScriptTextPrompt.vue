@@ -108,12 +108,11 @@ export default {
           this.tokens = response.data.tokens;
         }).catch((error) => {
           const errorMsg = error.response?.data?.message || error.message;
-          window.ProcessMaker.alert(errorMsg, "danger");
+          console.error(errorMsg);
         });
     }, 500),
     onSuggestionApplied(suggestion) {
-      const cursorPosition = this.$refs.textArea.selectionStart;
-      this.prompt = `${this.prompt.slice(0, cursorPosition)} ${suggestion} ${this.prompt.slice(cursorPosition)}`;
+      this.text = suggestion;
     },
     fetchSuggestions() {
       if (this.suggestionsPages.length) {
@@ -140,7 +139,7 @@ export default {
         }).catch((error) => {
           if (error.response.status !== 404) {
             const errorMsg = error.response?.data?.message || error.message;
-            window.ProcessMaker.alert(errorMsg, "danger");
+            console.error(errorMsg);
           }
           this.loadingSuggestions = false;
         });

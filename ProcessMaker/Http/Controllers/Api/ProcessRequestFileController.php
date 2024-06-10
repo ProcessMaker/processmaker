@@ -23,6 +23,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\TaskDraft;
 
 class ProcessRequestFileController extends Controller
 {
@@ -85,45 +86,55 @@ class ProcessRequestFileController extends Controller
      */
     public function index(Request $laravel_request, ProcessRequest $request)
     {
-        $media = \ProcessMaker\Models\Media::getFilesRequest($request);
-
         //Retrieve input filter variables
         $name = $laravel_request->get('name');
         $id = $laravel_request->get('id');
         $filter = $name ? $name : $id;
+
+        $media = Media::getFilesRequest($request, $id);
 
         // Register the Event
         if (!empty($filter)) {
             FilesAccessed::dispatch($filter, $request);
         }
 
+        if ($id && $media instanceof \ProcessMaker\Models\Media) {
+            // We retrieved a single item by ID, so no need to filter.
+            // Just return a collection with one item.
+            $media = [$media];
+            $filter = false;
+        }
+
         // If no filter, return entire collection; otherwise, filter collection
         if (!$filter) {
             return new ResourceCollection($media);
         } else {
-            $filtered = $media->reject(function ($item, $key) use ($filter, $name, $id) {
-                if ($filter === $name) {
-                    if ($item->custom_properties['data_name'] != $name) {
-                        return true;
-                    }
-                } elseif ($filter === $id) {
-                    if ($item->id != $id) {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-
-            return new ResourceCollection($filtered);
+            return new ResourceCollection($this->filter($media, $filter, $name, $id));
         }
+    }
+
+    private function filter($media, $filter, $name, $id)
+    {
+        return $media->reject(function ($item) use ($filter, $name, $id) {
+            if ($filter === $name) {
+                if ($item->custom_properties['data_name'] != $name) {
+                    return true;
+                }
+            } elseif ($filter === $id) {
+                if ($item->id != $id) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     /**
      * Display the specified resource.
      *
      * @param Media $file
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @OA\Get(
      *     path="/requests/{request_id}/files/{file_id}",
@@ -208,8 +219,8 @@ class ProcessRequestFileController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  Request  $request
+     * @return Response
      *
      * @OA\Post(
      *     path="/requests/{request_id}/files",
@@ -294,8 +305,15 @@ class ProcessRequestFileController extends Controller
         $rowId = $laravelRequest->input('row_id', null);
         $parent = (int) $laravelRequest->input('parent', null);
         $multiple = $laravelRequest->input('multiple', null);
+        $taskId = (int) $laravelRequest->input('task_id', 0);
 
-        foreach ($parentRequest->getMedia() as $mediaItem) {
+        $model = $parentRequest;
+        if ($taskId) {
+            // The draft may not exist yet. Create it now if it doesn't exist.
+            $model = TaskDraft::firstOrCreate(['task_id' => $taskId], ['data' => []]);
+        }
+
+        foreach ($model->getMedia() as $mediaItem) {
             if (
                 $mediaItem->getCustomProperty('data_name') == $data_name &&
                 $mediaItem->getCustomProperty('parent') == $parent &&
@@ -309,7 +327,7 @@ class ProcessRequestFileController extends Controller
         }
 
         // save the file and return any response you need
-        $media = $parentRequest
+        $media = $model
             ->addMedia($file)
             ->withCustomProperties([
                 'data_name' => $data_name,
@@ -318,6 +336,21 @@ class ProcessRequestFileController extends Controller
                 'createdBy' => $originalCreatedBy,
             ])
             ->toMediaCollection();
+
+        if ($taskId) {
+            // Model is a TaskDraft. Save the new file ID in the draft's data.
+            $data = $model->data;
+            $data[$data_name] = $media->id;
+            $model->data = $data;
+            $model->saveOrFail();
+
+            // Set the process request the file should belong to after saving.
+            // Note that this is the $parentRequest and may be different than
+            // the task->processRequest.
+            $media->setCustomProperty('parent_process_request_id', $parentRequest->id);
+            $media->setCustomProperty('is_multiple', (bool) $multiple);
+            $media->saveOrFail();
+        }
 
         // Register the Event
         FilesCreated::dispatch($media->id, $processRequest);
@@ -329,7 +362,7 @@ class ProcessRequestFileController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Media $file
-     * @return \Illuminate\Http\Response
+     * @return Response
      *
      * @internal param int $id
      *
@@ -365,7 +398,7 @@ class ProcessRequestFileController extends Controller
      */
     public function destroy(Request $laravel_request, ProcessRequest $request, $fileId)
     {
-        $file = \ProcessMaker\Models\Media::getFilesRequest($request)->find($fileId);
+        $file = Media::getFilesRequest($request, $fileId);
 
         if (!$file) {
             return abort(response(__('File ID does not exist'), 404));

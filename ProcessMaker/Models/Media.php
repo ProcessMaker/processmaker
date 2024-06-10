@@ -3,8 +3,11 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Traits\Exportable;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
 
 /**
@@ -55,6 +58,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as MediaLibraryModel;
  */
 class Media extends MediaLibraryModel
 {
+    use Exportable;
     use HasFactory;
 
     protected $connection = 'processmaker';
@@ -175,21 +179,90 @@ class Media extends MediaLibraryModel
     }
 
     /**
+     * Save the media related to the Process
+     *
+     * @param  Process $process
+     * @param array $properties
+     * @param string $key
+     *
+     * @return void
+     */
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid')
+    {
+        // Validate if the image smaller than 2MB
+        $maxFileSize = 2 * 1024 * 1024;
+        $imageData = base64_decode($properties['url']);
+        if (strlen($imageData) > $maxFileSize) {
+            return;
+        }
+        // Validate four images
+        $mediaCount = $process->getMedia()->count();
+        if ($mediaCount > 4) {
+            return;
+        }
+        // Get information to save
+        $collectionName = $process->uuid . '_images_carousel';
+        $exist = $process->media()->where($key, $properties[$key])->exists();
+        if (!$exist) {
+            // Store the images related move to MEDIA
+            $process->addMediaFromBase64($properties['url'])
+                ->withCustomProperties(['type' => $properties['type']])
+                ->toMediaCollection($collectionName);
+        }
+    }
+
+    /**
      * getFilesRequest
      *
      * @param  ProcessRequest $request
-     * @return Media files
+     * @return Collection | Media
      */
-    public static function getFilesRequest(ProcessRequest $request)
+    public static function getFilesRequest(ProcessRequest $request, $id = null)
     {
         $requestTokenIds = [$request->id];
         if ($request->collaboration && $request->collaboration->requests()) {
             // Get all processes and subprocesses request token id's ..
-            $requestTokenIds = $request->collaboration->requests->pluck('id');
+            $requestTokenIds = $request->collaboration->requests->pluck('id')->toArray();
+        }
+
+        // Return a single file when $id is set
+        if ($id) {
+            try {
+                $mediaById = self::findOrFail($id);
+            } catch (\Exception) {
+                abort(400, __('Something went wrong and the file cannot be previewed or downloaded.'));
+            }
+
+            if (!in_array($mediaById->process_request_id, $requestTokenIds)) {
+                abort(404, __('File is not part of this request'));
+            }
+
+            return $mediaById;
         }
 
         // Get all files for process and all subprocesses ..
-        return self::whereIn('model_id', $requestTokenIds)->get();
+        return self::where('model_type', ProcessRequest::class)
+            ->whereIn('model_id', $requestTokenIds)->get();
+    }
+
+    public function getProcessRequestIdAttribute()
+    {
+        if ($this->model_type == TaskDraft::class) {
+            return $this->model->processRequestToken->processRequest->id;
+        } elseif ($this->model_type == ProcessRequest::class) {
+            return $this->model->id;
+        }
+
+        return null;
+    }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        $array['process_request_id'] = $this->process_request_id;
+
+        return $array;
     }
 
     /**

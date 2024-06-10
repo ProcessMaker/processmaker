@@ -9,7 +9,7 @@
     </div>
 
     <div class="d-flex d-lg-none w-100">
-        @if(hasPackage('package-ai'))
+        @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
         <global-search v-if="isMobile" class="w-100 small-screen"></global-search>
         @endif
     </div>
@@ -17,6 +17,7 @@
     <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback" :size="confirmSize"
+                            :data-test-close="confirmDataTestClose" :data-test-ok="confirmDataTestOk"
                             @close="confirmShow=false">
         </confirmation-modal>
         <message-modal class="d-none d-lg-block" id="messageModal" :show="messageShow" :title="messageTitle" :message="messageMessage"
@@ -29,6 +30,7 @@
         <div v-if="alerts.length > 0" class="alert-wrapper">
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)" style="white-space:pre-line">
               <span v-if="item.showLoader" class="spinner-border spinner-border-sm mb-1 mr-2"></span>
+              <span v-if="item.alertTitle"><p class="mt-0 mb-0"><b>@{{ item.alertTitle }}</b></p></span>
               <span>@{{item.alertText}}</span>
               <span v-if="item.alertLink"><a :href="item.alertLink">{{ __('Download') }}</a></span>
             </b-alert>
@@ -110,7 +112,7 @@
                     left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
-                        :key="subItem.url"                    
+                        :key="subItem.url"
                         :href="subItem.url"
                         :target="subItem.attributes.target"
                     >
@@ -123,7 +125,7 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
 
-            @if(hasPackage('package-ai'))
+            @if(hasPackage('package-ai') && shouldShow('globalSearchBar'))
             <global-search v-if="!isMobile" class="d-none d-lg-block"></global-search>
             @endif
 
@@ -133,16 +135,18 @@
 
             <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
             </notifications>
-            <li class="separator d-none d-lg-block"></li>
-            <li class="d-none d-lg-block">
-                @php
-                    $user = Auth::user();
-                    $permissions = json_encode([
-                        'edit-personal-profile' => $user->can('edit-personal-profile'),
-                    ]);
-                @endphp
-                <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
-            </li>
+            <ol class="separator-ol"><li class="separator d-none d-lg-block"></li></ol>
+            <ol class="separator-ol">
+                <li class="d-lg-block">
+                    @php
+                        $user = Auth::user();
+                        $permissions = json_encode([
+                            'edit-personal-profile' => $user->can('edit-personal-profile'),
+                        ]);
+                    @endphp
+                    <navbar-profile :info="{{$user}}" :permissions="{{$permissions}}"></navbar-profile>
+                </li>
+            </ol>
         </b-navbar-nav>
     </b-collapse>
 </b-navbar>
@@ -162,5 +166,8 @@
         height: 30px;
         margin-left: 0.5rem;
         margin-right: 1rem;
+    }
+    .separator-ol {
+        padding: 0px 0px 0px 2px;
     }
 </style>

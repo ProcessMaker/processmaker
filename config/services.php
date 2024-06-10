@@ -53,4 +53,10 @@ return [
         'template_categories' => env('GUIDED_TEMPLATE_CATEGORIES', 'all'),
     ],
 
+    'screen_templates_github' => [
+        'base_url' => 'https://raw.githubusercontent.com/processmaker/',
+        'template_repo' => env('SCREEN_TEMPLATE_REPO', 'screen-templates'),
+        'template_branch' => env('SCREEN_TEMPLATE_BRANCH', 'spring-2024'),
+        'template_categories' => env('SCREEN_TEMPLATE_CATEGORIES', 'all'),
+    ],
 ];

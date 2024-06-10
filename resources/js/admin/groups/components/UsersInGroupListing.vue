@@ -65,7 +65,7 @@
         fields: [
           {
             title: () => this.$t("ID"),
-            name: "id"
+            name: "member_id"
           },
           {
             title: () => this.$t("Username"),

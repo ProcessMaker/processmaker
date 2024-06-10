@@ -20,7 +20,8 @@ class TwoFactorAuthentication
         if (config('password-policies.2fa_enabled', false) &&
             !empty(config('password-policies.2fa_method', [])) &&
             !session()->get(TwoFactorAuthController::TFA_VALIDATED, false) &&
-            TwoFactorAuthController::check2faByGroups()
+            TwoFactorAuthController::check2faByGroups() &&
+            session('sso_driver') === null
         ) {
             // If not validated display the 2FA code screen
             return redirect()->route('2fa');

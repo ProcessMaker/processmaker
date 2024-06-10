@@ -312,7 +312,7 @@ class ClearRequestsTest extends TestCase
         $this->assertEquals(5, ProcessRequest::count());
         $this->assertEquals(1, ProcessCollaboration::count());
         $this->assertEquals(28, Comment::count());
-        $this->assertEquals(2, Media::count());
+        $this->assertEquals(2, Media::where('collection_name', 'local')->count());
 
         $this->artisan('processmaker:clear-requests')
             ->expectsQuestion(ProcessmakerClearRequests::message, 'yes')
@@ -324,7 +324,7 @@ class ClearRequestsTest extends TestCase
         $this->assertEquals(0, ProcessCollaboration::count());
         // 3 comments about Process should remain
         $this->assertEquals(3, Comment::count());
-        $this->assertEquals(1, Media::count());
+        $this->assertEquals(1, Media::where('collection_name', 'local')->count());
 
         // We need to do our own teardown here since were not using
         // transactions for this test

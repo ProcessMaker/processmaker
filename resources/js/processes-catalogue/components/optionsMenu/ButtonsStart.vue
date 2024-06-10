@@ -1,62 +1,70 @@
 <template>
-  <div id="start-events btn-group">
+  <div id="start-events btn-group mx-2">
     <button
       v-if="havelessOneStartEvent"
-      class="btn btn-success btn-lg start-button p-3"
+      class="btn btn-success start-button"
       type="button"
       :disabled="processEvents.length === 0"
       @click="goToNewRequest(startEvent)"
     >
-      <span class="px-3"> {{ $t('Start this process') }} </span>
+      <i
+        class="fa fa-play-circle"
+        style="font-size: 16px;"
+      />
+      <span class="pl-2"> {{ $t('Start this process') }} </span>
     </button>
     <button
       v-else
-      class="btn btn-success btn-lg dropdown-toggle start-button p-3"
+      class="btn btn-success btn-lg dropdown-toggle start-button justify-content-between"
       type="button"
       data-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
       @click="getStartEvents()"
     >
-      <span class="pl-3 pr-4"> {{ $t('Start this process') }} </span>
+      <span>
+        <i
+          class="fa fa-play-circle"
+          style="font-size: 16px;"
+        />
+        <span class="pl-2"> {{ $t('Start this process') }} </span>
+      </span>
+      <i
+        class="fas fa-caret-down"
+        style="font-size: 16px;"
+      />
     </button>
-    <div class="dropdown-menu scrollable-menu p-3 pb-0 mt-2">
-      <p
-        class="font-weight-bold px-1 text-uppercase"
-        style="font-size: 14px"
-      >
-        {{ $t('Starting events') }}
-      </p>
+    <div class="dropdown-menu dropdown-menu-right scrollable-menu p-3 pb-0 mt-2">
       <div
         v-for="event in processEvents"
         :key="event.id"
-        class="mt-2"
+        class="dropdown-item start-event"
+        type="button"
       >
         <p
-          class="text-capitalize mb-1"
-          style="font-weight: 600"
+          class="start-event-title"
         >
           {{ event.name }}
         </p>
         <button
           v-if="event.webEntry"
           type="button"
-          class="btn btn-outline-primary border-0 p-1 text-capitalize"
-          @click="copyLink(event.webEntry)"
+          class="btn button-start-event"
+          @click="copyLink(event)"
         >
-          <i class="fas fa-link p-1" />
+          <i class="fas fa-link pr-1" />
           {{ $t('Copy Link') }}
         </button>
         <button
           v-else
           type="button"
-          class="btn btn-outline-success border-0 p-1 text-capitalize"
+          class="btn button-start-event"
           @click="goToNewRequest(event.id)"
         >
-          <i class="fas fa-play-circle p-1" />
-          {{ $t('Start') }}
+          <i class="fas fa-play-circle pr-1" />
+          {{ $t('Start Here') }}
         </button>
-        <hr class="mt-2 mb-0">
+        <hr class="line-item">
       </div>
     </div>
   </div>
@@ -70,6 +78,7 @@ export default {
       processEvents: [],
       havelessOneStartEvent: false,
       startEvent: "",
+      anonUserId: "2",
     };
   },
   mounted() {
@@ -93,12 +102,12 @@ export default {
             }
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.disableButton();
           ProcessMaker.alert(err, "danger");
         });
     },
-    /** 
+    /**
      * Disable Start Button
      */
     disableButton() {
@@ -127,10 +136,15 @@ export default {
     /**
      * Copy WebEntry Link
      */
-    copyLink(webEntry) {
-      const link = webEntry.webentryRouteConfig.entryUrl;
+    copyLink(event) {
+      const link = event.webEntry.webentryRouteConfig.entryUrl;
       navigator.clipboard.writeText(link);
-      ProcessMaker.alert(this.$t("Link copied"), "success");
+      if (event.assignedUsers && event.assignedUsers === this.anonUserId) {
+        const msg = this.$t("Please use this link when you are not logged into ProcessMaker");
+        ProcessMaker.alert(msg, "success", 5, false, false, "", "Anonymous Web Link Copied");
+      } else {
+        ProcessMaker.alert(this.$t("Link copied"), "success");
+      }
     },
   },
 };
@@ -138,18 +152,69 @@ export default {
 
 <style scoped>
 .start-button {
+  display: flex;
+  align-items: center;
   background: #4EA075;
   border: 0px;
-  width: 294px;
-  font-size: 16px;
+  border-radius: 8px;
+  height: 40px;
+  width: 249px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
   font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+  text-transform: capitalize;
+  padding: 5px 16px;
 }
-
 .scrollable-menu {
     height: auto;
     max-height: 280px;
     overflow-x: hidden;
-    width: 294px;
-    border-radius: 4px;
+}
+.dropdown-menu.show {
+  width: 316px;
+  border-radius: 8px;
+  border: 1px solid #cdddee;
+  box-shadow: 0px 10px 20px 4px #00000021;
+}
+.dropdown-toggle::after {
+  display: none;
+}
+.start-event {
+  padding: 16px;
+  padding-bottom: 0px;
+}
+.start-event-title {
+  color: #566877;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 21px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.line-item {
+  margin-top: 16px;
+  margin-bottom: 0px;
+}
+.button-start-event {
+  color: #4ea075;
+  text-transform: capitalize;
+  padding: 4px 6px;
+  border: 0px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+.button-start-event:hover {
+  color: white;
+  background-color: #4ea075;
 }
 </style>

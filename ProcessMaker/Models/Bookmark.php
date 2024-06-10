@@ -44,7 +44,7 @@ class Bookmark extends ProcessMakerModel
     {
         $id = 0;
         if ($bookmark) {
-            $response = self::where('process_id', $proId)->where('user_id', $userId)->first();
+            $response = self::where('process_id', $proId)->where('user_id', $userId)->select('id')->first();
             if (!is_null($response)) {
                 $id = $response->id;
             }

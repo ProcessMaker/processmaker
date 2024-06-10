@@ -6,13 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use ProcessMaker\Http\Controllers\Api\TemplateController as TemplateApiController;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ScreenTemplates;
 use ProcessMaker\Models\Template;
 use ProcessMaker\Templates\ProcessTemplate;
+use ProcessMaker\Templates\ScreenTemplate;
 
 class TemplateController extends Controller
 {
     protected array $types = [
         'process' => [Process::class, ProcessTemplate::class],
+        'screen' => [Screen::class, ScreenTemplate::class],
     ];
 
     /**
@@ -45,9 +48,26 @@ class TemplateController extends Controller
      */
     public function configure(string $type, $request)
     {
-        [$template, $addons, $categories] = (new $this->types[$type][1])->configure($request);
+        [$type, $template, $addons, $categories, $route, $screenTypes] =
+            (new $this->types[$type][1])->configure($request);
 
-        return view('templates.configure', compact(['template', 'addons', 'categories']));
+        $templateBreadcrumb = '?#nav-templates';
+
+        if ($type === 'screen') {
+            $templateBreadcrumb = $template->is_public ? '?#nav-publicTemplates' : '?#nav-myTemplates';
+        }
+
+        return view('templates.configure', compact(
+            [
+                'type',
+                'template',
+                'addons',
+                'categories',
+                'route',
+                'screenTypes',
+                'templateBreadcrumb',
+            ]
+        ));
     }
 
     public function show(Request $request)
@@ -65,5 +85,27 @@ class TemplateController extends Controller
     public function chooseTemplateAssets()
     {
         return view('templates.assets');
+    }
+
+    /**
+     * Get screen export page
+     *
+     * @param ScreenTemplates $screen
+     *
+     * @return object
+     */
+    public function export(ScreenTemplates $screen)
+    {
+        return view('templates.export-screen', compact('screen'));
+    }
+
+    /**
+     * Get page import
+     *
+     * @param ScreenTemplates $screen
+     */
+    public function importScreen()
+    {
+        return view('templates.import-screen');
     }
 }

@@ -166,8 +166,10 @@ class ProcessRequestController extends Controller
                 $response = $query->orderBy(
                     str_ireplace('.', '->', $request->input('order_by', 'name')),
                     $request->input('order_direction', 'ASC')
-                )->select('process_requests.*')
-                ->paginate($request->input('per_page', 10));
+                )
+                    ->select('process_requests.*')
+                    ->withAggregate('processVersion', 'alternative')
+                    ->paginate($request->input('per_page', 10));
                 $total = $response->total();
             }
         } catch (QueryException $e) {
@@ -196,10 +198,29 @@ class ProcessRequestController extends Controller
 
     public function getCount(Request $request, $process)
     {
-        $query = ProcessRequest::select();
-        $query->where('process_id', $process);
+        $query = ProcessRequest::where('process_id', $process);
 
         return ['meta' => ['total' => $query->count()]];
+    }
+
+    public function getDefaultChart(Request $request, $process)
+    {
+        $countInProgress = ProcessRequest::where('process_id', $process)->inProgress()->count();
+        $countCompleted = ProcessRequest::where('process_id', $process)->completed()->count();
+
+        return [
+            'data' => [
+                'labels' => [__('Completed'), __('In Progress')],
+                'datasets' => [
+                    'label' => __('Default chart'),
+                    'data' => [$countCompleted, $countInProgress],
+                    'backgroundColor' => [
+                        'CLOSED' => '#62B2FD', // Color for 'Completed'
+                        'ACTIVE' => '#9BDFC4', // Color for 'In Progress'
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**
@@ -709,7 +730,7 @@ class ProcessRequestController extends Controller
         $tokensCount = $request->tokens()
             ->where([
                 'element_id' => $httpRequest->element_id,
-                'process_request_id'=> $request->id,
+                'process_request_id' => $request->id,
             ])->count();
         $token->count = $countFlag ? $tokensCount - 1 : $tokensCount;
         if ($token->count === 0) {

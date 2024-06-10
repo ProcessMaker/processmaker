@@ -9,15 +9,17 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Notifications\Events\BroadcastNotificationCreated;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use Laravel\Dusk\DuskServiceProvider;
 use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Lavary\Menu\Menu;
+use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Helpers\PmHash;
 use ProcessMaker\ImportExport\Extension;
 use ProcessMaker\ImportExport\SignalHelper;
+use ProcessMaker\Jobs\SmartInbox;
 use ProcessMaker\LicensedPackageManifest;
 use ProcessMaker\Managers;
 use ProcessMaker\Managers\MenuManager;
@@ -41,6 +43,8 @@ class ProcessMakerServiceProvider extends ServiceProvider
         static::extendValidators();
 
         static::extendDrivers();
+
+        static::forceHttps();
 
         $this->setupFactories();
 
@@ -187,6 +191,13 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
             Facades\Log::debug('Broadcasting Notification ' . $event->broadcastType() . 'on channel(s) ' . $channels);
         });
+
+        // Fire job when task is assigned to a user
+        Facades\Event::listen(ActivityAssigned::class, function ($event) {
+            $task_id = $event->getProcessRequestToken()->id;
+            // Dispatch the SmartInbox job with the processRequestToken as parameter
+            SmartInbox::dispatch($task_id);
+        });
     }
 
     /**
@@ -321,5 +332,15 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Facades\Hash::extend('pm', function () {
             return resolve(PmHash::class);
         });
+    }
+
+    /**
+     * Force HTTPS schema if configured to do so.
+     */
+    public static function forceHttps(): void
+    {
+        if (config('app.force_https')) {
+            URL::forceScheme('https');
+        }
     }
 }

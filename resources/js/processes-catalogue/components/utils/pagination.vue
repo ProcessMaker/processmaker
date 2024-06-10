@@ -17,10 +17,9 @@
 
 <script>
 export default {
-  props: ["totalRow", "totalPages"],
+  props: ["totalRow", "perPage"],
   data() {
     return {
-      perPage: 9,
       currentPage: 1,
       limit: 7,
     };

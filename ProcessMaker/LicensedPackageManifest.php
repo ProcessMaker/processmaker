@@ -59,7 +59,7 @@ class LicensedPackageManifest extends PackageManifest
 
     private function licensedPackages()
     {
-        $default = collect(['packages']); // always allow the packages package
+        $default = collect(['packages']);
         $data = $this->parseLicense();
         $expires = Carbon::parse($data['expires_at']);
         if ($expires->isPast()) {

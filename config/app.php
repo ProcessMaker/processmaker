@@ -49,7 +49,7 @@ return [
     // TODO Does the ProcessMakerSerializer class exist, if so, we need to fix its namespace :)
     'serialize_fractal' => env('SERIALIZE_FRACTAL', ProcessMaker\Transformers\ProcessMakerSerializer::class),
 
-    //Option Fractal, paginator
+    // Option Fractal, paginator
     'paginate_fractal' => env('PAGINATE_FRACTAL', League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
 
     // The processmaker identifier of the web client application
@@ -109,7 +109,6 @@ return [
     // Allows to detect if OpenAI is enabled or not
     'open_ai_nlq_to_pmql' => env('OPEN_AI_NLQ_TO_PMQL_ENABLED', false) && env('OPEN_AI_SECRET', false),
 
-    // Allows to detect if OpenAI is enabled or not
     'open_ai_process_translations' => env('OPEN_AI_PROCESS_TRANSLATIONS_ENABLED', false) &&
         env('OPEN_AI_SECRET', false),
 
@@ -124,6 +123,9 @@ return [
 
     // PM Analytics Dashboard
     'pm_analytics_dashboard' => env('PM_ANALYTICS_DASHBOARD', 'https://localhost'),
+
+    // PM Analytics Chart
+    'pm_analytics_chart' => env('PM_ANALYTICS_CHART', 'https://localhost'),
 
     // Enable default SSO
     'enable_default_sso' => env('ENABLE_DEFAULT_SSO', 'true'),
@@ -228,4 +230,8 @@ return [
     'queue_imports' => env('QUEUE_IMPORTS', true),
 
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
+
+    'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
+
+    'force_https' => env('FORCE_HTTPS', true),
 ];

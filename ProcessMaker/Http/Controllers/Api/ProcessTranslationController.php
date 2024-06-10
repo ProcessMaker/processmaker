@@ -68,8 +68,10 @@ class ProcessTranslationController extends Controller
         foreach ($processTranslationTokens as $processTranslationToken) {
             $batch = Bus::findBatch($processTranslationToken->token);
             $processTranslationToken->humanLanguage = Languages::ALL[$processTranslationToken['language']];
-            $processTranslationToken->batch = $batch ? $batch : null;
-            $translatingLanguages[] = $processTranslationToken;
+            if ($batch) {
+                $processTranslationToken->batch = $batch;
+                $translatingLanguages[] = $processTranslationToken;
+            }
         }
 
         $processTranslationTokens = collect($processTranslationTokens)->sortBy('humanLanguage');

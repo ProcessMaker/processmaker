@@ -19,6 +19,7 @@ use ProcessMaker\Http\Controllers\Auth\ResetPasswordController;
 use ProcessMaker\Http\Controllers\Auth\TwoFactorAuthController;
 use ProcessMaker\Http\Controllers\Designer\DesignerController;
 use ProcessMaker\Http\Controllers\HomeController;
+use ProcessMaker\Http\Controllers\InboxRulesController;
 use ProcessMaker\Http\Controllers\NotificationController;
 use ProcessMaker\Http\Controllers\Process\EnvironmentVariablesController;
 use ProcessMaker\Http\Controllers\Process\ModelerController;
@@ -60,8 +61,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         Route::get('script-executors', [ScriptExecutorController::class, 'index'])->name('script-executors.index');
 
         // temporary, should be removed
-        Route::get('security-logs/download/all', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
-        Route::get('security-logs/download/{user}', [\ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
+        Route::get('security-logs/download/{user}', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
@@ -94,9 +95,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('designer/scripts/categories', [ScriptController::class, 'index'])->name('script-categories.index')->middleware('can:view-script-categories');
     Route::get('designer', [DesignerController::class, 'index'])->name('designer.index');
 
-     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
-        ->name('process.browser.index')
-        ->middleware('can:view-process-catalog');
+    Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
+       ->name('process.browser.index')
+       ->middleware('can:view-process-catalog');
     //------------------------------------------------------------------------------------------
     // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
     //------------------------------------------------------------------------------------------
@@ -130,6 +131,7 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('modeler/{process}/inflight/{request?}', [ModelerController::class, 'inflight'])->name('modeler.inflight')->middleware('can:view,request');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
 
@@ -151,7 +153,10 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         ->name('tasks.index')
         ->middleware('no-cache');
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::get('tasks/{task}/edit/quickfill', [TaskController::class, 'quickFillEdit'])->name('tasks.edit.quickfill');
     Route::get('tasks/{task}/edit/{preview}', [TaskController::class, 'edit'])->name('tasks.preview');
+
+    Route::get('tasks/rules/{path?}', [InboxRulesController::class, 'index'])->name('inbox-rules.index')->where('path', '.*');
 
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
@@ -159,7 +164,8 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('template/{type}/{template}/configure', [TemplateController::class, 'configure'])->name('templates.configure')->middleware('template-authorization');
     Route::get('template/assets', [TemplateController::class, 'chooseTemplateAssets'])->name('templates.assets');
     Route::get('modeler/templates/{id}', [TemplateController::class, 'show'])->name('modeler.template.show')->middleware('template-authorization', 'can:edit-process-templates');
-
+    Route::get('screen-template/{screen}/export', [TemplateController::class, 'export'])->name('screens-template.export')->middleware('can:export-screens');
+    Route::get('screen-template/import', [TemplateController::class, 'importScreen'])->name('screens-template.importScreen')->middleware('can:import-screens');
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {
         return response()->view('errors.404', [], 404);
@@ -180,6 +186,7 @@ Route::get('2fa', [TwoFactorAuthController::class, 'displayTwoFactorAuthForm'])-
 Route::post('2fa/validate', [TwoFactorAuthController::class, 'validateTwoFactorAuthCode'])->name('2fa.validate');
 Route::get('2fa/send_again', [TwoFactorAuthController::class, 'sendCode'])->name('2fa.send_again');
 Route::get('2fa/auth_app_qr', [TwoFactorAuthController::class, 'displayAuthAppQr'])->name('2fa.auth_app_qr');
+Route::get('login-failed', [LoginController::class, 'showLoginFailed'])->name('login-failed');
 
 // Password Reset Routes...
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -203,3 +210,4 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
+

@@ -46,7 +46,11 @@
     });
   </script>
   @foreach ($manager->getScripts() as $script)
-    <script src="{{ $script }}"></script>
+    @if (str_contains($script, 'package-ab-testing'))
+      <script type="module" src="{{ $script }}"></script>
+    @else
+      <script src="{{ $script }}"></script>
+    @endif
   @endforeach
   <script src="{{ mix('js/processes/modeler/process-map.js') }}"></script>
 @endsection

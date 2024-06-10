@@ -106,21 +106,31 @@ class SyncGuidedTemplates implements ShouldQueue
      */
     private function importTemplate($template, $config, $guidedTemplateCategoryId)
     {
-        // Configure URLs for the helper process, process template
-        $helperProcessUrl = $this->buildTemplateUrl($config, $template['helper_process']);
-        $processTemplateUrl = $this->buildTemplateUrl($config, $template['template_process']);
+        // Check for template changes and determine if helper process and template process need to be imported
+        [$importHelperProcess, $importTemplateProcess] = $this->checkForTemplateChanges($template);
 
-        // Get manifests of the exported helper process, process template
-        $helperProcessPayload = $this->fetchPayload($helperProcessUrl);
-        $templateProcessPayload = $this->fetchPayload($processTemplateUrl);
+        // Fetch payloads if necessary
+        $helperProcessPayload = $importHelperProcess ?
+            $this->fetchPayload($this->buildTemplateUrl($config, $template['helper_process'])) : null;
+        $templateProcessPayload = $importTemplateProcess ?
+            $this->fetchPayload($this->buildTemplateUrl($config, $template['template_process'])) : null;
 
         // Update process categories for the helper process and process template
         $this->updateProcessCategories($helperProcessPayload, $templateProcessPayload, $guidedTemplateCategoryId);
 
-        // Import the helper process and get the new ID
-        $newHelperProcessId = $this->importProcess($helperProcessPayload, 'GUIDED_HELPER_PROCESS');
-        // Import the process template and get the new ID
-        $newProcessTemplateId = $this->importProcess($templateProcessPayload, 'GUIDED_PROCESS_TEMPLATE');
+        // Initialize variables for new process IDs
+        $newHelperProcessId = null;
+        $newProcessTemplateId = null;
+
+        // Import helper process if necessary and get new ID
+        if ($importHelperProcess) {
+            $newHelperProcessId = $this->importProcess($helperProcessPayload, 'GUIDED_HELPER_PROCESS');
+        }
+
+        // Import template process if necessary and get new ID
+        if ($importTemplateProcess) {
+            $newProcessTemplateId = $this->importProcess($templateProcessPayload, 'GUIDED_PROCESS_TEMPLATE');
+        }
 
         // Update or create the guided template in the database
         $guidedTemplate = $this->updateOrCreateGuidedTemplate($template, $newHelperProcessId, $newProcessTemplateId);
@@ -131,7 +141,9 @@ class SyncGuidedTemplates implements ShouldQueue
         // Import template assets and associate with the media collection
         $this->importTemplateAssets($template, $config, $mediaCollectionName, $guidedTemplate);
 
+        // Save the media collection name to the guided template and persist changes
         $guidedTemplate->media_collection = $mediaCollectionName;
+
         $guidedTemplate->save();
     }
 
@@ -151,19 +163,25 @@ class SyncGuidedTemplates implements ShouldQueue
         return Http::get($url)->json();
     }
 
-    private function updateProcessCategories(&$helperProcessPayload, &$templateProcessPayload, $guidedTemplateCategoryId)
+    private function updateProcessCategories(&$helperProcessPayload, &$templateProcessPayload,
+    $guidedTemplateCategoryId)
     {
         // Update process categories for both the helper process and process template
-        data_set(
-            $helperProcessPayload,
-            "export.{$helperProcessPayload['root']}.attributes.process_category_id",
-            $guidedTemplateCategoryId
-        );
-        data_set(
-            $templateProcessPayload,
-            "export.{$templateProcessPayload['root']}.attributes.process_category_id",
-            $guidedTemplateCategoryId
-        );
+        if ($helperProcessPayload !== null) {
+            data_set(
+                $helperProcessPayload,
+                "export.{$helperProcessPayload['root']}.attributes.process_category_id",
+                $guidedTemplateCategoryId
+            );
+        }
+
+        if ($templateProcessPayload !== null) {
+            data_set(
+                $templateProcessPayload,
+                "export.{$templateProcessPayload['root']}.attributes.process_category_id",
+                $guidedTemplateCategoryId
+            );
+        }
     }
 
     private function importProcess($payload, $assetType)
@@ -177,7 +195,8 @@ class SyncGuidedTemplates implements ShouldQueue
                 'asset_type' => $assetType,
                 'saveAssetsMode' => 'saveAllAssets',
             ];
-            if (in_array($asset['type'], ['Process', 'Screen', 'Script', 'Collections', 'DataConnector', 'ProcessTemplates'])) {
+            if (in_array($asset['type'], ['Process', 'Screen', 'Script',
+                'Collections', 'DataConnector', 'ProcessTemplates'])) {
                 $payload['export'][$key]['attributes']['asset_type'] = $assetType;
             }
         }
@@ -196,17 +215,46 @@ class SyncGuidedTemplates implements ShouldQueue
 
     private function updateOrCreateGuidedTemplate($template, $newHelperProcessId, $newProcessTemplateId)
     {
-        // Update or create the wizard template in the database
-        return WizardTemplate::updateOrCreate([
-            'unique_template_id' => $template['template_details']['unique-template-id'],
-        ], [
-            'name' => $template['template_details']['card-title'],
-            'description' => $template['template_details']['card-excerpt'],
-            'helper_process_id' => $newHelperProcessId,
-            'process_template_id' => $newProcessTemplateId,
-            'media_collection' => '',
-            'template_details' => json_encode($template['template_details']),
-        ]);
+        $templateDetails = $template['template_details'];
+        $uniqueTemplateId = $templateDetails['unique-template-id'];
+        $cardTitle = $templateDetails['card-title'];
+        $cardExcerpt = $templateDetails['card-excerpt'];
+        $templateDetailsJson = json_encode($templateDetails);
+
+        // Check if the wizard template exists
+        $guidedTemplate = WizardTemplate::where('unique_template_id', $uniqueTemplateId)->first();
+
+        if ($guidedTemplate) {
+            // Update existing wizard template
+            $guidedTemplate->update([
+                'name' => $cardTitle,
+                'description' => $cardExcerpt,
+                'media_collection' => '',
+                'template_details' => $templateDetailsJson,
+            ]);
+
+            if ($newHelperProcessId !== null) {
+                $guidedTemplate['helper_process_id'] = $newHelperProcessId;
+                $guidedTemplate->save();
+            }
+            if ($newProcessTemplateId !== null) {
+                $guidedTemplate['process_template_id'] = $newProcessTemplateId;
+                $guidedTemplate->save();
+            }
+        } else {
+            // Create new wizard template
+            $guidedTemplate = WizardTemplate::create([
+                'unique_template_id' => $uniqueTemplateId,
+                'name' => $cardTitle,
+                'description' => $cardExcerpt,
+                'helper_process_id' => $newHelperProcessId,
+                'process_template_id' => $newProcessTemplateId,
+                'media_collection' => '',
+                'template_details' => $templateDetailsJson,
+            ]);
+        }
+
+        return $guidedTemplate;
     }
 
     private function createMediaCollection($guidedTemplate)
@@ -230,8 +278,10 @@ class SyncGuidedTemplates implements ShouldQueue
         $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $guidedTemplate);
 
         if (!empty($template['assets']['launchpad']['process-card-background'])) {
-            $templateProcessCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['launchpad']['process-card-background']);
-            $this->importMedia($templateProcessCardBackgroundUrl, 'launchpadProcessCardBackground', $mediaCollectionName, $guidedTemplate);
+            $templateProcessCardBackgroundUrl =
+                $this->buildTemplateUrl($config, $template['assets']['launchpad']['process-card-background']);
+            $this->importMedia($templateProcessCardBackgroundUrl, 'launchpadProcessCardBackground',
+                $mediaCollectionName, $guidedTemplate);
         }
 
         foreach ($template['assets']['slides'] as $slide) {
@@ -251,5 +301,38 @@ class SyncGuidedTemplates implements ShouldQueue
     {
         // Import a media asset and associate it with the media collection
         $guidedTemplate->addMediaFromUrl($assetUrl)->withCustomProperties(['media_type' => $customProperty])->toMediaCollection($mediaCollectionName);
+    }
+
+    private function checkForTemplateChanges($template)
+    {
+        // Initialize variables to track changes
+        $helperProcessHashChanged = true;
+        $templateProcessHashChanged = true;
+
+        // Retrieve wizard template details if it exists
+        $wizardTemplate =
+            WizardTemplate::where('unique_template_id', $template['template_details']['unique-template-id'])
+            ->select('template_details')
+            ->first();
+
+        if ($wizardTemplate) {
+            $wizardTemplateDetails = json_decode($wizardTemplate->template_details, true);
+
+            // Check if helper process hash has changed
+            if (isset($wizardTemplateDetails['helper_process_hash']) &&
+                $template['template_details']['helper_process_hash'] ===
+                $wizardTemplateDetails['helper_process_hash']) {
+                $helperProcessHashChanged = false;
+            }
+
+            // Check if template process hash has changed
+            if (isset($wizardTemplateDetails['template_process_hash']) &&
+                $template['template_details']['template_process_hash'] ===
+                $wizardTemplateDetails['template_process_hash']) {
+                $templateProcessHashChanged = false;
+            }
+        }
+
+        return [$helperProcessHashChanged, $templateProcessHashChanged];
     }
 }

@@ -1,35 +1,33 @@
 <template>
-  <div class="search-categories">
-    <b-input-group>
-      <b-input-group-prepend>
-        <b-btn
-          class="px-1"
-          variant="outline-secondary"
-          :title="$t('Search Categories')"
-          @click="fetch()"
-        >
-          <i class="fas fa-search search-icon" />
-        </b-btn>
-      </b-input-group-prepend>
+  <div class="input-box">
+    <div class="search-categories">
+      <b-btn
+        class="px-1"
+        variant="btn btn-input"
+        :title="$t('Search Categories')"
+        @click="fetch()"
+      >
+        <i class="fas fa-search search-icon" />
+      </b-btn>
       <b-form-input
         id="search-box"
         v-model="filter"
         :placeholder="$t('Search Categories')"
         @keyup.enter="fetch()"
       />
-      <b-input-group-append
+      <div
         v-if="filter"
       >
-        <b-btn
-          class="px-1"
-          variant="outline-secondary"
+        <button
+          class="btn btn-input btn-clear"
+          v-b-tooltip.hover.bottom="$t('Clear Search')"
           @click="clearFilter()"
         >
-          <b-icon icon="x" />
-        </b-btn>
-      </b-input-group-append>
-    </b-input-group>
-    <hr class="my-12">
+          <b-icon class="icon-close" icon="x" />
+        </button>
+      </div>
+    </div>
+    <hr class="my-1">
   </div>
 </template>
 
@@ -57,16 +55,12 @@ export default {
 </script>
 
 <style scoped>
-.btn-outline-secondary {
-  font-size: 16px;
-}
-.btn-outline-secondary,
+.btn-input,
 #search-box {
   border: none;
   background-color: #f7f9fb;
 }
 #search-box {
-  color: #B9B9B9;
   padding: 4px;
   font-size: 16px;
   font-style: normal;
@@ -74,7 +68,35 @@ export default {
   line-height: 32.077px;
   letter-spacing: -0.38px;
 }
+.form-control:focus {
+  border: none !important;
+  box-shadow: none;
+}
 .search-categories {
+  display: flex;
+  align-items: center;
+}
+.input-box {
   padding-left: 1rem;
+  margin-bottom: 1rem;
+}
+.btn-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  font-size: 16px;
+  color: #6a7888;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+}
+.btn-clear:hover {
+  color: #1572c2;
+  background-color: #e5edf3;
+}
+.icon-close {
+  width: 24px;
+  height: 24px;
 }
 </style>
