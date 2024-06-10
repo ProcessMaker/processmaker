@@ -49,7 +49,7 @@ export default {
     pagination, CatalogueEmpty, SearchCards, Card,
   },
   mixins: [dataLoadingMixin],
-  props: ["category"],
+  props: ["categoryId"],
   data() {
     return {
       processList: [],
@@ -69,7 +69,7 @@ export default {
     };
   },
   watch: {
-    category() {
+    categoryId() {
       this.pmql = "";
       this.loadCard();
     },
@@ -100,7 +100,7 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      if (this.category === undefined || this.category.id === -1) {
+      if (!this.categoryId || this.categoryId === 'all_processes') {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -110,7 +110,7 @@ export default {
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
-      if (this.category.id === 0) {
+      if (this.categoryId === 'bookmarks') {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
@@ -120,7 +120,7 @@ export default {
       }
       return `process_bookmarks/processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
-          + `&category=${this.category.id}`
+          + `&category=${this.categoryId}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
           + "&launchpad=true"
@@ -130,8 +130,7 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      const categoryId = this.category ? this.category.id : -1;
-      window.history.replaceState(null, null, `/process-browser/${process.id}?categorySelected=${categoryId}`);
+      this.$router.push({ name: "show", params: { process: process, processId: process.id } });
       this.$emit("openProcess", process);
     },
     /**
