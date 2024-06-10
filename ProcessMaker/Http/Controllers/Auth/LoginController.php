@@ -348,4 +348,9 @@ class LoginController extends Controller
             $this->username() => [_('Account locked after too many failed attempts. Contact administrator.')],
         ]);
     }
+
+    public function showLoginFailed(Request $request)
+    {
+        return view('errors.login-failed');
+    }
 }
