@@ -56,6 +56,7 @@ class ProcessTemplate implements TemplateInterface
                 'process_templates.editing_process_uuid',
                 'process_templates.user_id',
                 'process_templates.process_category_id',
+                'process_templates.svg',
                 'process_templates.is_system',
                 'process_templates.asset_type',
                 'process_templates.created_at',
