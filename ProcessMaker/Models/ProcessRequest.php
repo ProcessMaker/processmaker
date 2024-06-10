@@ -1057,9 +1057,9 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
     /**
      * Retrieves the destination of the first closed end event.
      *
-     * @return ?string Returns a string value representing the element destination of the first closed end event.
+     * @return ?array Returns a string value representing the element destination of the first closed end event.
      */
-    public function getElementDestination(): ?string
+    public function getElementDestination(): ?array
     {
         $endEvents = $this->tokens()
             ->where('element_type', 'end_event')

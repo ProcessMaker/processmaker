@@ -136,7 +136,6 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      */
     protected $appends = [
         'advanceStatus',
-        'elementDestination'
     ];
 
     /**
@@ -1196,13 +1195,14 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
      * @param elementDestinationType Used to determine the type of destination for an element.
      * @param elementDestinationProp Used to determine the properties of the destination for an element.
      *
-     * @return string|null Returns the destination URL.
+     * @return array|null Returns the destination URL.
      */
-    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?string
+    private function getElementDestination($elementDestinationType, $elementDestinationProp): ?array
     {
         $elementDestination = null;
 
         switch ($elementDestinationType) {
+            case 'anotherProcess':
             case 'customDashboard':
             case 'externalURL':
                 if (array_key_exists('value', $elementDestinationProp)) {
@@ -1227,7 +1227,7 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             case 'processLaunchpad':
                 $elementDestination = route('process.browser.index', [
                     'process' => $this->process_id,
-                    'categorySelected' => -1
+                    'categorySelected' => -1,
                 ]);
                 break;
             case 'taskSource':
@@ -1236,18 +1236,20 @@ class ProcessRequestToken extends ProcessMakerModel implements TokenInterface
             default:
                 $elementDestination = null;
                 break;
-
         }
 
-        return $elementDestination;
+        return [
+            'type' => $elementDestinationType,
+            'value' => $elementDestination,
+        ];
     }
 
     /**
      * Determines the destination URL based on the element destination type specified in the definition.
      *
-     * @return string|null
+     * @return array|null
      */
-    public function getElementDestinationAttribute(): ?string
+    public function getElementDestinationAttribute(): ?array
     {
         $definition = $this->getDefinition();
         $elementDestinationProp = $definition['elementDestination'] ?? null;

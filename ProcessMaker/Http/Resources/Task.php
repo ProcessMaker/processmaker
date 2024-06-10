@@ -38,6 +38,7 @@ class Task extends ApiResource
         'interstitial',
         'userRequestPermission',
         'process',
+        'elementDestination',
     ];
 
     private $process = null;
