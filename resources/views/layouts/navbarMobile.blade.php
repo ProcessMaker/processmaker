@@ -2,8 +2,8 @@
   $showPrincipalNavbar = 1;
 
   if (
-    Request::path() !== 'tasks' && 
-    Request::path() !== 'requests' && 
+    Request::path() !== 'tasks' &&
+    Request::path() !== 'requests' &&
     !str_starts_with(Request::path(), 'process-browser')
   ) {
     $showPrincipalNavbar = 0;
