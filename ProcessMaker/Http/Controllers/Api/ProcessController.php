@@ -431,6 +431,10 @@ class ProcessController extends Controller
      */
     public function update(Request $request, Process $process)
     {
+        $lastVersion = $process->getDraftOrPublishedLatestVersion();
+        $process->bpmn = $lastVersion->bpmn;
+        $process->alternative = $lastVersion->alternative;
+
         $rules = Process::rules($process);
         if (!$request->has('name')) {
             unset($rules['name']);
