@@ -106,6 +106,7 @@
 <script>
 import SearchCategories from "./utils/SearchCategories.vue";
 import SelectTemplateModal from "../../components/templates/SelectTemplateModal.vue";
+import { EventBus } from '../index.js';
 
 export default {
   components: {
@@ -114,7 +115,6 @@ export default {
   },
   props: [
     "data",
-    "select",
     "title",
     "preicon",
     "filterCategories",
@@ -149,6 +149,11 @@ export default {
       comeFromProcess: false,
     };
   },
+  created() {
+    EventBus.$on('templates-selected', (obj) => {
+      this.openTemplate(obj);
+    });
+  },
   computed: {
     /**
      * Filters options regarding user permissions
@@ -173,33 +178,48 @@ export default {
     }
   },
   watch: {
-    selectedProcessItem: {
-      deep: true,
-      handler: function () {
-        this.$emit('selectedCategoryName', this.selectedProcessItem?.name);
-      },
+    $route(r) {
+      this.handleRouteQuery();
+    },
+    data() {
+      this.handleRouteQuery();
     }
   },
   methods: {
+    handleRouteQuery() {
+
+      // Do not change the selected category if we are not in the index route.
+      // This way, we preserve the selected category when returning from process details.
+
+      if (this.$route.name !== "index") {
+        return;
+      }
+
+      const query = this.$route.query;
+
+      this.selectedProcessItem = null;
+      this.selectedTemplateItem = null;
+
+      if (query.categoryId) {
+        this.selectedProcessItem = this.data.find((category) => {
+          return String(category.id) === String(query.categoryId);
+        });
+        this.selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
+          return String(category.id) === String(query.categoryId);
+        });
+      }
+    },
     /**
      * Adding categories
      */
     loadMore() {
       this.$emit("addCategories");
     },
-    markCategory(item, filter = true) {
-      this.comeFromProcess = true;
-      this.selectedProcessItem = item;
-      this.selectedTemplateItem = null;
-      if (filter) {
-        this.$refs.searchCategory.fillFilter(item.name);
-      }
-    },
     selectProcessItem(item) {
       this.comeFromProcess = false;
       this.selectedProcessItem = item;
       this.selectedTemplateItem = null;
-      this.select(item);
+      this.$emit('categorySelected', item);
     },
     /**
      * Enables All Templates option only if user has create-processes permission
@@ -213,14 +233,9 @@ export default {
           return obj.id === "guided_templates";
         });
       }
-      if (item.id === "all_templates") {
-        this.addNewProcess();
-        return;
-      }
       this.selectedTemplateItem = item;
       this.selectedProcessItem = null;
-      this.select(item);
-      this.$emit("wizardLinkSelect");
+      this.$emit('categorySelected', item);
     },
     /**
      * This method opens New Process modal window
@@ -230,11 +245,20 @@ export default {
         this.$refs.addProcessModal.show();
       });
     },
+    openTemplate(obj) {
+      this.$nextTick(() => {
+        this.$refs.addProcessModal.show();
+        this.$refs.addProcessModal.$nextTick(() => {
+          this.$refs.addProcessModal.$refs["template-search"].showDetails(obj);
+          this.$refs.addProcessModal.hideBackButton();
+        });
+      });
+    },
     isSelectedProcess(item) {
       return this.selectedProcessItem === item;
     },
-    isSelectedTemplate(index) {
-      return this.selectedTemplateItem === index;
+    isSelectedTemplate(item) {
+      return this.selectedTemplateItem === item;
     },
     onToggleCatalogue() {
       this.showCatalogue = !this.showCatalogue;

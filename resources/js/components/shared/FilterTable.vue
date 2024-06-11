@@ -77,7 +77,7 @@
           <slot :name="`row-${rowIndex}`">
             <td
               v-for="(header, index) in visibleHeaders"
-              :class="{ 'pm-table-filter-applied-tbody': column.sortAsc || column.sortDesc }"
+              :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
               :key="index"
             >
               <template v-if="containsHTML(getNestedPropertyValue(row, header))">

@@ -7,7 +7,7 @@
       :template="guidedTemplates ? 'Guided Templates' : ''"
     />
     <div class="menu-mask" :class="{ 'menu-open' : showMenu }"></div>
-    <div class="main" :class="{ 'menu-open' : showMenu }" v-show="hideLaunchpad">
+    <div class="process-catalog-main" :class="{ 'menu-open' : showMenu }">
       <div class="menu">
         <span class="pl-3 menu-title"> {{ $t('Process Browser') }} </span>
         <MenuCatologue
@@ -19,12 +19,10 @@
           :category-count="categoryCount"
           :data="listCategories"
           :from-process-list="fromProcessList"
-          :select="selectCategorie"
+          @categorySelected="selectCategory"
           :filter-categories="filterCategories"
           :permission="permission"
-          @wizardLinkSelect="wizardTemplatesSelected"
           @addCategories="addCategories"
-          @selectedCategoryName="selectedCategoryName = $event"
         />
         <div class="mobile-slide-close">
           <b-button variant="light" @click="showMenu = false" size="lg">
@@ -38,72 +36,33 @@
         </a>
       </div>
       <div class="processes-info">
-        <div
-          v-if="!showWizardTemplates && !showCardProcesses && !showProcess && !showProcessScreen"
-          class="d-flex justify-content-center py-5"
-        >
-          <CatalogueEmpty />
-        </div>
-        <div v-else>
-          <div class="mobile-menu-control">
+          <div class="mobile-menu-control" v-show="showMobileMenuControl">
             <span @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
-              {{ selectedCategoryName }}
+              {{ category?.name || 'N/A' }}
             </span>
           </div>
+        
+          <router-view :permission="permission" @goBackCategory="goBackCategory"></router-view>
 
-          <CardProcess
-            v-if="showCardProcesses && !showWizardTemplates && !showProcess"
-            :key="key"
-            :category="category"
-            @openProcess="openProcess"
-            @wizardLinkSelect="wizardTemplatesSelected"
-          />
-          <ProcessInfo
-            v-if="showProcess && !showWizardTemplates && !showCardProcesses && !showProcessScreen"
-            :process="selectedProcess"
-            :current-user-id="currentUserId"
-            :current-user="currentUser"
-            :permission="permission"
-            :is-documenter-installed="isDocumenterInstalled"
-            @goBackCategory="returnedFromInfo"
-          />
-          <ProcessScreen
-            v-if="showProcessScreen && !showCardProcesses && !showWizardTemplates"
-            :process="selectedProcess"
-            :current-user-id="currentUserId"
-            :permission="permission"
-            :is-documenter-installed="isDocumenterInstalled"
-            @goBackCategory="returnedFromInfo"
-          />
-          <wizard-templates
-            v-if="showWizardTemplates"
-            :template="guidedTemplates"
-          />
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ProcessInfo from "./ProcessInfo.vue";
 import MenuCatologue from "./menuCatologue.vue";
 import CatalogueEmpty from "./CatalogueEmpty.vue";
-import CardProcess from "./CardProcess.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
-import WizardTemplates from "./WizardTemplates.vue";
-import ProcessScreen from "./ProcessScreen.vue";
 
 export default {
   components: {
-    MenuCatologue, CatalogueEmpty, Breadcrumbs, CardProcess, WizardTemplates, ProcessInfo, ProcessScreen,
+    MenuCatologue, CatalogueEmpty, Breadcrumbs,
   },
   props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
   data() {
     return {
       showMenu: false,
-      selectedCategoryName: '',
       isMobile: window.screen.width < 650,
       listCategories: [],
       defaultOptions: [
@@ -112,11 +71,11 @@ export default {
           name: this.$t("Recent Cases"),
         },
         {
-          id: -1,
+          id: 'all_processes',
           name: this.$t("All Processes"),
         },
         {
-          id: 0,
+          id: 'bookmarks',
           name: this.$t("My Bookmarks"),
         },
       ],
@@ -134,7 +93,6 @@ export default {
       key: 0,
       totalPages: 1,
       filter: "",
-      markCategory: false,
       fromProcessList: false,
       categoryCount: 0,
       hideLaunchpad: true,
@@ -143,17 +101,6 @@ export default {
   mounted() {
     const url = new URL(window.location.href);
     this.getCategories();
-    setTimeout(() => {
-      this.checkSelectedProcess();
-      if (this.hasGuidedTemplateParamsOnly(url) || this.hasTemplateParams(url)) {
-        // Loaded from URL with guided template parameters to show guided templates
-        // Dynamically load the component
-        this.$refs.categoryList.selectTemplateItem();
-      }
-    }, 500);
-    this.$root.$on("clickCarouselImage", (val) => {
-        this.hideLaunchpad = !val.hideLaunchpad;
-    });
 
     // Show the menu by default when not on mobile
     if (!this.isMobile) {
@@ -161,11 +108,19 @@ export default {
     }
   },
   watch: {
-    selectedCategoryName() {
-      // Only hide the menu automatically if we are on mobile
-      if (this.isMobile) {
-        this.showMenu = false;
+    category: {
+      deep: true,
+      handler() {
+        // Only hide the menu automatically if we are on mobile
+        if (this.isMobile) {
+          this.showMenu = false;
+        }
       }
+    }
+  },
+  computed: {
+    showMobileMenuControl() {
+      return this.$route.name === "index";
     }
   },
   methods: {
@@ -198,17 +153,15 @@ export default {
             + `&per_page=${this.numCategories}`
             + `&filter=${this.filter}`)
           .then((response) => {
-            if (!this.checkDefaultOptions()) {
-              this.listCategories = [...this.defaultOptions, ...this.listCategories];
-            }
-            this.listCategories = [...this.listCategories, ...response.data.data];
+
+            const loadedCategories = response.data.data.filter(category => {
+              // filter if category exists in the default options
+              return !this.defaultOptions.some(defaultOption => defaultOption.name === category.name);
+            });
+            this.listCategories = [...this.defaultOptions, ...loadedCategories]; 
+
             this.totalPages = response.data.meta.total_pages !== 0 ? response.data.meta.total_pages : 1;
             this.categoryCount = response.data.meta.total;
-            if (this.markCategory) {
-              const indexCategory = this.listCategories.findIndex((category) => category.name === this.category.name);
-              this.$refs.categoryList.markCategory(this.listCategories[indexCategory]);
-              this.markCategory = false;
-            }
           });
       }
     },
@@ -233,18 +186,6 @@ export default {
           const categories = this.process.process_category_id;
           categoryId = typeof categories === "string" ? categories.split(",")[0] : categories;
         }
-        if (categoryId !== "0" && categoryId !== "-1") {
-          ProcessMaker.apiClient
-            .get(`process_bookmarks/${categoryId}`)
-            .then((response) => {
-              this.category = response.data;
-              this.markCategory = true;
-              this.filterCategories(this.category.name);
-            });
-        } else {
-          this.category = this.getDefaultCategory(categoryId);
-          this.$refs.categoryList.markCategory(this.category, false);
-        }
       }
     },
     /**
@@ -256,42 +197,19 @@ export default {
     /**
      * Select a category and show display
      */
-    selectCategorie(value) {
-      const url = new URL(window.location.href);
+    selectCategory(value) {
+      if (!value) {
+        return;
+      }
+      
+      this.category = value;
 
-      // If url has Template Params, don't replace state.
-      if (!this.hasTemplateParams(url)) {
-        window.history.replaceState(null, null, "/process-browser");
-        this.key += 1;
-        this.category = value;
-        this.selectedProcess = null;
-        this.showCardProcesses = true;
-        this.guidedTemplates = false;
-        this.showWizardTemplates = false;
+      // Do not set the query if we are already on the route
+      if (String(this.$route.query.categoryId) === String(value.id)) {
+        return;
       }
 
-      this.showProcess = false;
-    },
-    /**
-     * Select a wizard templates and show display
-     */
-    wizardTemplatesSelected(hasUrlParams = false) {
-      if (!hasUrlParams) {
-        // Add the params if the guided template link was selected
-        const url = new URL(window.location.href);
-        if (!url.search.includes("?guided_templates=true")) {
-          url.searchParams.append("guided_templates", true);
-          history.pushState(null, "", url); // Update the URL without triggering a page reload
-        }
-      }
-
-      // Update state variables
-      this.showWizardTemplates = true;
-      this.guidedTemplates = true;
-      this.showCardProcesses = false;
-      this.showProcess = false;
-      this.selectedProcess = null;
-      this.category = null;
+      this.$router.push({ name: 'index', query: { categoryId: value.id } });
     },
     /**
      * Select a process and show display
@@ -299,32 +217,14 @@ export default {
     openProcess(process) {
       this.showCardProcesses = false;
       this.guidedTemplates = false;
-      if (this.verifyScreen(process)) {
-        this.showProcess = false;
-        this.showProcessScreen = true;
-      } else {
-        this.showProcess = true;
-        this.showProcessScreen = false;
-      }
       this.selectedProcess = process;
     },
     /**
      * Return a process cards from process info
      */
-    returnedFromInfo() {
-      this.selectCategorie(this.category);
-    },
-    /**
-     * Verify if the process open the info or Screen
-     */
-    verifyScreen(process) {
-      let screenId = 0;
-      const unparseProperties = process.launchpad?.properties || null;
-      if (unparseProperties !== null) {
-        screenId = JSON.parse(unparseProperties)?.screen_id || 0;
-      }
-
-      return screenId !== 0;
+    goBackCategory() {
+      const categoryId = this.category ? this.category.id : 'recent'
+      this.$router.push({ name: "index", query: { categoryId } });
     },
     hasGuidedTemplateParamsOnly(url) {
       return url.search.includes("?guided_templates=true") && !url.search.includes("?guided_templates=true&template=");
@@ -346,7 +246,7 @@ export default {
   }
 }
 
-.main {
+.process-catalog-main {
   display: flex;
 
   @media (max-width: $lp-breakpoint) {
@@ -360,7 +260,7 @@ export default {
   overflow: hidden;
   margin-top: 15px;
   transition: flex 0.3s;
-  flex: 0 0 315px;
+  flex: 0 0 0px;
 
   .menu-catalog {
     background-color: #F7F9FB;
@@ -402,7 +302,7 @@ export default {
 }
 
 .menu-open .menu {
-  flex: 0 0 0px;
+  flex: 0 0 315px;
   @media (max-width: $lp-breakpoint) {
     left: 0%;
   }
@@ -458,6 +358,7 @@ export default {
   color: #6A7887;
   font-size: 1.3em;
   margin-top: 10px;
+  margin-left: 1em;
   i {
     margin-right: 3px;
   }
@@ -490,10 +391,5 @@ export default {
     padding-left: 0;
   }
 }
-@media (width <= 1024px) {
-  .menu {
-    min-width: 0;
-    width: 0;
-  }
-}
+
 </style>

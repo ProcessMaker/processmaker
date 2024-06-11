@@ -220,18 +220,8 @@ if (isMobileNavbar === "true") {
     },
     data() {
       return {
+        display: true,
       };
-    },
-    computed: {
-      visible() {
-
-
-
-// wont work because of replaceState. Maybe replace state listener???
-
-        // Do not show on process details page
-        return !(/process-browser\/\d+/.test(window.location.href));
-      }
     },
     mounted() {
       if (this.$cookies.get("firstMounted") === "true") {
