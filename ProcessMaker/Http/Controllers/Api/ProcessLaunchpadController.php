@@ -68,8 +68,8 @@ class ProcessLaunchpadController extends Controller
             ->groupBy('status')
             ->get();
 
-        $completed = $result->where('status', 'COMPLETED')->first()->count;
-        $in_progress = $result->where('status', 'ACTIVE')->first()->count;
+        $completed = $result->where('status', 'COMPLETED')->first()?->count ?? 0;
+        $in_progress = $result->where('status', 'ACTIVE')->first()?->count ?? 0;
 
         return [
             'completed' => $completed,
