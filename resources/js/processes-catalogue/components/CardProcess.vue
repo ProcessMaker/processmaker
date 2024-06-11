@@ -13,6 +13,7 @@
         :key="index"
         :process="process"
         @openProcessInfo="openProcessInfo"
+        :hideBookmark="categoryId === 'all_templates'"
       />
       <pagination
         :total-row="totalRow"
@@ -43,13 +44,14 @@ import pagination from "./utils/pagination.vue";
 import SearchCards from "./utils/SearchCards.vue";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
+import { EventBus } from '../index.js';
 
 export default {
   components: {
     pagination, CatalogueEmpty, SearchCards, Card,
   },
   mixins: [dataLoadingMixin],
-  props: ["category"],
+  props: ["categoryId"],
   data() {
     return {
       processList: [],
@@ -63,14 +65,16 @@ export default {
       data: null,
       totalPages: 1,
       pmql: "",
+      filter: "",
       bookmarkIcon: "far fa-bookmark",
       showEmpty: false,
       loading: false,
     };
   },
   watch: {
-    category() {
+    categoryId() {
       this.pmql = "";
+      this.filter = "";
       this.loadCard();
     },
   },
@@ -100,7 +104,7 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      if (this.category === undefined || this.category.id === -1) {
+      if (this.categoryId === 'all_processes') {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
           + `&per_page=${this.perPage}`
@@ -110,7 +114,7 @@ export default {
           + "&cat_status=ACTIVE"
           + "&order_by=name&order_direction=asc";
       }
-      if (this.category.id === 0) {
+      if (this.categoryId === 'bookmarks') {
         return `process_bookmarks?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
@@ -118,9 +122,17 @@ export default {
           + "&launchpad=true"
           + "&order_by=name&order_direction=asc";
       }
+      if (this.categoryId === 'all_templates') {
+        return `templates/process?page=${this.currentPage}`
+          + `&per_page=${this.perPage}`
+          + `&filter=${encodeURIComponent(this.filter)}`
+          + `&order_by=name`
+          + `&order_direction=asc`
+          + `&include=user,categories,category`;
+      }
       return `process_bookmarks/processes?page=${this.currentPage}`
           + `&per_page=${this.perPage}`
-          + `&category=${this.category.id}`
+          + `&category=${this.categoryId}`
           + `&pmql=${encodeURIComponent(this.pmql)}`
           + "&bookmark=true"
           + "&launchpad=true"
@@ -130,8 +142,11 @@ export default {
      * Go to process info
      */
     openProcessInfo(process) {
-      const categoryId = this.category ? this.category.id : -1;
-      window.history.replaceState(null, null, `/process-browser/${process.id}?categorySelected=${categoryId}`);
+      if (this.categoryId === 'all_templates') {
+        EventBus.$emit('templates-selected', { template: process, type: "Process" });
+        return;
+      }
+      this.$router.push({ name: "show", params: { process: process, processId: process.id } });
       this.$emit("openProcess", process);
     },
     /**
@@ -147,6 +162,7 @@ export default {
     onFilter(value, showEmpty = false) {
       this.currentPage = 1;
       this.pmql = `(fulltext LIKE "%${value}%")`;
+      this.filter = value;
       this.showEmpty = showEmpty;
       this.loadCard();
     },

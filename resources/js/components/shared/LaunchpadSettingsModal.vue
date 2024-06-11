@@ -216,17 +216,19 @@ export default {
           const launchpadProperties = unparseProperties ? JSON.parse(unparseProperties) : "";
           if (launchpadProperties && Object.keys(launchpadProperties).length > 0) {
             this.selectedSavedChart = {
-              id: launchpadProperties.saved_chart_id ?? this.defaultChart.id,
-              title: launchpadProperties.saved_chart_title ?? this.defaultChart.title,
+              id: this.verifyProperty(launchpadProperties.saved_chart_id) ? this.defaultChart.id : launchpadProperties.saved_chart_id,
+              title: this.verifyProperty(launchpadProperties.saved_chart_title)
+                ? this.defaultChart.title : launchpadProperties.saved_chart_title,
             };
-            this.selectedLaunchpadIcon = launchpadProperties.icon ?? this.defaultIcon;
-            this.selectedLaunchpadIconLabel = launchpadProperties.icon_label ?? this.defaultIcon;
+            this.selectedLaunchpadIcon = this.verifyProperty(launchpadProperties.icon) ? this.defaultIcon : launchpadProperties.icon;
+            this.selectedLaunchpadIconLabel = this.verifyProperty(launchpadProperties.icon_label)
+              ? this.defaultIcon : launchpadProperties.icon_label;
             this.selectedScreen = {
-              id: launchpadProperties.screen_id ?? this.defaultScreen.id,
-              uuid: launchpadProperties.screen_uuid ?? this.defaultScreen.uuid,
-              title: launchpadProperties.screen_title ?? this.defaultScreen.title,
+              id: this.verifyProperty(launchpadProperties.screen_id) ? this.defaultScreen.id : launchpadProperties.screen_id,
+              uuid: this.verifyProperty(launchpadProperties.screen_uuid) ? this.defaultScreen.uuid : launchpadProperties.screen_uuid,
+              title: this.verifyProperty(launchpadProperties.screen_title) ? this.defaultScreen.title : launchpadProperties.screen_title,
             };
-            this.$refs["icon-dropdown"].setIcon(launchpadProperties.icon);
+            this.$refs["icon-dropdown"].setIcon(this.selectedLaunchpadIcon);
           } else {
             this.selectedSavedChart = {
               id: this.defaultChart.id,
@@ -250,6 +252,12 @@ export default {
           });
           this.$refs["image-carousel"].setProcessId(this.processId);
         });
+    },
+    /**
+     * Verify if the property has any value
+     */
+    verifyProperty(property) {
+      return property === undefined || property === null || property === "";
     },
     showModal() {
       this.subject = "";

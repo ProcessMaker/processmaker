@@ -1,10 +1,12 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin' => ''])
 
 @section('content')
-@include('layouts.navbarMobile')
-<div class="mobile-container">
-  @yield('content_mobile')
-</div>
+  <div class="mobile-flex-container">
+    @include('layouts.navbarMobile')
+    <div class="mobile-container">
+      @yield('content_mobile')
+    </div>
+  </div>
 @endsection
 
 
@@ -18,6 +20,14 @@
   }
   #navbar {
     display: none;
+  }
+  .mobile-flex-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  .mobile-container {
+    flex: 1;
   }
 </style>
 

@@ -293,6 +293,11 @@ export default {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 5px;
   max-height: calc(100vh - 150px);
+  overflow: hidden;
+}
+
+.pm-table-container:hover {
+  overflow: auto;
 }
 
 .pm-table-container th {

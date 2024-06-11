@@ -12,6 +12,7 @@ use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
+use ProcessMaker\Models\ProcessRequest;
 
 class ProcessLaunchpadController extends Controller
 {
@@ -60,6 +61,23 @@ class ProcessLaunchpadController extends Controller
         return new ProcessCollection($processes);
     }
 
+    protected function getCounts($processId)
+    {
+        $result = ProcessRequest::where('process_id', $processId)
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->get();
+
+        $completed = $result->where('status', 'COMPLETED')->first()?->count ?? 0;
+        $in_progress = $result->where('status', 'ACTIVE')->first()?->count ?? 0;
+
+        return [
+            'completed' => $completed,
+            'in_progress' => $in_progress,
+            'total' => $completed + $in_progress,
+        ];
+    }
+
     /**
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10).
@@ -86,7 +104,11 @@ class ProcessLaunchpadController extends Controller
             }])
             ->where('id', $process->id)
             ->get()
-            ->toArray();
+            ->map(function ($process) {
+                $process->counts = $this->getCounts($process->id);
+
+                return $process;
+            });
 
         return new ApiResource($processes);
     }
