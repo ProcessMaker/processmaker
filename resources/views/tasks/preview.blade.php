@@ -445,11 +445,7 @@
             screenFields.forEach((field) => {
 
               const existingValue = _.get(this.formData, field, null);
-
-              if(this.validateBase64(existingValue)) {
-                _.set(newData, field, existingValue);
-                return;
-              }
+              
               let quickFillValue;
 
               if (existingValue) {
@@ -460,7 +456,13 @@
                 quickFillValue = _.get(event.detail, field, null);
               }
               // Set the value. This handles nested values using dot notation in 'field' string
+
+              if(this.validateBase64(quickFillValue)) {
+                _.set(newData, field, existingValue);
+                return;
+              }
               _.set(newData, field, quickFillValue);
+
             });
 
             this.formData = newData;
