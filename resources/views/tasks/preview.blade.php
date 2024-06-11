@@ -429,8 +429,8 @@
             });
           },
           validateBase64(field) {
-            var regex = /^data:image\/\w+;base64,/;
-            return regex.test(field) ? true : false;
+            const regex = /^data:image\/\w+;base64,/;
+            return regex.test(field);
           },
         },
         mounted() {
@@ -446,10 +446,6 @@
 
               const existingValue = _.get(this.formData, field, null);
 
-              if(this.validateBase64(existingValue)) {
-                _.set(newData, field, existingValue);
-                return;
-              }
               let quickFillValue;
 
               if (existingValue) {
@@ -459,8 +455,14 @@
                 // use the value from the quick fill(event.detail)
                 quickFillValue = _.get(event.detail, field, null);
               }
+
+              if(this.validateBase64(quickFillValue)) {
+                _.set(newData, field, existingValue);
+                return;
+              }
               // Set the value. This handles nested values using dot notation in 'field' string
               _.set(newData, field, quickFillValue);
+              
             });
 
             this.formData = newData;
