@@ -65,7 +65,7 @@
                             <br>
                             <div class="text-right">
                                 {!! Form::button(__('Cancel'), [
-                                    'class'=>'btn btn-outline-secondary', 
+                                    'class'=>'btn btn-outline-secondary',
                                     '@click' => 'onClose'
                                 ]) !!}
                                 {!! Form::button(__('Save and publish'), [
