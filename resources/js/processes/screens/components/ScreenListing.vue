@@ -11,7 +11,7 @@
       <filter-table
         :headers="fields"
         :data="data"
-        table-name="scripts"
+        table-name="screens"
         style="height: calc(100vh - 355px);"
       >
         <!-- Slot Table Header filter Button -->
@@ -19,7 +19,7 @@
           <div
             v-if="column.sortable"
             :key="index"
-            @click="handleEllipsisClick(column)"
+            @click="onClickEllipsis(column)"
           >
             <i
               :class="['fas', {
@@ -34,10 +34,10 @@
           <td
             v-for="(header, colIndex) in fields"
             :key="colIndex"
-            :data-cy="`scripts-table-td-${rowIndex}-${colIndex}`"
+            :data-cy="`screens-table-td-${rowIndex}-${colIndex}`"
           >
             <div
-              :data-cy="`datasource-table-html-${rowIndex}-${colIndex}`"
+              :data-cy="`screens-table-html-${rowIndex}-${colIndex}`"
               v-if="containsHTML(row[header.field])"
               v-html="sanitize(row[header.field])"
             >
@@ -45,7 +45,7 @@
             <template v-else>
               <template
                 v-if="isComponent(row[header.field])"
-                :data-cy="`scripts-table-component-${rowIndex}-${colIndex}`"
+                :data-cy="`screens-table-component-${rowIndex}-${colIndex}`"
               >
                 <component
                   :is="row[header.field].component"
@@ -55,7 +55,7 @@
               </template>
               <template
                 v-else
-                :data-cy="`scripts-table-field-${rowIndex}-${colIndex}`"
+                :data-cy="`screens-table-field-${rowIndex}-${colIndex}`"
               >
                 <template v-if="header.field === 'title'">
                   <b-link
@@ -156,6 +156,7 @@ import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import PaginationTable from "../../../components/shared/PaginationTable.vue";
+import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
@@ -284,7 +285,7 @@ export default {
           }
         });
     },
-    showAddToProjectModal(title, id, projects) {        
+    showAddToProjectModal(title, id, projects) {
       this.screenId = id;
       this.assetName = title;
       this.assignedProjects = projects;
@@ -326,36 +327,10 @@ export default {
       this.page = page;
       this.fetch();
     },
-    handleEllipsisClick(categoryColumn) {
-      this.fields.forEach(column => {
-        if (column.field !== categoryColumn.field) {
-          column.direction = "none";
-          column.filterApplied = false;
-        }
-      });
-
-      if (categoryColumn.direction === "asc") {
-        categoryColumn.direction = "desc";
-      } else if (categoryColumn.direction === "desc") {
-        categoryColumn.direction = "none";
-        categoryColumn.filterApplied = false;
-      } else {
-        categoryColumn.direction = "asc";
-        categoryColumn.filterApplied = true;
-      }
-
-      if (categoryColumn.direction !== "none") {
-        const sortOrder = [
-          {
-            sortField: categoryColumn.sortField || categoryColumn.field,
-            direction: categoryColumn.direction,
-          },
-        ];
-        this.dataManager(sortOrder);
-      } else {
-        this.fetch();
-      }
+    onClickEllipsis(column) {
+      ellipsisSortClick(column, this);
     },
+
   },
 
   computed: {}

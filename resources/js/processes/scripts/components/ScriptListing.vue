@@ -19,7 +19,7 @@
           <div
             v-if="column.sortable"
             :key="index"
-            @click="handleEllipsisClick(column)"
+            @click="onClickEllipsis(column)"
           >
             <i
               :class="['fas', {
@@ -137,7 +137,7 @@ import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../../components/shared/ellipsisMenuActions";
 import scriptNavigationMixin from "../../../components/shared/scriptNavigation";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
-import { FilterTableBodyMixin } from "../../../components/shared";
+import { FilterTableBodyMixin, ellipsisSortClick } from "../../../components/shared";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -285,40 +285,13 @@ export default {
           this.loading = false;
         });
     },
-    showAddToProjectModal(title, id) {        
+    showAddToProjectModal(title, id) {
       this.assetId = id;
       this.assetName = title;
       this.$refs["add-to-project-modal"].show();
     },
-    handleEllipsisClick(categoryColumn) {
-      this.fields.forEach(column => {
-        if (column.field !== categoryColumn.field) {
-          column.direction = "none";
-          column.filterApplied = false;
-        }
-      });
-
-      if (categoryColumn.direction === "asc") {
-        categoryColumn.direction = "desc";
-      } else if (categoryColumn.direction === "desc") {
-        categoryColumn.direction = "none";
-        categoryColumn.filterApplied = false;
-      } else {
-        categoryColumn.direction = "asc";
-        categoryColumn.filterApplied = true;
-      }
-
-      if (categoryColumn.direction !== "none") {
-        const sortOrder = [
-          {
-            sortField: categoryColumn.sortField || categoryColumn.field,
-            direction: categoryColumn.direction,
-          },
-        ];
-        this.dataManager(sortOrder);
-      } else {
-        this.fetch();
-      }
+    onClickEllipsis(column) {
+      ellipsisSortClick(column, this);
     },
   },
 

@@ -169,8 +169,7 @@ export default {
       this.$emit("page-change", page);
     },
     changePerPage(value) {
-      this.goToPage(this.defaultPage);
-      this.$emit("per-page-change", value);
+      this.$emit("per-page-change", value, this.defaultPage);
     },
     redirectPage(value) {
       this.$emit("page-change", value);
