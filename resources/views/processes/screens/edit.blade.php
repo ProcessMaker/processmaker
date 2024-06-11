@@ -65,7 +65,7 @@
                             <br>
                             <div class="text-right">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save and publish'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
                         @isset($addons)
@@ -92,6 +92,7 @@
                 return {
                     formData: @json($screen),
                     assignedProjects: @json($assignedProjects),
+                    isDraft: @json($isDraft),
                     selectedProjects: '',
                     errors: {
                         'title': null,
@@ -123,6 +124,20 @@
                   window.location.href = projectId ? `/designer/projects/${projectId}`: '/designer/screens';
                 },
                 onUpdate() {
+                    if (this.isDraft) {
+                        ProcessMaker.confirmModal(
+                            this.$t("Caution!"),
+                            this.$t("You are about to publish a draft version. Are you sure you want to proceed?"),
+                            "",
+                            () => {
+                                this.handleUpdate();
+                            }
+                        );
+                    } else {
+                        this.handleUpdate();
+                    }
+                },
+                handleUpdate() {
                     this.resetErrors();
                     ProcessMaker.apiClient.put('screens/' + this.formData.id, this.formData)
                         .then(response => {
