@@ -28,8 +28,8 @@
           variant="custom"
         />
       </div>
-      <div class="requests-count" v-if="process.requests_count">
-        {{ process.requests_count }}
+      <div class="requests-count" v-if="caseCount">
+        {{ caseCount }}
       </div>
       <div class="card-bookmark">
         <i
@@ -59,6 +59,14 @@ export default {
       labelIcon: "Default Icon",
       labelTooltip: "",
     };
+  },
+  computed: {
+    caseCount() {
+      if (this.process?.counts?.total) {
+        return this.process.counts.total.toLocaleString();
+      }
+      return null;
+    }
   },
   methods: {
     /**
@@ -156,11 +164,12 @@ export default {
   background-color: #F9E7C3;
   margin-right: 8px;
   
-  border-radius: 50%;
-  width: 30px;
+  border-radius: 15px;
+  min-width: 30px;
   height: 30px;
   justify-content: center;
   align-items: center;
+  padding: 0 8px;
 
   @media (max-width: $lp-breakpoint) {
     display: flex;

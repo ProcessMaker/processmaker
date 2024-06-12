@@ -105,7 +105,7 @@ const ProcessHeader = {
         "create-process-templates",
         "view-projects",
       ];
-      this.showEllipsis = this.permission.some( (permission) => permissionsNeeded.includes(permission));
+      this.showEllipsis = this.$root.permission.some( (permission) => permissionsNeeded.includes(permission));
     },
     /**
      * Return a process cards from process info
