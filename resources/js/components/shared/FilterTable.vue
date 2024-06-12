@@ -282,6 +282,11 @@ export default {
   scrollbar-width: 8px;
   scrollbar-color: #6C757D;
   max-height: calc(100vh - 150px);
+  overflow: hidden;
+}
+
+.pm-table-container:hover {
+  overflow: auto;
 }
 
 .pm-table-container th {
