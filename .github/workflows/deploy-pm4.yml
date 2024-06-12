@@ -278,8 +278,27 @@ jobs:
               else
                 exit 1
               fi'
-            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" && break || true
+            kubectl exec -n $namespace $pod -- /bin/sh -c "pr_body='${pr_body}';${code}" | tee /tmp/comment.md && break || true
           done
+          # Send the content of /tmp/comment.md as a PR comment
+          MESSAGE=$(cat /tmp/comment.md)
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY=${{ github.repository }}
+          PR_NUMBER=$(jq -r .number < "$GITHUB_EVENT_PATH")
+
+          if [ -z "$PR_NUMBER" ]; then
+              echo "The PR number is not available. Make sure this script is executed in a context of Pull Request."
+              exit 1
+          fi
+
+          URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+          json_payload=$(jq -n --arg message "$MESSAGE" '{"body": $message}')
+
+          curl -s \
+               -H "Authorization: token ${GITHUB_TOKEN}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               -d "$json_payload" \
+               "${URL}"
   deleteEKS:
     name: Delete Instance
     if: github.event.action == 'closed'
