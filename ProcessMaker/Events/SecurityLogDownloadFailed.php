@@ -56,7 +56,7 @@ class SecurityLogDownloadFailed implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'SecurityLogDownloadFailed';
+        return 'SecurityLogDownloadJobDone';
     }
 
     /**
