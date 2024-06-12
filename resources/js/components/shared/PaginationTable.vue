@@ -169,8 +169,7 @@ export default {
       this.$emit("page-change", page);
     },
     changePerPage(value) {
-      this.goToPage(this.defaultPage);
-      this.$emit("per-page-change", value);
+      this.$emit("per-page-change", value, this.defaultPage);
     },
     redirectPage(value) {
       this.$emit("page-change", value);
@@ -234,7 +233,6 @@ export default {
     font-weight: 700;
 }
 .pagination-total {
-  margin-left: 10px;
   padding: 0px 8px 0px 8px;
 }
 .pagination-dropup {

@@ -133,7 +133,8 @@ export default {
       this.page = page;
       this.queryBuilder();
     },
-    changePerPage(value) {
+    changePerPage(value, page) {
+      this.page = page;
       this.perPage = value;
       this.queryBuilder();
     },

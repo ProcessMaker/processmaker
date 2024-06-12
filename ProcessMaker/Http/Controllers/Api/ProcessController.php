@@ -45,7 +45,7 @@ class ProcessController extends Controller
 {
     const CAROUSEL_TYPES = [
         'IMAGE' => 'image',
-        'EMBED' => 'embed'
+        'EMBED' => 'embed',
     ];
 
     /**
@@ -128,6 +128,7 @@ class ProcessController extends Controller
                     'id' => $item['id'],
                     'events'=> $item['start_events']];
             });
+
             return new ApiCollection($modifiedCollection);
         }
 
@@ -402,7 +403,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}",
@@ -520,7 +521,7 @@ class ProcessController extends Controller
     public function updateBpmn(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
-        
+
         // bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
@@ -557,7 +558,8 @@ class ProcessController extends Controller
         ], 200);
     }
 
-    private function updateSubprocessElement($parentProcess, $request, $process) {
+    private function updateSubprocessElement($parentProcess, $request, $process)
+    {
         $definitions = $parentProcess->getDefinitions();
         $elements = $definitions->getElementsByTagName('callActivity');
         foreach ($elements as $element) {
@@ -584,7 +586,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}/draft",
@@ -948,7 +950,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @return ResponseFactory|Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @OA\Put(
      *     path="/processes/{processId}/restore",
@@ -1294,7 +1296,7 @@ class ProcessController extends Controller
      *
      * @return resource
      *
-     * @throws \Throwable
+     * @throws Throwable
      *
      * @OA\Post(
      *     path="/processes/{process_id}/import/assignments",
@@ -1440,7 +1442,7 @@ class ProcessController extends Controller
      * @param Process $process
      * @param Request $request
      *
-     * @return \ProcessMaker\Http\Resources\ProcessRequests
+     * @return ProcessRequests
      *
      * @OA\Post(
      *     path="/process_events/{process_id}",
@@ -1778,7 +1780,7 @@ class ProcessController extends Controller
      * @param string $uuid
      * @param string $collectionName
      * @return bool
-    */
+     */
     private function deleteImage(Process $process, $uuid, $collectionName)
     {
         // Retrieve the media image by UUID and collection name
@@ -1788,6 +1790,7 @@ class ProcessController extends Controller
         // If the media image exists, delete it and return true
         if ($mediaImagen) {
             $mediaImagen->delete();
+
             return true;
         } else {
             // Otherwise, return false
