@@ -233,7 +233,6 @@ export default {
     font-weight: 700;
 }
 .pagination-total {
-  margin-left: 10px;
   padding: 0px 8px 0px 8px;
 }
 .pagination-dropup {
