@@ -146,16 +146,7 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         //Default 3 days of due date
-        $isDueVariable = $activity->getProperty('isDueInVariable', false);
-        $dueVariable = $activity->getProperty('dueInVariable');
-        if ($isDueVariable && !empty($dueVariable)) {
-            $instanceData= $token->getInstance()->getDataStore()->getData();
-            $mustache = new Mustache_Engine();
-            $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
-            $due = is_numeric($dueVariable) ? $mustacheDueVariable : '72';
-        } else {
-            $due = $activity->getProperty('dueIn', '72');
-        }
+        $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
@@ -166,6 +157,25 @@ class TokenRepository implements TokenRepositoryInterface
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    /**
+     * Get due Variable
+     *
+     * @param Instance $instance
+     * @param User $user
+     */
+    private function getDueVariable(ActivityInterface $activity, TokenInterface $token)
+    {
+        $isDueVariable = $activity->getProperty('isDueInVariable', false);
+        $dueVariable = $activity->getProperty('dueInVariable');
+        if ($isDueVariable && !empty($dueVariable)) {
+            $instanceData= $token->getInstance()->getDataStore()->getData();
+            $mustache = new Mustache_Engine();
+            $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
+            return is_numeric($mustacheDueVariable) ? $mustacheDueVariable : '72';
+        }
+        return $activity->getProperty('dueIn', '72');
     }
 
     /**
