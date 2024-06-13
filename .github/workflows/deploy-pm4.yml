@@ -154,8 +154,8 @@ jobs:
   updateCode:
     name: Update Code Inside Deployed Instance
     if: |
-      (contains(github.event.pull_request.body, 'ci:api-test') && github.event.action == 'synchronize') ||
-      (contains(github.event.pull_request.body, 'ci:api-test') && github.event.action == 'edited')
+      (contains(github.event.pull_request.body, 'ci:fast-update') && github.event.action == 'synchronize') ||
+      (contains(github.event.pull_request.body, 'ci:fast-update') && github.event.action == 'edited')
     runs-on: self-hosted
     steps:
       - name: Clone private repository
@@ -201,7 +201,7 @@ jobs:
                 echo $pr_body | base64 -d > /tmp/pr_body
                 cd /opt/processmaker
                 git config --global --add safe.directory "/opt/processmaker"
-                if ! git pull --rebase; then
+                if ! git pull; then
                   git stash
                   git pull --rebase
                   git stash pop
@@ -231,7 +231,7 @@ jobs:
           done
   runAPITest:
     name: Run API Tests
-    needs: [deployEKS, updateCode]
+    needs: [deployEKS]
     if: always() && contains(github.event.pull_request.body, 'ci:api-test')
     runs-on: self-hosted
     steps:
