@@ -5,6 +5,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -145,7 +146,17 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         //Default 3 days of due date
-        $due = $activity->getProperty('dueIn', '72');
+        $isDueVariable = $activity->getProperty('isDueInVariable', false);
+        if ($isDueVariable) {
+            $instanceData= $token->getInstance()->getDataStore()->getData();
+            $formalExp = new FormalExpression();
+            $formalExp->setLanguage('FEEL');
+            $formalExp->setBody($activity->getProperty('dueInVariable'));
+            $dueVariable = $formalExp($instanceData);
+            $due = is_numeric($dueVariable) ? $dueVariable : '72';
+        } else {
+            $due = $activity->getProperty('dueIn', '72');
+        }
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
