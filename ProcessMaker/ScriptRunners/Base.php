@@ -67,8 +67,10 @@ abstract class Base
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
     {
+        $isNayra = $this->scriptExecutor->language === self::NAYRA_LANG;
+
         // Prepare the docker parameters
-        $environmentVariables = $this->getEnvironmentVariables();
+        $environmentVariables = $this->getEnvironmentVariables(!$isNayra);
         if (!getenv('HOME')) {
             putenv('HOME=' . base_path());
         }
@@ -82,14 +84,13 @@ abstract class Base
                 $token = new GenerateAccessToken($user);
                 return $token->getToken();
             });
-            $environmentVariables[] = 'API_TOKEN=' . $accessToken;
+            $environmentVariables[] = 'API_TOKEN=' . (!$isNayra ? escapeshellarg($accessToken) : $accessToken);
             $environmentVariables[] = 'API_HOST=' . config('app.docker_host_url') . '/api/1.0';
             $environmentVariables[] = 'APP_URL=' . config('app.docker_host_url');
             $environmentVariables[] = 'API_SSL_VERIFY=' . (config('app.api_ssl_verify') ? '1' : '0');
         }
 
         // Nayra Executor
-        $isNayra = $this->scriptExecutor->language === self::NAYRA_LANG;
         if ($isNayra) {
             $response = $this->handleNayraDocker($code, $data, $config, $timeout, $environmentVariables);
             return json_decode($response, true);
@@ -164,14 +165,19 @@ abstract class Base
     /**
      * Get the environment variables.
      *
+     * @param bool $useEscape
      * @return array
      */
-    private function getEnvironmentVariables()
+    private function getEnvironmentVariables($useEscape = true)
     {
         $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
+        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter, $useEscape) {
             foreach ($variables as $variable) {
-                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
+                if ($useEscape) {
+                    $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
+                } else {
+                    $variablesParameter[] = $variable['name'] . '=' . $variable['value'];
+                }
             }
         });
 
