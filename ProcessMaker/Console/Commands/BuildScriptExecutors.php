@@ -161,7 +161,7 @@ class BuildScriptExecutors extends Command
 
         $this->execCommand($command);
 
-        $isNayra = $scriptExecutor->language === 'nayra';
+        $isNayra = $scriptExecutor->language === 'php-nayra';
         if ($isNayra) {
             $instanceName = config('app.instance');
             $this->info('Stop existing nayra container');
