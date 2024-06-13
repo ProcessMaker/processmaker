@@ -5,7 +5,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Models\FormalExpression;
+use Mustache_Engine;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -147,13 +147,12 @@ class TokenRepository implements TokenRepositoryInterface
 
         //Default 3 days of due date
         $isDueVariable = $activity->getProperty('isDueInVariable', false);
-        if ($isDueVariable) {
+        $dueVariable = $activity->getProperty('dueInVariable');
+        if ($isDueVariable && !empty($dueVariable)) {
             $instanceData= $token->getInstance()->getDataStore()->getData();
-            $formalExp = new FormalExpression();
-            $formalExp->setLanguage('FEEL');
-            $formalExp->setBody($activity->getProperty('dueInVariable'));
-            $dueVariable = $formalExp($instanceData);
-            $due = is_numeric($dueVariable) ? $dueVariable : '72';
+            $mustache = new Mustache_Engine();
+            $mustacheDueVariable = $mustache->render($dueVariable, $instanceData);
+            $due = is_numeric($dueVariable) ? $mustacheDueVariable : '72';
         } else {
             $due = $activity->getProperty('dueIn', '72');
         }
