@@ -197,11 +197,11 @@ class Media extends MediaLibraryModel
      * @param  Process $process
      * @param array $properties
      * @param string $key
-     * @param string $subtype
+     * @param string $mediaType
      *
      * @return void
      */
-    public function saveProcessMedia(Process $process, $properties, $key = 'uuid', $subtype = 'launchpad')
+    public function saveProcessMedia(Process $process, $properties, $key = 'uuid', $mediaType = 'launchpad')
     {
         // Validate if the image smaller than 2MB
         $maxFileSize = 2 * 1024 * 1024;
@@ -215,13 +215,17 @@ class Media extends MediaLibraryModel
             return;
         }
         // Get collection name to save
-        $collectionName = self::determineCollectionName($process, $subtype);
+        $collectionName = self::determineCollectionName($process, $mediaType);
         // Check if exist
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
             // Store the images related move to MEDIA
             $process->addMediaFromBase64($properties['url'])
-                ->withCustomProperties(['type' => $properties['type']])
+                ->withCustomProperties([
+                    'media_type' => $mediaType,
+                    'type' => $properties['type'],
+                    'id' => $properties['node_identifier'],
+                ])
                 ->toMediaCollection($collectionName);
         }
     }
