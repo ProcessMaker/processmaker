@@ -112,8 +112,7 @@ export default {
         });
     }, 500),
     onSuggestionApplied(suggestion) {
-      const cursorPosition = this.$refs.textArea.selectionStart;
-      this.prompt = `${this.prompt.slice(0, cursorPosition)} ${suggestion} ${this.prompt.slice(cursorPosition)}`;
+      this.text = suggestion;
     },
     fetchSuggestions() {
       if (this.suggestionsPages.length) {
