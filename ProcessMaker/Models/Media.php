@@ -224,7 +224,7 @@ class Media extends MediaLibraryModel
                 ->withCustomProperties([
                     'media_type' => $mediaType,
                     'type' => $properties['type'],
-                    'id' => $properties['node_identifier'],
+                    'node_id' => $properties['node_id'],
                 ])
                 ->toMediaCollection($collectionName);
         }
