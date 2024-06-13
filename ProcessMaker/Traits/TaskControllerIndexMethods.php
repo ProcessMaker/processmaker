@@ -15,36 +15,6 @@ use ProcessMaker\Query\SyntaxError;
 
 trait TaskControllerIndexMethods
 {
-    /**
-     * Manually enable paginated results from the
-     * index method()
-     *
-     * @return void
-     */
-    public function enableIndexPagination(): void
-    {
-        static::$paginate = true;
-    }
-
-    /**
-     * Determine if pagination was manually set for the
-     * index() method results
-     *
-     * @return bool
-     */
-    public function isPaginationEnabled(): bool
-    {
-        return static::$paginate === true;
-    }
-
-    /**
-     * Used by saved search to paginate the results
-     * from the index() method
-     *
-     * @var bool
-     */
-    protected static bool $paginate = false;
-
     private function indexBaseQuery($request)
     {
         $query = ProcessRequestToken::with(['processRequest', 'user', 'draft']);
@@ -298,13 +268,6 @@ trait TaskControllerIndexMethods
         }
 
         return $response;
-    }
-
-    private function applyResource($response)
-    {
-        return $response->map(function ($processRequestToken) {
-            return new Resource($processRequestToken);
-        });
     }
 
     private function applyForCurrentUser($query, $user)
