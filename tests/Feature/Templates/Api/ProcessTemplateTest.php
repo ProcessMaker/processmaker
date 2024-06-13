@@ -45,8 +45,10 @@ class ProcessTemplateTest extends TestCase
         $data = $content['data'];
         $this->assertCount(10, $data);
 
-        // Assert that the data does not contain these fields to optimize the load.
-        $this->assertArrayNotHasKey('svg', $data[0]);
+        // Assert that the data contains the svg field, for template image rendering in the UI.
+        $this->assertArrayHasKey('svg', $data[0]);
+
+        // Assert that the data does not contain the manifest field, to optimize the load.
         $this->assertArrayNotHasKey('manifest', $data[0]);
     }
 
