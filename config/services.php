@@ -59,4 +59,7 @@ return [
         'template_branch' => env('SCREEN_TEMPLATE_BRANCH', 'spring-2024'),
         'template_categories' => env('SCREEN_TEMPLATE_CATEGORIES', 'all'),
     ],
+    'userway' => [
+        'account_id' => env('USERWAY_ACCOUNT_ID'),
+    ],
 ];
