@@ -107,7 +107,6 @@ class TaskResource extends ApiResource
             return false;
         }
 
-        // $singleRelationship = $relationshipObject instanceof HasOne || $relationshipObject instanceof BelongsTo;
         $relationshipColumns = self::$defaultFieldsFor[$relationship] ?? ['id'];
         $model->$relationship = $relationshipObject->select($relationshipColumns)->get();
 
@@ -153,7 +152,6 @@ class TaskResource extends ApiResource
 
     private function processInclude(Request $request, array $array)
     {
-        // http://pm4.local:8089/api/1.1/tasks/2963612?include=data,user,draft,requestor,processRequest,component,requestData,loopContext,bpmnTagName,interstitial,definition,userRequestPermission
         $include = $request->query('include', []);
         if ($include) {
             $include = explode(',', $include);
