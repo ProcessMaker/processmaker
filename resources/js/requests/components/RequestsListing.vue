@@ -397,8 +397,8 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      let color = "primary";
-      let badge = "alternative-a";
+      let color;
+      let badge;
 
       if (value === "A") {
         color = "primary";
@@ -408,6 +408,9 @@ export default {
         badge = "alternative-b";
       } else if (value === null) {
         return "-";
+      } else {
+        color = "primary";
+        badge = "alternative-a";
       }
 
       return `
