@@ -233,6 +233,17 @@ if (token) {
 }
 
 window.ProcessMaker.apiClient.defaults.baseURL = "/api/1.0/";
+// If requested url starts with "/api/1.1/" use "/api/1.1/"
+window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+  if (config.url.startsWith("/api/1.1/")) {
+    config.baseURL = "/api/1.1/";
+    config.url = config.url.replace("/api/1.1/", "");
+  } else {
+    config.baseURL = "/api/1.0/";
+  }
+  return config;
+});
+
 
 // Set the default API timeout
 let apiTimeout = 5000;
