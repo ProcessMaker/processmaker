@@ -106,9 +106,6 @@ export default {
   },
   methods: {
     onTabChanged(activeTabIndex) {
-      if (activeTabIndex === 0) {
-
-      }
       if (activeTabIndex === 1) {
         this.$nextTick(() => {
           this.$refs.taskList.fetch();
