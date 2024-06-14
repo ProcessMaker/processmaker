@@ -165,4 +165,12 @@ export default {
     align-items: center;
   }
 }
+
+.card-bookmark {
+  float: right;
+  font-size: 20px;
+}
+.card-bookmark:hover {
+  cursor: pointer;
+}
 </style>

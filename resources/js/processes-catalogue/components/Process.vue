@@ -6,18 +6,15 @@
           <i class="fas fa-arrow-left" />
         </a>
       </div>
-      <div>
+      <div class="center">
         <a href="#" @click.prevent="showDetails = !showDetails">
           <i class="fas fa-info-circle" />
         </a>
       </div>
       <div class="right">
-        <a href="#">
-          <i class="fas fa-bookmark" />
-        </a>
-        <!-- <bookmark
+        <bookmark
           :process="selectedProcess"
-        /> -->
+        />
       </div>
     </div>
     <div class="mobile-process-details" :class="{ 'active' : showDetails }">
@@ -157,11 +154,16 @@ export default {
     text-align: right;
   }
  
-  i {
+  .left i, .center i {
     display: block;
     color: #FFFFFF;
     padding: 1em;
     font-size: 1.5em;
+  }
+
+  .right i {
+    padding: 1em;
+    -webkit-text-stroke-width: 0;
   }
 
   @media (max-width: $lp-breakpoint) {
