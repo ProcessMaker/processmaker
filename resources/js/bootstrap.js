@@ -238,7 +238,7 @@ const apiVersionConfig = [
   { version: "1.1", baseURL: "/api/1.1/" },
 ];
 
-window.ProcessMaker.apiClient.defaults.baseURL = "/api/1.0/";
+window.ProcessMaker.apiClient.defaults.baseURL = apiVersionConfig[0].baseURL;
 window.ProcessMaker.apiClient.interceptors.request.use((config) => {
   if (typeof config.url !== "string" || !config.url) {
     throw new Error("Invalid URL in the request configuration");
