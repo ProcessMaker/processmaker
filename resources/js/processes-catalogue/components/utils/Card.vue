@@ -31,22 +31,23 @@
       <div class="requests-count" v-if="caseCount">
         {{ caseCount }}
       </div>
-      <div class="card-bookmark">
-        <i
-          v-if="!hideBookmark"
-          :ref="`bookmark-${process.id}`"
-          v-b-tooltip.hover.bottom
-          :title="$t(labelTooltip)"
-          :class="bookmarkIcon()"
-          @click="checkBookmark(process)"
-        />
-      </div>
+      <bookmark
+        v-if="!hideBookmark"
+        :process="process"
+        class="bookmark"
+        @bookmark-updated="$parent.loadCard()"
+      />
     </b-card-text>
   </b-card>
 </template>
 
 <script>
+import Bookmark from "../Bookmark.vue";
+
 export default {
+  components: {
+    Bookmark
+  },
   props: {
     process: null,
     hideBookmark: {
@@ -69,37 +70,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * Check the bookmark to add bookmarked list or remove it
-     */
-    checkBookmark(process) {
-      if (process.bookmark_id) {
-        ProcessMaker.apiClient
-          .delete(`process_bookmarks/${process.bookmark_id}`)
-          .then(() => {
-            ProcessMaker.alert(this.$t("Process removed from Bookmarked List."), "success");
-            this.$parent.loadCard();
-          });
-        return;
-      }
-      ProcessMaker.apiClient
-        .post(`process_bookmarks/${process.id}`)
-        .then(() => {
-          ProcessMaker.alert(this.$t("Process added to Bookmarked List."), "success");
-          this.$parent.loadCard();
-        });
-    },
-    /**
-     * Verify if the process is marked
-     */
-    bookmarkIcon() {
-      if (this.process.bookmark_id !== 0) {
-        this.labelTooltip = this.$t("Remove from My Bookmarks");
-        return "fas fa-bookmark marked";
-      }
-      this.labelTooltip = this.$t("Add to My Bookmarks");
-      return "fas fa-bookmark unmarked";
-    },
     /**
      * Open the process
      */
@@ -175,12 +145,9 @@ export default {
     display: flex;
   }
 }
-.card-bookmark {
-  float: right;
-  font-size: 24px;
-}
-.card-bookmark:hover {
-  cursor: pointer;
+
+.bookmark {
+  float:right;
 }
 .card-text {
   height: 100%;
@@ -215,18 +182,6 @@ export default {
     margin-bottom: 0;
     margin-right: 10px;
   }
-}
-.marked {
-  color: #f5bC00;
-}
-.unmarked {
-  color: #ebf3f7;
-  -webkit-text-stroke-color: #bed1e5;
-  -webkit-text-stroke-width: 1px;
-}
-.unmarked:hover {
-  color: #ffd445;
-  -webkit-text-stroke-width: 0;
 }
 .title-process {
   color: #556271;

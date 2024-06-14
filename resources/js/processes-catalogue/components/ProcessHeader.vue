@@ -48,14 +48,7 @@
           </div>
           <div class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
-              <i
-                :ref="`bookmark-${process.id}-marked`"
-                v-b-tooltip.hover.bottom
-                :title="$t(labelTooltip)"
-                class="fas fa-bookmark"
-                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
-                @click="checkBookmark(process)"
-              />
+              <bookmark :process="process" />
             </div>
             <span class="ellipsis-border">
               <ellipsis-menu
@@ -86,11 +79,13 @@ import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
 import ProcessesMixin from "./mixins/ProcessesMixin";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
+import Bookmark from "./Bookmark.vue";
 
 export default {
   components: {
     ButtonsStart,
     EllipsisMenu,
+    Bookmark,
   },
   mixins: [
     ProcessesMixin,
@@ -115,6 +110,7 @@ export default {
   },
   mounted() {
     this.getStartEvents();
+    console.log("prcess from ProcessHeader", this.process);
   },
   methods: {
      toggleInfoCollapsed() {

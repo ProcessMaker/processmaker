@@ -1,5 +1,4 @@
 <template>
-
   <div class="process-info-main" v-if="selectedProcess">
     <div class="mobile-process-nav bg-primary">
       <div class="left">
@@ -16,9 +15,12 @@
         <a href="#">
           <i class="fas fa-bookmark" />
         </a>
+        <!-- <bookmark
+          :process="selectedProcess"
+        /> -->
       </div>
     </div>
-    <div class="mobile-process-details" v-if="showDetails">
+    <div class="mobile-process-details" :class="{ 'active' : showDetails }">
       <h1>{{ $t('Details') }}</h1>
       <h2>{{ selectedProcess.name }}</h2>
       <p>{{ selectedProcess.description }}</p>
@@ -59,11 +61,12 @@
 import ProcessInfo from "./ProcessInfo.vue";
 import ProcessScreen from "./ProcessScreen.vue";
 import MiniPieChart from "./MiniPieChart.vue";
+import Bookmark from "./Bookmark.vue";
 
 export default {
   props: ["process", "processId"],
   components: {
-    ProcessInfo, ProcessScreen, MiniPieChart,
+    ProcessInfo, ProcessScreen, MiniPieChart, Bookmark
   },
   data() {
     return {
@@ -115,6 +118,7 @@ export default {
       ProcessMaker.apiClient
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
+          console.log("Process.vue got response", response.data[0]);
           this.loadedProcess = response.data[0];
         });
     }
@@ -167,9 +171,7 @@ export default {
 }
 
 .mobile-process-details {
-  @media (min-width: $lp-breakpoint) {
-    display: none;
-  }
+  display: none;
 
   width: 100%;
   position: absolute;
@@ -177,6 +179,13 @@ export default {
   padding: 1em;
   background-color: white;
   box-shadow: 0px 8px 8px #00000021;
+
+  // border: 4px solid red;
+
+  // transition: top 0.3s;
+  &.active {
+    display: block;
+  }
 
   h1 {
     font-size: 1.5em;

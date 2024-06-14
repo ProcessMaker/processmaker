@@ -107,8 +107,9 @@ class ProcessLaunchpadController extends Controller
             }])
             ->where('id', $process->id)
             ->get()
-            ->map(function ($process) {
+            ->map(function ($process) use ($request) {
                 $process->counts = $this->getCounts($process->id);
+                $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $request->user()->id);
 
                 return $process;
             });
