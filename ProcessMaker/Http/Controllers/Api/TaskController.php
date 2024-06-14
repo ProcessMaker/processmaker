@@ -139,11 +139,8 @@ class TaskController extends Controller
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
-        // If we should manually add pagination to the
-        // query in advance (also used by saved search)
-        if ($this->isPaginationEnabled()) {
-            $query->limit($request->input('per_page', 10));
-        }
+        // Paginate data
+        $query->paginate($request->input('per_page', 10));
 
         try {
             $response = $query->get();
