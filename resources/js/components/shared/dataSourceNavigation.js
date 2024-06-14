@@ -14,7 +14,7 @@ export default {
           this.doDataSourceDelete(data);
           break;
         case 'add-to-project':
-          this.showAddToProjectModal(data.name, data.id);
+          this.showAddToProjectModal(data.name, data.id, data.projects);
           break;
         case "edit-item":
           this.editDataSourse(data);

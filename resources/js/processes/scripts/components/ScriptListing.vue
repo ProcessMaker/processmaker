@@ -40,7 +40,14 @@
         </template>
       </vuetable>
 
-      <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="script" :assetId="assetId" :assetName="assetName"/>
+      <add-to-project-modal
+        id="add-to-project-modal"
+        ref="add-to-project-modal"
+        assetType="script"
+        :assetId="assetId"
+        :assetName="assetName"
+        :assigned-projects="assignedProjects"
+      />
 
       <pagination
         :single="$t('Script')"
@@ -101,6 +108,7 @@ export default {
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
+      assignedProjects: [],
       assetId: null,
       assetName: "",
       orderBy: "title",
@@ -206,9 +214,10 @@ export default {
           this.loading = false;
         });
     },
-    showAddToProjectModal(title, id) {        
+    showAddToProjectModal(title, id, projects = []) {
       this.assetId = id;
       this.assetName = title;
+      this.assignedProjects = projects;
       this.$refs["add-to-project-modal"].show();
     },
   },

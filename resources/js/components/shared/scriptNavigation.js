@@ -53,7 +53,7 @@ export default {
                 );
                 break;
               case 'add-to-project':
-                this.showAddToProjectModal(data.title, data.id);
+                this.showAddToProjectModal(data.title, data.id, data.projects);
                 break;
             }
         },

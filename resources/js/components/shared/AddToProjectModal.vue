@@ -71,6 +71,9 @@ export default {
   },
   methods: {
     show() {
+      this.$nextTick(() => {
+        this.projects = JSON.parse(this.assignedProjects).map((project) => project.id);
+      });
       this.customModalButtons[1].disabled = this.projects.length > 0 ? false : true;
       this.$bvModal.show('addToProject');
     },
