@@ -6,13 +6,28 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\TaskDraft;
+use ProcessMaker\Models\User;
 use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use StdClass;
 
 trait TaskResourceIncludes
 {
     use TaskScreenResourceTrait;
+
+
+    private function getData()
+    {
+        if ($this->loadedData) {
+            return $this->loadedData;
+        }
+        $dataManager = new DataManager();
+        $task = $this->resource->loadTokenInstance();
+        $this->loadedData = $dataManager->getData($task);
+
+        return $this->loadedData;
+    }
 
     private function includeData()
     {
@@ -131,7 +146,7 @@ trait TaskResourceIncludes
 
         // Remove inspector metadata
         $interstitial['interstitial_screen']['config'] = $this->removeInspectorMetadata(
-            $interstitial['interstitial_screen']['config']
+            $interstitial['interstitial_screen']['config'] ?: []
         );
 
         return [
@@ -145,5 +160,19 @@ trait TaskResourceIncludes
         $userRequestPermission = $this->loadUserRequestPermission($this->processRequest, Auth::user(), []);
 
         return ['user_request_permission' => $userRequestPermission];
+    }
+
+    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
+    {
+        $permissions[] = [
+            'process_request_id' => $request->id,
+            'allowed' => $user ? $user->can('view', $request) : false,
+        ];
+
+        if ($request->parentRequest && $user) {
+            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
+        }
+
+        return $permissions;
     }
 }

@@ -232,7 +232,30 @@ if (token) {
   console.error("CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token");
 }
 
+// Setup api versions
+const apiVersionConfig = [
+  { version: "1.0", baseURL: "/api/1.0/" },
+  { version: "1.1", baseURL: "/api/1.1/" },
+];
+
 window.ProcessMaker.apiClient.defaults.baseURL = "/api/1.0/";
+window.ProcessMaker.apiClient.interceptors.request.use((config) => {
+  if (typeof config.url !== "string" || !config.url) {
+    throw new Error("Invalid URL in the request configuration");
+  }
+
+  apiVersionConfig.forEach(({ version, baseURL }) => {
+    const versionPrefix = `/api/${version}/`;
+    if (config.url.startsWith(versionPrefix)) {
+      // eslint-disable-next-line no-param-reassign
+      config.baseURL = baseURL;
+      // eslint-disable-next-line no-param-reassign
+      config.url = config.url.replace(versionPrefix, "");
+    }
+  });
+
+  return config;
+});
 
 // Set the default API timeout
 let apiTimeout = 5000;
