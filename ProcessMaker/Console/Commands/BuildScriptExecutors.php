@@ -172,7 +172,10 @@ class BuildScriptExecutors extends Command
             $this->info('Get IP address of the nayra container');
             $ip = '';
             for ($i = 0; $i < 10; $i++) {
-                $ip = exec(Docker::command() . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
+                $ip = exec(
+                    Docker::command()
+                    . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra"
+                );
                 if ($ip) {
                     $this->info('Nayra container IP: ' . $ip);
                     Cache::forever('nayra_ips', [$ip]);
