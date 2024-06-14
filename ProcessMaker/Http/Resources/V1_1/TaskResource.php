@@ -19,6 +19,8 @@ class TaskResource extends ApiResource
 {
     use TaskResourceIncludes;
 
+    const INCLUDE_PREFIX = 'include';
+
     protected static $includeMethods = [
         'data',
         'user',
@@ -159,7 +161,7 @@ class TaskResource extends ApiResource
                 continue;
             }
 
-            $method = "include" . ucfirst($key);
+            $method = self::INCLUDE_PREFIX . ucfirst($key);
             if (method_exists($this, $method)) {
                 $attributes = $this->$method();
                 $array = array_merge($array, $attributes);
