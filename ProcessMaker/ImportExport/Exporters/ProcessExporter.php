@@ -9,6 +9,7 @@ use ProcessMaker\ImportExport\DependentType;
 use ProcessMaker\ImportExport\Psudomodels\Signal;
 use ProcessMaker\ImportExport\Utils;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
@@ -67,7 +68,6 @@ class ProcessExporter extends ExporterBase
         $this->exportSubprocesses();
         $this->exportProcessLaunchpad();
         $this->exportMedia();
-
         $this->exportEmbed();
     }
 
@@ -437,7 +437,7 @@ class ProcessExporter extends ExporterBase
      */
     public function exportMedia(): void
     {
-        $this->model->media->each(function ($media) {
+        $this->model->media->where('collection_name', '!=', Media::COLLECTION_SLIDESHOW)->each(function ($media) {
             $this->addDependent(DependentType::MEDIA, $media, MediaExporter::class);
         });
     }
