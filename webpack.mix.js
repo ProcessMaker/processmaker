@@ -18,12 +18,20 @@ mix.webpackConfig({
   plugins: [],
   externals: ["monaco-editor", "SharedComponents", "ModelerInspector"],
   resolve: {
-    extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json"],
+    extensions: [".*", ".js", ".ts", ".mjs", ".vue", ".json", "*.yml", "*.yaml"],
     symlinks: false,
     alias: {
       "vue-monaco": path.resolve(__dirname, "resources/js/vue-monaco-amd.js"),
     },
   },
+  module: {
+    rules: [
+      {
+        test: /\.ya?ml$/,
+        use: "yaml-loader",
+      }
+    ]
+  }
 });
 
 mix.options({
@@ -64,9 +72,9 @@ mix
   .copy("resources/js/components/FilterBar.vue", "public/js")
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
-  .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
+  // .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
   // .copy("node_modules/@processmaker/screen-builder/dist/img", "public/js/img")
-  // .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
+  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
   .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix
