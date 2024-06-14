@@ -48,14 +48,7 @@ class TaskResource extends ApiResource
         'requestor' => ['id', 'first_name', 'last_name', 'email'],
         'processRequest' => ['id', 'process_id', 'status'],
         'draft' => ['id', 'task_id', 'data'],
-        // 'component' => ['id', 'name', 'type', 'version'],
         'screen' => ['id', 'config'],
-        // 'requestData',
-        // 'loopContext',
-        // 'definition'
-        // 'bpmnTagName',
-        // 'interstitial',
-        // 'userRequestPermission',
         'process' => ['id', 'name'],
     ];
 
