@@ -630,9 +630,12 @@ export default {
       if (props.status === "ACTIVE" && isSelfService) {
         color = "danger";
         label = "Self Service";
-      } else if (props.status === "ACTIVE") {
+      } else if (props.status === "ACTIVE" && props.advanceStatus === "open") {
         color = "success";
         label = "In Progress";
+      } else if (props.status === "ACTIVE" && props.advanceStatus === "overdue") {
+        color = "danger";
+        label = "Overdue";
       } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
