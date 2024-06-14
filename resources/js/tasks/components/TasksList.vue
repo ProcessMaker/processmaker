@@ -102,26 +102,16 @@
               </template>
               <template v-else>
                 <template v-if="header.field === 'due_at'">
-                  <TaskListRowButtons 
-                    :ref="'taskListRowButtons-'+rowIndex"
-                    :buttons="taskTooltipButtons"
-                    :row="row"
-                    :rowIndex="rowIndex"
-                    :colIndex="colIndex"
-                    :showButtons="isTooltipVisible">
-                    <template v-slot:content>
-                      <span
-                        :class="[
-                        'badge',
-                        'badge-' + row['color_badge'],
-                        'due-' + row['color_badge'],
-                        ]"
-                        >
-                        {{ formatRemainingTime(row.due_at) }}
-                      </span>
-                      <span>{{ getNestedPropertyValue(row, header) }}</span>
-                    </template>
-                  </TaskListRowButtons>
+                  <span
+                    :class="[
+                    'badge',
+                    'badge-' + row['color_badge'],
+                    'due-' + row['color_badge'],
+                    ]"
+                    >
+                    {{ formatRemainingTime(row.due_at) }}
+                  </span>
+                  <span>{{ getNestedPropertyValue(row, header) }}</span>
                 </template>
                 <template v-else-if="header.field === 'is_priority'">
                   <span>
@@ -141,21 +131,35 @@
                   </span>
                 </template>
                 <template v-else>
-                  <div
-                    :id="`element-${rowIndex}-${colIndex}`"
-                    :class="{ 'pm-table-truncate': header.truncate }"
-                    :style="{ maxWidth: header.width + 'px' }"
-                  >
-                    {{ getNestedPropertyValue(row, header) }}
-                    <b-tooltip
-                      v-if="header.truncate"
-                      :target="`element-${rowIndex}-${colIndex}`"
-                      custom-class="pm-table-tooltip"
-                      @show="checkIfTooltipIsNeeded"
-                    >
-                      {{ getNestedPropertyValue(row, header) }}
-                    </b-tooltip>
-                  </div>
+                  <TaskListRowButtons 
+                    :ref="'taskListRowButtons-'+rowIndex"
+                    :buttons="taskTooltipButtons"
+                    :row="row"
+                    :rowIndex="rowIndex"
+                    :colIndex="colIndex"
+                    :showButtons="isTooltipVisible">
+                    <template v-slot:content>
+                      <div
+                        :id="`element-${rowIndex}-${colIndex}`"
+                        :class="{ 'pm-table-truncate': header.truncate }"
+                        :style="{ maxWidth: header.width + 'px' }"
+                        >
+                        {{ getNestedPropertyValue(row, header) }}
+                        <b-tooltip
+                          v-if="header.truncate"
+                          :target="`element-${rowIndex}-${colIndex}`"
+                          custom-class="pm-table-tooltip"
+                          @show="checkIfTooltipIsNeeded"
+                          >
+                          {{ getNestedPropertyValue(row, header) }}
+                        </b-tooltip>
+                      </div>
+                    </template>
+                    <template v-slot:body>
+                      <slot name="tooltip" v-bind:previewTasks="previewTasks">
+                      </slot>
+                    </template>
+                  </TaskListRowButtons>
                 </template>
               </template>
             </template>

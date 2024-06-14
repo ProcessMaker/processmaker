@@ -2,6 +2,10 @@ import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
   props: {
+    autosaveFilter: {
+      type: Boolean,
+      default: true
+    },
     advancedFilterProp: {
       type: Object,
       default: null
@@ -30,6 +34,14 @@ const PMColumnFilterCommonMixin = {
   methods: {
     storeFilterConfiguration() {
       const {order, type} = this.filterConfiguration();
+      
+      if (!this.autosaveFilter) {
+        this.$emit("advanced-filter-updated", {
+          filters: this.formattedFilter(),
+          order
+        });
+        return;
+      }
 
       // If advanced filter was provided as a prop, do not save the filter
       // or overwrite the global advanced_filter, instead emit the filter.

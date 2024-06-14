@@ -15,6 +15,7 @@
           :filter="filterRequest"
           :columns="columnsRequest"
           :pmql="fullPmqlRequest"
+          :autosaveFilter="false"
           ></requests-listing>
       </b-tab>
       <b-tab
@@ -28,6 +29,7 @@
           :disable-tooltip="false"
           :disable-quick-fill-tooltip="false"
           :fetch-on-created="false"
+          :autosaveFilter="false"
           ></tasks-list>
       </b-tab>
     </b-tabs>

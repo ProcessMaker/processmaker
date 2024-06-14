@@ -3,32 +3,34 @@
     <slot name="content"></slot>
     <PMFloatingButtons ref="pmFloatingButtons">
       <template v-slot:content>
-        <span v-for="(button, index) in buttons" :key="index">
-          <b-button :id="button.id + rowIndex"
-                    v-if="button.show"
-                    aria-label="button.title"
-                    @click="onClick(button)"
-                    variant="light"
-                    size="sm">
-            <i v-if="button.icon" 
-               :class="button.icon"/>
-            <img v-else-if="button.imgSrc"
-                 :src="button.imgSrc"
-                 :alt="button.title"/>
-          </b-button>
-          <b-tooltip
-            :target="button.id + rowIndex"
-            :title="button.title"
-            custom-class="task-hover-tooltip"
-            placement="bottom"
-            :delay="0"
-            boundary="viewport"
-            :no-fade="true"
-            />
-          <div v-if="index < buttons.length - 1 && button.show" 
-               class="task-vertical-separator">
-          </div>
-        </span>
+        <slot name="body">
+          <span v-for="(button, index) in buttons" :key="index">
+            <b-button :id="button.id + rowIndex"
+                      v-if="button.show"
+                      aria-label="button.title"
+                      @click="onClick(button)"
+                      variant="light"
+                      size="sm">
+              <i v-if="button.icon" 
+                 :class="button.icon"/>
+              <img v-else-if="button.imgSrc"
+                   :src="button.imgSrc"
+                   :alt="button.title"/>
+            </b-button>
+            <b-tooltip
+              :target="button.id + rowIndex"
+              :title="button.title"
+              custom-class="task-hover-tooltip"
+              placement="bottom"
+              :delay="0"
+              boundary="viewport"
+              :no-fade="true"
+              />
+            <div v-if="index < buttons.length - 1 && button.show" 
+                 class="task-vertical-separator">
+            </div>
+          </span>
+        </slot>
       </template>
     </PMFloatingButtons>
   </div>
