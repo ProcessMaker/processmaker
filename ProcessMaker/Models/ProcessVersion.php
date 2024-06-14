@@ -30,8 +30,6 @@ class ProcessVersion extends ProcessMakerModel implements ProcessModelInterface
 
     const categoryClass = ProcessCategory::class;
 
-    protected $connection = 'processmaker';
-
     /**
      * Attributes that are not mass assignable.
      *

@@ -88,7 +88,7 @@ abstract class DuskTestCase extends BaseTestCase
         parent::setUp();
         $sqlFile = sys_get_temp_dir() . '/testDB.sql';
         $arg = [
-            env('DB_HOSTNAME'),
+            env('DB_HOST'),
             env('DB_PORT'),
             env('DB_USERNAME'),
             env('DB_PASSWORD'),

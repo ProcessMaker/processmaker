@@ -61,8 +61,6 @@ class Media extends MediaLibraryModel
     use Exportable;
     use HasFactory;
 
-    protected $connection = 'processmaker';
-
     protected $table = 'media';
 
     /**

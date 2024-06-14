@@ -36,8 +36,6 @@ class User extends Authenticatable implements HasMedia
     use HasFactory;
     use Exportable;
 
-    protected $connection = 'processmaker';
-
     // Disk
     public const DISK_PROFILE = 'profile';
 

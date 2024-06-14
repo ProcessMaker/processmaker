@@ -43,8 +43,6 @@ class Group extends ProcessMakerModel
     use SerializeToIso8601;
     use Exportable;
 
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'name',
         'description',

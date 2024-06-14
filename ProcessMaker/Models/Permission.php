@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class Permission extends ProcessMakerModel
 {
-    protected $connection = 'processmaker';
-
     protected $fillable = [
         'title',
         'name',

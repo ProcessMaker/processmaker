@@ -22,13 +22,6 @@ class UpgradeMigrationRepository extends DMR implements MigrationRepositoryInter
     protected $table;
 
     /**
-     * The name of the database connection to use.
-     *
-     * @var string
-     */
-    protected $connection = 'processmaker';
-
-    /**
      * Get the ran migrations.
      *
      * @return array
