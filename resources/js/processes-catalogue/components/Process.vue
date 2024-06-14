@@ -182,9 +182,6 @@ export default {
   background-color: white;
   box-shadow: 0px 8px 8px #00000021;
 
-  // border: 4px solid red;
-
-  // transition: top 0.3s;
   &.active {
     display: block;
   }

@@ -73,7 +73,6 @@ export default {
   color: #f5bC00;
 }
 .unmarked {
-  // color: #ebf3f7;
   color: #fff;
   -webkit-text-stroke-color: #bed1e5;
   -webkit-text-stroke-width: 2px;
