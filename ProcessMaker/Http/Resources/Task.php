@@ -113,20 +113,6 @@ class Task extends ApiResource
         }
     }
 
-    private function loadUserRequestPermission(ProcessRequest $request, User $user, array $permissions)
-    {
-        $permissions[] = [
-            'process_request_id' => $request->id,
-            'allowed' => $user ? $user->can('view', $request) : false,
-        ];
-
-        if ($request->parentRequest && $user) {
-            $permissions = $this->loadUserRequestPermission($request->parentRequest, $user, $permissions);
-        }
-
-        return $permissions;
-    }
-
     private function getAssignedUsers($users)
     {
         foreach ($users as $user) {
@@ -147,17 +133,5 @@ class Task extends ApiResource
         }
 
         return $assignedUsers;
-    }
-
-    private function getData()
-    {
-        if ($this->loadedData) {
-            return $this->loadedData;
-        }
-        $dataManager = new DataManager();
-        $task = $this->resource->loadTokenInstance();
-        $this->loadedData = $dataManager->getData($task);
-
-        return $this->loadedData;
     }
 }
