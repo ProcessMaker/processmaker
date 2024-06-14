@@ -43,6 +43,11 @@ class TaskResource extends ApiResource
         'due_at',
     ];
 
+    protected static $defaultIncludes = [
+        'process',
+        'advanceStatus',
+    ];
+
     protected static $defaultFieldsFor = [
         'user' => ['id', 'firstname', 'lastname', 'email', 'username', 'avatar'],
         'requestor' => ['id', 'first_name', 'last_name', 'email'],
@@ -116,8 +121,7 @@ class TaskResource extends ApiResource
         if ($include) {
             $include = explode(',', $include);
         }
-        $include[] = 'process';
-        $include[] = 'advanceStatus';
+        $include = array_merge($include, self::$defaultIncludes);
 
         if (in_array('data', $include)) {
             $query->addSelect('process_request_id');
@@ -140,7 +144,7 @@ class TaskResource extends ApiResource
             self::addRelationship($model, $key);
         }
 
-        return new static($query->first());
+        return new static($model);
     }
 
     private function processInclude(Request $request, array $array)
