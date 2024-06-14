@@ -397,20 +397,14 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      let color;
-      let badge;
+      let color = "primary";
+      let badge = "alternative-a";
 
-      if (value === "A") {
-        color = "primary";
-        badge = "alternative-a";
-      } else if (value === "B") {
+      if (value === "B") {
         color = "secondary";
         badge = "alternative-b";
       } else if (value === null) {
         return "-";
-      } else {
-        color = "primary";
-        badge = "alternative-a";
       }
 
       return `
