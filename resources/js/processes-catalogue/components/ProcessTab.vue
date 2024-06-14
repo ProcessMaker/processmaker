@@ -4,23 +4,31 @@
       id="tabs-custom"
       pills
       lazy
-    >
+      @input="onTabChanged"
+      >
       <b-tab
         :title="$t('My Requests')"
         active
-      >
-        <request-tab
-          :currentUser="currentUser"
-          :process="process"
-        ></request-tab>
+        >
+        <requests-listing
+          ref="requestList"
+          :filter="filterRequest"
+          :columns="columnsRequest"
+          :pmql="fullPmqlRequest"
+          ></requests-listing>
       </b-tab>
       <b-tab
         :title="$t('My Tasks')"
-      >
-        <task-tab
-          :currentUser="currentUser"
-          :process="process"
-        ></task-tab>
+        >
+        <tasks-list
+          ref="taskList"
+          :filter="filterTask"
+          :pmql="fullPmqlTask" 
+          :columns="columnsTask"
+          :disable-tooltip="false"
+          :disable-quick-fill-tooltip="false"
+          :fetch-on-created="false"
+          ></tasks-list>
       </b-tab>
     </b-tabs>
   </div>
@@ -29,10 +37,14 @@
 <script>
 import RequestTab from "./RequestTab.vue";
 import TaskTab from "./TaskTab.vue";
+import RequestsListing from "../../requests/components/RequestsListing.vue";
+import TasksList from "../../tasks/components/TasksList.vue";
 export default {
   components: {
     RequestTab,
     TaskTab,
+      RequestsListing,
+      TasksList
   },
   props: {
     currentUser: {
@@ -42,6 +54,68 @@ export default {
       type: Object,
     },
   },
+  data() {
+    return {
+      filterRequest: "",
+      fullPmqlRequest: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+      columnsRequest: [
+        {
+          label: "Case #",
+          field: "case_number",
+          sortable: true,
+          default: true,
+          width: 80
+        },
+        {
+          label: "Case title",
+          field: "case_title",
+          sortable: true,
+          default: true,
+          truncate: true,
+          width: 220
+        },
+        {
+          label: "Status",
+          field: "status",
+          sortable: true,
+          default: true,
+          width: 100,
+          filter_subject: {type: 'Status'}
+        },
+        {
+          label: "Started",
+          field: "initiated_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160
+        },
+        {
+          label: "Completed",
+          field: "completed_at",
+          format: "datetime",
+          sortable: true,
+          default: true,
+          width: 160
+        },
+      ],
+      filterTask: "",
+      fullPmqlTask: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+      columnsTask: window.Processmaker.defaultColumns || null
+    };
+  },
+  methods: {
+    onTabChanged(activeTabIndex) {
+      if (activeTabIndex === 0) {
+
+      }
+      if (activeTabIndex === 1) {
+        this.$nextTick(() => {
+          this.$refs.taskList.fetch();
+        });
+      }
+    }
+  }
 };
 </script>
 <style>
