@@ -87,7 +87,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 15,
+      numCategories: 100,
       page: 1,
       key: 0,
       totalPages: 1,
@@ -115,7 +115,10 @@ export default {
           this.showMenu = false;
         }
       }
-    }
+    },
+    listCategories() {
+      this.$root.categories = this.listCategories;
+    },
   },
   computed: {
     showMobileMenuControl() {
