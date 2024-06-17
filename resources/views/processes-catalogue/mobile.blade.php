@@ -7,15 +7,21 @@
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
-      :permission="{{ \Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects') }}"
       :current-user="{{ \Auth::user() }}"
-      is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
     >
     </processes-catalogue>
   </div>
 @endsection
 
 @section('js')
+  <script>
+    window.ProcessMaker.isDocumenterInstalled = {{
+      Js::from(\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled())
+    }};
+    window.ProcessMaker.permission = {{
+      Js::from(\Auth::user()->hasPermissionsFor('processes', 'process-templates', 'pm-blocks', 'projects'))
+    }};
+  </script>
   @foreach($manager->getScripts() as $script)
     <script src="{{$script}}"></script>
   @endforeach

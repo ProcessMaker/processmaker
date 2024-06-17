@@ -21,7 +21,6 @@
           :from-process-list="fromProcessList"
           @categorySelected="selectCategory"
           :filter-categories="filterCategories"
-          :permission="permission"
           @addCategories="addCategories"
         />
         <div class="mobile-slide-close">
@@ -39,11 +38,11 @@
           <div class="mobile-menu-control" v-show="showMobileMenuControl">
             <span @click="showMenu = !showMenu">
               <i class="fa fa-bars"></i>
-              {{ category?.name || 'N/A' }}
+              {{ category?.name || '' }}
             </span>
           </div>
         
-          <router-view :permission="permission" @goBackCategory="goBackCategory"></router-view>
+          <router-view @goBackCategory="goBackCategory"></router-view>
 
       </div>
     </div>
@@ -59,7 +58,7 @@ export default {
   components: {
     MenuCatologue, CatalogueEmpty, Breadcrumbs,
   },
-  props: ["permission", "isDocumenterInstalled", "currentUserId", "process", "currentUser"],
+  props: ["currentUserId", "process", "currentUser"],
   data() {
     return {
       showMenu: false,

@@ -10,7 +10,7 @@
     >
       <Card
         v-for="(process, index) in processList"
-        :key="index"
+        :key="`${index}_${renderKey}`"
         :process="process"
         @openProcessInfo="openProcessInfo"
         :hideBookmark="categoryId === 'all_templates'"
@@ -66,9 +66,9 @@ export default {
       totalPages: 1,
       pmql: "",
       filter: "",
-      bookmarkIcon: "far fa-bookmark",
       showEmpty: false,
       loading: false,
+      renderKey: 0,
     };
   },
   watch: {
@@ -92,6 +92,7 @@ export default {
           this.processList = response.data.data;
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
+          this.renderKey = this.renderKey + 1;
         });
     },
     /**
