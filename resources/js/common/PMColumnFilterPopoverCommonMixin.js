@@ -34,14 +34,6 @@ const PMColumnFilterCommonMixin = {
   methods: {
     storeFilterConfiguration() {
       const {order, type} = this.filterConfiguration();
-      
-      if (!this.autosaveFilter) {
-        this.$emit("advanced-filter-updated", {
-          filters: this.formattedFilter(),
-          order
-        });
-        return;
-      }
 
       // If advanced filter was provided as a prop, do not save the filter
       // or overwrite the global advanced_filter, instead emit the filter.
@@ -67,7 +59,9 @@ const PMColumnFilterCommonMixin = {
         order
       };
 
-      ProcessMaker.apiClient.put(url, config);
+      if (!this.autosaveFilter) {
+        ProcessMaker.apiClient.put(url, config);
+      }
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },
