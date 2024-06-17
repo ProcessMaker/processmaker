@@ -155,13 +155,13 @@ class TaskAssignmentExecutionTest extends TestCase
         // Verify status
         $response->assertStatus(201);
         // Get the ProcessRequest
-        $currentDate = Carbon::now();
+        $expectedDueDate = Carbon::now()->addHours(24);
         $task = ProcessRequestToken::where([
             'process_request_id' => $response['id'],
             'status' => 'ACTIVE',
         ])->firstOrFail();
-
-        $this->assertGreaterThanOrEqual($task->due_at, $currentDate);
+        
+        $this->assertTrue($task->due_at->greaterThanOrEqualTo($expectedDueDate));
     }
 
     public function testSelfServeAssignment()
