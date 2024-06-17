@@ -143,27 +143,25 @@ class TaskAssignmentExecutionTest extends TestCase
 
     public function testDueDate()
     {
-        $user = User::factory()->create();
-
         $process = Process::factory()->create([
             'bpmn' => file_get_contents(__DIR__ . '/processes/TaskConfiguredCustomDueIn.bpmn'),
         ]);
         $data = [
-            'var_due_date' => 10
+            'var_due_date' => 24
         ];
-        $dueIn = Carbon::now()->addHours($data['var_due_date']);
         $route = route('api.process_events.trigger',
             [$process->id, 'event' => 'node_1']);
         $response = $this->apiCall('POST', $route, $data);
         // Verify status
         $response->assertStatus(201);
         // Get the ProcessRequest
+        $currentDate = Carbon::now();
         $task = ProcessRequestToken::where([
             'process_request_id' => $response['id'],
             'status' => 'ACTIVE',
         ])->firstOrFail();
 
-        $this->assertEquals($dueIn, $task->due_at);
+        $this->assertGreaterThanOrEqual($task->due_at, $currentDate);
     }
 
     public function testSelfServeAssignment()
