@@ -1816,15 +1816,4 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
                 ->limit(1)
         );
     }
-
-    public function scopeWithRequestCount($query)
-    {
-        return $query->withCount(['requests' => function ($query) {
-            return $query->where('status', 'ACTIVE')
-                // User has participated
-                ->whereHas('tokens', function ($q) {
-                    $q->where('user_id', Auth::user()->id);
-                });
-        }]);
-    }
 }

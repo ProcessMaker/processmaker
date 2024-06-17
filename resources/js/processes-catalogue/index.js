@@ -16,7 +16,7 @@ const router = new VueRouter({
       component: ProcessListing,
       props(route) {
         return {
-          categoryId: route.query.categoryId || null,
+          categoryId: route.query.categoryId || 'recent',
         };
       }
     },
@@ -38,7 +38,11 @@ new Vue({
   el: "#processes-catalogue",
   components: { ProcessesCatalogue },
   router,
-  data: {
+  data() {
+    return {
+      permission: window.ProcessMaker.permission,
+      isDocumenterInstalled: window.ProcessMaker.isDocumenterInstalled,
+    };
   },
   methods: {
   },

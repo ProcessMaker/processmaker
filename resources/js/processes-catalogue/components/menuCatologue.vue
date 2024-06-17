@@ -197,16 +197,22 @@ export default {
 
       const query = this.$route.query;
 
-      this.selectedProcessItem = null;
-      this.selectedTemplateItem = null;
-
       if (query.categoryId) {
-        this.selectedProcessItem = this.data.find((category) => {
+        const selectedProcessItem = this.data.find((category) => {
           return String(category.id) === String(query.categoryId);
         });
-        this.selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
+
+        if (selectedProcessItem) {
+          this.selectProcessItem(selectedProcessItem);
+        }
+
+        const selectedTemplateItem = this.filteredTemplateOptions.find((category) => {
           return String(category.id) === String(query.categoryId);
         });
+
+        if (selectedTemplateItem) {
+          this.selectTemplateItem(selectedTemplateItem);
+        }
       }
     },
     /**
@@ -273,7 +279,7 @@ export default {
       this.filterCategories(value);
     },
     hasPermission() {
-      return this.permission.includes("create-processes");
+      return this.$root.permission.includes("create-processes");
     },
     checkPackageAiInstalled() {
       this.hasPackageAI = ProcessMaker.packages.includes("package-ai") ? 1 : 0;

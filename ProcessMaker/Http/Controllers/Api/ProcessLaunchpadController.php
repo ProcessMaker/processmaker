@@ -47,7 +47,6 @@ class ProcessLaunchpadController extends Controller
         // Get the processes
         $processes = $processes
             ->select('processes.*')
-            ->withRequestCount()
             ->orderBy('processes.name', 'asc')
             ->paginate($perPage);
 
@@ -57,6 +56,10 @@ class ProcessLaunchpadController extends Controller
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
         }
+
+        $process = $processes->map(function ($process) {
+            $process->counts = $this->getCounts($process->id);
+        });
 
         return new ProcessCollection($processes);
     }
@@ -104,8 +107,9 @@ class ProcessLaunchpadController extends Controller
             }])
             ->where('id', $process->id)
             ->get()
-            ->map(function ($process) {
+            ->map(function ($process) use ($request) {
                 $process->counts = $this->getCounts($process->id);
+                $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $request->user()->id);
 
                 return $process;
             });

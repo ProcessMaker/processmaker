@@ -1,79 +1,11 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
-      <div class="header-mobile">
-        <div class="title">
-          {{ process.name }}
-        </div>
-        <div class="start-button">
-          <buttons-start
-            :process="process"
-            :title="$t('Start')"
-            :startEvent="singleStartEvent"
-            :processEvents="processEvents"
-          />
-        </div>
-      </div>
-      <div
-        class="header card card-body"
-      >
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <i
-              class="fas fa-arrow-left text-secondary mr-2 iconTitle"
-              @click="goBack"
-            />
-            <button
-              class="btn border-0 header-process title-process-button"
-              type="button"
-              data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-controls="collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
-              @click="toogleInfoCollapsed()"
-            >
-              <template v-if="infoCollapsed">
-                {{ $t('Process Info') }}
-                <i class="fas fa-angle-up pl-2" />
-              </template>
-              <template v-else>
-                {{ getNameEllipsis() }}
-                <i class="fas fa-angle-down pl-2" />
-              </template>
-            </button>
-          </div>
-          <div class="d-flex align-items-center">
-            <div class="card-bookmark mx-2">
-              <i
-                :ref="`bookmark-${process.id}-marked`"
-                v-b-tooltip.hover.bottom
-                :title="$t(labelTooltip)"
-                class="fas fa-bookmark"
-                :class="{ marked: showBookmarkIcon, unmarked: !showBookmarkIcon }"
-                @click="checkBookmark(process)"
-              />
-            </div>
-            <span class="ellipsis-border">
-              <ellipsis-menu
-                v-if="showEllipsis"
-                :actions="processLaunchpadActions"
-                :permission="permission"
-                :data="process"
-                :is-documenter-installed="isDocumenterInstalled"
-                :divider="false"
-                :lauchpad="true"
-                variant="none"
-                @navigate="onProcessNavigate"
-              />
-            </span>
-            <buttons-start
-              :process="process"
-              :startEvent="singleStartEvent"
-              :processEvents="processEvents"
-            />
-          </div>
-        </div>
-      </div>
+      <process-header
+        :process="process"
+        @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate()"
+      />
       <div
         id="collapseProcessInfo"
         class="collapse show"
@@ -154,8 +86,6 @@
 </template>
 
 <script>
-import ButtonsStart from "./optionsMenu/ButtonsStart.vue";
-import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import CreateTemplateModal from "../../components/templates/CreateTemplateModal.vue";
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
@@ -166,11 +96,10 @@ import ProcessOptions from "./ProcessOptions.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
+import ProcessHeader from "./ProcessHeader.vue";
 
 export default {
   components: {
-    ButtonsStart,
-    EllipsisMenu,
     CreateTemplateModal,
     CreatePmBlockModal,
     AddToProjectModal,
@@ -178,9 +107,10 @@ export default {
     ProcessOptions,
     ProcessesCarousel,
     WizardHelperProcessModal,
+    ProcessHeader,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
-  props: ["process", "permission", "isDocumenterInstalled", "currentUserId"],
+  props: ["process", "currentUserId"],
   computed: {
     createdFromWizardTemplate() {
       return !!this.process?.properties?.wizardTemplateUuid;
@@ -194,39 +124,12 @@ export default {
     ProcessMaker.EventBus.$on("reloadByNewScreen", (newScreen) => {
       window.location.reload();
     });
-    this.getStartEvents();
   },
   data() {
     return {
-      processEvents: [],
-      singleStartEvent: null,
     };
   },
   methods: {
-    /**
-     * get start events for dropdown Menu
-     */
-    getStartEvents() {
-      this.processEvents = [];
-      ProcessMaker.apiClient
-        .get(`process_bookmarks/processes/${this.process.id}/start_events`)
-        .then((response) => {
-          this.processEvents = response.data.data;
-          const nonWebEntryStartEvents = this.processEvents.filter(e => !("webEntry" in e) || !e.webEntry);
-          if (nonWebEntryStartEvents.length === 1) {
-            this.singleStartEvent = nonWebEntryStartEvents[0].id;
-          }
-        })
-        .catch((err) => {
-          ProcessMaker.alert(err, "danger");
-        });
-    },
-    /**
-     * Change button title
-     */
-    toogleInfoCollapsed() {
-      this.infoCollapsed = !this.infoCollapsed;
-    },
     /**
      * Verify if the Description is large
      */
@@ -251,6 +154,12 @@ export default {
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
 @import '~styles/variables';
+
+#collapseProcessInfo {
+  @media (max-width: $lp-breakpoint) {
+    display: none;
+  }
+}
 
 .wizard-link {
   text-transform: none;
