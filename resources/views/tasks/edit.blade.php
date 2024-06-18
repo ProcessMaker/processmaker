@@ -255,6 +255,15 @@
                               @{{ moment(createdAt).format() }}
                             </li>
                             <li class="list-group-item">
+                              <p class="section-title">{{__('Case')}}</p>
+                              {{ $task->process->name }}
+                              <p>
+                                <a href="{{route('process.browser.index', [$task->process->id])}}">
+                                  {{ __('Open Process Launchpad') }}
+                                </a>
+                              </p>
+                            </li>
+                            <li class="list-group-item">
                               <p class="section-title">{{__('Request')}}</p>
                               <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
                                 #{{$task->process_request_id}} {{$task->process->name}}
