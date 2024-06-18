@@ -134,17 +134,22 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('/redirect-to-intended', [HomeController::class, 'redirectToIntended'])->name('redirect_to_intended');
 
     Route::post('/keep-alive', [LoginController::class, 'keepAlive'])->name('keep-alive');
-
-    Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
-    Route::get('requests/{type?}', [RequestController::class, 'index'])
+    // Cases
+    Route::get('cases', [RequestController::class, 'index'])->name('cases.index')->middleware('no-cache');
+    Route::get('cases/{type?}', [RequestController::class, 'index'])->name('cases_by_type')
         ->where('type', 'all|in_progress|completed')
-        ->name('requests_by_type')
         ->middleware('no-cache');
-    Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
-    Route::get('requests', [RequestController::class, 'index'])
-        ->name('requests.index')
-        ->middleware('no-cache');
+    // Requests
+    Route::get('requests', function () {
+        return redirect()->route('cases.index');
+    })->name('requests.index')->middleware('no-cache');
+    Route::get('requests/{type?}', function ($type = null) {
+        return redirect()->route('cases_by_type', ['type' => $type]);
+    })->where('type', 'all|in_progress|completed')->name('requests_by_type')->middleware('no-cache');
+
     Route::get('requests/{request}', [RequestController::class, 'show'])->name('requests.show');
+    Route::get('request/{request}/files/{media}', [RequestController::class, 'downloadFiles'])->middleware('can:view,request');
+    Route::get('requests/search', [RequestController::class, 'search'])->name('requests.search');
     Route::get('requests/mobile/{request}', [RequestController::class, 'show'])->name('requests.showMobile');
     Route::get('requests/{request}/task/{task}/screen/{screen}', [RequestController::class, 'screenPreview'])->name('requests.screen-preview');
 
