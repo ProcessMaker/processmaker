@@ -1,5 +1,6 @@
 <template>
   <b-card
+    v-if="showCards"
     overlay
     class="card-process"
   >
@@ -39,6 +40,10 @@
       />
     </b-card-text>
   </b-card>
+  <b-card v-else
+  class="text-center d-flex align-items-center justify-content-center card-process2">
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  </b-card>
 </template>
 
 <script>
@@ -49,11 +54,20 @@ export default {
     Bookmark
   },
   props: {
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
     process: null,
     hideBookmark: {
       type: Boolean,
       default: false
-    }
+    },
+    showCards: true,
   },
   data() {
     return {
@@ -111,6 +125,15 @@ export default {
     height: 100px;
   }
 }
+.card-process2 {
+  max-width: 100%;
+  width: 57vw;
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+}
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;
 }
@@ -118,6 +141,7 @@ export default {
   padding: 32px;
   height: 100%;
   width: 100%;
+  margin-bottom: 20px;
 
   @media (max-width: $lp-breakpoint) {
     padding: 16px;

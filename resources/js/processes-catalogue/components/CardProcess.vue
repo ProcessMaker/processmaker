@@ -10,13 +10,39 @@
       class="processList h-100"
       ref="processListContainer"
     >
-      <Card
+      <!-- <Card
         v-for="(process, index) in processList"
         :key="`${index}_${renderKey}`"
         :process="process"
+        :show-cards="true"
         @openProcessInfo="openProcessInfo"
         :hideBookmark="categoryId === 'all_templates'"
       />
+      <span>count: {{ processList.length }}</span>
+      <div v-if="processList.length > 0 && processList.length >= this.perPage">
+        <Card
+        :show-cards="false" 
+      />
+      </div> -->
+      <template v-for="(process, index) in processList">
+        <Card
+          :key="`${index}_${renderKey}`"
+          :process="process"
+          :show-cards="true"
+          :current-page="currentPage"
+          :total-pages="totalPages"
+          @openProcessInfo="openProcessInfo"
+          :hideBookmark="categoryId === 'all_templates'"
+        />
+        <!-- Separator after last element -->
+          <div v-if="(index % perPage === 11) && processList.length >= perPage">
+            <Card
+            :show-cards="false"
+            :current-page="counterPage + Math.floor(index / perPage)"
+            :total-pages="totalPages"
+          />
+        </div>
+      </template>
     </div>
     <div
       v-if="loading"
@@ -51,6 +77,7 @@ export default {
   props: ["categoryId"],
   data() {
     return {
+      counterPage: 2,
       processList: [],
       currentdata: [],
       currentPage: 1,
@@ -71,6 +98,8 @@ export default {
   },
   watch: {
     categoryId() {
+      this.processList = [];
+      this.currentPage = 1;
       this.pmql = "";
       this.filter = "";
       this.loadCard();
@@ -97,19 +126,22 @@ export default {
   },
   methods: {
     loadCard(callback) {
+      console.log("llama API: ", this.currentPage);
       this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
           this.loading = false;
+          //console.log("response.data.data: ", response.data.data);
           //this.processList = response.data.data; //orig
           this.processList = this.processList.concat(response.data.data);
+          console.log("this.processList: ", this.processList);
           this.totalRow = response.data.meta.total;
-          //this.totalPages = response.data.meta.total_pages;
+          this.totalPages = response.data.meta.total_pages;
           this.showMoreVisible = this.processList.length < this.totalRow;
-          callback && callback();
           this.renderKey = this.renderKey + 1;
+          callback && callback();
         });
     },
     /**
@@ -122,6 +154,7 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
+      console.log("llama buildURL: ", this.categoryId);
       if (this.categoryId === 'all_processes') {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
@@ -171,8 +204,6 @@ export default {
      * Load Cards in the new pagination
      */
     onPageChanged(page) {
-      /*this.currentPage = page;
-      this.loadCard();*/ //orig
       if (page > this.currentPage && this.processList.length < this.totalRow) {
         this.currentPage = page;
         this.loadCard();
@@ -182,6 +213,7 @@ export default {
      * Build the PMQL
      */
     onFilter(value, showEmpty = false) {
+      this.processList = [];
       this.currentPage = 1;
       this.pmql = `(fulltext LIKE "%${value}%")`;
       this.filter = value;
@@ -189,10 +221,8 @@ export default {
       this.loadCard();
     },
     handleScroll() {
-      console.log("llega a handle scroll");
       const container = this.$refs.processListContainer;
       if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-        console.log("llama a onPageChanged");
         this.onPageChanged(this.currentPage + 1);
       }
     },
