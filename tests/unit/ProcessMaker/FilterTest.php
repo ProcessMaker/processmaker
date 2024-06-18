@@ -37,6 +37,22 @@ class FilterTest extends TestCase
         );
     }
 
+    public function testRawValue()
+    {
+        $sql = $this->filter([
+            [
+                'subject' => ['type' => 'Field', 'value' => 'due_at'],
+                'operator' => '>',
+                'value' => 'raw(NOW())',
+            ],
+        ], ProcessRequestToken::class);
+
+        $this->assertEquals(
+            'select * from `process_request_tokens` where (`due_at` > NOW())',
+            $sql
+        );
+    }
+
     public function testCompareDataInteger()
     {
         $filter = [
