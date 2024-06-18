@@ -2264,5 +2264,11 @@
   "Must be a valid Date": "Muss ein gültiges Datum sein",
   "Should NOT have more than {max} items": "Sollte NICHT mehr als {max} Artikel haben",
   "Must have at least {min}": "Muss mindestens {min} haben",
-  "Invalid type": "Ungültiger Typ"
+  "Invalid type": "Ungültiger Typ",
+  "Save and publish": "Speichern und veröffentlichen",
+  "You are about to publish a draft version. Are you sure you want to proceed?": "Sie sind dabei, eine Entwurfsversion zu veröffentlichen. Sind Sie sicher, dass Sie fortfahren möchten?",
+  "Your In-Progress tasks in the saved search {{title}}": "Ihre in Bearbeitung befindlichen Aufgaben in der gespeicherten Suche {{title}}",
+  "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Wählen Sie eine gespeicherte Suche aus, um die Aufgaben zu sehen, die Sie mit einer Inbox-Regel verwenden können.",
+  "No tasks to show.": "Keine Aufgaben zum Anzeigen.",
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Aber das ist in Ordnung. Sie können immer noch diese Inbox-Regel erstellen, die auf zukünftige Aufgaben angewendet wird, die den oben genannten Filtern entsprechen."
 }
