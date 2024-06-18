@@ -1,12 +1,14 @@
 <template>
-  <div>
+  <div class="h-100">
     <SearchCards
       v-if="processList.length > 0 || showEmpty"
       :filter-pmql="onFilter"
     />
     <div
+      id="infinite-list-card"
       v-show="!loading && processList.length > 0"
-      class="processList"
+      class="processList h-100"
+      ref="processListContainer"
     >
       <Card
         v-for="(process, index) in processList"
@@ -14,11 +16,6 @@
         :process="process"
         @openProcessInfo="openProcessInfo"
         :hideBookmark="categoryId === 'all_templates'"
-      />
-      <pagination
-        :total-row="totalRow"
-        :per-page="perPage"
-        @onPageChanged="onPageChanged"
       />
     </div>
     <div
@@ -69,6 +66,7 @@ export default {
       showEmpty: false,
       loading: false,
       renderKey: 0,
+      showMoreVisible: false,
     };
   },
   watch: {
@@ -79,19 +77,38 @@ export default {
     },
   },
   mounted() {
-    this.loadCard();
+    //this.loadCard(); //orig
+    this.loadCard(()=>{
+      Vue.nextTick(()=>{
+          const listCard = document.querySelector("#infinite-list-card");
+          
+          listCard.addEventListener("scroll", () => {
+            // let calc1 = this.$refs.processListContainer.getBoundingClientRect().height + this.$refs.processListContainer.scrollTop;
+            // let calc2 = this.$refs.processListContainer.scrollHeight;
+            // if (calc1 >=  calc2) {
+              this.handleScroll();
+            //}
+          });
+      });
+    });
+  },
+  destroyed() {
+    this.$refs.processListContainer.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
-    loadCard() {
+    loadCard(callback) {
       this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
           this.loading = false;
-          this.processList = response.data.data;
+          //this.processList = response.data.data; //orig
+          this.processList = this.processList.concat(response.data.data);
           this.totalRow = response.data.meta.total;
-          this.totalPages = response.data.meta.total_pages;
+          //this.totalPages = response.data.meta.total_pages;
+          this.showMoreVisible = this.processList.length < this.totalRow;
+          callback && callback();
           this.renderKey = this.renderKey + 1;
         });
     },
@@ -154,8 +171,12 @@ export default {
      * Load Cards in the new pagination
      */
     onPageChanged(page) {
-      this.currentPage = page;
-      this.loadCard();
+      /*this.currentPage = page;
+      this.loadCard();*/ //orig
+      if (page > this.currentPage && this.processList.length < this.totalRow) {
+        this.currentPage = page;
+        this.loadCard();
+      }
     },
     /**
      * Build the PMQL
@@ -167,6 +188,14 @@ export default {
       this.showEmpty = showEmpty;
       this.loadCard();
     },
+    handleScroll() {
+      console.log("llega a handle scroll");
+      const container = this.$refs.processListContainer;
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        console.log("llama a onPageChanged");
+        this.onPageChanged(this.currentPage + 1);
+      }
+    },
   },
 };
 </script>
@@ -177,7 +206,9 @@ export default {
 .processList {
   display: flex;
   flex-wrap: wrap;
-  
+  position: relative;
+  height: 100%;
+  overflow:auto;
   @media (max-width: $lp-breakpoint) {
     display: block;
   }
@@ -190,5 +221,19 @@ export default {
   border-right-color: transparent;
   border-radius: 50%;
   animation: 0.75s linear infinite spinner-border;
+}
+
+.show-more {
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #E5EDF3;
+  height: 40px;
+  line-height: 40px;
+  clear: both;
+  width: 75%;
+  position: absolute;
+  bottom: 0;
+  margin-top: 20px;
 }
 </style>

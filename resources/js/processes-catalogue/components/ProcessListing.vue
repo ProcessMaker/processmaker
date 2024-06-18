@@ -1,5 +1,5 @@
 <template>
-  <div class="process-listing">
+  <div class="process-listing h-100">
 
     <CardProcess
       v-if="!isTemplateCategory"
