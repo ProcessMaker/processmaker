@@ -257,7 +257,7 @@
                             <li class="list-group-item">
                               <p class="section-title">{{__('Case')}}</p>
                               {{ $task->process->name }}
-                              <p>
+                              <p class="launchpad-link">
                                 <a href="{{route('process.browser.index', [$task->process->id])}}">
                                   {{ __('Open Process Launchpad') }}
                                 </a>
@@ -888,6 +888,9 @@
   }
   .card-header:first-child.text-status {
     border-radius: 6px;
+  }
+  .launchpad-link {
+    margin-top: 5px;
   }
 </style>
 @endsection
