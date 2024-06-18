@@ -396,7 +396,22 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      return `Alternative ${value}`;
+      let color = "primary";
+      let badge = "alternative-a";
+
+      if (value === "B") {
+        color = "secondary";
+        badge = "alternative-b";
+      } else if (value === null) {
+        return "-";
+      }
+
+      return `
+        <span 
+          class="badge badge-${color} status-${badge}"
+        >
+          Alternative ${value}
+        </span>`;
     },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
