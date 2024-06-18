@@ -2,11 +2,11 @@
 
 namespace ProcessMaker;
 
-use RuntimeException;
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use ProcessMaker\Models\Recommendation;
+use RuntimeException;
 
 class SyncRecommendations
 {
@@ -28,24 +28,6 @@ class SyncRecommendations
         // file, then try to save each as model data for a
         // new or updated Recommendation
         $this->fetchRecommendations()->each(fn ($url) => $this->save($url));
-    }
-
-    /**
-     * Build the direct URL to the file/directory in the repo
-     *
-     * @param  string  $filename
-     *
-     * @return string
-     */
-    public function url(string $filename): string
-    {
-        $base = config('services.recommendations_github.base_url');
-
-        $repo = config('services.recommendations_github.repo');
-
-        $branch = config('services.recommendations_github.branch');
-
-        return "$base/$repo/$branch/$filename";
     }
 
     /**
@@ -99,7 +81,10 @@ class SyncRecommendations
     {
         // Retrieve the index of directories containing
         // the recommendation JSON files
-        $response = Http::get($this->url(static::$indexFileName));
+        $branch = config('services.recommendations_github.branch');
+        $url = 'https://api.github.com/repos/processmaker/pm4-recommendations/contents?ref=' . $branch;
+        $response = Http::withHeaders($this->headers())
+            ->get($url);
 
         if ($response->failed()) {
             throw new RuntimeException("Failed to retrieve recommendations from GitHub: {$response->reason()}");
@@ -108,26 +93,43 @@ class SyncRecommendations
         // JSON response is decoded into an array, where each key
         // represents a top-level directory containing JSON files,
         // each representing a recommendation
-        $directories = $response->json();
+        $files = $response->json();
         $urls = [];
 
         // Build the list of retrievable recommendation
         // JSON files by their URL
-        foreach ($directories as $dir => $files) {
+        foreach ($files as $file) {
             // We only want recommendation files that are either
             // default (for everyone) or located in a directory
             // named after this instance's domain.
-            if ($dir !== 'default' && ! static::matchesInstance($dir)) {
+            $name = $file['name'];
+            $type = $file['type'];
+            if ($type !== 'dir' || $name !== 'default' && !static::matchesInstance($name)) {
                 continue;
             }
 
+            $url = $file['url'];
+
+            $directoryContents = Http::withHeaders($this->headers())
+                ->get($url)
+                ->json();
+
             // Build the complete http url to each JSON
             // file in the directory
-            foreach ($files as $filename) {
-                $urls[] = $this->url($dir.'/'.$filename);
+            foreach ($directoryContents as $file) {
+                $urls[] = $file['download_url'];
             }
         }
 
         return collect($urls);
+    }
+
+    private function headers(): array
+    {
+        return [
+            'Accept' => 'application/vnd.github.v3+json',
+            'Authorization' => 'Bearer ' . config('services.recommendations_github.token'),
+            'X-GitHub-Api-Version' => '2022-11-28',
+        ];
     }
 }
