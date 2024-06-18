@@ -1,15 +1,9 @@
-@extends('layouts.layout')
-
+@extends('layouts.mobile')
 @section('title')
-    {{__('Processes Catalogue')}}
+{{__($title)}}
 @endsection
-
-@section('sidebar')
-    @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_processes_catalogue')])
-@endsection
-
-@section('content')
-  <div class="px-3 page-content mb-0" id="processes-catalogue">
+@section('content_mobile')
+  <div class="page-content mb-0" id="processes-catalogue">
     <processes-catalogue
       :process="{{$process ?? 0}}"
       :current-user-id="{{ \Auth::user()->id }}"
@@ -35,4 +29,8 @@
   <script>
     window.Processmaker.user = @json($currentUser);
   </script>
+@endsection
+
+@section('css')
+
 @endsection

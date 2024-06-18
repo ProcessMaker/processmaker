@@ -7,36 +7,84 @@
             :empty-desc="$t('')"
             empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader" class="card card-body screen-table-card" data-cy="screens-table">
-      <vuetable
-        :dataManager="dataManager"
-        :noDataTemplate="$t('No Data Available')"
-        :sortOrder="sortOrder"
-        :css="css"
-        :api-mode="false"
-        :fields="fields"
+    <div v-show="!shouldShowLoader" class="screen-table-card" data-cy="screens-table">
+      <filter-table
+        :headers="fields"
         :data="data"
-        data-path="data"
-        pagination-path="meta"
+        table-name="screens"
+        style="height: calc(100vh - 355px);"
       >
-        <template slot="title" slot-scope="props">
-          <b-link
-            :href="onScreenNavigate('edit-screen', props.rowData, props.rowIndex)"
-            v-if="permission.includes('edit-screens')"
-          ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
-          <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
+        <!-- Slot Table Header filter Button -->
+        <template v-for="(column, index) in fields" v-slot:[`filter-${column.field}`]>
+          <div
+            v-if="column.sortable"
+            :key="index"
+            @click="onClickEllipsis(column)"
+          >
+            <i
+              :class="['fas', {
+                'fa-sort': column.direction === 'none',
+                'fa-sort-up': column.direction === 'asc',
+                'fa-sort-down': column.direction === 'desc',
+              }]"
+            ></i>
+          </div>
         </template>
-
-        <template slot="actions" slot-scope="props">
-          <ellipsis-menu
-            :actions="screenActions"
-            :permission="permission"
-            :data="props.rowData"
-            :divider="true"
-            @navigate="onScreenNavigate"
-          />
+        <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
+          <td
+            v-for="(header, colIndex) in fields"
+            :key="colIndex"
+            :data-cy="`screens-table-td-${rowIndex}-${colIndex}`"
+          >
+            <div
+              :data-cy="`screens-table-html-${rowIndex}-${colIndex}`"
+              v-if="containsHTML(row[header.field])"
+              v-html="sanitize(row[header.field])"
+            >
+            </div>
+            <template v-else>
+              <template
+                v-if="isComponent(row[header.field])"
+                :data-cy="`screens-table-component-${rowIndex}-${colIndex}`"
+              >
+                <component
+                  :is="row[header.field].component"
+                  v-bind="row[header.field].props"
+                >
+                </component>
+              </template>
+              <template
+                v-else
+                :data-cy="`screens-table-field-${rowIndex}-${colIndex}`"
+              >
+                <template v-if="header.field === 'title'">
+                  <b-link
+                    :href="onScreenNavigate('edit-screen', row, rowIndex)"
+                    v-if="permission.includes('edit-screens')"
+                  ><span v-uni-id="row.id.toString()">{{row.title}}</span></b-link>
+                  <span v-uni-id="row.id.toString()" v-else="permission.includes('edit-screens')">{{ row.title }}</span>
+                </template>
+                <template v-if="header.field === 'actions'">
+                  <ellipsis-menu
+                    :actions="screenActions"
+                    :permission="permission"
+                    :data="row"
+                    :divider="true"
+                    @navigate="onScreenNavigate"
+                  />
+                </template>
+                <template v-if="header.field !== 'title' && header.field !== 'actions'">
+                  <div
+                    :style="{ maxWidth: header.width + 'px' }"
+                  >
+                    {{ getNestedPropertyValue(row, header) }}
+                  </div>
+                </template>
+              </template>
+            </template>
+          </td>
         </template>
-      </vuetable>
+      </filter-table>
 
       <add-to-project-modal id="add-to-project-modal" ref="add-to-project-modal"  assetType="screen" :assetId="screenId" :assetName="assetName" :assignedProjects="assignedProjects"/>
     </div>
@@ -108,6 +156,7 @@ import screenNavigationMixin from "../../../components/shared/screenNavigation";
 import CreateTemplateModal from "../../../components/templates/CreateTemplateModal.vue";
 import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
 import PaginationTable from "../../../components/shared/PaginationTable.vue";
+import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
 
 import { createUniqIdsMixin } from "vue-uniq-ids";
 import AddToProjectModal from "../../../components/shared/AddToProjectModal.vue";
@@ -137,43 +186,76 @@ export default {
         {
           title: () => this.$t("Name"),
           name: "__slot:title",
+          label: this.$t("Name"),
           field: "title",
-          sortField: "title"
+          sortable: true,
+          direction: "none",
+          width: 150,
+          sortField: "title",
         },
         {
           title: () => this.$t("Description"),
           name: "description",
-          sortField: "description"
+          label: this.$t("Description"),
+          field: "description",
+          sortable: true,
+          direction: "none",
+          width: 150,
+          sortField: "description",
         },
         {
           title: () => this.$t("Category"),
           name: "categories",
+          label: this.$t("Category"),
+          field: "category.name",
+          sortable: true,
+          direction: "none",
+          width: 150,
           sortField: "category.name",
           callback(categories) {
             return categories.map(item => item.name).join(', ');
-          }
+          },
         },
         {
           title: () => this.$t("Type"),
           name: "type",
+          label: this.$t("Type"),
+          field: "type",
+          sortable: true,
+          direction: "none",
+          width: 100,
           sortField: "type",
-          callback: this.formatType
+          callback: this.formatType,
         },
         {
           title: () => this.$t("Modified"),
           name: "updated_at",
+          label: this.$t("Modified"),
+          field: "updated_at",
+          sortable: true,
+          direction: "none",
+          format: "datetime",
+          width: 140,
           sortField: "updated_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
         {
           title: () => this.$t("Created"),
           name: "created_at",
+          label: this.$t("Created"),
+          field: "created_at",
+          sortable: true,
+          direction: "none",
+          format: "datetime",
+          width: 140,
           sortField: "created_at",
-          callback: "formatDate"
+          callback: "formatDate",
         },
         {
           name: "__slot:actions",
-          title: ""
+          title: "",
+          label: "",
+          field: "actions",
         }
       ]
     };
@@ -203,7 +285,7 @@ export default {
           }
         });
     },
-    showAddToProjectModal(title, id, projects) {        
+    showAddToProjectModal(title, id, projects) {
       this.screenId = id;
       this.assetName = title;
       this.assignedProjects = projects;
@@ -245,6 +327,10 @@ export default {
       this.page = page;
       this.fetch();
     },
+    onClickEllipsis(column) {
+      ellipsisSortClick(column, this);
+    },
+
   },
 
   computed: {}

@@ -527,10 +527,11 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
                 $result[] = [
                     'key' => $key,
                     'value' => $value,
-                    'type' => $type
+                    'type' => $type,
                 ];
             }
         }
+
         return $result;
     }
 

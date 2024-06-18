@@ -67,7 +67,7 @@
     methods: {
       tableRowMouseover(row, rowIndex) {
         let container = this.$refs.filterTable.$el;
-        let scrolledWidth = container.scrollWidth - container.clientWidth;
+        let scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
         this.$emit('onRowMouseover', row, scrolledWidth, rowIndex);
       },
       getSlotName(field) {

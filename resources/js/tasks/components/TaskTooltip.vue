@@ -1,5 +1,5 @@
 <template>
-    <div :style="{ top: (position.y) + 'px', right:  '50px' }" class="task-tooltip">
+    <div :style="{ top: (position.y) + 'px', right: '45px' }" class="task-tooltip">
         <slot name="task-tooltip-body">
         </slot>
     </div>
@@ -18,7 +18,7 @@ export default {
 <style scoped>
 .task-tooltip {
   position: absolute;
-  padding: 8px;
+  padding: 3px 5px;
   border-radius: 4px;
   background-color: #FFFFFF;
   color: #566877;
