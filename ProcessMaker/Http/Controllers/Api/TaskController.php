@@ -122,36 +122,24 @@ class TaskController extends Controller
 
         $this->applyForCurrentUser($query, $user);
 
-        try {
-            // Count up the total number of results, but
-            // watch for PMQL query exceptions and handle
-            // them if they occur
-            $totalResultCount = $query->count();
-        } catch (QueryException $e) {
-            return $this->handleQueryException($e);
-        }
-
-        // If only the total is being requested (by a Saved Search), send it now
-        if ($getTotal === true) {
-            return $totalResultCount;
-        }
-
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
         // Paginate data
         $query->paginate($request->input('per_page', 10));
 
+        // If only the total is being requested (by a Saved Search), send it now
+        if ($getTotal === true) {
+            return $query->count();
+        }
+
         try {
-            $response = $query->get();
+            $response = $query->paginate($request->input('per_page', 10));
         } catch (QueryException $e) {
             return $this->handleQueryException($e);
         }
 
         $response = $this->applyUserFilter($response, $request, $user);
-
-        // Map each item through its resource
-        $response = $this->applyResource($response);
 
         $inOverdueQuery = ProcessRequestToken::query()
             ->whereIn('id', $response->pluck('id'))
@@ -159,7 +147,7 @@ class TaskController extends Controller
 
         $response->inOverdue = $inOverdueQuery->count();
 
-        return new TaskCollection($response, $totalResultCount);
+        return new TaskCollection($response);
     }
 
     /**
