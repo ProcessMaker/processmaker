@@ -361,6 +361,15 @@
                           <i class="far fa-calendar-alt"></i>
                           <small>@{{ moment(statusDate).format() }}</small>
                         </li>
+                        <li class="list-group-item">
+                          <p class="section-title">{{ __('Process') }}</p>
+                          {{ $request->name }}
+                          <p class="launchpad-link">
+                            <a href="{{route('process.browser.index', [$request->process_id])}}">
+                              {{ __('Open Process Launchpad') }}
+                            </a>
+                          </p>
+                        </li>
                         @if ($request->user_id)
                           <li class="list-group-item">
                             <p class="section-title">{{ __('Requested By') }}:</p>
@@ -915,6 +924,9 @@
   }
   .card-header:first-child.text-status {
     border-radius: 6px;
+  }
+  .launchpad-link {
+    margin-top: 5px;
   }
 </style>
 @endsection
