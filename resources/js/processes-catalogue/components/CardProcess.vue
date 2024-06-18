@@ -10,20 +10,6 @@
       class="processList h-100"
       ref="processListContainer"
     >
-      <!-- <Card
-        v-for="(process, index) in processList"
-        :key="`${index}_${renderKey}`"
-        :process="process"
-        :show-cards="true"
-        @openProcessInfo="openProcessInfo"
-        :hideBookmark="categoryId === 'all_templates'"
-      />
-      <span>count: {{ processList.length }}</span>
-      <div v-if="processList.length > 0 && processList.length >= this.perPage">
-        <Card
-        :show-cards="false" 
-      />
-      </div> -->
       <template v-for="(process, index) in processList">
         <Card
           :key="`${index}_${renderKey}`"
@@ -40,6 +26,7 @@
             :show-cards="false"
             :current-page="counterPage + Math.floor(index / perPage)"
             :total-pages="totalPages"
+            :card-message="cardMessage"
           />
         </div>
       </template>
@@ -94,6 +81,7 @@ export default {
       loading: false,
       renderKey: 0,
       showMoreVisible: false,
+      cardMessage: null,
     };
   },
   watch: {
@@ -223,6 +211,7 @@ export default {
     handleScroll() {
       const container = this.$refs.processListContainer;
       if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+        this.cardMessage = "show";
         this.onPageChanged(this.currentPage + 1);
       }
     },

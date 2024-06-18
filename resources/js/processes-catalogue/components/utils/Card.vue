@@ -42,7 +42,8 @@
   </b-card>
   <b-card v-else
   class="text-center d-flex align-items-center justify-content-center card-process2">
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-if="cardMessage === 'show'">Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-else>Show More</span>
   </b-card>
 </template>
 
@@ -54,6 +55,7 @@ export default {
     Bookmark
   },
   props: {
+    cardMessage: null,
     currentPage: {
       type: Number,
       default: 1,
