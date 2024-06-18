@@ -125,9 +125,6 @@ class TaskController extends Controller
         // Apply filter overdue
         $query->overdue($request->input('overdue'));
 
-        // Paginate data
-        $query->paginate($request->input('per_page', 10));
-
         // If only the total is being requested (by a Saved Search), send it now
         if ($getTotal === true) {
             return $query->count();
