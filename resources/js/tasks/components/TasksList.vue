@@ -73,6 +73,21 @@
             :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
+            <!-- Slot for floating buttons -->
+            <template v-if="colIndex === visibleHeaders.length-1">
+              <TaskListRowButtons 
+                    :ref="'taskListRowButtons-'+rowIndex"
+                    :buttons="taskTooltipButtons"
+                    :row="row"
+                    :rowIndex="rowIndex"
+                    :colIndex="colIndex"
+                    :showButtons="isTooltipVisible">
+                <template v-slot:body>
+                  <slot name="tooltip" v-bind:previewTasks="previewTasks">
+                  </slot>
+                </template>
+              </TaskListRowButtons>
+            </template>
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
@@ -104,11 +119,11 @@
                 <template v-if="header.field === 'due_at'">
                   <span
                     :class="[
-                    'badge',
-                    'badge-' + row['color_badge'],
-                    'due-' + row['color_badge'],
+                      'badge',
+                      'badge-' + row['color_badge'],
+                      'due-' + row['color_badge'],
                     ]"
-                    >
+                  >
                     {{ formatRemainingTime(row.due_at) }}
                   </span>
                   <span>{{ getNestedPropertyValue(row, header) }}</span>
@@ -131,35 +146,21 @@
                   </span>
                 </template>
                 <template v-else>
-                  <TaskListRowButtons 
-                    :ref="'taskListRowButtons-'+rowIndex"
-                    :buttons="taskTooltipButtons"
-                    :row="row"
-                    :rowIndex="rowIndex"
-                    :colIndex="colIndex"
-                    :showButtons="isTooltipVisible">
-                    <template v-slot:content>
-                      <div
-                        :id="`element-${rowIndex}-${colIndex}`"
-                        :class="{ 'pm-table-truncate': header.truncate }"
-                        :style="{ maxWidth: header.width + 'px' }"
-                        >
-                        {{ getNestedPropertyValue(row, header) }}
-                        <b-tooltip
-                          v-if="header.truncate"
-                          :target="`element-${rowIndex}-${colIndex}`"
-                          custom-class="pm-table-tooltip"
-                          @show="checkIfTooltipIsNeeded"
-                          >
-                          {{ getNestedPropertyValue(row, header) }}
-                        </b-tooltip>
-                      </div>
-                    </template>
-                    <template v-slot:body>
-                      <slot name="tooltip" v-bind:previewTasks="previewTasks">
-                      </slot>
-                    </template>
-                  </TaskListRowButtons>
+                  <div
+                    :id="`element-${rowIndex}-${colIndex}`"
+                    :class="{ 'pm-table-truncate': header.truncate }"
+                    :style="{ maxWidth: header.width + 'px' }"
+                    >
+                    {{ getNestedPropertyValue(row, header) }}
+                    <b-tooltip
+                      v-if="header.truncate"
+                      :target="`element-${rowIndex}-${colIndex}`"
+                      custom-class="pm-table-tooltip"
+                      @show="checkIfTooltipIsNeeded"
+                      >
+                      {{ getNestedPropertyValue(row, header) }}
+                    </b-tooltip>
+                  </div>
                 </template>
               </template>
             </template>
@@ -713,6 +714,7 @@ export default {
       if(this.fromButton === "inboxRules"){
         bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
+      //rowPosition deprecated is not used
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
@@ -821,18 +823,9 @@ export default {
     taskListRowButtonsShow(row, index) {
       let container = this.$refs.filterTable.$el;
       let scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
-      
-      let firstRow = container.querySelector('tbody tr');
-      let lastCell = firstRow.lastElementChild;
-      let cellIndex = lastCell.cellIndex;
-      let lastColumnWidth = lastCell.offsetWidth;
-
-      if(this.$refs["taskListRowButtons-" + index][0].colIndex<cellIndex){
-        scrolledWidth = scrolledWidth - lastColumnWidth;
-      }
-
+      let widthTd = this.$refs["taskListRowButtons-" + index][0].$el.parentNode.offsetWidth - 24;
       this.$refs["taskListRowButtons-" + index][0].show();
-      this.$refs["taskListRowButtons-" + index][0].setMargin(scrolledWidth);
+      this.$refs["taskListRowButtons-" + index][0].setMargin(scrolledWidth - widthTd);
     },
     /**
      * TaskListRowButtons replaces the TaskTooltip component. 

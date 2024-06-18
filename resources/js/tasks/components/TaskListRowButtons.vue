@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <slot name="content"></slot>
+  <div class="pm-task-row-buttons">
     <PMFloatingButtons ref="pmFloatingButtons">
       <template v-slot:content>
         <slot name="body">
@@ -38,11 +37,9 @@
 
 <script>
   import PMFloatingButtons from "../../components/PMFloatingButtons.vue";
-  import PMPopoverConfirmation from "../../components/PMPopoverConfirmation.vue";
   export default {
     components: {
-      PMFloatingButtons,
-      PMPopoverConfirmation
+      PMFloatingButtons
     },
     props: {
       buttons: null,
@@ -50,11 +47,6 @@
       rowIndex: null,
       colIndex: null,
       showButtons: null
-    },
-    data() {
-      return {
-        idButtonRemove: "inbox-rule-row-button-" + Math.random().toString(36).substring(2, 9)
-      };
     },
     methods: {
       show() {
@@ -91,6 +83,10 @@
 </script>
 
 <style scoped>
+  .pm-task-row-buttons {
+    position: relative;
+    display: math;
+  }
   .task-vertical-separator {
     display: inline;
     border-left: 1px solid #ccc;
