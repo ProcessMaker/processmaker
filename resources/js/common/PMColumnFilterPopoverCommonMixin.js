@@ -266,7 +266,13 @@ const PMColumnFilterCommonMixin = {
         this.tableHeaders[i].sortDesc = false;
       }
       for (let i in this.tableHeaders) {
-        if (this.orderBy.endsWith(this.tableHeaders[i].field)) {
+        if (this.tableHeaders[i].order_column !== undefined) {
+          if (this.orderBy === this.tableHeaders[i].order_column) {
+            let sort = this.sortOrder[0].direction;
+            this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
+            this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
+          }
+        } else if (this.orderBy.endsWith(this.tableHeaders[i].field)) {
           let sort = this.sortOrder[0].direction;
           this.tableHeaders[i].sortAsc = (sort.toLowerCase() === "asc");
           this.tableHeaders[i].sortDesc = (sort.toLowerCase() === "desc");
