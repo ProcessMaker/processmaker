@@ -150,14 +150,14 @@
                     :id="`element-${rowIndex}-${colIndex}`"
                     :class="{ 'pm-table-truncate': header.truncate }"
                     :style="{ maxWidth: header.width + 'px' }"
-                    >
+                  >
                     {{ getNestedPropertyValue(row, header) }}
                     <b-tooltip
                       v-if="header.truncate"
                       :target="`element-${rowIndex}-${colIndex}`"
                       custom-class="pm-table-tooltip"
                       @show="checkIfTooltipIsNeeded"
-                      >
+                    >
                       {{ getNestedPropertyValue(row, header) }}
                     </b-tooltip>
                   </div>
