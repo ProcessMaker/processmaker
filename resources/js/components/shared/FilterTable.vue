@@ -464,6 +464,18 @@ export default {
   border-radius: 5px;
   padding: 7px;
 }
+.status-alternative-a {
+  background: rgba(224, 229, 232, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
+}
+.status-alternative-b {
+  background: rgba(249, 232, 195, 1);
+  color: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 7px;
+}
 @-moz-document url-prefix() {
   .pm-table-truncate {
     overflow: hidden;
