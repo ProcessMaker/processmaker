@@ -7,7 +7,7 @@
     <div
       id="infinite-list-card"
       v-show="!loading && processList.length > 0"
-      class="processList h-100"
+      class="processList"
       ref="processListContainer"
     >
       <template v-for="(process, index) in processList">
@@ -17,17 +17,31 @@
           :show-cards="true"
           :current-page="currentPage"
           :total-pages="totalPages"
+          :card-message="cardMessage"
+          :loading="false"
           @openProcessInfo="openProcessInfo"
           :hideBookmark="categoryId === 'all_templates'"
         />
-        <!-- Separator after last element -->
-          <div v-if="(index % perPage === 11) && processList.length >= perPage">
-            <Card
-            :show-cards="false"
-            :current-page="counterPage + Math.floor(index / perPage)"
-            :total-pages="totalPages"
-            :card-message="cardMessage"
-          />
+
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage">
+            <div v-if="((index + 1) === processList.length)">
+              <Card
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="'show-more'"
+              :loading="shouldShowLoader"
+            />
+            </div>
+            <div v-else>
+              <Card
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="cardMessage"
+              :loading="shouldShowLoader"
+            />
+            </div>           
         </div>
       </template>
     </div>
@@ -56,6 +70,7 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import Card from "./utils/Card.vue";
 import { EventBus } from '../index.js';
 
+
 export default {
   components: {
     pagination, CatalogueEmpty, SearchCards, Card,
@@ -81,50 +96,48 @@ export default {
       loading: false,
       renderKey: 0,
       showMoreVisible: false,
-      cardMessage: null,
+      cardMessage: "show-more",
+      switchMenu: null,
+      flagMenu: true,
+      
     };
   },
   watch: {
-    categoryId() {
-      this.processList = [];
-      this.currentPage = 1;
+    async categoryId() {
+      const listCard = document.querySelector("#infinite-list-card");
+      listCard.scrollTop = 0;
       this.pmql = "";
       this.filter = "";
+      this.currentPage = 1;
+      this.processList = [];
+
+      await Vue.nextTick();
       this.loadCard();
     },
   },
   mounted() {
-    //this.loadCard(); //orig
+    this.switchMenu = this.categoryId;
     this.loadCard(()=>{
       Vue.nextTick(()=>{
           const listCard = document.querySelector("#infinite-list-card");
           
-          listCard.addEventListener("scroll", () => {
-            // let calc1 = this.$refs.processListContainer.getBoundingClientRect().height + this.$refs.processListContainer.scrollTop;
-            // let calc2 = this.$refs.processListContainer.scrollHeight;
-            // if (calc1 >=  calc2) {
-              this.handleScroll();
-            //}
-          });
+          listCard.addEventListener("scroll", () => this.handleScroll());
       });
     });
   },
   destroyed() {
-    this.$refs.processListContainer.removeEventListener("scroll", this.handleScroll);
+    const listCard = document.querySelector("#infinite-list-card");
+    listCard.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
     loadCard(callback) {
-      console.log("llama API: ", this.currentPage);
       this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
         .get(url)
         .then((response) => {
           this.loading = false;
-          //console.log("response.data.data: ", response.data.data);
-          //this.processList = response.data.data; //orig
           this.processList = this.processList.concat(response.data.data);
-          console.log("this.processList: ", this.processList);
           this.totalRow = response.data.meta.total;
           this.totalPages = response.data.meta.total_pages;
           this.showMoreVisible = this.processList.length < this.totalRow;
@@ -142,7 +155,6 @@ export default {
      * Build URL for Process Cards
      */
     buildURL() {
-      console.log("llama buildURL: ", this.categoryId);
       if (this.categoryId === 'all_processes') {
         return "process_bookmarks/processes?"
           + `&page=${this.currentPage}`
@@ -210,8 +222,8 @@ export default {
     },
     handleScroll() {
       const container = this.$refs.processListContainer;
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-        this.cardMessage = "show";
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight)) {
+        this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }
     },
@@ -226,7 +238,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  height: 100%;
+  height: 97%;
   overflow:auto;
   @media (max-width: $lp-breakpoint) {
     display: block;
@@ -242,17 +254,17 @@ export default {
   animation: 0.75s linear infinite spinner-border;
 }
 
-.show-more {
-  text-align: center;
-  padding: 10px;
-  cursor: pointer;
-  background-color: #E5EDF3;
-  height: 40px;
-  line-height: 40px;
-  clear: both;
-  width: 75%;
-  position: absolute;
-  bottom: 0;
-  margin-top: 20px;
-}
+// .show-more {
+//   text-align: center;
+//   padding: 10px;
+//   cursor: pointer;
+//   background-color: #E5EDF3;
+//   height: 40px;
+//   line-height: 40px;
+//   clear: both;
+//   width: 75%;
+//   position: absolute;
+//   bottom: 0;
+//   margin-top: 20px;
+// }
 </style>

@@ -42,12 +42,13 @@
   </b-card>
   <b-card v-else
   class="text-center d-flex align-items-center justify-content-center card-process2">
-    <span v-if="cardMessage === 'show'">Page {{ currentPage }} of {{ totalPages }}</span>
-    <span v-else>Show More</span>
+    <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-else><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
   </b-card>
 </template>
 
 <script>
+
 import Bookmark from "../Bookmark.vue";
 
 export default {
@@ -55,6 +56,7 @@ export default {
     Bookmark
   },
   props: {
+    loading: false,
     cardMessage: null,
     currentPage: {
       type: Number,
@@ -135,6 +137,14 @@ export default {
   margin-right: 1rem;
   border-radius: 8px;
   background-color: #E5EDF3;
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 100px;
+  }
 }
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;

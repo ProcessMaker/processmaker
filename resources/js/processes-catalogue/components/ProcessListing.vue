@@ -2,6 +2,7 @@
   <div class="process-listing h-100">
 
     <CardProcess
+      :key="index"
       v-if="!isTemplateCategory"
       :categoryId="categoryId"
     />
@@ -22,6 +23,16 @@ export default {
   components: {
     WizardTemplates,
     CardProcess,
+  },
+  data(){
+    return {index:0};
+  },
+  watch: {
+    categoryId(nVal,oVal){
+      if(nVal !== oVal){
+        this.index++;
+      }
+    }
   },
   computed: {
     isTemplateCategory() {
