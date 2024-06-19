@@ -142,7 +142,7 @@ export default {
           this.totalPages = response.data.meta.total_pages;
           this.showMoreVisible = this.processList.length < this.totalRow;
           this.renderKey = this.renderKey + 1;
-          callback && callback();
+          callback?.();
         });
     },
     /**
