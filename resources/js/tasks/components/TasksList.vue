@@ -5,6 +5,7 @@
       data-cy="tasks-table"
     >
       <filter-table
+        ref="filterTable"
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
@@ -13,6 +14,7 @@
         :table-name="tableName"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
+        @table-tr-mouseleave="handleTrMouseleave"
         @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
@@ -20,8 +22,6 @@
           v-for="(column, index) in visibleHeaders"
           v-slot:[column.field]
         >
-          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
-          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
           <div
             :key="index"
             style="display: inline-block"
@@ -53,6 +53,9 @@
             :viewConfig="getViewConfigFilter()"
             :container="''"
             :boundary="'viewport'"
+            :columnSortAsc="column.sortAsc"
+            :columnSortDesc="column.sortDesc"
+            :filterApplied="column.filterApplied"
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
@@ -67,8 +70,24 @@
         >
           <td
             v-for="(header, colIndex) in visibleHeaders"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
+            <!-- Slot for floating buttons -->
+            <template v-if="colIndex === visibleHeaders.length-1">
+              <TaskListRowButtons 
+                    :ref="'taskListRowButtons-'+rowIndex"
+                    :buttons="taskTooltipButtons"
+                    :row="row"
+                    :rowIndex="rowIndex"
+                    :colIndex="colIndex"
+                    :showButtons="isTooltipVisible">
+                <template v-slot:body>
+                  <slot name="tooltip" v-bind:previewTasks="previewTasks">
+                  </slot>
+                </template>
+              </TaskListRowButtons>
+            </template>
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
@@ -148,38 +167,6 @@
           </td>
         </template>
       </filter-table>
-      <task-tooltip
-        :position="rowPosition"
-        v-show="isTooltipVisible"
-      >
-        <template v-slot:task-tooltip-body>
-          <div
-            @mouseover="clearHideTimer"
-            @mouseleave="hideTooltip"
-          >
-          <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
-            <span>
-              <b-button
-                v-if="!verifyURL('saved-searches')"
-                class="icon-button"
-                :aria-label="$t('Quick fill Preview')"
-                variant="light"
-                @click="previewTasks(tooltipRowData)"
-              >
-                <i class="fas fa-eye"/>
-              </b-button>
-            </span>
-            <ellipsis-menu
-              :actions="actions"
-              :data="tooltipRowData"
-              :divider="false"
-              @show="handleShowEllipsis"
-              @hide="handleHideEllipsis"
-            />
-          </slot>
-          </div>
-        </template>
-      </task-tooltip>
       <data-loading
         v-show="shouldShowLoader"
         :empty="$t('All clear')"
@@ -230,6 +217,7 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import TaskListRowButtons from "./TaskListRowButtons.vue";
 import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -245,6 +233,7 @@ export default {
     TaskTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
+    TaskListRowButtons
   },
   mixins: [
     datatableMixin,
@@ -300,6 +289,30 @@ export default {
     return {
       tooltipFromButton: "",
       selectedRow: 0,
+      taskTooltipButtons: [
+        {
+          id: "openPreviewButton",
+          ariaLabel: this.$t("Quick fill Preview"),
+          click: this.previewTasks,
+          icon: "fas fa-eye",
+          title: this.$t("Preview"),
+          show: !this.verifyURL('saved-searches') || false,
+        },
+        {
+          id: "openCaseButton",
+          title: this.$t("Open Case"),
+          click: this.redirectToRequest,
+          imgSrc: "/img/smartinbox-images/open-case.svg",
+          show: !this.verifyURL('saved-searches') || true,
+        },
+        {
+          id: "openTaskButton",
+          title: this.$t("Open Task"),
+          click: this.redirectToTask,
+          icon: "fas fa-external-link-alt",
+          show: !this.verifyURL('saved-searches') || true,
+        },
+      ],
       actions: [
         {
           value: "edit",
@@ -429,14 +442,21 @@ export default {
     },
     formatCaseNumber(processRequest, record) {
       return `
-      <a href="${this.openRequest(processRequest, 1)}"
+      <a href="${this.openTask(record, 1)}"
          class="text-nowrap">
          # ${processRequest.case_number || record.case_number}
       </a>`;
     },
     formatCaseTitle(processRequest, record) {
+      let draftBadge = "";
+      if (record.draft && record.status !== "CLOSED") {
+        draftBadge = `<span class="badge badge-warning status-warning">
+          ${this.$t("Draft")}
+        </span>`;
+      }
       return `
-      <a href="${this.openRequest(processRequest, 1)}"
+      ${draftBadge}
+      <a href="${this.openTask(record, 1)}"
          class="text-nowrap">
          ${
            processRequest.case_title_formatted ||
@@ -470,7 +490,8 @@ export default {
           field: "case_number",
           sortable: true,
           default: true,
-          width: 80,
+          width: 84,
+          fixed_width: 84,
           filter_subject: {
             type: "Relationship",
             value: "processRequest.case_number",
@@ -483,7 +504,8 @@ export default {
           name: "__slot:case_number",
           sortable: true,
           default: true,
-          width: 220,
+          width: 419,
+          fixed_width: 419,
           truncate: true,
           filter_subject: {
             type: "Relationship",
@@ -496,27 +518,16 @@ export default {
           field: "is_priority",
           sortable: false,
           default: true,
-          width: 40,
-        },
-        {
-          label: "Process",
-          field: "process",
-          sortable: true,
-          default: true,
-          width: 140,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processRequest.name",
-          },
-          order_column: "process_requests.name",
+          fixed_width: 20,
+          resizable: false,
         },
         {
           label: "Task",
           field: "element_name",
           sortable: true,
           default: true,
-          width: 140,
+          width: 135,
+          fixed_width: 135,
           truncate: true,
           filter_subject: { value: "element_name" },
           order_column: "element_name",
@@ -526,7 +537,8 @@ export default {
           field: "status",
           sortable: true,
           default: true,
-          width: 100,
+          width: 183,
+          fixed_width: 183,
           filter_subject: { type: "Status" },
         },
         {
@@ -535,7 +547,8 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 140,
+          width: 200,
+          fixed_width: 200,
         },
         {
           label: "Draft",
@@ -553,9 +566,16 @@ export default {
           format: "datetime",
           sortable: true,
           default: true,
-          width: 140,
+          width: 200,
+          fixed_width: 200,
         });
       }
+      columns.push({
+        label: "",
+        field: "options",
+        sortable: false,
+        width: 180,
+      });
       return columns;
     },
     onAction(action, rowData, index) {
@@ -650,7 +670,7 @@ export default {
     handleHideEllipsis() {
       this.ellipsisShow = false;
     },
-    handleRowMouseover(row) {
+    handleRowMouseover(row, index) {
       if (this.ellipsisShow) {
         this.isTooltipVisible = !this.disableRuleTooltip;
         this.clearHideTimer();
@@ -694,10 +714,12 @@ export default {
       if(this.fromButton === "inboxRules"){
         bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
+      //rowPosition deprecated is not used
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
       };
+      this.taskListRowButtonsShow(row, index);
     },
     handleRowMouseleave(visible) {
       this.startHideTimer();
@@ -716,9 +738,14 @@ export default {
       }
       this.isTooltipVisible = false;
     },
+    removeBadgeSpan(html) {
+      const badgeSpanRegex = /<span class="badge badge-warning status-warning">([^<]+)<\/span>/g;
+      return html.replace(badgeSpanRegex, "");
+    },
     sanitizeTooltip(html) {
       let cleanHtml = html.replace(/<script(.*?)>[\s\S]*?<\/script>/gi, "");
       cleanHtml = cleanHtml.replace(/<style(.*?)>[\s\S]*?<\/style>/gi, "");
+      cleanHtml = this.removeBadgeSpan(cleanHtml);
       cleanHtml = cleanHtml.replace(
         /<(?!img|input|meta|time|button|select|textarea|datalist|progress|meter)[^>]*>/gi,
         ""
@@ -777,7 +804,38 @@ export default {
     },
     onWatchShowPreview(value) {
       this.$emit('onWatchShowPreview', value);
-    }
+    },
+    redirectToTask(task) {
+      window.location.href = this.openTask(task);
+    },
+    redirectToRequest(task) {
+      window.location.href = this.openRequest(task.process_request);
+    },
+    handleTrMouseleave(row, index) {
+      this.taskListRowButtonsHide(row, index);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsShow(row, index) {
+      let container = this.$refs.filterTable.$el;
+      let scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
+      let widthTd = this.$refs["taskListRowButtons-" + index][0].$el.parentNode.offsetWidth - 24;
+      this.$refs["taskListRowButtons-" + index][0].show();
+      this.$refs["taskListRowButtons-" + index][0].setMargin(scrolledWidth - widthTd);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsHide(row, index) {
+      this.$refs["taskListRowButtons-" + index][0].close();
+    },
   },
 };
 </script>
@@ -788,26 +846,26 @@ export default {
 }
 .due-danger {
   background-color: rgba(237, 72, 88, 0.2);
-  color: rgba(237, 72, 88, 1);
-  font-weight: 600;
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 700;
   border-radius: 5px;
+  padding: 7px;
 }
 .due-primary {
-  background: rgba(205, 221, 238, 1);
-  color: rgba(86, 104, 119, 1);
-  font-weight: 600;
+  background: rgba(224, 229, 233, 1);
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 700;
   border-radius: 5px;
+  padding: 7px;
 }
 .btn-this-data {
   background-color: #1572c2;
   width: 197px;
   height: 40px;
 }
-
-.icon-button {
+.btn-light:hover {
+  background-color: #EDF1F6;
   color: #888;
-  width: 32px;
-  height: 32px;
 }
 </style>
 <style lang="scss" scoped>

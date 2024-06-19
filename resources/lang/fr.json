@@ -534,6 +534,7 @@
   "No Errors": "Aucune erreur",
   "No files available for download": "Aucun fichier à télécharger",
   "No Notifications Found": "Aucune notification trouvée",
+  "No permissions to access this content": "Pas d'autorisation pour accéder à ce contenu",
   "no problems to report": "Aucun problème à signaler",
   "No relevant data": "Aucune donnée pertinente",
   "No Results": "Aucun résultat",
@@ -1611,6 +1612,7 @@
   "Reset Password Notification": "Notification de réinitialisation du mot de passe",
   "You are receiving this email because we received a password reset request for your account.": "Vous recevez cet e-mail car une demande de réinitialisation de votre mot de passe a été émise.",
   "This password reset link will expire in :count minutes.": "Ce lien de réinitialisation du mot de passe expirera dans :count minutes.",
+  "If you believe this is an error, please contact the system administrator or support team for assistance.": "Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur système ou l'équipe de support pour obtenir de l'aide.",
   "If you did not request a password reset, please call us.": "Si vous n'avez pas demandé la réinitialisation de votre mot de passe, veuillez nous appeler.",
   "Hello!": "Bonjour !",
   "Regards": "Bien cordialement",
@@ -2262,5 +2264,11 @@
   "Must be a valid Date": "Doit être une Date valide",
   "Should NOT have more than {max} items": "Ne devrait PAS avoir plus de {max} articles",
   "Must have at least {min}": "Doit avoir au moins {min}",
-  "Invalid type": "Type invalide"
+  "Invalid type": "Type invalide",
+  "Save and publish": "Enregistrer et publier",
+  "You are about to publish a draft version. Are you sure you want to proceed?": "Vous êtes sur le point de publier une version brouillon. Êtes-vous sûr de vouloir continuer?",
+  "Your In-Progress tasks in the saved search {{title}}": "Vos tâches en cours dans la recherche enregistrée {{title}}",
+  "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Choisissez une recherche enregistrée pour voir les tâches que vous pouvez utiliser avec une Règle de Boîte de réception.",
+  "No tasks to show.": "Aucune tâche à afficher.",
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Mais c'est OK. Vous pouvez toujours créer cette règle de boîte de réception pour l'appliquer aux futures tâches qui correspondent aux filtres ci-dessus."
 }

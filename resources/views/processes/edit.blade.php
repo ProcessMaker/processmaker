@@ -573,7 +573,10 @@
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                                {!! Form::button(__('Save and publish'), [
+                                    'class' => 'btn btn-secondary ml-2',
+                                    '@click' => 'onUpdate'
+                                ]) !!}
                             </div>
                         </div>
 
@@ -606,6 +609,7 @@
                 return {
                     formData: @json($process),
                     assignedProjects: @json($assignedProjects),
+                    isDraft: @json($isDraft),
                     selectedProjects: '',
                     dataGroups: [],
                     value: [],
@@ -729,6 +733,21 @@
                     return (item && item.id) ? item.id : null
                 },
                 onUpdate() {
+                    let shouldDelete = false;
+                    if (this.isDraft) {
+                        ProcessMaker.confirmModal(
+                            this.$t("Caution!"),
+                            this.$t("You are about to publish a draft version. Are you sure you want to proceed?"),
+                            "",
+                            () => {
+                                this.handleUpdate();
+                            }
+                        );
+                    } else {
+                        this.handleUpdate();
+                    }
+                },
+                handleUpdate() {
                     this.resetErrors();
                     let that = this;
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
