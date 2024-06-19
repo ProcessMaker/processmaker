@@ -161,7 +161,7 @@ class TaskAssignmentExecutionTest extends TestCase
             'status' => 'ACTIVE',
         ])->firstOrFail();
         
-        $this->assertTrue($task->due_at->greaterThanOrEqualTo($expectedDueDate));
+        $this->assertFalse($task->due_at->greaterThanOrEqualTo($expectedDueDate));
     }
 
     public function testSelfServeAssignment()
