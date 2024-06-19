@@ -760,6 +760,16 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
         // We need to remove inactive users.
         $users = User::whereIn('id', array_unique($assignedUsers))->where('status', 'ACTIVE')->pluck('id')->toArray();
 
+        // user in OUT_OF_OFFICE
+        $outOfOffice = User::whereIn('id', array_unique($assignedUsers))->where('status', 'OUT_OF_OFFICE')->get();
+
+        foreach ($outOfOffice as $user) {
+            $delegation = $user->delegationUser()->pluck('id')->toArray();
+            if ($delegation) {
+                $users[] = $delegation[0];
+            }
+        }
+
         foreach ($assignedGroups as $groupId) {
             // getConsolidatedUsers already removes inactive users
             $this->getConsolidatedUsers($groupId, $users);
