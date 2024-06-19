@@ -13,4 +13,9 @@ class MobileHelper
 
         return false;
     }
+
+    public static function detectMobile()
+    {
+        return isset($_SERVER['HTTP_USER_AGENT']) && self::isMobile($_SERVER['HTTP_USER_AGENT']);
+    }
 }

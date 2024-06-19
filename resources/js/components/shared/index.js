@@ -54,6 +54,7 @@ import DataLoading from '../../components/common/DataLoading';
 import AvatarImage from '../../components/AvatarImage';
 import FilterTableBodyMixin from "./FilterTableBodyMixin";
 import PaginationTable from "./PaginationTable.vue";
+import { ellipsisSortClick } from "./UtilsTable";
 import TaskTooltip from "../../tasks/components/TaskTooltip.vue";
 
 export {
@@ -113,5 +114,6 @@ export {
   AvatarImage,
   FilterTableBodyMixin,
   PaginationTable,
+  ellipsisSortClick,
   TaskTooltip,
 };
