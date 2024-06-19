@@ -8,6 +8,7 @@
         :columnSortAsc="columnSortAsc"
         :columnSortDesc="columnSortDesc"
         :filterApplied="filterApplied"
+        :columnMouseover="columnHover"
       />
     </b-button>
     <b-popover :container="container"
@@ -61,11 +62,20 @@
       "columnSortAsc",
       "columnSortDesc",
       "filterApplied",
+      "columnMouseover",
     ],
     data() {
       return {
         popoverShow: false
       };
+    },
+    computed: {
+      columnHover() {
+        if (this.columnMouseover === this.value) {
+          return true;
+        }
+        return false;
+      },
     },
     methods: {
       onShown() {

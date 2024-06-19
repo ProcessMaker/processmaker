@@ -23,6 +23,8 @@
             class="pm-table-ellipsis-column"
             :class="{ 'pm-table-filter-applied': column.filterApplied || column.sortAsc || column.sortDesc }"
             :style="{ width: column.fixed_width + 'px' }"
+            @mouseover="$emit('table-column-mouseover', column.field)"
+            @mouseleave="$emit('table-column-mouseleave')"
           >
             <div
               class="pm-table-column-header"

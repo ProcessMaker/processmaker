@@ -14,6 +14,8 @@
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
         @table-row-mouseleave="handleRowMouseleave"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template
@@ -54,6 +56,7 @@
             :columnSortAsc="column.sortAsc"
             :columnSortDesc="column.sortDesc"
             :filterApplied="column.filterApplied"
+            :columnMouseover="columnMouseover"
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
@@ -378,6 +381,7 @@ export default {
       isTooltipVisible: false,
       hideTimer: null,
       ellipsisShow: false,
+      columnMouseover: null,
     };
   },
   computed: {
@@ -836,6 +840,37 @@ export default {
     },
     redirectToRequest(task) {
       window.location.href = this.openRequest(task.process_request);
+    },
+    handleTrMouseleave(row, index) {
+      this.taskListRowButtonsHide(row, index);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsShow(row, index) {
+      let container = this.$refs.filterTable.$el;
+      let scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
+      let widthTd = this.$refs["taskListRowButtons-" + index][0].$el.parentNode.offsetWidth - 24;
+      this.$refs["taskListRowButtons-" + index][0].show();
+      this.$refs["taskListRowButtons-" + index][0].setMargin(scrolledWidth - widthTd);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsHide(row, index) {
+      this.$refs["taskListRowButtons-" + index][0].close();
+    },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
     },
   },
 };
