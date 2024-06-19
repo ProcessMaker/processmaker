@@ -2264,5 +2264,16 @@
   "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Choose a saved search to see the tasks that you can use with an Inbox Rule.",
   "No tasks to show.": "No tasks to show.",
   "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.",
-  "Recent Cases": "Recent Cases"
+  "Recent Cases": "Recent Cases",
+  "No results": "No results",
+  "Process Info": "Process Info",
+  "Process Chart": "Process Chart",
+  "Create Template": "Create Template",
+  "This will create a PM Block based on the {{assetName}} Process": "This will create a PM Block based on the {{assetName}} Process",
+  "Author": "Author",
+  "Version": "Version",
+  "Type to search Screen": "Type to search Screen",
+  "Type to search Chart": "Type to search Chart",
+  "Open Case": "Open Case",
+  "Alternative": "Alternative"
 }

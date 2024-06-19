@@ -382,10 +382,9 @@ export default {
 }
 .processes-info {
   width: 100%;
-  margin-right: 16px;
+  margin-right: -16px;
   height: calc(100vh - 145px);
-  padding-left: 32px;
-  
+  overflow-x: hidden;
   @media (max-width: $lp-breakpoint) {
     padding-left: 0;
   }
