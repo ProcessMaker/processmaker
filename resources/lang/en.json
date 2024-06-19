@@ -2265,5 +2265,6 @@
   "No tasks to show.": "No tasks to show.",
   "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.",
   "Recent Cases": "Recent Cases",
-  "No matching categories were found.": "No matching categories were found."
+  "No matching categories were found": "No matching categories were found",
+  "Search categories and processes": "Search categories and processes"
 }

@@ -13,7 +13,7 @@
       <b-form-input
         class="search-box"
         v-model="filter"
-        :placeholder="$t('Search Processes')"
+        :placeholder="$t('Search categories and processes')"
         @keyup.enter="fetch()"
       />
 
@@ -27,7 +27,8 @@
         </b-button>
       </b-input-group-append>
     </b-input-group>
-    <div v-if="filteredCategories !== null">
+    <div v-if="filteredCategories !== null"
+         class="category-button-container">
       <template v-if="filteredCategories.length > 0">
         <b-button v-for="category in filteredCategories"
           :key="category.id"
@@ -67,7 +68,10 @@ export default {
       this.fetch();
     },
     selectCategory(category) {
-      this.$router.push({ name: "index", query: { categoryId: category.id } });
+      // Do not set the query if we are already on the route
+      if (this.$route.query.categoryId !== category.id) {
+        this.$router.push({name: "index", query: {categoryId: category.id}});
+      }
       this.clearSearch();
     },
     filterCategories() {
@@ -106,6 +110,11 @@ export default {
   
   margin-top: 10px;
   margin-right: 5px;
+}
+
+.category-button-container {
+  text-wrap: nowrap;
+  overflow-x: scroll
 }
 
 .category-no-result {
