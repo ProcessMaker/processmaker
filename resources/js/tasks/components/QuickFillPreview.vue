@@ -139,18 +139,18 @@
           <template v-slot:tooltip="{ tooltipRowData, previewTasks }">
             <b-button
               v-if="propFromButton === 'previewTask'"
-              class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
+              size="sm"
               @click="previewTasks(tooltipRowData, 93, 'previewTask')"
             >
               <i class="fas fa-eye" />
             </b-button>
             <b-button
               v-if="propFromButton === 'fullTask'"
-              class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
+              size="sm"
               @click="
                 previewTasks(tooltipRowData, 50, 'fullTask');
                 setTask();
@@ -160,9 +160,9 @@
             </b-button>
             <b-button
               v-if="propFromButton === 'inboxRules'"
-              class="icon-button"
               :aria-label="$t('Quick fill Preview')"
               variant="light"
+              size="sm"
               @click="previewTasks(tooltipRowData, 50, 'inboxRules')"
             >
               <i class="fas fa-eye" />
