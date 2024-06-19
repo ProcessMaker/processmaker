@@ -2,6 +2,10 @@ import { get, cloneDeep } from "lodash";
 
 const PMColumnFilterCommonMixin = {
   props: {
+    autosaveFilter: {
+      type: Boolean,
+      default: true
+    },
     advancedFilterProp: {
       type: Object,
       default: null
@@ -55,7 +59,9 @@ const PMColumnFilterCommonMixin = {
         order
       };
 
-      ProcessMaker.apiClient.put(url, config);
+      if (!this.autosaveFilter) {
+        ProcessMaker.apiClient.put(url, config);
+      }
       window.ProcessMaker.advanced_filter = config;
       window.ProcessMaker.EventBus.$emit("advanced-filter-updated");
     },

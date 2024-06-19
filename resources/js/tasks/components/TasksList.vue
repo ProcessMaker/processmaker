@@ -5,6 +5,7 @@
       data-cy="tasks-table"
     >
       <filter-table
+        ref="filterTable"
         :headers="tableHeaders"
         :data="data"
         :unread="unreadColumnName"
@@ -13,6 +14,7 @@
         :table-name="tableName"
         @table-row-click="handleRowClick"
         @table-row-mouseover="handleRowMouseover"
+        @table-tr-mouseleave="handleTrMouseleave"
         @table-row-mouseleave="handleRowMouseleave"
       >
         <!-- Slot Table Header -->
@@ -71,6 +73,21 @@
             :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
+            <!-- Slot for floating buttons -->
+            <template v-if="colIndex === visibleHeaders.length-1">
+              <TaskListRowButtons 
+                    :ref="'taskListRowButtons-'+rowIndex"
+                    :buttons="taskTooltipButtons"
+                    :row="row"
+                    :rowIndex="rowIndex"
+                    :colIndex="colIndex"
+                    :showButtons="isTooltipVisible">
+                <template v-slot:body>
+                  <slot name="tooltip" v-bind:previewTasks="previewTasks">
+                  </slot>
+                </template>
+              </TaskListRowButtons>
+            </template>
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
               <div
                 :id="`element-${rowIndex}-${colIndex}`"
@@ -150,50 +167,6 @@
           </td>
         </template>
       </filter-table>
-      <task-tooltip
-        :position="rowPosition"
-        v-show="isTooltipVisible"
-      >
-        <template v-slot:task-tooltip-body>
-          <div
-            @mouseover="clearHideTimer"
-            @mouseleave="hideTooltip"
-          >
-            <slot name="tooltip" v-bind:tooltipRowData="tooltipRowData" v-bind:previewTasks="previewTasks">
-              <span v-for="(item, index) in taskTooltipButtons" :key="index">
-                <span>
-                  <b-button
-                    v-if="!verifyURL('saved-searches') || item.savedSearch"
-                    :id="item.id"
-                    class="icon-button"
-                    :aria-label="item.title"
-                    variant="light"
-                    @click="item.click(tooltipRowData)"
-                  >
-                    <i v-if="item.icon" :class="item.icon" />
-                    <img
-                      v-else-if="item.imgSrc"
-                      :src="item.imgSrc"
-                      :alt="$t('No Image')"
-                    >
-                  </b-button>
-                </span>
-                <span
-                  v-if="(!verifyURL('saved-searches') || item.savedSearch) && item.separator"
-                  class="vertical-separator"
-                />
-                <b-tooltip
-                  :target="item.id"
-                  :title="item.title"
-                  custom-class="task-hover-tooltip"
-                  placement="bottom"
-                  :delay="0"
-                />
-              </span>
-            </slot>
-          </div>
-        </template>
-      </task-tooltip>
       <data-loading
         v-show="shouldShowLoader"
         :empty="$t('All clear')"
@@ -244,6 +217,7 @@ import TaskTooltip from "./TaskTooltip.vue";
 import PMColumnFilterIconAsc from "../../components/PMColumnFilterPopover/PMColumnFilterIconAsc.vue";
 import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMColumnFilterIconDesc.vue";
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
+import TaskListRowButtons from "./TaskListRowButtons.vue";
 import { get } from "lodash";
 
 const uniqIdsMixin = createUniqIdsMixin();
@@ -259,6 +233,7 @@ export default {
     TaskTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
+    TaskListRowButtons
   },
   mixins: [
     datatableMixin,
@@ -320,25 +295,22 @@ export default {
           ariaLabel: this.$t("Quick fill Preview"),
           click: this.previewTasks,
           icon: "fas fa-eye",
-          title: "Preview",
-          separator: true,
-          savedSearch: false,
+          title: this.$t("Preview"),
+          show: !this.verifyURL('saved-searches') || false,
         },
         {
           id: "openCaseButton",
           title: this.$t("Open Case"),
           click: this.redirectToRequest,
           imgSrc: "/img/smartinbox-images/open-case.svg",
-          separator: true,
-          savedSearch: true,
+          show: !this.verifyURL('saved-searches') || true,
         },
         {
           id: "openTaskButton",
           title: this.$t("Open Task"),
           click: this.redirectToTask,
           icon: "fas fa-external-link-alt",
-          separator: false,
-          savedSearch: true,
+          show: !this.verifyURL('saved-searches') || true,
         },
       ],
       actions: [
@@ -630,9 +602,12 @@ export default {
       if (props.status === "ACTIVE" && isSelfService) {
         color = "danger";
         label = "Self Service";
-      } else if (props.status === "ACTIVE") {
+      } else if (props.status === "ACTIVE" && props.advanceStatus === "open") {
         color = "success";
         label = "In Progress";
+      } else if (props.status === "ACTIVE" && props.advanceStatus === "overdue") {
+        color = "danger";
+        label = "Overdue";
       } else if (props.status === "CLOSED") {
         color = "primary";
         label = "Completed";
@@ -698,7 +673,7 @@ export default {
     handleHideEllipsis() {
       this.ellipsisShow = false;
     },
-    handleRowMouseover(row) {
+    handleRowMouseover(row, index) {
       if (this.ellipsisShow) {
         this.isTooltipVisible = !this.disableRuleTooltip;
         this.clearHideTimer();
@@ -742,10 +717,12 @@ export default {
       if(this.fromButton === "inboxRules"){
         bottomBorderY = rect.bottom - topAdjust + 90 - elementHeight;
       }
+      //rowPosition deprecated is not used
       this.rowPosition = {
         x: rightBorderX,
         y: bottomBorderY,
       };
+      this.taskListRowButtonsShow(row, index);
     },
     handleRowMouseleave(visible) {
       this.startHideTimer();
@@ -837,6 +814,31 @@ export default {
     redirectToRequest(task) {
       window.location.href = this.openRequest(task.process_request);
     },
+    handleTrMouseleave(row, index) {
+      this.taskListRowButtonsHide(row, index);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsShow(row, index) {
+      let container = this.$refs.filterTable.$el;
+      let scrolledWidth = container.scrollWidth - container.clientWidth - container.scrollLeft;
+      let widthTd = this.$refs["taskListRowButtons-" + index][0].$el.parentNode.offsetWidth - 24;
+      this.$refs["taskListRowButtons-" + index][0].show();
+      this.$refs["taskListRowButtons-" + index][0].setMargin(scrolledWidth - widthTd);
+    },
+    /**
+     * TaskListRowButtons replaces the TaskTooltip component. 
+     * Please ensure that any methods related to TaskTooltip are cleared.
+     * @param {object} row
+     * @param {int} index
+     */
+    taskListRowButtonsHide(row, index) {
+      this.$refs["taskListRowButtons-" + index][0].close();
+    },
   },
 };
 </script>
@@ -864,48 +866,9 @@ export default {
   width: 197px;
   height: 40px;
 }
-
-.icon-button {
-  color: #888;
-  width: 32px;
-  height: 32px;
-  border: 0;
-}
-.vertical-separator {
-  display: inline-block;
-  width: 1px;
-  height: 24px;
-  background-color: #ccc; /* Color del separador */
-  margin: 0 1px; /* Espaciado alrededor del separador */
-  vertical-align: middle; /* Alinear verticalmente con los botones */
-}
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
-}
-.task-hover-tooltip {
-  opacity: 1 !important;
-}
-.task-hover-tooltip .tooltip-inner {
-  background-color: #F2F6F7;
-  color: #556271;
-  box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
-  border-radius: 7px;
-  padding: 9px 12px 9px 12px;
-  border: 1px solid #CDDDEE
-}
-.task-hover-tooltip .arrow::before {
-  border-bottom-color: #CDDDEE !important;
-}
-.task-hover-tooltip .arrow::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  border-width: 0 .4rem .4rem;
-  transform: translateY(3px);
-  border-color: transparent;
-  border-style: solid;
-  border-bottom-color: #F2F6F7;
 }
 </style>
 <style lang="scss" scoped>
