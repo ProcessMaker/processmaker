@@ -215,4 +215,3 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
-

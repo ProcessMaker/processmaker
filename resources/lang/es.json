@@ -2268,5 +2268,11 @@
   "Must be a valid Date": "Debe ser una Fecha válida",
   "Should NOT have more than {max} items": "No debería tener más de {max} artículos",
   "Must have at least {min}": "Debe tener al menos {min}",
-  "Invalid type": "Tipo inválido"
+  "Invalid type": "Tipo inválido",
+  "Save and publish": "Guardar y publicar",
+  "You are about to publish a draft version. Are you sure you want to proceed?": "Estás a punto de publicar una versión preliminar. ¿Estás seguro de que quieres proceder?",
+  "Your In-Progress tasks in the saved search {{title}}": "Tus tareas en progreso en la búsqueda guardada {{title}}",
+  "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Elija una búsqueda guardada para ver las tareas que puede usar con una Regla de Bandeja de Entrada.",
+  "No tasks to show.": "No hay tareas para mostrar.",
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Pero eso está bien. Aún puedes crear esta Regla de Bandeja de Entrada para aplicar a futuras tareas que coincidan con los filtros anteriores."
 }

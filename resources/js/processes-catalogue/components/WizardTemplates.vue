@@ -16,7 +16,7 @@ import TemplateSearch from "../../components/templates/TemplateSearch.vue";
 
 export default {
   components: { TemplateSearch },
-  props: ["template"],
+  props: ["categoryId"],
   data() {
     return {
       currentComponent: "template-select-card",

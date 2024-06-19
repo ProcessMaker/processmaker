@@ -3,8 +3,8 @@ run-name: ${{ github.actor }} send deploy EKS 🚀
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited, closed]
-  #schedule:
-  #  - cron: '30 2 * * *'  # every day at midnight
+  schedule:
+    - cron: '30 2 * * *'  # run daily
   workflow_dispatch:
   workflow_call:
 env:
@@ -15,10 +15,10 @@ env:
   pull_req_id: ${{github.event.pull_request.number}}
   DATE: $(date -d '-1 day' '+%Y-%m-%d'|sed 's/-//g')
   CURRENT_DATE: $(date '+%Y-%m-%d %H:%M:%S'|sed 's/-//g')
-  CI_PACKAGE_BRANCH: ${{github.event.pull_request.head.ref || 'next' }}
-  CI_PROJECT: ${{github.event.pull_request.head.repo.name || 'processmaker' }}
+  CI_PACKAGE_BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref || 'develop' }}
+  CI_PROJECT: ${{github.event.pull_request.head.repo.name || github.event.repository.name || 'processmaker' }}
   CI_PR_BODY: ${{ github.event_name == 'schedule' && 'No ci tags needed here' || github.event.pull_request.body }}
-  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g")
+  IMAGE_TAG: $(echo "$CI_PROJECT-$CI_PACKAGE_BRANCH" | sed "s;/;-;g" | sed "s/refs-heads-//g")
   DEPLOY: ${{ secrets.DEPLOY }}
   GH_USER: ${{ secrets.GH_USER }}
   GH_EMAIL: ${{ secrets.GH_EMAIL }}
@@ -27,7 +27,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
   BUILD_BASE: ${{ (contains(github.event.pull_request.body, 'ci:build-base') || github.event_name == 'schedule') && '1' || '0' }}
   BASE_IMAGE: ${{ secrets.REGISTRY_HOST }}/processmaker/processmaker:base
-  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}
+  K8S_BRANCH: ${{ contains(github.event.pull_request.body, 'ci:next') && 'next' || 'develop' }}  
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -48,7 +48,7 @@ jobs:
       - name: Generate image EKS
         run: |
           cd pm4-k8s-distribution/images
-          branch=$CI_PACKAGE_BRANCH tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
+          branch=$(echo "${{ env.CI_PACKAGE_BRANCH }}" | sed 's/refs-heads-//g') tag=${{env.IMAGE_TAG}} bash build.k8s-cicd.sh
           echo "VERSION=${{ env.IMAGE_TAG }}" >> $GITHUB_ENV
       - name: List Images
         run: |
