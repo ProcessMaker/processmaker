@@ -253,18 +253,4 @@ export default {
   border-radius: 50%;
   animation: 0.75s linear infinite spinner-border;
 }
-
-// .show-more {
-//   text-align: center;
-//   padding: 10px;
-//   cursor: pointer;
-//   background-color: #E5EDF3;
-//   height: 40px;
-//   line-height: 40px;
-//   clear: both;
-//   width: 75%;
-//   position: absolute;
-//   bottom: 0;
-//   margin-top: 20px;
-// }
 </style>
