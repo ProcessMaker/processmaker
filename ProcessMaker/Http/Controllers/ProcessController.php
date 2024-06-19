@@ -124,7 +124,7 @@ class ProcessController extends Controller
             'canEditData',
             'addons',
             'assignedProjects',
-            'isDraft'
+            'isDraft',
         ]));
     }
 

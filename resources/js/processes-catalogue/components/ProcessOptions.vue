@@ -1,6 +1,9 @@
 <template>
   <div class="section-options">
-    <process-counter :process="process" />
+    <div class="left-column">
+      <process-description :process="process" />
+      <process-counter :process="process" />
+    </div>
     <chart-save-search :process="process" />
   </div>
 </template>
@@ -8,9 +11,10 @@
 <script>
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 import ChartSaveSearch from "./optionsMenu/ChartSaveSearch.vue";
+import ProcessDescription from "./optionsMenu/ProcessDescription.vue";
 
 export default {
-  components: { ProcessCounter, ChartSaveSearch },
+  components: { ProcessCounter, ChartSaveSearch, ProcessDescription },
   props: ["process"],
 };
 </script>
@@ -19,12 +23,18 @@ export default {
 .section-options {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  width: 98.5%;
+  margin-top: 20px;
 }
-@media (width < 1200px) {
+.left-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+@media (max-width: 2560px) {
   .section-options {
-    align-items: flex-start;
     flex-direction: row;
+    justify-content: space-between;
   }
 }
 </style>
