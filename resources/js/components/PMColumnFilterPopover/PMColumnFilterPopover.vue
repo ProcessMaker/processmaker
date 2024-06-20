@@ -71,10 +71,7 @@
     },
     computed: {
       columnHover() {
-        if (this.columnMouseover === this.value) {
-          return true;
-        }
-        return false;
+        return this.columnMouseover === this.value;
       },
     },
     methods: {
