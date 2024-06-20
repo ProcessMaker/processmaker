@@ -20,8 +20,8 @@
     <div v-else>
       <default-tab
         :alt-text="$t('No Image')"
-        :title-text="$t('You have made no requests of this process.')"
-        :description-text="$t('All your requests will be shown here')"
+        :title-text="$t('No items to show.')"
+        :description-text="$t('You have to start a Case of this process.')"
       />
     </div>
   </div>
