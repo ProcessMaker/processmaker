@@ -428,6 +428,10 @@
               this.sendEvent('taskReady', this.task?.id);
             });
           },
+          validateBase64(field) {
+            const regex = /^data:image\/\w+;base64,/;
+            return regex.test(field);
+          },
         },
         mounted() {
           this.prepareData();
@@ -437,6 +441,45 @@
           });
 
           window.addEventListener('fillData', event => {
+            const newData = {};
+            screenFields.forEach((field) => {
+
+              const existingValue = _.get(this.formData, field, null);
+
+              let quickFillValue;
+
+              if (existingValue) {
+                // If the value exists in the task data, don't overwrite it
+                quickFillValue = existingValue;
+              } else {
+                // use the value from the quick fill(event.detail)
+                quickFillValue = _.get(event.detail, field, null);
+              }
+
+              if(this.validateBase64(quickFillValue)) {
+                _.set(newData, field, existingValue);
+                return;
+              }
+              // Set the value. This handles nested values using dot notation in 'field' string
+              _.set(newData, field, quickFillValue);
+              
+            });
+
+            this.formData = newData;
+          });
+          
+          // Used by inbox rules new/edit interface. With inbox rules, we always
+          // want to use all data saved in the inbox rule db record, regardless
+          // if the field exists or not.
+          window.addEventListener('fillDataOverwriteExistingFields', event => {
+            for (let key in event.detail) {
+              if (event.detail.hasOwnProperty(key)) {
+                let value = event.detail[key];
+                if (this.validateBase64(value)) {
+                  delete event.detail[key];
+                }
+              }
+            }
             this.formData = _.merge(_.cloneDeep(this.formData), event.detail);
           });
 
