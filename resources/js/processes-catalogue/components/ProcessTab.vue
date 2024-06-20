@@ -7,7 +7,7 @@
       @input="onTabChanged"
       >
       <b-tab
-        :title="$t('My Requests')"
+        :title="$t('My Cases')"
         active
         >
         <requests-listing
