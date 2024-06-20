@@ -244,7 +244,7 @@ export default {
     doResize(event) {
       if (this.isResizing) {
         const diff = event.pageX - this.startX;
-        let min = 40;
+        let min = 64;
         const currentWidth = Math.max(min, this.startWidth + diff);
         const contentWidth = this.calculateContent(this.resizingColumnIndex);
         if ((contentWidth - currentWidth) <= 80) {
@@ -310,6 +310,7 @@ export default {
 .pm-table-column-header {
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .pm-table-column-resizer {
@@ -379,6 +380,7 @@ export default {
   position: absolute;
   top: 20%;
   right: 7px;
+  background-color: #F2F8FE
 }
 .pm-table-ellipsis-column .pm-table-filter-button {
   opacity: 0;
@@ -416,16 +418,27 @@ export default {
   opacity: 1 !important;
 }
 .pm-table-tooltip-header .tooltip-inner {
-  background-color: #deebff;
-  color: #104a75;
+  background-color: #FFFFFF;
+  color: #4C545C;
   box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.3);
   max-width: 250px;
   padding: 14px;
   border-radius: 7px;
+  border: 1px solid #CDDDEE
 }
 .pm-table-tooltip-header .arrow::before {
-  border-bottom-color: #deebff !important;
-  border-top-color: #deebff !important;
+  border-bottom-color: #CDDDEE !important;
+  border-top-color: #CDDDEE !important;
+}
+.pm-table-tooltip-header .arrow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  border-width: 0 .4rem .4rem;
+  transform: translateY(3px);
+  border-color: transparent;
+  border-style: solid;
+  border-bottom-color: #FFFFFF;
 }
 .pm-table-filter-applied {
   color: #1572C2;

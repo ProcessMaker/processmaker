@@ -26,7 +26,8 @@
         >
           <div
             :key="index"
-            style="display: inline-block"
+            :id="`tasks-table-column-${column.field}`"
+            class="pm-table-column-header-text"
           >
             <img
               v-if="column.field === 'is_priority'"
@@ -37,6 +38,16 @@
             />
             <span v-else>{{ $t(column.label) }}</span>
           </div>
+          <b-tooltip
+            :key="index"
+            :target="`tasks-table-column-${column.field}`"
+            custom-class="pm-table-tooltip-header"
+            placement="bottom"
+            :delay="0"
+            @show="checkIfTooltipIsNeeded"
+          >
+            {{ $t(column.label) }}
+          </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template
@@ -879,6 +890,10 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
+}
+.pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>
