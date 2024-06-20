@@ -9,6 +9,8 @@
         :unread="unreadColumnName"
         :loading="shouldShowLoader"
         @table-row-click="handleRowClick"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
@@ -31,6 +33,7 @@
                                    :columnSortAsc="column.sortAsc"
                                    :columnSortDesc="column.sortDesc"
                                    :filterApplied="column.filterApplied"
+                                   :columnMouseover="columnMouseover"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -162,6 +165,7 @@ export default {
       previousAdvancedFilter: "",
       tableHeaders: [],
       unreadColumnName: "user_viewed_at",
+      columnMouseover: null,
     };
   },
   computed: {
@@ -571,6 +575,12 @@ export default {
         },
         type: 'requestFilter',
       }
+    },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
     },
   }
 };
