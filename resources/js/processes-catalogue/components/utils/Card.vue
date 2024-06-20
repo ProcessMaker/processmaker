@@ -43,7 +43,8 @@
   <b-card v-else
   class="text-center d-flex align-items-center justify-content-center card-process2">
     <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
-    <span v-else><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+    <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
   </b-card>
 </template>
 
@@ -85,7 +86,7 @@ export default {
         return this.process.counts.total.toLocaleString();
       }
       return null;
-    }
+    },
   },
   methods: {
     /**
@@ -130,8 +131,6 @@ export default {
   }
 }
 .card-process2 {
-  max-width: 100%;
-  width: 57vw;
   height: 40px;
   margin-top: 1rem;
   margin-right: 1rem;

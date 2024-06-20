@@ -6,8 +6,8 @@
     />
     <div
       id="infinite-list-card"
-      v-show="!loading && processList.length > 0"
-      class="processList"
+      v-show="processList.length > 0"
+      class="processList d-flex"
       ref="processListContainer"
     >
       <template v-for="(process, index) in processList">
@@ -23,25 +23,26 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage">
-            <div v-if="((index + 1) === processList.length)">
-              <Card
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
+            
+              <Card v-if="((index + 1) === processList.length)"
+              style="width: 100%;"
               :show-cards="false"
               :current-page="counterPage + Math.floor(index / perPage)"
               :total-pages="totalPages"
               :card-message="'show-more'"
-              :loading="shouldShowLoader"
+              :loading="loading"
             />
-            </div>
-            <div v-else>
+
               <Card
+              v-else
+              style="width: 100%;"
               :show-cards="false"
               :current-page="counterPage + Math.floor(index / perPage)"
               :total-pages="totalPages"
               :card-message="cardMessage"
-              :loading="shouldShowLoader"
+              :loading="loading"
             />
-            </div>           
         </div>
       </template>
     </div>
@@ -104,7 +105,7 @@ export default {
   },
   watch: {
     async categoryId() {
-      const listCard = document.querySelector("#infinite-list-card");
+      const listCard = document.querySelector(".processes-info");
       listCard.scrollTop = 0;
       this.pmql = "";
       this.filter = "";
@@ -119,15 +120,15 @@ export default {
     this.switchMenu = this.categoryId;
     this.loadCard(()=>{
       Vue.nextTick(()=>{
-          const listCard = document.querySelector("#infinite-list-card");
+          const listCard = document.querySelector(".processes-info");
           
-          listCard.addEventListener("scroll", () => this.handleScroll());
+          listCard.addEventListener("scrollend", () => this.handleScroll());
       });
     });
   },
   destroyed() {
-    const listCard = document.querySelector("#infinite-list-card");
-    listCard.removeEventListener("scroll", this.handleScroll);
+    const listCard = document.querySelector(".processes-info");
+    listCard.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
     loadCard(callback) {
@@ -221,7 +222,7 @@ export default {
       this.loadCard();
     },
     handleScroll() {
-      const container = this.$refs.processListContainer;
+      const container =  document.querySelector(".processes-info");
       if ((container.scrollTop + container.clientHeight >= container.scrollHeight)) {
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
@@ -238,8 +239,10 @@ export default {
   display: flex;
   flex-wrap: wrap;
   position: relative;
-  height: 97%;
-  overflow:auto;
+  height: 100%;
+  overflow: unset;
+  justify-content: flex-start;
+  align-items: center;
   @media (max-width: $lp-breakpoint) {
     display: block;
   }
