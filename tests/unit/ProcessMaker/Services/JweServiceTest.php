@@ -34,13 +34,7 @@ class JweServiceTest extends TestCase
         ];
 
         $token = $this->jweService->generateToken($data);
-
         $decodedData = $this->jweService->validateToken($token);
-
-        dd([
-            'token' => $token,
-            'decodedData' => $decodedData,
-        ]);
 
         $this->assertArrayHasKey('company_name', $decodedData);
         $this->assertArrayHasKey('company_bucket', $decodedData);
