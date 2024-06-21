@@ -24,11 +24,11 @@ class RedirectTest extends TestCase
             'is_administrator' => false,
         ]);
         Auth::login($user);
-        $response = $this->get('/requests');
+        $response = $this->get('/cases');
         $response->assertStatus(200);
         $response->assertViewIs('requests.index');
         Auth::logoutCurrentDevice();
-        $response = $this->get('/requests');
+        $response = $this->get('/cases');
         //302 because we want to make sure they are being redirected
         $response->assertStatus(302);
     }
