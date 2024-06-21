@@ -14,10 +14,10 @@ use ProcessMaker\Http\Controllers\Api\GroupMemberController;
 use ProcessMaker\Http\Controllers\Api\ImportController;
 use ProcessMaker\Http\Controllers\Api\InboxRulesController;
 use ProcessMaker\Http\Controllers\Api\NotificationController;
-use ProcessMaker\Http\Controllers\Api\OpenAIController;
 use ProcessMaker\Http\Controllers\Api\PermissionController;
 use ProcessMaker\Http\Controllers\Api\ProcessCategoryController;
 use ProcessMaker\Http\Controllers\Api\ProcessController;
+use ProcessMaker\Http\Controllers\Api\ProcessIntelligenceController;
 use ProcessMaker\Http\Controllers\Api\ProcessLaunchpadController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestController;
 use ProcessMaker\Http\Controllers\Api\ProcessRequestFileController;
@@ -178,7 +178,7 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::put('process_categories/{process_category}', [ProcessCategoryController::class, 'update'])->name('process_categories.update')->middleware('can:edit-process-categories');
     Route::delete('process_categories/{process_category}', [ProcessCategoryController::class, 'destroy'])->name('process_categories.destroy')->middleware('can:delete-process-categories');
 
-    //Process Launchpad
+    // Process Launchpad
     Route::get('processes/{process}/media', [ProcessController::class, 'getMediaImages'])->name('processes.media')->middleware('can:view-processes');
     Route::delete('processes/{process}/media', [ProcessController::class, 'deleteMediaImages'])->name('processes.delete-media')->middleware('can:view-processes');
 
@@ -341,6 +341,9 @@ Route::middleware('auth:api', 'setlocale', 'bindings', 'sanitize')->prefix('api/
     Route::post('processes/{processId}/export/translation/{language}', [ProcessTranslationController::class, 'export'])->name('process-translation.export')->middleware('can:export-process-translations');
     Route::post('processes/{processId}/import/translation/validation', [ProcessTranslationController::class, 'preimportValidation'])->name('process-translation.preImport')->middleware('can:import-process-translations');
     Route::post('processes/{processId}/import/translation', [ProcessTranslationController::class, 'import'])->name('process-translation.import')->middleware('can:import-process-translations');
+
+    // Process Intelligence
+    Route::get('process-intelligence/get-jwe-token', [ProcessIntelligenceController::class, 'getJweToken'])->name('process-intelligence.get-jwe-token');
 
     // debugging javascript errors
     Route::post('debug', [DebugController::class, 'store'])->name('debug.store')->middleware('throttle');
