@@ -36,7 +36,7 @@
         v-if="!hideBookmark"
         :process="process"
         class="bookmark"
-        @bookmark-updated="$parent.loadCard()"
+        @bookmark-updated="callLoadCard"
       />
     </b-card-text>
   </b-card>
@@ -103,6 +103,9 @@ export default {
       }
 
       return `/img/launchpad-images/icons/${icon}.svg`;
+    },
+    callLoadCard() {
+      this.$emit('callLoadCard', () => {}, 'bookmark');
     },
   },
 };

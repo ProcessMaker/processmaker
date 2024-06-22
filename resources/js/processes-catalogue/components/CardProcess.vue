@@ -20,6 +20,7 @@
           :card-message="cardMessage"
           :loading="false"
           @openProcessInfo="openProcessInfo"
+          @callLoadCard="loadCard"
           :hideBookmark="categoryId === 'all_templates'"
         />
 
@@ -32,6 +33,7 @@
               :total-pages="totalPages"
               :card-message="'show-more'"
               :loading="loading"
+              @callLoadCard="loadCard"
             />
 
               <Card
@@ -42,6 +44,7 @@
               :total-pages="totalPages"
               :card-message="cardMessage"
               :loading="loading"
+              @callLoadCard="loadCard"
             />
         </div>
       </template>
@@ -124,14 +127,17 @@ export default {
           
           listCard.addEventListener("scrollend", () => this.handleScroll());
       });
-    });
+    }, null);
   },
   destroyed() {
     const listCard = document.querySelector(".processes-info");
     listCard.removeEventListener("scrollend", this.handleScroll);
   },
   methods: {
-    loadCard(callback) {
+    loadCard(callback, message) {
+      if(message === 'bookmark') {
+        this.processList = [];
+      }
       this.loading = true;
       const url = this.buildURL();
       ProcessMaker.apiClient
@@ -223,7 +229,8 @@ export default {
     },
     handleScroll() {
       const container =  document.querySelector(".processes-info");
-      if ((container.scrollTop + container.clientHeight >= container.scrollHeight)) {
+      if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
+        container.scrollTop = container.scrollTop + 150;
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }
