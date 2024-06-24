@@ -11,6 +11,9 @@ class ProcessIntelligenceControllerTest extends TestCase
 
     public function testGetJweToken()
     {
+        // Set a fake secret key for the tests.
+        config(['process_intelligence.secret_key' => base64_encode(random_bytes(32))]);
+
         $route = route('api.process-intelligence.get-jwe-token');
 
         $response = $this->apiCall('GET', $route);

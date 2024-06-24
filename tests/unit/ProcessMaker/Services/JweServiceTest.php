@@ -13,6 +13,9 @@ class JweServiceTest extends TestCase
     {
         parent::setUp();
 
+        // Set a fake secret key for the tests.
+        config(['process_intelligence.secret_key' => base64_encode(random_bytes(32))]);
+
         $this->jweService = new JweService();
     }
 
