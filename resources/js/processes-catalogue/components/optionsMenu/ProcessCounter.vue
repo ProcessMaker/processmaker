@@ -13,10 +13,15 @@
       src="/img/launchpad-images/iconCounter.svg"
       alt="icon Counter"
     > -->
-    <div>
+    <div class="d-flex align-items-center">
       <img class="thumb-16px" src="/img/launchpad-images/icons/Apple Fruit.svg"></img>
       <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
+      <img class="thumb-16px-1" src="/img/launchpad-images/icons/mini-chart-52-75.svg"></img>
+      <span class="text-summary">{{ completed }} {{ $t('Completed') }}</span>
+      <img class="thumb-16px" src="/img/launchpad-images/icons/mini-chart-49-51.svg"></img>
+      <span class="text-summary">{{ inProgress }} {{ $t('In Progress') }}</span>
     </div>
+
   <!-- </div> -->
 </template>
 <script>
@@ -25,10 +30,15 @@ export default {
   data() {
     return {
       count: 0,
+      completed: 0,
+      inProgress: 0,
     };
   },
   mounted() {
     this.fetch();
+    console.log("Process object: ", this.process);
+    this.completed = this.process.counts.completed;
+    this.inProgress =  this.process.counts.in_progress;
   },
   methods: {
     fetch() {
@@ -90,5 +100,10 @@ export default {
 .thumb-16px {
   width: 18px;
   height: 18px;
+}
+.thumb-16px-1 {
+  width: 18px;
+  height: 18px;
+  background-color: #4EA075;
 }
 </style>

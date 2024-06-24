@@ -82,7 +82,6 @@ import ProcessesMixin from "./mixins/ProcessesMixin";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import Bookmark from "./Bookmark.vue";
-import ProcessInfoSummary from "./optionsMenu/ProcessInfoSummary.vue"
 import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 
 export default {
@@ -90,7 +89,6 @@ export default {
     ButtonsStart,
     EllipsisMenu,
     Bookmark,
-    ProcessInfoSummary,
     ProcessCounter,
   },
   mixins: [
