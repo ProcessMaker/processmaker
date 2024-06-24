@@ -3,14 +3,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use ProcessMaker\Filters\Filter;
 
 class Recommendation extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 
-    protected $fillable = [
-        'name',
-        'description',
+    protected $guarded = [
+        'uuid',
     ];
 
     protected $casts = [
@@ -31,7 +31,7 @@ class Recommendation extends ProcessMakerModel
     {
         // Default to an empty array for available actions
         static::saving(static function ($recommendation) {
-           $recommendation->actions = $recommendation->actions ?? [];
+            $recommendation->actions = $recommendation->actions ?? [];
         });
 
         parent::boot();
@@ -45,5 +45,22 @@ class Recommendation extends ProcessMakerModel
     public function scopeActive(Builder $query): void
     {
         $query->where('status', '=', 'ACTIVE');
+    }
+
+    public function baseQuery(User $user)
+    {
+        // Build the base query
+        $query = ProcessRequestToken::query();
+
+        // Scope the query to active (in progress) tasks for the user
+        // who just completed/started the task triggering this job
+        $query->where('user_id', '=', $user->id)
+                ->where('status', '=', 'ACTIVE');
+
+        // Use the Filter class to refine the query with
+        // the recommendations advanced filter
+        Filter::filter($query, $this->advanced_filter);
+
+        return $query;
     }
 }

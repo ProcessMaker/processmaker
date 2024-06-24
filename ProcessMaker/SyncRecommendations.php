@@ -58,18 +58,7 @@ class SyncRecommendations
         // Retrieve the Recommendation model data from the repo
         $model_data = Http::get($url)->json();
 
-        $recommendation = new Recommendation;
-
-        // Check if one already exists on this instance
-        $existing_recommendation = $recommendation->where('uuid', $model_data['uuid']);
-
-        // If it does, we'll use that one, otherwise we create a new one
-        if ($existing_recommendation->exists()) {
-            $recommendation = $existing_recommendation->first();
-        }
-
-        // Then we persist it
-        $recommendation->forceFill($model_data)->save();
+        Recommendation::updateOrCreate(['uuid' => $model_data['uuid']], $model_data);
     }
 
     /**

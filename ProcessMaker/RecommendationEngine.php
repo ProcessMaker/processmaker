@@ -2,20 +2,20 @@
 
 namespace ProcessMaker;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder;
 use ProcessMaker\Filters\Filter;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\RecommendationUser;
 use ProcessMaker\Models\User;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RecommendationEngine
 {
     /**
      * Target user's recommendations
      *
-     * @var \ProcessMaker\Models\ProcessRequestToken|\ProcessMaker\Models\User
+     * @var ProcessRequestToken|User
      */
     protected User $user;
 
@@ -27,7 +27,7 @@ class RecommendationEngine
     /**
      * Returns an instance of the RecommendationEngine for the given user
      *
-     * @param  \ProcessMaker\Models\User  $user
+     * @param  User  $user
      *
      * @return static
      */
@@ -48,18 +48,7 @@ class RecommendationEngine
         }
 
         foreach (Recommendation::active()->get() as $recommendation) {
-
-            // Build the base query
-            $query = ProcessRequestToken::query();
-
-            // Scope the query to active (in progress) tasks for the user
-            // who just completed/started the task triggering this job
-            $query->where('user_id', '=', $this->user->id)
-                  ->where('status','=','ACTIVE');
-
-            // Use the Filter class to refine the query with
-            // the recommendations advanced filter
-            Filter::filter($query, $recommendation->advanced_filter);
+            $query = $recommendation->baseQuery($this->user);
 
             // Set up the RecommendationUser query
             $recommendationUsersQuery = $recommendation->recommendationUsers(function (Builder $query) {
@@ -88,7 +77,7 @@ class RecommendationEngine
     /**
      * Create a new RecommendationUser
      *
-     * @param  \ProcessMaker\Models\Recommendation  $recommendation
+     * @param  Recommendation  $recommendation
      * @param  int  $count
      *
      * @return void
@@ -107,7 +96,7 @@ class RecommendationEngine
     /**
      * Update or delete existing RecommendationUser records
      *
-     * @param  \Illuminate\Database\Eloquent\Relations\HasMany|\Illuminate\Database\Query\Builder  $query
+     * @param  HasMany|Builder  $query
      * @param  bool  $minimumMatchesMet
      * @param  int  $resultCount
      *
@@ -141,7 +130,7 @@ class RecommendationEngine
     /**
      * Check if the matches/result count satisfies the threshold set for the Recommendation
      *
-     * @param  \ProcessMaker\Models\Recommendation  $recommendation
+     * @param  Recommendation  $recommendation
      * @param  int  $count
      *
      * @return bool
