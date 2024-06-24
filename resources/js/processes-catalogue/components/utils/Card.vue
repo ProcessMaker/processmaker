@@ -145,7 +145,7 @@ export default {
     max-width: none;
     min-width: none;
     border-radius: 8px;
-    height: 100px;
+    height: 40px;
   }
 }
 .card-process:hover {

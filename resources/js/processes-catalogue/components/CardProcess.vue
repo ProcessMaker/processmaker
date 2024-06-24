@@ -24,7 +24,7 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 83%;">
             
               <Card v-if="((index + 1) === processList.length)"
               style="width: 100%;"
@@ -150,6 +150,8 @@ export default {
           this.showMoreVisible = this.processList.length < this.totalRow;
           this.renderKey = this.renderKey + 1;
           callback?.();
+          const container =  document.querySelector(".processes-info");
+          container.scrollTop = container.scrollTop - 60;
         });
     },
     /**
@@ -230,7 +232,6 @@ export default {
     handleScroll() {
       const container =  document.querySelector(".processes-info");
       if ((container.scrollTop + container.clientHeight >= container.scrollHeight - 5)) {
-        container.scrollTop = container.scrollTop + 150;
         this.cardMessage = "show-page";
         this.onPageChanged(this.currentPage + 1);
       }
@@ -249,7 +250,6 @@ export default {
   height: 100%;
   overflow: unset;
   justify-content: flex-start;
-  align-items: center;
   @media (max-width: $lp-breakpoint) {
     display: block;
   }
