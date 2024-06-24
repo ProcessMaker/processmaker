@@ -109,7 +109,6 @@ class TaskResource extends ApiResource
         }
 
         $relationshipColumns = self::$defaultFieldsFor[$relationship] ?? ['id'];
-        $sql = $relationshipObject->toRawSql();
         $model->$relationship = $relationshipObject->select($relationshipColumns)->getResults();
 
         return true;
