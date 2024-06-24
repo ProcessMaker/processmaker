@@ -1,6 +1,6 @@
 <template>
-  <div class="process-counter">
-    <div>
+  <!-- <div class="process-counter"> -->
+    <!-- <div>
       <p class="process-counter-text">
         {{ $t('Cases Started') }}
       </p>
@@ -12,8 +12,12 @@
       class="process-counter-image"
       src="/img/launchpad-images/iconCounter.svg"
       alt="icon Counter"
-    >
-  </div>
+    > -->
+    <div>
+      <img class="thumb-16px" src="/img/launchpad-images/icons/Apple Fruit.svg"></img>
+      <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
+    </div>
+  <!-- </div> -->
 </template>
 <script>
 export default {
@@ -75,5 +79,16 @@ export default {
 .process-counter-image {
   width: 56px;
   height: 56px;
+}
+
+.text-summary {
+    color: #556271;
+    font-size: 16px;
+    font-weight: 400;
+    vertical-align: middle;
+  }
+.thumb-16px {
+  width: 18px;
+  height: 18px;
 }
 </style>

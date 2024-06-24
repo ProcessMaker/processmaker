@@ -1,8 +1,13 @@
 <template>
   <div id="processCollapseInfo">
     <div id="processData">
+      <process-header-start
+        :process="process"
+        @goBack="goBack()"
+      />
       <process-header
         :process="process"
+        :hide-header-options="true"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate()"
       />
@@ -97,6 +102,7 @@ import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import processNavigationMixin from "../../components/shared/processNavigation";
 import ProcessesMixin from "./mixins/ProcessesMixin";
 import ProcessHeader from "./ProcessHeader.vue";
+import ProcessHeaderStart from "./ProcessHeaderStart.vue";
 
 export default {
   components: {
@@ -108,6 +114,7 @@ export default {
     ProcessesCarousel,
     WizardHelperProcessModal,
     ProcessHeader,
+    ProcessHeaderStart,
   },
   mixins: [ProcessesMixin, ellipsisMenuMixin, processNavigationMixin],
   props: ["process", "currentUserId"],

@@ -4,46 +4,21 @@
         <div class="title">
           {{ process.name }}
         </div>
-        <div class="start-button">
-          <buttons-start
-            :process="process"
-            :title="$t('Start')"
-            :startEvent="singleStartEvent"
-            :processEvents="processEvents"
-          />
-        </div>
       </div>
       <div
-        class="header card-body card-process-info"
+        class="header card card-body card-custom"
       >
         <div class="d-flex justify-content-between">
           <div class="d-flex align-items-center">
-              <template v-if="infoCollapsed">
-                <i class="fas fa-caret-down pl-2" />
-                <span>
-                  {{ $t('Process Info') }}
-                </span>
-              </template>
-              <template v-else>
-                <i class="fas fa-caret-right pl-2" />
-                <span>
-                  {{ $t('Process Info') }}
-                </span>
-              </template>
-            <button
-              v-if="enableCollapse"
-              class="btn border-0 header-process title-process-button"
-              type="button"
-              data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-controls="collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
-              @click="toggleInfoCollapsed()"
-            >
-              
-            </button>
+            <i
+              class="fas fa-angle-left text-secondary mr-2 iconTitle"
+              @click="$emit('goBack')"
+            />
+            <div class="title">
+              as {{ process.name }}
+            </div>
           </div>
-          <div v-if="!hideHeaderOptions" class="d-flex align-items-center">
+          <div class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
               <bookmark :process="process" />
             </div>
@@ -66,11 +41,6 @@
               :processEvents="processEvents"
             />
           </div>
-          <div v-else class="d-flex align-items-center">
-              <template v-if="!infoCollapsed">
-                <process-counter :process="process" />
-              </template>
-            </div>
         </div>
       </div>
   </div>
@@ -82,16 +52,12 @@ import ProcessesMixin from "./mixins/ProcessesMixin";
 import EllipsisMenu from "../../components/shared/EllipsisMenu.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
 import Bookmark from "./Bookmark.vue";
-import ProcessInfoSummary from "./optionsMenu/ProcessInfoSummary.vue"
-import ProcessCounter from "./optionsMenu/ProcessCounter.vue";
 
 export default {
   components: {
     ButtonsStart,
     EllipsisMenu,
     Bookmark,
-    ProcessInfoSummary,
-    ProcessCounter,
   },
   mixins: [
     ProcessesMixin,
@@ -105,11 +71,7 @@ export default {
     enableCollapse: {
       type: Boolean,
       default: true
-    },
-    hideHeaderOptions: {
-      type: Boolean,
-      default: false
-    },
+    }
   },
   data() {
     return {
@@ -120,6 +82,7 @@ export default {
   },
   mounted() {
     this.getStartEvents();
+    console.log("prcess from ProcessHeader", this.process);
   },
   methods: {
      toggleInfoCollapsed() {
@@ -182,14 +145,8 @@ export default {
 .card-bookmark:hover {
   cursor: pointer;
 }
-
-.card-process-info {
-  border-color: #CDDDEE;
-  border-radius: 8px;
-  background-color: #fff;
-  margin-bottom: 12px;
-  border: 1px solid rgb(205, 221, 238);
-  padding-top: 13px;
-  height: 53px;
+.card-custom {
+  background-color: #F6F9FB;
+  border: 1px solid rgba(205, 221, 238, 0.125);
 }
 </style>
