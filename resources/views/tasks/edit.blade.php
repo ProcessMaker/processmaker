@@ -508,7 +508,7 @@
               "COMPLETED": "open-style",
               "TRIGGERED": "open-style",
             };
-            const status = this.task.advanceStatus.toUpperCase();
+            const status = (this.task.advanceStatus || '').toUpperCase();
             return "card-header text-status " + header[status];
           },
           isAllowReassignment() {
@@ -646,9 +646,14 @@
                 // to view error details. This is done in loadTask in Task.vue
                 if (error.response?.status && error.response?.status === 422) {
                   // Validation error
-                  Object.entries(error.response.data.errors).forEach(([key, value]) => {
-                    window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
-                  });
+                  if (error.response.data.errors) {
+                    Object.entries(error.response.data.errors).forEach(([key, value]) => {
+                      window.ProcessMaker.alert(`${key}: ${value[0]}`, 'danger', 0);
+                    });
+                  } else if (error.response.data.message) {
+                    window.ProcessMaker.alert(error.response.data.message, 'danger', 0);
+                  }
+                  this.$refs.task.loadNextAssignedTask();
                 }
               }).finally(() => {
                 this.submitting = false;
