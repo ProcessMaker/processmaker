@@ -259,18 +259,6 @@ export default {
           truncate: true,
         },
         {
-          label: "Alternative",
-          field: "process_version_alternative",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processVersion.alternative",
-          },
-        },
-        {
           label: "Task",
           field: "active_tasks",
           sortable: false,
