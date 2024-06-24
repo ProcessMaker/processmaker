@@ -106,14 +106,14 @@ export default {
       this.currentPage = 1;
       this.processList = [];
 
-      await Vue.nextTick();
+      await this.$nextTick();
       this.loadCard();
     },
   },
   mounted() {
     this.switchMenu = this.categoryId;
     this.loadCard(()=>{
-      Vue.nextTick(()=>{
+      this.$nextTick(()=>{
           const listCard = document.querySelector(".processes-info");
           
           listCard.addEventListener("scrollend", () => this.handleScroll());
