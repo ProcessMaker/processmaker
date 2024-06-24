@@ -6,6 +6,7 @@ use ProcessMaker\Http\Controllers\Admin\AuthClientController;
 use ProcessMaker\Http\Controllers\Admin\CssOverrideController;
 use ProcessMaker\Http\Controllers\Admin\GroupController;
 use ProcessMaker\Http\Controllers\Admin\LdapLogsController;
+use ProcessMaker\Http\Controllers\Admin\ProcessIntelligenceController;
 use ProcessMaker\Http\Controllers\Admin\QueuesController;
 use ProcessMaker\Http\Controllers\Admin\ScriptExecutorController;
 use ProcessMaker\Http\Controllers\Admin\SettingsController;
@@ -37,7 +38,6 @@ use ProcessMaker\Http\Controllers\TaskController;
 use ProcessMaker\Http\Controllers\TemplateController;
 use ProcessMaker\Http\Controllers\TestStatusController;
 use ProcessMaker\Http\Controllers\UnavailableController;
-use ProcessMaker\Http\Middleware\NoCache;
 
 Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '2fa')->group(function () {
     // Routes related to Authentication (password reset, etc)
@@ -63,6 +63,9 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
         // temporary, should be removed
         Route::get('security-logs/download/all', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForAllUsers'])->middleware('can:view-security-logs');
         Route::get('security-logs/download/{user}', [ProcessMaker\Http\Controllers\Api\SecurityLogController::class, 'downloadForUser'])->middleware('can:view-security-logs');
+
+        // Process Intelligence
+        Route::get('pi-test', [ProcessIntelligenceController::class, 'index'])->name('process-intelligence.index');
     });
 
     Route::get('admin', [AdminController::class, 'index'])->name('admin.index');
@@ -98,13 +101,13 @@ Route::middleware('auth', 'session_kill', 'sanitize', 'force_change_password', '
     Route::get('process-browser/{process?}', [ProcessesCatalogueController::class, 'index'])
        ->name('process.browser.index')
        ->middleware('can:view-process-catalog');
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     // Below route is for backward compatibility with old format routes. PLEASE DO NOT REMOVE
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
     Route::get('processes-catalogue/{process?}', function ($process = null) {
         return redirect()->route('process.browser.index', [$process]);
     })->name('processes.catalogue.index');
-    //------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------
 
     Route::get('processes', [ProcessController::class, 'index'])->name('processes.index');
     Route::get('processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit')->middleware('can:edit-processes');
@@ -210,4 +213,3 @@ Route::get('/unavailable', [UnavailableController::class, 'show'])->name('error.
 
 // SAML Metadata Route
 Route::resource('/saml/metadata', MetadataController::class)->only('index');
-
