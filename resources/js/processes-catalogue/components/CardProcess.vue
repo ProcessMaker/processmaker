@@ -24,7 +24,7 @@
           :hideBookmark="categoryId === 'all_templates'"
         />
 
-          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 83%;">
+          <div v-if="(index % perPage === perPage - 1) && processList.length >= perPage" style="width: 75%;">
             
               <Card v-if="((index + 1) === processList.length)"
               style="width: 100%;"
@@ -48,15 +48,6 @@
             />
         </div>
       </template>
-    </div>
-    <div
-      v-if="loading"
-      class="d-flex justify-content-center align-items-center m-5"
-    >
-      <data-loading
-        v-show="shouldShowLoader"
-        empty-icon="beach"
-      />
     </div>
     <CatalogueEmpty
       v-if="!loading && processList.length === 0"
