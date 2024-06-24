@@ -8,11 +8,9 @@ use ProcessMaker\Services\JweService;
 
 class ProcessIntelligenceController extends Controller
 {
-    protected $jweService;
-
-    public function __construct(JweService $jweService)
-    {
-        $this->jweService = $jweService;
+    public function __construct(
+        protected JweService $jweService
+    ) {
     }
 
     /**

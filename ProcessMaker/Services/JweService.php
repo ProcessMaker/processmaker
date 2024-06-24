@@ -19,8 +19,8 @@ class JweService
 
     public function __construct()
     {
-        $this->jwtSecretKey = config('process_intelligence.secret_key');
-        $this->jweEncryptionKey = config('process_intelligence.encryption_key');
+        $this->jwtSecretKey = base64_decode(config('process_intelligence.secret_key'));
+        $this->jweEncryptionKey = base64_decode(config('process_intelligence.encryption_key'));
 
         $this->jwtConfig = Configuration::forSymmetricSigner(
             new Sha256(),
@@ -130,7 +130,7 @@ class JweService
     {
         return [
             'company_name' => config('process_intelligence.company_name'),
-            'company_bucket' => config('process_intelligence.company_bucket'),
+            'company_database' => config('process_intelligence.company_database'),
         ];
     }
 }

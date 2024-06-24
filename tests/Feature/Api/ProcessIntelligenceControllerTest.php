@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class ProcessIntelligenceControllerTest extends TestCase
 {
-    use WithFaker;
     use RequestHelper;
 
     public function testGetJweToken()

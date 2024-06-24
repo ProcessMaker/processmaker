@@ -20,7 +20,7 @@ class JweServiceTest extends TestCase
     {
         $expected = [
             'company_name' => config('process_intelligence.company_name'),
-            'company_bucket' => config('process_intelligence.company_bucket'),
+            'company_database' => config('process_intelligence.company_database'),
         ];
 
         $this->assertEquals($expected, $this->jweService->getInstanceMetadata());
@@ -37,7 +37,7 @@ class JweServiceTest extends TestCase
         $decodedData = $this->jweService->validateToken($token);
 
         $this->assertArrayHasKey('company_name', $decodedData);
-        $this->assertArrayHasKey('company_bucket', $decodedData);
+        $this->assertArrayHasKey('company_database', $decodedData);
         $this->assertEquals(1, $decodedData['user_id']);
         $this->assertEquals('john.doe', $decodedData['username']);
     }
