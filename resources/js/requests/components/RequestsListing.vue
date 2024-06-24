@@ -398,7 +398,7 @@ export default {
         <span 
           class="badge badge-${color} status-${badge}"
         >
-          Alternative ${value}
+          ${this.$t('Alternative')} ${value}
         </span>`;
     },
     transform(dataInput) {
