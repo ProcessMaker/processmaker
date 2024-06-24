@@ -9,6 +9,7 @@ use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Exception\InvalidDockerImageException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\ScriptRunners\Base;
 use UnexpectedValueException;
 
 class BuildScriptExecutors extends Command
@@ -161,7 +162,7 @@ class BuildScriptExecutors extends Command
 
         $this->execCommand($command);
 
-        $isNayra = $scriptExecutor->language === 'php-nayra';
+        $isNayra = $scriptExecutor->language === Base::NAYRA_LANG;
         if ($isNayra) {
             $instanceName = config('app.instance');
             $this->info('Stop existing nayra container');

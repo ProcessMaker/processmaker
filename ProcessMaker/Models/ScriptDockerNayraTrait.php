@@ -2,10 +2,12 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\Docker;
+use ProcessMaker\ScriptRunners\Base;
 
 /**
  * Execute a docker container copying files to interchange information.
@@ -36,12 +38,12 @@ trait ScriptDockerNayraTrait
         $body = json_encode($params);
         $servers = Cache::get('nayra_ips');
         if (!$servers) {
-            $url = config('app.nayra_rest_api_host') . '/run_script';
-        } else {
-            $index = array_rand($servers);
-            $url = 'http://' . $servers[$index] . ':8080/run_script';
-            $this->ensureNayraServerIsRunning('http://' . $servers[$index] . ':8080');
+            $this->bringUpNayraContainer();
+            $servers = Cache::get('nayra_ips');
         }
+        $index = array_rand($servers);
+        $url = 'http://' . $servers[$index] . ':8080/run_script';
+        $this->ensureNayraServerIsRunning('http://' . $servers[$index] . ':8080');
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -102,6 +104,12 @@ trait ScriptDockerNayraTrait
         }
         $this->waitContainerNetwork($docker, $instanceName);
         $this->nayraServiceIsRunning($url);
+    }
+
+    private function bringUpNayraContainer()
+    {
+        $lang = Base::NAYRA_LANG;
+        Artisan::call("processmaker:build-script-executor {$lang} --rebuild");
     }
 
     /**
