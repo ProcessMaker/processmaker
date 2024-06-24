@@ -382,7 +382,7 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      return `Alternative ${value}`;
+      return this.$t("Alternative") + ` ${value || "A"}`;
     },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
