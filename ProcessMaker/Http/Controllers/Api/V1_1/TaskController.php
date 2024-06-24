@@ -35,8 +35,6 @@ class TaskController extends Controller
         $pagination = $query->paginate();
         $perPage = $pagination->perPage();
         $page = $pagination->currentPage();
-        $orderBy = $pagination->orderBy;
-        $orderDirection = $pagination->orderDirection;
         $lastPage = $pagination->lastPage();
         return [
             'data' => $pagination->items(),
@@ -51,8 +49,6 @@ class TaskController extends Controller
                 'last_page' => $lastPage,
                 'path' => '/',
                 'per_page' => $perPage,
-                'sort_by' => $orderBy,
-                'sort_order' => strtolower($orderDirection),
                 'to' => $perPage * ($page - 1) + $perPage,
                 'total_pages' => ceil($pagination->count() / $perPage),
             ],
@@ -63,6 +59,9 @@ class TaskController extends Controller
     {
         if ($request->has('process_request_id')) {
             $query->where('process_request_id', $request->input('process_request_id'));
+        }
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
         }
     }
 
