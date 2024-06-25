@@ -1,48 +1,31 @@
 <template>
   <div>
     <div class="header-mobile">
-        <div class="title">
-          {{ process.name }}
-        </div>
+      <div class="title">
+        {{ process.name }}
       </div>
-      <div
-        class="header card card-body card-custom"
-      >
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-            <i
-              class="fas fa-angle-left text-secondary mr-2 iconTitle"
-              @click="$emit('goBack')"
-            />
-            <div class="title">
-              as {{ process.name }}
-            </div>
-          </div>
-          <div class="d-flex align-items-center">
-            <div class="card-bookmark mx-2">
-              <bookmark :process="process" />
-            </div>
-            <span class="ellipsis-border">
-              <ellipsis-menu
-                v-if="showEllipsis"
-                :actions="processLaunchpadActions"
-                :data="process"
-                :divider="false"
-                :lauchpad="true"
-                variant="none"
-                @navigate="$emit('onProcessNavigate')"
-                :isDocumenterInstalled="$root.isDocumenterInstalled"
-                :permission="$root.permission"
-              />
-            </span>
-            <buttons-start
-              :process="process"
-              :startEvent="singleStartEvent"
-              :processEvents="processEvents"
-            />
+    </div>
+    <div class="header card card-body card-custom">
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-chevron-left mr-2 custom-color" @click="$emit('goBack')" />
+          <div class="title">
+            {{ process.name }}
           </div>
         </div>
+        <div class="d-flex align-items-center">
+          <div class="card-bookmark mx-2">
+            <bookmark :process="process" />
+          </div>
+          <span class="ellipsis-border">
+            <ellipsis-menu v-if="showEllipsis" :actions="processLaunchpadActions" :data="process" :divider="false"
+              :lauchpad="true" variant="none" @navigate="$emit('onProcessNavigate')"
+              :isDocumenterInstalled="$root.isDocumenterInstalled" :permission="$root.permission" />
+          </span>
+          <buttons-start :process="process" :startEvent="singleStartEvent" :processEvents="processEvents" />
+        </div>
       </div>
+    </div>
   </div>
 </template>
 
@@ -82,10 +65,9 @@ export default {
   },
   mounted() {
     this.getStartEvents();
-    console.log("prcess from ProcessHeader", this.process);
   },
   methods: {
-     toggleInfoCollapsed() {
+    toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
     /**
@@ -113,6 +95,7 @@ export default {
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
 @import '~styles/variables';
+
 .header {
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -128,7 +111,9 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.5em;
+    font-size: 16px;
+    color: #4C545C;
+    font-weight: 400;
   }
 
   @media (max-width: $lp-breakpoint) {
@@ -142,11 +127,28 @@ export default {
   float: right;
   font-size: 20px;
 }
+
 .card-bookmark:hover {
   cursor: pointer;
 }
+
 .card-custom {
   background-color: #F6F9FB;
   border: 1px solid rgba(205, 221, 238, 0.125);
+}
+
+.title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 22px;
+  letter-spacing: -0.2;
+  color: #4C545C;
+  font-weight: 400;
+}
+
+.custom-color {
+  color: #4C545C;
 }
 </style>

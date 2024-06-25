@@ -15,33 +15,26 @@
       </div>
       <div
         class="header card-body card-process-info"
+        data-toggle="collapse"
+              data-target="#collapseProcessInfo"
+              aria-controls="collapseProcessInfo"
+              :aria-expanded="infoCollapsed"
+        @click="toggleInfoCollapsed()"
       >
         <div class="d-flex justify-content-between">
           <div class="d-flex align-items-center">
               <template v-if="infoCollapsed">
-                <i class="fas fa-caret-down pl-2" />
-                <span>
+                <i class="fas fa-caret-down pl-2 mr-2 custom-color" />
+                <span class="custom-text">
                   {{ $t('Process Info') }}
                 </span>
               </template>
               <template v-else>
-                <i class="fas fa-caret-right pl-2" />
-                <span>
+                <i class="fas fa-caret-right pl-2 mr-2 custom-color" />
+                <span class="custom-text">
                   {{ $t('Process Info') }}
                 </span>
               </template>
-            <button
-              v-if="enableCollapse"
-              class="btn border-0 header-process title-process-button"
-              type="button"
-              data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-controls="collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
-              @click="toggleInfoCollapsed()"
-            >
-              
-            </button>
           </div>
           <div v-if="!hideHeaderOptions" class="d-flex align-items-center">
             <div class="card-bookmark mx-2">
@@ -67,10 +60,10 @@
             />
           </div>
           <div v-else class="d-flex align-items-center">
-              <template v-if="!infoCollapsed">
-                <process-counter :process="process" />
-              </template>
-            </div>
+            <template v-if="!infoCollapsed">
+              <process-counter :process="process" :enable-collapse="enableCollapse" />
+            </template>
+          </div>
         </div>
       </div>
   </div>
@@ -163,7 +156,10 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 1.5em;
+    font-size: 22px;
+    letter-spacing: -0.2;
+    color: #4C545C;
+    font-weight: 400;
   }
 
   @media (max-width: $lp-breakpoint) {
@@ -189,5 +185,15 @@ export default {
   border: 1px solid rgb(205, 221, 238);
   padding-top: 13px;
   height: 53px;
+}
+.custom-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: #556271;
+  letter-spacing: -0.2;
+}
+
+.custom-color {
+  color: #4C545C;
 }
 </style>
