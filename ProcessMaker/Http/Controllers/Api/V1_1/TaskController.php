@@ -44,7 +44,6 @@ class TaskController extends Controller
                 'currentPage' => $pagination->currentPage(),
                 'lastPage' => $pagination->lastPage(),
                 'count' => $pagination->count(),
-                // 'filter' => $filter,
                 'from' => $perPage * ($page - 1) + 1,
                 'last_page' => $lastPage,
                 'path' => '/',
