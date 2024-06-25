@@ -1,10 +1,5 @@
 <template>
   <div>
-    <SearchCategories
-      ref="searchCategory"
-      :filter-pmql="onFilter"
-      class="hide-on-mobile"
-    />
     <div
       v-b-toggle.category-menu
       block
