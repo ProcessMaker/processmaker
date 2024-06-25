@@ -65,7 +65,6 @@
             />
           </template>
         </b-card>
-        <b-card style="opacity: 0"/>
       </b-card-group>
     </div>
   </div>
@@ -130,6 +129,15 @@ export default {
           asset_name_new: "New Data Connector",
           urlPath: "/designer/data-sources",
           urlAsset: "/designer/data-sources?create=true",
+        },
+        {
+          color: "#4B667C",
+          icon: "fas fa-magic",
+          asset_name: "Flow Genies",
+          asset_name_all: `${this.$t("View All")} Flow Genies`,
+          asset_name_new: `${this.$t("New")} Flow Genie`,
+          urlPath: "/designer/flow-genies",
+          urlAsset: "/designer/flow-genies?create=true",
         },
       ],
       showButtonsCore: new Array(3).fill(false),

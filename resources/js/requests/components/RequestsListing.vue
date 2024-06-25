@@ -12,8 +12,6 @@
       >
         <!-- Slot Table Header -->
         <template v-for="(column, index) in tableHeaders" v-slot:[column.field]>
-          <PMColumnFilterIconAsc v-if="column.sortAsc"></PMColumnFilterIconAsc>
-          <PMColumnFilterIconDesc v-if="column.sortDesc"></PMColumnFilterIconDesc>
           <div :key="index" style="display: inline-block;">{{ $t(column.label) }}</div>
         </template>
         <!-- Slot Table Header filter Button -->
@@ -30,6 +28,9 @@
                                    :container="''"
                                    :boundary="'viewport'"
                                    :hideSortingButtons="column.hideSortingButtons"
+                                   :columnSortAsc="column.sortAsc"
+                                   :columnSortDesc="column.sortDesc"
+                                   :filterApplied="column.filterApplied"
                                    @onChangeSort="onChangeSort($event, column.field)"
                                    @onApply="onApply($event, column.field)"
                                    @onClear="onClear(column.field)"
@@ -40,6 +41,7 @@
         <template v-for="(row, rowIndex) in data.data" v-slot:[`row-${rowIndex}`]>
           <td
             v-for="(header, colIndex) in tableHeaders"
+            :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
             :key="colIndex"
           >
             <template v-if="containsHTML(getNestedPropertyValue(row, header))">
@@ -394,7 +396,22 @@ export default {
       };
     },
     formatProcessVersionAlternative(value) {
-      return `Alternative ${value}`;
+      let color = "primary";
+      let badge = "alternative-a";
+
+      if (value === "B") {
+        color = "secondary";
+        badge = "alternative-b";
+      } else if (value === null) {
+        return "-";
+      }
+
+      return `
+        <span 
+          class="badge badge-${color} status-${badge}"
+        >
+          Alternative ${value}
+        </span>`;
     },
     transform(dataInput) {
       const data = _.cloneDeep(dataInput);
@@ -450,6 +467,9 @@ export default {
               cancelToken: new CancelToken((c) => {
                 this.cancelToken = c;
               }),
+              headers: {
+                'Cache-Control': 'no-cache',
+              }
             },
           )
           .then((response) => {

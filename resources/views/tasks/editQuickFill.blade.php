@@ -32,7 +32,8 @@
 <div v-cloak id="quickfill" class="container-fluid px-3">
     <quick-fill-preview
     class="quick-fill-preview"
-    :task="{{ $task }}"
+    :task="task"
+    :screen-fields="screenFields"
     :prop-from-button ="'fullTask'"
     :prop-columns="columns"
     :prop-filters="filters"
@@ -43,6 +44,9 @@
 <script src="{{mix('js/tasks/show.js')}}"></script>
 <script>
     let task = @json($task);
+    task.draft = @json($task->draft);
+    task.data = @json($task->processRequest->data);
+    const screenFields = @json($screenFields);
     const store = new Vuex.Store();
     const main = new Vue({
       store: store,
@@ -50,6 +54,8 @@
       data: {
           isDisabled: true,
           data: {},
+          task,
+          screenFields,
           filters: {
             order: { by: "created_at", direction: "desc" },
             filters:[

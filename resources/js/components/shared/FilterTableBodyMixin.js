@@ -34,7 +34,8 @@ export default {
       this.page = page;
       this.fetch();
     },
-    changePerPage(value) {
+    changePerPage(value, page) {
+      this.page = page;
       this.perPage = value;
       this.fetch();
     },
@@ -81,6 +82,6 @@ export default {
       if (e.target.offsetWidth >= e.target.scrollWidth) {
         e.preventDefault();
       }
-    }
+    },
   },
 };
