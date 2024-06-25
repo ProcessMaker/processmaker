@@ -9,6 +9,7 @@ class ProcessRequests extends ApiResource
     public function toArray($request)
     {
         $array = parent::toArray($request);
+        $array['process_version_alternative'] = $this->processVersionAlternative;
         $include = explode(',', $request->input('include', ''));
 
         if (in_array('data', $include)) {
