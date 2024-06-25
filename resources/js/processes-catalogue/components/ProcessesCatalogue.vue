@@ -87,7 +87,7 @@ export default {
       category: null,
       selectedProcess: null,
       guidedTemplates: false,
-      numCategories: 15,
+      numCategories: 100,
       page: 1,
       key: 0,
       totalPages: 1,
@@ -115,7 +115,10 @@ export default {
           this.showMenu = false;
         }
       }
-    }
+    },
+    listCategories() {
+      this.$root.categories = this.listCategories;
+    },
   },
   computed: {
     showMobileMenuControl() {
@@ -265,6 +268,8 @@ export default {
     background-color: #F7F9FB;
     flex: 1;
     width: 315px;
+    height: 100%;
+    overflow-y: scroll;
   }
 
   @media (max-width: $lp-breakpoint) {
