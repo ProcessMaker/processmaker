@@ -145,7 +145,7 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $this->getAcionByEmail($activity);
+        $this->validateAndSendActionByEmail($activity);
 
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
@@ -166,17 +166,20 @@ class TokenRepository implements TokenRepositoryInterface
      *
      * @param ActivityInterface $activity
      */
-    private function getAcionByEmail(ActivityInterface $activity)
+    private function validateAndSendActionByEmail(ActivityInterface $activity)
     {
         $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
         if ($isActionsByEmail) {
-            $configEmail =  json_decode($activity->getProperty('configEmail', []));
+            $configEmail = json_decode($activity->getProperty('configEmail', []));
             // Get the parameters to send the email
             $emailserver = $configEmail->emailServer ?? 0;
             $subject = $configEmail->subject ?? '';
             $emailScreen = $configEmail->screenEmailRef ?? 0;
             $emailScreenCompleted = $configEmail->screenCompleteRef ?? 0;
+
+            //TODO send Email
         }
+
     }
 
     /**
