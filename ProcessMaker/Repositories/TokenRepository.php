@@ -162,8 +162,10 @@ class TokenRepository implements TokenRepositoryInterface
     /**
      * Get due Variable
      *
-     * @param Instance $instance
-     * @param User $user
+     * @param ActivityInterface $activity
+     * @param TokenInterface $token
+     *
+     * @return integer
      */
     private function getDueVariable(ActivityInterface $activity, TokenInterface $token)
     {
