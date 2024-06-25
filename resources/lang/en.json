@@ -2282,5 +2282,7 @@
   "Type to search Screen": "Type to search Screen",
   "Type to search Chart": "Type to search Chart",
   "Open Case": "Open Case",
-  "Alternative": "Alternative"
+  "Alternative": "Alternative",
+  "No matching categories were found": "No matching categories were found",
+  "Search categories and processes": "Search categories and processes"
 }
