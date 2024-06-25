@@ -7,13 +7,14 @@
     </div>
     <div class="header card card-body card-custom">
       <div class="d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <i class="fas fa-chevron-left mr-2 custom-color" @click="$emit('goBack')" />
-          <div class="title">
+        <div class="d-flex align-items-center flex-grow-1">
+          <i class="fas fa-chevron-left mr-2 custom-color" 
+            @click="$emit('goBack')" />
+          <div class="title text-truncate">
             {{ process.name }}
           </div>
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center flex-shrink-0">
           <div class="card-bookmark mx-2">
             <bookmark :process="process" />
           </div>
@@ -96,6 +97,34 @@ export default {
 @import url("./scss/processes.css");
 @import '~styles/variables';
 
+
+.header-mobile .title,
+.header .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.d-flex.align-items-center {
+  min-width: 0;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
 .header {
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -138,10 +167,11 @@ export default {
 }
 
 .title {
-  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  max-width: 100%;
   font-size: 22px;
   letter-spacing: -0.2;
   color: #4C545C;

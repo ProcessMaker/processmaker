@@ -142,8 +142,8 @@ export default {
   height: 56px;
 }
 .thumb-size {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 .d-flex.align-items-center > * {
   margin-right: 8px;
