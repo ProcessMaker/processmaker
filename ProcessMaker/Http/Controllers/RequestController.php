@@ -46,7 +46,7 @@ class RequestController extends Controller
             $this->authorize('view-all_requests');
         }
 
-        $title = 'My Requests';
+        $title = 'My Cases';
 
         $types = ['all'=>'All Requests', 'in_progress'=>'Requests In Progress', 'completed'=>'Completed Requests'];
 
