@@ -225,8 +225,7 @@
             </div>
             <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel"
               aria-labelledby="forms-tab" v-show="canViewPrint">
-              <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested"
-                ref="forms">
+              <request-screens :id="requestId" :information="dataSummary" ref="forms">
               </request-screens>
             </div>
             <div v-if="activeTab === 'overview'" class="tab-pane fade p-0" id="overview" role="tabpanel"
@@ -499,7 +498,6 @@
           showJSONEditor: false,
           data: @json($request->getRequestData()),
           requestId: @json($request->getKey()),
-          screenRequested: @json($screenRequested),
           request: @json($request),
           files: @json($files),
           refreshTasks: 0,
