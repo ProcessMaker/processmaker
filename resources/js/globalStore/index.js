@@ -20,7 +20,7 @@ export default {
           return;
         }
 
-        if (options.parent && options.parent.$globalStore) {
+        if (options?.parent?.$globalStore) {
           this.$globalStore = options.parent.$globalStore;
 
           return;
