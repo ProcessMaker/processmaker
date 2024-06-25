@@ -19,6 +19,7 @@ import MonacoEditor from "vue-monaco";
 import Vue from "vue";
 import * as vue from "vue";
 import VueCookies from "vue-cookies";
+import GlobalStore from "./globalStore";
 import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import translator from "./modules/lang.js";
@@ -75,6 +76,7 @@ window.bootstrap = bootstrap;
 window.Vue.use(BootstrapVue);
 window.Vue.use(BootstrapVueIcons);
 window.Vue.use(ScreenBuilder);
+window.Vue.use(GlobalStore);
 window.Vue.use(VueDeepSet);
 window.Vue.use(VueCookies);
 if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
