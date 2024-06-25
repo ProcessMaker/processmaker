@@ -2,12 +2,12 @@
 
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\InboxRules\MatchingTasks;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class SmartInbox implements ShouldQueue
@@ -37,6 +37,6 @@ class SmartInbox implements ShouldQueue
             SmartInboxApplyAction::dispatchSync($this->incomingTaskId, $inboxRule->id);
         }
 
-        GenerateUserRecommendations::dispatch($incomingTask->user)->onQueue('low');
+        GenerateUserRecommendations::dispatch($incomingTask->user_id)->onQueue('low');
     }
 }

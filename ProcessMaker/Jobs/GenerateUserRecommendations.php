@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Models\User;
 use ProcessMaker\RecommendationEngine;
@@ -14,14 +15,16 @@ class GenerateUserRecommendations implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public User $user;
-
     /**
      * Create a new job instance.
      */
-    public function __construct(User|int $user)
+    public function __construct(public int $user_id)
     {
-        $this->user = $user instanceof User ? $user : User::findOrFail($user);
+    }
+
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping($this->user_id))->dontRelease()];
     }
 
     /**
@@ -29,6 +32,7 @@ class GenerateUserRecommendations implements ShouldQueue
      */
     public function handle(): void
     {
-        RecommendationEngine::for($this->user)->generate();
+        $user = User::findOrFail($this->user_id);
+        RecommendationEngine::for($user)->generate();
     }
 }
