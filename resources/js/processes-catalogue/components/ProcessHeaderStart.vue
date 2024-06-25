@@ -10,7 +10,7 @@
         <div class="d-flex align-items-center flex-grow-1">
           <i class="fas fa-chevron-left mr-2 custom-color" 
             @click="$emit('goBack')" />
-          <div class="title text-truncate">
+          <div class="title text-truncate" v-b-tooltip.hover :title="process.name">
             {{ process.name }}
           </div>
         </div>
