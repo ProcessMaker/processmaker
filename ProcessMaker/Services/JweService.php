@@ -74,12 +74,18 @@ class JweService
             throw new InvalidArgumentException('Encryption failed.');
         }
 
-        // Concatenate the IV, tag and ciphertext.
-        $combinedData = $iv . $tag . $ciphertext;
+        // JWE Header.
+        $header = json_encode(['alg' => 'dir', 'enc' => 'A256GCM']);
 
-        // Encode the combined data in base64.
-        // This ensures compatibility with text-based systems and protocols.
-        return base64_encode($combinedData);
+        // Encode each part in base64url and concatenate with dots.
+        return sprintf(
+            '%s.%s.%s.%s.%s',
+            $this->base64UrlEncode($header),
+            '', // No Encrypted Key for 'dir' algorithm
+            $this->base64UrlEncode($iv),
+            $this->base64UrlEncode($ciphertext),
+            $this->base64UrlEncode($tag)
+        );
     }
 
     /**
@@ -102,10 +108,14 @@ class JweService
      */
     public function decrypt(string $jwe): string
     {
-        $data = base64_decode($jwe);
-        $iv = substr($data, 0, 12);
-        $tag = substr($data, 12, 16);
-        $ciphertext = substr($data, 28);
+        $parts = explode('.', $jwe);
+        if (count($parts) !== 5) {
+            throw new InvalidArgumentException('Invalid JWE format.');
+        }
+
+        $iv = $this->base64UrlDecode($parts[2]);
+        $ciphertext = $this->base64UrlDecode($parts[3]);
+        $tag = $this->base64UrlDecode($parts[4]);
 
         $jwt = openssl_decrypt(
             $ciphertext,
@@ -132,5 +142,21 @@ class JweService
             'company_name' => config('process_intelligence.company_name'),
             'company_database' => config('process_intelligence.company_database'),
         ];
+    }
+
+    /**
+     * Encodes data using base64 URL encoding.
+     */
+    private function base64UrlEncode(string $data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * Decodes data using base64 URL decoding.
+     */
+    private function base64UrlDecode(string $data): string
+    {
+        return base64_decode(strtr($data, '-_', '+/'));
     }
 }

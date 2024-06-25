@@ -31,7 +31,7 @@
         "laravel/ui": "^4.2",
         "laravelcollective/html": "^6.4",
         "lavary/laravel-menu": "^1.8",
-        "lcobucci/jwt": "^4.2",
+        "lcobucci/jwt": "^5.3",
         "league/flysystem-aws-s3-v3": "^3.15",
         "mateusjunges/laravel-kafka": "^1.11",
         "microsoft/microsoft-graph": "^1.77",
