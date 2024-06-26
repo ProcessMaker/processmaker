@@ -21,6 +21,11 @@
   padding: 32px;
   padding-bottom: 0px;
   background-color: white;
+  border-left: 1px solid rgb(205, 221, 238);
+  border-right: 1px solid rgb(205, 221, 238);
+  border-bottom: none;
+  border-top: 1px solid rgb(205, 221, 238);
+  border-radius: 8px;
 }
 .title-process {
   color: #556271;
