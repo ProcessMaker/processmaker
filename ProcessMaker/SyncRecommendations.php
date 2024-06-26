@@ -11,11 +11,11 @@ use RuntimeException;
 class SyncRecommendations
 {
     /**
-     * Filename in the repo containing the directory and file list
+     * List of Recommendation UUIDs that have been synced from GitHub
      *
-     * @var string
+     * @var array
      */
-    protected static string $indexFileName = 'index.json';
+    protected array $uuids = [];
 
     /**
      * Sync the Recommendations from the central repository
@@ -28,6 +28,8 @@ class SyncRecommendations
         // file, then try to save each as model data for a
         // new or updated Recommendation
         $this->fetchRecommendations()->each(fn ($url) => $this->save($url));
+
+        $this->handleDeletedRecommendations();
     }
 
     /**
@@ -57,6 +59,8 @@ class SyncRecommendations
     {
         // Retrieve the Recommendation model data from the repo
         $model_data = Http::get($url)->json();
+
+        $this->uuids[] = $model_data['uuid'];
 
         Recommendation::updateOrCreate(['uuid' => $model_data['uuid']], $model_data);
     }
@@ -120,5 +124,11 @@ class SyncRecommendations
             'Authorization' => 'Bearer ' . config('services.recommendations_github.token'),
             'X-GitHub-Api-Version' => '2022-11-28',
         ];
+    }
+
+    protected function handleDeletedRecommendations(): void
+    {
+        Recommendation::whereNotIn('uuid', $this->uuids)
+            ->each(fn ($recommendation) => $recommendation->delete());
     }
 }

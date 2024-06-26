@@ -2,6 +2,7 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Jobs\GenerateUserRecommendations;
 use ProcessMaker\Models\Recommendation;
 use ProcessMaker\Models\User;
 
@@ -25,5 +26,8 @@ class ApplyRecommendation
                     break;
             }
         }
+
+        // Generate recommendations again so updated tasks are considered
+        GenerateUserRecommendations::dispatch($user->id);
     }
 }

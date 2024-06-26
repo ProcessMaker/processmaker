@@ -5,18 +5,34 @@
       <div class="actions">
         <b-button
           v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
+          class="ml-2"
+          variant="outline-secondary"
           @click="markAsPriority(userRecommendation)"
           >
           {{ markAsPriorityLabel(userRecommendation) }}
         </b-button>
         <b-button
           v-if="userRecommendation.recommendation.actions.includes('reassign_to_user')"
+          class="ml-2"
+          variant="outline-secondary"
           @click="reassignToUser(userRecommendation)"
           >
           {{ reassignToUserLabel(userRecommendation) }}
         </b-button>
 
-        <a href="#" @click="dismiss(userRecommendation)">X</a>
+        <b-dropdown variant="outline-secondary" class="ml-2" no-caret>
+          <template #button-content>
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+          </template>
+          <b-dropdown-item>{{ $t('Create a rule based on this suggestion') }}</b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item>{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
+          <b-dropdown-item>{{ $t('Dismiss All') }}</b-dropdown-item>
+        </b-dropdown>
+
+        <a href="#" class="ml-2" @click="dismiss(userRecommendation)">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </a>
       </div>
     </div>
 
@@ -96,7 +112,6 @@ export default {
       this.update(params);
     },
     update(params = {}) {
-      console.log('update', this.userRecommendationId, this.action, params)
       if (!this.userRecommendationId || !this.action) {
         return;
       }

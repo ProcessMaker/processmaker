@@ -9,9 +9,7 @@ class Recommendation extends ProcessMakerModel
 {
     protected $connection = 'processmaker';
 
-    protected $guarded = [
-        'uuid',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'min_matches' => 'integer',
@@ -32,6 +30,10 @@ class Recommendation extends ProcessMakerModel
         // Default to an empty array for available actions
         static::saving(static function ($recommendation) {
             $recommendation->actions = $recommendation->actions ?? [];
+        });
+
+        static::deleting(function (Recommendation $recommendation) {
+            $recommendation->recommendationUsers()->delete();
         });
 
         parent::boot();
