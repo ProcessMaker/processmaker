@@ -5,7 +5,9 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Mustache_Engine;
+use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -26,6 +28,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
+use ProcessMaker\Packages\Connectors\Email\EmailConfig;
 
 /**
  * Execution Instance Repository.
@@ -94,6 +97,7 @@ class TokenRepository implements TokenRepositoryInterface
             $user = null;
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
+            $this->validateAndSendActionByEmail($activity, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -145,8 +149,6 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $this->validateAndSendActionByEmail($activity);
-
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -165,21 +167,35 @@ class TokenRepository implements TokenRepositoryInterface
      * Get action by email configuration
      *
      * @param ActivityInterface $activity
+     * @param String $email
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, String $email)
     {
         $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
         if ($isActionsByEmail) {
             $configEmail = json_decode($activity->getProperty('configEmail', []));
             // Get the parameters to send the email
-            $emailserver = $configEmail->emailServer ?? 0;
-            $subject = $configEmail->subject ?? '';
-            $emailScreen = $configEmail->screenEmailRef ?? 0;
-            $emailScreenCompleted = $configEmail->screenCompleteRef ?? 0;
+            $groupName = $configEmail->emailServer ?? 'Email Default Settings';
+            $configEmail->subject = $configEmail->subject ?? '';
+            $configEmail->screenEmailRef = $configEmail->screenEmailRef ?? 0;
+            $configEmail->screenCompleteRef = $configEmail->screenCompleteRef ?? 0;
+            
 
-            //TODO send Email
+            //Send Email
+            $this->loadConfig($groupName);
+            Mail::send(new TaskActionByEmail($configEmail, 'luciana.nunez@processmaker.com'));
         }
 
+    }
+
+    /**
+     * configure email server
+     */
+    private function loadConfig($groupName)
+    {
+        $emailServer = EmailConfig::getServerIndexByName($groupName);
+        $config = new EmailConfig($emailServer);
+        $config->loadEmailConfig();
     }
 
     /**
