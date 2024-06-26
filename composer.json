@@ -171,6 +171,8 @@
                 "package-versions": "dev-next",
                 "package-vocabularies": "dev-next",
                 "package-webentry": "dev-next",
+                "package-accessibility": "dev-next",
+                "package-rpa": "dev-next",
                 "packages": "^0"
             },
             "docker-executors": {
