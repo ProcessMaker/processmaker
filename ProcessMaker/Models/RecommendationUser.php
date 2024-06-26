@@ -52,6 +52,6 @@ class RecommendationUser extends ProcessMakerModel
 
         $this->dismissed_until = $dismissUntil;
 
-        $this->save();
+        $this->saveOrFail();
     }
 }

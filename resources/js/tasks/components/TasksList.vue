@@ -1,5 +1,6 @@
 <template>
   <div class="data-table">
+    <Recommendations />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -219,6 +220,7 @@ import PMColumnFilterIconDesc from "../../components/PMColumnFilterPopover/PMCol
 import FilterTableBodyMixin from "../../components/shared/FilterTableBodyMixin";
 import TaskListRowButtons from "./TaskListRowButtons.vue";
 import { get } from "lodash";
+import Recommendations from "../../components/Recommendations.vue";
 
 const uniqIdsMixin = createUniqIdsMixin();
 
@@ -233,7 +235,8 @@ export default {
     TaskTooltip,
     PMColumnFilterIconAsc,
     PMColumnFilterIconDesc,
-    TaskListRowButtons
+    TaskListRowButtons,
+    Recommendations,
   },
   mixins: [
     datatableMixin,

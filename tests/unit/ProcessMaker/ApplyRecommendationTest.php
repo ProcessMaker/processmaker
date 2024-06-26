@@ -27,7 +27,6 @@ class ApplyRecommendationTest extends TestCase
                     'value' => 'node_1',
                 ],
             ],
-            'actions' => ['mark_as_priority'],
         ]);
 
         $activeTask1 = ProcessRequestToken::factory()->create([
@@ -44,7 +43,7 @@ class ApplyRecommendationTest extends TestCase
             'is_priority' => false,
         ]);
 
-        ApplyRecommendation::run($recommendation, $user);
+        ApplyRecommendation::run('mark_as_priority', $recommendation, $user);
 
         $activeTask1->refresh();
         $this->assertTrue($activeTask1->is_priority);
@@ -71,11 +70,10 @@ class ApplyRecommendationTest extends TestCase
         ]);
 
         $recommendation = Mockery::mock(Recommendation::class)->makePartial();
-        $recommendation->actions = ['reassign_to_user'];
         $recommendation->allows([
             'baseQuery' => $baseQuery,
         ]);
 
-        ApplyRecommendation::run($recommendation, $user, ['to_user_id' => $userToReassignTo->id]);
+        ApplyRecommendation::run('reassign_to_user', $recommendation, $user, ['to_user_id' => $userToReassignTo->id]);
     }
 }

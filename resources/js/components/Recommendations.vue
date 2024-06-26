@@ -1,0 +1,113 @@
+<template>
+  <div>
+    <div class="recommendation" v-for="(userRecommendation, index) in userRecommendations" :key="index">
+      {{ description(userRecommendation) }}
+      <div class="actions">
+        <b-button
+          v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
+          @click="markAsPriority(userRecommendation)"
+          >
+          {{ markAsPriorityLabel(userRecommendation) }}
+        </b-button>
+        <b-button
+          v-if="userRecommendation.recommendation.actions.includes('reassign_to_user')"
+          @click="reassignToUser(userRecommendation)"
+          >
+          {{ reassignToUserLabel(userRecommendation) }}
+        </b-button>
+
+        <a href="#" @click="dismiss(userRecommendation)">X</a>
+      </div>
+    </div>
+
+    <b-modal id="confirm" :title="$t('Confirmation')" @ok="onConfirm">
+      <p class="" v-html="confirmText"></p>
+      <user-select v-if="action === 'reassign_to_user'" :label="false" @input="toUserId = $event" />
+    </b-modal>
+  </div>
+</template>
+
+<script>
+import UserSelect from '../processes/modeler/components/inspector/UserSelect.vue';
+
+export default {
+  components: {
+    UserSelect
+  },
+  data() {
+    return {
+      userRecommendations: [],
+      action: null,
+      userRecommendationId: null,
+      confirmText: null,
+      toUserId: null,
+    }
+  },
+  mounted() {
+    this.fetchRecommendations();
+  },
+  methods: {
+    fetchRecommendations() {
+      ProcessMaker.apiClient.get("recommendations").then((response) => {
+        this.userRecommendations = response.data.data;
+      });
+    },
+    description(userRecommendation) {
+      return this.$t(userRecommendation.recommendation.description, { count: userRecommendation.count })
+    },
+    markAsPriorityLabel(userRecommendation) {
+      return this.$t('Mark ({{count}}) as priority', { count: userRecommendation.count })
+    },
+    reassignToUserLabel(userRecommendation) {
+      return this.$t('Reassign ({{count}})', { count: userRecommendation.count })
+    },
+    dismiss(userRecommendation) {
+      this.userRecommendationId = userRecommendation.id;
+      this.action = 'dismiss';
+      this.update().then(() => {
+        this.userRecommendations = this.userRecommendations.filter(r => r.id !== userRecommendation.id);
+      });
+    },
+    reassignToUser(userRecommendation) {
+      this.userRecommendationId = userRecommendation.id;
+      this.action = 'reassign_to_user';
+      this.confirmText = this.$t(
+        'Reassign <strong>({{count}}) tasks</strong> to:',
+        { count: userRecommendation.count}
+      );
+      this.toUserId = null;
+      this.$bvModal.show('confirm');
+    },
+    markAsPriority(userRecommendation) {
+      this.userRecommendationId = userRecommendation.id;
+      this.action = 'mark_as_priority';
+      this.confirmText = this.$t(
+        'Are you sure you want to mark <strong>({{count}}) tasks</strong> as priority?',
+        { count: userRecommendation.count }
+      );
+      this.$bvModal.show('confirm');
+    },
+    onConfirm() {
+      let params = {};
+      if (this.action === 'reassign_to_user') {
+        this.update({ to_user_id: this.toUserId });
+        return;
+      }
+      this.update(params);
+    },
+    update(params = {}) {
+      console.log('update', this.userRecommendationId, this.action, params)
+      if (!this.userRecommendationId || !this.action) {
+        return;
+      }
+      return ProcessMaker.apiClient.put(
+        "recommendations/" + this.userRecommendationId, 
+        {
+          action: this.action,
+          ...params
+        }
+      );
+    }
+  }
+}
+</script>

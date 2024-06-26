@@ -19,6 +19,7 @@ class ApplyRecommendation implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
+        public string $action,
         public int $recommendationId,
         public int $userId,
         public array $params = [])
@@ -32,6 +33,6 @@ class ApplyRecommendation implements ShouldQueue
     {
         $recommendation = Recommendation::findOrFail($this->recommendationId);
         $user = User::findOrFail($this->userId);
-        RunApplyRecommendation::run($recommendation, $user, $this->params);
+        RunApplyRecommendation::run($this->action, $recommendation, $user, $this->params);
     }
 }
