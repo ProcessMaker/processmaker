@@ -741,6 +741,14 @@ class ProcessRequestController extends Controller
         return new ApiResource($token);
     }
 
+    /**
+     * Retrieve the screens requested for a given process request.
+     *
+     * @param  Request  $httpRequest
+     * @param  ProcessRequest  $request
+     *
+     * @return ApiCollection
+     */
     public function screenRequested(Request $httpRequest, ProcessRequest $request)
     {
         $query = ProcessRequestToken::query();
