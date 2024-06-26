@@ -36,7 +36,7 @@ class DockerExecutorPhpNayra extends Command
                 'language' => Base::NAYRA_LANG,
                 'title' => 'Nayra (µService)',
                 'description' => 'Nayra (µService) Executor',
-                'config' => 'RUN composer require nayra/nayra',
+                'config' => '',
             ]);
         }
 
