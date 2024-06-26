@@ -132,43 +132,41 @@ export default {
       this.$refs.screens.toggleDetailRow(data.id);
     },
     fetch() {
-      Vue.nextTick(() => {
-        this.loading = true;
-        let endpoint = `/requests/${this.id}/details-screen-request`;
-        // Load from our api client
-        ProcessMaker.apiClient
-          .get(
-            `${endpoint}?page=` +
-              this.page +
-              "&per_page=" +
-              this.perPage +
-              "&filter=" +
-              this.filter +
-              "&order_by=" +
-              this.orderBy +
-              "&order_direction=asc"
-          )
-          .then((response) => {
-            this.data = this.transform(response.data);
-            this.screens = this.data.data;
-            this.screens.forEach((item) => {
-              item.view = false;
-              return item;
-            });
-            this.loading = false;
-          })
-          .catch((error) => {
-            this.data = [];
-            this.loading = false;
-            if (_.has(error, "response.data.message")) {
-              ProcessMaker.alert(error.response.data.message, "danger");
-            } else if (_.has(error, "response.data.error")) {
-              return;
-            } else {
-              throw error;
-            }
+      this.loading = true;
+      let endpoint = `/requests/${this.id}/details-screen-request`;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          `${endpoint}?page=` +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=asc"
+        )
+        .then((response) => {
+          this.data = this.transform(response.data);
+          this.screens = this.data.data;
+          this.screens.forEach((item) => {
+            item.view = false;
+            return item;
           });
-      });
+          this.loading = false;
+        })
+        .catch((error) => {
+          this.data = [];
+          this.loading = false;
+          if (_.has(error, "response.data.message")) {
+            ProcessMaker.alert(error.response.data.message, "danger");
+          } else if (_.has(error, "response.data.error")) {
+            return;
+          } else {
+            throw error;
+          }
+        });
     },
   },
 };
