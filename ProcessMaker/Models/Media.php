@@ -219,13 +219,17 @@ class Media extends MediaLibraryModel
         // Check if exist
         $exist = $process->media()->where($key, $properties[$key])->exists();
         if (!$exist) {
+            // Define the custom properties
+            $customProperties = [
+                'media_type' => $mediaType,
+                'type' => $properties['type'],
+            ];
+            if ($mediaType === 'slideshow') {
+                $customProperties['node_id'] = $properties['node_id'] ?? '';
+            }
             // Store the images related move to MEDIA
             $process->addMediaFromBase64($properties['url'])
-                ->withCustomProperties([
-                    'media_type' => $mediaType,
-                    'type' => $properties['type'],
-                    'node_id' => $properties['node_id'],
-                ])
+                ->withCustomProperties($customProperties)
                 ->toMediaCollection($collectionName);
         }
     }
