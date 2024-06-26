@@ -18,7 +18,7 @@
     </div>
   </div>
   <div v-else class="d-flex align-items-center">
-    <img class="thumb-size" :src="`/img/launchpad-images/icons/${processIcon}.svg`"></img>
+    <img class="thumb-size" :src="`/img/launchpad-images/icons/${processIcon}.svg`" :alt="$t('No Image')"></img>
     <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
     <status-summary 
       :completedIcon="completedIcon" 
