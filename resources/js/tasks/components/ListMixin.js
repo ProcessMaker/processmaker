@@ -84,7 +84,10 @@ const ListMixin = {
               advancedFilter +
               this.columnsQuery,
 
-              { dataLoadingId: this.dataLoadingId }
+              {
+                dataLoadingId: this.dataLoadingId,
+                headers: { 'Cache-Control': 'no-cache'}
+              },
           )
           .then((response) => {
             this.data = this.transform(response.data);

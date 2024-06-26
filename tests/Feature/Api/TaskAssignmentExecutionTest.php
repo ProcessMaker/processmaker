@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Carbon\Carbon;
 use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Group;
@@ -138,6 +139,29 @@ class TaskAssignmentExecutionTest extends TestCase
         $process->save();
         $response = $run(['userIdInData' => 'foo']);
         $this->assertFalse(array_key_exists('errors', $response));
+    }
+
+    public function testDueDate()
+    {
+        $process = Process::factory()->create([
+            'bpmn' => file_get_contents(__DIR__ . '/processes/TaskConfiguredCustomDueIn.bpmn'),
+        ]);
+        $data = [
+            'var_due_date' => 24
+        ];
+        $route = route('api.process_events.trigger',
+            [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, $data);
+        // Verify status
+        $response->assertStatus(201);
+        // Get the ProcessRequest
+        $expectedDueDate = Carbon::now()->addHours(24);
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $response['id'],
+            'status' => 'ACTIVE',
+        ])->firstOrFail();
+        
+        $this->assertFalse($task->due_at->greaterThanOrEqualTo($expectedDueDate));
     }
 
     public function testSelfServeAssignment()

@@ -357,7 +357,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.dropdownSavedCharts = [];
+          this.dropdownSavedCharts = [this.defaultChart];
         });
     },
     /**
@@ -381,7 +381,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.dropdownSavedScreen = [];
+          this.dropdownSavedScreen = [this.defaultScreen];
         });
     },
     /**
