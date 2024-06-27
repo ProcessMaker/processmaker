@@ -15,6 +15,7 @@
       </div>
       <div
         class="header card-body card-process-info"
+        :style="{ borderRadius: infoCollapsed ? '0px' : '8px' }"
         data-toggle="collapse"
               data-target="#collapseProcessInfo"
               aria-controls="collapseProcessInfo"
@@ -186,6 +187,9 @@ export default {
   padding-top: 13px;
   height: 53px;
   margin-right: 20px;
+}
+.uncollapsed-card {
+  border-radius: 0px;
 }
 .custom-text {
   font-size: 16px;

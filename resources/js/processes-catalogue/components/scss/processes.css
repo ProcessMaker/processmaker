@@ -25,9 +25,10 @@
   border-right: 1px solid rgb(205, 221, 238);
   border-bottom: none;
   border-top: 1px solid rgb(205, 221, 238);
-  border-radius: 8px;
+  border-radius: 0px;
   margin-right: 20px;
 }
+
 .title-process {
   color: #556271;
   font-family: 'Open Sans', sans-serif;
