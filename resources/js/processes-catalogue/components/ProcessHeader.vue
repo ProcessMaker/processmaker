@@ -185,6 +185,7 @@ export default {
   border: 1px solid rgb(205, 221, 238);
   padding-top: 13px;
   height: 53px;
+  margin-right: 20px;
 }
 .custom-text {
   font-size: 16px;

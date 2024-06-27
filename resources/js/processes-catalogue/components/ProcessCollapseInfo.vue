@@ -13,7 +13,7 @@
       />
       <div
         id="collapseProcessInfo"
-        class="collapse show"
+        class="collapse show custom-class"
       >
         <div class="info-collapse">
           <div class="row">
@@ -167,7 +167,9 @@ export default {
     display: none;
   }
 }
-
+.custom-class {
+ margin-top: -13px;
+}
 .wizard-link {
   text-transform: none;
 }
