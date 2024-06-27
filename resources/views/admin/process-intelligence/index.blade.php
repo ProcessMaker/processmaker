@@ -18,7 +18,7 @@
 @endsection
 @section('content')
   <iframe
-    src="https://dev-app.workfellow.com/automatic-sign-in?jwe={{ $token }}"
+    src="https://dev-app.workfellow.com/automatic-sign-in?token={{ $token }}"
     title="{{ __('Process Intelligence') }}"
     width="100%"
     height="600"
