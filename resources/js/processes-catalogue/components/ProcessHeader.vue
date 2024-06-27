@@ -14,7 +14,7 @@
       </div>
     </div>
     <div
-      class="header card-body card-process-info"
+      class="header card-body card-process-info clickable"
       :style="{
         borderRadius: infoCollapsed ? '8px 8px 0px 0px' : '8px',
         borderTopLeftRadius: '8px',
@@ -210,5 +210,9 @@ export default {
 
 .custom-color {
   color: #4c545c;
+}
+
+.clickable {
+  cursor: pointer;
 }
 </style>
