@@ -8,34 +8,48 @@
         {{ count }}
       </p>
     </div>
-    <div class="d-flex align-items-center">
-      <status-summary 
-      :completedIcon="completedIcon" 
-      :inProgressIcon="inProgressIcon" 
-      :completed="completed" 
-      :inProgress="inProgress" 
-    />
+    <div class="charts">
+      <mini-pie-chart
+        :count="process.counts.completed"
+        :total="process.counts.total"
+        :name="$t('In Progress')"
+        color="#4EA075"
+      />
+      <mini-pie-chart
+        :count="process.counts.in_progress"
+        :total="process.counts.total"
+        :name="$t('Completed')"
+        color="#478FCC"
+      />
     </div>
   </div>
   <div v-else class="d-flex align-items-center">
     <img class="thumb-size" :src="`/img/launchpad-images/icons/${processIcon}.svg`" :alt="$t('No Image')"></img>
     <span class="text-summary">{{ count }} {{ $t('Cases started') }}</span>
-    <status-summary 
-      :completedIcon="completedIcon" 
-      :inProgressIcon="inProgressIcon" 
-      :completed="completed" 
-      :inProgress="inProgress" 
-    />
+    <div class="charts">
+      <mini-pie-chart
+        :count="process.counts.completed"
+        :total="process.counts.total"
+        :name="$t('In Progress')"
+        color="#4EA075"
+      />
+      <mini-pie-chart
+        :count="process.counts.in_progress"
+        :total="process.counts.total"
+        :name="$t('Completed')"
+        color="#478FCC"
+      />
+    </div>
   </div>
 </template>
 <script>
 import CustomIcon from "../utils/CustomIcon.vue"
-import StatusSummary from '../../components/StatusSummary.vue';
+import MiniPieChart from "../MiniPieChart.vue";
 
 export default {
   components: {
     CustomIcon,
-    StatusSummary,
+    MiniPieChart,
   },
   props: ["process", "enableCollapse"],
   data() {
@@ -44,20 +58,13 @@ export default {
       completed: 0,
       inProgress: 0,
       processIcon: null,
+      completedCollapsed: 0,
+      inProgressCollapsed: 0,
     };
   },
   mounted() {
     this.fetch();
-    this.percentCalcs();
     this.getProcessImage();
-  },
-  computed: {
-    completedIcon() {
-      return this.getIconName(this.completed);
-    },
-    inProgressIcon() {
-      return this.getIconName(this.inProgress);
-    },
   },
   methods: {
     fetch() {
@@ -70,37 +77,12 @@ export default {
           this.count = 0;
         });
     },
-    percentCalcs() {
-      if (this.process.counts.total === 0 || !this.process.counts.total) {
-        this.completed = 0;
-        this.inProgress = 0;
-      } else {
-        this.completed = Math.round((this.process.counts.completed * 100) / this.process.counts.total) || 0;
-        this.inProgress = Math.round((this.process.counts.in_progress * 100) / this.process.counts.total) || 0;
-      }
-    },
+
     getProcessImage() {
       const propertiesString = this.process.launchpad["properties"];
       const propertiesObject = JSON.parse(propertiesString);
       this.processIcon = propertiesObject.icon;
       return this.processIcon ? this.processIcon : null;
-    },
-    getIconName(value) {
-      if (value === 0) {
-        return "mini-chart-0";
-      } else if (value >= 1 && value <= 25) {
-        return "mini-chart-1-25";
-      } else if (value >= 26 && value <= 48) {
-        return "mini-chart-26-48";
-      } else if (value >= 49 && value <= 51) {
-        return "mini-chart-49-51";
-      } else if (value >= 52 && value <= 75) {
-        return "mini-chart-52-75";
-      } else if (value >= 76 && value <= 99) {
-        return "mini-chart-76-99";
-      } else {
-        return "mini-chart-100";
-      }
     },
   },
 };
@@ -142,8 +124,8 @@ export default {
   height: 56px;
 }
 .thumb-size {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 .d-flex.align-items-center > * {
   margin-right: 8px;
@@ -160,5 +142,9 @@ export default {
   font-weight: 400;
   vertical-align: middle;
   font-style: italic;
+}
+.charts {
+  display: flex;
+  align-items: center;
 }
 </style>

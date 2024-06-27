@@ -12,6 +12,11 @@
       >
         {{ process.description }}
       </p>
+      <span 
+        v-if="readActivated || !largeDescription" 
+        class="class-version">
+        {{ $t('Version') }} {{ processVersion }}
+      </span>
       <p
         v-if="!readActivated && largeDescription"
         class="description"
@@ -36,6 +41,11 @@ export default {
       largeDescription: false,
     };
   },
+  computed: {
+    processVersion() {
+      return moment(this.process.updated_at).format();
+    },
+  },
   mounted() {
     this.verifyDescription();
   },
@@ -56,6 +66,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import url("../scss/processes.css");
+@import '~styles/variables';
 
 .title {
   color: #1572C2;
@@ -81,5 +92,9 @@ export default {
   line-height: 24px;
   letter-spacing: -0.02em;
   text-align: left;
+}
+.class-version {
+  font-size: 1em;
+  color:#B1B8BF;
 }
 </style>
