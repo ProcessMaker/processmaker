@@ -49,7 +49,7 @@ return [
     // TODO Does the ProcessMakerSerializer class exist, if so, we need to fix its namespace :)
     'serialize_fractal' => env('SERIALIZE_FRACTAL', ProcessMaker\Transformers\ProcessMakerSerializer::class),
 
-    //Option Fractal, paginator
+    // Option Fractal, paginator
     'paginate_fractal' => env('PAGINATE_FRACTAL', League\Fractal\Pagination\IlluminatePaginatorAdapter::class),
 
     // The processmaker identifier of the web client application
@@ -232,4 +232,6 @@ return [
     'node_bin_path' => env('NODE_BIN_PATH', '/usr/bin/node'),
 
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
+
+    'force_https' => env('FORCE_HTTPS', true),
 ];

@@ -277,11 +277,11 @@ class LoginController extends Controller
      * Handle a login request to the application.
      * Overrides the original login action.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \ProcessMaker\Models\User $user
+     * @param  Request $request
+     * @param  User $user
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Illuminate\Http\JsonResponse
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function login(Request $request, User $user)
     {
@@ -340,12 +340,17 @@ class LoginController extends Controller
     /**
      * Throws locked error message
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     protected function throwLockedLoginResponse()
     {
         throw ValidationException::withMessages([
             $this->username() => [_('Account locked after too many failed attempts. Contact administrator.')],
         ]);
+    }
+
+    public function showLoginFailed(Request $request)
+    {
+        return view('errors.login-failed');
     }
 }
