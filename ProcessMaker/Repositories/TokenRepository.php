@@ -162,7 +162,7 @@ class TokenRepository implements TokenRepositoryInterface
     }
 
     /**
-     * Get action by email configuration
+     * Validate email configuration and Send Email
      *
      * @param ActivityInterface $activity
      */
