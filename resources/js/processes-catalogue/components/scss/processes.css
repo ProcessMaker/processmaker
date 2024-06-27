@@ -27,6 +27,8 @@
   border-top: 1px solid rgb(205, 221, 238);
   border-radius: 0px;
   margin-right: 20px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 }
 
 .title-process {

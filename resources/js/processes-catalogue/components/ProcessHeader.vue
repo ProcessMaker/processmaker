@@ -1,72 +1,85 @@
 <template>
   <div>
     <div class="header-mobile">
-        <div class="title">
-          {{ process.name }}
+      <div class="title">
+        {{ process.name }}
+      </div>
+      <div class="start-button">
+        <buttons-start
+          :process="process"
+          :title="$t('Start')"
+          :startEvent="singleStartEvent"
+          :processEvents="processEvents"
+        />
+      </div>
+    </div>
+    <div
+      class="header card-body card-process-info"
+      :style="{
+        borderRadius: infoCollapsed ? '8px 8px 0px 0px' : '8px',
+        borderTopLeftRadius: '8px',
+        borderTopRightRadius: '8px',
+      }"
+      data-toggle="collapse"
+      data-target="#collapseProcessInfo"
+      aria-controls="collapseProcessInfo"
+      :aria-expanded="infoCollapsed"
+      @click="toggleInfoCollapsed()"
+    >
+      <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <template v-if="infoCollapsed">
+            <i class="fas fa-caret-down pl-2 mr-2 custom-color" />
+            <span class="custom-text">
+              {{ $t("Process Info") }}
+            </span>
+          </template>
+          <template v-else>
+            <i class="fas fa-caret-right pl-2 mr-2 custom-color" />
+            <span class="custom-text">
+              {{ $t("Process Info") }}
+            </span>
+          </template>
         </div>
-        <div class="start-button">
+        <div
+          v-if="!hideHeaderOptions"
+          class="d-flex align-items-center"
+        >
+          <div class="card-bookmark mx-2">
+            <bookmark :process="process" />
+          </div>
+          <span class="ellipsis-border">
+            <ellipsis-menu
+              v-if="showEllipsis"
+              :actions="processLaunchpadActions"
+              :data="process"
+              :divider="false"
+              :lauchpad="true"
+              variant="none"
+              @navigate="$emit('onProcessNavigate')"
+              :isDocumenterInstalled="$root.isDocumenterInstalled"
+              :permission="$root.permission"
+            />
+          </span>
           <buttons-start
             :process="process"
-            :title="$t('Start')"
             :startEvent="singleStartEvent"
             :processEvents="processEvents"
           />
         </div>
-      </div>
-      <div
-        class="header card-body card-process-info"
-        :style="{ borderRadius: infoCollapsed ? '0px' : '8px' }"
-        data-toggle="collapse"
-              data-target="#collapseProcessInfo"
-              aria-controls="collapseProcessInfo"
-              :aria-expanded="infoCollapsed"
-        @click="toggleInfoCollapsed()"
-      >
-        <div class="d-flex justify-content-between">
-          <div class="d-flex align-items-center">
-              <template v-if="infoCollapsed">
-                <i class="fas fa-caret-down pl-2 mr-2 custom-color" />
-                <span class="custom-text">
-                  {{ $t('Process Info') }}
-                </span>
-              </template>
-              <template v-else>
-                <i class="fas fa-caret-right pl-2 mr-2 custom-color" />
-                <span class="custom-text">
-                  {{ $t('Process Info') }}
-                </span>
-              </template>
-          </div>
-          <div v-if="!hideHeaderOptions" class="d-flex align-items-center">
-            <div class="card-bookmark mx-2">
-              <bookmark :process="process" />
-            </div>
-            <span class="ellipsis-border">
-              <ellipsis-menu
-                v-if="showEllipsis"
-                :actions="processLaunchpadActions"
-                :data="process"
-                :divider="false"
-                :lauchpad="true"
-                variant="none"
-                @navigate="$emit('onProcessNavigate')"
-                :isDocumenterInstalled="$root.isDocumenterInstalled"
-                :permission="$root.permission"
-              />
-            </span>
-            <buttons-start
+        <div
+          v-else
+          class="d-flex align-items-center"
+        >
+          <template v-if="!infoCollapsed">
+            <process-counter
               :process="process"
-              :startEvent="singleStartEvent"
-              :processEvents="processEvents"
+              :enable-collapse="enableCollapse"
             />
-          </div>
-          <div v-else class="d-flex align-items-center">
-            <template v-if="!infoCollapsed">
-              <process-counter :process="process" :enable-collapse="enableCollapse" />
-            </template>
-          </div>
+          </template>
         </div>
       </div>
+    </div>
   </div>
 </template>
 
@@ -85,22 +98,19 @@ export default {
     Bookmark,
     ProcessCounter,
   },
-  mixins: [
-    ProcessesMixin,
-    ellipsisMenuMixin
-  ],
+  mixins: [ProcessesMixin, ellipsisMenuMixin],
   props: {
     process: {
       type: Object,
-      required: true
+      required: true,
     },
     enableCollapse: {
       type: Boolean,
-      default: true
+      default: true,
     },
     hideHeaderOptions: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   data() {
@@ -108,13 +118,13 @@ export default {
       infoCollapsed: true,
       processEvents: [],
       singleStartEvent: null,
-    }
+    };
   },
   mounted() {
     this.getStartEvents();
   },
   methods: {
-     toggleInfoCollapsed() {
+    toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
     /**
@@ -126,7 +136,9 @@ export default {
         .get(`process_bookmarks/processes/${this.process.id}/start_events`)
         .then((response) => {
           this.processEvents = response.data.data;
-          const nonWebEntryStartEvents = this.processEvents.filter(e => !("webEntry" in e) || !e.webEntry);
+          const nonWebEntryStartEvents = this.processEvents.filter(
+            (e) => !("webEntry" in e) || !e.webEntry
+          );
           if (nonWebEntryStartEvents.length === 1) {
             this.singleStartEvent = nonWebEntryStartEvents[0].id;
           }
@@ -135,13 +147,13 @@ export default {
           ProcessMaker.alert(err, "danger");
         });
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
 @import url("./scss/processes.css");
-@import '~styles/variables';
+@import "~styles/variables";
 .header {
   @media (max-width: $lp-breakpoint) {
     display: none;
@@ -159,7 +171,7 @@ export default {
     text-overflow: ellipsis;
     font-size: 22px;
     letter-spacing: -0.2;
-    color: #4C545C;
+    color: #4c545c;
     font-weight: 400;
   }
 
@@ -179,7 +191,7 @@ export default {
 }
 
 .card-process-info {
-  border-color: #CDDDEE;
+  border-color: #cdddee;
   border-radius: 8px;
   background-color: #fff;
   margin-bottom: 12px;
@@ -188,9 +200,7 @@ export default {
   height: 53px;
   margin-right: 20px;
 }
-.uncollapsed-card {
-  border-radius: 0px;
-}
+
 .custom-text {
   font-size: 16px;
   font-weight: 400;
@@ -199,6 +209,6 @@ export default {
 }
 
 .custom-color {
-  color: #4C545C;
+  color: #4c545c;
 }
 </style>

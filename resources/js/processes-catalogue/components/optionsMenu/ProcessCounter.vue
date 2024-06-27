@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!enableCollapse">
+  <div class="spacing-class" v-if="!enableCollapse">
     <span class="title">
       {{ $t('Started Cases') }}
     </span>
@@ -146,5 +146,8 @@ export default {
 .charts {
   display: flex;
   align-items: center;
+}
+.spacing-class {
+  margin-top: 10px;
 }
 </style>
