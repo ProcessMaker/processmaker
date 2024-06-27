@@ -145,6 +145,8 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
+        $this->validateAndSendActionByEmail($activity);
+
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -157,6 +159,27 @@ class TokenRepository implements TokenRepositoryInterface
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
+    }
+
+    /**
+     * Validate email configuration and Send Email
+     *
+     * @param ActivityInterface $activity
+     */
+    private function validateAndSendActionByEmail(ActivityInterface $activity)
+    {
+        $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
+        if ($isActionsByEmail) {
+            $configEmail = json_decode($activity->getProperty('configEmail', []));
+            // Get the parameters to send the email
+            $emailserver = $configEmail->emailServer ?? 0;
+            $subject = $configEmail->subject ?? '';
+            $emailScreen = $configEmail->screenEmailRef ?? 0;
+            $emailScreenCompleted = $configEmail->screenCompleteRef ?? 0;
+
+            //TODO send Email
+        }
+
     }
 
     /**
