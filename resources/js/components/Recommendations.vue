@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="recommendation" v-for="(userRecommendation, index) in userRecommendations" :key="index">
-      {{ description(userRecommendation) }}
+      <div class="title">
+        <div class="name">
+          {{ name(userRecommendation) }}
+        </div>
+        <a href="#" @click="filter(userRecommendation)">{{ description(userRecommendation) }}</a>
+      </div>
       <div class="actions">
         <b-button
           v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
@@ -68,6 +73,9 @@ export default {
         this.userRecommendations = response.data.data;
       });
     },
+    name(userRecommendation) {
+      return this.$t(userRecommendation.recommendation.name, { count: userRecommendation.count });
+    },
     description(userRecommendation) {
       return this.$t(userRecommendation.recommendation.description, { count: userRecommendation.count })
     },
@@ -122,7 +130,35 @@ export default {
           ...params
         }
       );
+    },
+    filter(userRecommendation) {
+      const filter = userRecommendation.recommendation.advanced_filter;
+      filter.push({ subject: { type: "Status" }, operator: "=", value: "In Progress" });
+      this.$root.$emit('load-with-filter', filter);
     }
   }
 }
 </script>
+
+<style scoped lang="scss">
+.recommendation {
+  display: flex;
+  padding: 10px;
+  border: 2px solid #9AC2E5;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  align-items: center;
+  background-color: #F2F8FC;
+}
+.title {
+  flex-grow: 1;
+}
+.name {
+  font-weight: 600;
+}
+.actions :deep(.btn) {
+  background-color: #FEFEFE;
+  border-color: #CDDEEE;
+  text-transform: none;
+}
+</style>
