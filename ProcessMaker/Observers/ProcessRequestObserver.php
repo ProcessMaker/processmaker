@@ -51,7 +51,7 @@ class ProcessRequestObserver
         if ($request->status === 'ERROR') {
             $errors = $request->getAttribute('errors') ?? [];
             foreach ($errors as $error) {
-                event(new RequestError($request, $error['message']));
+                RequestError::dispatchIfNotRateLimited($request, $error['message']);
             }
         }
         if ($request->status === 'COMPLETED') {
