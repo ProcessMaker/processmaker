@@ -10,6 +10,9 @@
   <title>{{ __('Login') }} - {{ __('ProcessMaker') }}</title>
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ \ProcessMaker\Models\Setting::getFavicon() }}">
+  @if (hasPackage('package-accessibility'))
+    @include('package-accessibility::userway')
+  @endif
 
 </head>
 <body>

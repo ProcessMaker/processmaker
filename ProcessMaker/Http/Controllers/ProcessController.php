@@ -106,7 +106,26 @@ class ProcessController extends Controller
         $canEditData = $this->listCan('EditData', $process);
         $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons', 'assignedProjects']));
+        $lastDraftOrPublishedVersion = $process->getDraftOrPublishedLatestVersion();
+
+        $isDraft = 0;
+        if ($lastDraftOrPublishedVersion) {
+            $isDraft = $lastDraftOrPublishedVersion->draft;
+        }
+
+        return view('processes.edit', compact([
+            'process',
+            'categories',
+            'screenRequestDetail',
+            'screenCancel',
+            'list',
+            'canCancel',
+            'canStart',
+            'canEditData',
+            'addons',
+            'assignedProjects',
+            'isDraft',
+        ]));
     }
 
     /**

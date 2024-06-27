@@ -220,6 +220,7 @@ if (isMobileNavbar === "true") {
     },
     data() {
       return {
+        display: true,
       };
     },
     mounted() {
