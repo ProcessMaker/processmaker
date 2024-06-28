@@ -20,7 +20,6 @@ class TaskActionByEmailTest extends TestCase
         // Create a new process
         $this->process = Process::factory()->create();
         $this->process->bpmn = $file;
-
         $this->process->save();
     }
 
