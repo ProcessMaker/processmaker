@@ -92,7 +92,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.item);
     if (this.type === "tasks") {
       this.splitText(this.item.process_request.case_title_formatted);
     } else if (this.type === "requests") {
