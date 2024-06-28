@@ -88,9 +88,7 @@ export default {
     dismiss(userRecommendation) {
       this.userRecommendationId = userRecommendation.id;
       this.action = 'dismiss';
-      this.update().then(() => {
-        this.userRecommendations = this.userRecommendations.filter(r => r.id !== userRecommendation.id);
-      });
+      this.update();
     },
     reassignToUser(userRecommendation) {
       this.userRecommendationId = userRecommendation.id;
@@ -129,7 +127,9 @@ export default {
           action: this.action,
           ...params
         }
-      );
+      ).then(() => {
+        this.userRecommendations = this.userRecommendations.filter(r => r.id !== this.userRecommendationId);
+      });
     },
     filter(userRecommendation) {
       const filter = userRecommendation.recommendation.advanced_filter;
@@ -160,5 +160,9 @@ export default {
   background-color: #FEFEFE;
   border-color: #CDDEEE;
   text-transform: none;
+}
+
+.actions :deep(.btn-outline-secondary:hover) {
+  color: #6C757D;
 }
 </style>
