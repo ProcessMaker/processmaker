@@ -11,7 +11,7 @@
                 <div
                   ref="fullText"
                   :style="{ display: isVisible ? 'block' : 'none' }"
-                  v-html="item.case_title_formatted"
+                  v-html="sanitize(item.case_title_formatted)"
                 />
                 <div ref="line1" class="line-1" v-html="title1"></div>
                 <div ref="line2" class="line-2" v-html="title2"></div>
@@ -93,9 +93,9 @@ export default {
   },
   mounted() {
     if (this.type === "tasks") {
-      this.splitText(this.item.process_request.case_title_formatted);
+      this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
     } else if (this.type === "requests") {
-      this.splitText(this.item.case_title_formatted);
+      this.splitText(this.sanitize(this.item.case_title_formatted));
     }
   },
   methods: {
@@ -173,6 +173,24 @@ export default {
     },
     formatActiveTasks(value) {
       return value.map((task) => `${task.element_name}`).join(", ");
+    },
+    sanitize(html) {
+      return this.removeScripts(html);
+    },
+    removeScripts(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach((script) => {
+        script.remove();
+      });
+
+      const styles = doc.querySelectorAll('style');
+      styles.forEach((style) => {
+        style.remove();
+      });
+
+      return doc.body.innerHTML;
     },
   },
 };
