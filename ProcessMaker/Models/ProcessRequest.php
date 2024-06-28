@@ -355,8 +355,20 @@ class ProcessRequest extends ProcessMakerModel implements ExecutionInstanceInter
             ->orderBy('completed_at')
             ->get();
         $screens = [];
+        $definitions = [];
         foreach ($tokens as $token) {
-            $definition = $token->getDefinition();
+            // Get process related to token
+            $request = $token->processRequest ?: $token->getInstance();
+            $process = $request->processVersion ?: $request->process;
+
+            // Get the definition
+            if (!empty($definitions[$process->id])) {
+                $definition = $definitions[$process->id];
+            } else {
+                $definition = $definitions[$process->id] = $token->getDefinition();
+            }
+
+            // Get the screen realated to token
             if (array_key_exists('screenRef', $definition)) {
                 $screen = $token->getScreenVersion();
                 if ($screen) {
