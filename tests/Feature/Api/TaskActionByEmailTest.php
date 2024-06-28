@@ -19,7 +19,7 @@ class TaskActionByEmailTest extends TestCase
     {
         // Create a new process
         $this->process = Process::factory()->create();
-        $this->process->bpmn = file_get_contents($file);
+        $this->process->bpmn = $file;
 
         $task_uid = 'UserTaskUID';
         $this->task = $this->process->getDefinitions()->getActivity($task_uid);
