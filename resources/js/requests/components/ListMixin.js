@@ -80,7 +80,7 @@ const ListMixin = {
               this.page
             }&per_page=${
               this.perPage
-            }&include=process,participants,data`
+            }&include=process,participants,data,activeTasks`
                   + `&pmql=${
                     encodeURIComponent(pmql)
                   }&filter=${
