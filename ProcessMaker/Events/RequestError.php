@@ -61,11 +61,16 @@ class RequestError implements SecurityLogEventInterface
 
     /**
      * Dispatch the event if the process request is not rate limited
+     *
+     * @param ProcessRequest $request
+     * @param string $error
+     *
+     * @return bool
      */
-    public static function dispatchIfNotRateLimited(ProcessRequest $request, string $error)
+    public static function dispatchIfNotRateLimited(ProcessRequest $request, string $error): bool
     {
         $key = 'process-request-errors:' . $request->getKey();
-        $limit= config('app.process_request_errors_rate_limit', 1);
+        $limit = config('app.process_request_errors_rate_limit', 1);
         Log::info("Rate limit is set to {$limit} for process request errors.");
 
         if (RateLimiter::tooManyAttempts($key, $limit)) {
