@@ -142,7 +142,7 @@ export default {
           if(!callback) {
             this.$nextTick(() => {
                 if((container.scrollTop+container.clientHeight)>=container.scrollHeight-5){
-                  container.scrollTop = container.scrollTop - 1000;
+                  container.scrollTop = container.scrollTop - 1050;
                 } 
             });
           } 
