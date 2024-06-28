@@ -43,12 +43,10 @@
   </div>
 </template>
 <script>
-import CustomIcon from "../utils/CustomIcon.vue"
 import MiniPieChart from "../MiniPieChart.vue";
 
 export default {
   components: {
-    CustomIcon,
     MiniPieChart,
   },
   props: ["process", "enableCollapse"],
