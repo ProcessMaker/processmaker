@@ -175,14 +175,13 @@ class TokenRepository implements TokenRepositoryInterface
         if ($isActionsByEmail === "true") {
             $configEmail = json_decode($activity->getProperty('configEmail', []));
             // Get the parameters to send the email
-            $groupName = $configEmail->emailServer ?? 'Email Default Settings';
+            $emailServer = $configEmail->emailServer ?? 'Email Default Settings';
             $configEmail->subject = $configEmail->subject ?? '';
             $configEmail->screenEmailRef = $configEmail->screenEmailRef ?? 0;
-            $configEmail->screenCompleteRef = $configEmail->screenCompleteRef ?? 0;
             
 
             //Send Email
-            $this->loadConfig($groupName);
+            $this->loadConfig($emailServer);
             $email = 'luciana.nunez@processmaker.com';
             Mail::send(new TaskActionByEmail($configEmail, $email));
         }
@@ -191,10 +190,11 @@ class TokenRepository implements TokenRepositoryInterface
 
     /**
      * configure email server
+     * @param String $emailServer
      */
-    private function loadConfig($groupName)
+    private function loadConfig($emailServer)
     {
-        $emailServer = EmailConfig::getServerIndexByName($groupName);
+        $emailServer = EmailConfig::getServerIndexByName($emailServer);
         $config = new EmailConfig($emailServer);
         $config->loadEmailConfig();
     }
