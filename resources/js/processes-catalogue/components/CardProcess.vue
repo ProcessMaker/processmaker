@@ -92,9 +92,7 @@ export default {
       renderKey: 0,
       showMoreVisible: false,
       cardMessage: "show-more",
-      switchMenu: null,
-      flagMenu: true,
-      
+      sumHeight: 0,
     };
   },
   watch: {
@@ -111,7 +109,6 @@ export default {
     },
   },
   mounted() {
-    this.switchMenu = this.categoryId;
     this.loadCard(()=>{
       this.$nextTick(()=>{
           const listCard = document.querySelector(".processes-info");
@@ -142,7 +139,13 @@ export default {
           this.renderKey = this.renderKey + 1;
           callback?.();
           const container =  document.querySelector(".processes-info");
-          container.scrollTop = container.scrollTop - 60;
+          if(!callback) {
+            this.$nextTick(() => {
+                if((container.scrollTop+container.clientHeight)>=container.scrollHeight-5){
+                  container.scrollTop = container.scrollTop - 1000;
+                } 
+            });
+          } 
         });
     },
     /**
