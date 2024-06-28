@@ -21,12 +21,6 @@ class TaskActionByEmailTest extends TestCase
         $this->process = Process::factory()->create();
         $this->process->bpmn = $file;
 
-        $task_uid = 'UserTaskUID';
-        $this->task = $this->process->getDefinitions()->getActivity($task_uid);
-        $this->assigned = User::factory()->create([
-            'id' => $this->task->getProperty('assignedUsers'),
-            'status' => 'ACTIVE',
-        ]);
         $this->process->save();
     }
 
@@ -39,7 +33,7 @@ class TaskActionByEmailTest extends TestCase
 
         //Start a process request
         $route = route('api.process_events.trigger',
-            [$this->process->id, 'event' => 'StartEventUID']);
+            [$this->process->id, 'event' => 'node_1']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
 
@@ -56,7 +50,7 @@ class TaskActionByEmailTest extends TestCase
 
         //Start a process request
         $route = route('api.process_events.trigger',
-            [$this->process->id, 'event' => 'StartEventUID']);
+            [$this->process->id, 'event' => 'node_1']);
         $data = [];
         $response = $this->apiCall('POST', $route, $data);
 
