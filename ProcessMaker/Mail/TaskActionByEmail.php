@@ -44,7 +44,6 @@ class TaskActionByEmail extends Mailable
     protected function generateBody()
     {
         $screen = Screen::findOrFail($this->emailConfig->screenEmailRef);
-        $screenRendered = ScreenRenderer::render($screen->config, []);
-        return $screenRendered;
+        return ScreenRenderer::render($screen->config, []);
     }
 }

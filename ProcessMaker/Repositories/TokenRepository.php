@@ -97,7 +97,7 @@ class TokenRepository implements TokenRepositoryInterface
             $user = null;
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
-            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+            $this->validateAndSendActionByEmail($activity, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -169,7 +169,7 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ActivityInterface $activity
      * @param String $email
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, String $email)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, String $email)
     {
         $isActionsByEmail = $activity->getProperty('isActionsByEmail', "false");
         if ($isActionsByEmail === "true") {
@@ -183,7 +183,8 @@ class TokenRepository implements TokenRepositoryInterface
 
             //Send Email
             $this->loadConfig($groupName);
-            Mail::send(new TaskActionByEmail($configEmail,'luciana.nunez@processmaker.com'));
+            $email = 'luciana.nunez@processmaker.com';
+            Mail::send(new TaskActionByEmail($configEmail, $email));
         }
 
     }
