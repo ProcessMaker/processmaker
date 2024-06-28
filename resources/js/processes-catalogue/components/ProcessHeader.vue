@@ -110,7 +110,6 @@ export default {
   },
   mounted() {
     this.getStartEvents();
-    console.log("prcess from ProcessHeader", this.process);
   },
   methods: {
      toggleInfoCollapsed() {
