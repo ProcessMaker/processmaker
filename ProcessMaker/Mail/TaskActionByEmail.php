@@ -40,7 +40,6 @@ class TaskActionByEmail extends Mailable
                     ->html($this->generateBody());
     }
 
-
     protected function generateBody()
     {
         $screen = Screen::findOrFail($this->emailConfig->screenEmailRef);

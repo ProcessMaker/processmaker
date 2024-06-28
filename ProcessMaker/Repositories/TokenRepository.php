@@ -178,7 +178,6 @@ class TokenRepository implements TokenRepositoryInterface
             $emailServer = $configEmail->emailServer ?? 'Email Default Settings';
             $configEmail->subject = $configEmail->subject ?? '';
             $configEmail->screenEmailRef = $configEmail->screenEmailRef ?? 0;
-            
 
             //Send Email
             $this->loadConfig($emailServer);
