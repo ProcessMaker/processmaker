@@ -135,7 +135,7 @@ trait TaskResourceIncludes
         return ['process' => $this->process];
     }
 
-    private function includeInterstitial()
+    public function includeInterstitial()
     {
         $interstitial = $this->getInterstitial();
 
