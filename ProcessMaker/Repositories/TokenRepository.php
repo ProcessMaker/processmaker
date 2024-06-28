@@ -183,7 +183,6 @@ class TokenRepository implements TokenRepositoryInterface
 
             //Send Email
             $this->loadConfig($groupName);
-            $email = 'luciana.nunez@processmaker.com';
             Mail::send(new TaskActionByEmail($configEmail, $email));
         }
 
