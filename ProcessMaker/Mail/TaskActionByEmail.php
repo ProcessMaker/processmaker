@@ -11,12 +11,9 @@ class TaskActionByEmail
 {
     private $emailProvider;
 
-    private $messageParser;
-
-    public function __construct(EmailProvider $emailProvider, MessageParser $messageParser)
+    public function __construct()
     {
-        $this->emailProvider = $emailProvider;
-        $this->messageParser = $messageParser;
+        $this->emailProvider = new EmailProvider();
     }
 
     public function sendAbeEmail($config, $to, $data)
