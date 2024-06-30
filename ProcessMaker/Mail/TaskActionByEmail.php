@@ -5,7 +5,6 @@ namespace ProcessMaker\Mail;
 use Mustache_Engine;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider;
-use ProcessMaker\Packages\Connectors\ActionsByEmail\MessageParser;
 
 class TaskActionByEmail
 {
@@ -16,6 +15,21 @@ class TaskActionByEmail
         $this->emailProvider = new EmailProvider();
     }
 
+    /**
+     * Send an email based on the provided configuration and data.
+     *
+     * This method constructs and sends an email using the provided configuration,
+     * recipient email address, and additional data for rendering the email content.
+     *
+     * @param object $config Configuration object containing email settings, including:
+     *                       - emailServer: The email server ID (integer, optional, default: 0).
+     *                       - subject: The subject of the email (string, optional, default: '').
+     *                       - screenEmailRef: Reference ID to a custom email screen (integer, optional, default: 0).
+     * @param string $to Recipient email address.
+     * @param array $data Additional data for rendering the email content (optional).
+     *
+     * @return void
+     */
     public function sendAbeEmail($config, $to, $data)
     {
         try {
@@ -46,11 +60,12 @@ class TaskActionByEmail
             $this->emailProvider->send($emailConfig);
     
         } catch (\Exception $e) {
-            Log::error('ABE: Mailer Daemon Response Found As Incoming Mail. Aborting Error Message Reply', [
+            Log::error('Error sending ABE email', [
                 'to' => $to,
                 'emailServer' => $emailServer,
-                'Subjetc' => $subject,
+                'subject' => $subject,
                 'screen' => $emailScreenRef,
+                'error' => $e->getMessage(),
             ]);
         }
     }
