@@ -259,18 +259,6 @@ export default {
           truncate: true,
         },
         {
-          label: "Alternative",
-          field: "process_version_alternative",
-          sortable: true,
-          default: true,
-          width: 150,
-          truncate: true,
-          filter_subject: {
-            type: "Relationship",
-            value: "processVersion.alternative",
-          },
-        },
-        {
           label: "Task",
           field: "active_tasks",
           sortable: false,
@@ -410,7 +398,7 @@ export default {
         <span 
           class="badge badge-${color} status-${badge}"
         >
-          Alternative ${value}
+          ${this.$t('Alternative')} ${value}
         </span>`;
     },
     transform(dataInput) {
