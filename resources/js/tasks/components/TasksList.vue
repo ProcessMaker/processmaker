@@ -16,6 +16,8 @@
         @table-row-mouseover="handleRowMouseover"
         @table-tr-mouseleave="handleTrMouseleave"
         @table-row-mouseleave="handleRowMouseleave"
+        @table-column-mouseover="handleColumnMouseover"
+        @table-column-mouseleave="handleColumnMouseleave"
       >
         <!-- Slot Table Header -->
         <template
@@ -24,7 +26,8 @@
         >
           <div
             :key="index"
-            style="display: inline-block"
+            :id="`tasks-table-column-${column.field}`"
+            class="pm-table-column-header-text"
           >
             <img
               v-if="column.field === 'is_priority'"
@@ -35,6 +38,16 @@
             />
             <span v-else>{{ $t(column.label) }}</span>
           </div>
+          <b-tooltip
+            :key="index"
+            :target="`tasks-table-column-${column.field}`"
+            custom-class="pm-table-tooltip-header"
+            placement="bottom"
+            :delay="0"
+            @show="checkIfTooltipIsNeeded"
+          >
+            {{ $t(column.label) }}
+          </b-tooltip>
         </template>
         <!-- Slot Table Header filter Button -->
         <template
@@ -56,6 +69,7 @@
             :columnSortAsc="column.sortAsc"
             :columnSortDesc="column.sortDesc"
             :filterApplied="column.filterApplied"
+            :columnMouseover="columnMouseover"
             @onChangeSort="onChangeSort($event, column.field)"
             @onApply="onApply($event, column.field)"
             @onClear="onClear(column.field)"
@@ -350,6 +364,7 @@ export default {
       isTooltipVisible: false,
       hideTimer: null,
       ellipsisShow: false,
+      columnMouseover: null,
     };
   },
   computed: {
@@ -839,6 +854,12 @@ export default {
     taskListRowButtonsHide(row, index) {
       this.$refs["taskListRowButtons-" + index][0].close();
     },
+    handleColumnMouseover(column) {
+      this.columnMouseover = column;
+    },
+    handleColumnMouseleave() {
+      this.columnMouseover = null;
+    },
   },
 };
 </script>
@@ -869,6 +890,10 @@ export default {
 .btn-light:hover {
   background-color: #EDF1F6;
   color: #888;
+}
+.pm-table-column-header-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
 <style lang="scss" scoped>
