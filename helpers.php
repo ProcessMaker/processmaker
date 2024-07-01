@@ -7,7 +7,7 @@ use ProcessMaker\SanitizeHelper;
 
 if (!function_exists('job_pending')) {
     /**
-     * Check if a given job (by instance or class) is already pending in the queue.
+     * Check if a given job (by instance or class) is already pending in the queue..
      *
      * @param $job
      *
