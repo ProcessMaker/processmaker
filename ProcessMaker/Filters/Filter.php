@@ -2,28 +2,30 @@
 
 namespace ProcessMaker\Filters;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
-use ProcessMaker\Query\BaseField;
-use ProcessMaker\Query\Expression;
+use ProcessMaker\Traits\InteractsWithRawFilter;
 
 class Filter
 {
-    const TYPE_PARTICIPANTS = 'Participants';
+    use InteractsWithRawFilter;
 
-    const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
+    public const TYPE_PARTICIPANTS = 'Participants';
 
-    const TYPE_ASSIGNEES_FULLNAME = 'AssigneesFullName';
+    public const TYPE_PARTICIPANTS_FULLNAME = 'ParticipantsFullName';
 
-    const TYPE_STATUS = 'Status';
+    public const TYPE_ASSIGNEES_FULLNAME = 'AssigneesFullName';
 
-    const TYPE_FIELD = 'Field';
+    public const TYPE_STATUS = 'Status';
 
-    const TYPE_PROCESS = 'Process';
+    public const TYPE_FIELD = 'Field';
 
-    const TYPE_RELATIONSHIP = 'Relationship';
+    public const TYPE_PROCESS = 'Process';
+
+    public const TYPE_RELATIONSHIP = 'Relationship';
 
     public string|null $subjectValue;
 
@@ -49,7 +51,18 @@ class Filter
         'starts_with',
     ];
 
-    public static function filter(Builder $query, string|array $filterDefinitions)
+    public function __construct($definition)
+    {
+        $this->subjectType = $definition['subject']['type'];
+        $this->subjectValue = Arr::get($definition, 'subject.value');
+        $this->operator = $definition['operator'];
+        $this->value = $definition['value'];
+        $this->or = Arr::get($definition, 'or', []);
+
+        $this->detectRawValue();
+    }
+
+    public static function filter(Builder $query, string|array $filterDefinitions): void
     {
         if (is_string($filterDefinitions)) {
             $filterDefinitions = json_decode($filterDefinitions, true);
@@ -66,27 +79,16 @@ class Filter
         });
     }
 
-    public function __construct($definition)
-    {
-        $this->subjectType = $definition['subject']['type'];
-        $this->subjectValue = Arr::get($definition, 'subject.value');
-        $this->operator = $definition['operator'];
-        $this->value = $definition['value'];
-        $this->or = Arr::get($definition, 'or', []);
-    }
-
-    public function addToQuery(Builder $query)
+    public function addToQuery(Builder $query): void
     {
         if (!empty($this->or)) {
-            $query->where(function ($query) {
-                $this->apply($query);
-            });
+            $query->where(fn ($query) => $this->apply($query));
         } else {
             $this->apply($query);
         }
     }
 
-    private function apply($query)
+    private function apply($query): void
     {
         if ($valueAliasMethod = $this->valueAliasMethod()) {
             $this->valueAliasAdapter($valueAliasMethod, $query);
@@ -137,16 +139,20 @@ class Filter
      * @param [type] $query
      * @return void
      */
-    private function manuallyAddJsonWhere($query)
+    private function manuallyAddJsonWhere($query): void
     {
         $parts = explode('.', $this->subjectValue);
+
         array_shift($parts);
+
         $selector = implode('"."', $parts);
         $operator = $this->operator();
         $value = $this->value();
+
         if (!is_numeric($value)) {
-            $value = \DB::connection()->getPdo()->quote($value);
+            $value = DB::connection()->getPdo()->quote($value);
         }
+
         $query->whereRaw("json_unquote(json_extract(`data`, '$.\"{$selector}\"')) {$operator} {$value}");
     }
 
@@ -212,12 +218,12 @@ class Filter
         return $this->subjectValue;
     }
 
-    private function relationshipSubjectTypeParts()
+    private function relationshipSubjectTypeParts(): array
     {
         return explode('.', $this->subjectValue);
     }
 
-    private function value()
+    public function value()
     {
         if ($this->operator === 'contains') {
             return '%' . $this->value . '%';
@@ -225,6 +231,10 @@ class Filter
 
         if ($this->operator === 'starts_with') {
             return $this->value . '%';
+        }
+
+        if ($this->filteringWithRawValue()) {
+            return $this->getRawValue();
         }
 
         return $this->value;
@@ -258,16 +268,16 @@ class Filter
         return $method;
     }
 
-    private function valueAliasAdapter(string $method, Builder $query)
+    private function valueAliasAdapter(string $method, Builder $query): void
     {
         $operator = $this->operator();
+
         if ($operator === 'in') {
             $operator = '=';
         }
+
         $values = (array) $this->value();
-
         $expression = (object) ['operator' => $operator];
-
         $model = $query->getModel();
 
         if ($method === 'valueAliasParticipant') {
@@ -292,19 +302,20 @@ class Filter
         }, $values);
     }
 
-    private function filterByProcessId(Builder $query)
+    private function filterByProcessId(Builder $query): void
     {
         if ($query->getModel() instanceof ProcessRequestToken) {
             $query->whereIn('process_request_id', function ($query) {
-                $query->select('id')->from('process_requests')
-                    ->whereIn('process_id', (array) $this->value());
+                $query->select('id')
+                      ->from('process_requests')
+                      ->whereIn('process_id', (array) $this->value());
             });
         } else {
             $this->applyQueryBuilderMethod($query);
         }
     }
 
-    private function filterByRelationship(Builder $query)
+    private function filterByRelationship(Builder $query): void
     {
         $relationshipName = $this->relationshipSubjectTypeParts()[0];
         $query->whereHas($relationshipName, function ($rel) {
@@ -312,7 +323,7 @@ class Filter
         });
     }
 
-    private function filterByRequestData(Builder $query)
+    private function filterByRequestData(Builder $query): void
     {
         $query->whereHas('processRequest', function ($rel) {
             $this->applyQueryBuilderMethod($rel);
