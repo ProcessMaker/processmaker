@@ -12,6 +12,7 @@ use ProcessMaker\Models\Embed;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessLaunchpad;
+use ProcessMaker\Models\ProcessRequest;
 
 class ProcessLaunchpadController extends Controller
 {
@@ -24,7 +25,9 @@ class ProcessLaunchpadController extends Controller
         $processes = Process::nonSystem()->active();
         // Filter by category
         $category = $request->input('category', null);
-        if (!empty($category)) {
+        if ($category === 'recent') {
+            $processes->orderByRecentRequests();
+        } elseif (!empty($category)) {
             $processes->processCategory($category);
         }
         // Filter pmql
@@ -53,6 +56,10 @@ class ProcessLaunchpadController extends Controller
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
         }
+
+        $process = $processes->map(function ($process) {
+            $process->counts = $process->getCounts();
+        });
 
         return new ProcessCollection($processes);
     }
@@ -83,7 +90,12 @@ class ProcessLaunchpadController extends Controller
             }])
             ->where('id', $process->id)
             ->get()
-            ->toArray();
+            ->map(function ($process) use ($request) {
+                $process->counts = $process->getCounts();
+                $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $request->user()->id);
+
+                return $process;
+            });
 
         return new ApiResource($processes);
     }
@@ -120,9 +132,9 @@ class ProcessLaunchpadController extends Controller
         return response([], 204);
     }
 
-   /**
-    * Store the elements related to the carousel [IMAGE, EMBED URL]
-    */
+    /**
+     * Store the elements related to the carousel [IMAGE, EMBED URL]
+     */
     public function saveContentCarousel(Request $request, Process $process)
     {
         $contentCarousel = $request->input('imagesCarousel');
@@ -144,7 +156,6 @@ class ProcessLaunchpadController extends Controller
                         // Nothing
                         break;
                 }
-
             }
         }
     }

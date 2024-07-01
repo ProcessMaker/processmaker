@@ -19,7 +19,7 @@
               <div
                 v-if="column.sortable"
                 :key="index"
-                @click="handleEllipsisClick(column)"
+                @click="onClickEllipsis(column)"
               >
                 <i
                   :class="['fas', {
@@ -112,6 +112,8 @@
   import EllipsisMenu from "../../../components/shared/EllipsisMenu.vue";
   import paginationTable from "../../../components/shared/PaginationTable.vue";
   import FilterTableBodyMixin from "../../../components/shared/FilterTableBodyMixin";
+  import { ellipsisSortClick } from "../../../components/shared/UtilsTable";
+
   const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
@@ -292,35 +294,8 @@
         };
         return bubbleColor[status];
       },
-      handleEllipsisClick(categoryColumn) {
-        this.fields.forEach(column => {
-          if (column.field !== categoryColumn.field) {
-            column.direction = "none";
-            column.filterApplied = false;
-          }
-        });
-
-        if (categoryColumn.direction === "asc") {
-          categoryColumn.direction = "desc";
-        } else if (categoryColumn.direction === "desc") {
-          categoryColumn.direction = "none";
-          categoryColumn.filterApplied = false;
-        } else {
-          categoryColumn.direction = "asc";
-          categoryColumn.filterApplied = true;
-        }
-
-        if (categoryColumn.direction !== "none") {
-          const sortOrder = [
-            {
-              sortField: categoryColumn.sortField || categoryColumn.field,
-              direction: categoryColumn.direction,
-            },
-          ];
-          this.dataManager(sortOrder);
-        } else {
-          this.fetch();
-        }
+      onClickEllipsis(column) {
+        ellipsisSortClick(column, this);
       },
     }
   };

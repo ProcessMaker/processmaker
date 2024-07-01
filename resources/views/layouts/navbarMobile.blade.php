@@ -1,12 +1,17 @@
 @php
   $showPrincipalNavbar = 1;
 
-  if (Request::path() !== 'tasks' && Request::path() !== 'requests') {
+  if (
+    Request::path() !== 'tasks' &&
+    Request::path() !== 'requests' &&
+    Request::path() !== 'cases' &&
+    !str_starts_with(Request::path(), 'process-browser')
+  ) {
     $showPrincipalNavbar = 0;
   }
 @endphp
-<div class="flex-grow-1">
-  <div id="navbarMobile">
+<div>
+  <div id="navbarMobile" v-if="display" v-cloak>
     @if($showPrincipalNavbar)
       <nav class="navbar navbar-light bg-primary d-print-none">
         @php
@@ -63,9 +68,14 @@
             'isActive' => Request::path() === 'tasks',
           ],
           [
-            'name' => __('Requests'),
-            'url' => route('requests.index'),
-            'isActive' => Request::path() === 'requests',
+            'name' => __('Cases'),
+            'url' => route('cases.index'),
+            'isActive' => Request::path() === 'cases',
+          ],
+          [
+            'name' => __('Processes'),
+            'url' => route('process.browser.index'),
+            'isActive' => Request::path() === 'process-browser',
           ],
         ];
       @endphp
