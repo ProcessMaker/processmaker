@@ -115,7 +115,6 @@ export default {
       ProcessMaker.apiClient
         .get(`process_launchpad/${this.processId}`)
         .then((response) => {
-          console.log("Process.vue got response", response.data[0]);
           this.loadedProcess = response.data[0];
         });
     }

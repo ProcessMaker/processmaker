@@ -4,7 +4,7 @@
       <process-header
         :process="process"
         @goBack="goBack()"
-        @onProcessNavigate="onProcessNavigate()"
+        @onProcessNavigate="onProcessNavigate"
       />
       <div
         id="collapseProcessInfo"
