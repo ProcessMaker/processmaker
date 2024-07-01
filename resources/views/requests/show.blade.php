@@ -507,7 +507,7 @@
           showJSONEditor: false,
           data: @json($request->getRequestData()),
           requestId: @json($request->getKey()),
-          request: @json($request),
+          request: @json($request->getRequestAsArray()),
           files: @json($files),
           refreshTasks: 0,
           canCancel: @json($canCancel),
