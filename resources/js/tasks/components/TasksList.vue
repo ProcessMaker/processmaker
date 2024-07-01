@@ -26,7 +26,7 @@
           v-slot:[column.field]
         >
           <div
-            :key="index"
+            :key="`tasks-table-column-${index}`"
             :id="`tasks-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
