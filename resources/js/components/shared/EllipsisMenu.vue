@@ -308,6 +308,9 @@ export default {
   background-color: #EBEEF2;
   border-radius: 4px;
 }
+.contracted-menu:focus {
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.15);
+}
 .expanded-menu {
   color: #556271;
   text-transform: none;

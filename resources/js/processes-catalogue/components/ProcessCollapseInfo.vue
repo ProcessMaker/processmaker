@@ -9,7 +9,7 @@
         :process="process"
         :hide-header-options="true"
         @goBack="goBack()"
-        @onProcessNavigate="onProcessNavigate()"
+        @onProcessNavigate="onProcessNavigate"
       />
       <div
         id="collapseProcessInfo"

@@ -124,7 +124,10 @@ export default {
     this.getStartEvents();
   },
   methods: {
-    toggleInfoCollapsed() {
+    ellipsisNavigate(action, data) {
+      this.$emit('onProcessNavigate', action, data);
+    },
+     toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
     /**
