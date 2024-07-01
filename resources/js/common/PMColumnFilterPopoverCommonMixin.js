@@ -31,6 +31,13 @@ const PMColumnFilterCommonMixin = {
       }
     }
   },
+  mounted() {
+    this.$root.$on("load-with-filter", (filter) => {
+      _.set(window, "ProcessMaker.advanced_filter.filters", filter);
+      this.getFilterConfiguration();
+      this.fetch();
+    });
+  },
   methods: {
     storeFilterConfiguration() {
       const {order, type} = this.filterConfiguration();

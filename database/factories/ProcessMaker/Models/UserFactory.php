@@ -20,12 +20,10 @@ class UserFactory extends Factory
         }
 
         return [
-            'username' => $this->faker->unique()->userName() . '_' . $this->faker->unique()->randomNumber(3),
+            'username' => $this->faker->unique()->userName().'.'.$this->faker->word(),
             'email' => $this->faker->unique()->email(),
             'password' => $GLOBALS['testPassword'],
-
             'status' => $this->faker->randomElement(['ACTIVE', 'INACTIVE']),
-
             'firstname' => $this->faker->firstName(),
             'lastname' => $this->faker->lastName(),
             'address' => $this->faker->streetAddress(),
@@ -33,30 +31,24 @@ class UserFactory extends Factory
             'state' => $this->faker->stateAbbr(),
             'postal' => $this->faker->postcode(),
             'country' => 'US',
-
             'phone' => $this->faker->phoneNumber(),
             'fax' => $this->faker->phoneNumber(),
             'cell' => $this->faker->phoneNumber(),
-
             'title' => $this->faker->jobTitle(),
             'birthdate' => $this->faker->dateTimeThisCentury(),
             'timezone' => $this->faker->timezone(),
             'datetime_format' => $this->faker->randomElement(['Y-m-d H:i', 'm/d/Y', 'm/d/Y h:i A', 'm/d/Y H:i']),
             'language' => 'en',
             'loggedin_at' => null,
-
             'is_administrator' => false,
             'force_change_password' => 0,
-
         ];
     }
 
     public function admin()
     {
         return $this->state(function () {
-            return [
-                'is_administrator' => true,
-            ];
+            return ['is_administrator' => false];
         });
     }
 }

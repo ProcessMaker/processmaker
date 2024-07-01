@@ -94,11 +94,16 @@
         const json = JSON.parse(JSON.stringify(this.rowData.config));
         return this.disableForm(json);
       },
-      formData() {
-        if(this.iFramePostedData) {
-          return this.iFramePostedData;
+      formData: {
+        get() {
+          if(this.iFramePostedData) {
+            return this.iFramePostedData;
+          }
+          return this.rowData.data ? this.rowData.data : {};
+        }, 
+        set() {
+
         }
-        return this.rowData.data ? this.rowData.data : {};
       },
       printablePages() {
         const pages = [0];
