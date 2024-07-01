@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label>{{ $t(label) }}</label>
+    <label v-if="label !== false">{{ $t(label) }}</label>
     <multiselect
       v-model="content"
       :aria-label="$t(label)"

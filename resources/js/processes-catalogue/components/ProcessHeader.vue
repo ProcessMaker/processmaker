@@ -58,7 +58,7 @@
                 :divider="false"
                 :lauchpad="true"
                 variant="none"
-                @navigate="$emit('onProcessNavigate')"
+                @navigate="ellipsisNavigate"
                 :isDocumenterInstalled="$root.isDocumenterInstalled"
                 :permission="$root.permission"
               />
@@ -110,9 +110,11 @@ export default {
   },
   mounted() {
     this.getStartEvents();
-    console.log("prcess from ProcessHeader", this.process);
   },
   methods: {
+    ellipsisNavigate(action, data) {
+      this.$emit('onProcessNavigate', action, data);
+    },
      toggleInfoCollapsed() {
       this.infoCollapsed = !this.infoCollapsed;
     },
