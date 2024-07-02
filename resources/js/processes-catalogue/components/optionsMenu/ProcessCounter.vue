@@ -39,23 +39,37 @@
         :name="$t('Completed')"
         color="#478FCC"
       />
+      <div >
+        <div
+          v-if="iconWizardTemplate"
+          class="icon-wizard-class"
+          @click="getHelperProcess"
+        >
+          <img style="margin-left: 8px;"
+            src="../../../../img/wizard-icon.svg"
+            :alt="$t('Guided Template Icon')"
+          >
+      </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import MiniPieChart from "../MiniPieChart.vue";
+import WizardHelperProcessModal from "../../../components/templates/WizardHelperProcessModal.vue";
 
 export default {
   components: {
     MiniPieChart,
+    WizardHelperProcessModal,
   },
-  props: ["process", "enableCollapse"],
+  props: ["process", "enableCollapse", "iconWizardTemplate"],
   data() {
     return {
       count: 0,
       completed: 0,
       inProgress: 0,
-      processIcon: null,
+      processIcon: 'Default_Icon',
       completedCollapsed: 0,
       inProgressCollapsed: 0,
     };
@@ -75,12 +89,17 @@ export default {
           this.count = 0;
         });
     },
-
     getProcessImage() {
-      const propertiesString = this.process.launchpad["properties"];
-      const propertiesObject = JSON.parse(propertiesString);
-      this.processIcon = propertiesObject.icon;
-      return this.processIcon ? this.processIcon : null;
+      if(this.process.launchpad) {
+        const propertiesString = this.process.launchpad["properties"];
+        const propertiesObject = JSON.parse(propertiesString);
+        this.processIcon = propertiesObject.icon;
+      }
+      
+      return this.processIcon ? this.processIcon : 'Default_Icon';
+    },
+    getHelperProcess() {
+      this.$parent.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
 };
@@ -147,5 +166,9 @@ export default {
 }
 .spacing-class {
   margin-top: 10px;
+}
+.icon-wizard-class {
+  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  z-index: 5;
 }
 </style>

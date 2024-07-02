@@ -8,6 +8,7 @@
       <process-header
         :process="process"
         :hide-header-options="true"
+        :icon-wizard-template="createdFromWizardTemplate"
         @goBack="goBack()"
         @onProcessNavigate="onProcessNavigate"
       />
@@ -16,24 +17,6 @@
         class="collapse show custom-class"
       >
         <div class="info-collapse">
-          <div class="row">
-            <div class="wizard-container col-sm-3">
-              <div class="wizard">
-                <b-button
-                  v-if="createdFromWizardTemplate"
-                  class="mt-2 wizard-link"
-                  variant="link"
-                  @click="getHelperProcess"
-                >
-                  <img
-                    src="../../../img/wizard-icon.svg"
-                    :alt="$t('Guided Template Icon')"
-                  >
-                  {{ $t('Re-run Wizard') }}
-                </b-button>
-              </div>
-            </div>
-          </div>
           <b-row>
             <b-col class="process-carousel col-12">
               <processes-carousel
@@ -80,13 +63,6 @@
       :description-settings="process.description"
       :process="process"
     />
-    <wizard-helper-process-modal
-      v-if="createdFromWizardTemplate"
-      id="wizardHelperProcessModal"
-      ref="wizardHelperProcessModal"
-      :process-launchpad-id="process.id"
-      :wizard-template-uuid="wizardTemplateUuid"
-    />
   </div>
 </template>
 
@@ -95,7 +71,6 @@ import CreateTemplateModal from "../../components/templates/CreateTemplateModal.
 import CreatePmBlockModal from "../../components/pm-blocks/CreatePmBlockModal.vue";
 import AddToProjectModal from "../../components/shared/AddToProjectModal.vue";
 import LaunchpadSettingsModal from "../../components/shared/LaunchpadSettingsModal.vue";
-import WizardHelperProcessModal from "../../components/templates/WizardHelperProcessModal.vue";
 import ProcessesCarousel from "./ProcessesCarousel.vue";
 import ProcessOptions from "./ProcessOptions.vue";
 import ellipsisMenuMixin from "../../components/shared/ellipsisMenuActions";
@@ -112,7 +87,6 @@ export default {
     LaunchpadSettingsModal,
     ProcessOptions,
     ProcessesCarousel,
-    WizardHelperProcessModal,
     ProcessHeader,
     ProcessHeaderStart,
   },
@@ -152,6 +126,7 @@ export default {
       this.readActivated = true;
     },
     getHelperProcess() {
+      console.log("en getHelperProcess: ", this.$refs.wizardHelperProcessModal);
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
