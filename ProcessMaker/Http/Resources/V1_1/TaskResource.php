@@ -55,7 +55,24 @@ class TaskResource extends ApiResource
     protected static $defaultFieldsFor = [
         'user' => ['id', 'firstname', 'lastname', 'email', 'username', 'avatar'],
         'requestor' => ['id', 'first_name', 'last_name', 'email'],
-        'processRequest' => ['id', 'process_id', 'process_version_id', 'callable_id', 'status'],
+        'processRequest' => [
+            'id',
+            'uuid',
+            'process_id',
+            'process_version_id',
+            'user_id',
+            'parent_request_id',
+            'callable_id',
+            'status',
+            'name',
+            'do_not_sanitize',
+            'completed_at',
+            'initiated_at',
+            'created_at',
+            'updated_at',
+            'case_title',
+            'case_number',
+        ],
         'draft' => ['id', 'task_id', 'data'],
         'screen' => ['id', 'config'],
         'process' => ['id', 'name'],
@@ -70,7 +87,7 @@ class TaskResource extends ApiResource
     public function toArray($request)
     {
         $array = [
-            'advancedStatus' => $this->advanceStatus,
+            'advanceStatus' => $this->advanceStatus,
         ];
         foreach (self::$defaultFields as $field) {
             $array[$field] = $this->$field;
