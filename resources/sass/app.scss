@@ -981,6 +981,19 @@ nav {
 
 
 //Guided templates modal styling
+#wizardTemplateDetails___BV_modal_content_.first_slide {
+  background: linear-gradient(180deg, #3270BC 0%, #00B5DA 100%), linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2));
+  padding-left: 0;
+}
+
+#wizardTemplateDetails___BV_modal_content_.first_slide .wizard-template-carousel {
+  margin-left:-15px;
+}
+
+#wizardTemplateDetails___BV_modal_content_.first_slide .template-name {
+  color: #00345B;
+}
+
 #wizardTemplateDetails___BV_modal_content_,
 #processWizard___BV_modal_content_{
   border-radius: 8px;
