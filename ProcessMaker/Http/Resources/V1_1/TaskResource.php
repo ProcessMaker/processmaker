@@ -4,16 +4,11 @@ namespace ProcessMaker\Http\Resources\V1_1;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
-use ProcessMaker\Http\Resources\Task;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\ProcessTranslations\ProcessTranslation;
 use ProcessMaker\Traits\TaskResourceIncludes;
-use ProcessMaker\Traits\TaskScreenResourceTrait;
 
 class TaskResource extends ApiResource
 {
