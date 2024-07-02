@@ -164,7 +164,6 @@
                 "package-process-optimization": "dev-next",
                 "package-product-analytics": "dev-next",
                 "package-projects": "dev-next",
-                "package-rpa": "dev-next",
                 "package-savedsearch": "dev-next",
                 "package-sentry": "dev-next",
                 "package-signature": "dev-next",
