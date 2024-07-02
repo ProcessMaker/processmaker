@@ -246,13 +246,6 @@ export default {
   margin-right: 20px;
 }
 
-.custom-text {
-  font-size: 16px;
-  font-weight: 400;
-  color: #556271;
-  letter-spacing: -0.2;
-}
-
 .custom-color {
   color: #4c545c;
 }
