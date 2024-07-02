@@ -2280,5 +2280,13 @@
   "Your In-Progress tasks in the saved search {{title}}": "Tus tareas en progreso en la búsqueda guardada {{title}}",
   "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Elija una búsqueda guardada para ver las tareas que puede usar con una Regla de Bandeja de Entrada.",
   "No tasks to show.": "No hay tareas para mostrar.",
-  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Pero eso está bien. Aún puedes crear esta Regla de Bandeja de Entrada para aplicar a futuras tareas que coincidan con los filtros anteriores."
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Pero eso está bien. Aún puedes crear esta Regla de Bandeja de Entrada para aplicar a futuras tareas que coincidan con los filtros anteriores.",
+  "Another Process": "Otro Proceso",
+  "Custom Dashboard": "Panel Personalizado",
+  "External URL": "URL Externa",
+  "Process Launchpad": "Lanzador de Procesos",
+  "Summary Screen (Default)": "Pantalla de Resumen (Predeterminada)",
+  "Task List": "Lista de Tareas",
+  "Task Source (Default)": "Fuente de Tarea (Predeterminada)",
+  "Welcome Screen": "Pantalla de Bienvenida"
 }
