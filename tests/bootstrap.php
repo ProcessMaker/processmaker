@@ -103,6 +103,10 @@ if (env('TEST_TOKEN')) {
         ['title' => 'Test Executor']
     );
     ScriptExecutor::firstOrCreate(
+        ['language' => 'php-nayra'],
+        ['title' => 'Test Executor']
+    );
+    ScriptExecutor::firstOrCreate(
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
