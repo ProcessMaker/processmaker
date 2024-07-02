@@ -19,7 +19,7 @@
               <h1 class="mb-3 d-inline-block font-weight-bold template-name">{{ templateDetails['modal-title']| str_limit(30) }}</h1>
               <h3 class="wizard-details-headline text-white">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h3>
               <div v-for="item in templateModalDescriptionItems" class="mb-3 wizard-details-description text-white d-flex align-items-center">
-                <span class="mr-3">
+                <span v-if="templateListIcon" class="mr-3">
                   <img
                     :src="templateListIcon"
                     :alt="template.name + ' icon'"
