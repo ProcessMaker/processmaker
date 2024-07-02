@@ -20,6 +20,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -254,6 +255,48 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } else {
             return abort(422);
+        }
+    }
+
+    public function updateVariable (Request $request, ProcessRequestToken $task, ProcessAbeRequestToken $abe)
+    {
+        $data = [];
+        $varName = $request->input('varName');
+        $varValue = $request->input('varValue');
+        $data[$varName] = $varValue;
+        try {
+            // Verificar si la respuesta ya ha sido enviada
+            $existingAbe = ProcessAbeRequestToken::where('id', $abe->id)
+                ->where('process_request_id', $task->id)->first();
+
+            if ($existingAbe && $existingAbe->is_answered) {
+                return response()->json([
+                    'message' => 'This response has already been answered',
+                    'data' => $existingAbe
+                ], 200);
+            }
+
+            // Update with the data
+            $abe->data = $data;
+            // Asignar answered_at y is_answered
+            $abe->is_answered = true;
+            $abe->answered_at = Carbon::now();
+            $abe->is_answered = true;
+            $abe->save();
+            // Close the thread related
+            $process = $task->process;
+            $instance = $task->processRequest;
+            WorkflowManager::completeTask($process, $instance, $task, $data);
+
+            return response()->json([
+                'message' => 'Variable updated successfully',
+                'data' => $abe
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error updating variable',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
