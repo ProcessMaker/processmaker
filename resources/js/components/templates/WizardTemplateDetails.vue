@@ -21,7 +21,7 @@
               <div v-for="item in templateModalDescriptionItems" class="mb-3 wizard-details-description text-white d-flex align-items-center">
                 <span class="mr-3">
                   <img
-                    :src="templateIcon"
+                    :src="templateListIcon"
                     :alt="template.name + ' icon'"
                     width="30px"
                   >
@@ -78,8 +78,8 @@ export default {
     templateDetails() {
       return JSON.parse(this.template?.template_details);
     },
-    templateIcon() {
-      return this.template?.template_media?.icon;
+    templateListIcon() {
+      return this.template?.template_media?.listIcon;
     },
     templateSlides() {
       return this.template?.template_media?.slides;
@@ -88,7 +88,6 @@ export default {
       return this.templateDetails['modal-description'].split(';');
     },
     slideInterval() {
-      console.log('slide interval', this.template);
       return Object.keys(this.template?.template_media?.slides).length > 1 ? 3000 : 0;
     }
   },

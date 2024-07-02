@@ -273,9 +273,11 @@ class SyncGuidedTemplates implements ShouldQueue
         // Build asset urls
         $templateIconUrl = $this->buildTemplateUrl($config, $template['assets']['icon']);
         $templateCardBackgroundUrl = $this->buildTemplateUrl($config, $template['assets']['card-background']);
+        $templateListIconUrl = $this->buildTemplateUrl($config, $template['assets']['list-icon']);
         // Import template assets and associate with the media collection
         $this->importMedia($templateIconUrl, 'icon', $mediaCollectionName, $guidedTemplate);
         $this->importMedia($templateCardBackgroundUrl, 'cardBackground', $mediaCollectionName, $guidedTemplate);
+        $this->importMedia($templateListIconUrl, 'listIcon', $mediaCollectionName, $guidedTemplate);
 
         if (!empty($template['assets']['launchpad']['process-card-background'])) {
             $templateProcessCardBackgroundUrl =
