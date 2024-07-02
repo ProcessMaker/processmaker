@@ -155,6 +155,9 @@ return [
 
     ],
 
+    // Turn on/off the recommendation engine
+    'recommendations_enabled' => env('RECOMMENDATIONS_ENABLED', true),
+
     // Define the view of the Login
     'login_view' => env('LOGIN_VIEW', 'auth.newLogin'),
 
@@ -172,6 +175,7 @@ return [
          * ProcessMaker Service Providers
          */
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
+        ProcessMaker\Providers\RecommendationsServiceProvider::class,
         ProcessMaker\Providers\SettingServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
