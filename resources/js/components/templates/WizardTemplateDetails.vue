@@ -18,17 +18,18 @@
             <div class="wizard-details-text pl-3">
               <h1 class="mb-3 d-inline-block font-weight-bold template-name">{{ templateDetails['modal-title']| str_limit(30) }}</h1>
               <h3 class="wizard-details-headline text-white">{{ templateDetails['modal-excerpt'] | str_limit(150) }}</h3>
-              <div v-for="item in templateModalDescriptionItems" class="mb-2 wizard-details-description text-white">
-                <span>
+              <div v-for="item in templateModalDescriptionItems" class="mb-3 wizard-details-description text-white d-flex align-items-center">
+                <span class="mr-3">
                   <img
                     :src="templateIcon"
                     :alt="template.name + ' icon'"
-                    width="45px"
+                    width="30px"
                   >
-                </span> 
-                {{ item | str_limit(150) }}
+                </span>
+                <span class="template-list-item">{{ item | str_limit(150) }}</span>
               </div>
-              <button class="mt-5 wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
+              <hr class="template-divider mx-2"/>
+              <button class="wizard-details-button text-uppercase"  @click.prevent="getHelperProcessStartEvent('wizard-details-modal')">
                 <i class="fas fa-play-circle mr-1" />
                 {{ $t('Get Started') }}
               </button>
@@ -87,6 +88,7 @@ export default {
       return this.templateDetails['modal-description'].split(';');
     },
     slideInterval() {
+      console.log('slide interval', this.template);
       return Object.keys(this.template?.template_media?.slides).length > 1 ? 3000 : 0;
     }
   },
@@ -118,21 +120,39 @@ export default {
   font-weight: 400;
 }
 .wizard-details-description {
-  font-size: 19px;
+  font-size: 18px;
   line-height: 3px;
+  font-weight: lighter;
+}
+
+.wizard-details-description .template-list-item{
+  line-height:1.5rem;
 }
 
 .wizard-details-headline {
-  font-size: 26px;
+  font-size: 20px;
+  margin-bottom: 22px;
+  font-weight:lighter;
 }
 
-.wizard-details-button{
+.wizard-details-button {
   border-radius: 11px;
-  border: none;
+  border: none!important;
   background-color: #1572C2;
   color: #FFFFFF;
   display: inline-flex;
   padding: 7px 16px;
   align-items: center;
+}
+
+.wizard-details-button:focus {
+  border:none;
+  outline: none;
+}
+
+.template-divider {
+  background-color: #0081D8;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 </style>
