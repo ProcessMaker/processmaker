@@ -52,6 +52,7 @@ class CallActivityTest extends TestCase
         // Assert both processes are COMPLETED
         $this->assertCount(0, $activeTokens);
         $this->assertCount(0, $activeSubTokens);
+        $this->assertEmpty($instance->errors);
         $this->assertEquals('COMPLETED', $instance->status);
         $this->assertEquals('COMPLETED', $subInstance->status);
     }

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Cache\ArrayStore;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -36,10 +37,10 @@ trait ScriptDockerNayraTrait
             'timeout' => $timeout,
         ];
         $body = json_encode($params);
-        $servers = Cache::get('nayra_ips');
+        $servers = self::getNayraAddresses();
         if (!$servers) {
             $this->bringUpNayraContainer();
-            $servers = Cache::get('nayra_ips');
+            $servers = self::getNayraAddresses();
         }
         $index = array_rand($servers);
         $url = 'http://' . $servers[$index] . ':8080/run_script';
@@ -91,6 +92,11 @@ trait ScriptDockerNayraTrait
     {
         $docker = Docker::command();
         $instanceName = config('app.instance');
+        if ($this->findNayraAddresses($docker, $instanceName)) {
+            // The container is already running
+            return;
+        }
+
         $image = $this->scriptExecutor->dockerImageName();
         exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
         exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
@@ -117,20 +123,34 @@ trait ScriptDockerNayraTrait
      *
      * @param Docker $docker The Docker instance.
      * @param string $instanceName The name of the container instance.
-     * @return string The IP of the container.
      */
-    private function waitContainerNetwork($docker, $instanceName): string
+    private function waitContainerNetwork($docker, $instanceName)
+    {
+        if (!$this->findNayraAddresses($docker, $instanceName)) {
+            throw new ScriptException('Could not get address of the nayra container');
+        }
+    }
+
+    /**
+     * Find the Nayra addresses.
+     *
+     * @param Docker $docker The Docker instance.
+     * @param string $instanceName The name of the container instance.
+     * @return bool Returns true if the Nayra addresses were found, false otherwise.
+     */
+    private function findNayraAddresses($docker, $instanceName): bool
     {
         $ip = '';
         for ($i = 0; $i < 30; $i++) {
             $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
             if ($ip) {
-                Cache::forever('nayra_ips', [$ip]);
-                return $ip;
+                self::setNayraAddresses([$ip]);
+                return true;
             }
             sleep(1);
         }
-        throw new ScriptException('Could not get address of the nayra container');
+
+        return false;
     }
 
     /**
@@ -149,5 +169,33 @@ trait ScriptDockerNayraTrait
             sleep(1);
         }
         throw new ScriptException('Could not connect to the nayra container');
+    }
+
+    public static function getNayraAddresses()
+    {
+        // Check if it is running in unit test mode with Cache ArrayStore
+        $isArrayDriver = self::isCacheArrayStore();
+        if ($isArrayDriver) {
+            return Cache::store('file')->get('nayra_ips');
+        }
+
+        return Cache::get('nayra_ips');
+    }
+
+    public static function setNayraAddresses(array $addresses)
+    {
+        // Check if it is running in unit test mode with Cache ArrayStore
+        $isArrayDriver = self::isCacheArrayStore();
+        if ($isArrayDriver) {
+            return Cache::store('file')->forever('nayra_ips', $addresses);
+        }
+
+        Cache::forever('nayra_ips', $addresses);
+    }
+
+    private static function isCacheArrayStore(): bool
+    {
+        $cacheDriver = Cache::getFacadeRoot()->getStore();
+        return $cacheDriver instanceof ArrayStore;
     }
 }

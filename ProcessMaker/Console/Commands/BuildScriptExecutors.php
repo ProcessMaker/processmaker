@@ -179,7 +179,7 @@ class BuildScriptExecutors extends Command
                 );
                 if ($ip) {
                     $this->info('Nayra container IP: ' . $ip);
-                    Cache::forever('nayra_ips', [$ip]);
+                    Base::setNayraAddresses([$ip]);
                     $this->sendEvent(0, 'done');
                     break;
                 }
