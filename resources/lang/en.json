@@ -2291,5 +2291,13 @@
   "Open Case": "Open Case",
   "Alternative": "Alternative",
   "No matching categories were found": "No matching categories were found",
-  "Search categories and processes": "Search categories and processes"
+  "Search categories and processes": "Search categories and processes",
+  "Another Process": "Another Process",
+  "Custom Dashboard": "Custom Dashboard",
+  "External URL": "External URL",
+  "Process Launchpad": "Process Launchpad",
+  "Summary Screen (Default)": "Summary Screen (Default)",
+  "Task List": "Task List",
+  "Task Source (Default)": "Task Source (Default)",
+  "Welcome Screen": "Welcome Screen"
 }

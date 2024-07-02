@@ -2276,5 +2276,13 @@
   "Your In-Progress tasks in the saved search {{title}}": "Ihre in Bearbeitung befindlichen Aufgaben in der gespeicherten Suche {{title}}",
   "Choose a saved search to see the tasks that you can use with an Inbox Rule.": "Wählen Sie eine gespeicherte Suche aus, um die Aufgaben zu sehen, die Sie mit einer Inbox-Regel verwenden können.",
   "No tasks to show.": "Keine Aufgaben zum Anzeigen.",
-  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Aber das ist in Ordnung. Sie können immer noch diese Inbox-Regel erstellen, die auf zukünftige Aufgaben angewendet wird, die den oben genannten Filtern entsprechen."
+  "But that's OK. You can still create this this Inbox Rule to apply to future tasks that match the above filters.": "Aber das ist in Ordnung. Sie können immer noch diese Inbox-Regel erstellen, die auf zukünftige Aufgaben angewendet wird, die den oben genannten Filtern entsprechen.",
+  "Another Process": "Ein anderer Prozess",
+  "Custom Dashboard": "Benutzerdefiniertes Dashboard",
+  "External URL": "Externe URL",
+  "Process Launchpad": "Prozess-Startbildschirm",
+  "Summary Screen (Default)": "Zusammenfassungsbildschirm (Standard)",
+  "Task List": "Aufgabenliste",
+  "Task Source (Default)": "Aufgabenquelle (Standard)",
+  "Welcome Screen": "Willkommensbildschirm"
 }
