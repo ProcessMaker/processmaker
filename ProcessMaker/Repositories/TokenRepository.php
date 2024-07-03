@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use ProcessMaker\Mail\TaskActionByEmail;
+use ProcessMaker\Models\ProcessAbeRequestToken;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -96,7 +97,7 @@ class TokenRepository implements TokenRepositoryInterface
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
             // Validate if the task is enable the action by email
-            $this->validateAndSendActionByEmail($activity, $user->email);
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -170,7 +171,7 @@ class TokenRepository implements TokenRepositoryInterface
      *
      * @return void
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity, string $to)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, string $to)
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
@@ -178,7 +179,17 @@ class TokenRepository implements TokenRepositoryInterface
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, []);
+                    $emailSent = (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, []);
+                    // Check if the email was sent successfully
+                    if ($emailSent) {
+                        // Create a new ProcessAbeRequestToken record
+                        $processAbeRequestToken = new ProcessAbeRequestToken();
+                        $processAbeRequestToken->process_request_id = $token->process_request_id;
+                        $processAbeRequestToken->process_request_token_id = $token->id;
+                        $processAbeRequestToken->save();
+                    }
+
+                    return $emailSent;
                 }
             }
         } catch (\Exception $e) {

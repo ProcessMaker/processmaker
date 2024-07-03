@@ -19,5 +19,5 @@ Route::prefix('api/1.0')->name('api.')->group(function () {
     // Trigger intermediate event
     Route::post('requests/{request}/events/{event}', [ProcessRequestController::class, 'activateIntermediateEvent'])->name('requests.update,request');
 
-    Route::put('tasks/{token_id}/update_variable/{token_abe}', [TaskController::class, 'updateVariable'])->name('tasks.abe.update')->middleware('can:update,task');
+    Route::get('tasks/{token_id}/update_variable/{token_abe}', [TaskController::class, 'updateVariable'])->name('tasks.abe.update')->middleware('can:update,task');
 });

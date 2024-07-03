@@ -258,18 +258,30 @@ class TaskController extends Controller
         }
     }
 
-    public function updateVariable (Request $request, ProcessRequestToken $task, ProcessAbeRequestToken $abe)
+    /**
+     * Update variable.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $task_id
+     * @param int $abe_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateVariable(Request $request, $task_id, $abe_id)
     {
-        $data = [];
-        $varName = $request->input('varName');
-        $varValue = $request->input('varValue');
-        $data[$varName] = $varValue;
+        // Validar los parámetros GET
+        $request->validate([
+            'varName' => 'required|string',
+            'varValue' => 'required|string',
+        ]);
+
         try {
+            $task = ProcessRequestToken::findOrFail($task_id);
+            $abe = ProcessAbeRequestToken::findOrFail($abe_id);
             // Verificar si la respuesta ya ha sido enviada
             $existingAbe = ProcessAbeRequestToken::where('id', $abe->id)
                 ->where('process_request_id', $task->id)->first();
 
-            if ($existingAbe && $existingAbe->is_answered) {
+            if ($abe->is_answered) {
                 return response()->json([
                     'message' => 'This response has already been answered',
                     'data' => $existingAbe
@@ -277,7 +289,9 @@ class TaskController extends Controller
             }
 
             // Update with the data
-            $abe->data = $data;
+            $data = [];
+            $data[$request->varName] = $request->varValue;
+            $abe->data = json_encode($data);
             // Asignar answered_at y is_answered
             $abe->is_answered = true;
             $abe->answered_at = Carbon::now();
