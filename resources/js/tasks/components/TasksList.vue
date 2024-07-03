@@ -26,7 +26,7 @@
           v-slot:[column.field]
         >
           <div
-            :key="index"
+            :key="'b' + index"
             :id="`tasks-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
@@ -40,7 +40,7 @@
             <span v-else>{{ $t(column.label) }}</span>
           </div>
           <b-tooltip
-            :key="index"
+            :key="'c' + index"
             :target="`tasks-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
             placement="bottom"
@@ -57,7 +57,7 @@
         >
           <PMColumnFilterPopover
             v-if="column.sortable"
-            :key="index"
+            :key="'d' + index"
             :id="'pm-table-column-' + index"
             type="Field"
             :value="column.field"
@@ -86,7 +86,7 @@
           <td
             v-for="(header, colIndex) in visibleHeaders"
             :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
-            :key="colIndex"
+            :key="'a' + colIndex"
           >
             <!-- Slot for floating buttons -->
             <template v-if="colIndex === visibleHeaders.length-1">

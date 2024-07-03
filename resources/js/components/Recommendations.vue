@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="recommendation" v-for="(userRecommendation, index) in userRecommendations" :key="index">
-      <div class="title">
-        <div class="name">
+      <div class="recommendation-title">
+        <div class="recommendation-name">
           {{ name(userRecommendation) }}
         </div>
         <a href="#" @click="filter(userRecommendation)">{{ description(userRecommendation) }}</a>
       </div>
-      <div class="actions">
+      <div class="recommendation-actions" v-if="!dashboard">
         <b-button
           v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
           class="ml-2"
@@ -29,20 +29,47 @@
           <template #button-content>
             <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
           </template>
-          <b-dropdown-item>{{ $t('Create a rule based on this suggestion') }}</b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item>{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
-          <b-dropdown-item>{{ $t('Dismiss All') }}</b-dropdown-item>
+          <b-dropdown-item @click="createRule(userRecommendation)">{{ $t('Create a rule based on this suggestion') }}</b-dropdown-item>
+          <b-dropdown-divider />
+          <b-dropdown-item @click="dismiss(userRecommendation)">{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
+          <b-dropdown-item @click="dismissAll()">{{ $t('Dismiss All') }}</b-dropdown-item>
         </b-dropdown>
 
         <a href="#" class="ml-2" @click="dismiss(userRecommendation)">
           <i class="fa fa-times" aria-hidden="true"></i>
         </a>
       </div>
+
+      <div class="recommendation-actions" v-if="dashboard" right>
+        <b-dropdown variant="outline-secondary" class="ml-2" no-caret>
+          <template #button-content>
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+          </template>
+
+          <b-dropdown-item
+            v-if="userRecommendation.recommendation.actions.includes('mark_as_priority')"
+            @click="markAsPriority(userRecommendation)"
+            >
+            {{ markAsPriorityLabel(userRecommendation) }}
+          </b-dropdown-item>
+          <b-dropdown-item
+            v-if="userRecommendation.recommendation.actions.includes('reassign_to_user')"
+            @click="reassignToUser(userRecommendation)"
+            >
+            {{ reassignToUserLabel(userRecommendation) }}
+          </b-dropdown-item>
+
+          <b-dropdown-divider />
+          <b-dropdown-item @click="createRule(userRecommendation)">{{ $t('Create a rule based on this suggestion') }}</b-dropdown-item>
+          <b-dropdown-divider />
+          <b-dropdown-item @click="dismiss(userRecommendation)">{{ $t('Dismiss This Suggestion') }}</b-dropdown-item>
+          <b-dropdown-item @click="dismissAll()">{{ $t('Dismiss All') }}</b-dropdown-item>
+        </b-dropdown>
+      </div>
     </div>
 
     <b-modal id="confirm" :title="$t('Confirmation')" @ok="onConfirm">
-      <p class="" v-html="confirmText"></p>
+      <p v-html="confirmText"></p>
       <user-select v-if="action === 'reassign_to_user'" :label="false" @input="toUserId = $event" />
     </b-modal>
   </div>
@@ -62,6 +89,12 @@ export default {
       userRecommendationId: null,
       confirmText: null,
       toUserId: null,
+    }
+  },
+  props: {
+    dashboard: {
+      type: Boolean,
+      default: false,
     }
   },
   mounted() {
@@ -89,6 +122,33 @@ export default {
       this.userRecommendationId = userRecommendation.id;
       this.action = 'dismiss';
       this.update();
+    },
+    dismissAll() {
+      const promises = this.userRecommendations.map(userRecommendation => {
+        return this.callApi(userRecommendation.id, { action: 'dismiss' });
+      });
+      Promise.all(promises).then(() => {
+        this.userRecommendations = [];
+      });
+    },
+    createRule(userRecommendation) {
+
+      const payload = {
+        name: userRecommendation.recommendation.name.replace(/[^a-zA-Z0-9 ]/g, ''),
+        advanced_filter: {
+          filters: userRecommendation.recommendation.advanced_filter,
+          order: {by: "id", direction: "desc"}
+        },
+        data: {},
+      };
+
+      return ProcessMaker.apiClient.post('tasks/rules', payload)
+        .then((response) => {
+          this.dismiss(userRecommendation).then(() => {
+            const id = response.data.id;
+            window.location.href = `/tasks/rules/${id}`
+          });
+        });
     },
     reassignToUser(userRecommendation) {
       this.userRecommendationId = userRecommendation.id;
@@ -121,8 +181,8 @@ export default {
       if (!this.userRecommendationId || !this.action) {
         return;
       }
-      return ProcessMaker.apiClient.put(
-        "recommendations/" + this.userRecommendationId, 
+      return this.callApi(
+        this.userRecommendationId, 
         {
           action: this.action,
           ...params
@@ -131,9 +191,14 @@ export default {
         this.userRecommendations = this.userRecommendations.filter(r => r.id !== this.userRecommendationId);
       });
     },
+    callApi(id, params) {
+      return ProcessMaker.apiClient.put(
+        "recommendations/" + id, params
+      );
+    },
     filter(userRecommendation) {
       const filter = userRecommendation.recommendation.advanced_filter;
-      filter.push({ subject: { type: "Status" }, operator: "=", value: "In Progress" });
+      // filter.push({ subject: { type: "Status" }, operator: "=", value: "In Progress" });
       this.$root.$emit('load-with-filter', filter);
     }
   }
@@ -150,19 +215,26 @@ export default {
   align-items: center;
   background-color: #F2F8FC;
 }
-.title {
+.recommendation-title {
   flex-grow: 1;
 }
-.name {
+.recommendation-name {
   font-weight: 600;
+  color: #212529;
 }
-.actions :deep(.btn) {
+.recommendation-actions :deep(.btn) {
   background-color: #FEFEFE;
   border-color: #CDDEEE;
   text-transform: none;
 }
 
-.actions :deep(.btn-outline-secondary:hover) {
+.recommendation-actions :deep(.btn-outline-secondary:hover),
+.recommendation-actions :deep(.btn-outline-secondary.dropdown-toggle) {
   color: #6C757D;
+}
+
+.recommendation-actions :deep(.dropdown-item) {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 </style>
