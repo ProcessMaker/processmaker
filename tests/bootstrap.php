@@ -8,6 +8,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\ScriptExecutor;
 
 // Bootstrap laravel
@@ -110,6 +111,7 @@ if (env('TEST_TOKEN')) {
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
+    Cache::store('file')->flush();
 
     if (env('PARALLEL_TEST_PROCESSES')) {
         Artisan::call('processmaker:create-test-dbs');
