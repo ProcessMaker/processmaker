@@ -126,7 +126,6 @@ export default {
       this.readActivated = true;
     },
     getHelperProcess() {
-      console.log("en getHelperProcess: ", this.$refs.wizardHelperProcessModal);
       this.$refs.wizardHelperProcessModal.getHelperProcessStartEvent();
     },
   },
