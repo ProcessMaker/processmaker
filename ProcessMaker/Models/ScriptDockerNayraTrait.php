@@ -198,7 +198,11 @@ trait ScriptDockerNayraTrait
                     $ip = '127.0.0.1';
                 }
             } else {
-                $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra 2>&1", $output, $status);
+                $ip = exec(
+                    $docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra 2>&1",
+                    $output,
+                    $status
+                );
             }
             if ($ip) {
                 self::setNayraAddresses([$ip]);
