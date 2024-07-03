@@ -4,13 +4,13 @@
       <process-header-start
         :process="process"
         @goBack="goBack()"
+        @onProcessNavigate="onProcessNavigate"
       />
       <process-header
         :process="process"
         :hide-header-options="true"
         :icon-wizard-template="createdFromWizardTemplate"
         @goBack="goBack()"
-        @onProcessNavigate="onProcessNavigate"
       />
       <div
         id="collapseProcessInfo"

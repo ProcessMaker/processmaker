@@ -144,9 +144,7 @@ export default {
   width: 22px;
   height: 22px;
 }
-.d-flex.align-items-center > * {
-  margin-right: 8px;
-}
+
 .title {
   color: #1572C2;
   font-size: 18px;
