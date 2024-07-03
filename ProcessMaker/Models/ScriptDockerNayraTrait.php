@@ -57,6 +57,9 @@ trait ScriptDockerNayraTrait
         curl_close($ch);
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($httpStatus !== 200) {
+            $result .= ' HTTP Status: ' . $httpStatus;
+            error_log('Error executing script with Nayra Docker: ' . $result);
+            $result .= "\n" . $this->getDockerLogs(config('app.instance'));
             Log::error('Error executing script with Nayra Docker', [
                 'url' => $url,
                 'httpStatus' => $httpStatus,
@@ -65,6 +68,17 @@ trait ScriptDockerNayraTrait
             throw new ScriptException($result);
         }
         return $result;
+    }
+
+    private function getDockerLogs($instanceName)
+    {
+        $docker = Docker::command();
+        $logs = [];
+        exec($docker . " logs {$instanceName}_nayra", $logs, $status);
+        if ($status) {
+            return 'Error getting logs from Nayra Docker: ' . implode("\n", $logs);
+        }
+        return implode("\n", $logs);
     }
 
     /**
@@ -102,6 +116,7 @@ trait ScriptDockerNayraTrait
         exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
         exec($docker . ' run -d --name ' . $instanceName . '_nayra ' . $image . ' &', $output, $status);
         if ($status) {
+            error_log('Error starting Nayra Docker: ' . implode("\n", $output));
             Log::error('Error starting Nayra Docker', [
                 'output' => $output,
                 'status' => $status,
@@ -127,6 +142,7 @@ trait ScriptDockerNayraTrait
     private function waitContainerNetwork($docker, $instanceName)
     {
         if (!$this->findNayraAddresses($docker, $instanceName)) {
+            error_log('Could not get address of the nayra container');
             throw new ScriptException('Could not get address of the nayra container');
         }
     }
@@ -168,6 +184,7 @@ trait ScriptDockerNayraTrait
             }
             sleep(1);
         }
+        error_log('Could not connect to the nayra container: ' . $url);
         throw new ScriptException('Could not connect to the nayra container');
     }
 

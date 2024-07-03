@@ -102,6 +102,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $this->unlock();
             $this->updateData(['output' => $exception->getMessageForData($token)]);
         } catch (Throwable $exception) {
+            error_log('SCRIPT ERROR: ' . $exception->getMessage());
+            error_log($exception->getFile() . ':' . $exception->getLine());
+            error_log($exception->getTraceAsString());
             $message = $exception->getMessage();
             $finalAttempt = true;
             if ($errorHandling) {
