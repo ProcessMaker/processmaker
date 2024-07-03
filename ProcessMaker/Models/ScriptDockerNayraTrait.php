@@ -25,6 +25,7 @@ trait ScriptDockerNayraTrait
      */
     public function handleNayraDocker(string $code, array $data, array $config, $timeout, array $environmentVariables)
     {
+        error_log('handleNayraDocker');
         $envVariables = [];
         foreach ($environmentVariables as $line) {
             list($key, $value) = explode('=', $line, 2);
@@ -44,9 +45,10 @@ trait ScriptDockerNayraTrait
             $this->bringUpNayra();
             $servers = self::getNayraAddresses();
         }
-        $index = array_rand($servers);
-        $url = 'http://' . $servers[$index] . ':8080/run_script';
-        $this->ensureNayraServerIsRunning('http://' . $servers[$index] . ':8080');
+        $baseUrl = $this->getNayraInstanceUrl();
+        $url = $baseUrl . '/run_script';
+        $this->ensureNayraServerIsRunning($baseUrl);
+
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -74,6 +76,12 @@ trait ScriptDockerNayraTrait
         return $result;
     }
 
+    private function getNayraInstanceUrl()
+    {
+        $servers = self::getNayraAddresses();
+        return 'http://' . $servers[0] . ':8080';
+    }
+
     private function getDockerLogs($instanceName)
     {
         $docker = Docker::command();
@@ -94,6 +102,7 @@ trait ScriptDockerNayraTrait
      */
     private function ensureNayraServerIsRunning(string $url)
     {
+        error_log('ensureNayraServerIsRunning ' . $url);
         $header = @get_headers($url);
         if (!$header) {
             $this->bringUpNayra();
@@ -107,6 +116,7 @@ trait ScriptDockerNayraTrait
      */
     private function bringUpNayra()
     {
+        error_log('bringUpNayra');
         $docker = Docker::command();
         $instanceName = config('app.instance');
         if ($this->findNayraAddresses($docker, $instanceName, 3)) {
@@ -121,8 +131,8 @@ trait ScriptDockerNayraTrait
             $this->bringUpNayraContainer();
         } else {
 
-            $res = exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
-            $res = exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
+            exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
+            exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
                 $docker . ' run -d --name ' . $instanceName . '_nayra '
                 . ($this->inHost ? '--network host ': '')
@@ -140,13 +150,13 @@ trait ScriptDockerNayraTrait
             }
         }
         $this->waitContainerNetwork($docker, $instanceName);
-        $servers = self::getNayraAddresses();
-        $url = 'http://' . $servers[0] . ':8080';
+        $url = $this->getNayraInstanceUrl();
         $this->nayraServiceIsRunning($url);
     }
 
     private function bringUpNayraContainer()
     {
+        error_log('bringUpNayraContainer');
         $lang = Base::NAYRA_LANG;
         Artisan::call("processmaker:build-script-executor {$lang} --rebuild");
     }
@@ -159,6 +169,7 @@ trait ScriptDockerNayraTrait
      */
     private function waitContainerNetwork($docker, $instanceName)
     {
+        error_log('waitContainerNetwork ' . $instanceName);
         if (!$this->findNayraAddresses($docker, $instanceName, 30)) {
             error_log('Could not get address of the nayra container');
             throw new ScriptException('Could not get address of the nayra container');
@@ -174,6 +185,7 @@ trait ScriptDockerNayraTrait
      */
     private function findNayraAddresses($docker, $instanceName, $times): bool
     {
+        error_log('findNayraAddresses ' . $instanceName);
         $ip = '';
         for ($i = 0; $i < $times; $i++) {
             if ($i > 0) {
@@ -205,6 +217,7 @@ trait ScriptDockerNayraTrait
      */
     private function nayraServiceIsRunning($url): bool
     {
+        error_log('nayraServiceIsRunning ' . $url);
         for ($i = 0; $i < 30; $i++) {
             if ($i > 0) {
                 sleep(1);
@@ -220,6 +233,7 @@ trait ScriptDockerNayraTrait
 
     public static function getNayraAddresses()
     {
+        error_log('getNayraAddresses');
         // Check if it is running in unit test mode with Cache ArrayStore
         $isArrayDriver = self::isCacheArrayStore();
         if ($isArrayDriver) {
@@ -231,6 +245,7 @@ trait ScriptDockerNayraTrait
 
     public static function setNayraAddresses(array $addresses)
     {
+        error_log('setNayraAddresses');
         // Check if it is running in unit test mode with Cache ArrayStore
         $isArrayDriver = self::isCacheArrayStore();
         if ($isArrayDriver) {
