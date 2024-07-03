@@ -63,8 +63,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.tasks-container {
-  /*overflow: auto;*/
-}
-</style>

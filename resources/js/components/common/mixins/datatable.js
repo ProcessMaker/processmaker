@@ -167,6 +167,7 @@ export default {
         },
       },
       noDataTemplate() { return "asdfas#####1111"; },
+      totalCards: 0, 
     };
   },
 };

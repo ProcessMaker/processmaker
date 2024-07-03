@@ -1,13 +1,11 @@
 const ListMixin = {
   mounted() {
-    this.$nextTick(() => {
-      //this.$refs.tasksContainer.addEventListener('scroll', this.onScroll);
-      const listCard = document.querySelector(".mobile-container");
-      listCard.addEventListener("scroll", () => this.onScroll());
-    });
+    const taskListCard = document.querySelector(".mobile-container");
+    taskListCard.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
-    //this.$refs.tasksContainer.removeEventListener('scroll', this.onScroll);
+    const taskListCard = document.querySelector(".mobile-container");
+    taskListCard.removeEventListener("scrollend", this.onScroll());
   },
   computed: {
     columnsQuery() {
@@ -19,11 +17,18 @@ const ListMixin = {
   },
   methods: {
     onScroll() {
-      //const container = this.$refs.tasksContainer;
-      console.log("funciona evento onScroll");
-      //if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-      //  this.loadMoreTasks();
-      //}
+      const container = document.querySelector(".mobile-container");
+
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+       
+       if(this.totalCards>=this.perPage) {
+        this.perPage = this.perPage * (this.page+1);
+        this.fetch();
+       } else {
+        console.log("No hay mas cards");
+       }
+       
+      }
     },
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
@@ -84,7 +89,24 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
+        console.log("API call: ",
+        `${this.endpoint}?page=${
+          this.page
+        }&include=` + include.join(",")
+          + `&pmql=${
+            encodeURIComponent(pmql)
+          }&per_page=${
+            this.perPage
+          }${filterParams
+          }${this.getSortParam()
+          }&non_system=true` +
+          advancedFilter +
+          this.columnsQuery,
 
+          {
+            dataLoadingId: this.dataLoadingId,
+            headers: { 'Cache-Control': 'no-cache'}
+          });
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -108,7 +130,7 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
-            
+            this.totalCards = response.data.meta.total;
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];
               this.data.data.forEach((element) => {
