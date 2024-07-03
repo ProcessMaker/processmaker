@@ -310,12 +310,11 @@ export default {
     color: #566877;
   }
 
-  a {
-    padding-top: 5px;
-  }
-
   i {
     font-size: 1.5em;
   }
+}
+.dashboard .recommendation-navigation a {
+  padding-top: 5px
 }
 </style>
