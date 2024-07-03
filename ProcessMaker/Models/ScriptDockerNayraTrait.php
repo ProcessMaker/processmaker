@@ -16,7 +16,7 @@ use ProcessMaker\ScriptRunners\Base;
 trait ScriptDockerNayraTrait
 {
 
-    private $inHost = true;
+    private $inHost = false;
 
     /**
      * Execute the script task using Nayra Docker.
@@ -41,7 +41,7 @@ trait ScriptDockerNayraTrait
         $body = json_encode($params);
         $servers = self::getNayraAddresses();
         if (!$servers) {
-            $this->bringUpNayraContainer();
+            $this->bringUpNayra();
             $servers = self::getNayraAddresses();
         }
         $index = array_rand($servers);
@@ -96,17 +96,16 @@ trait ScriptDockerNayraTrait
     {
         $header = @get_headers($url);
         if (!$header) {
-            $this->bringUpNayra($url);
+            $this->bringUpNayra();
         }
     }
 
     /**
      * Bring up Nayra and check the provided URL.
      *
-     * @param string $url The URL to check
      * @return void
      */
-    private function bringUpNayra(string $url)
+    private function bringUpNayra()
     {
         $docker = Docker::command();
         $instanceName = config('app.instance');
@@ -116,24 +115,33 @@ trait ScriptDockerNayraTrait
         }
 
         $image = $this->scriptExecutor->dockerImageName();
-        exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
-        exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
-        exec(
-            $docker . ' run -d --name ' . $instanceName . '_nayra '
-            . ($this->inHost ? '--network host ': '')
-            . $image . ' &',
-            $output,
-            $status
-        );
+        //check if image exists
+        exec($docker . " inspect {$image} 2>&1", $output, $status);
         if ($status) {
-            error_log('Error starting Nayra Docker: ' . implode("\n", $output));
-            Log::error('Error starting Nayra Docker', [
-                'output' => $output,
-                'status' => $status,
-            ]);
-            throw new ScriptException('Error starting Nayra Docker');
+            $this->bringUpNayraContainer();
+        } else {
+
+            $res = exec($docker . " stop {$instanceName}_nayra 2>&1 || true");
+            $res = exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
+            exec(
+                $docker . ' run -d --name ' . $instanceName . '_nayra '
+                . ($this->inHost ? '--network host ': '')
+                . $image . ' &',
+                $output,
+                $status
+            );
+            if ($status) {
+                error_log('Error starting Nayra Docker: ' . implode("\n", $output));
+                Log::error('Error starting Nayra Docker', [
+                    'output' => $output,
+                    'status' => $status,
+                ]);
+                throw new ScriptException('Error starting Nayra Docker');
+            }
         }
         $this->waitContainerNetwork($docker, $instanceName);
+        $servers = self::getNayraAddresses();
+        $url = 'http://' . $servers[0] . ':8080';
         $this->nayraServiceIsRunning($url);
     }
 
@@ -175,7 +183,7 @@ trait ScriptDockerNayraTrait
                 // check if container is running in host network
                 exec($docker . " inspect {$instanceName}_nayra", $output, $status);
                 if ($status === 0) {
-                    $ip = 'localhost';
+                    $ip = '127.0.0.1';
                 }
             } else {
                 $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");

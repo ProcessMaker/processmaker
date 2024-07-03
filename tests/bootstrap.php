@@ -111,7 +111,7 @@ if (env('TEST_TOKEN')) {
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
-    Cache::store('file')->flush();
+    Cache::store('file')->forget('nayra_ips');
 
     if (env('PARALLEL_TEST_PROCESSES')) {
         Artisan::call('processmaker:create-test-dbs');
