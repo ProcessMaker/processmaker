@@ -4,60 +4,47 @@
             v-model="activeTab"
             @input="onTabsInput"
             @changed="onTabsChanged">
-      <b-tab :title="$t('My Cases')"
-             active>
-        <PMSearchBar v-model="filter">
-          <template v-slot:right-content>
-            <TabOptions @onTabSettings="onTabSettings"
-                         @onDelete="onDelete">
-            </TabOptions>
-          </template>
-        </PMSearchBar>
-        <requests-listing ref="requestList"
-                          :filter="filterRequest"
-                          :columns="columnsRequest"
-                          :pmql="fullPmqlRequest"
-                          :autosaveFilter="false">
-        </requests-listing>
-      </b-tab>
-
-      <b-tab :title="$t('My Tasks')">
-        <PMSearchBar v-model="filter">
-          <template v-slot:right-content>
-            <TabOptions @onTabSettings="onTabSettings"
-                         @onDelete="onDelete">
-            </TabOptions>
-          </template>
-        </PMSearchBar>
-        <tasks-list ref="taskList"
-                    :filter="filterTask"
-                    :pmql="fullPmqlTask" 
-                    :columns="columnsTask"
-                    :disable-tooltip="false"
-                    :disable-quick-fill-tooltip="false"
-                    :fetch-on-created="false"
-                    :autosaveFilter="false">
-        </tasks-list>
-      </b-tab>
-
       <b-tab v-for="(item, index) in tabsList"
              :key="index"
              :title="item.name">
-        <PMSearchBar v-model="filter">
+        <PMSearchBar v-model="item.filter">
           <template v-slot:right-content>
             <TabOptions @onTabSettings="onTabSettings"
                          @onDelete="onDelete">
             </TabOptions>
           </template>
         </PMSearchBar>
-        <tasks-list :filter="''"
-                    :pmql="''"
-                    :columns="[]"
-                    @in-overdue="setInOverdueMessage"
-                    :saved-search="item.idSavedSearch">
-        </tasks-list>
+        <template v-if="item.type==='myCases'">
+          <requests-listing :ref="'list'+index"
+                            :columns="item.columns"
+                            :filter="item.filter"
+                            :pmql="item.pmql"
+                            :autosaveFilter="false">
+          </requests-listing>
+        </template>
+        <template v-else-if="item.type==='myTasks'">
+          <tasks-list :ref="'list'+index"
+                      :columns="item.columns"
+                      :filter="item.filter"
+                      :pmql="item.pmql"
+                      :autosaveFilter="false"
+                      :fetch-on-created="false"
+                      :disable-tooltip="false"
+                      :disable-quick-fill-tooltip="false">
+          </tasks-list>
+        </template>
+        <template v-else>
+          <tasks-list :ref="'list'+index"
+                      :columns="item.columns"
+                      :filter="item.filter"
+                      :pmql="item.pmql"
+                      :autosaveFilter="false"
+                      :fetch-on-created="false"
+                      :saved-search="item.idSavedSearch"
+                      @in-overdue="setInOverdueMessage">
+          </tasks-list>
+        </template>
       </b-tab>
-
       <template #tabs-end>
         <b-nav-item id="pt-b-nav-item-id"
                     role="presentation"
@@ -66,7 +53,7 @@
         </b-nav-item>
       </template>
     </PMTabs>
-    <b-popover ref="ptBPopover" 
+    <b-popover :ref="'tabCreate'"
                :target="'pt-b-nav-item-id'"
                :triggers="'click'"
                :container="''"
@@ -74,12 +61,32 @@
                :placement="'bottom'"
                :custom-class="'pt-popover-body'"
                @shown="onShown">
-      <CreateSavedSearchTab ref="ptCreateSavedSearchTab"
+      <CreateSavedSearchTab :ref="'createSavedSearchTab'"
                             @onCancel="onCancelCreateSavedSerchTab"
-                            @onOk="onOkCreateSavedSerchTab"
-                            @onSelectedOption="onSelectedOptionCreateSavedSerchTab">
+                            @onOk="onOkCreateSavedSerchTab">
       </CreateSavedSearchTab>
-    </b-popover>    
+    </b-popover>
+    <b-modal :ref="'tabSetting'"
+             :title="$t('Tab Settings')"
+             :button-size="'sm'"
+             :centered="true"
+             @ok="$refs.tabSettingForm.onOk()">
+      <CreateSavedSearchTab :ref="'tabSettingForm'"
+                            :hideFormsButton="true"
+                            :showOptionSeeTabOnMobile="true"
+                            @onOk="onOkTabSetting">
+      </CreateSavedSearchTab>
+    </b-modal>
+    <b-modal :ref="'tabDeletion'"
+             :button-size="'sm'"
+             :centered="true"
+             :title="$t('Confirmation')"
+             :ok-title="$t('Delete')"
+             :ok-variant="'danger'"
+             :cancel-title="$t('Cancel')"
+             @ok="onOkDelete">
+      <span v-html="$t('Do you want to delete the tab <b>{{nameItem}}</b>?', {nameItem: this.tabsList[this.activeTab].name})"></span>
+    </b-modal>
   </div>
 </template>
 
@@ -109,72 +116,70 @@
     },
     data() {
       return {
-        filterRequest: "",
-        fullPmqlRequest: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-        columnsRequest: [
-          {
-            label: "Case #",
-            field: "case_number",
-            sortable: true,
-            default: true,
-            width: 80
-          },
-          {
-            label: "Case title",
-            field: "case_title",
-            sortable: true,
-            default: true,
-            truncate: true,
-            width: 220
-          },
-          {
-            label: "Status",
-            field: "status",
-            sortable: true,
-            default: true,
-            width: 100,
-            filter_subject: {type: 'Status'}
-          },
-          {
-            label: "Started",
-            field: "initiated_at",
-            format: "datetime",
-            sortable: true,
-            default: true,
-            width: 160
-          },
-          {
-            label: "Completed",
-            field: "completed_at",
-            format: "datetime",
-            sortable: true,
-            default: true,
-            width: 160
+        tabsList: [{
+            type: "myCases",
+            name: this.$t("My Cases"),
+            filter: "",
+            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            columns: [
+              {
+                label: "Case #",
+                field: "case_number",
+                sortable: true,
+                default: true,
+                width: 80
+              },
+              {
+                label: "Case title",
+                field: "case_title",
+                sortable: true,
+                default: true,
+                truncate: true,
+                width: 220
+              },
+              {
+                label: "Status",
+                field: "status",
+                sortable: true,
+                default: true,
+                width: 100,
+                filter_subject: {type: 'Status'}
+              },
+              {
+                label: "Started",
+                field: "initiated_at",
+                format: "datetime",
+                sortable: true,
+                default: true,
+                width: 160
+              },
+              {
+                label: "Completed",
+                field: "completed_at",
+                format: "datetime",
+                sortable: true,
+                default: true,
+                width: 160
+              }
+            ]
+          }, {
+            type: "myTasks",
+            name: this.$t("My Tasks"),
+            filter: "",
+            pmql: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
+            columns: window.Processmaker.defaultColumns || null
           }
         ],
-        filterTask: "",
-        fullPmqlTask: `(user_id = ${ProcessMaker.user.id}) AND (process_id = ${this.process.id})`,
-        columnsTask: window.Processmaker.defaultColumns || null,
-        tabsList: [],
-        activeTab: 0,
-        selectedSavedSearch: null,
-        filter: ""
+        activeTab: 0
       };
-    },
-    watch: {
-      filter() {
-        console.log(this.filter);
-      }
     },
     methods: {
       onTabsInput(activeTabIndex) {
-        if (activeTabIndex === 1) {
-          this.$nextTick(() => {
-            if (this.$refs.taskList) {
-              this.$refs.taskList.fetch();
-            }
-          });
-        }
+        this.$nextTick(() => {
+          if (this.$refs["list" + activeTabIndex]) {
+            this.$refs["list" + activeTabIndex][0].fetch();
+          }
+        });
       },
       onTabsChanged() {
         let index = this.$refs.bTabs.getTabs().length;
@@ -183,24 +188,29 @@
         }
       },
       onCancelCreateSavedSerchTab() {
-        this.$refs.ptBPopover.$emit("close");
+        this.$refs.tabCreate.$emit("close");
       },
       onOkCreateSavedSerchTab(tab) {
-        this.$refs.ptBPopover.$emit("close");
-        console.log(tab)
-        tab.meta = this.selectedSavedSearch;
+        this.$refs.tabCreate.$emit("close");
         this.tabsList.push(tab);
+        console.log("save to database new savedsearch")
       },
-      onSelectedOptionCreateSavedSerchTab(option) {
-        this.selectedSavedSearch = option.meta;
+      onOkTabSetting(tab) {
+        this.$set(this.tabsList, this.activeTab, tab);
+        console.log("save to database setting")
       },
       onTabSettings() {
+        this.$refs.tabSetting.show();
+        this.$refs.tabSetting.$nextTick(() => {
+          this.$refs.tabSettingForm.set(this.tabsList[this.activeTab]);
+        });
       },
       onDelete() {
+        this.$refs.tabDeletion.show();
       },
-      deleteTab() {
-        if (this.activeTab >= 2) {
-          this.tabsList.splice(this.activeTab - 2, 1);
+      onOkDelete() {
+        if (this.tabsList.length > 1) {
+          this.tabsList.splice(this.activeTab, 1);
         }
       },
       setInOverdueMessage() {
@@ -210,7 +220,7 @@
         this.closeOnBlur();
       },
       closeOnBlur() {
-        let area = this.$refs.ptCreateSavedSearchTab.$el.parentNode;
+        let area = this.$refs.createSavedSearchTab.$el.parentNode;
         area.addEventListener('mouseenter', () => {
           window.removeEventListener('click', this.onCancelCreateSavedSerchTab);
         });
