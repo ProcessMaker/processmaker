@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="tasksContainer" class="tasks-container">
     <template v-for="(item, index) in data.data">
       <card
         :key="index"
@@ -51,7 +51,7 @@ export default {
     };
   },
   mounted() {
-    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")`;
+    this.pmql = `(user_id = ${ProcessMaker.user.id}) AND (status = "In Progress")`;    
   },
   methods: {
     updatePmql(value) {
@@ -63,3 +63,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+.tasks-container {
+  /*overflow: auto;*/
+}
+</style>

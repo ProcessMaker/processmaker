@@ -1,4 +1,14 @@
 const ListMixin = {
+  mounted() {
+    this.$nextTick(() => {
+      //this.$refs.tasksContainer.addEventListener('scroll', this.onScroll);
+      const listCard = document.querySelector(".mobile-container");
+      listCard.addEventListener("scroll", () => this.onScroll());
+    });
+  },
+  beforeDestroy() {
+    //this.$refs.tasksContainer.removeEventListener('scroll', this.onScroll);
+  },
   computed: {
     columnsQuery() {
       if (this.columns && this.columns.length > 0) {
@@ -8,6 +18,13 @@ const ListMixin = {
     },
   },
   methods: {
+    onScroll() {
+      //const container = this.$refs.tasksContainer;
+      console.log("funciona evento onScroll");
+      //if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+      //  this.loadMoreTasks();
+      //}
+    },
     getSortParam() {
       if (this.sortOrder instanceof Array && this.sortOrder.length > 0) {
         return (

@@ -1,4 +1,4 @@
-@extends('layouts.layout', ['content_margin' => ''])
+@extends('layouts.layout', ['content_margin' => '', 'overflow-auto' => ''])
 
 @section('content')
   <div class="mobile-flex-container">
@@ -28,6 +28,8 @@
   }
   .mobile-container {
     flex: 1;
+    height: 100vh;
+    overflow: auto;
   }
 </style>
 
