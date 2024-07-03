@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <Recommendations />
+    <Recommendations if="showRecommendations" />
     <div
       v-show="true"
       data-cy="tasks-table"
@@ -26,7 +26,7 @@
           v-slot:[column.field]
         >
           <div
-            :key="'b' + index"
+            :key="index"
             :id="`tasks-table-column-${column.field}`"
             class="pm-table-column-header-text"
           >
@@ -40,7 +40,7 @@
             <span v-else>{{ $t(column.label) }}</span>
           </div>
           <b-tooltip
-            :key="'c' + index"
+            :key="index"
             :target="`tasks-table-column-${column.field}`"
             custom-class="pm-table-tooltip-header"
             placement="bottom"
@@ -57,7 +57,7 @@
         >
           <PMColumnFilterPopover
             v-if="column.sortable"
-            :key="'d' + index"
+            :key="index"
             :id="'pm-table-column-' + index"
             type="Field"
             :value="column.field"
@@ -86,7 +86,7 @@
           <td
             v-for="(header, colIndex) in visibleHeaders"
             :class="{ 'pm-table-filter-applied-tbody': header.sortAsc || header.sortDesc }"
-            :key="'a' + colIndex"
+            :key="colIndex"
           >
             <!-- Slot for floating buttons -->
             <template v-if="colIndex === visibleHeaders.length-1">
@@ -300,6 +300,10 @@ export default {
     tableName: {
       type: String,
       default: "",
+    },
+    showRecommendations: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
