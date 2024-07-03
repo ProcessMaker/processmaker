@@ -124,6 +124,7 @@ export default {
 .tab-style {
   background-color: white;
   padding-top: 32px;
+  width: 98.5%;
 }
 .nav-pills .nav-link.active {
   background-color: white;
@@ -152,8 +153,5 @@ export default {
 #tabs-custom div:has(ul) {
   display: flex;
   justify-content: center;
-}
-div:has(.tab-pane) {
-  width: 100%;
 }
 </style>
