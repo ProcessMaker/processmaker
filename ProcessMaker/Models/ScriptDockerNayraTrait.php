@@ -120,7 +120,6 @@ trait ScriptDockerNayraTrait
         exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
         exec(
             $docker . ' run -d --name ' . $instanceName . '_nayra '
-            . '-p 8080:8080 '
             . ($this->inHost ? '--network host ': '')
             . $image . ' &',
             $output,
@@ -172,7 +171,17 @@ trait ScriptDockerNayraTrait
             if ($i > 0) {
                 sleep(1);
             }
-            $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
+            if ($this->inHost) {
+                // check if container is running in host network
+                exec($docker . " inspect --format '{{ .NetworkSettings.Networks.host.IPAddress }}' {$instanceName}_nayra", $output, $status);
+                if ($status === 0) {
+                    self::setNayraAddresses(['localhost']);
+                    return true;
+                }
+                return false;
+            } else {
+                $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
+            }
             if ($ip) {
                 self::setNayraAddresses([$ip]);
                 return true;
