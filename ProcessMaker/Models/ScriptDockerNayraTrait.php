@@ -173,12 +173,10 @@ trait ScriptDockerNayraTrait
             }
             if ($this->inHost) {
                 // check if container is running in host network
-                exec($docker . " inspect --format '{{ .NetworkSettings.Networks.host.IPAddress }}' {$instanceName}_nayra", $output, $status);
+                exec($docker . " inspect {$instanceName}_nayra", $output, $status);
                 if ($status === 0) {
-                    self::setNayraAddresses(['localhost']);
-                    return true;
+                    $ip = 'localhost';
                 }
-                return false;
             } else {
                 $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
             }
