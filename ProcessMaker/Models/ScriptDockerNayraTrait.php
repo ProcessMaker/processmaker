@@ -186,6 +186,7 @@ trait ScriptDockerNayraTrait
     private function findNayraAddresses($docker, $instanceName, $times): bool
     {
         error_log('findNayraAddresses ' . $instanceName);
+        passthru('docker network ls');
         $ip = '';
         for ($i = 0; $i < $times; $i++) {
             if ($i > 0) {
