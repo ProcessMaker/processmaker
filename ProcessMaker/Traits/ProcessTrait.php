@@ -4,6 +4,7 @@ namespace ProcessMaker\Traits;
 
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -14,7 +15,7 @@ trait ProcessTrait
     /**
      * Parsed process BPMN definitions.
      *
-     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     * @var BpmnDocumentInterface
      */
     private $bpmnDefinitions;
 
@@ -199,5 +200,22 @@ trait ProcessTrait
         }
 
         return $response;
+    }
+
+    public function getCounts()
+    {
+        $result = $this->requests()
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->get();
+
+        $completed = $result->where('status', 'COMPLETED')->first()?->count ?? 0;
+        $in_progress = $result->where('status', 'ACTIVE')->first()?->count ?? 0;
+
+        return [
+            'completed' => $completed,
+            'in_progress' => $in_progress,
+            'total' => $completed + $in_progress,
+        ];
     }
 }
