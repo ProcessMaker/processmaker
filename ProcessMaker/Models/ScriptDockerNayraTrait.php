@@ -17,6 +17,7 @@ trait ScriptDockerNayraTrait
 {
 
     private $inHost = false;
+    private $schema = 'http';
 
     /**
      * Execute the script task using Nayra Docker.
@@ -43,7 +44,6 @@ trait ScriptDockerNayraTrait
         $servers = self::getNayraAddresses();
         if (!$servers) {
             $this->bringUpNayra();
-            $servers = self::getNayraAddresses();
         }
         $baseUrl = $this->getNayraInstanceUrl();
         $url = $baseUrl . '/run_script';
@@ -65,7 +65,6 @@ trait ScriptDockerNayraTrait
             $result .= ' URL: ' . $url;
             $result .= ' BODY: ' . $body;
             error_log('Error executing script with Nayra Docker: ' . $result);
-            $result .= "\n" . $this->getDockerLogs(config('app.instance'));
             Log::error('Error executing script with Nayra Docker', [
                 'url' => $url,
                 'httpStatus' => $httpStatus,
@@ -79,7 +78,7 @@ trait ScriptDockerNayraTrait
     private function getNayraInstanceUrl()
     {
         $servers = self::getNayraAddresses();
-        return 'http://' . $servers[0] . ':8080';
+        return $this->schema . '://' . $servers[0] . ':8080';
     }
 
     private function getDockerLogs($instanceName)
@@ -105,7 +104,7 @@ trait ScriptDockerNayraTrait
         error_log('ensureNayraServerIsRunning ' . $url);
         $header = @get_headers($url);
         if (!$header) {
-            $this->bringUpNayra();
+            $this->bringUpNayra(true);
         }
     }
 
@@ -114,12 +113,12 @@ trait ScriptDockerNayraTrait
      *
      * @return void
      */
-    private function bringUpNayra()
+    private function bringUpNayra($restart = false)
     {
         error_log('bringUpNayra');
         $docker = Docker::command();
         $instanceName = config('app.instance');
-        if ($this->findNayraAddresses($docker, $instanceName, 3)) {
+        if (!$restart && $this->findNayraAddresses($docker, $instanceName, 3)) {
             // The container is already running
             return;
         }
@@ -135,8 +134,8 @@ trait ScriptDockerNayraTrait
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
                 $docker . ' run -d --name ' . $instanceName . '_nayra '
-                . ($this->inHost ? '--network host ': '')
-                . $image . ' &',
+                . '-p 8080:8080 '
+                . $image,
                 $output,
                 $status
             );
@@ -149,6 +148,7 @@ trait ScriptDockerNayraTrait
                 throw new ScriptException('Error starting Nayra Docker');
             }
         }
+        error_log($this->getDockerLogs(config('app.instance')));
         $this->waitContainerNetwork($docker, $instanceName);
         $url = $this->getNayraInstanceUrl();
         $this->nayraServiceIsRunning($url);
@@ -198,7 +198,7 @@ trait ScriptDockerNayraTrait
                     $ip = '127.0.0.1';
                 }
             } else {
-                $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra");
+                $ip = exec($docker . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra 2>&1", $output, $status);
             }
             if ($ip) {
                 self::setNayraAddresses([$ip]);

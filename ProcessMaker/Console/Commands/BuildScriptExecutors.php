@@ -169,7 +169,11 @@ class BuildScriptExecutors extends Command
             $this->execCommand(Docker::command() . " stop {$instanceName}_nayra 2>&1 || true");
             $this->execCommand(Docker::command() . " rm {$instanceName}_nayra 2>&1 || true");
             $this->info('Bring up the nayra container');
-            $this->execCommand(Docker::command() . ' run -d --name ' . $instanceName . '_nayra ' . $image);
+            $this->execCommand(
+                Docker::command() . ' run -d --name ' . $instanceName
+                . '_nayra -p 8080:8080 '
+                . $image
+            );
             $this->info('Get IP address of the nayra container');
             $ip = '';
             for ($i = 0; $i < 10; $i++) {
