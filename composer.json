@@ -1,6 +1,6 @@
 {
     "name": "processmaker/processmaker",
-    "version": "4.11.0+nightly-20240618",
+    "version": "4.11.0+next-20240628",
     "description": "BPM PHP Software",
     "keywords": [
         "php bpm processmaker"
@@ -46,7 +46,7 @@
         "processmaker/docker-executor-node": "1.1.0",
         "processmaker/docker-executor-php": "1.2.0",
         "processmaker/laravel-i18next": "dev-master",
-        "processmaker/nayra": "1.11.0",
+        "processmaker/nayra": "1.12.0",
         "processmaker/pmql": "1.12.1",
         "psr/http-message": "^1.1",
         "psr/log": "^2.0",
@@ -104,7 +104,7 @@
             "Gmail"
         ],
         "processmaker": {
-            "build": "5fd048af",
+            "build": "5bc9e6c7",
             "custom": {
                 "package-ellucian-ethos": "1.16.0",
                 "package-plaid": "1.6.0",
@@ -132,7 +132,8 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.0.3"
+                "package-plg": "0.0.3",
+                "package-accessibility": "dev-next"
             },
             "enterprise": {
                 "connector-docusign": "dev-next",
@@ -163,6 +164,7 @@
                 "package-process-optimization": "dev-next",
                 "package-product-analytics": "dev-next",
                 "package-projects": "dev-next",
+                "package-rpa": "dev-next",
                 "package-savedsearch": "dev-next",
                 "package-sentry": "dev-next",
                 "package-signature": "dev-next",

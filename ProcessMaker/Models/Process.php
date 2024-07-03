@@ -164,6 +164,8 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
 
     const ASSIGNMENT_PROCESS = 'Assignment process';
 
+    const NOT_ASSIGNABLE_USER_STATUS = ['INACTIVE', 'OUT_OF_OFFICE'];
+
     protected $connection = 'processmaker';
 
     /**
@@ -1002,33 +1004,46 @@ class Process extends ProcessMakerModel implements HasMedia, ProcessModelInterfa
     /**
      * Get a consolidated list of users within groups.
      *
-     * @param binary $group_id
+     * @param mixed $group_id
      * @param array $users
      *
      * @return array
      */
-    public function getConsolidatedUsers($group_id, array &$users)
+    public function getConsolidatedUsers($groupOrGroups, array &$users)
     {
-        $users = array_unique(array_merge(
-            GroupMember::where([
-                ['group_id', '=', $group_id],
-                ['member_type', '=', User::class],
-            ])
-                ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
-                ->where('users.status', 'ACTIVE')->pluck('member_id')->toArray(),
-            $users
-        ));
-        $groupMembers = GroupMember::where([
-            ['group_id', '=', $group_id],
-            ['member_type', '=', Group::class],
-        ])
+        $isArray = is_array($groupOrGroups);
+        if ($isArray) {
+            $groupOrGroups = array_unique($groupOrGroups);
+        }
+        // Add the users from the groups
+        GroupMember::select('member_id')
+            ->where('member_type', User::class)
+            ->when($isArray, function ($query) use ($groupOrGroups) {
+                $query->whereIn('group_id', $groupOrGroups);
+            }, function ($query) use ($groupOrGroups) {
+                $query->where('group_id', $groupOrGroups);
+            })
+            ->leftjoin('users', 'users.id', '=', 'group_members.member_id')
+            ->whereNotIn('users.status', Process::NOT_ASSIGNABLE_USER_STATUS)
+            ->chunk(1000, function ($members) use (&$users) {
+                $userIds = $members->pluck('member_id')->toArray();
+                $users = array_unique(array_merge($users, $userIds));
+            });
+
+        // Add the users from the subgroups
+        GroupMember::select('member_id')
+            ->where('member_type', Group::class)
+            ->when($isArray, function ($query) use ($groupOrGroups) {
+                $query->whereIn('group_id', $groupOrGroups);
+            }, function ($query) use ($groupOrGroups) {
+                $query->where('group_id', $groupOrGroups);
+            })
             ->leftjoin('groups', 'groups.id', '=', 'group_members.member_id')
             ->where('groups.status', 'ACTIVE')
-            ->pluck('member_id');
-
-        foreach ($groupMembers as $groupMember) {
-            $this->getConsolidatedUsers($groupMember, $users);
-        }
+            ->chunk(1000, function ($members) use (&$users) {
+                $groupIds = $members->pluck('member_id')->toArray();
+                $users = $this->addActiveAssignedGroupMembers($groupIds, $users);
+            });
 
         return $users;
     }
