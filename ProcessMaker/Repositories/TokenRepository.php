@@ -168,19 +168,17 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ActivityInterface $activity
      * @param string $to
      *
-     * @throw Exception
+     * @return void
      */
     private function validateAndSendActionByEmail(ActivityInterface $activity, string $to)
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
-            if ($isActionsByEmail === "true") {
-                $configEmail = json_decode($activity->getProperty('configEmail', '{}'));
-                if (is_object($configEmail)) {
+            if ($isActionsByEmail) {
+                $configEmail = json_decode($activity->getProperty('configEmail'), true);
+                if (!empty($configEmail)) {
                     // Send Email
                     return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, []);
-                } else {
-                    throw new \Exception('Invalid configEmail format');
                 }
             }
         } catch (\Exception $e) {

@@ -21,7 +21,7 @@ class TaskActionByEmail
      * This method constructs and sends an email using the provided configuration,
      * recipient email address, and additional data for rendering the email content.
      *
-     * @param object $config Configuration object containing email settings, including:
+     * @param array $config Configuration object containing email settings, including:
      *                       - emailServer: The email server ID (integer, optional, default: 0).
      *                       - subject: The subject of the email (string, optional, default: '').
      *                       - screenEmailRef: Reference ID to a custom email screen (integer, optional, default: 0).
@@ -34,9 +34,9 @@ class TaskActionByEmail
     {
         try {
             // Get parameters to send the email
-            $emailServer = $config->emailServer ?? 0;
-            $subject = $config->subject ?? '';
-            $emailScreenRef = $config->screenEmailRef ?? 0;
+            $emailServer = $config['emailServer'] ?? 0;
+            $subject = $config['subject'] ?? '';
+            $emailScreenRef = $config['screenEmailRef'] ?? 0;
     
             $emailConfig = [
                 'subject' => $this->mustache($subject, $data),
@@ -52,8 +52,8 @@ class TaskActionByEmail
                 $customScreen = Screen::findOrFail($emailScreenRef);
                 $emailConfig['body'] = $this->emailProvider->screenRenderer($customScreen->config, $data);
             } else {
-                // Default message if no custom screen is selected
-                $emailConfig['body'] = __('No screen selected');
+                // Default message if no custom screen is configured
+                $emailConfig['body'] = __('No screen configured');
             }
     
             // Send the email using emailProvider
