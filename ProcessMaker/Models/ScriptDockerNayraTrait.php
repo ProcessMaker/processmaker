@@ -18,6 +18,7 @@ trait ScriptDockerNayraTrait
 
     private $inHost = false;
     private $schema = 'http';
+    public static $nayraPort = 8081;
 
     /**
      * Execute the script task using Nayra Docker.
@@ -78,7 +79,7 @@ trait ScriptDockerNayraTrait
     private function getNayraInstanceUrl()
     {
         $servers = self::getNayraAddresses();
-        return $this->schema . '://' . $servers[0] . ':8080';
+        return $this->schema . '://' . $servers[0] . ':' . $this->nayraPort;
     }
 
     private function getDockerLogs($instanceName)
@@ -134,7 +135,7 @@ trait ScriptDockerNayraTrait
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
                 $docker . ' run -d --name ' . $instanceName . '_nayra '
-                . '-p 8080:8080 '
+                . '-p ' . static::$nayraPort . ':8080 '
                 . $image,
                 $output,
                 $status
