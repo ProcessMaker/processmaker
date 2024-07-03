@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
+use ProcessMaker\Mail\TaskActionByEmail;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -94,6 +95,8 @@ class TokenRepository implements TokenRepositoryInterface
             $user = null;
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
+            // Validate if the task is enable the action by email
+            $this->validateAndSendActionByEmail($activity, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -145,8 +148,6 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
-        $this->validateAndSendActionByEmail($activity);
-
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -165,21 +166,27 @@ class TokenRepository implements TokenRepositoryInterface
      * Validate email configuration and Send Email
      *
      * @param ActivityInterface $activity
+     * @param string $to
+     *
+     * @return void
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, string $to)
     {
-        $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
-        if ($isActionsByEmail) {
-            $configEmail = json_decode($activity->getProperty('configEmail', []));
-            // Get the parameters to send the email
-            $emailserver = $configEmail->emailServer ?? 0;
-            $subject = $configEmail->subject ?? '';
-            $emailScreen = $configEmail->screenEmailRef ?? 0;
-            $emailScreenCompleted = $configEmail->screenCompleteRef ?? 0;
-
-            //TODO send Email
+        try {
+            $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
+            if ($isActionsByEmail) {
+                $configEmail = json_decode($activity->getProperty('configEmail'), true);
+                if (!empty($configEmail)) {
+                    // Send Email
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, []);
+                }
+            }
+        } catch (\Exception $e) {
+            // Catch and log the error
+            Log::error('Failed to validate and send action by email', [
+                'error' => $e->getMessage(),
+            ]);
         }
-
     }
 
     /**
