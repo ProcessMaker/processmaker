@@ -29,18 +29,14 @@
               </b-link>
             </template>
             <template v-if="type === 'requests'">
-              <div class="bodyInfo">
-                {{ $t("Process") }}: {{ item.name }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Task") }}: {{ formatActiveTasks(item.active_tasks) }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Started") }}: {{ formatDate(item.initiated_at) }}
-              </div>
-              <div class="bodyInfo">
-                {{ $t("Completed") }}: {{ formatDate(item.completed_at) }}
-              </div>
+              <template v-for="(row, index) in fields">
+                <div
+                  :key="index"
+                  class="bodyInfo"
+                >
+                  {{ $t(row.label) }}: {{ formatItem[row.field] }}
+                </div>
+              </template>
             </template>
           </div>
         </b-card-text>
@@ -75,11 +71,12 @@
 </template>
 
 <script>
+import { cloneDeep } from "lodash";
 import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
   components: { AvatarImage },
-  props: ["type", "item"],
+  props: ["type", "item", "fields"],
   data() {
     return {
       openURL: "",
@@ -89,14 +86,31 @@ export default {
       isVisible: false,
       title1: "",
       title2: "",
+      formatItem: [],
     };
   },
   mounted() {
+    this.formatItem = cloneDeep(this.item);
+    window.addEventListener("resize", () => {
+      console.log("resize");
+      this.splitText(this.sanitize(this.item.case_title_formatted));
+    });
     if (this.type === "tasks") {
       this.splitText(this.sanitize(this.item.process_request.case_title_formatted));
     } else if (this.type === "requests") {
       this.splitText(this.sanitize(this.item.case_title_formatted));
+      this.fields.forEach((row) => {
+        if (row.field === "tasks") {
+          this.formatItem[row.field] = this.formatActiveTasks(this.formatItem.active_tasks);
+        }
+        if (row.format && row.format === "dateTime") {
+          this.formatItem[row.field] = this.formatDate(this.formatItem[row.field]);
+        }
+      });
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize");
   },
   methods: {
     /**
@@ -156,6 +170,8 @@ export default {
     },
     splitText(text) {
       // Split the text into two lines
+      this.title1 = "";
+      this.title2 = "";
       this.isVisible = true;
       const words = text.split(' ');
       this.$nextTick(() => {

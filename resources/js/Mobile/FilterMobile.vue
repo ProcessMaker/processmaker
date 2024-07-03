@@ -8,7 +8,7 @@
         >
           <button
             id="statusDropdown"
-            class="btn btn-secondary dropdown-toggle dropdown-style"
+            class="btn btn-secondary dropdown-toggle dropdown-status-style"
             type="button"
             data-toggle="dropdown"
             aria-haspopup="true"
@@ -16,7 +16,7 @@
           >
             <i :class="selectedIconStatus" />
             {{ selectedOptionStatus }}
-            <i class="fas fa-caret-down" />
+            <i class="fas fa-caret-down status-dropdown" />
           </button>
           <div
             class="dropdown-menu"
@@ -24,16 +24,14 @@
           >
             <a
               class="dropdown-item"
-              @click="selectOption('In Progress', 'status', 'fas fa-circle text-warning')"
+              @click="selectOption('In Progress', 'status', '')"
             >
-              <i class="fas fa-circle text-warning" />
               {{ $t('In Progress') }}
             </a>
             <a
               class="dropdown-item"
-              @click="selectOption('Completed', 'status', 'fas fa-circle text-primary')"
+              @click="selectOption('Completed', 'status', '')"
             >
-              <i class="fas fa-circle text-primary" />
               {{ $t('Completed') }}
             </a>
           </div>
@@ -46,14 +44,16 @@
         >
           <button
             id="requestsDropdown"
-            class="btn btn-secondary dropdown-toggle"
+            class="btn dropdown-toggle dropdown-requests-style"
             type="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
           >
-            <i :class="selectedIconFilter" />
-            <i class="fas fa-caret-down" />
+            <img
+              src="/img/sort-down-icon.svg"
+              alt="sort-down"
+            >
           </button>
           <div
             class="dropdown-menu"
@@ -61,25 +61,17 @@
           >
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-user' }"
               @click="selectOption(`requester`, 'filter', 'fas fa-user')"
             >
-              <i class="fas fa-user" />
               {{ $t('As Requester') }}
-              <i
-                v-if="selectedIconFilter=== 'fas fa-user'"
-                class="fas fa-check ml-auto text-success"
-              />
             </a>
             <a
               class="dropdown-item"
+              :class="{ 'dropdown-item-selected': selectedIconFilter === 'fas fa-users' }"
               @click="selectOption(`participant`, 'filter', 'fas fa-users')"
             >
-              <i class="fas fa-users" />
               {{ $t('As Participant') }}
-              <i
-                v-if="selectedIconFilter === 'fas fa-users'"
-                class="fas fa-check ml-auto text-success"
-              />
             </a>
           </div>
         </div>
@@ -118,10 +110,12 @@
         </div>
         <div class="d-flex align-items-end ml-1">
           <button
-            class="btn btn-primary"
+            class="btn"
             @click="toggleInput"
           >
-            <i class="fas fa-search" />
+            <img
+              src="/img/search-icon.svg"
+            >
           </button>
           <input
             v-if="showInput"
@@ -153,7 +147,7 @@ export default {
     return {
       searchCriteria: "",
       selectedOptionStatus: "In Progress",
-      selectedIconStatus: "fas fa-circle text-warning",
+      selectedIconStatus: "",
       selectedIconFilter: "fas fa-user",
       apiData: [],
       showInput: false,
@@ -294,16 +288,31 @@ export default {
     padding: 5px 10px;
   }
   .dropdown-item {
-    font-size: 12px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #556271;
   }
   .narrow-input {
     font-size: 12px;
     width: 100%;
     padding: 5px 60px;
   }
-  .dropdown-style {
+  .dropdown-status-style {
     background-color: white !important;
-    color: black !important;
+    color: #4C545C !important;
+    border: none;
+    text-transform: none;
+    font-size: 15px;
+    font-weight: 400;
   }
-
+  .status-dropdown {
+    margin-left: 5px;
+  }
+  .dropdown-requests-style {
+    align-items: center;
+    padding: 8px 12px;
+  }
+  .dropdown-item-selected {
+    background-color: #EBEEF2;
+  }
 </style>
