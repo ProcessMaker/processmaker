@@ -34,7 +34,7 @@
           {{ reassignToUserLabel }}
         </b-button>
 
-        <b-dropdown variant="outline-secondary" class="ml-2" no-caret>
+        <b-dropdown variant="outline-secondary" class="ml-2" no-caret right boundary="window">
           <template #button-content>
             <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
           </template>
@@ -44,13 +44,13 @@
           <b-dropdown-item @click="dismissAll">{{ $t('Dismiss All') }}</b-dropdown-item>
         </b-dropdown>
 
-        <a href="#" class="ml-2" @click="dismiss">
+        <a href="#" class="ml-2 recommendation-dismiss" @click="dismiss">
           <i class="fa fa-times" aria-hidden="true"></i>
         </a>
       </div>
 
-      <div class="recommendation-actions" v-if="dashboard" right>
-        <b-dropdown variant="outline-secondary" class="ml-2" no-caret>
+      <div class="recommendation-actions" v-if="dashboard">
+        <b-dropdown variant="outline-secondary" class="ml-2" no-caret right boundary="window" menu-class="w-50">
           <template #button-content>
             <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
           </template>
@@ -236,6 +236,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+@import '~styles/variables';
+
 .recommendation {
   display: flex;
   padding: 10px;
@@ -244,6 +247,7 @@ export default {
   margin-bottom: 10px;
   align-items: center;
   background-color: #F2F8FC;
+  overflow: hidden;
 }
 .recommendation.dashboard {
   border: none;
@@ -251,20 +255,43 @@ export default {
 }
 .recommendation-title {
   flex-grow: 1;
+  min-width: 0;
+  
+  a {
+    display: block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 0;
+  }
 }
 .recommendation-name {
   font-weight: 600;
-  color: #212529;
+  color: #566877;
+}
+.recommendation-actions {
+  display: flex;
+  align-items: center;
 }
 .recommendation-actions :deep(.btn) {
   background-color: #FEFEFE;
   border-color: #CDDEEE;
   text-transform: none;
+  flex-shrink: 0;
+}
+
+.dashboard .recommendation-actions :deep(.dropdown-toggle) {
+  background-color: transparent;
 }
 
 .recommendation-actions :deep(.btn-outline-secondary:hover),
-.recommendation-actions :deep(.btn-outline-secondary.dropdown-toggle) {
-  color: #6C757D;
+.recommendation-actions :deep(.btn-outline-secondary.dropdown-toggle),
+.recommendation-dismiss {
+  color: #566877;
+}
+
+.recommendation-dismiss {
+  margin-right: 10px;
 }
 
 .recommendation-actions :deep(.dropdown-item) {
@@ -275,11 +302,16 @@ export default {
 .recommendation-navigation {
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  min-width: 110px;
 
   a, div {
     display: block;
-    margin: 0 5px;
+    margin: 0 7px;
+    color: #566877;
+  }
+
+  a {
+    padding-top: 5px;
   }
 
   i {
