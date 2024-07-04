@@ -23,7 +23,8 @@ const ListMixin = {
        if(this.totalCards>=this.perPage) {
         this.cardMessage = "show-page";
         //this.perPage = 15 * (this.page+1);
-        this.perPage = this.perPage + 15;
+        //this.perPage = this.perPage + 15;
+        this.sumCards = this.sumCards + this.perPage;
         this.fetch();
        } else {
         console.log("No hay mas cards");
@@ -40,6 +41,10 @@ const ListMixin = {
         );
       }
       return "";
+    },
+    calculateTotalPages(totalItems, itemsPerPage) {
+      if (itemsPerPage <= 0) return 0;
+      return Math.ceil(totalItems / itemsPerPage);
     },
     fetch() {
       Vue.nextTick(() => {
@@ -79,23 +84,23 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
-        // console.log("API call: ",
-        // `${this.endpoint}?page=${
-        //   this.page
-        // }&include=` + include.join(",")
-        //   + `&pmql=${
-        //     encodeURIComponent(pmql)
-        //   }&per_page=${
-        //     this.perPage
-        //   }${filterParams
-        //   }${this.getSortParam()
-        //   }&non_system=true` +
-        //   advancedFilter +
-        //   this.columnsQuery,
-        //   {
-        //     dataLoadingId: this.dataLoadingId,
-        //     headers: { 'Cache-Control': 'no-cache'}
-        //   });
+        console.log("API call: ",
+        `${this.endpoint}?page=${
+          this.page
+        }&include=` + include.join(",")
+          + `&pmql=${
+            encodeURIComponent(pmql)
+          }&per_page=${
+            this.perPage + this.sumCards
+          }${filterParams
+          }${this.getSortParam()
+          }&non_system=true` +
+          advancedFilter +
+          this.columnsQuery,
+          {
+            dataLoadingId: this.dataLoadingId,
+            headers: { 'Cache-Control': 'no-cache'}
+          });
         // Load from our api client
         ProcessMaker.apiClient
           .get(
@@ -105,7 +110,7 @@ const ListMixin = {
               + `&pmql=${
                 encodeURIComponent(pmql)
               }&per_page=${
-                this.perPage
+                this.perPage + this.sumCards
               }${filterParams
               }${this.getSortParam()
               }&non_system=true` +
@@ -118,9 +123,8 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
-            console.log("response API: ", response.data);
             this.totalCards = response.data.meta.total;
-            this.lastPage =  response.data.meta.last_page;
+            this.totalPages = this.calculateTotalPages(this.totalCards, this.perPage);
             if (this.$cookies.get("isMobile") === "true") {
               const dataIds = [];
               this.data.data.forEach((element) => {

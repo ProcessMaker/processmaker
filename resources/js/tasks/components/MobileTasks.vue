@@ -1,21 +1,5 @@
 <template>
   <div ref="tasksContainer" class="tasks-container">
-    <!-- <template v-for="(item, index) in data.data">
-      <card
-        :key="index"
-        :item="item"
-        type="tasks"
-      />
-    </template> -->
-    <!-- Improve pagination for cards -->
-    <!-- <pagination
-      ref="pagination"
-      :single="$t('Task')"
-      :plural="$t('Tasks')"
-      :per-page-select-enabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-    /> -->
     <template v-for="(item, index) in data.data">
       <card
         :key="index"
@@ -23,32 +7,22 @@
         :show-cards="true"
         type="tasks"
       />
-      <!-- <p>itera index: {{ index }}</p> -->
-      <div v-if="(index % 15 === 14) && data.data.length >= 15" style="width: 100%;">
-        <!-- <p>cumple if 15 perPage: {{ perPage }} index {{ index }} datalength {{data.data.length  }}</p> -->
+      <div v-if="(index % perPage === perPage - 1) && data.data.length >= perPage" style="width: 100%;">
               <Card v-if="((index + 1) === data.data.length)"
-              style="width: 96%;"
               :show-cards="false"
-              :current-page="counterPage + Math.floor(index / 15)"
-              :total-pages="lastPage"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
               :card-message="'show-more'"
               :loading="loading"
             />
             <Card
               v-else
-              style="width: 96%;"
               :show-cards="false"
-              :current-page="counterPage + Math.floor(index / 15)"
-              :total-pages="lastPage"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
               :card-message="cardMessage"
               :loading="loading"
             />
-            <!-- <div v-if="((index + 1) === data.data.length)">
-              <p>Separador: {{ cardMessage }} </p>
-            </div>
-            <div v-else>
-              <p>page of: {{ cardMessage }} </p>
-            </div> -->
       </div>
     </template>
   </div>

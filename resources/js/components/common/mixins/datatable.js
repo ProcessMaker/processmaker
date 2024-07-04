@@ -163,7 +163,8 @@ export default {
       totalCards: 0,
       counterPage: 2,
       cardMessage: "show-more",
-      lastPage: 0,
+      sumCards: 0,
+      totalPages: 0,
     };
   },
 };

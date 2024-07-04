@@ -75,7 +75,6 @@ import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
   components: { AvatarImage },
-  //props: ["type", "item"],
   props: {
     item: null,
     type: null,
