@@ -328,14 +328,6 @@ jobs:
     needs: imageEKS
     runs-on: ${{ vars.RUNNER }}
     steps:
-      - name: Set up tmate session
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tmate
-          tmate -S /tmp/tmate.sock new-session -d
-          tmate -S /tmp/tmate.sock wait tmate-ready
-          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
       - name: Export Params
         run: |
           echo "IMAGE=${{ secrets.REGISTRY_HOST }}/processmaker/enterprise:${{env.IMAGE_TAG}}" >> $GITHUB_ENV
@@ -361,9 +353,6 @@ jobs:
           docker-compose run phpunit
           CONTAINER_ID=$(docker ps -a --filter ancestor=pm4-eks-phpunit:latest --format "{{.ID}}" | head -n 1)
           docker cp $CONTAINER_ID:/opt/processmaker/coverage.xml coverage.xml
-      - name: Wait for debugging session to end
-        if: failure()
-        run: sleep 3h
       - name: Archive code coverage
         uses: actions/upload-artifact@v4
         with:
