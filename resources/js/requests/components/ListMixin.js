@@ -4,6 +4,7 @@ const ListMixin = {
     requestListCard.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
+    console.log("llama destroy requests");
     const requestListCard = document.querySelector(".mobile-container");
     requestListCard.removeEventListener("scrollend", this.onScroll());
   },
@@ -11,16 +12,16 @@ const ListMixin = {
     onScroll() {
       const container = document.querySelector(".mobile-container");
       if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
-        console.log("cumple: ", container.scrollHeight);
-      //  if(this.totalCards>=this.perPage) {
-      //   this.cardMessage = "show-page";
-      //   //this.perPage = 15 * (this.page+1);
-      //   this.perPage = this.perPage + 15;
-      //   this.fetch();
-      //  } else {
-      //   console.log("No hay mas cards");
-      //  }
-      }
+        if(this.totalCards>=this.perPage) {
+         this.cardMessage = "show-page";
+         this.sumCards = this.sumCards + this.perPage;
+         this.fetch();
+        }
+       }
+    },
+    calculateTotalPages(totalItems, itemsPerPage) {
+      if (itemsPerPage <= 0) return 0;
+      return Math.ceil(totalItems / itemsPerPage);
     },
     formatStatus(status) {
       let color = "success";
@@ -101,7 +102,7 @@ const ListMixin = {
             `${this.endpoint}?page=${
               this.page
             }&per_page=${
-              this.perPage
+              this.perPage + this.sumCards
             }&include=process,participants,data`
                   + `&pmql=${
                     encodeURIComponent(pmql)
@@ -115,6 +116,8 @@ const ListMixin = {
           )
           .then((response) => {
             this.data = this.transform(response.data);
+            this.totalCards = response.data.meta.total;
+            this.totalPages = this.calculateTotalPages(this.totalCards, this.perPage);
           }).catch((error) => {
             if (_.has(error, "response.data.message")) {
               ProcessMaker.alert(error.response.data.message, "danger");

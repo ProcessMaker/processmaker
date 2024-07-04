@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <template v-for="(item, index) in data.data">
       <card
@@ -8,7 +8,6 @@
         type="requests"
       />
     </template>
-    <!-- Improve pagination for cards -->
     <pagination
       ref="pagination"
       :single="$t('Request')"
@@ -18,8 +17,36 @@
       @vuetable-pagination:change-page="onPageChange"
     />
   </div>
+</template> -->
+<template>
+  <div ref="requestsContainer" class="requests-container">
+    <template v-for="(item, index) in data.data">
+      <card
+        :key="index"
+        :item="item"
+        :show-cards="true"
+        type="requests"
+      />
+      <div v-if="(index % perPage === perPage - 1) && data.data.length >= perPage" style="width: 100%;">
+              <Card v-if="((index + 1) === data.data.length)"
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="'show-more'"
+              :loading="loading"
+            />
+            <Card
+              v-else
+              :show-cards="false"
+              :current-page="counterPage + Math.floor(index / perPage)"
+              :total-pages="totalPages"
+              :card-message="cardMessage"
+              :loading="loading"
+            />
+      </div>
+    </template>
+  </div>
 </template>
-
 <script>
 import Card from "../../Mobile/Card.vue";
 import datatableMixin from "../../components/common/mixins/datatable";

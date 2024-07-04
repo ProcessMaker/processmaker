@@ -4,6 +4,7 @@ const ListMixin = {
     taskListCard.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
+    console.log("llama destroy tasks");
     const taskListCard = document.querySelector(".mobile-container");
     taskListCard.removeEventListener("scrollend", this.onScroll());
   },
@@ -19,15 +20,10 @@ const ListMixin = {
     onScroll() {
       const container = document.querySelector(".mobile-container");
       if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
-        //console.log("cumple: ", container.scrollHeight - 60);
        if(this.totalCards>=this.perPage) {
         this.cardMessage = "show-page";
-        //this.perPage = 15 * (this.page+1);
-        //this.perPage = this.perPage + 15;
         this.sumCards = this.sumCards + this.perPage;
         this.fetch();
-       } else {
-        console.log("No hay mas cards");
        }
       }
     },
@@ -84,23 +80,6 @@ const ListMixin = {
         if (this.additionalIncludes) {
           include.push(...this.additionalIncludes);
         }
-        console.log("API call: ",
-        `${this.endpoint}?page=${
-          this.page
-        }&include=` + include.join(",")
-          + `&pmql=${
-            encodeURIComponent(pmql)
-          }&per_page=${
-            this.perPage + this.sumCards
-          }${filterParams
-          }${this.getSortParam()
-          }&non_system=true` +
-          advancedFilter +
-          this.columnsQuery,
-          {
-            dataLoadingId: this.dataLoadingId,
-            headers: { 'Cache-Control': 'no-cache'}
-          });
         // Load from our api client
         ProcessMaker.apiClient
           .get(
