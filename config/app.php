@@ -240,4 +240,6 @@ return [
     'task_drafts_enabled' => env('TASK_DRAFTS_ENABLED', true),
 
     'force_https' => env('FORCE_HTTPS', true),
+
+    'nayra_docker_network' => env('NAYRA_DOCKER_NETWORK', ''),
 ];

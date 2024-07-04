@@ -4,13 +4,11 @@ namespace ProcessMaker\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\Exception\InvalidDockerImageException;
 use ProcessMaker\Facades\Docker;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\ScriptRunners\Base;
-use UnexpectedValueException;
 
 class BuildScriptExecutors extends Command
 {
@@ -164,34 +162,11 @@ class BuildScriptExecutors extends Command
 
         $isNayra = $scriptExecutor->language === Base::NAYRA_LANG;
         if ($isNayra) {
-            $instanceName = config('app.instance');
-            $this->info('Stop existing nayra container');
-            $this->execCommand(Docker::command() . " stop {$instanceName}_nayra 2>&1 || true");
-            $this->execCommand(Docker::command() . " rm {$instanceName}_nayra 2>&1 || true");
-            $this->info('Bring up the nayra container');
-            $this->execCommand(Docker::command() . ' run -d --name ' . $instanceName . '_nayra ' . $image);
-            $this->info('Get IP address of the nayra container');
-            $ip = '';
-            for ($i = 0; $i < 10; $i++) {
-                $ip = exec(
-                    Docker::command()
-                    . " inspect --format '{{ .NetworkSettings.IPAddress }}' {$instanceName}_nayra"
-                );
-                if ($ip) {
-                    $this->info('Nayra container IP: ' . $ip);
-                    Cache::forever('nayra_ips', [$ip]);
-                    $this->sendEvent(0, 'done');
-                    break;
-                }
-                sleep(1);
-            }
-            if (!$ip) {
-                throw new UnexpectedValueException('Could not get IP address of the nayra container');
-            }
+            Base::bringUpNayraExecutor($this, $image);
         }
     }
 
-    private function execCommand(string $command)
+    public function execCommand(string $command)
     {
         if ($this->userId) {
             $this->runProc(
@@ -221,7 +196,7 @@ class BuildScriptExecutors extends Command
         parent::info($text, $verbosity);
     }
 
-    private function sendEvent($output, $status)
+    public function sendEvent($output, $status)
     {
         if ($this->userId) {
             event(new BuildScriptExecutor($output, $this->userId, $status));

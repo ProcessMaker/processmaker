@@ -45,6 +45,9 @@ trait RequestHelper
         // If the url was generated using the route() helper,
         // strip out the http://.../api/1.0 part of it;
         $url = preg_replace('/^.*\/api\//i', '', $url);
+        if (substr($url, 0, 1) === '/') {
+            $url = '1.0' . $url;
+        }
 
         $response = $this->actingAs($this->user, 'api')
                          ->json($method, '/api/' . $url, $params);
