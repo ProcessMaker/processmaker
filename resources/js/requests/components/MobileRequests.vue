@@ -4,6 +4,7 @@
       <card
         :key="index"
         :item="item"
+        :show-cards="true"
         type="requests"
       />
     </template>

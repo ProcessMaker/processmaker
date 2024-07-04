@@ -1,5 +1,5 @@
 <template>
-  <b-card class="m-3">
+  <b-card v-if="showCards" class="m-3">
     <a :href="openURL">
       <b-card-text @click="openCard()">
         <b-row>
@@ -62,6 +62,12 @@
       </b-card-text>
     </a>
   </b-card>
+  <b-card v-else
+    class="card-tasks">
+    <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+  </b-card>
 </template>
 
 <script>
@@ -69,7 +75,27 @@ import AvatarImage from "../components/AvatarImage.vue";
 
 export default {
   components: { AvatarImage },
-  props: ["type", "item"],
+  //props: ["type", "item"],
+  props: {
+    item: null,
+    type: null,
+    loading: false,
+    cardMessage: null,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
+    process: null,
+    hideBookmark: {
+      type: Boolean,
+      default: false
+    },
+    showCards: true,
+  },
   data() {
     return {
       openURL: "",
@@ -158,5 +184,14 @@ a,
 }
 .align-left {
   text-align: end;
+}
+.card-tasks {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+  align-items: center;
+  margin-left: 1rem;
 }
 </style>

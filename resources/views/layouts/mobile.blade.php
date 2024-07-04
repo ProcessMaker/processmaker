@@ -1,5 +1,4 @@
 @extends('layouts.layout', ['content_margin' => '', 'overflow-auto' => ''])
-
 @section('content')
   <div class="mobile-flex-container">
     @include('layouts.navbarMobile')
@@ -8,10 +7,7 @@
     </div>
   </div>
 @endsection
-
-
 <script>
-
 </script>
 <!-- Hide Sidebar and Navbar -->
 <style media="screen">
@@ -32,5 +28,4 @@
     overflow: auto;
   }
 </style>
-
 @yield('css')

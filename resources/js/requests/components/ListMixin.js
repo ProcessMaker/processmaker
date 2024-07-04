@@ -1,5 +1,27 @@
 const ListMixin = {
+  mounted() {
+    const requestListCard = document.querySelector(".mobile-container");
+    requestListCard.addEventListener("scrollend", () => this.onScroll());
+  },
+  beforeDestroy() {
+    const requestListCard = document.querySelector(".mobile-container");
+    requestListCard.removeEventListener("scrollend", this.onScroll());
+  },
   methods: {
+    onScroll() {
+      const container = document.querySelector(".mobile-container");
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 10) {
+        console.log("cumple: ", container.scrollHeight);
+      //  if(this.totalCards>=this.perPage) {
+      //   this.cardMessage = "show-page";
+      //   //this.perPage = 15 * (this.page+1);
+      //   this.perPage = this.perPage + 15;
+      //   this.fetch();
+      //  } else {
+      //   console.log("No hay mas cards");
+      //  }
+      }
+    },
     formatStatus(status) {
       let color = "success";
       let label = "In Progress";
