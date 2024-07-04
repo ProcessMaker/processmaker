@@ -623,9 +623,6 @@ export default {
         } else if (props.advanceStatus === "overdue") {
           color = "danger";
           label = "Overdue";
-        } else if (props.advanceStatus === "open") {
-          color = "success";
-          label = "In Progress";
         }
       } else if (props.status === "CLOSED") {
         color = "primary";

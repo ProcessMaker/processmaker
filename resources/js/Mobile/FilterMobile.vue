@@ -121,6 +121,7 @@
           >
             <img
               :src="getIconSrc"
+              alt="search"
             >
           </button>
           <input
