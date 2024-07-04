@@ -31,6 +31,10 @@ class SmartInbox implements ShouldQueue
     {
         $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
 
+        if (!$incomingTask->user_id) {
+            return;
+        }
+
         $matchingInboxRules = app(MatchingTasks::class)->matchingInboxRules($incomingTask);
 
         foreach ($matchingInboxRules as $inboxRule) {
