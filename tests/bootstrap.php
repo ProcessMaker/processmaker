@@ -10,6 +10,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\ScriptRunners\Base;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -111,7 +112,7 @@ if (env('TEST_TOKEN')) {
         ['language' => 'lua'],
         ['title' => 'Test Executor']
     );
-    Cache::store('file')->forget('nayra_ips');
+    Base::clearNayraAddresses();
 
     if (env('PARALLEL_TEST_PROCESSES')) {
         Artisan::call('processmaker:create-test-dbs');
