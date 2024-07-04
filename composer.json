@@ -132,7 +132,8 @@
                 "package-zj-sonymusic": "dev-fall",
                 "pm-platform": "dev-fall",
                 "package-zj-nas": "dev-fall",
-                "package-plg": "0.0.3"
+                "package-plg": "0.0.3",
+                "package-accessibility": "dev-next"
             },
             "enterprise": {
                 "connector-docusign": "dev-next",
@@ -163,6 +164,7 @@
                 "package-process-optimization": "dev-next",
                 "package-product-analytics": "dev-next",
                 "package-projects": "dev-next",
+                "package-rpa": "dev-next",
                 "package-savedsearch": "dev-next",
                 "package-sentry": "dev-next",
                 "package-signature": "dev-next",
