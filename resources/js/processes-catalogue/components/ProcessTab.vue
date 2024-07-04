@@ -6,7 +6,8 @@
             @changed="onTabsChanged">
       <b-tab v-for="(item, index) in tabsList"
              :key="index"
-             :title="item.name">
+             :title="item.name"
+             @hook:mounted="checkTabsMounted">
         <PMSearchBar v-model="item.filter">
           <template v-slot:right-content>
             <TabOptions @onTabSettings="onTabSettings"
@@ -85,7 +86,7 @@
              :ok-variant="'danger'"
              :cancel-title="$t('Cancel')"
              @ok="onOkDelete">
-      <span v-html="$t('Do you want to delete the tab <b>{{nameItem}}</b>?', {nameItem: this.tabsList[this.activeTab].name})"></span>
+      <span v-html="$t('Do you want to delete the tab <b>{{nameItem}}</b>?', {nameItem: ''})"></span>
     </b-modal>
   </div>
 </template>
@@ -176,16 +177,15 @@
     methods: {
       onTabsInput(activeTabIndex) {
         this.$nextTick(() => {
-          if (this.$refs["list" + activeTabIndex]) {
+          if (this.$refs["list" + activeTabIndex] &&
+                  this.$refs["list" + activeTabIndex][0]) {
             this.$refs["list" + activeTabIndex][0].fetch();
           }
         });
       },
       onTabsChanged() {
         let index = this.$refs.bTabs.getTabs().length;
-        if (index > 2) {
-          this.activeTab = index - 1;
-        }
+        this.activeTab = index - 1;
       },
       onCancelCreateSavedSerchTab() {
         this.$refs.tabCreate.$emit("close");
@@ -226,6 +226,32 @@
         });
         area.addEventListener('mouseleave', () => {
           window.addEventListener('click', this.onCancelCreateSavedSerchTab);
+        });
+      },
+      setDragDrop() {
+        this.$refs.bTabs.getButtons().forEach((button, index) => {
+          let el = button.$el;
+          el.setAttribute('draggable', true);
+          el.ondragstart = (event) => {
+            event.dataTransfer.setData("text/plain", index);
+          };
+          el.ondragover = (event) => {
+            event.preventDefault();
+          };
+          el.ondrop = (event) => {
+            event.preventDefault();
+            let fromIndex = event.dataTransfer.getData("text/plain");
+            if (!/^\d+$/.test(fromIndex) || fromIndex === index) {
+              return;
+            }
+            let movedTab = this.tabsList.splice(fromIndex, 1)[0];
+            this.tabsList.splice(index, 0, movedTab);
+          };
+        });
+      },
+      checkTabsMounted() {
+        this.$nextTick(() => {
+          this.setDragDrop();
         });
       }
     }

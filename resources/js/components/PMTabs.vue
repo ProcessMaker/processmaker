@@ -43,6 +43,9 @@
     methods: {
       getTabs() {
         return this.$refs.bTabs.tabs;
+      },
+      getButtons() {
+        return this.$refs.bTabs.$refs.buttons;
       }
     }
   };
