@@ -2,21 +2,19 @@
 
 namespace ProcessMaker\Jobs;
 
-use Facades\ProcessMaker\InboxRules\ApplyAction;
-use Facades\ProcessMaker\InboxRules\MatchingTasks;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use ProcessMaker\InboxRules\MatchingTasks;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class SmartInbox implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $incomingTaskId;
+    public int $incomingTaskId;
 
     /**
      * Create a new job instance.
@@ -32,9 +30,17 @@ class SmartInbox implements ShouldQueue
     public function handle(): void
     {
         $incomingTask = ProcessRequestToken::findOrFail($this->incomingTaskId);
-        $matchingInboxRules = MatchingTasks::matchingInboxRules($incomingTask);
-        foreach ($matchingInboxRules as $inboxRule) {
-            SmartInboxApplyAction::dispatch($this->incomingTaskId, $inboxRule->id);
+
+        if (!$incomingTask->user_id) {
+            return;
         }
+
+        $matchingInboxRules = app(MatchingTasks::class)->matchingInboxRules($incomingTask);
+
+        foreach ($matchingInboxRules as $inboxRule) {
+            SmartInboxApplyAction::dispatchSync($this->incomingTaskId, $inboxRule->id);
+        }
+
+        GenerateUserRecommendations::dispatch($incomingTask->user_id)->onQueue('low');
     }
 }
