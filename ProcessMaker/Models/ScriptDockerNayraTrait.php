@@ -16,7 +16,7 @@ use ProcessMaker\ScriptRunners\Base;
 trait ScriptDockerNayraTrait
 {
 
-    private $inHost = false;
+    public static $inHost = true;
     private $schema = 'http';
     public static $nayraPort = 8081;
 
@@ -135,7 +135,7 @@ trait ScriptDockerNayraTrait
             exec($docker . " rm {$instanceName}_nayra 2>&1 || true");
             exec(
                 $docker . ' run -d --name ' . $instanceName . '_nayra '
-                // . '-p ' . static::$nayraPort . ':8080 '
+                . (static::$inHost ? '-p ' . static::$nayraPort . ':8081 ' : '')
                 . $image,
                 $output,
                 $status
@@ -193,7 +193,7 @@ trait ScriptDockerNayraTrait
             if ($i > 0) {
                 sleep(1);
             }
-            if ($this->inHost) {
+            if (static::$inHost) {
                 // check if container is running in host network
                 exec($docker . " inspect {$instanceName}_nayra", $output, $status);
                 if ($status === 0) {
