@@ -58,27 +58,10 @@ class ProcessLaunchpadController extends Controller
         }
 
         $process = $processes->map(function ($process) {
-            $process->counts = $this->getCounts($process->id);
+            $process->counts = $process->getCounts();
         });
 
         return new ProcessCollection($processes);
-    }
-
-    protected function getCounts($processId)
-    {
-        $result = ProcessRequest::where('process_id', $processId)
-            ->selectRaw('status, count(*) as count')
-            ->groupBy('status')
-            ->get();
-
-        $completed = $result->where('status', 'COMPLETED')->first()?->count ?? 0;
-        $in_progress = $result->where('status', 'ACTIVE')->first()?->count ?? 0;
-
-        return [
-            'completed' => $completed,
-            'in_progress' => $in_progress,
-            'total' => $completed + $in_progress,
-        ];
     }
 
     /**
@@ -109,7 +92,7 @@ class ProcessLaunchpadController extends Controller
             ->where('id', $process->id)
             ->get()
             ->map(function ($process) use ($request) {
-                $process->counts = $this->getCounts($process->id);
+                $process->counts = $process->getCounts();
                 $process->bookmark_id = Bookmark::getBookmarked(true, $process->id, $request->user()->id);
 
                 return $process;

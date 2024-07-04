@@ -1,5 +1,6 @@
 <template>
   <b-card
+    v-if="showCards"
     overlay
     class="card-process"
   >
@@ -35,13 +36,20 @@
         v-if="!hideBookmark"
         :process="process"
         class="bookmark"
-        @bookmark-updated="$parent.loadCard()"
+        @bookmark-updated="callLoadCard"
       />
     </b-card-text>
+  </b-card>
+  <b-card v-else
+  class="text-center d-flex align-items-center justify-content-center card-process2">
+    <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+    <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
   </b-card>
 </template>
 
 <script>
+
 import Bookmark from "../Bookmark.vue";
 
 export default {
@@ -49,11 +57,22 @@ export default {
     Bookmark
   },
   props: {
+    loading: false,
+    cardMessage: null,
+    currentPage: {
+      type: Number,
+      default: 1,
+    },
+    totalPages: {
+      type: Number,
+      default: 0
+    } ,
     process: null,
     hideBookmark: {
       type: Boolean,
       default: false
-    }
+    },
+    showCards: true,
   },
   data() {
     return {
@@ -67,7 +86,7 @@ export default {
         return this.process.counts.total.toLocaleString();
       }
       return null;
-    }
+    },
   },
   methods: {
     /**
@@ -84,6 +103,9 @@ export default {
       }
 
       return `/img/launchpad-images/icons/${icon}.svg`;
+    },
+    callLoadCard() {
+      this.$emit('callLoadCard', () => {}, 'bookmark');
     },
   },
 };
@@ -111,6 +133,21 @@ export default {
     height: 100px;
   }
 }
+.card-process2 {
+  height: 40px;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  border-radius: 8px;
+  background-color: #E5EDF3;
+
+  @media (max-width: $lp-breakpoint) {
+    width: 100%;
+    max-width: none;
+    min-width: none;
+    border-radius: 8px;
+    height: 40px;
+  }
+}
 .card-process:hover {
   box-shadow: 0px 3px 16px 2px #acbdcf75;
 }
@@ -118,6 +155,7 @@ export default {
   padding: 32px;
   height: 100%;
   width: 100%;
+  margin-bottom: 20px;
 
   @media (max-width: $lp-breakpoint) {
     padding: 16px;

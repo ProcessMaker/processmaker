@@ -38,10 +38,11 @@ class BookmarkController extends Controller
             ->where('bookmark.user_id', $user->id)
             ->orderBy('processes.name', 'asc')
             ->paginate($perPage);
-        
+
         foreach ($processes as $process) {
             // Get the launchpad configuration
             $process->launchpad = ProcessLaunchpad::getLaunchpad($launchpad, $process->id);
+            $process->counts = $process->getCounts();
         }
 
         return new ProcessCollection($processes);

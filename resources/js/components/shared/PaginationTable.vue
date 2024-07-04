@@ -206,6 +206,14 @@ export default {
   font-size: 16px;
   color: #556271;
   gap: 8px;
+  flex-wrap: wrap;
+}
+.pagination-button,
+  .pagination-input,
+  .pagination-total,
+  .pagination-dropdown-group {
+    flex: 0 1 auto;
+    margin: 2px 0;
 }
 .pagination-button {
   display: flex;
