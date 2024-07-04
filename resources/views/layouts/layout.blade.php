@@ -105,8 +105,12 @@
         @include('layouts.navbar')
     </div>
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
-      <div id="main" class="main flex-grow-1 h-100 {{$content_margin ?? 'overflow-auto'}} {{$content_margin ?? 'py-3'}}">
-        @yield('content')
+      <div
+        id="main"
+        class="main flex-grow-1 h-100
+          {{$content_margin ?? 'overflow-auto'}}
+          {{$content_margin ?? 'py-3'}}">
+      @yield('content')
       </div>
     </div>
   </div>
