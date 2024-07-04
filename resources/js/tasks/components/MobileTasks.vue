@@ -7,23 +7,15 @@
         :show-cards="true"
         type="tasks"
       />
-      <div v-if="(index % perPage === perPage - 1) && data.data.length >= perPage" style="width: 100%;">
-              <Card v-if="((index + 1) === data.data.length)"
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="'show-more'"
-              :loading="loading"
-            />
-            <Card
-              v-else
-              :show-cards="false"
-              :current-page="counterPage + Math.floor(index / perPage)"
-              :total-pages="totalPages"
-              :card-message="cardMessage"
-              :loading="loading"
-            />
-      </div>
+      <mobile-cards-pagination
+        :index="index"
+        :per-page="perPage"
+        :data-length="data.data.length"
+        :counter-page="counterPage"
+        :total-pages="totalPages"
+        :card-message="cardMessage"
+        :loading="loading"
+      />
     </template>
   </div>
 </template>
@@ -31,8 +23,9 @@
 import Card from "../../Mobile/Card.vue";
 import datatableMixin from "../../components/common/mixins/datatable";
 import ListMixin from "./ListMixin";
+import MobileCardsPagination from "../../Mobile/MobileCardsPagination.vue"
 export default {
-  components: { Card },
+  components: { Card, MobileCardsPagination },
   mixins: [datatableMixin, ListMixin],
   props: {
     filter: {},
