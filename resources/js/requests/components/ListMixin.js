@@ -4,7 +4,6 @@ const ListMixin = {
     requestListCard.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
-    console.log("llama destroy requests");
     const requestListCard = document.querySelector(".mobile-container");
     requestListCard.removeEventListener("scrollend", this.onScroll());
   },

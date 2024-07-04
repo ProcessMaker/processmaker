@@ -4,7 +4,6 @@ const ListMixin = {
     taskListCard.addEventListener("scrollend", () => this.onScroll());
   },
   beforeDestroy() {
-    console.log("llama destroy tasks");
     const taskListCard = document.querySelector(".mobile-container");
     taskListCard.removeEventListener("scrollend", this.onScroll());
   },

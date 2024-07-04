@@ -1,23 +1,3 @@
-<!-- <template>
-  <div>
-    <template v-for="(item, index) in data.data">
-      <card
-        :key="index"
-        :item="item"
-        :show-cards="true"
-        type="requests"
-      />
-    </template>
-    <pagination
-      ref="pagination"
-      :single="$t('Request')"
-      :plural="$t('Requests')"
-      :per-page-select-enabled="true"
-      @changePerPage="changePerPage"
-      @vuetable-pagination:change-page="onPageChange"
-    />
-  </div>
-</template> -->
 <template>
   <div ref="requestsContainer" class="requests-container">
     <template v-for="(item, index) in data.data">

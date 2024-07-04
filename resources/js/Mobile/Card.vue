@@ -62,11 +62,12 @@
       </b-card-text>
     </a>
   </b-card>
-  <b-card v-else
-    class="card-tasks">
-    <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
-    <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
-    <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+  <b-card v-else class="card-tasks">
+    <div class="card-tasks-content">
+      <span v-if="cardMessage === 'show-page'">Page {{ currentPage }} of {{ totalPages }}</span>
+      <span v-if="cardMessage === 'show-more' && !loading"> {{ $t('Show More') }}</span>
+      <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> {{ $t('Loading') }}...</span>
+    </div>
   </b-card>
 </template>
 
@@ -184,13 +185,25 @@ a,
 .align-left {
   text-align: end;
 }
+
 .card-tasks {
   height: 40px;
   margin-top: 1rem;
   margin-right: 1rem;
   border-radius: 8px;
   background-color: #E5EDF3;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   margin-left: 1rem;
+}
+
+.card-tasks-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 </style>
