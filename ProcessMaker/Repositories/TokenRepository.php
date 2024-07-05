@@ -95,8 +95,6 @@ class TokenRepository implements TokenRepositoryInterface
             $user = null;
         } else {
             $user = $token->getInstance()->getProcess()->getOwnerDocument()->getModel()->getNextUser($activity, $token);
-            // Validate if the task is enable the action by email
-            $this->validateAndSendActionByEmail($activity, $user->email);
         }
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
@@ -148,6 +146,11 @@ class TokenRepository implements TokenRepositoryInterface
             }
         }
 
+        // Check if is script or self service again to send the Action by email with the updated token
+        if (!$isScriptOrServiceTask) {
+            $this->validateAndSendActionByEmail($activity, $token, $user->email);
+        }
+
         //Default 3 days of due date
         $due = $this->getDueVariable($activity, $token);
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
@@ -170,7 +173,7 @@ class TokenRepository implements TokenRepositoryInterface
      *
      * @return void
      */
-    private function validateAndSendActionByEmail(ActivityInterface $activity, string $to)
+    private function validateAndSendActionByEmail(ActivityInterface $activity, TokenInterface $token, string $to)
     {
         try {
             $isActionsByEmail = $activity->getProperty('isActionsByEmail', false);
@@ -178,7 +181,7 @@ class TokenRepository implements TokenRepositoryInterface
                 $configEmail = json_decode($activity->getProperty('configEmail'), true);
                 if (!empty($configEmail)) {
                     // Send Email
-                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, $to, []);
+                    return (new TaskActionByEmail())->sendAbeEmail($configEmail, 'luciana.nunez@processmaker.com', $token->getInstance()->getDataStore()->getData());
                 }
             }
         } catch (\Exception $e) {
